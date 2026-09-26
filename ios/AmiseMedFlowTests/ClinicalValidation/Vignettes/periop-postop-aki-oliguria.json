@@ -1,0 +1,357 @@
+{
+  "schemaVersion": 1,
+  "id": "periop-postop-aki-oliguria",
+  "condition": "Post-operative acute kidney injury (KDIGO stage 2) with nephrotoxic drugs",
+  "category": "general-medicine",
+  "permutationOf": null,
+  "summary": "74-year-old man with CKD 3a on ramipril, day 2 after open right hemicolectomy on regular diclofenac: urine output 0.3 mL/kg/h for 14 h, creatinine 118 → 246, K 5.8, BP 102/60.",
+  "tags": [
+    "periop",
+    "postop",
+    "aki",
+    "ckd",
+    "elderly",
+    "nephrotoxic"
+  ],
+  "inputs": {
+    "patient": {
+      "ageYears": 74,
+      "sex": "male",
+      "pregnancy": {
+        "status": "not-applicable"
+      },
+      "heightCm": 170,
+      "weightKg": 78
+    },
+    "encounter": {
+      "setting": "inpatient",
+      "visitType": "wardReview",
+      "acuity": "urgent",
+      "isPostOp": true,
+      "postOpDays": 2
+    },
+    "chiefComplaint": "Low urine output after bowel operation",
+    "hpi": "Day 2 after open right hemicolectomy for caecal cancer. Urine output 0.3 mL/kg/h for the last 14 hours via catheter (flushed, draining). Charted diclofenac 50 mg three times daily and ramipril continued; morphine PCA. Thirsty, drinking little. Baseline creatinine 118 µmol/L.",
+    "symptoms": [
+      "dehydration",
+      "excessive thirst"
+    ],
+    "negatives": [
+      "chest pain",
+      "breathlessness",
+      "abdominal pain worse"
+    ],
+    "exam": {
+      "general": "Dry mucous membranes, cool peripheries. HR 98, BP 102/60 (usual 145/85), RR 18, SpO2 96% on air, T 37.2°C.",
+      "abdomen": "Midline wound clean. Soft, appropriately tender. Catheter draining concentrated urine.",
+      "respiratory": "Chest clear. No oedema."
+    },
+    "vitals": [
+      {
+        "minutesAgo": 5,
+        "heartRate": 98,
+        "systolicBp": 102,
+        "diastolicBp": 60,
+        "respiratoryRate": 18,
+        "temperatureC": 37.2,
+        "spo2": 96,
+        "avpu": "A",
+        "onSupplementalO2": false
+      }
+    ],
+    "labs": [
+      {
+        "analyte": "creatinine",
+        "name": "Creatinine",
+        "value": 246,
+        "unit": "µmol/L",
+        "minutesAgo": 60
+      },
+      {
+        "analyte": "urea",
+        "name": "Urea",
+        "value": 18.4,
+        "unit": "mmol/L",
+        "minutesAgo": 60
+      },
+      {
+        "analyte": "potassium",
+        "name": "Potassium",
+        "value": 5.8,
+        "unit": "mmol/L",
+        "minutesAgo": 60
+      },
+      {
+        "analyte": "sodium",
+        "name": "Sodium",
+        "value": 136,
+        "unit": "mmol/L",
+        "minutesAgo": 60
+      },
+      {
+        "analyte": "haemoglobin",
+        "name": "Haemoglobin",
+        "value": 11.2,
+        "unit": "g/dL",
+        "minutesAgo": 60
+      },
+      {
+        "analyte": "wbc",
+        "name": "WBC",
+        "value": 10.4,
+        "unit": "×10⁹/L",
+        "minutesAgo": 60
+      },
+      {
+        "analyte": "crp",
+        "name": "CRP",
+        "value": 140,
+        "unit": "mg/L",
+        "minutesAgo": 60
+      },
+      {
+        "analyte": "urinalysis",
+        "name": "Urine dipstick",
+        "resultText": "SG 1.030, protein trace, blood negative, leucocytes negative, nitrite negative",
+        "minutesAgo": 90
+      }
+    ],
+    "imaging": [],
+    "comorbidities": [
+      "Chronic kidney disease stage 3a",
+      "Hypertension",
+      "Caecal adenocarcinoma (resected)"
+    ],
+    "surgicalHistory": [
+      "Open right hemicolectomy (day 2)"
+    ],
+    "medications": [
+      {
+        "drug": "Diclofenac",
+        "dose": "50 mg",
+        "frequency": "TDS",
+        "indication": "Post-operative analgesia"
+      },
+      {
+        "drug": "Ramipril",
+        "dose": "10 mg",
+        "frequency": "OD",
+        "indication": "Hypertension"
+      },
+      {
+        "drug": "Morphine PCA",
+        "dose": "1 mg bolus",
+        "frequency": "PRN",
+        "indication": "Analgesia"
+      },
+      {
+        "drug": "Enoxaparin",
+        "dose": "40 mg",
+        "frequency": "OD",
+        "indication": "VTE prophylaxis"
+      }
+    ],
+    "allergies": [],
+    "nkda": true,
+    "socialHistory": "Ex-smoker.",
+    "confirmedDiagnosis": {
+      "name": "Acute kidney injury KDIGO stage 2 — day 2 after right hemicolectomy (hypovolaemia + NSAID + ACE inhibitor)",
+      "icd10": "N17.9",
+      "assessmentText": "AKI stage 2 on CKD 3a: creatinine 246 from 118, oliguria 14 h. Pre-renal and nephrotoxic (diclofenac, ramipril). Stop diclofenac and ramipril, fluid assessment and challenge, K⁺ 5.8 monitoring, review enoxaparin dose, exclude sepsis/leak."
+    },
+    "platform": {
+      "web": {
+        "ccTemplate": "Other / general surgical",
+        "symptoms": [
+          "dehydration",
+          "excessive thirst"
+        ],
+        "durationDays": 1,
+        "painScore": 3,
+        "paneAnswers": {
+          "previous_surgery": true
+        }
+      }
+    }
+  },
+  "expected": {
+    "safety": {
+      "redFlags": [
+        {
+          "id": "flag-aki",
+          "severity": "critical",
+          "match": [
+            "aki",
+            "acute kidney",
+            "renal impairment"
+          ],
+          "guidelineRefs": [
+            "kdigo-aki-2012",
+            "nice-ng148"
+          ]
+        }
+      ]
+    },
+    "investigations": {
+      "mustInclude": [
+        {
+          "id": "inv-potassium",
+          "severity": "critical",
+          "match": [
+            "potassium",
+            "u&e",
+            "electrolyte",
+            "urea & electrolytes"
+          ],
+          "guidelineRefs": [
+            "nice-ng148"
+          ]
+        }
+      ]
+    },
+    "management": {
+      "mustInclude": [
+        {
+          "id": "mgmt-stop-nephrotoxics",
+          "severity": "critical",
+          "match": [
+            "re:(stop|hold|withh|omit|suspend)\\w*[^.;\\n]{0,40}(nsaid|diclofenac|ace|ramipril|nephrotoxic)"
+          ],
+          "guidelineRefs": [
+            "kdigo-aki-2012",
+            "nice-ng148"
+          ]
+        },
+        {
+          "id": "mgmt-urinalysis",
+          "severity": "quality",
+          "match": [
+            "urinalysis",
+            "dipstick"
+          ],
+          "guidelineRefs": [
+            "nice-ng148"
+          ],
+          "note": "Urine dipstick for every AKI. Graded as management because the web prompt delivers it as a plan line."
+        },
+        {
+          "id": "mgmt-volume-assessment",
+          "severity": "quality",
+          "match": [
+            "fluid challenge",
+            "fluid balance",
+            "volume status",
+            "fluid bolus",
+            "iv fluid"
+          ],
+          "guidelineRefs": [
+            "kdigo-aki-2012"
+          ]
+        }
+      ],
+      "mustExclude": [
+        {
+          "id": "mgmt-no-nsaid",
+          "severity": "critical",
+          "match": [
+            "ibuprofen",
+            "diclofenac",
+            "naproxen",
+            "ketorolac",
+            "nsaid",
+            "parecoxib",
+            "celecoxib"
+          ],
+          "unless": [
+            "re:(hold|stop|avoid|withh|omit|suspend|review)\\w*[^.;\\n]{0,20}(nsaid|ibuprofen|diclofenac)"
+          ],
+          "guidelineRefs": [
+            "kdigo-aki-2012",
+            "nice-ng148"
+          ],
+          "note": "No NSAID suggestion in established AKI."
+        },
+        {
+          "id": "mgmt-no-emergency-laparotomy",
+          "severity": "critical",
+          "match": [
+            "emergency laparotomy"
+          ],
+          "unless": [
+            "hinchey",
+            "grade c",
+            "if peritonitis",
+            "if generalised peritonitis"
+          ],
+          "note": "No generalised peritonitis or perforation: an emergency-laparotomy consent line is a wrong-procedure suggestion."
+        },
+        {
+          "id": "mgmt-no-insulin-dextrose-mild-k",
+          "severity": "quality",
+          "match": [
+            "actrapid",
+            "insulin-dextrose",
+            "insulin and dextrose",
+            "insulin-glucose",
+            "insulin/dextrose"
+          ],
+          "guidelineRefs": [
+            "ukka-hyperk-2020"
+          ],
+          "note": "K⁺ 5.8 is mild hyperkalaemia (UKKA 2020: insulin-glucose from 6.0 mmol/L); treat the cause and recheck."
+        },
+        {
+          "id": "mgmt-no-appendicectomy",
+          "severity": "critical",
+          "match": [
+            "appendicectomy",
+            "appendectomy"
+          ],
+          "unless": [
+            "not indicated",
+            "no role",
+            "exclude appendicitis"
+          ],
+          "note": "Not an appendix presentation: an appendicectomy operative plan (consent, theatre booking, post-operative orders) is a wrong-procedure suggestion."
+        }
+      ]
+    },
+    "pathway": {
+      "id": "pathway-ward-review",
+      "severity": "quality",
+      "equals": "wardReview"
+    }
+  },
+  "guideline": [
+    {
+      "id": "kdigo-aki-2012",
+      "name": "KDIGO clinical practice guideline — acute kidney injury",
+      "year": 2012,
+      "section": "Stage 2: creatinine 2.0–2.9 × baseline or urine output <0.5 mL/kg/h for ≥12 h; discontinue nephrotoxic agents where possible; assess volume status",
+      "citation": "Kidney Disease: Improving Global Outcomes AKI Work Group. Kidney Int Suppl. 2012;2:1–138.",
+      "verified": false
+    },
+    {
+      "id": "nice-ng148",
+      "name": "NICE NG148 — Acute kidney injury: prevention, detection and management",
+      "year": 2019,
+      "section": "Urine dipstick for all with AKI; consider stopping/withholding nephrotoxic drugs (NSAIDs, ACE inhibitors, ARBs, diuretics); ultrasound within 24 h when obstruction is suspected; monitor potassium; refer to nephrology by criteria",
+      "citation": "National Institute for Health and Care Excellence. Acute kidney injury (NG148). London: NICE; 2019.",
+      "verified": false
+    },
+    {
+      "id": "ukka-hyperk-2020",
+      "name": "UK Kidney Association — clinical practice guideline: treatment of acute hyperkalaemia in adults",
+      "year": 2020,
+      "section": "Mild 5.5–5.9, moderate 6.0–6.4, severe ≥6.5 mmol/L; insulin-glucose for K⁺ ≥6.0 mmol/L; ECG; treat the cause; dialysis for refractory hyperkalaemia or in dialysis patients",
+      "citation": "UK Kidney Association. Treatment of acute hyperkalaemia in adults. 2020 (updated 2023).",
+      "verified": false
+    }
+  ],
+  "rationale": "Base post-operative AKI: pre-renal plus nephrotoxic drugs on CKD. Tests the AKI flag, stopping NSAIDs/ACE inhibitor, potassium, urinalysis, volume assessment and proportionate hyperkalaemia treatment.",
+  "authoring": {
+    "author": "Claude (perioperative medicine cluster)",
+    "date": "2026-09-25",
+    "notes": "Expectations and citations need surgeon sign-off (reviewedBy). Citations verified: false. iOS outcomes not yet observed (unverified: ios) — triage after the next CI run."
+  }
+}

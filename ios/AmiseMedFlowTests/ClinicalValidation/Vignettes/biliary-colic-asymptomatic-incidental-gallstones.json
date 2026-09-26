@@ -1,0 +1,265 @@
+{
+  "schemaVersion": 1,
+  "id": "biliary-colic-asymptomatic-incidental-gallstones",
+  "condition": "Asymptomatic gallstones (incidental)",
+  "category": "hpb",
+  "permutationOf": "biliary-colic-uncomplicated",
+  "permutationLabel": "Incidental finding — asymptomatic gallstones (no treatment)",
+  "summary": "47-year-old woman referred after gallstones were seen on an ultrasound done for microscopic haematuria; no biliary symptoms, normal gallbladder wall, CBD and LFTs.",
+  "tags": [
+    "biliary",
+    "outpatient",
+    "incidental",
+    "over-treatment",
+    "entry:imaging"
+  ],
+  "inputs": {
+    "patient": {
+      "ageYears": 47,
+      "sex": "female",
+      "pregnancy": {
+        "status": "not-pregnant"
+      },
+      "heightCm": 160,
+      "weightKg": 70
+    },
+    "encounter": {
+      "setting": "outpatient",
+      "visitType": "newConsult",
+      "acuity": "routine"
+    },
+    "chiefComplaint": "Referred with gallstones seen on a scan",
+    "hpi": "Ultrasound of the kidneys for microscopic haematuria incidentally showed gallstones. She has never had abdominal pain, indigestion after food, jaundice or fever. Eats normally. Referred to discuss whether she needs an operation.",
+    "socrates": {},
+    "symptoms": [],
+    "negatives": [
+      "abdominal pain",
+      "jaundice",
+      "fever",
+      "dyspepsia"
+    ],
+    "exam": {
+      "general": "Well.",
+      "abdomen": "Soft, non-tender. No masses."
+    },
+    "vitals": [
+      {
+        "minutesAgo": 20,
+        "heartRate": 70,
+        "systolicBp": 122,
+        "diastolicBp": 76,
+        "respiratoryRate": 14,
+        "temperatureC": 36.6,
+        "spo2": 99,
+        "avpu": "A",
+        "onSupplementalO2": false
+      }
+    ],
+    "labs": [
+      {
+        "analyte": "bilirubin",
+        "name": "Bilirubin",
+        "value": 9,
+        "unit": "µmol/L",
+        "minutesAgo": 40
+      },
+      {
+        "analyte": "alp",
+        "name": "ALP",
+        "value": 72,
+        "unit": "U/L",
+        "minutesAgo": 40
+      },
+      {
+        "analyte": "alt",
+        "name": "ALT",
+        "value": 19,
+        "unit": "U/L",
+        "minutesAgo": 40
+      }
+    ],
+    "imaging": [
+      {
+        "name": "USS kidneys and abdomen",
+        "modality": "US",
+        "region": "Abdomen",
+        "minutesAgo": 43200,
+        "result": "Kidneys normal. Incidental: several small gallstones in a thin-walled (2 mm) gallbladder; no wall thickening or polyp. CBD 4 mm. Liver normal."
+      }
+    ],
+    "comorbidities": [],
+    "medications": [],
+    "allergies": [],
+    "nkda": true,
+    "socialHistory": "Nurse. Non-smoker.",
+    "confirmedDiagnosis": {
+      "name": "Asymptomatic cholelithiasis (incidental finding)",
+      "icd10": "K80.20",
+      "assessmentText": "Asymptomatic gallstones found incidentally. Normal gallbladder wall and biliary tree, normal LFTs. No biliary symptoms."
+    },
+    "platform": {
+      "web": {
+        "ccTemplate": "Other / general surgical",
+        "symptoms": [],
+        "symptomDetails": {},
+        "examFindings": {
+          "abdomen": [
+            "Soft"
+          ]
+        },
+        "paneAnswers": {
+          "us_gallstones": true
+        },
+        "durationDays": 0,
+        "painScore": 0
+      }
+    }
+  },
+  "expected": {
+    "safety": {
+      "emergencyLevel": {
+        "id": "level-routine",
+        "severity": "quality",
+        "atMost": "routine",
+        "guidelineRefs": [
+          "nice-cg188"
+        ],
+        "knownGap": [
+          "web"
+        ],
+        "knownGapNote": "adaptiveTriage emergency_now (score 100) for an asymptomatic referral: \"never had … jaundice or fever\" fires biliary-obstruction and cholangitis-pattern rules.",
+        "proposedFix": "clinical-inference.ts: replace the substring helpers exam()/hasSx()/hasRadResult() and hasFever (which matches \"temp\" and \"afebrile\") with a negation-aware matcher (NegEx-style: no/not/without/denies/negative/absent within ~5 tokens) and read fever from the temperature vital (≥38 °C), not from text."
+      },
+      "mustNotAlarm": [
+        {
+          "id": "no-alarm",
+          "severity": "quality",
+          "match": [
+            "sepsis",
+            "septic",
+            "emergency",
+            "dilated cbd",
+            "dilated common bile duct"
+          ],
+          "knownGap": [
+            "web"
+          ],
+          "knownGapNote": "\"Emergency now\" and \"Dilated CBD\" alarms fire on negated history and \"CBD 4 mm\".",
+          "proposedFix": "clinical-inference.ts: replace the substring helpers exam()/hasSx()/hasRadResult() and hasFever (which matches \"temp\" and \"afebrile\") with a negation-aware matcher (NegEx-style: no/not/without/denies/negative/absent within ~5 tokens) and read fever from the temperature vital (≥38 °C), not from text."
+        }
+      ]
+    },
+    "management": {
+      "mustExclude": [
+        {
+          "id": "mgmt-no-cholecystectomy",
+          "severity": "quality",
+          "match": [
+            "laparoscopic cholecystectomy",
+            "lap chole",
+            "re:lap(\\.|aroscopic)? cholecystectomy",
+            "cholecystectomy"
+          ],
+          "unless": [
+            "if symptoms",
+            "if symptomatic",
+            "should symptoms",
+            "if pain",
+            "not indicated",
+            "not required",
+            "no need",
+            "symptomatic gallstones",
+            "symptomatic gallbladder"
+          ],
+          "guidelineRefs": [
+            "nice-cg188"
+          ],
+          "note": "NICE CG188: reassure people with asymptomatic gallbladder stones in a normal gallbladder and biliary tree that they do not need treatment unless symptoms develop. Quality: an unconditional cholecystectomy suggestion is over-treatment; the surgeon may wish to upgrade this to critical (operative risk without benefit).",
+          "knownGap": [
+            "web"
+          ],
+          "knownGapNote": "With no features applied, PANE still ranks cholecystitis first (0.27 ≥ 0.20), so the Assessment panel shows early LC within 72 h; the gallstone operative-plan prompt fires on \"gallstones\" in the US report.",
+          "proposedFix": "clinical-inference.ts SURGICAL PATHWAY CASCADE: gate hasAppendicitisIndication/hasGallstoneIndication on the working diagnosis or assessment (as the Alvarado block already does with assessmentHasAppend) and on positive, non-negated findings — not on any \"guarding\", \"gallbladder wall\" or \"gallstone\" substring."
+        },
+        {
+          "id": "mgmt-no-antibiotics",
+          "severity": "quality",
+          "match": [
+            "antibiotic",
+            "antimicrobial",
+            "co-amoxiclav",
+            "amoxicillin-clavulanate",
+            "piperacillin",
+            "tazocin",
+            "cefuroxime",
+            "ceftriaxone",
+            "meropenem",
+            "imipenem",
+            "carbapenem",
+            "metronidazole"
+          ],
+          "unless": [
+            "if cholangitis",
+            "if febrile",
+            "if fever",
+            "if cholecystitis",
+            "not indicated"
+          ]
+        },
+        {
+          "id": "mgmt-no-appendicectomy",
+          "severity": "critical",
+          "match": [
+            "appendicectomy",
+            "appendectomy"
+          ],
+          "unless": [
+            "not indicated",
+            "no role",
+            "exclude appendicitis"
+          ],
+          "note": "Not an appendix presentation: an appendicectomy operative plan (consent, theatre booking, post-operative orders) is a wrong-procedure suggestion."
+        }
+      ],
+      "mustInclude": [
+        {
+          "id": "mgmt-reassure-safety-net",
+          "severity": "quality",
+          "match": [
+            "reassur",
+            "no treatment",
+            "watchful",
+            "return if",
+            "safety net",
+            "safety-net",
+            "if symptoms develop"
+          ],
+          "guidelineRefs": [
+            "nice-cg188"
+          ],
+          "proposedFix": "Add a biliary-colic/asymptomatic-cholelithiasis protocol (see biliary-colic-uncomplicated) with the NICE CG188 \"no treatment for asymptomatic stones in a normal gallbladder\" branch.",
+          "knownGap": [
+            "ios"
+          ],
+          "knownGapNote": "iOS CI 2026-09-25 (run 36169134350, database mode): no management item matched among 8 (ios.pipeline.decisions, ios.pipeline.actions, ios.soap.plan)"
+        }
+      ]
+    }
+  },
+  "guideline": [
+    {
+      "id": "nice-cg188",
+      "name": "NICE CG188 — Gallstone disease: diagnosis and management",
+      "year": 2014,
+      "section": "Asymptomatic gallbladder stones in a normal gallbladder and biliary tree: reassure, no treatment; symptomatic gallbladder stones: offer laparoscopic cholecystectomy; LFTs and ultrasound for suspected gallstone disease",
+      "citation": "National Institute for Health and Care Excellence. Clinical guideline CG188, October 2014.",
+      "verified": false
+    }
+  ],
+  "rationale": "Permutation: the incidental-finding end of the spectrum. Guideline-concordant care is reassurance and safety-netting, not surgery. Tests over-triage and over-treatment when the only positive is gallstones on imaging.",
+  "authoring": {
+    "author": "Claude (HPB cluster)",
+    "date": "2026-09-25",
+    "notes": "Expectations and citations need surgeon sign-off (reviewedBy). iOS outcomes not yet observed (unverified: ios) — triage after the first CI run."
+  }
+}

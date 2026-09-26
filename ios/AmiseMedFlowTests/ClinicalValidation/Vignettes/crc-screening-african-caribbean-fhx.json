@@ -1,0 +1,153 @@
+{
+  "schemaVersion": 1,
+  "id": "crc-screening-african-caribbean-fhx",
+  "condition": "Colorectal cancer screening — average-to-moderate risk, African-Caribbean",
+  "category": "colorectal",
+  "permutationOf": "crc-lynch-surveillance-overdue",
+  "permutationLabel": "No symptoms; father CRC at 58; no national programme",
+  "summary": "47-year-old St Lucian man of African-Caribbean descent, asymptomatic, father had colorectal cancer at 58, asks about screening. There is no national bowel screening programme in Saint Lucia; USPSTF 2021 starts average-risk screening at 45; ACG 2021 recommends colonoscopy from 40, 5-yearly, for one FDR diagnosed < 60. BSG 2020 would not add colonoscopy for one FDR diagnosed ≥ 50.",
+  "tags": [
+    "crc",
+    "screening",
+    "caribbean",
+    "family-history"
+  ],
+  "inputs": {
+    "patient": {
+      "ageYears": 47,
+      "sex": "male",
+      "pregnancy": {
+        "status": "not-applicable"
+      },
+      "heightCm": 176,
+      "weightKg": 90
+    },
+    "encounter": {
+      "setting": "outpatient",
+      "visitType": "wellness",
+      "acuity": "routine"
+    },
+    "chiefComplaint": "Wants bowel cancer screening",
+    "hpi": "No bowel symptoms. Father diagnosed with colorectal cancer at 58 (alive, treated in Martinique). Has never had a FIT or colonoscopy. Read that bowel cancer is rising in younger Caribbean men. Hypertension, obesity.",
+    "symptoms": [],
+    "negatives": [
+      "rectal bleeding",
+      "change in bowel habit",
+      "weight loss",
+      "abdominal pain"
+    ],
+    "exam": {
+      "general": "Well. BMI 29.",
+      "abdomen": "Soft, non-tender, no masses."
+    },
+    "vitals": [
+      {
+        "minutesAgo": 20,
+        "heartRate": 76,
+        "systolicBp": 146,
+        "diastolicBp": 92,
+        "respiratoryRate": 14,
+        "temperatureC": 36.6,
+        "spo2": 98,
+        "avpu": "A",
+        "onSupplementalO2": false
+      }
+    ],
+    "comorbidities": [
+      "Hypertension",
+      "Obesity",
+      "Family history of colorectal cancer (father, age 58)"
+    ],
+    "surgicalHistory": [],
+    "medications": [
+      {
+        "drug": "Amlodipine",
+        "dose": "10 mg",
+        "frequency": "OD",
+        "indication": "Hypertension"
+      }
+    ],
+    "allergies": [],
+    "nkda": true,
+    "socialHistory": "Bus driver. Non-smoker. Diet high in processed meat.",
+    "confirmedDiagnosis": {
+      "name": "Colorectal cancer screening — family history of colorectal cancer",
+      "icd10": "Z80.0",
+      "assessmentText": "Asymptomatic, age 47, one first-degree relative with colorectal cancer at 58. Colorectal cancer screening discussion."
+    },
+    "platform": {
+      "web": {
+        "ccTemplate": "Colonoscopy (diagnostic / surveillance)",
+        "symptoms": [
+          "annual review"
+        ],
+        "durationDays": 0,
+        "painScore": 0
+      }
+    }
+  },
+  "expected": {
+    "safety": {
+      "emergencyLevel": {
+        "id": "level-routine",
+        "severity": "quality",
+        "atMost": "priority",
+        "guidelineRefs": [
+          "uspstf-2021"
+        ]
+      }
+    },
+    "management": {
+      "mustInclude": [
+        {
+          "id": "mgmt-screening-offered",
+          "severity": "quality",
+          "match": [
+            "colonoscop",
+            "re:\\bfit\\b",
+            "faecal immunochemical",
+            "fobt",
+            "screening"
+          ],
+          "guidelineRefs": [
+            "uspstf-2021",
+            "acg-screen-2021"
+          ],
+          "note": "USPSTF 2021 / ACG 2021: average-risk screening from 45. ACG 2021: one FDR with CRC diagnosed < 60 (father at 58) → colonoscopy from age 40 (or 10 years before the relative’s age at diagnosis), repeated every 5 years — so he is overdue on the ACG reading. BSG 2020 (UK) would not add colonoscopic surveillance for a single FDR diagnosed ≥ 50. The practice’s policy needs the surgeon’s decision. Not observable in the web harness: the dashboard feeds the Family History field (ClinicalPromptsStrip familyHistory) to computeClinicalPrompts, but the vignette schema has no family-history input, so web-runner passes []. In the dashboard the \"FHx colorectal cancer, age 35–49\" prompt would probably add a colonoscopy. Needs a familyHistory input in the schema and both runners. Without a family history there is no screening prompt before 50: the average-risk \"colorectal_screen\" prompt starts at age 50 (USPSTF 2021 and ACG 2021: 45) and offers FOBT every 2 years rather than annual FIT. Web, 2026-09-25 (fix-web-screening): now observed in the harness — the preventive-screening engine reads the \"Family history: …\" and \"Lynch syndrome\" comorbidity entries, which the dashboard passes too; web removed from unverified."
+        }
+      ]
+    }
+  },
+  "guideline": [
+    {
+      "id": "uspstf-2021",
+      "name": "USPSTF recommendation statement — screening for colorectal cancer",
+      "year": 2021,
+      "section": "Screen adults aged 45–49 (grade B) and 50–75 (grade A)",
+      "citation": "US Preventive Services Task Force. Screening for colorectal cancer: US Preventive Services Task Force recommendation statement. JAMA. 2021;325:1965–1977.",
+      "verified": false
+    },
+    {
+      "id": "acg-screen-2021",
+      "name": "ACG clinical guidelines — colorectal cancer screening",
+      "year": 2021,
+      "section": "Average risk: start at 45; one FDR with CRC or advanced adenoma diagnosed < 60, or two FDRs: colonoscopy from 40 (or 10 years before the youngest affected relative) every 5 years",
+      "citation": "Shaukat A, Kahi CJ, Burke CA, et al. ACG clinical guidelines: colorectal cancer screening 2021. Am J Gastroenterol. 2021;116:458–479.",
+      "verified": false
+    },
+    {
+      "id": "bsg-hereditary-2020",
+      "name": "BSG/ACPGBI/UKCGG guidelines — management of hereditary colorectal cancer",
+      "year": 2020,
+      "section": "Moderate-risk family history thresholds (one FDR < 50, or two FDRs) for UK colonoscopic surveillance",
+      "citation": "Monahan KJ, Bradshaw N, Dolwani S, et al. Guidelines for the management of hereditary colorectal cancer from the British Society of Gastroenterology (BSG)/Association of Coloproctology of Great Britain and Ireland (ACPGBI)/United Kingdom Cancer Genetics Group (UKCGG). Gut. 2020;69:411–444.",
+      "verified": false
+    }
+  ],
+  "rationale": "Screening encounter in the Saint Lucian context (no organised programme; opportunistic screening). All expectations are quality: guideline bodies differ on the FDR ≥ 50 case and the practice’s policy is not written down.",
+  "authoring": {
+    "author": "Claude (colorectal/anorectal cluster)",
+    "date": "2026-09-25",
+    "notes": "Expectations need surgeon sign-off (reviewedBy). Citations verified: false until checked against the source."
+  }
+}

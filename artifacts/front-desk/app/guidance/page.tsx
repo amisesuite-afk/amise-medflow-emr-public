@@ -1,8 +1,10 @@
 import type { Metadata } from 'next';
 import Link from 'next/link';
 import '../subpage-mobile.css';
+import { hasApprovedArticles } from '@/content/health-info';
 
 export const metadata: Metadata = {
+  alternates: { canonical: '/guidance' },
   title: 'Health Guidance & Preventive Screening — Amise Medical Services',
   description:
     'General health guidance and preventive screening information from Amise Medical Services. Dr Dawit Daniel Kabiye, MD, DM — General & Endoscopic Surgery, Saint Lucia.',
@@ -120,6 +122,30 @@ function Hero() {
             }}>{label}</a>
           ))}
         </div>
+      </div>
+    </section>
+  );
+}
+
+// ── Health information library link (only once an article is approved) ───────
+
+function HealthInformationLink() {
+  return (
+    <section style={{ padding: '28px 40px 0', background: '#fff' }}>
+      <div style={{ maxWidth: 1000, margin: '0 auto' }}>
+        <Link href="/health-information" style={{
+          display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 16, flexWrap: 'wrap',
+          padding: '18px 24px', background: '#f0fdf9', border: '1.5px solid #99f6e4', borderRadius: 12,
+          textDecoration: 'none',
+        }}>
+          <span>
+            <span style={{ display: 'block', fontSize: 15, fontWeight: 800, color: '#0f172a' }}>Patient information library</span>
+            <span style={{ display: 'block', fontSize: 13, color: '#475569', marginTop: 4 }}>
+              Reviewed articles on common surgical and endoscopy conditions, what to expect, and when to seek urgent care.
+            </span>
+          </span>
+          <span style={{ fontSize: 14, fontWeight: 700, color: '#0d9488' }}>Read the articles →</span>
+        </Link>
       </div>
     </section>
   );
@@ -551,6 +577,7 @@ export default function GuidancePage() {
       <GuidanceNav />
       <main>
         <Hero />
+        {hasApprovedArticles() && <HealthInformationLink />}
         <ScreeningSection />
         <LifeLessons />
         <CtaSection />

@@ -1,0 +1,418 @@
+{
+  "schemaVersion": 1,
+  "id": "renal-colic-infected-obstructed",
+  "condition": "Obstructed infected kidney (ureteric stone with sepsis)",
+  "category": "urology",
+  "permutationOf": "renal-colic-typical",
+  "permutationLabel": "Infected obstructed kidney, septic, diabetic",
+  "summary": "52-year-old diabetic woman with 2 days of right loin pain then fever 39.2, rigors, BP 94/56, lactate 3.0; CT 9 mm proximal ureteric stone with hydronephrosis.",
+  "tags": [
+    "renal",
+    "stone",
+    "sepsis",
+    "diabetes",
+    "do-not-miss"
+  ],
+  "inputs": {
+    "patient": {
+      "ageYears": 52,
+      "sex": "female",
+      "pregnancy": {
+        "status": "not-applicable"
+      },
+      "heightCm": 162,
+      "weightKg": 88
+    },
+    "encounter": {
+      "setting": "emergency",
+      "visitType": "urgentReview",
+      "acuity": "emergency"
+    },
+    "chiefComplaint": "Right loin pain with fever and shaking",
+    "hpi": "Type 2 diabetes. Two days of right loin pain radiating to the groin, then fever, rigors and vomiting since last night. Feels faint.",
+    "socrates": {
+      "onset": [
+        "2–3 days ago"
+      ],
+      "site": [
+        "Loin",
+        "Right side"
+      ],
+      "character": [
+        "Colicky"
+      ],
+      "radiation": [
+        "Groin"
+      ],
+      "associations": [
+        "Fever",
+        "Rigors",
+        "Vomiting"
+      ],
+      "timing": [
+        "Constant"
+      ],
+      "exacerbating": [
+        "Movement"
+      ],
+      "relieving": [
+        "Nothing"
+      ],
+      "severity": [
+        "Severe (7–9/10)"
+      ]
+    },
+    "symptoms": [
+      "loin pain",
+      "fever",
+      "rigors",
+      "vomiting",
+      "renal colic"
+    ],
+    "negatives": [
+      "diarrhoea",
+      "cough"
+    ],
+    "exam": {
+      "general": "Unwell, clammy. Pulse 122/min, BP 94/56, RR 24, temperature 39.2°C, SpO2 96%.",
+      "abdomen": "Right renal angle and flank tenderness, no peritonism."
+    },
+    "vitals": [
+      {
+        "minutesAgo": 10,
+        "heartRate": 122,
+        "systolicBp": 94,
+        "diastolicBp": 56,
+        "respiratoryRate": 24,
+        "temperatureC": 39.2,
+        "spo2": 96,
+        "avpu": "A",
+        "onSupplementalO2": false,
+        "glucoseMmol": 14.2,
+        "weightKg": 88
+      }
+    ],
+    "labs": [
+      {
+        "analyte": "wbc",
+        "name": "WBC",
+        "value": 19.4,
+        "unit": "×10⁹/L",
+        "minutesAgo": 30
+      },
+      {
+        "analyte": "crp",
+        "name": "CRP",
+        "value": 210,
+        "unit": "mg/L",
+        "minutesAgo": 30
+      },
+      {
+        "analyte": "lactate",
+        "name": "Lactate",
+        "value": 3.0,
+        "unit": "mmol/L",
+        "minutesAgo": 30
+      },
+      {
+        "analyte": "creatinine",
+        "name": "Creatinine",
+        "value": 162,
+        "unit": "µmol/L",
+        "minutesAgo": 30
+      },
+      {
+        "analyte": "urinalysis",
+        "name": "Urine dipstick",
+        "resultText": "Nitrite positive, leucocytes 3+, blood 3+",
+        "minutesAgo": 30
+      },
+      {
+        "analyte": "glucose",
+        "name": "Glucose",
+        "value": 14.2,
+        "unit": "mmol/L",
+        "minutesAgo": 30
+      }
+    ],
+    "imaging": [
+      {
+        "name": "CT KUB (low-dose, non-contrast)",
+        "modality": "CT",
+        "result": "9 mm calculus in the right proximal ureter with moderate right hydronephrosis and perinephric fat stranding.",
+        "minutesAgo": 45,
+        "region": "KUB"
+      }
+    ],
+    "comorbidities": [
+      "Type 2 diabetes mellitus",
+      "Obesity"
+    ],
+    "surgicalHistory": [],
+    "medications": [
+      {
+        "drug": "Metformin",
+        "dose": "1 g",
+        "frequency": "BD",
+        "indication": "Type 2 diabetes"
+      }
+    ],
+    "allergies": [],
+    "nkda": true,
+    "socialHistory": "Office manager.",
+    "confirmedDiagnosis": {
+      "name": "Obstructed infected right kidney (pyonephrosis) — 9 mm proximal ureteric stone",
+      "icd10": "N13.6",
+      "assessmentText": "Obstructed infected right kidney with sepsis: urgent decompression (nephrostomy or stent) and IV antibiotics; defer definitive stone treatment."
+    },
+    "platform": {
+      "web": {
+        "ccTemplate": "Acute abdominal pain",
+        "socratesAnswers": {
+          "onset": "2 days",
+          "site": "Right loin / flank",
+          "character": "Colicky",
+          "radiation": "Right groin",
+          "associated": "Fever, rigors, vomiting",
+          "timing": "Constant",
+          "triggers": "Movement",
+          "relief": "Nothing",
+          "severity": "8/10"
+        },
+        "symptoms": [
+          "loin pain",
+          "fever",
+          "rigors",
+          "vomiting",
+          "renal colic"
+        ],
+        "symptomDetails": {
+          "abdominal pain": [
+            "RUQ",
+            "1–3 days",
+            "Colicky",
+            "Loin",
+            "Severe (7–9)",
+            "Vomiting",
+            "Fever",
+            "Rigors",
+            "Continuous"
+          ]
+        },
+        "durationDays": 2,
+        "painScore": 8
+      }
+    }
+  },
+  "expected": {
+    "differential": {
+      "mustRankTopK": [
+        {
+          "id": "dx-stone-or-infection-top3",
+          "severity": "critical",
+          "match": [
+            "renal colic",
+            "urolith",
+            "ureteric",
+            "nephrolith",
+            "calcul",
+            "pyonephrosis",
+            "obstructed",
+            "pyelonephritis"
+          ],
+          "k": 3,
+          "guidelineRefs": [
+            "eau-urolith-2024"
+          ]
+        }
+      ]
+    },
+    "safety": {
+      "emergencyLevel": {
+        "id": "level-emergency",
+        "severity": "critical",
+        "atLeast": "emergency",
+        "guidelineRefs": [
+          "eau-urolith-2024",
+          "nice-ng51",
+          "nice-ng148"
+        ]
+      },
+      "mustAlarm": [
+        {
+          "id": "alarm-sepsis",
+          "severity": "critical",
+          "match": [
+            "sepsis",
+            "septic"
+          ],
+          "guidelineRefs": [
+            "nice-ng51"
+          ]
+        }
+      ],
+      "redFlags": [
+        {
+          "id": "flag-infected-obstruction",
+          "severity": "critical",
+          "match": [
+            "infected obstructed",
+            "obstructed infected",
+            "pyonephrosis",
+            "re:fever[^.;\\n]{0,20}loin"
+          ],
+          "guidelineRefs": [
+            "eau-urolith-2024"
+          ]
+        }
+      ]
+    },
+    "investigations": {
+      "mustInclude": [
+        {
+          "id": "inv-cultures",
+          "severity": "critical",
+          "match": [
+            "blood culture",
+            "msu",
+            "urine culture",
+            "c&s",
+            "mid-stream",
+            "midstream",
+            "csu",
+            "catheter specimen"
+          ],
+          "guidelineRefs": [
+            "eau-urolith-2024",
+            "nice-ng51"
+          ],
+          "proposedFix": "A protocol for the PANE node infected_obstructed_kidney (EAU Urolithiasis 2024: cultures, antibiotics, urgent decompression)."
+        }
+      ]
+    },
+    "management": {
+      "mustInclude": [
+        {
+          "id": "mgmt-urgent-decompression",
+          "severity": "critical",
+          "match": [
+            "nephrostomy",
+            "ureteric stent",
+            "ureteral stent",
+            "jj stent",
+            "dj stent",
+            "re:\\bpcn\\b",
+            "decompress",
+            "retrograde stent"
+          ],
+          "guidelineRefs": [
+            "eau-urolith-2024",
+            "nice-ng148"
+          ],
+          "note": "EAU: urgent decompression (nephrostomy or retrograde stent) of the obstructed infected kidney."
+        },
+        {
+          "id": "mgmt-iv-antibiotics",
+          "severity": "critical",
+          "match": [
+            "re:\\biv\\b[^.;\\n]{0,60}(antibiotic|piperacillin|meropenem|ceftriaxone|gentamicin|co-amoxiclav|cefuroxime|amikacin)",
+            "broad-spectrum",
+            "ceftriaxone",
+            "piperacillin",
+            "meropenem",
+            "gentamicin",
+            "cefuroxime"
+          ],
+          "guidelineRefs": [
+            "eau-urolith-2024",
+            "nice-ng51"
+          ]
+        },
+        {
+          "id": "mgmt-urology",
+          "severity": "quality",
+          "match": [
+            "urolog"
+          ],
+          "guidelineRefs": [
+            "nice-ng148"
+          ],
+          "knownGapNote": "Web: No urology referral.",
+          "proposedFix": "As flag-infected-obstruction."
+        }
+      ],
+      "mustExclude": [
+        {
+          "id": "mgmt-no-definitive-stone-treatment",
+          "severity": "critical",
+          "match": [
+            "ureteroscopy",
+            "re:\\burs\\b",
+            "eswl",
+            "lithotripsy",
+            "pcnl",
+            "nephrolithotomy"
+          ],
+          "unless": [
+            "after infection",
+            "delay",
+            "defer",
+            "once infection",
+            "after drainage",
+            "after decompression",
+            "not "
+          ],
+          "guidelineRefs": [
+            "eau-urolith-2024"
+          ],
+          "note": "EAU: definitive stone removal is delayed until the infection has resolved."
+        },
+        {
+          "id": "mgmt-no-laparotomy",
+          "severity": "critical",
+          "match": [
+            "emergency laparotomy",
+            "re:\\blaparotomy\\b",
+            "bowel obstruction — operative plan"
+          ],
+          "guidelineRefs": [
+            "eau-urolith-2024"
+          ],
+          "note": "The source is the obstructed kidney: decompression, not laparotomy."
+        }
+      ]
+    }
+  },
+  "guideline": [
+    {
+      "id": "eau-urolith-2024",
+      "name": "EAU Guidelines on Urolithiasis",
+      "year": 2024,
+      "section": "Renal colic: NSAIDs first-line analgesia (caution in reduced renal function); low-dose non-contrast CT to confirm; pregnancy: ultrasound first-line, MRI second-line, low-dose CT last resort; medical expulsive therapy (alpha-blocker) for distal ureteric stones >5 mm; obstructed infected kidney: urgent decompression (percutaneous nephrostomy or retrograde ureteral stent) with antibiotics, urine and blood cultures, definitive stone treatment delayed until infection resolved; anuria / obstructed solitary kidney: urgent decompression",
+      "citation": "Skolarikos A, Jung H, Neisius A, et al. EAU Guidelines on Urolithiasis. EAU Guidelines Office, Arnhem; 2024 edition.",
+      "verified": false
+    },
+    {
+      "id": "nice-ng51",
+      "name": "NICE NG51 — Suspected sepsis: recognition, diagnosis and early management",
+      "year": 2024,
+      "section": "High-risk criteria (new confusion, SBP ≤90, HR >130, RR ≥25, lactate); blood cultures and broad-spectrum IV antibiotics within 1 hour for high risk; IV fluid bolus; lactate; senior review; source control",
+      "citation": "National Institute for Health and Care Excellence. Suspected sepsis in people aged 16 or over: recognition, assessment and early management. NICE guideline NG51 (updated 2024). London: NICE.",
+      "verified": false
+    },
+    {
+      "id": "nice-ng148",
+      "name": "NICE NG148 — Acute kidney injury: prevention, detection and management",
+      "year": 2019,
+      "section": "Detection (creatinine against baseline); urinalysis for all with AKI; ultrasound of the urinary tract within 24 h when obstruction is suspected (immediately if pyonephrosis suspected); stop/withhold nephrotoxic drugs (NSAIDs, ACE inhibitors, ARBs, diuretics) and review metformin; refer to urology immediately for pyonephrosis, obstructed solitary kidney, bilateral upper tract obstruction or complications of obstruction; nephrology referral criteria",
+      "citation": "National Institute for Health and Care Excellence. Acute kidney injury: prevention, detection and management. NICE guideline NG148. London: NICE; 2019.",
+      "verified": false
+    }
+  ],
+  "rationale": "The infected obstructed kidney is a urological emergency: decompress and treat sepsis, no definitive stone treatment while infected (EAU 2024).",
+  "authoring": {
+    "author": "Claude (endocrine / renal / urology / neuro cluster)",
+    "date": "2026-09-25",
+    "notes": "Expectations need surgeon sign-off (reviewedBy). Every citation is verified: false. iOS outcomes not observed (Linux)."
+  }
+}

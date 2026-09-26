@@ -34,7 +34,7 @@ const { chromium } = useSandboxBrowser
   : await import('playwright');
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
-const BASE = 'http://localhost:3000';
+const BASE = (process.env.E2E_BASE_URL ?? 'http://localhost:3000').replace(/\/$/, '');
 const OUT  = join(__dirname, 'shots');
 mkdirSync(OUT, { recursive: true });
 
@@ -118,7 +118,7 @@ const MOCK_ENCOUNTER = {
   });
 
   // Local API server
-  await ctx.route('http://localhost:3000/api/**', async route => {
+  await ctx.route(`${BASE}/api/**`, async route => {
     const url  = route.request().url();
     const meth = route.request().method();
     const j    = (data) =>
@@ -301,7 +301,31 @@ const MOCK_ENCOUNTER = {
   await page.waitForTimeout(400);
   await shot(page, '04-assessment-typed');
 
-  // ── Pathognomonic detection ───────────────────────────────────────────────────
+  // ── Diagnostic reasoning panel (engine-derived; writes nothing without a tap) ──
+  if (await page.locator('[data-testid="diagnostic-reasoning"]').count()) pass('Diagnostic reasoning panel on the Assessment step');
+  else fail('Diagnostic reasoning panel', 'data-testid="diagnostic-reasoning" not found on the Assessment step');
+
+  // ── What's missing strip (under the patient header; the new patient has no allergy status) ──
+  {
+    const strip = page.locator('[data-testid="whats-missing-strip"]');
+    const text = (await strip.count()) ? await strip.first().innerText() : '';
+    if (/Allergy status not recorded/i.test(text)) pass("What's missing strip lists the allergy status (safety first)");
+    else fail("What's missing strip", `strip ${text ? `text: ${text.slice(0, 120)}` : 'not found'}`);
+  }
+
+  // ── Clinical prompts strip (clinical-inference.ts) is rendered in the consultation ──
+  // It was imported but never rendered until 2026-09-26; the harness only called the function.
+  {
+    const cp = page.locator('[data-testid="clinical-prompts-strip"]');
+    if (await cp.count()) {
+      const t = (await cp.first().innerText()).replace(/\s+/g, ' ').slice(0, 120);
+      pass(`Clinical prompts strip rendered in the consultation (${t})`);
+    } else fail('Clinical prompts strip', 'data-testid="clinical-prompts-strip" not rendered');
+  }
+
+  // ── Pathognomonic detection → SUGGESTION, confirmed by the clinician ──────────
+  // A sign only suggests the working diagnosis (UX review C4); nothing is recorded until
+  // "Confirm diagnosis" is tapped.
   await page.waitForTimeout(2000);
   const variantText = await page.locator('body').textContent() ?? '';
   if (/rovsing|appendicitis|K35/i.test(variantText)) {
@@ -309,7 +333,23 @@ const MOCK_ENCOUNTER = {
   } else {
     fail('Dx variant banner', `No appendicitis/Rovsing keywords. Body: "${variantText.slice(0,200)}"`);
   }
-  await shot(page, '05-variant-chips');
+  const dxSuggestion = page.locator('[data-testid="dx-suggestion"]');
+  if (await dxSuggestion.count()) {
+    const sugText = (await dxSuggestion.first().textContent()) ?? '';
+    if (/Suggested:.*appendicitis/i.test(sugText)) pass('Diagnosis shown as a suggestion (not auto-set)');
+    else fail('Diagnosis suggestion', `Unexpected text: "${sugText.slice(0, 120)}"`);
+    if (await page.locator('[data-testid="dx-confirmed"]').count()) {
+      fail('Diagnosis suggestion', 'Working diagnosis already confirmed before the clinician confirmed it');
+    }
+    await shot(page, '05-variant-chips');
+    await dxSuggestion.locator('button', { hasText: /Confirm diagnosis/ }).click();
+    await page.waitForTimeout(800);
+    if (await page.locator('[data-testid="dx-confirmed"]').count()) pass('Working diagnosis set only after "Confirm diagnosis"');
+    else fail('Confirm diagnosis', 'Confirmed working diagnosis not shown after Confirm');
+  } else {
+    fail('Diagnosis suggestion', 'No "Suggested: …" card for the Rovsing sign');
+    await shot(page, '05-variant-chips');
+  }
 
   // ── Navigate to Plan tab ──────────────────────────────────────────────────────
   // Phase-nav "Plan" is disabled; tab-bar "📌Plan" is always enabled.
@@ -330,21 +370,33 @@ const MOCK_ENCOUNTER = {
       if (val.length > planContent.length) planContent = val;
     }
 
-    if (planContent.length > 20) {
-      pass(`Plan auto-populated (${planContent.length} chars)`);
-      console.log(`   Plan preview: "${planContent.slice(0, 120)}..."`);
-      if (!/emergency.*append|immediate.*append/i.test(planContent)) {
-        pass('Plan filtered: no immediate surgical steps for phlegmon variant');
+    // The plan is never written by itself (UX review C4): it stays empty until the clinician
+    // taps "Insert suggested plan" under the "Suggested for <diagnosis>" badge.
+    if (planContent.trim().length === 0) pass('Plan not auto-populated after confirming the diagnosis');
+    else fail('Plan auto-populate', `Plan was written without a clinician action (got: "${planContent.slice(0, 60)}")`);
+    const suggestedFor = page.locator('[data-testid="plan-suggested-for"]');
+    if (await suggestedFor.count()) {
+      pass(`Plan suggestion badge: "${((await suggestedFor.first().textContent()) ?? '').trim()}"`);
+      await page.locator('button', { hasText: /Insert suggested plan/ }).first().click();
+      await page.waitForTimeout(800);
+      planContent = '';
+      for (const ta of await page.locator('textarea').all()) {
+        const val = await ta.inputValue();
+        if (val.length > planContent.length) planContent = val;
+      }
+      if (planContent.length > 20) {
+        pass(`Suggested plan inserted on tap (${planContent.length} chars)`);
+        console.log(`   Plan preview: "${planContent.slice(0, 120)}..."`);
+        if (!/emergency.*append|immediate.*append/i.test(planContent)) {
+          pass('Plan filtered: no immediate surgical steps for phlegmon variant');
+        } else {
+          fail('Plan filter', 'Emergency/immediate appendicectomy present — should be conservative only');
+        }
       } else {
-        fail('Plan filter', 'Emergency/immediate appendicectomy present — should be conservative only');
+        fail('Insert suggested plan', `Plan still empty after the tap (got: "${planContent.slice(0, 60)}")`);
       }
     } else {
-      const planPageText = await page.locator('body').textContent() ?? '';
-      if (/appendicitis|conservative|phlegmon|protocol/i.test(planPageText)) {
-        pass('Plan protocol/variant banner visible on Plan tab');
-      } else {
-        fail('Plan auto-populate', `Empty or short (got: "${planContent.slice(0,60)}")`);
-      }
+      fail('Plan suggestion', 'No "Suggested for …" plan panel for the confirmed diagnosis');
     }
   } else {
     fail('Plan tab', 'Button not found');
@@ -429,6 +481,32 @@ const MOCK_ENCOUNTER = {
     }
   }
 
+  // ── Tools menu: Scores over the current step (UX review top-10 #10) ───────────
+  // Opened in a side panel; closing it returns to the same step (the step is never changed).
+  {
+    const stepBefore = ((await page.locator('button[role="tab"][aria-selected="true"]').first().textContent().catch(() => '')) ?? '').trim();
+    const tools = page.locator('[data-testid="consult-tools"]').first();
+    if (await tools.count()) {
+      await tools.click(); await page.waitForTimeout(300);
+      await page.locator('[data-testid="consult-tool-scales"]').click({ timeout: 3000 }).catch(() => {});
+      await page.waitForTimeout(800);
+      const drawer = page.locator('[data-testid="consult-tool-drawer"]');
+      if (await drawer.count()) {
+        pass('Tools → Scores opens over the current step');
+        await shot(page, '11-tools-scores');
+        await page.locator('[data-testid="consult-tool-close"]').click();
+        await page.waitForTimeout(400);
+        const stepAfter = ((await page.locator('button[role="tab"][aria-selected="true"]').first().textContent().catch(() => '')) ?? '').trim();
+        if (!(await drawer.count()) && stepAfter === stepBefore) pass(`Closing the tool returns to the same step (${stepAfter || 'unchanged'})`);
+        else fail('Tools close', `Drawer still open or step changed ("${stepBefore}" → "${stepAfter}")`);
+      } else {
+        fail('Tools → Scores', 'No tool panel opened');
+      }
+    } else {
+      fail('Tools menu', 'Not found in the consultation navigation');
+    }
+  }
+
   // ── Auto-save indicator ───────────────────────────────────────────────────────
   await page.waitForTimeout(1000);
   const localStorageHasEnc = await page.evaluate(() => !!localStorage.getItem('amise-enc-v1'));
@@ -437,6 +515,39 @@ const MOCK_ENCOUNTER = {
     pass(`Auto-save indicator (${localStorageHasEnc ? 'localStorage enc key present' : '✓ Saved visible'})`);
   } else {
     fail('Auto-save indicator', 'Not visible and localStorage key missing');
+  }
+
+  // ── Clinical sign-off page (Insights; doctor / admin) ────────────────────────
+  // Renders the catalogue with per-rule-set progress; keyboard j moves the selection. The mock
+  // Supabase returns no rows, so nothing is recorded here (no decision is ever written by e2e).
+  {
+    // Leave the consultation focus rail (patient list) so the full navigation shows.
+    const patientList = page.locator('nav[aria-label="Consultation phases"] [title="Patient list"]').first();
+    if (await patientList.count()) { await patientList.click().catch(() => {}); await page.waitForTimeout(800); }
+    const nav = page.locator('nav[aria-label="Navigation"] button', { hasText: 'Analytics & QI' })
+      .or(page.locator('nav[aria-label="Navigation"] [title="Analytics & QI"]')).first();
+    if (await nav.count()) {
+      await nav.click(); await page.waitForTimeout(800);
+      const tab = page.locator('[data-testid="insights-tab-signoff"]');
+      if (await tab.count()) {
+        await tab.click();
+        await page.locator('[data-testid="clinical-signoff"]').waitFor({ timeout: 10000 }).catch(() => {});
+        const body = (await page.locator('[data-testid="clinical-signoff"]').textContent().catch(() => '')) ?? '';
+        if (/treatment-decision-support/.test(body) && /\d+\/\d+ approved/.test(body)) pass('Clinical sign-off page shows items and rule-set progress');
+        else fail('Clinical sign-off page', `catalogue or progress missing (got: "${body.slice(0, 80)}")`);
+        const selBefore = await page.locator('[role="option"][aria-selected="true"]').first().getAttribute('data-signoff-item').catch(() => null);
+        await page.locator('body').click({ position: { x: 5, y: 5 } }).catch(() => {});
+        await page.keyboard.press('j'); await page.waitForTimeout(200);
+        const selAfter = await page.locator('[role="option"][aria-selected="true"]').first().getAttribute('data-signoff-item').catch(() => null);
+        if (selBefore && selAfter && selBefore !== selAfter) pass(`Sign-off keyboard: j moves ${selBefore} → ${selAfter}`);
+        else fail('Sign-off keyboard', `selection did not move (${selBefore} → ${selAfter})`);
+        await shot(page, '12-clinical-signoff');
+      } else {
+        fail('Clinical sign-off tab', 'Not shown to a doctor in Analytics & QI');
+      }
+    } else {
+      fail('Clinical sign-off', 'Analytics & QI navigation not found');
+    }
   }
 
   // ── JS errors ─────────────────────────────────────────────────────────────────

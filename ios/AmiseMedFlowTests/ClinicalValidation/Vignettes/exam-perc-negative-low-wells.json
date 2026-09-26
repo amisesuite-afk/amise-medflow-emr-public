@@ -1,0 +1,156 @@
+{
+  "schemaVersion": 1,
+  "id": "exam-perc-negative-low-wells",
+  "condition": "Pleuritic chest pain, low Wells and PERC negative",
+  "category": "vascular",
+  "permutationOf": "pe-perc-negative-low-risk",
+  "permutationLabel": "Wells PE 0 and PERC 0 recorded",
+  "summary": "31-year-old woman with sharp left chest pain on breathing after a viral illness; no risk factors; Wells PE 0 and PERC negative recorded.",
+  "tags": [
+    "evidence-exam",
+    "perc",
+    "wells",
+    "pe",
+    "rule"
+  ],
+  "inputs": {
+    "patient": {
+      "ageYears": 31,
+      "sex": "female",
+      "pregnancy": {
+        "status": "not-pregnant"
+      }
+    },
+    "encounter": {
+      "setting": "emergency",
+      "visitType": "urgentReview",
+      "acuity": "urgent"
+    },
+    "chiefComplaint": "Sharp chest pain when breathing",
+    "hpi": "Three days of sharp left-sided chest pain on deep breathing after a cold. Not breathless at rest. No leg swelling, surgery, travel, hormones, previous clots or haemoptysis.",
+    "symptoms": [
+      "pleuritic chest pain"
+    ],
+    "exam": {
+      "general": "Comfortable.",
+      "respiratory": "Chest clear."
+    },
+    "vitals": [
+      {
+        "minutesAgo": 10,
+        "heartRate": 82,
+        "systolicBp": 118,
+        "diastolicBp": 72,
+        "respiratoryRate": 15,
+        "temperatureC": 36.9,
+        "spo2": 99,
+        "avpu": "A",
+        "onSupplementalO2": false
+      }
+    ],
+    "labs": [],
+    "imaging": [],
+    "comorbidities": [],
+    "surgicalHistory": [],
+    "medications": [],
+    "allergies": [],
+    "nkda": true,
+    "socialHistory": "",
+    "scoreForms": {
+      "wells-pe": {
+        "total": 0
+      },
+      "perc": {
+        "total": 0
+      }
+    },
+    "platform": {
+      "web": {
+        "ccTemplate": "Other / general surgical",
+        "symptoms": [
+          "pleuritic chest pain"
+        ],
+        "durationDays": 3
+      }
+    }
+  },
+  "expected": {
+    "reasoning": {
+      "mustInclude": [
+        {
+          "id": "perc-lr",
+          "severity": "quality",
+          "match": [
+            "re:PERC rule 0: 0 criteria.*LR 0\\.17"
+          ],
+          "sources": [
+            "web.reasoning.evidence"
+          ],
+          "platforms": [
+            "web"
+          ]
+        },
+        {
+          "id": "wells-lr",
+          "severity": "quality",
+          "match": [
+            "re:Wells score for pulmonary embolism.*LR 0\\.45"
+          ],
+          "sources": [
+            "web.reasoning.evidence"
+          ],
+          "platforms": [
+            "web"
+          ]
+        }
+      ]
+    },
+    "differential": {
+      "mustRankTopK": [
+        {
+          "id": "pe-not-leading",
+          "severity": "quality",
+          "match": [
+            "pleur",
+            "pneumon",
+            "gord",
+            "reflux",
+            "costochond",
+            "pericard",
+            "musculo",
+            "chest wall",
+            "rib"
+          ],
+          "k": 1,
+          "platforms": [
+            "web"
+          ],
+          "note": "With a low Wells score and PERC negative, PE should not lead the differential."
+        }
+      ]
+    }
+  },
+  "guideline": [
+    {
+      "id": "kline-2004",
+      "name": "Kline JA et al. Clinical criteria to prevent unnecessary diagnostic testing in emergency department patients with suspected pulmonary embolism",
+      "year": 2004,
+      "section": "PERC rule",
+      "citation": "J Thromb Haemost 2004;2:1247-55",
+      "verified": false
+    },
+    {
+      "id": "nice-ng158",
+      "name": "NICE NG158 Venous thromboembolic diseases",
+      "year": 2020,
+      "section": "Two-level Wells PE score",
+      "verified": false
+    }
+  ],
+  "rationale": "PERC is valid only at low clinical probability; with Wells 0 and PERC negative the post-test probability of PE is below the testing threshold, and both rules must appear as evidence with their likelihood ratios.",
+  "authoring": {
+    "author": "Claude (evidence-exam, 2026-09-26)",
+    "date": "2026-09-26",
+    "notes": "Exam-sign / decision-rule permutation. Likelihood ratios fromMemory; awaiting surgeon sign-off."
+  }
+}

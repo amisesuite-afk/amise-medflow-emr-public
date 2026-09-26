@@ -13,13 +13,19 @@
 import React, { useState, useMemo } from 'react';
 import { useAppContext } from '@/context/AppContext';
 import {
-  scoreTokyoCholangitis, scoreTokyoCholecystitis,
+  scoreTokyoCholangitis, scoreTokyoCholecystitis, liverEnzymeUln,
   scoreRanson, scoreBisap, scorePepRisk, scoreNews2,
   type TokyoCholangitisInputs, type TokyoCholecystitisInputs,
   type RansonAdmissionInputs, type Ranson48hInputs,
   type BisapInputs, type ErpRiskInputs,
   type ExtractedLabs, type ScoringVitals,
 } from '@/lib/clinical-scores';
+import { NEWS2_AVPU_LABELS, type News2Avpu } from '@workspace/triage-engine';
+import { tokyoCholangitisAutoFill, tokyoCholecystitisAutoFill, type Tg18Record } from '@/lib/tg18-autofill';
+import { news2OptionsFromVitals, resolveNews2Scale2 } from '@/lib/vitals-news2-fields';
+import { usePatientNews2Scale2 } from '@/hooks/usePatientNews2Scale2';
+import { useReferenceRanges } from '@/hooks/useReferenceRanges';
+import RecordScoreButton from '@/components/RecordScoreButton';
 
 // ── Colour tokens ─────────────────────────────────────────────────────────────
 const BADGE: Record<'green' | 'amber' | 'red', React.CSSProperties> = {
@@ -112,15 +118,44 @@ function useRelevantScores() {
 // ═══════════════════════════════════════════════════════════════════════════════
 // TOKYO CHOLANGITIS PANEL
 // ═══════════════════════════════════════════════════════════════════════════════
+/**
+ * The record the TG18 auto-fill reads (lib/tg18-autofill.ts): vitals, extracted labs, examination,
+ * HPI, assessment and received imaging reports. Every auto-filled toggle can be unticked.
+ */
+function useTg18Record(): Tg18Record {
+  const {
+    age, vitals, extractedLabs, examGeneral, examAbdomen, examNotes, hpiNotes, assessment,
+    radiologyRequests, surgicalHistory,
+  } = useAppContext();
+  return useMemo(() => {
+    const a = parseInt(age, 10);
+    const sbp = parseFloat(vitals.systolicBp ?? '');
+    return {
+      age: Number.isNaN(a) ? null : a,
+      systolicBp: Number.isFinite(sbp) ? sbp : null,
+      avpu: (vitals as Record<string, string>).avpu ?? null,
+      labs: extractedLabs as ExtractedLabs,
+      examText: [examGeneral, examAbdomen, ...Object.values(examNotes ?? {})].filter(Boolean).join('\n'),
+      historyText: hpiNotes,
+      assessment,
+      imagingReports: radiologyRequests.filter(r => r.resultReceived && r.resultNotes).map(r => r.resultNotes),
+      surgicalHistory,
+    };
+  }, [age, vitals, extractedLabs, examGeneral, examAbdomen, examNotes, hpiNotes, assessment, radiologyRequests, surgicalHistory]);
+}
+
 function TokyoCholangitisCard() {
-  const { extractedLabs, vitals } = useAppContext();
-  const [inputs, setInputs] = useState<Partial<TokyoCholangitisInputs>>({
-    biliary_dilatation: false, biliary_cause_on_imaging: false,
-    organ_dysfunction: [],
-  });
+  const { extractedLabs, vitals, sex } = useAppContext();
+  const referenceRanges = useReferenceRanges();
+  const record = useTg18Record();
+  // Pre-filled from the record (TG18 A/B/C criteria and organ dysfunction); the clinician's
+  // toggles override the auto-filled values.
+  const auto = useMemo(() => tokyoCholangitisAutoFill(record), [record]);
+  const [overrides, setOverrides] = useState<Partial<TokyoCholangitisInputs>>({});
+  const inputs = useMemo<Partial<TokyoCholangitisInputs>>(() => ({ ...auto, ...overrides }), [auto, overrides]);
 
   const set = (k: keyof TokyoCholangitisInputs, v: unknown) =>
-    setInputs(c => ({ ...c, [k]: v }));
+    setOverrides(c => ({ ...c, [k]: v }));
 
   const labs = extractedLabs as ExtractedLabs;
   const sv: ScoringVitals = {
@@ -131,7 +166,9 @@ function TokyoCholangitisCard() {
     spo2:            vitals.spo2           ? +vitals.spo2           : undefined,
   };
 
-  const result = useMemo(() => scoreTokyoCholangitis(inputs, labs, sv), [inputs, labs, sv]);
+  // TG18 B2 "> 1.5 × ULN": the practice's ALP / GGT / AST / ALT ranges, else the defaults.
+  const uln = useMemo(() => liverEnzymeUln(referenceRanges, { sex }), [referenceRanges, sex]);
+  const result = useMemo(() => scoreTokyoCholangitis(inputs, labs, sv, uln), [inputs, labs, sv, uln]);
 
   const orgOptions = ['cardiovascular', 'neurological', 'respiratory', 'renal', 'hepatic', 'haematological'] as const;
   const toggleOrgan = (o: string) => {
@@ -143,6 +180,7 @@ function TokyoCholangitisCard() {
     <div style={PANEL}>
       <div style={LABEL}>Tokyo TG18 — Acute Cholangitis</div>
       {grade(`Grade ${result.grade}`, result.colour, result.label)}
+      <div style={{ fontSize: 10, color: '#94a3b8', marginBottom: 6 }}>Pre-filled from the record — review each criterion; tap to change.</div>
 
       <div style={{ marginBottom: 8 }}>
         <div style={{ fontSize: 10, color: '#94a3b8', marginBottom: 4 }}>Imaging / clinical findings</div>
@@ -177,14 +215,16 @@ function TokyoCholangitisCard() {
 // ═══════════════════════════════════════════════════════════════════════════════
 // TOKYO CHOLECYSTITIS PANEL
 // ═══════════════════════════════════════════════════════════════════════════════
-function TokyoCholecystitisCard() {
+/** Also used by ScalesTab (CDS suggestion 'tg18Cholecystitis'). */
+export function TokyoCholecystitisCard() {
   const { extractedLabs, vitals } = useAppContext();
-  const [inputs, setInputs] = useState<Partial<TokyoCholecystitisInputs>>({
-    murphy_sign: false, ruq_pain_mass_tenderness: false, organ_dysfunction: [],
-  });
+  const record = useTg18Record();
+  const auto = useMemo(() => tokyoCholecystitisAutoFill(record), [record]);
+  const [overrides, setOverrides] = useState<Partial<TokyoCholecystitisInputs>>({});
+  const inputs = useMemo<Partial<TokyoCholecystitisInputs>>(() => ({ ...auto, ...overrides }), [auto, overrides]);
 
   const set = (k: keyof TokyoCholecystitisInputs, v: unknown) =>
-    setInputs(c => ({ ...c, [k]: v }));
+    setOverrides(c => ({ ...c, [k]: v }));
 
   const labs = extractedLabs as ExtractedLabs;
   const sv: ScoringVitals = {
@@ -198,6 +238,8 @@ function TokyoCholecystitisCard() {
     <div style={PANEL}>
       <div style={LABEL}>Tokyo TG18 — Acute Cholecystitis</div>
       {grade(`Grade ${result.grade}`, result.colour, result.label)}
+      {result.score >= 1 && <RecordScoreButton scoreKey="tg18-cholecystitis" value={result.score} />}
+      <div style={{ fontSize: 10, color: '#94a3b8', marginBottom: 6 }}>Pre-filled from the record — review each criterion; tap to change.</div>
 
       <div style={{ marginBottom: 8 }}>
         <div style={{ fontSize: 10, color: '#94a3b8', marginBottom: 4 }}>Local signs (A criteria)</div>
@@ -215,6 +257,15 @@ function TokyoCholecystitisCard() {
           <Toggle label="GB enlargement" value={!!inputs.us_gb_enlargement} onChange={v => set('us_gb_enlargement', v)} />
           <Toggle label="Echo-slurry" value={!!inputs.us_echo_slurry} onChange={v => set('us_echo_slurry', v)} />
           <Toggle label="Non-enhanced area (CT)" value={!!inputs.us_non_enhanced_area} onChange={v => set('us_non_enhanced_area', v)} />
+        </div>
+      </div>
+
+      <div style={{ marginBottom: 8 }}>
+        <div style={{ fontSize: 10, color: '#94a3b8', marginBottom: 4 }}>Grade II criteria (TG18) — besides WBC &gt; 18</div>
+        <div style={{ display: 'flex', flexWrap: 'wrap', gap: 5 }}>
+          <Toggle label="Palpable tender RUQ mass" value={!!inputs.palpable_tender_mass} onChange={v => set('palpable_tender_mass', v)} />
+          <Toggle label="Duration > 72 h" value={!!inputs.duration_over_72h} onChange={v => set('duration_over_72h', v)} />
+          <Toggle label="Marked local inflammation (gangrenous / emphysematous / abscess)" value={!!inputs.marked_local_inflammation} onChange={v => set('marked_local_inflammation', v)} />
         </div>
       </div>
 
@@ -414,16 +465,44 @@ function PepRiskCard() {
 // ═══════════════════════════════════════════════════════════════════════════════
 // NEWS2 PANEL (emergency)
 // ═══════════════════════════════════════════════════════════════════════════════
+// Royal College of Physicians NEWS2 (2017), scored by the shared `evaluateNews2` (via
+// `scoreNews2`). Consciousness (ACVPU) and air/oxygen are part of the saved vitals
+// (VitalsState `avpu` / `onSupplementalO2` → vitals.avpu / on_supplemental_o2, Migration 91),
+// so a NEWS2 is complete once they have been recorded on any vitals form. The pickers here
+// show and edit the same stored values; until recorded they read "not recorded" and the
+// score is marked incomplete rather than silently assuming Alert / room air (hazard log
+// H-04). Before Migration 91 the values still live in the encounter's local vitals; only
+// the database copy is skipped. SpO₂ Scale 2 comes from the patient record
+// (patients.news2_spo2_scale2, Migration 88) when the dashboard can read it; otherwise it
+// is an explicit manual opt-in. Never inferred from oxygen use. Display only.
+function vitalNum(v: string | undefined): number | undefined {
+  if (!v || !v.trim()) return undefined;
+  const x = Number(v);
+  return Number.isFinite(x) ? x : undefined;
+}
+
+const NEWS2_SELECT: React.CSSProperties = {
+  fontSize: 11, padding: '3px 6px', borderRadius: 5,
+  background: 'var(--btn-bg, #2d3748)', color: 'var(--text, #e2e8f0)',
+  border: '1px solid var(--border, #2d3748)',
+};
+
 function News2Card() {
-  const { vitals } = useAppContext();
-  const sv: ScoringVitals = {
-    temperatureC:    vitals.temperatureC    ? +vitals.temperatureC    : undefined,
-    heartRate:       vitals.heartRate       ? +vitals.heartRate       : undefined,
-    respiratoryRate: vitals.respiratoryRate ? +vitals.respiratoryRate : undefined,
-    systolicBp:      vitals.systolicBp      ? +vitals.systolicBp      : undefined,
-    spo2:            vitals.spo2            ? +vitals.spo2            : undefined,
-  };
-  const result = useMemo(() => scoreNews2(sv), [vitals]);
+  const { vitals, updateVital, patientId } = useAppContext();
+  const { avpu, onOxygen } = news2OptionsFromVitals(vitals);
+  const patientScale2 = usePatientNews2Scale2(patientId);
+  const [manualScale2, setManualScale2] = useState(false);
+  const useScale2 = resolveNews2Scale2(patientScale2, manualScale2);
+  const result = useMemo(() => {
+    const sv: ScoringVitals = {
+      temperatureC:    vitalNum(vitals.temperatureC),
+      heartRate:       vitalNum(vitals.heartRate),
+      respiratoryRate: vitalNum(vitals.respiratoryRate),
+      systolicBp:      vitalNum(vitals.systolicBp),
+      spo2:            vitalNum(vitals.spo2),
+    };
+    return scoreNews2(sv, { avpu, onOxygen, useSpO2Scale2: useScale2 });
+  }, [vitals, avpu, onOxygen, useScale2]);
 
   return (
     <div style={PANEL}>
@@ -433,6 +512,54 @@ function News2Card() {
         result.colour,
         `${result.clinical_risk.replace('_', '-').toUpperCase()} risk — ${result.response}`,
       )}
+      {result.has_single_parameter_3 && (
+        <div style={{ fontSize: 11, color: '#fca5a5', fontWeight: 700, marginBottom: 4 }}>
+          ⚠ Single parameter scoring 3 — RCP: urgent ward-based response
+        </div>
+      )}
+      {result.incomplete_note && (
+        <div style={{ fontSize: 11, color: '#fde047', fontWeight: 600, marginBottom: 4 }}>
+          ⚠ {result.incomplete_note} — the score may under-estimate risk
+        </div>
+      )}
+      <div style={{ ...ROW, gap: 6, marginBottom: 6, alignItems: 'center' }}>
+        <label style={{ fontSize: 11, color: 'var(--text-muted, #94a3b8)', display: 'flex', gap: 4, alignItems: 'center' }}>
+          ACVPU
+          <select
+            style={NEWS2_SELECT}
+            value={avpu ?? ''}
+            onChange={e => updateVital('avpu', e.target.value)}
+          >
+            <option value="">Not recorded</option>
+            {(Object.keys(NEWS2_AVPU_LABELS) as News2Avpu[]).map(k => (
+              <option key={k} value={k}>{k} — {NEWS2_AVPU_LABELS[k]}</option>
+            ))}
+          </select>
+        </label>
+        <label style={{ fontSize: 11, color: 'var(--text-muted, #94a3b8)', display: 'flex', gap: 4, alignItems: 'center' }}>
+          Air/O₂
+          <select
+            style={NEWS2_SELECT}
+            value={onOxygen === null ? '' : onOxygen ? 'o2' : 'air'}
+            onChange={e => updateVital('onSupplementalO2', e.target.value)}
+          >
+            <option value="">Not recorded</option>
+            <option value="air">Room air</option>
+            <option value="o2">Supplemental O₂ (+2)</option>
+          </select>
+        </label>
+        {patientScale2.available ? (
+          <span style={{ fontSize: 11, color: 'var(--text-muted, #94a3b8)' }}>
+            SpO₂ Scale {useScale2 ? '2' : '1'} — patient record (clinician opt-in)
+          </span>
+        ) : (
+          <Toggle
+            label="SpO₂ Scale 2 (confirmed hypercapnic resp. failure only)"
+            value={manualScale2}
+            onChange={setManualScale2}
+          />
+        )}
+      </div>
       <div style={{ display: 'flex', flexWrap: 'wrap', gap: 6, marginTop: 4 }}>
         {Object.entries(result.breakdown).map(([k, v]) => (
           <span key={k} style={{
@@ -442,6 +569,9 @@ function News2Card() {
             {k}: {v}
           </span>
         ))}
+      </div>
+      <div style={{ marginTop: 6, fontSize: 10, color: '#94a3b8' }}>
+        RCP NEWS2 (2017) · SpO₂ Scale {result.spo2_scale} · decision support only; escalation is a clinical decision
       </div>
     </div>
   );

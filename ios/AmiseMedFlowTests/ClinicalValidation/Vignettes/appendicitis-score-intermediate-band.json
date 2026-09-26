@@ -1,0 +1,342 @@
+{
+  "schemaVersion": 1,
+  "id": "appendicitis-score-intermediate-band",
+  "condition": "Acute appendicitis",
+  "category": "gi-emergency",
+  "permutationOf": "appendicitis-adult-typical",
+  "permutationLabel": "Intermediate score band (Alvarado 6, AIR 5): imaging needed",
+  "summary": "38-year-old man, 30 h migratory RIF pain with nausea, afebrile, RIF tenderness without guarding, WBC 11.8, CRP 32. Intermediate probability.",
+  "tags": [
+    "acute-abdomen",
+    "scores"
+  ],
+  "inputs": {
+    "patient": {
+      "ageYears": 38,
+      "sex": "male",
+      "pregnancy": {
+        "status": "not-applicable"
+      },
+      "heightCm": 180,
+      "weightKg": 88
+    },
+    "encounter": {
+      "setting": "emergency",
+      "visitType": "urgentReview",
+      "acuity": "urgent"
+    },
+    "chiefComplaint": "Right iliac fossa pain",
+    "hpi": "30 hours of pain that started centrally and settled in the right iliac fossa. Nausea, no vomiting, appetite reduced but eating. No fever at home. No urinary symptoms.",
+    "socrates": {
+      "onset": [
+        "Yesterday"
+      ],
+      "site": [
+        "Periumbilical",
+        "RLQ"
+      ],
+      "character": [
+        "Dull"
+      ],
+      "radiation": [
+        "No radiation"
+      ],
+      "associations": [
+        "Nausea"
+      ],
+      "timing": [
+        "Constant"
+      ],
+      "exacerbating": [
+        "Movement",
+        "Coughing"
+      ],
+      "relieving": [
+        "Rest"
+      ],
+      "severity": [
+        "Moderate (4–6/10)"
+      ]
+    },
+    "symptoms": [
+      "abdominal pain",
+      "migration of pain to the right iliac fossa",
+      "nausea"
+    ],
+    "negatives": [
+      "vomiting",
+      "fever",
+      "dysuria"
+    ],
+    "exam": {
+      "general": "Temperature 37.1°C, pulse 88/min.",
+      "abdomen": "Tender in the right iliac fossa with mild percussion tenderness; no guarding. No mass."
+    },
+    "vitals": [
+      {
+        "minutesAgo": 20,
+        "heartRate": 88,
+        "systolicBp": 134,
+        "diastolicBp": 82,
+        "respiratoryRate": 16,
+        "temperatureC": 37.1,
+        "spo2": 98,
+        "avpu": "A",
+        "onSupplementalO2": false
+      }
+    ],
+    "labs": [
+      {
+        "analyte": "wbc",
+        "name": "WBC",
+        "value": 11.8,
+        "unit": "×10⁹/L",
+        "minutesAgo": 30
+      },
+      {
+        "analyte": "neutrophilPct",
+        "name": "Neutrophils (%)",
+        "value": 72,
+        "unit": "%",
+        "minutesAgo": 30
+      },
+      {
+        "analyte": "crp",
+        "name": "CRP",
+        "value": 32,
+        "unit": "mg/L",
+        "minutesAgo": 30
+      }
+    ],
+    "imaging": [],
+    "comorbidities": [],
+    "surgicalHistory": [],
+    "medications": [],
+    "allergies": [],
+    "nkda": true,
+    "socialHistory": "Driver. Non-smoker.",
+    "scoreForms": {
+      "alvarado": {
+        "migration": true,
+        "anorexia": false,
+        "nauseaVomiting": true,
+        "rifTenderness": true,
+        "rebound": false,
+        "temperatureRaised": false,
+        "wbcAbove10": true,
+        "neutrophilia": false
+      },
+      "air": {
+        "vomiting": false,
+        "rifPain": true,
+        "rebound": 1,
+        "tempAtLeast38_5": false,
+        "pmnBand": 1,
+        "wbcBand": 1,
+        "crpBand": 1
+      }
+    },
+    "confirmedDiagnosis": {
+      "name": "Suspected acute appendicitis",
+      "icd10": "K35.80",
+      "paneDiseaseId": "appendicitis",
+      "assessmentText": "Suspected acute appendicitis, intermediate probability (Alvarado 6, AIR 5). Imaging before the operative decision."
+    },
+    "platform": {
+      "web": {
+        "ccTemplate": "Acute abdominal pain",
+        "socratesAnswers": {
+          "site": "Periumbilical then right iliac fossa",
+          "onset": "Yesterday",
+          "character": "Dull",
+          "associated": "Nausea",
+          "timing": "Constant",
+          "triggers": "Movement, coughing",
+          "relief": "Rest",
+          "severity": "5/10"
+        },
+        "symptoms": [
+          "abdominal pain",
+          "nausea"
+        ],
+        "symptomDetails": {
+          "abdominal pain": [
+            "Periumbilical",
+            "RLQ",
+            "1–3 days",
+            "Dull",
+            "Moderate (4–6)",
+            "Nausea",
+            "Continuous",
+            "Movement",
+            "Coughing"
+          ]
+        },
+        "examFindings": {
+          "abdomen": [
+            "Tender RLQ"
+          ]
+        },
+        "durationDays": 1,
+        "painScore": 5
+      }
+    }
+  },
+  "expected": {
+    "differential": {
+      "mustRankTopK": [
+        {
+          "id": "dx-appendicitis-top3",
+          "severity": "critical",
+          "match": [
+            "appendic"
+          ],
+          "k": 3,
+          "guidelineRefs": [
+            "wses-2020"
+          ]
+        }
+      ]
+    },
+    "safety": {
+      "emergencyLevel": {
+        "id": "level-at-least-urgent",
+        "severity": "critical",
+        "atLeast": "urgent",
+        "guidelineRefs": [
+          "wses-2020"
+        ]
+      }
+    },
+    "scores": {
+      "recommended": [
+        {
+          "id": "score-rec-air",
+          "severity": "quality",
+          "score": "air",
+          "guidelineRefs": [
+            "wses-2020",
+            "air-2008"
+          ],
+          "knownGap": [
+            "web"
+          ],
+          "knownGapNote": "Web: Web CDS has no AIR rule."
+        },
+        {
+          "id": "score-rec-aas",
+          "severity": "quality",
+          "score": "aas",
+          "guidelineRefs": [
+            "wses-2020",
+            "aas-2014"
+          ],
+          "note": "WSES 2020 names the AIR and the Adult Appendicitis Score as the best-performing adult scores.",
+          "knownGap": [
+            "web",
+            "ios"
+          ],
+          "knownGapNote": "Web: Neither platform implements the Adult Appendicitis Score. | iOS CI 2026-09-25 (run 36169134350, database mode): aas not recommended; recommended: alvarado, air, ripasa, news2, rcri, asa, mews"
+        }
+      ],
+      "values": [
+        {
+          "id": "score-alvarado-calculator",
+          "severity": "critical",
+          "score": "alvarado",
+          "mode": "calculator",
+          "equals": 6,
+          "guidelineRefs": [
+            "alvarado-1986"
+          ],
+          "note": "Migration 1 + nausea 1 + RIF tenderness 2 + WBC >10 2 = 6 (possible)."
+        },
+        {
+          "id": "score-air-calculator",
+          "severity": "critical",
+          "score": "air",
+          "mode": "calculator",
+          "equals": 5,
+          "platforms": [
+            "ios"
+          ],
+          "guidelineRefs": [
+            "air-2008"
+          ],
+          "note": "RIF pain 1 + rebound light 1 + PMN 70–84% 1 + WBC 10–14.9 1 + CRP 10–49 1 = 5 (intermediate)."
+        }
+      ]
+    },
+    "investigations": {
+      "mustInclude": [
+        {
+          "id": "inv-imaging",
+          "severity": "critical",
+          "match": [
+            "ultrasound",
+            "uss",
+            "re:\\bct\\b[^.;\\n]{0,40}(abdo|pelvi)",
+            "computed tomography"
+          ],
+          "guidelineRefs": [
+            "wses-2020"
+          ],
+          "note": "WSES 2020: intermediate-risk patients need imaging (US, then CT if needed) before the decision to operate or discharge."
+        }
+      ]
+    },
+    "management": {
+      "mustExclude": [
+        {
+          "id": "mgmt-no-direct-theatre-before-imaging",
+          "severity": "quality",
+          "match": [
+            "re:skip if ≥ ?7",
+            "re:skip (ct|imaging)"
+          ],
+          "note": "Direct-to-theatre without imaging is not supported for an intermediate band."
+        }
+      ]
+    }
+  },
+  "guideline": [
+    {
+      "id": "wses-2020",
+      "name": "WSES Jerusalem guidelines — diagnosis and treatment of acute appendicitis (2020 update)",
+      "year": 2020,
+      "section": "Clinical scores (AIR/AAS over Alvarado), imaging by age/sex/pregnancy, antibiotic-first option, complicated appendicitis (abscess), antibiotic duration",
+      "citation": "Di Saverio S, Podda M, De Simone B, et al. Diagnosis and treatment of acute appendicitis: 2020 update of the WSES Jerusalem guidelines. World J Emerg Surg. 2020;15:27.",
+      "verified": false
+    },
+    {
+      "id": "alvarado-1986",
+      "name": "Alvarado score (MANTRELS)",
+      "year": 1986,
+      "section": "Items and weights; ≤4 unlikely, 5–6 possible, 7–8 probable, 9–10 very probable",
+      "citation": "Alvarado A. A practical score for the early diagnosis of acute appendicitis. Ann Emerg Med. 1986;15:557–64.",
+      "verified": false
+    },
+    {
+      "id": "air-2008",
+      "name": "Appendicitis Inflammatory Response (AIR) score",
+      "year": 2008,
+      "section": "Items and weights; 0–4 low, 5–8 intermediate, 9–12 high probability",
+      "citation": "Andersson M, Andersson RE. The appendicitis inflammatory response score: a tool for the diagnosis of acute appendicitis that outperforms the Alvarado score. World J Surg. 2008;32:1843–9.",
+      "verified": false
+    },
+    {
+      "id": "aas-2014",
+      "name": "Adult Appendicitis Score (AAS)",
+      "year": 2014,
+      "section": "Items and weights; <11 low, 11–15 intermediate, ≥16 high probability",
+      "citation": "Sammalkorpi HE, Mentula P, Leppäniemi A. A new adult appendicitis score improves diagnostic accuracy of acute appendicitis — a prospective study. BMC Gastroenterol. 2014;14:114.",
+      "verified": false
+    }
+  ],
+  "rationale": "Permutation: score band (intermediate). Tests the arithmetic of both scores in the middle band, that the AIR/AAS are recommended (WSES 2020), and that imaging is proposed before the operative decision.",
+  "authoring": {
+    "author": "Claude (GI surgical emergencies cluster)",
+    "date": "2026-09-25",
+    "notes": "Expectations need surgeon sign-off (reviewedBy). Every citation is verified: false."
+  }
+}

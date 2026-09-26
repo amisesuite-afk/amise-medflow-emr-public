@@ -1,0 +1,212 @@
+{
+  "schemaVersion": 1,
+  "id": "hernia-paediatric-inguinal-infant",
+  "condition": "Paediatric inguinal hernia (infant)",
+  "category": "hernia",
+  "permutationOf": null,
+  "summary": "4-month-old boy (born at 34 weeks) with an intermittent right groin/scrotal swelling on crying that reduces spontaneously. Infant inguinal hernias need prompt repair (herniotomy, no mesh) because the incarceration risk is highest in the first year; watchful waiting is not appropriate.",
+  "tags": [
+    "paediatric",
+    "groin"
+  ],
+  "inputs": {
+    "patient": {
+      "ageYears": 0,
+      "sex": "male",
+      "pregnancy": {
+        "status": "not-applicable"
+      },
+      "weightKg": 6.1
+    },
+    "encounter": {
+      "setting": "outpatient",
+      "visitType": "newConsult",
+      "acuity": "priority"
+    },
+    "chiefComplaint": "Swelling in the right groin when crying",
+    "hpi": "Mother has noticed a swelling in the right groin extending towards the scrotum for 3 weeks, only when he cries or strains, and it goes away when he settles. Feeding well, no vomiting. Born at 34 weeks, no neonatal surgery.",
+    "socrates": {
+      "onset": [
+        "1–4 weeks ago"
+      ],
+      "site": [
+        "Right inguinal",
+        "Right scrotum"
+      ],
+      "character": [
+        "Soft",
+        "Non-tender"
+      ],
+      "radiation": [
+        "No radiation"
+      ],
+      "associations": [],
+      "timing": [
+        "Intermittent"
+      ],
+      "exacerbating": [
+        "Straining / Valsalva"
+      ],
+      "relieving": [
+        "Lying down"
+      ],
+      "severity": [
+        "Mild (1–3/10)"
+      ]
+    },
+    "symptoms": [
+      "groin swelling"
+    ],
+    "negatives": [
+      "vomiting",
+      "irritability",
+      "poor feeding"
+    ],
+    "exam": {
+      "general": "Thriving infant, weight 6.1 kg.",
+      "abdomen": "Soft. Right inguinoscrotal swelling seen when crying, reduces spontaneously; thickened cord on the right (silk sign). Both testes descended. Left side normal."
+    },
+    "vitals": [
+      {
+        "minutesAgo": 15,
+        "heartRate": 140,
+        "respiratoryRate": 36,
+        "temperatureC": 36.9,
+        "spo2": 99,
+        "avpu": "A",
+        "onSupplementalO2": false
+      }
+    ],
+    "labs": [],
+    "imaging": [],
+    "comorbidities": [
+      "Prematurity (34 weeks)"
+    ],
+    "surgicalHistory": [],
+    "medications": [],
+    "allergies": [],
+    "nkda": true,
+    "socialHistory": "Lives with parents.",
+    "confirmedDiagnosis": {
+      "name": "Right inguinal hernia in an infant (reducible)",
+      "icd10": "K40.90",
+      "paneDiseaseId": "inguinal_hernia",
+      "assessmentText": "Right inguinal hernia, reducible, 4-month-old ex-34-week infant. Book prompt elective herniotomy (paediatric surgery); counsel parents on signs of incarceration."
+    },
+    "platform": {
+      "web": {
+        "ccTemplate": "Inguinal / groin hernia",
+        "symptoms": [
+          "hernia",
+          "groin swelling",
+          "scrotal swelling"
+        ],
+        "symptomDetails": {
+          "hernia": [
+            "Right groin",
+            "Easily reducible"
+          ]
+        },
+        "examFindings": {
+          "abdomen": [
+            "Soft",
+            "Hernia present"
+          ]
+        },
+        "durationDays": 21
+      }
+    }
+  },
+  "expected": {
+    "differential": {
+      "mustRankTopK": [
+        {
+          "id": "dx-inguinal-top3",
+          "severity": "critical",
+          "match": [
+            "inguinal",
+            "icd:K40"
+          ],
+          "k": 3,
+          "guidelineRefs": [
+            "eupsa-paed-hernia-2022"
+          ]
+        }
+      ]
+    },
+    "safety": {
+      "emergencyLevel": {
+        "id": "level-not-emergency",
+        "severity": "quality",
+        "atMost": "urgent"
+      }
+    },
+    "management": {
+      "mustInclude": [
+        {
+          "id": "mgmt-prompt-repair",
+          "severity": "quality",
+          "match": [
+            "herniotomy",
+            "paediatric surg",
+            "pediatric surg"
+          ],
+          "guidelineRefs": [
+            "eupsa-paed-hernia-2022"
+          ]
+        }
+      ],
+      "mustExclude": [
+        {
+          "id": "mgmt-no-watchful-waiting",
+          "severity": "critical",
+          "match": [
+            "watchful waiting",
+            "re:\\btruss\\b",
+            "active observation"
+          ],
+          "guidelineRefs": [
+            "eupsa-paed-hernia-2022"
+          ],
+          "note": "Watchful waiting is an adult option; infants have the highest incarceration risk.",
+          "proposedFix": "Add a paediatric inguinal hernia protocol (herniotomy, prompt repair, no mesh, no truss) selected when age < 16."
+        },
+        {
+          "id": "mgmt-no-adult-mesh-repair",
+          "severity": "critical",
+          "match": [
+            "lichtenstein",
+            "mesh",
+            "re:\\b(tep|tapp)\\b",
+            "psa if male"
+          ],
+          "unless": [
+            "no mesh",
+            "without mesh"
+          ],
+          "guidelineRefs": [
+            "eupsa-paed-hernia-2022"
+          ],
+          "note": "Paediatric inguinal hernia is treated by herniotomy (high ligation of the sac), not adult mesh repair; adult pre-op items are wrong for an infant.",
+          "proposedFix": "Age-gate the hernia protocol and prompt (paediatric herniotomy template; suppress adult pre-op items such as PSA/ECG)."
+        }
+      ]
+    }
+  },
+  "guideline": [
+    {
+      "id": "eupsa-paed-hernia-2022",
+      "name": "EUPSA guideline — surgical management of paediatric inguinal hernia",
+      "year": 2022,
+      "section": "Timing of repair (infants: early repair; incarceration risk while waiting); open vs laparoscopic herniotomy; management of incarcerated hernia (reduction then repair)",
+      "citation": "Morini F, Dreuning KMA, Janssen Lok MJH, et al. Surgical management of pediatric inguinal hernia: a systematic review and guideline from the European Pediatric Surgeons' Association Evidence and Guideline Committee. Eur J Pediatr Surg. 2022;32:219–232.",
+      "verified": false
+    }
+  ],
+  "rationale": "Base paediatric case (age 0 years = 4 months). Tests that adult defaults (watchful waiting, mesh, TAPP operative plan, adult pre-operative bloods) are not applied to an infant.",
+  "authoring": {
+    "author": "Claude (hernia / breast / endocrine cluster)",
+    "date": "2026-09-25",
+    "notes": "Expectations need surgeon sign-off (reviewedBy). Citations verified: false."
+  }
+}

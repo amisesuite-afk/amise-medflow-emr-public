@@ -1,0 +1,243 @@
+{
+  "schemaVersion": 1,
+  "id": "svt-gsv-near-sfj",
+  "condition": "Superficial vein thrombosis (great saphenous vein, near the saphenofemoral junction)",
+  "category": "vascular",
+  "permutationOf": null,
+  "summary": "58-year-old woman with varicose veins: 4 days of a painful red cord along the medial thigh; duplex shows great saphenous vein thrombus 15 cm long extending to within 2 cm of the saphenofemoral junction, deep veins clear.",
+  "tags": [
+    "vte",
+    "svt",
+    "varicose-veins"
+  ],
+  "inputs": {
+    "patient": {
+      "ageYears": 58,
+      "sex": "female",
+      "pregnancy": {
+        "status": "not-applicable"
+      },
+      "heightCm": 162,
+      "weightKg": 81
+    },
+    "encounter": {
+      "setting": "outpatient",
+      "visitType": "urgentReview",
+      "acuity": "priority"
+    },
+    "chiefComplaint": "Painful red cord on inner left thigh",
+    "hpi": "Four days of a painful, red, hard line along the inside of the left thigh over her varicose veins, now reaching the groin crease. No fever. No leg swelling. No chest symptoms.",
+    "socrates": {
+      "onset": [
+        "4–7 days ago"
+      ],
+      "site": [
+        "Thigh"
+      ],
+      "character": [
+        "Aching"
+      ],
+      "radiation": [
+        "Groin"
+      ],
+      "associations": [],
+      "timing": [
+        "Constant"
+      ],
+      "exacerbating": [
+        "Movement"
+      ],
+      "relieving": [
+        "Rest"
+      ],
+      "severity": [
+        "Moderate (4–6/10)"
+      ]
+    },
+    "symptoms": [
+      "leg pain",
+      "leg redness",
+      "varicose veins"
+    ],
+    "negatives": [
+      "fever",
+      "leg swelling",
+      "shortness of breath"
+    ],
+    "exam": {
+      "general": "Well. T 36.9°C, HR 80, BP 132/80.",
+      "msk": "Left medial thigh: tender, firm, erythematous cord along the great saphenous vein from the knee to 3 cm below the groin crease. Varicose veins below the knee. No calf swelling or oedema."
+    },
+    "vitals": [
+      {
+        "minutesAgo": 10,
+        "heartRate": 80,
+        "systolicBp": 132,
+        "diastolicBp": 80,
+        "respiratoryRate": 14,
+        "temperatureC": 36.9,
+        "spo2": 98,
+        "avpu": "A",
+        "onSupplementalO2": false
+      }
+    ],
+    "labs": [],
+    "imaging": [
+      {
+        "name": "Venous duplex left leg",
+        "modality": "US",
+        "region": "Left leg",
+        "result": "Occlusive thrombus in the great saphenous vein, 15 cm long, proximal tip 2 cm from the saphenofemoral junction. Common femoral, femoral and popliteal veins compressible — no deep vein thrombosis.",
+        "minutesAgo": 30
+      }
+    ],
+    "comorbidities": [
+      "Varicose veins"
+    ],
+    "surgicalHistory": [],
+    "medications": [],
+    "allergies": [],
+    "nkda": true,
+    "socialHistory": "Hairdresser.",
+    "confirmedDiagnosis": {
+      "name": "Superficial vein thrombosis of left great saphenous vein within 3 cm of the saphenofemoral junction",
+      "icd10": "I80.02",
+      "assessmentText": "Superficial vein thrombosis (superficial thrombophlebitis) of the left great saphenous vein, 15 cm, extending to within 2 cm of the saphenofemoral junction; deep veins clear. Treat with therapeutic anticoagulation as for DVT."
+    },
+    "platform": {
+      "web": {
+        "ccTemplate": "Varicose veins",
+        "symptoms": [
+          "limb pain",
+          "rash"
+        ],
+        "examFindings": {
+          "extremities": [
+            "Varicose veins"
+          ]
+        },
+        "paneAnswers": {
+          "varicosities": true,
+          "leg_swelling": false,
+          "calf_tenderness": false
+        },
+        "durationDays": 4,
+        "painScore": 5
+      }
+    }
+  },
+  "expected": {
+    "differential": {
+      "mustNotMiss": [
+        {
+          "id": "mnm-svt",
+          "severity": "quality",
+          "match": [
+            "thrombophlebitis",
+            "superficial vein thromb",
+            "superficial venous thromb",
+            "svt"
+          ],
+          "guidelineRefs": [
+            "esvs-venous-2021"
+          ]
+        }
+      ]
+    },
+    "safety": {
+      "emergencyLevel": {
+        "id": "level-at-least-priority",
+        "severity": "quality",
+        "atLeast": "priority",
+        "guidelineRefs": [
+          "esvs-venous-2021"
+        ]
+      },
+      "redFlags": [
+        {
+          "id": "flag-sfj-extension",
+          "severity": "quality",
+          "match": [
+            "saphenofemoral",
+            "sfj",
+            "junction",
+            "extend"
+          ],
+          "guidelineRefs": [
+            "esvs-venous-2021"
+          ],
+          "note": "Thrombus near the SFJ carries DVT/PE risk and changes treatment."
+        }
+      ]
+    },
+    "investigations": {
+      "mustInclude": [
+        {
+          "id": "inv-duplex",
+          "severity": "quality",
+          "match": [
+            "duplex"
+          ],
+          "guidelineRefs": [
+            "esvs-venous-2021"
+          ]
+        }
+      ]
+    },
+    "management": {
+      "mustInclude": [
+        {
+          "id": "mgmt-anticoagulation",
+          "severity": "critical",
+          "match": [
+            "therapeutic anticoag",
+            "fondaparinux",
+            "anticoagula",
+            "rivaroxaban",
+            "apixaban",
+            "lmwh",
+            "enoxaparin 1.5"
+          ],
+          "guidelineRefs": [
+            "esvs-venous-2021"
+          ],
+          "note": "ESVS 2021: within 3 cm of the SFJ → therapeutic anticoagulation; ≥5 cm elsewhere → fondaparinux 2.5 mg for 45 days."
+        }
+      ],
+      "mustExclude": [
+        {
+          "id": "mgmt-no-antibiotics",
+          "severity": "quality",
+          "match": [
+            "flucloxacillin",
+            "co-amoxiclav",
+            "cefalexin",
+            "re:(start|commence|prescribe)[^.;]{0,30}antibiotic"
+          ],
+          "sources": [
+            "web.plan",
+            "ios.radiation.plan",
+            "ios.soap.plan"
+          ],
+          "note": "Sterile inflammation, not infection."
+        }
+      ]
+    }
+  },
+  "guideline": [
+    {
+      "id": "esvs-venous-2021",
+      "name": "ESVS 2021 clinical practice guidelines — venous thrombosis",
+      "year": 2021,
+      "section": "Superficial vein thrombosis: duplex ultrasound of both deep and superficial systems; SVT ≥5 cm → fondaparinux 2.5 mg daily for 45 days; SVT within 3 cm of the saphenofemoral junction → therapeutic anticoagulation as for DVT",
+      "citation": "Kakkos SK, Gohel M, Baekgaard N, et al. European Society for Vascular Surgery (ESVS) 2021 Clinical Practice Guidelines on the Management of Venous Thrombosis. Eur J Vasc Endovasc Surg. 2021;61:9–82.",
+      "verified": false
+    }
+  ],
+  "rationale": "Base superficial vein thrombosis case at the high-risk end (≥5 cm, within 3 cm of the SFJ). ESVS 2021: therapeutic anticoagulation. ICD I80.02 tests the ICD route (no protocol registered). The \"rash\" chip stands in for the red cord because there is no thrombophlebitis chip.",
+  "authoring": {
+    "author": "Claude (soft tissue / vascular / trauma / burns cluster)",
+    "date": "2026-09-25",
+    "notes": "Expectations need surgeon sign-off (reviewedBy). Citations verified: false. iOS outcomes are unverified until the first CI run."
+  }
+}

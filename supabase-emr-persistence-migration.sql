@@ -14,12 +14,22 @@
 -- ─────────────────────────────────────────────────────────────────────────────
 
 -- assessments: one primary assessment per encounter
-alter table assessments
-  add constraint assessments_encounter_unique unique (encounter_id);
+-- Guarded so a re-run is a no-op (the constraint's index is a relation, so a
+-- duplicate raises duplicate_table as well as duplicate_object).
+do $guard$ begin
+  alter table assessments
+    add constraint assessments_encounter_unique unique (encounter_id);
+exception when duplicate_table or duplicate_object then null;
+end $guard$;
 
 -- plans: one management plan per encounter (used by the autosave path)
-alter table plans
-  add constraint plans_encounter_unique unique (encounter_id);
+-- Guarded so a re-run is a no-op (the constraint's index is a relation, so a
+-- duplicate raises duplicate_table as well as duplicate_object).
+do $guard$ begin
+  alter table plans
+    add constraint plans_encounter_unique unique (encounter_id);
+exception when duplicate_table or duplicate_object then null;
+end $guard$;
 
 -- ─────────────────────────────────────────────────────────────────────────────
 -- vitals: recorded_at defaults to now() at DB level but the monitoring tab

@@ -1,0 +1,240 @@
+{
+  "schemaVersion": 1,
+  "id": "acutemed-syncope-complete-heart-block",
+  "condition": "Syncope from complete heart block (elderly, on a beta-blocker)",
+  "category": "general-medicine",
+  "permutationOf": "acutemed-syncope-exertional-high-risk",
+  "permutationLabel": "Elderly, bradycardic, on a beta-blocker",
+  "summary": "83-year-old woman with two blackouts without warning this week, on bisoprolol: HR 34 regular, BP 118/50. ESC 2018: bradycardia <40 bpm with syncope is high risk.",
+  "tags": [
+    "syncope",
+    "bradycardia",
+    "elderly",
+    "falls"
+  ],
+  "inputs": {
+    "patient": {
+      "ageYears": 83,
+      "sex": "female",
+      "pregnancy": {
+        "status": "not-applicable"
+      },
+      "heightCm": 154,
+      "weightKg": 58
+    },
+    "encounter": {
+      "setting": "outpatient",
+      "visitType": "followUp",
+      "acuity": "routine"
+    },
+    "chiefComplaint": "Two falls this week",
+    "hpi": "Follow-up after femoral hernia repair. Daughter reports two falls this week where she \"just went down\" without warning, brief loss of consciousness each time, no injury. Tired and breathless on the stairs for a month. Takes bisoprolol for blood pressure.",
+    "symptoms": [
+      "blackouts without warning",
+      "fatigue",
+      "exertional breathlessness"
+    ],
+    "negatives": [
+      "chest pain",
+      "palpitations",
+      "tongue biting",
+      "focal weakness",
+      "head injury"
+    ],
+    "exam": {
+      "general": "Alert, orientated.",
+      "cardiovascular": "Pulse 34 regular, BP 118/50, cannon waves in the JVP.",
+      "respiratory": "Chest clear.",
+      "neuro": "No focal deficit."
+    },
+    "vitals": [
+      {
+        "minutesAgo": 10,
+        "heartRate": 34,
+        "systolicBp": 118,
+        "diastolicBp": 50,
+        "respiratoryRate": 16,
+        "temperatureC": 36.5,
+        "spo2": 96,
+        "avpu": "A",
+        "onSupplementalO2": false
+      }
+    ],
+    "labs": [],
+    "imaging": [],
+    "comorbidities": [
+      "Hypertension",
+      "Femoral hernia (repaired)"
+    ],
+    "surgicalHistory": [
+      "Open femoral hernia repair (4 weeks ago)"
+    ],
+    "medications": [
+      {
+        "drug": "Bisoprolol",
+        "dose": "5 mg",
+        "frequency": "OD",
+        "indication": "Hypertension"
+      },
+      {
+        "drug": "Amlodipine",
+        "dose": "5 mg",
+        "frequency": "OD"
+      }
+    ],
+    "allergies": [],
+    "nkda": true,
+    "socialHistory": "Lives with daughter.",
+    "confirmedDiagnosis": {
+      "name": "Syncope due to suspected complete heart block",
+      "icd10": "I44.2",
+      "assessmentText": "Recurrent syncope without prodrome with HR 34 - suspected complete heart block; emergency transfer for ECG monitoring and pacing assessment; hold bisoprolol."
+    },
+    "platform": {
+      "web": {
+        "ccTemplate": "Other / general surgical",
+        "symptoms": [
+          "syncope",
+          "fatigue",
+          "dyspnoea on exertion"
+        ],
+        "symptomDetails": {
+          "syncope": [
+            "No identifiable trigger",
+            "No warning",
+            "Rapid recovery"
+          ]
+        },
+        "examFindings": {
+          "cardiovascular": [
+            "Bradycardia"
+          ]
+        },
+        "durationDays": 5,
+        "painScore": 0
+      }
+    }
+  },
+  "expected": {
+    "differential": {
+      "mustNotMiss": [
+        {
+          "id": "mnm-heart-block",
+          "severity": "critical",
+          "match": [
+            "heart block",
+            "bradyarrhythmia",
+            "bradycardia",
+            "av block",
+            "icd:I44",
+            "icd:R00.1"
+          ],
+          "guidelineRefs": [
+            "esc-syncope-2018"
+          ]
+        }
+      ]
+    },
+    "safety": {
+      "emergencyLevel": {
+        "id": "level-at-least-urgent",
+        "severity": "critical",
+        "atLeast": "urgent",
+        "guidelineRefs": [
+          "esc-syncope-2018"
+        ]
+      },
+      "mustAlarm": [
+        {
+          "id": "alarm-bradycardia",
+          "severity": "critical",
+          "match": [
+            "brady",
+            "heart block",
+            "pacing"
+          ],
+          "guidelineRefs": [
+            "esc-syncope-2018"
+          ]
+        }
+      ]
+    },
+    "management": {
+      "mustInclude": [
+        {
+          "id": "mgmt-pacing-cardiology",
+          "severity": "quality",
+          "match": [
+            "pacing",
+            "pacemaker",
+            "cardiology"
+          ],
+          "guidelineRefs": [
+            "esc-syncope-2018"
+          ]
+        },
+        {
+          "id": "mgmt-hold-rate-limiting",
+          "severity": "quality",
+          "match": [
+            "re:(hold|withhold|stop)[^.;]{0,30}(beta|bisoprolol)"
+          ],
+          "guidelineRefs": [
+            "esc-syncope-2018"
+          ],
+          "knownGap": [
+            "ios"
+          ],
+          "knownGapNote": "iOS CI 2026-09-25 (run 36169134350, database mode): no management item matched among 8 (ios.pipeline.actions, ios.radiation.plan, ios.radiation.followUp, ios.soap.plan)"
+        }
+      ]
+    },
+    "investigations": {
+      "mustInclude": [
+        {
+          "id": "inv-ecg",
+          "severity": "critical",
+          "match": [
+            "ecg",
+            "electrocardiogram",
+            "re:12.lead",
+            "ekg"
+          ],
+          "guidelineRefs": [
+            "esc-syncope-2018"
+          ]
+        }
+      ],
+      "mustExclude": [
+        {
+          "id": "inv-no-ctpa",
+          "severity": "quality",
+          "match": [
+            "ctpa",
+            "ct pulmonary angiogra"
+          ],
+          "guidelineRefs": [
+            "esc-syncope-2018"
+          ],
+          "note": "No PE features; checks the iOS radiation-card substring match (\"pe\" in \"syncope\"/\"suspected\")."
+        }
+      ]
+    }
+  },
+  "guideline": [
+    {
+      "id": "esc-syncope-2018",
+      "verified": false,
+      "name": "2018 ESC Guidelines for the diagnosis and management of syncope",
+      "year": 2018,
+      "section": "Table 5 risk stratification: high-risk - syncope during exertion or supine, absence of prodrome, new chest discomfort/breathlessness, structural heart disease, ECG with Mobitz II or third-degree AV block or bradycardia <40 bpm, unexplained SBP <90 mmHg, GI bleeding; low-risk - typical reflex prodrome and triggers; low-risk patients discharged, high-risk patients need early intensive evaluation; brain imaging not recommended in uncomplicated syncope",
+      "citation": "Brignole M, Moya A, de Lange FJ, et al. Eur Heart J. 2018;39:1883-1948."
+    }
+  ],
+  "rationale": "Elderly permutation: \"falls\" rather than \"syncope\", on a rate-limiting drug. The web bradycardia vital cascade should fire; this checks triage and the iOS text path.",
+  "authoring": {
+    "author": "Claude (acute medicine cluster)",
+    "date": "2026-09-25",
+    "notes": "Expectations need surgeon sign-off (reviewedBy). Citations written from the guideline texts, not yet checked against the source (verified: false). iOS outcomes are unverified until the next CI run."
+  }
+}

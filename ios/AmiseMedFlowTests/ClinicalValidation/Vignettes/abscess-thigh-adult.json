@@ -1,0 +1,204 @@
+{
+  "schemaVersion": 1,
+  "id": "abscess-thigh-adult",
+  "condition": "Skin abscess",
+  "category": "soft-tissue",
+  "permutationOf": null,
+  "summary": "28-year-old man: 5 days of an enlarging painful lump on the thigh, 4 cm fluctuant abscess with a 1 cm rim of erythema, afebrile, normal observations.",
+  "tags": [
+    "abscess",
+    "outpatient",
+    "incision-drainage"
+  ],
+  "inputs": {
+    "patient": {
+      "ageYears": 28,
+      "sex": "male",
+      "pregnancy": {
+        "status": "not-applicable"
+      },
+      "heightCm": 180,
+      "weightKg": 78
+    },
+    "encounter": {
+      "setting": "outpatient",
+      "visitType": "urgentReview",
+      "acuity": "priority"
+    },
+    "chiefComplaint": "Painful lump on right thigh",
+    "hpi": "Five days of a growing painful lump on the outer right thigh, now throbbing and pointing. No fevers. No previous boils. No diabetes. No injecting drug use.",
+    "socrates": {
+      "onset": [
+        "4–7 days ago"
+      ],
+      "site": [
+        "Thigh"
+      ],
+      "character": [
+        "Throbbing"
+      ],
+      "radiation": [
+        "No radiation"
+      ],
+      "associations": [],
+      "timing": [
+        "Constant",
+        "Progressive"
+      ],
+      "exacerbating": [
+        "Movement"
+      ],
+      "relieving": [
+        "Analgesics"
+      ],
+      "severity": [
+        "Moderate (4–6/10)"
+      ]
+    },
+    "symptoms": [
+      "lump",
+      "pain"
+    ],
+    "negatives": [
+      "fever",
+      "rigors"
+    ],
+    "exam": {
+      "general": "Well. T 37.1°C, HR 78, BP 124/76.",
+      "skin": "Right lateral thigh: 4 cm tender fluctuant swelling with a pointing head and a 1 cm rim of surrounding erythema. No lymphangitis. No crepitus. Not pulsatile."
+    },
+    "vitals": [
+      {
+        "minutesAgo": 10,
+        "heartRate": 78,
+        "systolicBp": 124,
+        "diastolicBp": 76,
+        "respiratoryRate": 14,
+        "temperatureC": 37.1,
+        "spo2": 99,
+        "avpu": "A",
+        "onSupplementalO2": false
+      }
+    ],
+    "labs": [],
+    "imaging": [],
+    "comorbidities": [],
+    "surgicalHistory": [],
+    "medications": [],
+    "allergies": [],
+    "nkda": true,
+    "socialHistory": "Mechanic. Non-smoker.",
+    "confirmedDiagnosis": {
+      "name": "Cutaneous abscess of right thigh",
+      "icd10": "L02.415",
+      "paneDiseaseId": "skin_abscess",
+      "assessmentText": "Simple cutaneous abscess of the right thigh, 4 cm, minimal surrounding cellulitis, no systemic features. For incision and drainage."
+    },
+    "platform": {
+      "web": {
+        "ccTemplate": "Soft tissue mass",
+        "symptoms": [
+          "abscess",
+          "skin lesion"
+        ],
+        "examFindings": {
+          "skin": [
+            "Lesion present"
+          ]
+        },
+        "paneAnswers": {
+          "swelling_fluctuant_soft": true,
+          "erythema_surrounding": true,
+          "fever": false
+        },
+        "durationDays": 5,
+        "painScore": 5
+      }
+    }
+  },
+  "expected": {
+    "differential": {
+      "mustRankTopK": [
+        {
+          "id": "dx-abscess-top3",
+          "severity": "critical",
+          "match": [
+            "abscess",
+            "furuncle"
+          ],
+          "k": 3,
+          "guidelineRefs": [
+            "idsa-ssti-2014"
+          ]
+        }
+      ]
+    },
+    "safety": {
+      "emergencyLevel": {
+        "id": "level-not-emergency",
+        "severity": "quality",
+        "atMost": "urgent",
+        "guidelineRefs": [
+          "idsa-ssti-2014"
+        ]
+      }
+    },
+    "investigations": {
+      "mustInclude": [
+        {
+          "id": "inv-pus-culture",
+          "severity": "quality",
+          "match": [
+            "pus",
+            "culture",
+            "swab",
+            "mrsa"
+          ],
+          "guidelineRefs": [
+            "idsa-ssti-2014"
+          ]
+        }
+      ]
+    },
+    "management": {
+      "mustInclude": [
+        {
+          "id": "mgmt-incision-drainage",
+          "severity": "critical",
+          "match": [
+            "incision and drainage",
+            "re:\\bi\\s?&\\s?d\\b",
+            "drain the abscess",
+            "drainage"
+          ],
+          "guidelineRefs": [
+            "idsa-ssti-2014"
+          ],
+          "note": "IDSA: incision and drainage is the recommended treatment for a formed abscess; antibiotics alone are inadequate.",
+          "proposedFix": "Register the ICD-10(-CM) codes clinicians actually use for this condition in the protocol icd10Prefixes (pane-engine management/protocols), or map by ICD chapter block rather than a single 4-character prefix."
+        }
+      ]
+    },
+    "pathway": {
+      "id": "pathway-first-visit",
+      "severity": "quality",
+      "equals": "firstVisit"
+    }
+  },
+  "guideline": [
+    {
+      "id": "idsa-ssti-2014",
+      "name": "IDSA practice guideline — diagnosis and management of skin and soft tissue infections (2014 update)",
+      "year": 2014,
+      "section": "Purulent SSTI (abscess): incision and drainage; antibiotics active against MRSA when SIRS, immunocompromise or failed drainage; culture of abscess material. Non-purulent cellulitis: agent active against streptococci; severe: IV antibiotics and assess for necrotising infection. Necrotising infections: prompt surgical consultation, vancomycin plus piperacillin-tazobactam (or carbapenem), clindamycin for toxin suppression in streptococcal NF",
+      "citation": "Stevens DL, Bisno AL, Chambers HF, et al. Practice guidelines for the diagnosis and management of skin and soft tissue infections: 2014 update by the Infectious Diseases Society of America. Clin Infect Dis. 2014;59:e10–52.",
+      "verified": false
+    }
+  ],
+  "rationale": "Base abscess case: a simple, well patient. Incision and drainage is the key action. The ICD-10-CM code for a thigh abscess (L02.415) tests the ICD → protocol route (the protocol is registered as L02.9).",
+  "authoring": {
+    "author": "Claude (soft tissue / vascular / trauma / burns cluster)",
+    "date": "2026-09-25",
+    "notes": "Expectations need surgeon sign-off (reviewedBy). Citations verified: false. iOS outcomes are unverified until the first CI run."
+  }
+}

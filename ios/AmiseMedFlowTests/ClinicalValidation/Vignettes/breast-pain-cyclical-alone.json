@@ -1,0 +1,221 @@
+{
+  "schemaVersion": 1,
+  "id": "breast-pain-cyclical-alone",
+  "condition": "Cyclical breast pain (mastalgia) without a lump",
+  "category": "breast-endocrine",
+  "permutationOf": null,
+  "summary": "38-year-old woman with bilateral premenstrual breast pain for 6 months and a normal examination. Reassurance, well-fitting bra, simple analgesia/topical NSAID; no imaging unless focal signs or a lump.",
+  "tags": [
+    "breast",
+    "pain",
+    "over-investigation"
+  ],
+  "inputs": {
+    "patient": {
+      "ageYears": 38,
+      "sex": "female",
+      "pregnancy": {
+        "status": "not-pregnant"
+      }
+    },
+    "encounter": {
+      "setting": "outpatient",
+      "visitType": "newConsult",
+      "acuity": "routine"
+    },
+    "chiefComplaint": "Painful breasts before my periods",
+    "hpi": "Six months of aching in both breasts, worst in the week before her period and settling afterwards. No lump felt, no nipple discharge, no skin change. Worried because a friend had breast cancer.",
+    "socrates": {
+      "onset": [
+        "1–6 months ago",
+        "Gradual"
+      ],
+      "site": [
+        "Bilateral"
+      ],
+      "character": [
+        "Aching"
+      ],
+      "radiation": [
+        "No radiation"
+      ],
+      "associations": [
+        "Mastalgia",
+        "Cyclical changes"
+      ],
+      "timing": [
+        "Intermittent"
+      ],
+      "exacerbating": [
+        "None"
+      ],
+      "relieving": [
+        "Nothing"
+      ],
+      "severity": [
+        "Mild (1–3/10)"
+      ]
+    },
+    "symptoms": [
+      "breast pain"
+    ],
+    "negatives": [
+      "breast lump",
+      "nipple discharge",
+      "skin change"
+    ],
+    "exam": {
+      "general": "Well.",
+      "other": "Breasts: diffusely tender upper outer quadrants bilaterally, no discrete mass, no focal tenderness, no skin or nipple change, no axillary nodes."
+    },
+    "vitals": [
+      {
+        "minutesAgo": 15,
+        "heartRate": 70,
+        "systolicBp": 118,
+        "diastolicBp": 72,
+        "respiratoryRate": 12,
+        "temperatureC": 36.6,
+        "spo2": 99,
+        "avpu": "A",
+        "onSupplementalO2": false
+      }
+    ],
+    "labs": [],
+    "imaging": [],
+    "comorbidities": [],
+    "surgicalHistory": [],
+    "medications": [],
+    "allergies": [],
+    "nkda": true,
+    "socialHistory": "Non-smoker.",
+    "confirmedDiagnosis": {
+      "name": "Cyclical mastalgia, normal breast examination",
+      "icd10": "N64.4",
+      "assessmentText": "Cyclical bilateral mastalgia with normal examination. Reassurance, supportive bra, topical NSAID; no imaging indicated. Return if a lump or focal pain develops."
+    },
+    "platform": {
+      "web": {
+        "ccTemplate": "Other / general surgical",
+        "symptoms": [
+          "breast pain"
+        ],
+        "symptomDetails": {
+          "breast pain": [
+            "Cyclical",
+            "Diffuse"
+          ]
+        },
+        "durationDays": 180,
+        "painScore": 3
+      }
+    }
+  },
+  "expected": {
+    "differential": {
+      "mustRankTopK": [
+        {
+          "id": "dx-benign-top3",
+          "severity": "quality",
+          "match": [
+            "fibrocystic",
+            "mastalgia",
+            "benign"
+          ],
+          "k": 3
+        }
+      ]
+    },
+    "safety": {
+      "emergencyLevel": {
+        "id": "level-routine",
+        "severity": "quality",
+        "atMost": "priority",
+        "guidelineRefs": [
+          "abs-best-practice-2010",
+          "nice-ng12"
+        ],
+        "note": "Breast pain alone is not an NG12 suspected-cancer criterion."
+      },
+      "mustNotAlarm": [
+        {
+          "id": "no-cancer-alarm",
+          "severity": "quality",
+          "match": [
+            "cancer screening triggered (breast)",
+            "re:(2-week|two-week|two week|2ww|suspected cancer)[^\\n]{0,60}breast",
+            "re:breast[^\\n]{0,60}(2-week|two-week|two week|2ww|suspected cancer)",
+            "cancer screening triggered"
+          ]
+        }
+      ]
+    },
+    "investigations": {
+      "mustExclude": [
+        {
+          "id": "inv-no-imaging-or-biopsy",
+          "severity": "quality",
+          "match": [
+            "mammogra",
+            "core biopsy",
+            "core needle",
+            "re:\\bcnb\\b",
+            "vacuum-assisted biopsy",
+            "core (needle )?biopsy"
+          ],
+          "unless": [
+            "if ",
+            "≥35",
+            "age "
+          ],
+          "guidelineRefs": [
+            "abs-best-practice-2010"
+          ],
+          "note": "Imaging is not indicated for cyclical pain with a normal examination."
+        }
+      ]
+    },
+    "management": {
+      "mustInclude": [
+        {
+          "id": "mgmt-reassurance",
+          "severity": "quality",
+          "match": [
+            "reassur"
+          ],
+          "guidelineRefs": [
+            "abs-best-practice-2010"
+          ],
+          "knownGap": [
+            "ios"
+          ],
+          "knownGapNote": "iOS CI 2026-09-25 (run 36169134350, database mode): no management item matched among 3 (ios.pipeline.actions, ios.soap.plan)"
+        }
+      ]
+    }
+  },
+  "guideline": [
+    {
+      "id": "abs-best-practice-2010",
+      "name": "Best practice diagnostic guidelines for patients presenting with breast symptoms (ABS / RCR, Department of Health)",
+      "year": 2010,
+      "section": "Triple assessment (clinical examination, age-appropriate imaging, needle biopsy); imaging by age; nipple discharge; breast infection; breast pain",
+      "citation": "Willett AM, Michell MJ, Lee MJR (eds). Best practice diagnostic guidelines for patients presenting with breast symptoms. London: Department of Health / Association of Breast Surgery; 2010.",
+      "verified": false
+    },
+    {
+      "id": "nice-ng12",
+      "name": "NICE NG12 — Suspected cancer: recognition and referral",
+      "year": 2015,
+      "section": "Site-specific recommendations: breast cancer (age ≥30 unexplained lump; ≥50 unilateral nipple discharge/retraction; skin changes; men ≥50 subareolar mass), haematological cancers (unexplained lymphadenopathy), head and neck (unexplained thyroid lump)",
+      "citation": "National Institute for Health and Care Excellence. Suspected cancer: recognition and referral. NICE guideline NG12. London: NICE; 2015 (updated).",
+      "verified": false
+    }
+  ],
+  "rationale": "Base breast-pain case, testing over-investigation and over-triage (all quality). The web CC template is \"Other / general surgical\" because both breast templates presume a lump or discharge.",
+  "authoring": {
+    "author": "Claude (hernia / breast / endocrine cluster)",
+    "date": "2026-09-25",
+    "notes": "Expectations need surgeon sign-off (reviewedBy). Citations verified: false."
+  }
+}

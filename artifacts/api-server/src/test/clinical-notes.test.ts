@@ -24,6 +24,7 @@ function mkChain(termResult: unknown) {
   obj.update      = vi.fn(self);
   obj.eq          = vi.fn(self);
   obj.not         = vi.fn(self);
+  obj.is          = vi.fn(self);
   obj.in          = vi.fn(self);
   obj.order       = vi.fn(self);
   obj.limit       = vi.fn(self);
@@ -130,6 +131,14 @@ describe('GET /api/clinical-notes/patient/:patientId', () => {
     expect(res.status).toBe(200);
     const chain = mockFrom.mock.results[0].value;
     expect(chain.eq).toHaveBeenCalledWith('encounter_id', 'enc-42');
+  });
+
+  it('excludes soft-deleted notes', async () => {
+    mockFrom.mockReturnValueOnce(mkChain(ok([])));
+    const res = await request(app).get('/api/clinical-notes/patient/pat-1');
+    expect(res.status).toBe(200);
+    const chain = mockFrom.mock.results[0].value;
+    expect(chain.is).toHaveBeenCalledWith('deleted_at', null);
   });
 });
 

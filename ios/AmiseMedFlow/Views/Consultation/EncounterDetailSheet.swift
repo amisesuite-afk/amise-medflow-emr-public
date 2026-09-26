@@ -8,6 +8,7 @@ import SwiftUI
 struct EncounterDetailSheet: View {
     let encounter: Encounter
     @Environment(\.dismiss) private var dismiss
+    @State private var pdfWrapper: PDFDataWrapper?
 
     var body: some View {
         NavigationStack {
@@ -37,12 +38,20 @@ struct EncounterDetailSheet: View {
                 if !diff.isEmpty {
                     differentialSection(diff)
                 }
+                // Outcomes loop: the final diagnosis confirmed later (nurse / doctor / admin).
+                EncounterFinalDiagnosisSection(encounter: encounter)
                 if let pmh = encounter.pmhNotes, !pmh.isEmpty {
                     Section("History at Visit") {
                         readRow("Past Medical History", value: pmh)
                         if let psh = encounter.surgicalHistory, !psh.isEmpty {
                             readRow("Surgical History", value: psh)
                         }
+                    }
+                }
+                if let pathway = encounter.pathwaySummary, !pathway.isEmpty {
+                    Section("Pathway Assessments") {
+                        Text(pathway)
+                            .font(.subheadline)
                     }
                 }
                 if let summary = encounter.clinicianSummary, !summary.isEmpty {
@@ -56,9 +65,21 @@ struct EncounterDetailSheet: View {
             .navigationTitle("Visit Record")
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
+                ToolbarItem(placement: .topBarLeading) {
+                    Button {
+                        let data = ProcedureFormPDF.encounterRecord(encounter: encounter)
+                        pdfWrapper = PDFDataWrapper(data: data)
+                    } label: {
+                        Image(systemName: "square.and.arrow.up")
+                    }
+                    .help("Export as PDF")
+                }
                 ToolbarItem(placement: .confirmationAction) {
                     Button("Done") { dismiss() }
                 }
+            }
+            .sheet(item: $pdfWrapper) { wrapper in
+                ShareSheet(items: [wrapper.data as Any]).ignoresSafeArea()
             }
         }
     }
@@ -135,20 +156,19 @@ struct EncounterDetailSheet: View {
 
     // MARK: - SOCRATES
 
+    /// Structured history as stored (socratesSelections keys are lower case: "site", "onset" …).
+    /// The earlier version looked up "Site", "Onset" … and so never showed anything. Every stored key
+    /// is shown, including the non-pain history frames' and legacy values (HistoryFrames.swift).
     private func socratesSection(_ socr: [String: [String]]) -> some View {
-        let order = ["Site","Onset","Character","Radiation",
-                     "Associated","Time","Exacerbating","Severity"]
-        let present = order.filter { key in
-            !(socr[key]?.isEmpty ?? true)
-        }
-        return Section("SOCRATES") {
+        let present = HistoryFrames.orderedKeys(socr.keys.filter { !(socr[$0]?.isEmpty ?? true) })
+        return Section("History (structured)") {
             ForEach(present, id: \.self) { key in
                 if let chips = socr[key], !chips.isEmpty {
                     VStack(alignment: .leading, spacing: 4) {
-                        Text(key)
+                        Text(HistoryFrames.keyTitle(key))
                             .font(.caption)
                             .foregroundStyle(.secondary)
-                        Text(chips.joined(separator: " · "))
+                        Text(chips.sorted().map { HistoryFrames.displayLabel(key: key, value: $0) }.joined(separator: " · "))
                             .font(.subheadline)
                     }
                     .padding(.vertical, 2)
@@ -272,7 +292,7 @@ struct EncounterDetailSheet: View {
                         Text(entry.name)
                             .font(.subheadline)
                         Spacer()
-                        Text("\(entry.probability)%")
+                        Text(ProbabilityText.percent(entry.probability))
                             .font(.subheadline.weight(.semibold))
                             .foregroundStyle(probabilityColor(entry.probability))
                         Text(entry.confidence)

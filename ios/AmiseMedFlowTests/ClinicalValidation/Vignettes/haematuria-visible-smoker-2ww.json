@@ -1,0 +1,255 @@
+{
+  "schemaVersion": 1,
+  "id": "haematuria-visible-smoker-2ww",
+  "condition": "Visible haematuria (suspected bladder cancer)",
+  "category": "urology",
+  "permutationOf": null,
+  "permutationLabel": "Smoker, 66, culture-negative painless visible haematuria",
+  "summary": "66-year-old smoker with occupational exposure and two episodes of painless visible haematuria, culture negative, Hb 13.4.",
+  "tags": [
+    "cancer",
+    "2ww",
+    "haematuria"
+  ],
+  "inputs": {
+    "patient": {
+      "ageYears": 66,
+      "sex": "male",
+      "pregnancy": {
+        "status": "not-applicable"
+      },
+      "heightCm": 176,
+      "weightKg": 80
+    },
+    "encounter": {
+      "setting": "outpatient",
+      "visitType": "newConsult",
+      "acuity": "priority"
+    },
+    "chiefComplaint": "Blood in the urine",
+    "hpi": "Two episodes of painless red urine in 3 weeks, the last with small clots. No dysuria, no frequency, no loin pain. Urine culture from the GP was negative. Smoker, 40 pack-years. Worked in a rubber factory for 20 years.",
+    "symptoms": [
+      "haematuria"
+    ],
+    "negatives": [
+      "dysuria",
+      "loin pain",
+      "fever",
+      "weight loss"
+    ],
+    "exam": {
+      "general": "Well. Pulse 78/min, BP 138/82.",
+      "abdomen": "Soft, non-tender, no masses, bladder not palpable. PR: small benign prostate."
+    },
+    "vitals": [
+      {
+        "minutesAgo": 10,
+        "heartRate": 78,
+        "systolicBp": 138,
+        "diastolicBp": 82,
+        "respiratoryRate": 14,
+        "temperatureC": 36.6,
+        "spo2": 97,
+        "avpu": "A",
+        "onSupplementalO2": false,
+        "weightKg": 80
+      }
+    ],
+    "labs": [
+      {
+        "analyte": "urinalysis",
+        "name": "Urine dipstick",
+        "resultText": "Blood 3+, nitrite negative, leucocytes negative",
+        "minutesAgo": 30
+      },
+      {
+        "analyte": "urinalysis",
+        "name": "MSU culture",
+        "resultText": "No growth",
+        "minutesAgo": 30
+      },
+      {
+        "analyte": "haemoglobin",
+        "name": "Haemoglobin",
+        "value": 13.4,
+        "unit": "g/dL",
+        "minutesAgo": 30
+      },
+      {
+        "analyte": "creatinine",
+        "name": "Creatinine",
+        "value": 88,
+        "unit": "µmol/L",
+        "minutesAgo": 30
+      }
+    ],
+    "imaging": [],
+    "comorbidities": [
+      "COPD"
+    ],
+    "surgicalHistory": [],
+    "medications": [
+      {
+        "drug": "Tiotropium",
+        "dose": "18 mcg",
+        "frequency": "OD",
+        "indication": "COPD"
+      }
+    ],
+    "allergies": [],
+    "nkda": true,
+    "socialHistory": "Smoker 40 pack-years. Former rubber-industry worker.",
+    "confirmedDiagnosis": {
+      "name": "Unexplained painless visible haematuria — suspected bladder cancer",
+      "icd10": "R31.0",
+      "paneDiseaseId": "haematuria_investigation",
+      "assessmentText": "Unexplained painless visible haematuria, age 66, smoker, occupational exposure, culture negative: suspected cancer pathway referral."
+    },
+    "platform": {
+      "web": {
+        "ccTemplate": "Other / general surgical",
+        "symptoms": [
+          "haematuria"
+        ],
+        "toxicHabits": [
+          "smoking"
+        ],
+        "durationDays": 21
+      }
+    }
+  },
+  "expected": {
+    "differential": {
+      "mustRankTopK": [
+        {
+          "id": "dx-haematuria-bladder-top3",
+          "severity": "critical",
+          "match": [
+            "bladder",
+            "haematuria",
+            "urothelial",
+            "renal cell"
+          ],
+          "k": 3,
+          "guidelineRefs": [
+            "nice-ng12",
+            "eau-nmibc-2024"
+          ]
+        }
+      ]
+    },
+    "safety": {
+      "emergencyLevel": {
+        "id": "level-priority",
+        "severity": "critical",
+        "atLeast": "priority",
+        "guidelineRefs": [
+          "nice-ng12"
+        ],
+        "note": "A suspected-cancer referral, not an emergency (CLAUDE.md: red flags are not emergencies)."
+      }
+    },
+    "investigations": {
+      "mustInclude": [
+        {
+          "id": "inv-cystoscopy",
+          "severity": "critical",
+          "match": [
+            "cystoscop"
+          ],
+          "guidelineRefs": [
+            "eau-nmibc-2024"
+          ]
+        },
+        {
+          "id": "inv-upper-tract-imaging",
+          "severity": "quality",
+          "match": [
+            "ct urogra",
+            "ctu",
+            "upper tract imaging",
+            "re:\\bct\\b[^.;\\n]{0,20}urogra"
+          ],
+          "guidelineRefs": [
+            "eau-nmibc-2024"
+          ]
+        }
+      ]
+    },
+    "management": {
+      "mustInclude": [
+        {
+          "id": "mgmt-suspected-cancer-referral",
+          "severity": "critical",
+          "match": [
+            "2-week",
+            "two-week",
+            "2ww",
+            "suspected cancer pathway",
+            "urgent referral",
+            "urgent urolog",
+            "fast-track"
+          ],
+          "guidelineRefs": [
+            "nice-ng12"
+          ]
+        },
+        {
+          "id": "mgmt-smoking-cessation",
+          "severity": "quality",
+          "match": [
+            "smoking cessation",
+            "stop smoking"
+          ],
+          "guidelineRefs": [
+            "eau-nmibc-2024"
+          ]
+        }
+      ],
+      "mustExclude": [
+        {
+          "id": "mgmt-no-antibiotics-only",
+          "severity": "quality",
+          "match": [
+            "re:(trimethoprim|nitrofurantoin|cefalexin)"
+          ],
+          "unless": [
+            "if culture positive",
+            "if uti",
+            "due to uti",
+            "prophylaxis",
+            "recurrent",
+            "lower uti"
+          ],
+          "guidelineRefs": [
+            "nice-ng12"
+          ]
+        }
+      ]
+    }
+  },
+  "guideline": [
+    {
+      "id": "nice-ng12",
+      "name": "NICE NG12 — Suspected cancer: recognition and referral",
+      "year": 2015,
+      "section": "Urological cancers: refer using a suspected cancer pathway (2-week wait) for bladder or kidney cancer if aged ≥45 with unexplained visible haematuria without urinary tract infection, or visible haematuria that persists or recurs after successful treatment of UTI; suspected spinal metastases in people with cancer",
+      "citation": "National Institute for Health and Care Excellence. Suspected cancer: recognition and referral. NICE guideline NG12. London: NICE; 2015 (updated).",
+      "verified": false
+    },
+    {
+      "id": "eau-nmibc-2024",
+      "name": "EAU Guidelines on Non-muscle-invasive Bladder Cancer (diagnosis)",
+      "year": 2024,
+      "section": "Visible haematuria: cystoscopy and upper tract imaging (CT urography); haematuria in patients on anticoagulant or antiplatelet treatment is investigated in the same way",
+      "citation": "Gontero P, Birtle A, Compérat E, et al. EAU Guidelines on Non-muscle-invasive Bladder Cancer (TaT1 and CIS). EAU Guidelines Office, Arnhem; 2024 edition.",
+      "verified": false
+    }
+  ],
+  "rationale": "NICE NG12: age ≥45 with unexplained visible haematuria → suspected cancer pathway; cystoscopy and upper-tract imaging (EAU).",
+  "authoring": {
+    "author": "Claude (endocrine / renal / urology / neuro cluster)",
+    "date": "2026-09-25",
+    "notes": "Expectations need surgeon sign-off (reviewedBy). Every citation is verified: false. iOS outcomes not observed (Linux)."
+  }
+}

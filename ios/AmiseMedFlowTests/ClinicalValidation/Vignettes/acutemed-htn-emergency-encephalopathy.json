@@ -1,0 +1,296 @@
+{
+  "schemaVersion": 1,
+  "id": "acutemed-htn-emergency-encephalopathy",
+  "condition": "Hypertensive emergency (encephalopathy / malignant hypertension)",
+  "category": "general-medicine",
+  "permutationOf": null,
+  "summary": "49-year-old man with untreated hypertension: 2 days of severe headache, vomiting and blurred vision, now confused; BP 238/138, papilloedema, creatinine 188, proteinuria. ESC: ICU, IV labetalol/nicardipine, MAP down 20-25 % over hours.",
+  "tags": [
+    "hypertension",
+    "hypertensive-emergency",
+    "encephalopathy"
+  ],
+  "inputs": {
+    "patient": {
+      "ageYears": 49,
+      "sex": "male",
+      "pregnancy": {
+        "status": "not-applicable"
+      },
+      "heightCm": 178,
+      "weightKg": 98
+    },
+    "encounter": {
+      "setting": "outpatient",
+      "visitType": "newConsult",
+      "acuity": "routine"
+    },
+    "chiefComplaint": "Headache and blurred vision",
+    "hpi": "Referred for a lipoma on the back. Two days of a severe generalised headache, vomiting and blurred vision; wife says he has become muddled today. Told he had high blood pressure 3 years ago but never started treatment.",
+    "symptoms": [
+      "severe headache",
+      "vomiting",
+      "blurred vision",
+      "confusion"
+    ],
+    "negatives": [
+      "focal weakness",
+      "thunderclap onset",
+      "chest pain",
+      "breathlessness",
+      "fever",
+      "neck stiffness"
+    ],
+    "exam": {
+      "general": "Restless, disorientated to time.",
+      "cardiovascular": "BP 238/138 (repeated 236/136), HR 96 regular.",
+      "respiratory": "Chest clear.",
+      "neuro": "GCS 14 (E4 V4 M6), no focal deficit, no neck stiffness.",
+      "other": "Fundoscopy: bilateral papilloedema with flame haemorrhages and cotton-wool spots."
+    },
+    "vitals": [
+      {
+        "minutesAgo": 5,
+        "heartRate": 96,
+        "systolicBp": 238,
+        "diastolicBp": 138,
+        "respiratoryRate": 18,
+        "temperatureC": 36.9,
+        "spo2": 97,
+        "avpu": "C",
+        "onSupplementalO2": false
+      }
+    ],
+    "labs": [
+      {
+        "analyte": "creatinine",
+        "name": "Creatinine",
+        "value": 188,
+        "unit": "µmol/L",
+        "minutesAgo": 30
+      },
+      {
+        "analyte": "urinalysis",
+        "name": "Urine dipstick",
+        "resultText": "Protein 2+, blood 1+",
+        "minutesAgo": 30
+      }
+    ],
+    "imaging": [],
+    "comorbidities": [
+      "Hypertension (untreated)",
+      "Obesity",
+      "Lipoma, back"
+    ],
+    "surgicalHistory": [],
+    "medications": [],
+    "allergies": [],
+    "nkda": true,
+    "socialHistory": "Smoker. Drinks 20 units a week.",
+    "confirmedDiagnosis": {
+      "name": "Hypertensive emergency - hypertensive encephalopathy / malignant hypertension",
+      "icd10": "I16.1",
+      "assessmentText": "Hypertensive emergency with encephalopathy, grade 4 retinopathy and AKI: emergency transfer to intensive care for IV labetalol or nicardipine, MAP reduction 20-25% over several hours."
+    },
+    "platform": {
+      "web": {
+        "ccTemplate": "Other / general surgical",
+        "symptoms": [
+          "headache",
+          "vomiting",
+          "visual loss",
+          "confusion"
+        ],
+        "symptomDetails": {
+          "headache": [
+            "Generalised",
+            "Pressure / band-like",
+            "Nausea / vomiting",
+            "Progressive worsening"
+          ]
+        },
+        "examFindings": {
+          "neurology": [
+            "Confused",
+            "GCS < 15",
+            "No focal deficit"
+          ]
+        },
+        "durationDays": 2,
+        "painScore": 8
+      }
+    }
+  },
+  "expected": {
+    "differential": {
+      "mustNotMiss": [
+        {
+          "id": "mnm-hypertensive-emergency",
+          "severity": "critical",
+          "match": [
+            "hypertensive",
+            "malignant hypertension",
+            "icd:I16",
+            "icd:I67.4"
+          ],
+          "guidelineRefs": [
+            "esh-esc-2018"
+          ]
+        },
+        {
+          "id": "mnm-stroke-or-haemorrhage",
+          "severity": "quality",
+          "match": [
+            "stroke",
+            "haemorrhage",
+            "subarachnoid",
+            "icd:I6"
+          ],
+          "guidelineRefs": [
+            "esc-he-2019"
+          ]
+        }
+      ]
+    },
+    "safety": {
+      "emergencyLevel": {
+        "id": "level-emergency",
+        "severity": "critical",
+        "atLeast": "emergency",
+        "guidelineRefs": [
+          "esh-esc-2018",
+          "esc-he-2019"
+        ]
+      },
+      "mustAlarm": [
+        {
+          "id": "alarm-hypertension",
+          "severity": "critical",
+          "match": [
+            "hypertensi"
+          ],
+          "guidelineRefs": [
+            "esh-esc-2018"
+          ]
+        }
+      ]
+    },
+    "investigations": {
+      "mustInclude": [
+        {
+          "id": "inv-ecg",
+          "severity": "quality",
+          "match": [
+            "ecg",
+            "electrocardiogram",
+            "re:12.lead",
+            "ekg"
+          ],
+          "guidelineRefs": [
+            "esc-he-2019"
+          ]
+        },
+        {
+          "id": "inv-ct-head",
+          "severity": "quality",
+          "match": [
+            "re:\\bct\\b[^.;]{0,20}(head|brain)",
+            "re:(head|brain)[^.;]{0,10}\\bct\\b",
+            "mri brain",
+            "brain imaging",
+            "neuroimaging"
+          ],
+          "guidelineRefs": [
+            "esc-he-2019"
+          ],
+          "note": "Encephalopathy: brain imaging to exclude stroke/haemorrhage."
+        }
+      ]
+    },
+    "management": {
+      "mustInclude": [
+        {
+          "id": "mgmt-iv-antihypertensive",
+          "severity": "critical",
+          "match": [
+            "labetalol",
+            "nicardipine",
+            "clevidipine",
+            "gtn infusion",
+            "glyceryl trinitrate",
+            "nitroprusside",
+            "esmolol",
+            "hydralazine"
+          ],
+          "guidelineRefs": [
+            "esh-esc-2018",
+            "esc-he-2019"
+          ],
+          "note": "IV labetalol or nicardipine in a monitored setting."
+        },
+        {
+          "id": "mgmt-controlled-reduction",
+          "severity": "quality",
+          "match": [
+            "re:20\\s*[-–]\\s*25 ?%"
+          ],
+          "guidelineRefs": [
+            "esh-esc-2018"
+          ]
+        },
+        {
+          "id": "mgmt-critical-care",
+          "severity": "quality",
+          "match": [
+            "re:\\bicu\\b",
+            "re:\\bitu\\b",
+            "re:\\bhdu\\b",
+            "intensive care",
+            "critical care",
+            "high dependency"
+          ],
+          "guidelineRefs": [
+            "esc-he-2019"
+          ]
+        }
+      ],
+      "mustExclude": [
+        {
+          "id": "mgmt-no-sublingual-nifedipine",
+          "severity": "quality",
+          "match": [
+            "sublingual nifedipine",
+            "re:nifedipine[^.;]{0,20}sublingual"
+          ],
+          "guidelineRefs": [
+            "esc-he-2019"
+          ]
+        }
+      ]
+    }
+  },
+  "guideline": [
+    {
+      "id": "esh-esc-2018",
+      "verified": false,
+      "name": "2018 ESC/ESH Guidelines for the management of arterial hypertension",
+      "year": 2018,
+      "section": "Section 8.3 hypertensive emergencies: severe hypertension with acute hypertension-mediated organ damage (encephalopathy, malignant hypertension, ACS, acute pulmonary oedema, aortic dissection, eclampsia) needs immediate, controlled BP reduction with IV therapy in a monitored setting (for hypertensive encephalopathy/malignant hypertension MAP reduction of 20-25% within several hours); severe hypertension without acute organ damage is not an emergency - oral therapy, no rapid reduction",
+      "citation": "Williams B, Mancia G, Spiering W, et al. Eur Heart J. 2018;39:3021-3104."
+    },
+    {
+      "id": "esc-he-2019",
+      "verified": false,
+      "name": "ESC Council on Hypertension position document on the management of hypertensive emergencies",
+      "year": 2019,
+      "section": "Hypertensive emergency: admission to intensive care, IV labetalol or nicardipine (clevidipine) first-line for encephalopathy/malignant hypertension; fundoscopy, ECG, creatinine, urinalysis, troponin; avoid precipitous falls",
+      "citation": "van den Born BJH, Lip GYH, Brguljan-Hitij J, et al. Eur Heart J Cardiovasc Pharmacother. 2019;5:37-46."
+    }
+  ],
+  "rationale": "Base hypertensive emergency: acute organ damage (encephalopathy, retinopathy, AKI) makes it an emergency. The web hypertension prompt keys on SBP (>=180 urgency, >=220 emergency actions); triage ignores BP.",
+  "authoring": {
+    "author": "Claude (acute medicine cluster)",
+    "date": "2026-09-25",
+    "notes": "Expectations need surgeon sign-off (reviewedBy). Citations written from the guideline texts, not yet checked against the source (verified: false). iOS outcomes are unverified until the next CI run."
+  }
+}

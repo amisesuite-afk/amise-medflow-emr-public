@@ -135,7 +135,7 @@ struct ProcedurePickerSheet: View {
                     Image(systemName: "magnifyingglass")
                         .font(.title2)
                         .foregroundStyle(.tertiary)
-                    Text("No procedures match "\(query)"")
+                    Text("No procedures match \"\(query)\"")
                         .font(.subheadline)
                         .foregroundStyle(.secondary)
                 }

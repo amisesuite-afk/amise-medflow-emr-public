@@ -38,7 +38,8 @@ Recommended cadence for the highest-blast-radius secrets, in priority order:
 | `TWILIO_AUTH_TOKEN` | Send SMS as the practice, read call/SMS history | Every 90 days |
 | `ANTHROPIC_API_KEY` | Billing exposure, no PHI access on its own (PHI only flows *to* Claude, not stored by the key) | Every 180 days |
 | `SESSION_SECRET` | Session forgery for the api-server | Every 180 days, or immediately if ever logged/exposed |
-| `CRON_SECRET` | Unauthenticated trigger of cron endpoints (reminders, escalations) — no PHI read access itself | Every 180 days |
+| `STAFF_MACHINE_TOKEN` | Passes every `requireStaffAuth()` staff route as a machine caller (`x-staff-token`), so PHI read/write through the api-server. Set on Render and on the front-desk Vercel project; rotate both together | Every 90 days |
+| `CRON_SECRET` | Unauthenticated trigger of cron endpoints (reminders, escalations). **While `STAFF_MACHINE_TOKEN` is unset it is also accepted as `x-staff-token`**, with the same blast radius as that row | Every 180 days (90 while it doubles as the staff token) |
 
 Rotation mechanics: all of the above are set in the Render dashboard (`amise-medflow-api` →
 Environment) per `render.yaml`'s comment block, and changing one triggers a redeploy —

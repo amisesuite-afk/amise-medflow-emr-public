@@ -1,0 +1,293 @@
+{
+  "schemaVersion": 1,
+  "id": "perianal-abscess-hiv",
+  "condition": "Perianal abscess in advanced HIV",
+  "category": "anorectal",
+  "permutationOf": "perianal-abscess-simple",
+  "permutationLabel": "Immunosuppressed (HIV, CD4 140)",
+  "summary": "41-year-old man with HIV (CD4 140, detectable viral load, poor ART adherence) and a perianal abscess. Drain; antibiotics are indicated in immunosuppression; send pus for culture and tissue for histology (atypical infection, anal neoplasia); re-engage HIV care.",
+  "tags": [
+    "anorectal",
+    "abscess",
+    "hiv",
+    "immunosuppressed"
+  ],
+  "inputs": {
+    "patient": {
+      "ageYears": 41,
+      "sex": "male",
+      "pregnancy": {
+        "status": "not-applicable"
+      },
+      "heightCm": 174,
+      "weightKg": 61
+    },
+    "encounter": {
+      "setting": "outpatient",
+      "visitType": "urgentReview",
+      "acuity": "priority"
+    },
+    "chiefComplaint": "Painful swelling near the anus",
+    "hpi": "Four days of perianal pain and swelling. HIV diagnosed 8 years ago; stopped antiretrovirals 6 months ago; last CD4 140. Previous perianal warts treated. No fevers, bowels normal.",
+    "socrates": {
+      "onset": [
+        "4–7 days ago"
+      ],
+      "site": [
+        "Perianal",
+        "Right lateral"
+      ],
+      "character": [
+        "Throbbing"
+      ],
+      "exacerbating": [
+        "Sitting",
+        "Defaecation"
+      ],
+      "timing": [
+        "Constant"
+      ],
+      "severity": [
+        "Moderate (4–6/10)"
+      ]
+    },
+    "symptoms": [
+      "perianal pain",
+      "perianal lump"
+    ],
+    "negatives": [
+      "fever"
+    ],
+    "exam": {
+      "general": "Thin. Temperature 37.4°C, HR 88, BP 118/74. Oral candida.",
+      "abdomen": "Soft.",
+      "other": "Perianal: 3 cm tender fluctuant swelling at 9 o’clock with 1 cm of erythema; scarring from previous warts; no ulcer, no mass on DRE."
+    },
+    "vitals": [
+      {
+        "minutesAgo": 20,
+        "heartRate": 88,
+        "systolicBp": 118,
+        "diastolicBp": 74,
+        "respiratoryRate": 16,
+        "temperatureC": 37.4,
+        "spo2": 99,
+        "avpu": "A",
+        "onSupplementalO2": false
+      }
+    ],
+    "labs": [
+      {
+        "analyte": "wbc",
+        "name": "WBC",
+        "value": 5.1,
+        "unit": "×10⁹/L",
+        "minutesAgo": 60
+      },
+      {
+        "analyte": "crp",
+        "name": "CRP",
+        "value": 44,
+        "unit": "mg/L",
+        "minutesAgo": 60
+      },
+      {
+        "analyte": "glucose",
+        "name": "Glucose",
+        "value": 5.2,
+        "unit": "mmol/L",
+        "minutesAgo": 60
+      },
+      {
+        "analyte": "cd4",
+        "name": "CD4 count",
+        "value": 140,
+        "unit": "cells/µL",
+        "minutesAgo": 60
+      }
+    ],
+    "comorbidities": [
+      "HIV infection (CD4 140, not on ART)",
+      "Anogenital warts (treated)"
+    ],
+    "surgicalHistory": [],
+    "medications": [],
+    "allergies": [],
+    "nkda": true,
+    "socialHistory": "Hairdresser. MSM. Non-smoker.",
+    "confirmedDiagnosis": {
+      "name": "Perianal abscess in advanced HIV",
+      "icd10": "K61.0",
+      "paneDiseaseId": "perianal_abscess",
+      "assessmentText": "Perianal abscess at 9 o’clock in a patient with HIV, CD4 140, off ART. Drainage, antibiotics, pus culture and wall biopsy; HIV clinic referral."
+    },
+    "platform": {
+      "web": {
+        "ccTemplate": "Other / general surgical",
+        "symptoms": [
+          "perianal pain",
+          "perianal lump"
+        ],
+        "examFindings": {
+          "perineal": [
+            "Erythema",
+            "Mass / swelling"
+          ],
+          "anal": [
+            "Perianal abscess",
+            "Tenderness DRE"
+          ]
+        },
+        "paneAnswers": {
+          "anal_pain": true,
+          "perianal_swelling": true
+        },
+        "durationDays": 4,
+        "painScore": 6
+      }
+    }
+  },
+  "expected": {
+    "differential": {
+      "mustRankTopK": [
+        {
+          "id": "dx-abscess-top3",
+          "severity": "critical",
+          "match": [
+            "perianal abscess",
+            "anorectal abscess",
+            "perianal sepsis",
+            "ischiorectal abscess",
+            "icd:K61"
+          ],
+          "k": 3,
+          "guidelineRefs": [
+            "ascrs-abscess-2022"
+          ]
+        }
+      ],
+      "mustNotMiss": [
+        {
+          "id": "mnm-anal-neoplasia",
+          "severity": "quality",
+          "match": [
+            "anal cancer",
+            "anal carcinoma",
+            "anus",
+            "anal intraepithelial",
+            "squamous cell carcinoma"
+          ],
+          "guidelineRefs": [
+            "ascrs-anal-scc-2018"
+          ],
+          "knownGap": [
+            "web",
+            "ios"
+          ],
+          "knownGapNote": "Anal cancer is not a PANE disease; symptom inference ranks anal SCC #2. | iOS CI 2026-09-25 (run 36169134350, database mode): not in top 5 of ios.bayes: 1. Skin Abscess | 2. Perianal Abscess | 3. Inguinal Hernia | 4. Deep Vein Thrombosis | 5. Incarcerated / Strangulated Hernia"
+        }
+      ]
+    },
+    "safety": {
+      "emergencyLevel": {
+        "id": "level-same-day",
+        "severity": "critical",
+        "atLeast": "urgent",
+        "guidelineRefs": [
+          "ascrs-abscess-2022"
+        ],
+        "note": "Same rule as the base case: an undrained abscess is drained promptly; immunosuppression makes delay more dangerous."
+      },
+      "redFlags": [
+        {
+          "id": "flag-hiv",
+          "severity": "critical",
+          "match": [
+            "hiv",
+            "immunosupp",
+            "immunocomp"
+          ],
+          "guidelineRefs": [
+            "ascrs-abscess-2022"
+          ],
+          "note": "The immunosuppression has to be surfaced: it changes antibiotic use and the differential."
+        }
+      ]
+    },
+    "investigations": {
+      "mustInclude": [
+        {
+          "id": "inv-pus-culture",
+          "severity": "quality",
+          "match": [
+            "pus c&s",
+            "culture",
+            "microbiology"
+          ],
+          "guidelineRefs": [
+            "ascrs-abscess-2022"
+          ]
+        }
+      ]
+    },
+    "management": {
+      "mustInclude": [
+        {
+          "id": "mgmt-drainage",
+          "severity": "critical",
+          "match": [
+            "incision and drainage",
+            "re:\\bi&d\\b",
+            "re:\\bi & d\\b",
+            "drainage"
+          ],
+          "guidelineRefs": [
+            "ascrs-abscess-2022"
+          ]
+        },
+        {
+          "id": "mgmt-antibiotics",
+          "severity": "critical",
+          "match": [
+            "antibiotic",
+            "co-amoxiclav",
+            "amoxicillin",
+            "metronidazole",
+            "piperacillin",
+            "flucloxacillin",
+            "clindamycin",
+            "ceftriaxone",
+            "meropenem"
+          ],
+          "guidelineRefs": [
+            "ascrs-abscess-2022"
+          ]
+        }
+      ]
+    }
+  },
+  "guideline": [
+    {
+      "id": "ascrs-abscess-2022",
+      "name": "ASCRS clinical practice guidelines — anorectal abscess, fistula-in-ano and rectovaginal fistula",
+      "year": 2022,
+      "section": "Antibiotics after drainage in immunosuppressed patients; cultures in atypical/immunosuppressed cases",
+      "citation": "Gaertner WB, Burgess PL, Davids JS, et al. The American Society of Colon and Rectal Surgeons clinical practice guidelines for the management of anorectal abscess, fistula-in-ano, and rectovaginal fistula. Dis Colon Rectum. 2022;65:964–985.",
+      "verified": false
+    },
+    {
+      "id": "ascrs-anal-scc-2018",
+      "name": "ASCRS clinical practice guidelines — anal squamous cell cancers (revised 2018)",
+      "year": 2018,
+      "section": "People living with HIV are at high risk of anal squamous neoplasia",
+      "citation": "Stewart DB, Gaertner WB, Glasgow SC, et al. The American Society of Colon and Rectal Surgeons clinical practice guidelines for anal squamous cell cancers (revised 2018). Dis Colon Rectum. 2018;61:755–774.",
+      "verified": false
+    }
+  ],
+  "rationale": "Permutation: immunosuppression (HIV). The HIV status is in the comorbidity list; tests whether it is surfaced and whether antibiotics (then indicated) appear.",
+  "authoring": {
+    "author": "Claude (colorectal/anorectal cluster)",
+    "date": "2026-09-25",
+    "notes": "Expectations need surgeon sign-off (reviewedBy). Citations verified: false until checked against the source."
+  }
+}

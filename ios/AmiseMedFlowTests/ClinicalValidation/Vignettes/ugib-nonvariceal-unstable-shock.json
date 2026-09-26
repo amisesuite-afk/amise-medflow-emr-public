@@ -1,0 +1,437 @@
+{
+  "schemaVersion": 1,
+  "id": "ugib-nonvariceal-unstable-shock",
+  "condition": "Acute upper GI bleeding (non-variceal)",
+  "category": "upper-gi",
+  "permutationOf": "ugib-nonvariceal-gbs-high",
+  "permutationLabel": "Haemodynamic instability — haemorrhagic shock",
+  "summary": "70-year-old man collapsed after a large haematemesis and melaena: HR 128, SBP 82, Hb 7.2, urea 22. GBS 17. Resuscitate (major haemorrhage), then endoscopy immediately after resuscitation.",
+  "tags": [
+    "gi-bleed",
+    "shock",
+    "resuscitation",
+    "elderly"
+  ],
+  "inputs": {
+    "patient": {
+      "ageYears": 70,
+      "sex": "male",
+      "pregnancy": {
+        "status": "not-applicable"
+      },
+      "heightCm": 172,
+      "weightKg": 78
+    },
+    "encounter": {
+      "setting": "emergency",
+      "visitType": "urgentReview",
+      "acuity": "emergency"
+    },
+    "chiefComplaint": "Vomiting blood and collapse",
+    "hpi": "Vomited a large amount of fresh red blood with clots twice in the last hour, then collapsed in the bathroom. Black tarry stools for a day before. Takes naproxen for knee osteoarthritis. Now clammy and drowsy. No known liver disease.",
+    "socrates": {
+      "onset": [
+        "Today",
+        "Sudden"
+      ],
+      "site": [
+        "Epigastric"
+      ],
+      "character": [
+        "Dull"
+      ],
+      "radiation": [
+        "No radiation"
+      ],
+      "associations": [
+        "Vomiting",
+        "Melaena"
+      ],
+      "timing": [
+        "Constant"
+      ],
+      "exacerbating": [
+        "NSAIDs"
+      ],
+      "relieving": [
+        "Nothing"
+      ],
+      "severity": [
+        "Moderate (4–6/10)"
+      ]
+    },
+    "symptoms": [
+      "haematemesis",
+      "melaena",
+      "syncope"
+    ],
+    "negatives": [
+      "known liver disease"
+    ],
+    "exam": {
+      "general": "Pale, cold and clammy, drowsy but rousable. Pulse 128/min thready, BP 82/50. Haemodynamically unstable — haemorrhagic shock. Capillary refill 5 s.",
+      "abdomen": "Soft, mild epigastric tenderness. PR: melaena. No stigmata of chronic liver disease."
+    },
+    "vitals": [
+      {
+        "minutesAgo": 5,
+        "heartRate": 128,
+        "systolicBp": 82,
+        "diastolicBp": 50,
+        "respiratoryRate": 26,
+        "temperatureC": 36.1,
+        "spo2": 95,
+        "avpu": "V",
+        "onSupplementalO2": false
+      }
+    ],
+    "labs": [
+      {
+        "analyte": "haemoglobin",
+        "name": "Haemoglobin",
+        "value": 7.2,
+        "unit": "g/dL",
+        "minutesAgo": 15
+      },
+      {
+        "analyte": "urea",
+        "name": "Urea",
+        "value": 22,
+        "unit": "mmol/L",
+        "minutesAgo": 15
+      },
+      {
+        "analyte": "creatinine",
+        "name": "Creatinine",
+        "value": 132,
+        "unit": "µmol/L",
+        "minutesAgo": 15
+      },
+      {
+        "analyte": "platelets",
+        "name": "Platelets",
+        "value": 240,
+        "unit": "×10⁹/L",
+        "minutesAgo": 15
+      },
+      {
+        "analyte": "inr",
+        "name": "INR",
+        "value": 1.2,
+        "unit": "",
+        "minutesAgo": 15
+      },
+      {
+        "analyte": "lactate",
+        "name": "Lactate",
+        "value": 4.6,
+        "unit": "mmol/L",
+        "minutesAgo": 15
+      }
+    ],
+    "imaging": [],
+    "comorbidities": [
+      "Osteoarthritis"
+    ],
+    "surgicalHistory": [],
+    "medications": [
+      {
+        "drug": "Naproxen",
+        "dose": "500 mg",
+        "frequency": "BD",
+        "indication": "Osteoarthritis"
+      }
+    ],
+    "allergies": [],
+    "nkda": true,
+    "socialHistory": "Retired. Lives with wife. Ex-smoker.",
+    "confirmedDiagnosis": {
+      "name": "Acute upper GI bleed with haemorrhagic shock",
+      "icd10": "K92.0",
+      "paneDiseaseId": "upper_gi_bleed",
+      "assessmentText": "Acute upper GI bleed with haemorrhagic shock (haematemesis and melaena), Glasgow-Blatchford 17, probable NSAID ulcer — haemodynamically unstable."
+    },
+    "platform": {
+      "web": {
+        "ccTemplate": "Upper GI bleed (haematemesis / melaena)",
+        "symptoms": [
+          "haematemesis",
+          "melaena",
+          "black stool",
+          "syncope"
+        ],
+        "symptomDetails": {
+          "vomiting": [
+            "Blood"
+          ],
+          "black stool": [
+            "Tarry / melaena",
+            "With blood"
+          ]
+        },
+        "examFindings": {
+          "general": [
+            "Pale",
+            "Clammy"
+          ]
+        },
+        "durationDays": 1,
+        "painScore": 4
+      }
+    }
+  },
+  "expected": {
+    "differential": {
+      "mustRankTopK": [
+        {
+          "id": "dx-ugib-top3",
+          "severity": "critical",
+          "match": [
+            "upper gi",
+            "haemorrhage",
+            "hemorrhage",
+            "icd:K92",
+            "peptic ulcer",
+            "icd:K25",
+            "icd:K26",
+            "icd:K27"
+          ],
+          "k": 3,
+          "guidelineRefs": [
+            "esge-2021"
+          ]
+        }
+      ]
+    },
+    "safety": {
+      "emergencyLevel": {
+        "id": "level-emergency",
+        "severity": "critical",
+        "atLeast": "emergency",
+        "guidelineRefs": [
+          "nice-cg141",
+          "esge-2021"
+        ]
+      },
+      "mustAlarm": [
+        {
+          "id": "alarm-haemodynamic",
+          "severity": "critical",
+          "match": [
+            "haemodynamic",
+            "hemodynamic",
+            "hypotension",
+            "shock",
+            "tachycardia",
+            "emergency now"
+          ],
+          "guidelineRefs": [
+            "esge-2021"
+          ]
+        },
+        {
+          "id": "alarm-gi-bleed",
+          "severity": "critical",
+          "match": [
+            "bleed",
+            "haemorrhage",
+            "haematemesis",
+            "melaena"
+          ],
+          "guidelineRefs": [
+            "esge-2021"
+          ]
+        }
+      ]
+    },
+    "scores": {
+      "recommended": [
+        {
+          "id": "score-rec-gbs",
+          "severity": "quality",
+          "score": "glasgow-blatchford",
+          "guidelineRefs": [
+            "esge-2021",
+            "blatchford-2000"
+          ]
+        }
+      ]
+    },
+    "investigations": {
+      "mustInclude": [
+        {
+          "id": "inv-group-crossmatch",
+          "severity": "critical",
+          "match": [
+            "group & save",
+            "group and save",
+            "crossmatch",
+            "cross-match",
+            "group & screen",
+            "group & type",
+            "blood group"
+          ],
+          "guidelineRefs": [
+            "bsg-2020"
+          ]
+        },
+        {
+          "id": "inv-coagulation",
+          "severity": "quality",
+          "match": [
+            "inr",
+            "coagulation",
+            "clotting"
+          ],
+          "guidelineRefs": [
+            "bsg-2020"
+          ]
+        }
+      ]
+    },
+    "management": {
+      "mustInclude": [
+        {
+          "id": "mgmt-resuscitation",
+          "severity": "critical",
+          "match": [
+            "resuscitat",
+            "major haemorrhage",
+            "massive transfusion",
+            "fluid",
+            "large-bore",
+            "blood product"
+          ],
+          "guidelineRefs": [
+            "esge-2021",
+            "nice-cg141"
+          ]
+        },
+        {
+          "id": "mgmt-transfusion",
+          "severity": "critical",
+          "match": [
+            "transfus",
+            "prbc",
+            "red cell",
+            "packed cells",
+            "blood product"
+          ],
+          "guidelineRefs": [
+            "esge-2021",
+            "bsg-2020"
+          ],
+          "note": "Hb 7.2 with shock: transfuse (massive bleeding is the exception to the restrictive threshold)."
+        },
+        {
+          "id": "mgmt-endoscopy-after-resus",
+          "severity": "critical",
+          "match": [
+            "immediately after resuscitation",
+            "re:(\\bogd\\b|endoscop)[^.;\\n]{0,40}(12 ?h|immediate|emergency)",
+            "re:(emergency|immediate)[^.;\\n]{0,20}(\\bogd\\b|endoscop)"
+          ],
+          "guidelineRefs": [
+            "nice-cg141",
+            "esge-2021"
+          ],
+          "note": "NICE CG141: offer endoscopy to unstable patients immediately after resuscitation."
+        },
+        {
+          "id": "mgmt-critical-care",
+          "severity": "quality",
+          "match": [
+            "icu",
+            "hdu",
+            "critical care",
+            "intensive care",
+            "high dependency",
+            "level 2"
+          ],
+          "guidelineRefs": [
+            "bsg-2020"
+          ],
+          "proposedFix": "dx-variants.ts: order ugib_variceal before ugib_nonvariceal_stable (most specific first) and add an unstable variant; keep lint:dx-phases in step."
+        },
+        {
+          "id": "mgmt-escalation-ir-surgery",
+          "severity": "quality",
+          "match": [
+            "embolis",
+            "interventional radiology",
+            "under-running",
+            "oversew"
+          ],
+          "guidelineRefs": [
+            "esge-2021",
+            "nice-cg141"
+          ],
+          "note": "Rescue if endoscopic haemostasis fails."
+        }
+      ],
+      "mustExclude": [
+        {
+          "id": "mgmt-no-tranexamic-acid",
+          "severity": "critical",
+          "match": [
+            "tranexamic",
+            "re:\\btxa\\b"
+          ],
+          "guidelineRefs": [
+            "esge-2021",
+            "halt-it-2020"
+          ],
+          "proposedFix": "Remove tranexamic acid from the upper_gi_bleed protocol medications (ESGE 2021 recommends against it; HALT-IT). Surgeon sign-off needed."
+        }
+      ]
+    }
+  },
+  "guideline": [
+    {
+      "id": "esge-2021",
+      "name": "ESGE Guideline — endoscopic diagnosis and management of nonvariceal upper gastrointestinal haemorrhage (NVUGIH), update 2021",
+      "year": 2021,
+      "section": "Haemodynamic resuscitation first; early endoscopy after resuscitation; tranexamic acid not recommended",
+      "citation": "Gralnek IM, Stanley AJ, Morris AJ, et al. Endoscopy. 2021;53:300–332.",
+      "verified": false
+    },
+    {
+      "id": "nice-cg141",
+      "name": "NICE CG141 — Acute upper gastrointestinal bleeding in over 16s: management",
+      "year": 2012,
+      "section": "Offer endoscopy to unstable patients with severe acute UGIB immediately after resuscitation; major haemorrhage protocol",
+      "citation": "National Institute for Health and Care Excellence. Clinical guideline CG141. London: NICE; 2012 (last updated 2016).",
+      "verified": false
+    },
+    {
+      "id": "bsg-2020",
+      "name": "BSG-led multisociety consensus care bundle — early clinical management of acute upper gastrointestinal bleeding",
+      "year": 2020,
+      "section": "Care bundle: large-bore access, crossmatch, major haemorrhage protocol, critical care",
+      "citation": "Siau K, Hearnshaw S, Stanley AJ, et al. Frontline Gastroenterol. 2020;11:311–323.",
+      "verified": false
+    },
+    {
+      "id": "blatchford-2000",
+      "name": "Glasgow-Blatchford score — derivation",
+      "year": 2000,
+      "section": "Score components (urea, Hb, SBP <90 → 3, HR, melaena, syncope → 2)",
+      "citation": "Blatchford O, Murray WR, Blatchford M. A risk score to predict need for treatment for upper-gastrointestinal haemorrhage. Lancet. 2000;356:1318–1321.",
+      "verified": false
+    },
+    {
+      "id": "halt-it-2020",
+      "name": "HALT-IT randomised trial — tranexamic acid in gastrointestinal bleeding",
+      "year": 2020,
+      "section": "Tranexamic acid: no benefit, more venous thromboembolism",
+      "citation": "HALT-IT Trial Collaborators. Effects of a high-dose 24-h infusion of tranexamic acid on death and thromboembolic events in patients with acute gastrointestinal bleeding (HALT-IT). Lancet. 2020;395:1927–1936.",
+      "verified": false
+    }
+  ],
+  "rationale": "Permutation: shock. The engines must escalate to emergency, alarm for haemodynamic instability, and plan resuscitation with blood, then endoscopy immediately after resuscitation (not \"within 24 h\"), with IR/surgery as rescue.",
+  "authoring": {
+    "author": "Claude (upper-GI cluster)",
+    "date": "2026-09-25",
+    "notes": "Expectations need surgeon sign-off (reviewedBy). Citations written from the guideline texts, not yet checked against the source (verified: false)."
+  }
+}

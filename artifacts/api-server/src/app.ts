@@ -9,9 +9,11 @@ import path from "path";
 import fs from "node:fs";
 import { fileURLToPath } from "url";
 import router from "./routes";
+import { labFeedInboundGate } from "./routes/lab-feed";
 import { logger } from "./lib/logger";
 import { correlationId } from "./middlewares/correlation";
 import { phiAuditMiddleware } from "./lib/phi-audit-middleware";
+import { corsAllowedOrigins } from "./lib/site-urls";
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
@@ -66,12 +68,9 @@ app.use(helmet({
 }));
 app.use(compression());
 
-const isDev = process.env.NODE_ENV !== 'production';
-const allowedOrigins = [
-  process.env.PORTAL_URL,
-  process.env.DASHBOARD_URL,
-  ...(isDev ? ['http://localhost:3000', 'http://localhost:3001', 'http://localhost:5173'] : []),
-].filter(Boolean) as string[];
+// PORTAL_URL / DASHBOARD_URL may each be a comma-separated list (the website
+// is served from amisemedical.com and amisesuite.com) — see lib/site-urls.ts.
+const allowedOrigins = corsAllowedOrigins();
 
 app.use(cors({
   origin: (origin, cb) => {
@@ -88,6 +87,15 @@ app.use(cors({
   },
   credentials: true,
 }));
+// Laboratory results feed: rate-limited, and the laboratory's secret is checked BEFORE any body
+// is buffered (the gate then reads the HL7 / FHIR body as text, so the JSON parser skips it).
+app.use('/api/lab-feed/inbound', rateLimit({
+  windowMs: 60 * 1000,
+  limit: 120,
+  standardHeaders: 'draft-7',
+  legacyHeaders: false,
+}));
+app.use('/api/lab-feed/inbound', labFeedInboundGate);
 app.use(express.json({ limit: '10mb' }));
 app.use(express.urlencoded({ extended: true, limit: '10mb' }));
 // Raw binary body for Tasker "File To Send" uploads.

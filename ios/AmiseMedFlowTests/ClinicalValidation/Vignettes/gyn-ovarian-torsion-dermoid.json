@@ -1,0 +1,305 @@
+{
+  "schemaVersion": 1,
+  "id": "gyn-ovarian-torsion-dermoid",
+  "condition": "Ovarian torsion (appendicitis mimic)",
+  "category": "other",
+  "permutationOf": null,
+  "permutationLabel": "Adult with known dermoid cyst (base case)",
+  "summary": "24-year-old woman, sudden right iliac fossa/pelvic pain for 5 h with repeated vomiting, known 6 cm right ovarian dermoid awaiting surgery; urine hCG negative; US: enlarged right ovary with reduced venous flow. Surgical emergency: laparoscopy and detorsion.",
+  "tags": [
+    "mimic",
+    "gynaecology",
+    "torsion",
+    "do-not-miss"
+  ],
+  "inputs": {
+    "patient": {
+      "ageYears": 24,
+      "sex": "female",
+      "pregnancy": {
+        "status": "not-pregnant"
+      },
+      "heightCm": 165,
+      "weightKg": 58
+    },
+    "encounter": {
+      "setting": "emergency",
+      "visitType": "urgentReview",
+      "acuity": "urgent"
+    },
+    "chiefComplaint": "Sudden right lower abdominal pain with vomiting",
+    "hpi": "Sudden onset of severe right lower abdominal and pelvic pain 5 hours ago while dancing, constant with waves of worsening, vomited four times. Known 6 cm right ovarian dermoid cyst on ultrasound 3 months ago, waiting for gynaecology. LMP 2 weeks ago, normal. Urine pregnancy test negative in triage. No fever, no urinary symptoms.",
+    "socrates": {
+      "onset": [
+        "Today",
+        "Sudden"
+      ],
+      "site": [
+        "RLQ",
+        "Suprapubic"
+      ],
+      "character": [
+        "Sharp"
+      ],
+      "radiation": [
+        "No radiation"
+      ],
+      "associations": [
+        "Nausea",
+        "Vomiting"
+      ],
+      "timing": [
+        "Constant"
+      ],
+      "exacerbating": [
+        "Movement"
+      ],
+      "relieving": [
+        "Nothing"
+      ],
+      "severity": [
+        "Severe (7–9/10)"
+      ]
+    },
+    "symptoms": [
+      "abdominal pain",
+      "pelvic pain",
+      "vomiting"
+    ],
+    "negatives": [
+      "fever",
+      "dysuria",
+      "vaginal bleeding"
+    ],
+    "exam": {
+      "general": "Distressed, pale. T 37.2, HR 104, BP 118/76.",
+      "abdomen": "Tender right iliac fossa and suprapubic region with voluntary guarding; tender right adnexal fullness on bimanual examination."
+    },
+    "vitals": [
+      {
+        "minutesAgo": 10,
+        "heartRate": 104,
+        "systolicBp": 118,
+        "diastolicBp": 76,
+        "respiratoryRate": 18,
+        "temperatureC": 37.2,
+        "spo2": 99,
+        "avpu": "A",
+        "onSupplementalO2": false
+      }
+    ],
+    "labs": [
+      {
+        "analyte": "bhcg",
+        "name": "Urine hCG",
+        "resultText": "Negative",
+        "minutesAgo": 60
+      },
+      {
+        "analyte": "wbc",
+        "name": "WBC",
+        "value": 11.8,
+        "unit": "×10⁹/L",
+        "minutesAgo": 30
+      },
+      {
+        "analyte": "crp",
+        "name": "CRP",
+        "value": 12,
+        "unit": "mg/L",
+        "minutesAgo": 30
+      },
+      {
+        "analyte": "haemoglobin",
+        "name": "Haemoglobin",
+        "value": 12.9,
+        "unit": "g/dL",
+        "minutesAgo": 30
+      }
+    ],
+    "imaging": [
+      {
+        "name": "USS pelvis (transvaginal) with Doppler",
+        "modality": "US",
+        "region": "Pelvis",
+        "result": "Enlarged right ovary 8 cm containing a 6 cm echogenic dermoid, peripheral follicles, markedly reduced venous flow and preserved but diminished arterial flow; small amount of free fluid. Appendix not seen. Left ovary normal.",
+        "minutesAgo": 30
+      }
+    ],
+    "comorbidities": [
+      "Right ovarian dermoid cyst"
+    ],
+    "surgicalHistory": [],
+    "medications": [],
+    "allergies": [],
+    "nkda": true,
+    "socialHistory": "Student. Non-smoker.",
+    "confirmedDiagnosis": {
+      "name": "Right ovarian torsion (dermoid cyst)",
+      "icd10": "N83.51",
+      "paneDiseaseId": "ovarian_torsion",
+      "assessmentText": "Right ovarian torsion on a dermoid cyst: emergency laparoscopy with detorsion and ovarian-sparing cystectomy; gynaecology on call informed."
+    },
+    "platform": {
+      "web": {
+        "ccTemplate": "Acute abdominal pain",
+        "socratesAnswers": {
+          "site": "Right lower (RLQ) and pelvic",
+          "onset": "Sudden, 5 hours ago",
+          "character": "Sharp",
+          "radiation": "None",
+          "associated": "Nausea and vomiting",
+          "timing": "Constant",
+          "triggers": "Movement",
+          "relief": "Nothing",
+          "severity": "8/10"
+        },
+        "symptoms": [
+          "abdominal pain",
+          "pelvic pain",
+          "vomiting"
+        ],
+        "symptomDetails": {
+          "abdominal pain": [
+            "RLQ",
+            "Suprapubic",
+            "Sudden",
+            "< 6 hours",
+            "Sharp",
+            "Severe (7–9)",
+            "Vomiting",
+            "Continuous",
+            "Movement"
+          ],
+          "pelvic pain": [
+            "Constant"
+          ]
+        },
+        "examFindings": {
+          "abdomen": [
+            "Tender RLQ",
+            "Guarding"
+          ]
+        },
+        "paneAnswers": {
+          "adnexal_tenderness": true,
+          "pelvic_pain": true,
+          "nausea_vomiting": true
+        },
+        "durationDays": 0,
+        "painScore": 8
+      }
+    }
+  },
+  "expected": {
+    "differential": {
+      "mustRankTopK": [
+        {
+          "id": "dx-torsion-top3",
+          "severity": "critical",
+          "guidelineRefs": [
+            "acog-co783-2019"
+          ],
+          "match": [
+            "torsion"
+          ],
+          "k": 3
+        }
+      ]
+    },
+    "safety": {
+      "emergencyLevel": {
+        "id": "level-at-least-urgent",
+        "severity": "critical",
+        "guidelineRefs": [
+          "acog-co783-2019"
+        ],
+        "note": "Ovarian viability is time-dependent: surgical emergency.",
+        "atLeast": "urgent"
+      }
+    },
+    "management": {
+      "mustInclude": [
+        {
+          "id": "mgmt-laparoscopy",
+          "severity": "critical",
+          "guidelineRefs": [
+            "acog-co783-2019"
+          ],
+          "match": [
+            "laparoscop"
+          ]
+        },
+        {
+          "id": "mgmt-ovarian-conservation",
+          "severity": "quality",
+          "guidelineRefs": [
+            "acog-co783-2019"
+          ],
+          "note": "Detorsion and ovarian preservation, even when the ovary looks dusky.",
+          "match": [
+            "detorsion",
+            "preserve",
+            "conserv",
+            "ovarian-sparing",
+            "ovary-sparing"
+          ]
+        },
+        {
+          "id": "mgmt-gynaecology",
+          "severity": "quality",
+          "guidelineRefs": [
+            "acog-co783-2019"
+          ],
+          "match": [
+            "gynaecolog",
+            "gynecolog"
+          ]
+        }
+      ],
+      "mustExclude": [
+        {
+          "id": "mgmt-no-appendicectomy",
+          "severity": "critical",
+          "guidelineRefs": [
+            "acog-co783-2019"
+          ],
+          "note": "Imaging shows ovarian torsion; an appendicectomy plan is a wrong-procedure suggestion.",
+          "match": [
+            "appendicectomy",
+            "appendectomy"
+          ],
+          "unless": [
+            "not indicated",
+            "no role",
+            "exclude appendicitis"
+          ]
+        }
+      ]
+    }
+  },
+  "guideline": [
+    {
+      "id": "acog-co783-2019",
+      "name": "ACOG Committee Opinion No. 783 — adnexal torsion in adolescents",
+      "year": 2019,
+      "section": "Torsion is a surgical emergency: prompt laparoscopy; preserve the ovary (detorsion) even when it looks non-viable, rather than oophorectomy; normal Doppler flow does not exclude torsion",
+      "citation": "American College of Obstetricians and Gynecologists. Adnexal torsion in adolescents: ACOG Committee Opinion No. 783. Obstet Gynecol. 2019;134:e56–e63.",
+      "verified": false
+    },
+    {
+      "id": "acog-pb174-2016",
+      "name": "ACOG Practice Bulletin No. 174 — evaluation and management of adnexal masses",
+      "year": 2016,
+      "section": "Pregnancy test in reproductive-age women with an adnexal mass and pain; transvaginal ultrasound; haemorrhagic corpus luteum cysts are usually managed conservatively unless haemodynamic compromise",
+      "citation": "American College of Obstetricians and Gynecologists. Evaluation and management of adnexal masses: Practice Bulletin No. 174. Obstet Gynecol. 2016;128:e210–e226.",
+      "verified": false
+    }
+  ],
+  "rationale": "Ovarian torsion is a classic mimic of appendicitis; ovarian salvage depends on prompt laparoscopy and detorsion rather than oophorectomy.",
+  "authoring": {
+    "author": "Claude (prevention/screening, obstetric-gynaecological mimics and paediatric surgery cluster)",
+    "date": "2026-09-25",
+    "notes": "Expectations need surgeon sign-off (reviewedBy). Every citation is verified: false. iOS outcomes are unverified (not run on Linux); triage after the first CI run."
+  }
+}

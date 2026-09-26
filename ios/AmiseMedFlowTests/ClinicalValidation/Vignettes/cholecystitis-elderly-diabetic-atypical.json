@@ -1,0 +1,477 @@
+{
+  "schemaVersion": 1,
+  "id": "cholecystitis-elderly-diabetic-atypical",
+  "condition": "Acute calculous cholecystitis",
+  "category": "hpb",
+  "permutationOf": "cholecystitis-tg18-grade1",
+  "permutationLabel": "Elderly (81) diabetic, atypical — afebrile, vague pain, off food; TG18 Grade II by WBC >18",
+  "summary": "81-year-old insulin-treated diabetic woman, 3 days off her food with vague upper abdominal discomfort; T 37.4 °C, equivocal Murphy’s, WBC 19.4, CRP 210; ultrasound shows a distended thick-walled gallbladder with stones and pericholecystic fluid.",
+  "tags": [
+    "biliary",
+    "elderly",
+    "diabetes",
+    "atypical"
+  ],
+  "inputs": {
+    "patient": {
+      "ageYears": 81,
+      "sex": "female",
+      "pregnancy": {
+        "status": "not-applicable"
+      },
+      "heightCm": 154,
+      "weightKg": 61
+    },
+    "encounter": {
+      "setting": "emergency",
+      "visitType": "urgentReview",
+      "acuity": "priority"
+    },
+    "chiefComplaint": "Off her food with vague upper abdominal discomfort",
+    "hpi": "Three days of reduced appetite and a vague ache in the upper abdomen, vomited twice. No fever reported. Her daughter says she is less mobile and \"not herself\" but she is alert and orientated (AMT 9/10). Insulin-treated type 2 diabetes with CKD stage 3a; sugars high since yesterday.",
+    "socrates": {
+      "onset": [
+        "2–3 days ago"
+      ],
+      "site": [
+        "Epigastric",
+        "RUQ"
+      ],
+      "character": [
+        "Aching"
+      ],
+      "radiation": [
+        "No radiation"
+      ],
+      "associations": [
+        "Anorexia",
+        "Nausea",
+        "Vomiting"
+      ],
+      "timing": [
+        "Constant"
+      ],
+      "exacerbating": [
+        "Eating"
+      ],
+      "relieving": [
+        "Nothing"
+      ],
+      "severity": [
+        "Mild (1–3/10)"
+      ]
+    },
+    "symptoms": [
+      "upper abdominal pain",
+      "anorexia",
+      "vomiting"
+    ],
+    "negatives": [
+      "fever",
+      "jaundice",
+      "rigors"
+    ],
+    "exam": {
+      "general": "Frail, dry mucous membranes. Alert, GCS 15. Temperature 37.4°C, pulse 98/min, BP 132/70.",
+      "abdomen": "Mild right upper quadrant tenderness; Murphy's sign equivocal. No palpable mass. No peritonism."
+    },
+    "vitals": [
+      {
+        "minutesAgo": 20,
+        "heartRate": 98,
+        "systolicBp": 132,
+        "diastolicBp": 70,
+        "respiratoryRate": 18,
+        "temperatureC": 37.4,
+        "spo2": 96,
+        "avpu": "A",
+        "onSupplementalO2": false,
+        "glucoseMmol": 17.8
+      }
+    ],
+    "labs": [
+      {
+        "analyte": "wbc",
+        "name": "WBC",
+        "value": 19.4,
+        "unit": "×10⁹/L",
+        "minutesAgo": 40
+      },
+      {
+        "analyte": "crp",
+        "name": "CRP",
+        "value": 210,
+        "unit": "mg/L",
+        "minutesAgo": 40
+      },
+      {
+        "analyte": "bilirubin",
+        "name": "Bilirubin",
+        "value": 26,
+        "unit": "µmol/L",
+        "minutesAgo": 40
+      },
+      {
+        "analyte": "alp",
+        "name": "ALP",
+        "value": 150,
+        "unit": "U/L",
+        "minutesAgo": 40
+      },
+      {
+        "analyte": "alt",
+        "name": "ALT",
+        "value": 48,
+        "unit": "U/L",
+        "minutesAgo": 40
+      },
+      {
+        "analyte": "creatinine",
+        "name": "Creatinine",
+        "value": 118,
+        "unit": "µmol/L",
+        "minutesAgo": 40
+      },
+      {
+        "analyte": "urea",
+        "name": "Urea",
+        "value": 9.8,
+        "unit": "mmol/L",
+        "minutesAgo": 40
+      },
+      {
+        "analyte": "lipase",
+        "name": "Lipase",
+        "value": 30,
+        "unit": "U/L",
+        "minutesAgo": 40
+      },
+      {
+        "analyte": "glucose",
+        "name": "Glucose",
+        "value": 17.8,
+        "unit": "mmol/L",
+        "minutesAgo": 40
+      },
+      {
+        "analyte": "lactate",
+        "name": "Lactate",
+        "value": 1.6,
+        "unit": "mmol/L",
+        "minutesAgo": 40
+      }
+    ],
+    "imaging": [
+      {
+        "name": "USS abdomen",
+        "modality": "US",
+        "region": "Abdomen",
+        "minutesAgo": 15,
+        "result": "Distended gallbladder with multiple stones and a stone impacted in the neck; wall thickened to 6 mm with pericholecystic fluid. No intramural gas. CBD 6 mm."
+      }
+    ],
+    "comorbidities": [
+      "Type 2 diabetes mellitus (insulin-treated)",
+      "Chronic kidney disease stage 3a",
+      "Hypertension"
+    ],
+    "medications": [
+      {
+        "drug": "Insulin glargine",
+        "dose": "18 units",
+        "frequency": "OD",
+        "indication": "Type 2 diabetes"
+      },
+      {
+        "drug": "Amlodipine",
+        "dose": "5 mg",
+        "frequency": "OD",
+        "indication": "Hypertension"
+      }
+    ],
+    "allergies": [],
+    "nkda": true,
+    "socialHistory": "Widowed, lives with daughter. Walks with a stick.",
+    "scoreForms": {
+      "tg18-cholecystitis": {
+        "localSigns": true,
+        "systemicSigns": true,
+        "imagingCharacteristic": true,
+        "wbcAbove18": true,
+        "palpableTenderRUQMass": false,
+        "durationOver72h": false,
+        "markedLocalInflammation": false,
+        "organDysfunction": []
+      }
+    },
+    "confirmedDiagnosis": {
+      "name": "Acute calculous cholecystitis",
+      "icd10": "K81.0",
+      "paneDiseaseId": "cholecystitis",
+      "assessmentText": "Acute calculous cholecystitis, Tokyo (TG18) Grade II (moderate) — WBC 19.4. Atypical presentation in an 81-year-old insulin-treated diabetic. No organ dysfunction."
+    },
+    "platform": {
+      "web": {
+        "ccTemplate": "Acute abdominal pain",
+        "symptoms": [
+          "abdominal pain",
+          "right upper quadrant pain",
+          "loss of appetite",
+          "vomiting"
+        ],
+        "symptomDetails": {
+          "abdominal pain": [
+            "Epigastric",
+            "RUQ",
+            "1–3 days",
+            "Constant",
+            "Dull",
+            "Mild (1–3)",
+            "Anorexia",
+            "Vomiting",
+            "Continuous"
+          ]
+        },
+        "examFindings": {
+          "abdomen": [
+            "Tender RUQ"
+          ]
+        },
+        "durationDays": 3,
+        "painScore": 3
+      }
+    }
+  },
+  "expected": {
+    "differential": {
+      "mustRankTopK": [
+        {
+          "id": "dx-cholecystitis-top3",
+          "severity": "critical",
+          "match": [
+            "cholecystitis"
+          ],
+          "k": 3,
+          "guidelineRefs": [
+            "tg18-dx-cholecystitis"
+          ],
+          "note": "Atypical elderly presentation (afebrile, mild pain, equivocal Murphy’s) must not demote cholecystitis once imaging is characteristic."
+        }
+      ],
+      "mustNotMiss": [
+        {
+          "id": "mnm-mesenteric-ischaemia",
+          "severity": "quality",
+          "match": [
+            "mesenteric",
+            "ischaemi",
+            "ischemi"
+          ],
+          "note": "Elderly vasculopath with vague pain and vomiting: mesenteric ischaemia belongs in the differential.",
+          "knownGap": [
+            "web",
+            "ios"
+          ],
+          "knownGapNote": "PANE top 3: cholecystitis, peptic ulcer, GORD (symptom inference #4 has mesenteric ischaemia). | iOS CI 2026-09-25 (run 36169134350, database mode): not in top 5 of ios.bayes: 1. Acute Cholecystitis | 2. Acute Appendicitis | 3. Small Bowel Obstruction | 4. Acute Pancreatitis | 5. Ascending Cholangitis",
+          "proposedFix": "PANE: age ≥75 / vascular risk modifier for mesenteric ischaemia."
+        }
+      ]
+    },
+    "safety": {
+      "emergencyLevel": {
+        "id": "level-at-least-urgent",
+        "severity": "critical",
+        "atLeast": "urgent",
+        "guidelineRefs": [
+          "tg18-mgmt-cholecystitis"
+        ],
+        "note": "TG18 Grade II in an 81-year-old: admission and same-day surgical assessment. iOS (predicted, not observed): routine — no urgent keyword in the CC."
+      },
+      "redFlags": [
+        {
+          "id": "flag-diabetes-elderly",
+          "severity": "quality",
+          "match": [
+            "diabet",
+            "elderly",
+            "frail",
+            "age"
+          ],
+          "note": "Diabetes and age: masked signs, higher gangrene/perforation risk."
+        }
+      ]
+    },
+    "scores": {
+      "values": [
+        {
+          "id": "score-tg18-calculator",
+          "severity": "critical",
+          "score": "tg18-cholecystitis",
+          "mode": "calculator",
+          "equals": 2,
+          "guidelineRefs": [
+            "tg18-dx-cholecystitis"
+          ],
+          "note": "WBC >18 × 10⁹/L is on its own a Grade II criterion."
+        },
+        {
+          "id": "score-tg18-autofill",
+          "severity": "quality",
+          "score": "tg18-cholecystitis",
+          "mode": "autofill",
+          "min": 2,
+          "guidelineRefs": [
+            "tg18-dx-cholecystitis"
+          ],
+          "note": "The record holds WBC 19.4 and a characteristic ultrasound: auto-fill should not under-grade."
+        }
+      ]
+    },
+    "investigations": {
+      "mustInclude": [
+        {
+          "id": "inv-blood-cultures",
+          "severity": "quality",
+          "match": [
+            "blood culture"
+          ],
+          "guidelineRefs": [
+            "tg18-antimicrobial"
+          ],
+          "note": "TG18: blood cultures in Grade II/III."
+        }
+      ]
+    },
+    "management": {
+      "mustInclude": [
+        {
+          "id": "mgmt-definitive-or-drainage",
+          "severity": "critical",
+          "match": [
+            "laparoscopic cholecystectomy",
+            "lap chole",
+            "re:lap(\\.|aroscopic)? cholecystectomy",
+            "cholecystectomy",
+            "cholecystostomy",
+            "gallbladder drainage",
+            "ptgbd",
+            "re:gallbladder (aspiration|drain)",
+            "percutaneous transhepatic gallbladder"
+          ],
+          "guidelineRefs": [
+            "tg18-mgmt-cholecystitis"
+          ],
+          "note": "Grade II: early LC if fit (CCI/ASA-PS), otherwise drainage if not responding. Either must be in the plan."
+        },
+        {
+          "id": "mgmt-antibiotics",
+          "severity": "quality",
+          "match": [
+            "antibiotic",
+            "antimicrobial",
+            "co-amoxiclav",
+            "amoxicillin-clavulanate",
+            "piperacillin",
+            "tazocin",
+            "cefuroxime",
+            "ceftriaxone",
+            "meropenem",
+            "imipenem",
+            "carbapenem",
+            "metronidazole"
+          ],
+          "guidelineRefs": [
+            "tg18-antimicrobial"
+          ]
+        },
+        {
+          "id": "mgmt-glycaemic-plan",
+          "severity": "quality",
+          "match": [
+            "insulin",
+            "glucose",
+            "glycaemic",
+            "diabet",
+            "sliding scale",
+            "vrii"
+          ]
+        }
+      ],
+      "mustExclude": [
+        {
+          "id": "mgmt-no-nsaid-ckd",
+          "severity": "quality",
+          "match": [
+            "nsaid",
+            "ibuprofen",
+            "diclofenac",
+            "naproxen",
+            "ketorolac",
+            "parecoxib",
+            "celecoxib"
+          ],
+          "unless": [
+            "re:(avoid|no|not|contraindicated|do not (give|use|prescribe))[^.;\\n]{0,20}(nsaid|ibuprofen|diclofenac|naproxen|ketorolac)",
+            "re:(nsaid|ibuprofen|diclofenac|naproxen|ketorolac)s?[^.;\\n]{0,30}(contraindicated|avoid|not in pregnan)"
+          ],
+          "note": "CKD 3a, age 81, dehydrated: NSAIDs risk AKI."
+        },
+        {
+          "id": "mgmt-no-appendicectomy",
+          "severity": "critical",
+          "match": [
+            "appendicectomy",
+            "appendectomy"
+          ],
+          "unless": [
+            "not indicated",
+            "no role",
+            "exclude appendicitis"
+          ],
+          "note": "Not an appendix presentation: an appendicectomy operative plan (consent, theatre booking, post-operative orders) is a wrong-procedure suggestion."
+        }
+      ]
+    },
+    "dxVariant": {
+      "id": "variant-grade2",
+      "severity": "quality",
+      "equals": "cholecystitis_grade2",
+      "guidelineRefs": [
+        "tg18-mgmt-cholecystitis"
+      ],
+      "proposedFix": "dx-variants.ts: check Grade III → II → I, and remove the bare \"cholecystitis\" keyword from Grade I."
+    }
+  },
+  "guideline": [
+    {
+      "id": "tg18-dx-cholecystitis",
+      "name": "Tokyo Guidelines 2018 — diagnostic criteria and severity grading of acute cholecystitis",
+      "year": 2018,
+      "section": "Diagnostic criteria (A local + B systemic + C imaging); Grade II: WBC >18,000/mm³, palpable tender RUQ mass, duration >72 h, marked local inflammation (gangrenous, emphysematous, abscess, biliary peritonitis); Grade III: organ dysfunction",
+      "citation": "Yokoe M, Hata J, Takada T, et al. J Hepatobiliary Pancreat Sci. 2018;25:41–54.",
+      "verified": false
+    },
+    {
+      "id": "tg18-mgmt-cholecystitis",
+      "name": "Tokyo Guidelines 2018 — flowchart for the management of acute cholecystitis",
+      "year": 2018,
+      "section": "Grade I: early LC if CCI ≤5 / ASA-PS ≤2; Grade II: early LC in an advanced centre if fit, otherwise antibiotics and urgent/early gallbladder drainage when not responding; Grade III: organ support, antibiotics, drainage unless favourable organ dysfunction",
+      "citation": "Okamoto K, Suzuki K, Takada T, et al. J Hepatobiliary Pancreat Sci. 2018;25:55–72.",
+      "verified": false
+    },
+    {
+      "id": "tg18-antimicrobial",
+      "name": "Tokyo Guidelines 2018 — antimicrobial therapy for acute cholangitis and cholecystitis",
+      "year": 2018,
+      "section": "Blood cultures in Grade II/III; antimicrobial choice by severity; duration after source control",
+      "citation": "Gomi H, Solomkin JS, Schlossberg D, et al. J Hepatobiliary Pancreat Sci. 2018;25:3–16.",
+      "verified": false
+    }
+  ],
+  "rationale": "Permutation: elderly diabetic with blunted signs (afebrile, mild pain, equivocal Murphy’s). TG18 still grades Grade II on WBC >18. Tests atypical-presentation ranking, emergency level without fever, grade calculation from WBC, and CKD-aware analgesia.",
+  "authoring": {
+    "author": "Claude (HPB cluster)",
+    "date": "2026-09-25",
+    "notes": "Expectations and citations need surgeon sign-off (reviewedBy). iOS outcomes not yet observed (unverified: ios) — triage after the first CI run."
+  }
+}

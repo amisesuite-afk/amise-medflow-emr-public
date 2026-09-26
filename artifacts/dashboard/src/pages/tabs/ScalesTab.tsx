@@ -1,5 +1,8 @@
-import { useState, useMemo } from 'react';
+import { useState, useMemo, useEffect } from 'react';
 import { useAppContext } from '@/context/AppContext';
+import { parseAvpu, parseOnSupplementalO2 } from '@/lib/vitals-news2-fields';
+import type { News2Avpu } from '@workspace/triage-engine';
+import { usePatientNews2Scale2 } from '@/hooks/usePatientNews2Scale2';
 import CollapsibleCard from '@/components/CollapsibleCard';
 import {
   alvaradoScore, interpretAlvarado, type AlvaradoInputs,
@@ -10,7 +13,7 @@ import {
   tg18CholangitisGrade, interpretTg18Cholangitis, type Tg18CholangitisInputs,
   asgeCbdProbability,   interpretAsgeCbd,          type AsgeCbdInputs,
   interpretWagner, WAGNER_GRADES, type WagnerGrade,
-  news2Score, interpretNews2, type News2Inputs,
+  evaluateNews2Inputs, interpretNews2, type News2Inputs,
   curb65Score, interpretCurb65, type Curb65Inputs,
   glasgowBlatchfordScore, interpretGlasgowBlatchford, type GlasgowBlatchfordInputs,
   preRockallScore, interpretPreRockall, type PreRockallInputs,
@@ -51,6 +54,12 @@ import {
   type ScaleResult,
 } from '@/lib/clinical-scales';
 import { getCdsSuggestions, type CdsContext } from '@/lib/clinical-cds';
+import { WHATS_MISSING_RULES, scoreRecordFill, type ScoreFill } from '@workspace/pane-engine';
+import { missingRecordFromConsultation } from '@/lib/whats-missing-web';
+import { missingConsultationFromApp } from '@/lib/whats-missing-app';
+import { TokyoCholecystitisCard } from '@/components/ClinicalScoresPanel';
+import RecordScoreButton from '@/components/RecordScoreButton';
+import { DECISION_RULE_CARDS, DECISION_RULE_TITLES } from '@/components/DecisionRuleCard';
 
 // ── Context-derive helpers for pre-population ─────────────────────────────────
 // Cards call useAppContext() and use these to seed useState at mount (lazy init).
@@ -85,9 +94,80 @@ function PrePopBadge() {
   );
 }
 
+// ── Score auto-fill from the record (what's missing, lib/pane-engine whats-missing/record-fill.ts) ──
+// Vitals, labs, age and affirmed history / examination findings pre-fill the calculator once, at
+// mount; each such field is marked "from record" until the clinician changes it. Record inputs the
+// score needs and the record does not hold are listed ("Not on file"). No formula changes.
+
+interface RecordSeed<T> {
+  v: T;
+  setField: (k: keyof T & string, value: T[keyof T]) => void;
+  tog: (k: keyof T & string) => void;
+  fromRecord: (k: string) => boolean;
+  anyFromRecord: boolean;
+  missing: string[];
+}
+
+function useRecordSeed<T extends object>(score: string, base: (ctx: AppCtx) => T, adapt?: (value: T, fill: ScoreFill) => Set<string>): RecordSeed<T> {
+  const ctx = useAppContext();
+  const [seed] = useState(() => {
+    const fill = scoreRecordFill(score, missingRecordFromConsultation(missingConsultationFromApp(ctx)));
+    const value = { ...base(ctx) } as Record<string, unknown>;
+    const keys = new Set<string>();
+    for (const f of fill.fields) {
+      if (!(f.key in value)) continue;
+      value[f.key] = f.value;
+      keys.add(f.key);
+    }
+    for (const k of adapt?.(value as T, fill) ?? []) keys.add(k);
+    return { value: value as T, keys, missing: fill.missing };
+  });
+  const [v, setV] = useState<T>(seed.value);
+  const [marked, setMarked] = useState<Set<string>>(seed.keys);
+  const setField = (k: keyof T & string, value: T[keyof T]) => {
+    setV(p => ({ ...p, [k]: value }));
+    setMarked(s => { if (!s.has(k)) return s; const n = new Set(s); n.delete(k); return n; });
+  };
+  return {
+    v, setField,
+    tog: k => setField(k, !v[k] as T[keyof T]),
+    fromRecord: k => marked.has(k),
+    anyFromRecord: seed.keys.size > 0,
+    missing: seed.missing,
+  };
+}
+
+const CONCEPT_PART = new Map(WHATS_MISSING_RULES.concepts.map(c => [c.id, c.part]));
+
+function FromRecordTag() {
+  return (
+    <span title="Pre-filled from the record — editable" style={{
+      marginLeft: 6, fontSize: 10, fontWeight: 700, color: '#0f766e', background: 'rgba(15,118,110,0.08)',
+      border: '1px solid rgba(15,118,110,0.25)', borderRadius: 3, padding: '0 4px', whiteSpace: 'nowrap',
+    }}>from record</span>
+  );
+}
+
+function RecordSeedNote({ seed, prePop }: { seed: { anyFromRecord: boolean; missing: string[] }; prePop?: boolean }) {
+  if (!seed.anyFromRecord && !prePop && !seed.missing.length) return null;
+  const parts = seed.missing.map(c => CONCEPT_PART.get(c) ?? c);
+  return (
+    <div style={{ fontSize: 11, color: '#059669', marginBottom: 8, padding: '4px 8px', background: '#ecfdf5', borderRadius: 6 }}>
+      {(seed.anyFromRecord || prePop) && <div>⚡ Pre-filled from the record (marked “from record”) — review and adjust before scoring</div>}
+      {parts.length > 0 && <div style={{ color: '#92400e' }}>Not on file: {parts.join(', ')}</div>}
+    </div>
+  );
+}
+
 // ── Result badge ──────────────────────────────────────────────────────────────
 
-function ResultBadge({ result }: { result: ScaleResult }) {
+/**
+ * `recordKey` / `recordValue`: the calculator can be recorded for the Plan-step decision support
+ * (explicit "Use in decision support" tap — RecordScoreButton).
+ */
+function ResultBadge({ result, recordKey, recordValue, redParameter }: {
+  result: ScaleResult; recordKey?: string; recordValue?: number | null; redParameter?: boolean;
+}) {
   const colors: Record<string, string> = {
     green: '#d1fae5', amber: '#fef3c7', red: '#fee2e2',
   };
@@ -102,19 +182,20 @@ function ResultBadge({ result }: { result: ScaleResult }) {
     }}>
       <div style={{ fontWeight: 700, fontSize: 15 }}>{result.band}</div>
       <div style={{ fontSize: 13, marginTop: 4, color: '#374151' }}>{result.action}</div>
+      {recordKey && <RecordScoreButton scoreKey={recordKey} value={recordValue ?? null} redParameter={redParameter} />}
     </div>
   );
 }
 
 // ── Shared input helpers ──────────────────────────────────────────────────────
 
-function Chk({ label, checked, onChange, pts }: {
-  label: string; checked: boolean; onChange: () => void; pts?: number;
+function Chk({ label, checked, onChange, pts, fromRecord }: {
+  label: string; checked: boolean; onChange: () => void; pts?: number; fromRecord?: boolean;
 }) {
   return (
     <label style={{ display: 'flex', alignItems: 'flex-start', gap: 8, cursor: 'pointer', marginBottom: 6, fontSize: 13 }}>
       <input type="checkbox" checked={checked} onChange={onChange} style={{ marginTop: 2, flexShrink: 0 }} />
-      <span>{label}{pts !== undefined && <span style={{ color: '#6b7280', marginLeft: 4 }}>({pts > 0 ? `+${pts}` : pts})</span>}</span>
+      <span>{label}{pts !== undefined && <span style={{ color: '#6b7280', marginLeft: 4 }}>({pts > 0 ? `+${pts}` : pts})</span>}{fromRecord && <FromRecordTag />}</span>
     </label>
   );
 }
@@ -129,20 +210,33 @@ function ScoreRow({ label, value }: { label: string; value: string | number }) {
 
 // ── Scale card components ─────────────────────────────────────────────────────
 
+// RCP NEWS2 (2017) via the shared `evaluateNews2`. Vitals not yet charted start EMPTY and are
+// reported as "not recorded" — they used to be pre-filled with normal values (RR 15, SpO₂ 98…),
+// which scored an unmeasured parameter as reassuringly normal (hazard log H-04).
+// Consciousness and air/O₂ are pre-filled from the saved vitals (Migration 91) when recorded;
+// SpO₂ Scale 2 follows the patient record (Migration 88) when the dashboard can read it.
 function News2Card() {
   const ctx = useAppContext();
+  const storedAvpu = parseAvpu(ctx.vitals.avpu);
+  const storedO2 = parseOnSupplementalO2(ctx.vitals.onSupplementalO2);
+  const patientScale2 = usePatientNews2Scale2(ctx.patientId);
   const [v, setV] = useState<News2Inputs>(() => ({
-    respiratoryRate: _vn(ctx, 'respiratoryRate') ?? 15,
-    spo2:            _vn(ctx, 'spo2')            ?? 98,
-    supplementalO2:  false,
-    systolicBp:      _vn(ctx, 'systolicBp')      ?? 120,
-    heartRate:       _vn(ctx, 'heartRate')        ?? 75,
-    consciousnessAvpu: 'A' as const,
-    temperatureC:    _vn(ctx, 'temperatureC')     ?? 37.0,
+    respiratoryRate: _vn(ctx, 'respiratoryRate'),
+    spo2:            _vn(ctx, 'spo2'),
+    supplementalO2:  storedO2,        // null = not recorded (H-04: never assume air)
+    useSpO2Scale2:   false,
+    systolicBp:      _vn(ctx, 'systolicBp'),
+    heartRate:       _vn(ctx, 'heartRate'),
+    consciousnessAvpu: storedAvpu,    // null = not recorded (H-04: never assume Alert)
+    temperatureC:    _vn(ctx, 'temperatureC'),
   }));
-  const prePop = !!(ctx.vitals.respiratoryRate || ctx.vitals.spo2 || ctx.vitals.systolicBp || ctx.vitals.heartRate || ctx.vitals.temperatureC);
-  const score = news2Score(v);
-  const result = interpretNews2(score);
+  useEffect(() => {
+    if (patientScale2.available) setV(p => ({ ...p, useSpO2Scale2: patientScale2.useScale2 }));
+  }, [patientScale2.available, patientScale2.useScale2]);
+  const prePop = !!(ctx.vitals.respiratoryRate || ctx.vitals.spo2 || ctx.vitals.systolicBp || ctx.vitals.heartRate || ctx.vitals.temperatureC || storedAvpu || storedO2 !== null);
+  const evaluation = evaluateNews2Inputs(v);
+  const score = evaluation.total;
+  const result = interpretNews2(evaluation);
   const num = (k: keyof News2Inputs) => (e: React.ChangeEvent<HTMLInputElement>) =>
     setV(p => ({ ...p, [k]: e.target.value ? parseFloat(e.target.value) : null }));
   const gridStyle: React.CSSProperties = { display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 8, marginBottom: 8 };
@@ -158,7 +252,8 @@ function News2Card() {
         <label style={lblStyle}>Heart rate<input style={inpStyle} type="number" value={v.heartRate ?? ''} onChange={num('heartRate')} /></label>
         <label style={lblStyle}>Temp (°C)<input style={inpStyle} type="number" step="0.1" value={v.temperatureC ?? ''} onChange={num('temperatureC')} /></label>
         <label style={lblStyle}>Consciousness
-          <select style={inpStyle} value={v.consciousnessAvpu} onChange={e => setV(p => ({ ...p, consciousnessAvpu: e.target.value as News2Inputs['consciousnessAvpu'] }))}>
+          <select style={inpStyle} value={v.consciousnessAvpu ?? ''} onChange={e => setV(p => ({ ...p, consciousnessAvpu: e.target.value ? e.target.value as News2Avpu : null }))}>
+            <option value="">Not recorded</option>
             <option value="A">Alert</option>
             <option value="C">New confusion</option>
             <option value="V">Voice</option>
@@ -167,34 +262,66 @@ function News2Card() {
           </select>
         </label>
       </div>
-      <Chk label="On supplemental O₂" checked={v.supplementalO2} onChange={() => setV(p => ({ ...p, supplementalO2: !p.supplementalO2 }))} />
+      <label style={{ ...lblStyle, marginBottom: 8 }}>Air / supplemental O₂ (O₂ +2)
+        <select style={inpStyle} value={v.supplementalO2 === null ? '' : v.supplementalO2 ? 'o2' : 'air'}
+          onChange={e => setV(p => ({ ...p, supplementalO2: e.target.value === '' ? null : e.target.value === 'o2' }))}>
+          <option value="">Not recorded</option>
+          <option value="air">Air</option>
+          <option value="o2">Supplemental O₂</option>
+        </select>
+      </label>
+      {patientScale2.available ? (
+        <div style={{ marginBottom: 6, fontSize: 13, color: '#6b7280' }}>
+          SpO₂ Scale {v.useSpO2Scale2 ? '2' : '1'} — from the patient record (clinician opt-in for confirmed hypercapnic respiratory failure)
+        </div>
+      ) : (
+        <Chk
+          label="Use SpO₂ Scale 2 — ONLY for confirmed hypercapnic respiratory failure, on a clinician's decision (oxygen alone does not switch the scale)"
+          checked={v.useSpO2Scale2 === true}
+          onChange={() => setV(p => ({ ...p, useSpO2Scale2: !p.useSpO2Scale2 }))}
+        />
+      )}
       <ScoreRow label="NEWS2 Score" value={score} />
-      <ResultBadge result={result} />
+      {evaluation.hasSingleParameterScore3 && (
+        <div style={{ marginTop: 6, fontSize: 12, fontWeight: 700, color: '#b91c1c' }}>
+          ⚠ Single parameter scoring 3 — RCP: urgent ward-based response
+        </div>
+      )}
+      {evaluation.incompleteNote && (
+        <div style={{ marginTop: 6, fontSize: 12, fontWeight: 600, color: '#92400e' }}>
+          ⚠ {evaluation.incompleteNote} — the score may under-estimate risk
+        </div>
+      )}
+      <ResultBadge result={result} recordKey="news2" recordValue={score} redParameter={evaluation.hasSingleParameterScore3} />
     </div>
   );
 }
 
 function AlvaradoCard() {
-  const [v, setV] = useState<AlvaradoInputs>({
+  const s = useRecordSeed<AlvaradoInputs>('alvarado', () => ({
     migratoryPain: false, anorexia: false, nausea: false,
     rifTenderness: false, rebound: false, fever: false,
     wbcAbove10: false, leftShift: false,
-  });
+  }));
+  const v = s.v;
   const score = alvaradoScore(v);
   const result = interpretAlvarado(score);
-  const tog = (k: keyof AlvaradoInputs) => setV(p => ({ ...p, [k]: !p[k] }));
+  const row = (k: keyof AlvaradoInputs, label: string, pts: number) => (
+    <Chk label={label} checked={v[k]} onChange={() => s.tog(k)} pts={pts} fromRecord={s.fromRecord(k)} />
+  );
   return (
     <div>
-      <Chk label="Migratory pain to RLQ" checked={v.migratoryPain} onChange={() => tog('migratoryPain')} pts={1} />
-      <Chk label="Anorexia" checked={v.anorexia} onChange={() => tog('anorexia')} pts={1} />
-      <Chk label="Nausea / vomiting" checked={v.nausea} onChange={() => tog('nausea')} pts={1} />
-      <Chk label="Tenderness in RIF" checked={v.rifTenderness} onChange={() => tog('rifTenderness')} pts={2} />
-      <Chk label="Rebound tenderness" checked={v.rebound} onChange={() => tog('rebound')} pts={1} />
-      <Chk label="Fever (temperature > 37.3°C)" checked={v.fever} onChange={() => tog('fever')} pts={1} />
-      <Chk label="WBC > 10,000 /µL" checked={v.wbcAbove10} onChange={() => tog('wbcAbove10')} pts={2} />
-      <Chk label="Shift to left (neutrophilia / bands)" checked={v.leftShift} onChange={() => tog('leftShift')} pts={1} />
+      <RecordSeedNote seed={s} />
+      {row('migratoryPain', 'Migratory pain to RLQ', 1)}
+      {row('anorexia', 'Anorexia', 1)}
+      {row('nausea', 'Nausea / vomiting', 1)}
+      {row('rifTenderness', 'Tenderness in RIF', 2)}
+      {row('rebound', 'Rebound tenderness', 1)}
+      {row('fever', 'Fever (temperature ≥ 37.3°C)', 1)}
+      {row('wbcAbove10', 'WBC > 10,000 /µL', 2)}
+      {row('leftShift', 'Shift to left (neutrophils > 75%)', 1)}
       <ScoreRow label="Alvarado Score" value={`${score}/10`} />
-      <ResultBadge result={result} />
+      <ResultBadge result={result} recordKey="alvarado" recordValue={score} />
     </div>
   );
 }
@@ -249,14 +376,13 @@ function HeartCard() {
         </select>
       </label>
       <ScoreRow label="HEART Score" value={`${score}/10`} />
-      <ResultBadge result={result} />
+      <ResultBadge result={result} recordKey="heart" recordValue={score} />
     </div>
   );
 }
 
 function WellsPeCard() {
-  const ctx = useAppContext();
-  const [v, setV] = useState<WellsPeInputs>(() => {
+  const s = useRecordSeed<WellsPeInputs>('wells-pe', ctx => {
     const hr = _vn(ctx, 'heartRate');
     return {
       dvtSigns:              _sy(ctx, 'leg swelling', 'calf swelling', 'DVT', 'leg pain') || _co(ctx, 'DVT', 'deep vein thrombosis'),
@@ -268,50 +394,57 @@ function WellsPeCard() {
       cancer:                _co(ctx, 'cancer', 'malignancy', 'carcinoma', 'lymphoma', 'leukaemia', 'metastatic', 'tumour'),
     };
   });
+  const v = s.v;
   const prePop = v.hrAbove100 || v.priorDvtPe || v.cancer || v.dvtSigns || v.haemoptysis;
   const score = wellsPeScore(v);
   const result = interpretWellsPe(score);
-  const tog = (k: keyof WellsPeInputs) => setV(p => ({ ...p, [k]: !p[k] }));
+  const row = (k: keyof WellsPeInputs, label: string, pts: number) => (
+    <Chk label={label} checked={v[k]} onChange={() => s.tog(k)} pts={pts} fromRecord={s.fromRecord(k)} />
+  );
   return (
     <div>
-      {prePop && <PrePopBadge />}
-      <Chk label="Clinical signs / symptoms of DVT" checked={v.dvtSigns} onChange={() => tog('dvtSigns')} pts={3} />
-      <Chk label="Alternative diagnosis less likely than PE" checked={v.altDiagnosisLessLikely} onChange={() => tog('altDiagnosisLessLikely')} pts={3} />
-      <Chk label="Heart rate > 100 bpm" checked={v.hrAbove100} onChange={() => tog('hrAbove100')} pts={1.5} />
-      <Chk label="Immobilisation or surgery in past 4 weeks" checked={v.immobilised} onChange={() => tog('immobilised')} pts={1.5} />
-      <Chk label="Prior DVT or PE" checked={v.priorDvtPe} onChange={() => tog('priorDvtPe')} pts={1.5} />
-      <Chk label="Haemoptysis" checked={v.haemoptysis} onChange={() => tog('haemoptysis')} pts={1} />
-      <Chk label="Malignancy (treatment / palliation in past 6 months)" checked={v.cancer} onChange={() => tog('cancer')} pts={1} />
+      <RecordSeedNote seed={s} prePop={prePop} />
+      {row('dvtSigns', 'Clinical signs / symptoms of DVT', 3)}
+      {row('altDiagnosisLessLikely', 'Alternative diagnosis less likely than PE', 3)}
+      {row('hrAbove100', 'Heart rate > 100 bpm', 1.5)}
+      {row('immobilised', 'Immobilisation or surgery in past 4 weeks', 1.5)}
+      {row('priorDvtPe', 'Prior DVT or PE', 1.5)}
+      {row('haemoptysis', 'Haemoptysis', 1)}
+      {row('cancer', 'Malignancy (treatment / palliation in past 6 months)', 1)}
       <ScoreRow label="Wells PE Score" value={score} />
-      <ResultBadge result={result} />
+      <ResultBadge result={result} recordKey="wells-pe" recordValue={score} />
     </div>
   );
 }
 
 function WellsDvtCard() {
-  const [v, setV] = useState<WellsDvtInputs>({
+  const s = useRecordSeed<WellsDvtInputs>('wells-dvt', () => ({
     activeCancer: false, paralysisParesis: false, bedridden3Days: false,
     localTenderness: false, entireLegSwollen: false, calfSwelling3cm: false,
     pittingOedema: false, collateralVeins: false, previousDvt: false,
     alternativeDx: false,
-  });
+  }));
+  const v = s.v;
   const score = wellsDvtScore(v);
   const result = interpretWellsDvt(score);
-  const tog = (k: keyof WellsDvtInputs) => setV(p => ({ ...p, [k]: !p[k] }));
+  const row = (k: keyof WellsDvtInputs, label: string, pts: number) => (
+    <Chk label={label} checked={v[k]} onChange={() => s.tog(k)} pts={pts} fromRecord={s.fromRecord(k)} />
+  );
   return (
     <div>
-      <Chk label="Active cancer (treatment within 6 months or palliation)" checked={v.activeCancer} onChange={() => tog('activeCancer')} pts={1} />
-      <Chk label="Paralysis, paresis, or recent plaster immobilisation of leg" checked={v.paralysisParesis} onChange={() => tog('paralysisParesis')} pts={1} />
-      <Chk label="Bedridden ≥ 3 days or major surgery within 12 weeks" checked={v.bedridden3Days} onChange={() => tog('bedridden3Days')} pts={1} />
-      <Chk label="Localised tenderness along deep venous system" checked={v.localTenderness} onChange={() => tog('localTenderness')} pts={1} />
-      <Chk label="Entire leg swollen" checked={v.entireLegSwollen} onChange={() => tog('entireLegSwollen')} pts={1} />
-      <Chk label="Calf swelling > 3 cm vs contralateral side" checked={v.calfSwelling3cm} onChange={() => tog('calfSwelling3cm')} pts={1} />
-      <Chk label="Pitting oedema (symptomatic leg only)" checked={v.pittingOedema} onChange={() => tog('pittingOedema')} pts={1} />
-      <Chk label="Collateral superficial veins (non-varicose)" checked={v.collateralVeins} onChange={() => tog('collateralVeins')} pts={1} />
-      <Chk label="Previously documented DVT" checked={v.previousDvt} onChange={() => tog('previousDvt')} pts={1} />
-      <Chk label="Alternative diagnosis at least as likely" checked={v.alternativeDx} onChange={() => tog('alternativeDx')} pts={-2} />
+      <RecordSeedNote seed={s} />
+      {row('activeCancer', 'Active cancer (treatment within 6 months or palliation)', 1)}
+      {row('paralysisParesis', 'Paralysis, paresis, or recent plaster immobilisation of leg', 1)}
+      {row('bedridden3Days', 'Bedridden ≥ 3 days or major surgery within 12 weeks', 1)}
+      {row('localTenderness', 'Localised tenderness along deep venous system', 1)}
+      {row('entireLegSwollen', 'Entire leg swollen', 1)}
+      {row('calfSwelling3cm', 'Calf swelling > 3 cm vs contralateral side', 1)}
+      {row('pittingOedema', 'Pitting oedema (symptomatic leg only)', 1)}
+      {row('collateralVeins', 'Collateral superficial veins (non-varicose)', 1)}
+      {row('previousDvt', 'Previously documented DVT', 1)}
+      {row('alternativeDx', 'Alternative diagnosis at least as likely', -2)}
       <ScoreRow label="Wells DVT Score" value={score} />
-      <ResultBadge result={result} />
+      <ResultBadge result={result} recordKey="wells-dvt" recordValue={score} />
     </div>
   );
 }
@@ -355,7 +488,7 @@ function Abcd2Card() {
       </label>
       <Chk label="Diabetes mellitus" checked={v.diabetes} onChange={() => setV(p => ({ ...p, diabetes: !p.diabetes }))} pts={1} />
       <ScoreRow label="ABCD² Score" value={`${score}/7`} />
-      <ResultBadge result={result} />
+      <ResultBadge result={result} recordKey="abcd2" recordValue={score} />
     </div>
   );
 }
@@ -376,7 +509,8 @@ function Tg18Card() {
   return (
     <div>
       <div style={hdr}>Grade I / II criteria</div>
-      <Chk label="Fever / rigors (temp ≥ 38°C)" checked={v.fever} onChange={() => tog('fever')} />
+      <div style={{ fontSize: 11, color: '#6b7280', marginBottom: 4 }}>Grade II needs any two of the five criteria below (TG18).</div>
+      <Chk label="High fever (temp ≥ 39°C)" checked={v.fever} onChange={() => tog('fever')} />
       <Chk label="WBC abnormal (< 4k or > 12k)" checked={v.wbcAbnormal} onChange={() => tog('wbcAbnormal')} />
       <label style={lblStyle}>Age (years) — ≥ 75 is Grade II criterion
         <input style={inpStyle} type="number" value={v.age ?? ''} onChange={e => setV(p => ({ ...p, age: e.target.value ? +e.target.value : null }))} />
@@ -391,7 +525,7 @@ function Tg18Card() {
       <Chk label="Hepatic — PT-INR > 1.5" checked={v.organDysfunctionHepatic} onChange={() => tog('organDysfunctionHepatic')} />
       <Chk label="Haematological — platelets < 100,000" checked={v.organDysfunctionHaem} onChange={() => tog('organDysfunctionHaem')} />
       <ScoreRow label="TG18 Grade" value={grade} />
-      <ResultBadge result={result} />
+      <ResultBadge result={result} recordKey="tg18-cholangitis" recordValue={grade === 'III' ? 3 : grade === 'II' ? 2 : 1} />
     </div>
   );
 }
@@ -450,8 +584,7 @@ function WagnerCard() {
 }
 
 function Curb65Card() {
-  const ctx = useAppContext();
-  const [v, setV] = useState<Curb65Inputs>(() => {
+  const s = useRecordSeed<Curb65Inputs>('curb65', ctx => {
     const rr  = _vn(ctx, 'respiratoryRate');
     const sbp = _vn(ctx, 'systolicBp');
     const dbp = _vn(ctx, 'diastolicBp');
@@ -463,27 +596,29 @@ function Curb65Card() {
       age65orAbove:           (_ageN(ctx) ?? 0) >= 65,
     };
   });
+  const v = s.v;
   const prePop = v.confusion || v.respiratoryRateAbove30 || v.bpLow || v.age65orAbove;
   const score = curb65Score(v);
   const result = interpretCurb65(score);
-  const tog = (k: keyof Curb65Inputs) => setV(p => ({ ...p, [k]: !p[k] }));
+  const row = (k: keyof Curb65Inputs, label: string) => (
+    <Chk label={label} checked={v[k]} onChange={() => s.tog(k)} pts={1} fromRecord={s.fromRecord(k)} />
+  );
   return (
     <div>
-      {prePop && <PrePopBadge />}
-      <Chk label="Confusion (new onset, AMTS ≤ 8)" checked={v.confusion} onChange={() => tog('confusion')} pts={1} />
-      <Chk label="Urea > 7 mmol/L (BUN > 19 mg/dL)" checked={v.ureaMmolAbove7} onChange={() => tog('ureaMmolAbove7')} pts={1} />
-      <Chk label="Respiratory rate ≥ 30/min" checked={v.respiratoryRateAbove30} onChange={() => tog('respiratoryRateAbove30')} pts={1} />
-      <Chk label="Low BP (SBP < 90 or DBP ≤ 60 mmHg)" checked={v.bpLow} onChange={() => tog('bpLow')} pts={1} />
-      <Chk label="Age ≥ 65 years" checked={v.age65orAbove} onChange={() => tog('age65orAbove')} pts={1} />
+      <RecordSeedNote seed={s} prePop={prePop} />
+      {row('confusion', 'Confusion (new onset, AMTS ≤ 8)')}
+      {row('ureaMmolAbove7', 'Urea > 7 mmol/L (BUN > 19 mg/dL)')}
+      {row('respiratoryRateAbove30', 'Respiratory rate ≥ 30/min')}
+      {row('bpLow', 'Low BP (SBP < 90 or DBP ≤ 60 mmHg)')}
+      {row('age65orAbove', 'Age ≥ 65 years')}
       <ScoreRow label="CURB-65 Score" value={`${score}/5`} />
-      <ResultBadge result={result} />
+      <ResultBadge result={result} recordKey="curb65" recordValue={score} />
     </div>
   );
 }
 
 function GlasgowBlatchfordCard() {
-  const ctx = useAppContext();
-  const [v, setV] = useState<GlasgowBlatchfordInputs>(() => {
+  const s = useRecordSeed<GlasgowBlatchfordInputs>('glasgow-blatchford', ctx => {
     const sbp = _vn(ctx, 'systolicBp');
     const hr  = _vn(ctx, 'heartRate');
     return {
@@ -498,33 +633,51 @@ function GlasgowBlatchfordCard() {
       liverDisease:      _co(ctx, 'cirrhosis', 'liver disease', 'liver failure', 'hepatitis', 'portal hypertension'),
       cardiacFailure:    _co(ctx, 'heart failure', 'cardiac failure', 'CHF', 'CCF', 'LVF'),
     };
+  }, (value, fill) => {
+    // The record's Hb (g/dL) goes in the field for the patient's sex.
+    const hb = fill.fields.find(f => f.key === 'haemoglobin')?.value;
+    if (typeof hb !== 'number') return new Set();
+    const key = value.isMale ? 'haemoglobinMale' : 'haemoglobinFemale';
+    (value as unknown as Record<string, unknown>)[key] = hb;
+    return new Set([key]);
   });
+  const v = s.v;
+  const ctx = useAppContext();
   const prePop = v.systolicBp !== null || v.heartRateAbove100 || v.melaena || v.syncope || v.liverDisease || v.cardiacFailure || ctx.sex !== null;
   const score = glasgowBlatchfordScore(v);
   const result = interpretGlasgowBlatchford(score);
   const inpStyle: React.CSSProperties = { border: '1px solid #d1d5db', borderRadius: 6, padding: '4px 8px', fontSize: 13, width: '100%' };
   const lblStyle: React.CSSProperties = { fontSize: 12, color: '#6b7280', display: 'flex', flexDirection: 'column', gap: 2, marginBottom: 8 };
   const grid: React.CSSProperties = { display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 8, marginBottom: 8 };
+  const numField = (k: 'ureaMmol' | 'systolicBp' | 'haemoglobinMale' | 'haemoglobinFemale', label: string, step?: string) => (
+    <label style={lblStyle}>
+      <span>{label}{s.fromRecord(k) && <FromRecordTag />}</span>
+      <input style={inpStyle} type="number" step={step} value={v[k] ?? ''} onChange={e => s.setField(k, e.target.value ? +e.target.value : null)} />
+    </label>
+  );
+  const row = (k: 'heartRateAbove100' | 'melaena' | 'syncope' | 'liverDisease' | 'cardiacFailure', label: string, pts: number) => (
+    <Chk label={label} checked={v[k]} onChange={() => s.tog(k)} pts={pts} fromRecord={s.fromRecord(k)} />
+  );
   return (
     <div>
-      {prePop && <PrePopBadge />}
+      <RecordSeedNote seed={s} prePop={prePop} />
       <div style={grid}>
-        <label style={lblStyle}>Urea (mmol/L)<input style={inpStyle} type="number" step="0.1" value={v.ureaMmol ?? ''} onChange={e => setV(p => ({ ...p, ureaMmol: e.target.value ? +e.target.value : null }))} /></label>
-        <label style={lblStyle}>Systolic BP<input style={inpStyle} type="number" value={v.systolicBp ?? ''} onChange={e => setV(p => ({ ...p, systolicBp: e.target.value ? +e.target.value : null }))} /></label>
-        <label style={lblStyle}>Hb — male (g/dL)<input style={inpStyle} type="number" step="0.1" value={v.haemoglobinMale ?? ''} onChange={e => setV(p => ({ ...p, haemoglobinMale: e.target.value ? +e.target.value : null }))} /></label>
-        <label style={lblStyle}>Hb — female (g/dL)<input style={inpStyle} type="number" step="0.1" value={v.haemoglobinFemale ?? ''} onChange={e => setV(p => ({ ...p, haemoglobinFemale: e.target.value ? +e.target.value : null }))} /></label>
+        {numField('ureaMmol', 'Urea (mmol/L)', '0.1')}
+        {numField('systolicBp', 'Systolic BP')}
+        {numField('haemoglobinMale', 'Hb — male (g/dL)', '0.1')}
+        {numField('haemoglobinFemale', 'Hb — female (g/dL)', '0.1')}
       </div>
       <label style={{ ...lblStyle, flexDirection: 'row', alignItems: 'center', gap: 8 }}>
-        <input type="checkbox" checked={v.isMale} onChange={e => setV(p => ({ ...p, isMale: e.target.checked }))} />
-        Male patient (use male Hb thresholds)
+        <input type="checkbox" checked={v.isMale} onChange={e => s.setField('isMale', e.target.checked)} />
+        Male patient (use male Hb thresholds){s.fromRecord('isMale') && <FromRecordTag />}
       </label>
-      <Chk label="Heart rate > 100 bpm" checked={v.heartRateAbove100} onChange={() => setV(p => ({ ...p, heartRateAbove100: !p.heartRateAbove100 }))} pts={1} />
-      <Chk label="Melaena on presentation" checked={v.melaena} onChange={() => setV(p => ({ ...p, melaena: !p.melaena }))} pts={1} />
-      <Chk label="Syncope" checked={v.syncope} onChange={() => setV(p => ({ ...p, syncope: !p.syncope }))} pts={2} />
-      <Chk label="Hepatic disease" checked={v.liverDisease} onChange={() => setV(p => ({ ...p, liverDisease: !p.liverDisease }))} pts={2} />
-      <Chk label="Cardiac failure" checked={v.cardiacFailure} onChange={() => setV(p => ({ ...p, cardiacFailure: !p.cardiacFailure }))} pts={2} />
+      {row('heartRateAbove100', 'Heart rate > 100 bpm', 1)}
+      {row('melaena', 'Melaena on presentation', 1)}
+      {row('syncope', 'Syncope', 2)}
+      {row('liverDisease', 'Hepatic disease', 2)}
+      {row('cardiacFailure', 'Cardiac failure', 2)}
       <ScoreRow label="Glasgow-Blatchford Score" value={score} />
-      <ResultBadge result={result} />
+      <ResultBadge result={result} recordKey="glasgow-blatchford" recordValue={score} />
     </div>
   );
 }
@@ -568,14 +721,13 @@ function PreRockallCard() {
         </select>
       </label>
       <ScoreRow label="Pre-Rockall Score" value={score} />
-      <ResultBadge result={result} />
+      <ResultBadge result={result} recordKey="rockall-pre" recordValue={score} />
     </div>
   );
 }
 
 function RcriCard() {
-  const ctx = useAppContext();
-  const [v, setV] = useState<RcriInputs>(() => ({
+  const s = useRecordSeed<RcriInputs>('rcri', ctx => ({
     highRiskSurgery:          false,
     ischemicHeartDisease:     _co(ctx, 'ischaemic heart disease', 'IHD', 'CAD', 'coronary artery disease', 'myocardial infarction', 'MI', 'angina', 'CABG', 'coronary stent', 'PTCA', 'Q wave'),
     congestiveHeartFailure:   _co(ctx, 'heart failure', 'CCF', 'CHF', 'cardiac failure', 'LVF', 'left ventricular failure', 'pulmonary oedema'),
@@ -583,21 +735,24 @@ function RcriCard() {
     insulinDependentDiabetes: _co(ctx, 'insulin', 'type 1 diabetes', 'T1DM', 'insulin-dependent diabetes', 'basal bolus', 'insulin pump'),
     creatinineAbove177:       _co(ctx, 'CKD', 'chronic kidney disease', 'renal failure', 'dialysis', 'ESRD', 'renal impairment', 'CKD 4', 'CKD 5'),
   }));
+  const v = s.v;
   const prePop = v.ischemicHeartDisease || v.congestiveHeartFailure || v.cerebrovascularDisease || v.insulinDependentDiabetes || v.creatinineAbove177;
   const score = rcriScore(v);
   const result = interpretRcri(score);
-  const tog = (k: keyof RcriInputs) => setV(p => ({ ...p, [k]: !p[k] }));
+  const row = (k: keyof RcriInputs, label: string) => (
+    <Chk label={label} checked={v[k]} onChange={() => s.tog(k)} pts={1} fromRecord={s.fromRecord(k)} />
+  );
   return (
     <div>
-      {prePop && <PrePopBadge />}
-      <Chk label="High-risk surgery (intrathoracic / intraperitoneal / suprainguinal vascular)" checked={v.highRiskSurgery} onChange={() => tog('highRiskSurgery')} pts={1} />
-      <Chk label="Ischaemic heart disease (hx of MI / positive stress / angina / nitrates / Q waves)" checked={v.ischemicHeartDisease} onChange={() => tog('ischemicHeartDisease')} pts={1} />
-      <Chk label="Congestive heart failure (hx / pulmonary oedema / S3 / bilateral rales)" checked={v.congestiveHeartFailure} onChange={() => tog('congestiveHeartFailure')} pts={1} />
-      <Chk label="Cerebrovascular disease (hx of TIA or stroke)" checked={v.cerebrovascularDisease} onChange={() => tog('cerebrovascularDisease')} pts={1} />
-      <Chk label="Pre-operative insulin use" checked={v.insulinDependentDiabetes} onChange={() => tog('insulinDependentDiabetes')} pts={1} />
-      <Chk label="Pre-operative creatinine > 177 µmol/L (2.0 mg/dL)" checked={v.creatinineAbove177} onChange={() => tog('creatinineAbove177')} pts={1} />
+      <RecordSeedNote seed={s} prePop={prePop} />
+      {row('highRiskSurgery', 'High-risk surgery (intrathoracic / intraperitoneal / suprainguinal vascular)')}
+      {row('ischemicHeartDisease', 'Ischaemic heart disease (hx of MI / positive stress / angina / nitrates / Q waves)')}
+      {row('congestiveHeartFailure', 'Congestive heart failure (hx / pulmonary oedema / S3 / bilateral rales)')}
+      {row('cerebrovascularDisease', 'Cerebrovascular disease (hx of TIA or stroke)')}
+      {row('insulinDependentDiabetes', 'Pre-operative insulin use')}
+      {row('creatinineAbove177', 'Pre-operative creatinine > 177 µmol/L (2.0 mg/dL)')}
       <ScoreRow label="RCRI Score" value={`${score}/6`} />
-      <ResultBadge result={result} />
+      <ResultBadge result={result} recordKey="rcri" recordValue={score} />
     </div>
   );
 }
@@ -621,7 +776,7 @@ function RansonCard() {
       <Chk label="LDH > 350 IU/L" checked={v.ldhAbove350} onChange={() => tog('ldhAbove350')} pts={1} />
       <Chk label="AST > 250 IU/L" checked={v.astAbove250} onChange={() => tog('astAbove250')} pts={1} />
       <ScoreRow label="Ranson Admission Score" value={`${score}/5`} />
-      <ResultBadge result={result} />
+      <ResultBadge result={result} recordKey="ranson" recordValue={score} />
     </div>
   );
 }
@@ -828,13 +983,15 @@ const EMPTY_CAPRINI = Object.fromEntries(
 ) as unknown as CapriniInputs;
 
 function CapriniCard() {
-  const [v, setV] = useState<CapriniInputs>(EMPTY_CAPRINI);
+  const s = useRecordSeed<CapriniInputs>('caprini', () => ({ ...EMPTY_CAPRINI }));
+  const v = s.v;
   const score  = capriniScore(v);
   const result = interpretCaprini(score);
   const grouped = [1, 2, 3, 5].map(pts => CAPRINI_FACTORS.filter(f => f.pts === pts));
 
   return (
     <div>
+      <RecordSeedNote seed={s} />
       {grouped.map((group, gi) => (
         <div key={gi} style={{ marginBottom: 16 }}>
           <div style={{ fontSize: 11, fontWeight: 700, color: '#6b7280', marginBottom: 8 }}>
@@ -847,14 +1004,15 @@ function CapriniCard() {
                 label={f.label}
                 pts={f.pts}
                 checked={v[f.field]}
-                onChange={() => setV(p => ({ ...p, [f.field]: !p[f.field] }))}
+                onChange={() => s.tog(f.field)}
+                fromRecord={s.fromRecord(f.field)}
               />
             ))}
           </div>
         </div>
       ))}
       <ScoreRow label="Caprini score" value={score} />
-      <ResultBadge result={result} />
+      <ResultBadge result={result} recordKey="caprini" recordValue={score} />
     </div>
   );
 }
@@ -920,7 +1078,7 @@ function CfsCard() {
       </div>
       <div style={{ marginBottom: 4, fontWeight: 600, fontSize: 14 }}>CFS {level} — {current.label}</div>
       <p style={{ fontSize: 13, color: '#374151', margin: '0 0 8px' }}>{current.description}</p>
-      <ResultBadge result={result} />
+      <ResultBadge result={result} recordKey="cfs" recordValue={level} />
     </div>
   );
 }
@@ -1258,7 +1416,7 @@ function HasBledCard() {
       <Chk label="Alcohol (≥ 8 drinks / week)"                          checked={v.alcoholUse}               onChange={() => tog('alcoholUse')}               pts={1} />
       <div style={{ fontSize: 11, color: '#6b7280', marginBottom: 6 }}>Maximum score 9 (drugs + alcohol each count +1)</div>
       <ScoreRow label="HAS-BLED Score" value={`${score}/9`} />
-      <ResultBadge result={result} />
+      <ResultBadge result={result} recordKey="has-bled" recordValue={score} />
     </div>
   );
 }
@@ -1304,7 +1462,7 @@ function QsofaCard() {
         pts={1}
       />
       <ScoreRow label="qSOFA Score" value={`${score}/3`} />
-      <ResultBadge result={result} />
+      <ResultBadge result={result} recordKey="qsofa" recordValue={score} />
     </div>
   );
 }
@@ -1336,7 +1494,7 @@ function AsaCard() {
         <div style={{ color: '#6b7280', marginTop: 2 }}><strong>Perioperative mortality:</strong> {selected.mortalityApprox}</div>
       </div>
       <Chk label="Emergency surgery (add 'E' suffix — mortality ~3× higher)" checked={emergency} onChange={() => setEmergency(p => !p)} />
-      <ResultBadge result={result} />
+      <ResultBadge result={result} recordKey="asa" recordValue={asaClass} />
     </div>
   );
 }
@@ -1344,31 +1502,32 @@ function AsaCard() {
 // ── BISAP ─────────────────────────────────────────────────────────────────────
 
 function BisapCard() {
-  const ctx = useAppContext();
-  const [v, setV] = useState<BisapInputs>(() => ({
+  const s = useRecordSeed<BisapInputs>('bisap', ctx => ({
     bunAbove25:           false,
     impairedMentalStatus: false,
     sirs:                 false,
     ageAbove60:           (_ageN(ctx) ?? 0) > 60,
     pleuralEffusion:      false,
   }));
-  const prePop = v.ageAbove60;
-  const tog = (k: keyof BisapInputs) => setV(p => ({ ...p, [k]: !p[k] }));
+  const v = s.v;
   const score  = bisapScore(v);
   const result = interpretBisap(score);
+  const row = (k: keyof BisapInputs, label: string) => (
+    <Chk label={label} checked={v[k]} onChange={() => s.tog(k)} pts={1} fromRecord={s.fromRecord(k)} />
+  );
   return (
     <div>
-      {prePop && <PrePopBadge />}
-      <Chk label="BUN > 25 mg/dL (8.9 mmol/L)"                    checked={v.bunAbove25}           onChange={() => tog('bunAbove25')}           pts={1} />
-      <Chk label="Impaired mental status (GCS < 15 / disoriented)" checked={v.impairedMentalStatus} onChange={() => tog('impairedMentalStatus')} pts={1} />
-      <Chk label="SIRS (≥ 2 criteria: temp, HR, RR / PaCO₂, WBC)" checked={v.sirs}                 onChange={() => tog('sirs')}                 pts={1} />
-      <Chk label="Age > 60 years"                                   checked={v.ageAbove60}           onChange={() => tog('ageAbove60')}           pts={1} />
-      <Chk label="Pleural effusion on imaging"                       checked={v.pleuralEffusion}      onChange={() => tog('pleuralEffusion')}      pts={1} />
+      <RecordSeedNote seed={s} prePop={v.ageAbove60} />
+      {row('bunAbove25', 'BUN > 25 mg/dL (8.9 mmol/L)')}
+      {row('impairedMentalStatus', 'Impaired mental status (GCS < 15 / disoriented)')}
+      {row('sirs', 'SIRS (≥ 2 criteria: temp, HR, RR / PaCO₂, WBC)')}
+      {row('ageAbove60', 'Age > 60 years')}
+      {row('pleuralEffusion', 'Pleural effusion on imaging')}
       <div style={{ fontSize: 11, color: '#6b7280', marginBottom: 6 }}>
         SIRS ≥ 2 of: temp &lt; 36 °C or &gt; 38 °C · HR &gt; 90 · RR &gt; 20 or PaCO₂ &lt; 32 mmHg · WBC &lt; 4k or &gt; 12k or &gt; 10% bands
       </div>
       <ScoreRow label="BISAP Score" value={`${score}/5`} />
-      <ResultBadge result={result} />
+      <ResultBadge result={result} recordKey="bisap" recordValue={score} />
     </div>
   );
 }
@@ -1905,6 +2064,7 @@ const SCALE_COMPONENTS: Record<string, React.FC> = {
   wellsDvt:         WellsDvtCard,
   abcd2:            Abcd2Card,
   tg18Cholangitis:  Tg18Card,
+  tg18Cholecystitis: TokyoCholecystitisCard,
   asgeCbd:          AsgeCbdCard,
   wagner:           WagnerCard,
   curb65:           Curb65Card,
@@ -1940,9 +2100,12 @@ const SCALE_COMPONENTS: Record<string, React.FC> = {
   barthelAdl:       BarthelAdlCard,
   iss:              IssCard,
   burns:            BurnsCard,
+  // Evidence-exam 1.0.0 decision rules (DecisionRuleCard.tsx): AIR, PERC, Ottawa, CT head, C-spine, Centor, STONE, LRINEC, syncope.
+  ...DECISION_RULE_CARDS,
 };
 
 const ALL_SCALE_TITLES: Record<string, string> = {
+  ...DECISION_RULE_TITLES,
   news2:            'NEWS2 — Early Warning Score',
   alvarado:         'Alvarado Score — Appendicitis',
   heart:            'HEART Score — Chest Pain',
@@ -1950,6 +2113,7 @@ const ALL_SCALE_TITLES: Record<string, string> = {
   wellsDvt:         'Wells DVT Score — Deep Vein Thrombosis',
   abcd2:            'ABCD² Score — TIA Stroke Risk',
   tg18Cholangitis:  'TG18 Cholangitis Severity',
+  tg18Cholecystitis: 'TG18 Acute Cholecystitis — Diagnosis and Severity',
   asgeCbd:          'ASGE CBD Stone Probability',
   wagner:           'Wagner Classification — Diabetic Foot',
   curb65:           'CURB-65 — Pneumonia Severity',
@@ -1992,6 +2156,12 @@ const URGENCY_LABELS: Record<string, { tag: string; color: string; bg: string }>
   relevant: { tag: 'RELEVANT', color: '#b45309', bg: '#fffbeb' },
   consider: { tag: 'CONSIDER', color: '#1d4ed8', bg: '#eff6ff' },
 };
+
+/** One calculator by its registry key (the Exam step's decision-rule suggestions open it). */
+export function ScaleCalculator({ scaleKey }: { scaleKey: string }) {
+  const Comp = SCALE_COMPONENTS[scaleKey];
+  return Comp ? <Comp /> : <div style={{ fontSize: 13, color: '#6b7280' }}>No calculator for {scaleKey}.</div>;
+}
 
 // ── Main ScalesTab ────────────────────────────────────────────────────────────
 

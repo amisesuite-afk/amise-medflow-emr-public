@@ -11,30 +11,30 @@ struct DiagnosisHubView: View {
     @Bindable var patient: Patient
     var onNavigate: ((PatientDetailSection) -> Void)?
 
-    @StateObject private var ai = AIService()
-    @Environment(\.modelContext) private var context
+    @Environment(\.modelContext) var context
 
     // Photo / camera state
-    @State private var photoPickerItem: PhotosPickerItem?
-    @State private var showCamera = false
-    @State private var capturedImage: UIImage?
-    @State private var isParsingImage = false
-    @State private var parsedResult: ParsedResult?
-    @State private var showResultConfirm = false
-    @State private var showAIError = false
+    @State var photoPickerItem: PhotosPickerItem?
+    @State var showCamera = false
+    @State var capturedImage: UIImage?
+    @State var isParsingImage = false
+    @State var parsedResult: ParsedResult?
+    @State var showResultConfirm = false
+    @State var showAIError = false
+    @State var aiErrorMessage: String = ""
 
     // Plan draft
-    @State private var isDraftingPlan = false
-    @State private var planDrafted = false
+    @State var isDraftingPlan = false
+    @State var planDrafted = false
 
     // Clinical reasoning
-    @State private var isGeneratingReasoning = false
-    @State private var clinicalReasoning: String?
-    @State private var showReasoning = false
+    @State var isGeneratingReasoning = false
+    @State var clinicalReasoning: String?
+    @State var showReasoning = false
 
     // MARK: - Computed helpers
 
-    private var investigations: [InvestigationEntry] {
+    var investigations: [InvestigationEntry] {
         patient.investigations
     }
     private var pendingInvs: Int {
@@ -98,7 +98,7 @@ struct DiagnosisHubView: View {
                             .font(.system(size: 14))
                             .padding(20)
                     }
-                    .navigationTitle("Clinical Reasoning")
+                    .navigationTitle("Clinical Narrative")
                     .navigationBarTitleDisplayMode(.inline)
                     .toolbar {
                         ToolbarItem(placement: .cancellationAction) {
@@ -108,10 +108,10 @@ struct DiagnosisHubView: View {
                 }
             }
         }
-        .alert("AI Error", isPresented: $showAIError) {
+        .alert("Cannot Generate Draft", isPresented: $showAIError) {
             Button("OK", role: .cancel) {}
         } message: {
-            Text(ai.error ?? "Unknown error")
+            Text(aiErrorMessage.isEmpty ? "Insufficient clinical data to generate a draft." : aiErrorMessage)
         }
     }
 
@@ -195,9 +195,9 @@ struct DiagnosisHubView: View {
                             if isGeneratingReasoning {
                                 ProgressView().scaleEffect(0.7)
                             } else {
-                                Image(systemName: "brain")
+                                Image(systemName: "doc.text.magnifyingglass")
                             }
-                            Text("Reasoning")
+                            Text("Narrative")
                                 .font(.system(size: 12, weight: .semibold))
                         }
                         .foregroundStyle(.teal)
@@ -239,7 +239,9 @@ struct DiagnosisHubView: View {
         .shadow(color: .black.opacity(0.04), radius: 4, y: 2)
     }
 
-    // MARK: - 2x2 domain grid
+    // MARK: - domain grid
+
+    private var scoreCount: Int { patient.scoreHistory.count }
 
     private var domainGrid: some View {
         LazyVGrid(columns: [GridItem(.flexible()), GridItem(.flexible())], spacing: 10) {
@@ -266,7 +268,7 @@ struct DiagnosisHubView: View {
                 icon: "list.bullet.clipboard",
                 color: .purple,
                 line1: hasPlan ? "Plan recorded" : "Not drafted",
-                line2: hasPlan ? nil : "Tap to draft with AI",
+                line2: hasPlan ? nil : "Tap to draft plan",
                 dot: hasPlan ? .green : .orange,
                 destination: .plan
             )
@@ -278,6 +280,15 @@ struct DiagnosisHubView: View {
                 line2: patient.clinicalNotes.isEmpty ? nil : "\(patient.clinicalNotes.count) total",
                 dot: signedNotes > 0 ? .green : .secondary,
                 destination: .notes
+            )
+            domainCard(
+                title: "Clinical Scores",
+                icon: "chart.bar.doc.horizontal",
+                color: AMColor.accent,
+                line1: scoreCount > 0 ? "\(scoreCount) saved" : "101 scales available",
+                line2: scoreCount > 0 ? "101 scales available" : nil,
+                dot: scoreCount > 0 ? AMColor.accent : .secondary,
+                destination: .scores
             )
         }
     }
@@ -329,6 +340,7 @@ struct DiagnosisHubView: View {
                     .stroke(color.opacity(0.15), lineWidth: 1)
             )
             .shadow(color: .black.opacity(0.03), radius: 3, y: 1)
+            .contentShape(Rectangle())   // whole row tappable, not only its text
         }
         .buttonStyle(.plain)
     }
@@ -397,246 +409,4 @@ struct DiagnosisHubView: View {
         .shadow(color: .black.opacity(0.03), radius: 3, y: 1)
     }
 
-    // MARK: - Clinical reasoning card
-
-    @ViewBuilder
-    private func reasoningCard(_ text: String) -> some View {
-        VStack(alignment: .leading, spacing: 8) {
-            HStack(spacing: 6) {
-                Image(systemName: "brain")
-                    .font(.system(size: 13))
-                    .foregroundStyle(.teal)
-                Text("Clinical Reasoning")
-                    .font(.system(size: 12, weight: .heavy))
-                    .foregroundStyle(.secondary)
-                    .tracking(0.5)
-                Spacer()
-                Button("Expand") { showReasoning = true }
-                    .font(.caption.weight(.semibold))
-                    .foregroundStyle(AMColor.accent)
-            }
-            Text(text)
-                .font(.system(size: 13))
-                .lineLimit(6)
-                .foregroundStyle(.primary)
-        }
-        .padding(14)
-        .background(Color.teal.opacity(0.05), in: RoundedRectangle(cornerRadius: 14))
-        .overlay(
-            RoundedRectangle(cornerRadius: 14)
-                .stroke(Color.teal.opacity(0.2), lineWidth: 1)
-        )
-    }
-
-    // MARK: - Actions
-
-    private func draftPlan() async {
-        guard patient.workingDiagnosis != nil else { return }
-        isDraftingPlan = true
-        defer { isDraftingPlan = false }
-        do {
-            let plan = try await ai.draftDiagnosisPlan(patient: patient)
-            patient.managementPlan = plan
-            patient.updatedAt = .now
-            patient.pendingSync = true
-            planDrafted = true
-        } catch {
-            showAIError = true
-        }
-    }
-
-    private func generateReasoning() async {
-        isGeneratingReasoning = true
-        defer { isGeneratingReasoning = false }
-        do {
-            let text = try await ai.generateClinicalReasoning(patient: patient)
-            clinicalReasoning = text
-            showReasoning = true
-        } catch {
-            showAIError = true
-        }
-    }
-
-    // MARK: - Photo processing
-
-    private func processPickedPhoto(_ item: PhotosPickerItem) async {
-        guard let data = try? await item.loadTransferable(type: Data.self) else { return }
-        await parseImageData(data)
-    }
-
-    private func processUIImage(_ image: UIImage) async {
-        guard let data = image.jpegData(compressionQuality: 0.85) else { return }
-        await parseImageData(data)
-    }
-
-    @MainActor
-    private func parseImageData(_ data: Data) async {
-        isParsingImage = true
-        defer { isParsingImage = false }
-        do {
-            let raw = try await ai.analyseResultImage(data, patient: patient)
-            // Try to parse JSON response
-            if let start = raw.firstIndex(of: "{"), let end = raw.lastIndex(of: "}") {
-                let jsonStr = String(raw[start...end])
-                if let jsonData = jsonStr.data(using: .utf8),
-                   let obj = try? JSONSerialization.jsonObject(with: jsonData) as? [String: Any] {
-                    let parsed = ParsedResult(
-                        testName:  (obj["testName"] as? String)  ?? "Lab Result",
-                        category:  (obj["category"] as? String)  ?? "Other",
-                        results:   (obj["results"] as? String)   ?? raw,
-                        abnormal:  (obj["abnormal"] as? [String]) ?? [],
-                        urgent:    (obj["urgent"] as? Bool)       ?? false,
-                        summary:   (obj["summary"] as? String)   ?? ""
-                    )
-                    parsedResult = parsed
-                    showResultConfirm = true
-                    return
-                }
-            }
-            // Fallback — show raw text as result
-            parsedResult = ParsedResult(
-                testName: "Result",
-                category: "Other",
-                results: raw,
-                abnormal: [],
-                urgent: false,
-                summary: ""
-            )
-            showResultConfirm = true
-        } catch {
-            showAIError = true
-        }
-    }
-
-    private func addParsedResult(_ parsed: ParsedResult) {
-        let category: InvestigationEntry.InvCategory = {
-            switch parsed.category.lowercased() {
-            case let s where s.contains("blood"): return .blood
-            case let s where s.contains("imaging"): return .imaging
-            case let s where s.contains("radiol"): return .imaging
-            case let s where s.contains("pathol"): return .pathology
-            case let s where s.contains("endosc"): return .endoscopy
-            default: return .other
-            }
-        }()
-        var entry = InvestigationEntry(
-            name: parsed.testName,
-            category: category,
-            status: .resulted
-        )
-        entry.result = parsed.results
-        entry.resultedAt = Date()
-        entry.suggestedFor = patient.workingDiagnosis ?? ""
-
-        var invs = patient.investigations
-        invs.append(entry)
-        patient.investigations = invs
-        patient.updatedAt = .now
-        patient.pendingSync = true
-    }
-}
-
-// MARK: - Parsed result model
-
-struct ParsedResult {
-    let testName: String
-    let category: String
-    let results: String
-    let abnormal: [String]
-    let urgent: Bool
-    let summary: String
-}
-
-// MARK: - Confirm parsed result sheet
-
-struct ParsedResultConfirmView: View {
-    let parsed: ParsedResult
-    let patient: Patient
-    var onConfirm: () -> Void
-    var onCancel: () -> Void
-
-    var body: some View {
-        NavigationStack {
-            List {
-                Section("Detected Test") {
-                    LabeledContent("Test name", value: parsed.testName)
-                    LabeledContent("Category", value: parsed.category)
-                    if parsed.urgent {
-                        Label("URGENT result — review immediately", systemImage: "exclamationmark.triangle.fill")
-                            .foregroundStyle(.red)
-                            .font(.caption.weight(.semibold))
-                    }
-                }
-
-                if !parsed.summary.isEmpty {
-                    Section("Clinical Summary") {
-                        Text(parsed.summary).font(.subheadline)
-                    }
-                }
-
-                if !parsed.abnormal.isEmpty {
-                    Section("Abnormal Values") {
-                        ForEach(parsed.abnormal, id: \.self) { v in
-                            Label(v, systemImage: "exclamationmark.circle")
-                                .foregroundStyle(.orange)
-                                .font(.caption)
-                        }
-                    }
-                }
-
-                Section("Extracted Results") {
-                    Text(parsed.results)
-                        .font(.system(size: 12).monospaced())
-                        .foregroundStyle(.primary)
-                }
-
-                Section {
-                    Text("Adding to \(patient.fullName)'s investigations as a Resulted entry.")
-                        .font(.caption)
-                        .foregroundStyle(.secondary)
-                }
-            }
-            .navigationTitle("Confirm Result")
-            .navigationBarTitleDisplayMode(.inline)
-            .toolbar {
-                ToolbarItem(placement: .cancellationAction) {
-                    Button("Cancel", action: onCancel)
-                }
-                ToolbarItem(placement: .confirmationAction) {
-                    Button("Add to Record") { onConfirm() }
-                        .bold()
-                }
-            }
-        }
-    }
-}
-
-// MARK: - Camera capture wrapper
-
-struct CameraCapture: UIViewControllerRepresentable {
-    var onCapture: (UIImage?) -> Void
-
-    func makeCoordinator() -> Coordinator { Coordinator(onCapture: onCapture) }
-
-    func makeUIViewController(context: Context) -> UIImagePickerController {
-        let picker = UIImagePickerController()
-        picker.sourceType = .camera
-        picker.delegate = context.coordinator
-        return picker
-    }
-
-    func updateUIViewController(_ vc: UIImagePickerController, context: Context) {}
-
-    class Coordinator: NSObject, UIImagePickerControllerDelegate, UINavigationControllerDelegate {
-        let onCapture: (UIImage?) -> Void
-        init(onCapture: @escaping (UIImage?) -> Void) { self.onCapture = onCapture }
-
-        func imagePickerController(_ picker: UIImagePickerController,
-                                   didFinishPickingMediaWithInfo info: [UIImagePickerController.InfoKey: Any]) {
-            onCapture(info[.originalImage] as? UIImage)
-        }
-        func imagePickerControllerDidCancel(_ picker: UIImagePickerController) {
-            onCapture(nil)
-        }
-    }
 }

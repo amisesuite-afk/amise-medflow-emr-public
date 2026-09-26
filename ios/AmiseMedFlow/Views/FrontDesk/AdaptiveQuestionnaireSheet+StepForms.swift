@@ -1,0 +1,397 @@
+// AdaptiveQuestionnaireSheet+StepForms.swift
+// Step progress strip and step-specific @ViewBuilder question forms.
+
+import SwiftUI
+import SwiftData
+
+extension AdaptiveQuestionnaireSheet {
+
+    // MARK: Step progress strip
+
+    var stepProgressStrip: some View {
+        ScrollView(.horizontal, showsIndicators: false) {
+            HStack(spacing: 0) {
+                ForEach(Array(phases.enumerated()), id: \.offset) { idx, phase in
+                    let done    = idx < safeIndex
+                    let current = idx == safeIndex
+                    HStack(spacing: 0) {
+                        VStack(spacing: 3) {
+                            ZStack {
+                                Circle()
+                                    .fill(done ? AMColor.accent : (current ? AMColor.accent.opacity(0.15) : Color.secondary.opacity(0.1)))
+                                    .frame(width: stepCircleSize, height: stepCircleSize)
+                                if done {
+                                    Image(systemName: "checkmark")
+                                        .scaledFont(size: 11, weight: .bold)
+                                        .foregroundStyle(.white)
+                                } else {
+                                    Image(systemName: phase.icon)
+                                        .scaledFont(size: 11, weight: current ? .semibold : .regular)
+                                        .foregroundStyle(current ? AMColor.accent : .secondary)
+                                }
+                            }
+                            // 8 pt at the default size; scales like caption2 (the strip scrolls
+                            // sideways, so longer titles never truncate).
+                            Text(phase.title)
+                                .scaledFont(size: 8, weight: current ? .bold : .regular, relativeTo: .caption2)
+                                .foregroundStyle(current ? AMColor.accent : (done ? .teal.opacity(0.6) : .secondary))
+                                .lineLimit(1)
+                        }
+                        .frame(minWidth: 64)
+                        // "Step 2 of 5, Pain Details, current step": the tick and colour were
+                        // the only signs of which steps are done.
+                        .accessibilityElement(children: .ignore)
+                        .accessibilityLabel(Text(A11yLabel.joined([
+                            "Step \(idx + 1) of \(phases.count)",
+                            phase.title,
+                            done ? "completed" : (current ? "current step" : "not started"),
+                        ])))
+                        if idx < phases.count - 1 {
+                            Rectangle()
+                                .fill(done ? AMColor.accent.opacity(0.5) : Color.secondary.opacity(0.2))
+                                .frame(width: 20, height: 1.5)
+                        }
+                    }
+                }
+            }
+            .padding(.horizontal, 20)
+            .padding(.vertical, 10)
+        }
+        .background(Color(.secondarySystemBackground))
+    }
+
+    // ── Phase guidance banner ─────────────────────────────────────────────────
+    // Shown at the top of every phase to guide patients through each step.
+
+    @ViewBuilder
+    var phaseGuidanceBanner: some View {
+        let info: (icon: String, headline: String, detail: String) = {
+            switch currentPhase {
+            case .cc:
+                return ("1.circle.fill",
+                        "What brings you in today?",
+                        "Choose the option that best describes your main reason for this visit. If your complaint isn't listed, select \"Other\" and describe it in the text box below.")
+            case .lump:
+                return ("hand.raised",
+                        "Tell us about the lump or swelling",
+                        "Answer as many questions as you can. Tap a choice to select it. If you are not sure, leave it blank.")
+            case .socrates:
+                return ("waveform.path.ecg",
+                        "Tell us about your pain",
+                        "Answer as many questions as you can. Tap a choice to select it. Use the slider at the bottom to rate your pain from 0 (no pain) to 10 (worst imaginable).")
+            case .symptoms:
+                return ("checklist",
+                        "Other symptoms you have noticed",
+                        "Tap any that apply — even if they seem unrelated to your main problem. Use the search box to find something not listed, or type your own and tap \"Add\".")
+            case .redFlags:
+                return ("exclamationmark.triangle.fill",
+                        "Important warning signs",
+                        "Please answer honestly. These questions help us spot symptoms that may need urgent attention. Turn on the toggle next to any that apply to you.")
+            case .pmhx:
+                return ("cross.case",
+                        "Your past health history",
+                        "Tick any conditions you have been diagnosed with. For medications, type the names below — or photograph your prescription / medication bag using the camera button.")
+            case .social:
+                return ("person.2",
+                        "Lifestyle & last meal",
+                        "These details help us plan your care safely. The \"Last meal\" question is especially important if you may need a procedure or anaesthesia today.")
+            }
+        }()
+
+        Section {
+            HStack(alignment: .top, spacing: 12) {
+                Image(systemName: info.icon)
+                    .scaledFont(size: 22)
+                    .foregroundStyle(AMColor.accent)
+                    .frame(width: 30)
+                    .accessibilityHidden(true)
+                VStack(alignment: .leading, spacing: 4) {
+                    Text(info.headline)
+                        .scaledFont(size: 14, weight: .semibold)
+                        .accessibilityAddTraits(.isHeader)
+                    Text(info.detail)
+                        .scaledFont(size: 12)
+                        .foregroundStyle(.secondary)
+                        .fixedSize(horizontal: false, vertical: true)
+                }
+            }
+            .padding(.vertical, 4)
+        }
+        .listRowBackground(AMColor.accent.opacity(0.07))
+    }
+
+    // ── Phase 0: patient header ───────────────────────────────────────────────
+    // Patient-facing: only this patient's own identifiers. No staff triage (acuity) label.
+
+    @ViewBuilder
+    func patientHeaderSection(_ patient: Patient) -> some View {
+        Section {
+            HStack(spacing: 8) {
+                VStack(alignment: .leading, spacing: 2) {
+                    Text(patient.fullName).font(.subheadline.weight(.semibold))
+                    HStack(spacing: 6) {
+                        if let mrn = patient.mrn, !mrn.isEmpty {
+                            Text("MRN \(mrn)")
+                                .font(.caption2).foregroundStyle(AMColor.accent)
+                        }
+                        Text(patient.ageDisplay ?? "").font(.caption2).foregroundStyle(.secondary)
+                        Text(patient.sex.rawValue).font(.caption2).foregroundStyle(.secondary)
+                    }
+                }
+            }
+            .accessibilityElement(children: .combine)
+        } header: {
+            Label("Patient", systemImage: "person.crop.circle")
+                .textCase(nil).scaledFont(size: 11, weight: .semibold)
+        }
+    }
+
+    // ── Phase 1: Chief complaint ──────────────────────────────────────────────
+
+    @ViewBuilder
+    var phase1CCSection: some View {
+        Section {
+            // Structured CC picker — maps directly to Bayesian routing
+            Picker("Chief complaint", selection: $answers.ccCategory) {
+                Text("Select…").tag(Optional<CCCategory>.none)
+                ForEach(visibleCCCategories, id: \.self) { cc in
+                    Text(cc.rawValue).tag(Optional(cc))
+                }
+            }
+            .pickerStyle(.menu)
+            .onChange(of: answers.ccCategory) { _, _ in
+                // Reset CC-dependent answers when category changes
+                answers.associatedSymptoms = []
+                answers.painSite = ""
+                answers.painCharacter = nil
+                answers.painOnset = nil
+                answers.painTiming = nil
+                answers.painWorsenedBy = []
+                answers.painRelievedBy = []
+                answers.painRadiates = false
+                answers.painRadiationSite = ""
+                answers.resetLumpAnswers()
+            }
+
+            let placeholder = answers.ccCategory == .other
+                ? "Describe the complaint…"
+                : "Additional detail (optional)"
+            TextField(placeholder, text: $answers.ccClarification, axis: .vertical)
+                .lineLimit(2...)
+        } header: {
+            Label("Chief Complaint", systemImage: "1.circle.fill")
+                .textCase(nil).scaledFont(size: 11, weight: .semibold)
+        } footer: {
+            if answers.ccCategory == nil {
+                Text("Select the primary reason for today's visit. All subsequent questions adapt to this selection.")
+                    .font(.caption).foregroundStyle(.secondary)
+            }
+        }
+    }
+
+    // Demographic gating for CC picker
+    var visibleCCCategories: [CCCategory] {
+        CCCategory.allCases.filter { cc in
+            if cc == .breastSymptom && patientSex == .male { return false }
+            return true
+        }
+    }
+
+    // ── Phase 2: SOCRATES (pain CCs only) ────────────────────────────────────
+
+    @ViewBuilder
+    func phase2SocratesSection(cc: CCCategory) -> some View {
+        Section {
+            TextField("Location (e.g. right lower abdomen, central, diffuse)",
+                      text: $answers.painSite, axis: .vertical)
+                .lineLimit(1...)
+
+            Picker("Onset speed", selection: $answers.painOnset) {
+                Text("Select…").tag(Optional<PainOnset>.none)
+                ForEach(PainOnset.allCases, id: \.self) { o in Text(o.rawValue).tag(Optional(o)) }
+            }
+
+            if answers.painOnset != nil {
+                HStack {
+                    Text("Hours since onset")
+                    Spacer()
+                    TextField("e.g. 6", value: $answers.painOnsetHoursAgo, format: .number)
+                        .keyboardType(.numberPad)
+                        .multilineTextAlignment(.trailing)
+                        .frame(minWidth: 80, maxWidth: 140)   // room for the number at large text sizes
+                        .accessibilityLabel("Hours since onset")
+                }
+            }
+
+            Picker("Character", selection: $answers.painCharacter) {
+                Text("Select…").tag(Optional<PainCharacter>.none)
+                ForEach(PainCharacter.allCases, id: \.self) { c in Text(c.rawValue).tag(Optional(c)) }
+            }
+        } header: {
+            Label("Pain — Site & Onset", systemImage: "2.circle.fill")
+                .textCase(nil).scaledFont(size: 11, weight: .semibold)
+        }
+
+        Section {
+            Toggle("Does the pain spread to another area?", isOn: $answers.painRadiates)
+            if answers.painRadiates {
+                TextField("Where does it spread to?", text: $answers.painRadiationSite)
+            }
+
+            Picker("Timing pattern", selection: $answers.painTiming) {
+                Text("Select…").tag(Optional<PainTiming>.none)
+                ForEach(PainTiming.allCases, id: \.self) { t in Text(t.rawValue).tag(Optional(t)) }
+            }
+
+            VStack(alignment: .leading, spacing: 6) {
+                Text("Severity: \(answers.severityAnswered ? "\(answers.painSeverity)/10" : "not yet set")")
+                    .font(.subheadline)
+                    .accessibilityHidden(true)   // spoken on the slider
+                Slider(value: Binding(
+                    get: { Double(answers.painSeverity) },
+                    set: { answers.painSeverity = Int($0); answers.severityAnswered = true }
+                ), in: 0...10, step: 1)
+                .tint(answers.painSeverity >= 8 ? .red : answers.painSeverity >= 5 ? .orange : .green)
+                // A bare slider reads as a percentage.
+                .accessibilityLabel("Pain severity, 0 no pain to 10 worst imaginable")
+                .accessibilityValue(answers.severityAnswered ? "\(answers.painSeverity) out of 10" : "not yet set")
+            }
+        } header: {
+            Label("Pain — Radiation, Timing & Severity", systemImage: "3.circle.fill")
+                .textCase(nil).scaledFont(size: 11, weight: .semibold)
+        }
+
+        Section {
+            QCheckboxGrid(label: "Makes it WORSE", options: cc.worsening, selection: $answers.painWorsenedBy)
+            QCheckboxGrid(label: "Makes it BETTER", options: cc.relieving, selection: $answers.painRelievedBy)
+        } header: {
+            Label("Exacerbating & Relieving Factors", systemImage: "arrow.up.arrow.down")
+                .textCase(nil).scaledFont(size: 11, weight: .semibold)
+        }
+    }
+
+    // ── Phase 2 (lump / hernia): lump questions ──────────────────────────────
+    // Chosen by the complaint's history-frames symptom type (CCCategory.questionSet). Plain wording;
+    // the answers are stored as the lump frame's chips (EncounterAnswers.socratesSelections).
+
+    @ViewBuilder
+    func phase2LumpSection(cc: CCCategory) -> some View {
+        Section {
+            TextField("Where is it? (e.g. right groin, belly button, left side of the neck)",
+                      text: $answers.lumpSite, axis: .vertical)
+                .lineLimit(1...)
+
+            Picker("When did you first notice it?", selection: $answers.lumpDuration) {
+                Text("Select…").tag(Optional<LumpDuration>.none)
+                ForEach(LumpDuration.allCases, id: \.self) { d in Text(d.rawValue).tag(Optional(d)) }
+            }
+
+            Picker("Has it changed in size?", selection: $answers.lumpSizeChange) {
+                Text("Select…").tag(Optional<LumpSizeChange>.none)
+                ForEach(LumpSizeChange.allCases, id: \.self) { c in Text(c.rawValue).tag(Optional(c)) }
+            }
+
+            Picker("Is it painful or tender?", selection: $answers.lumpPain) {
+                Text("Select…").tag(Optional<LumpPain>.none)
+                ForEach(LumpPain.allCases, id: \.self) { p in Text(p.rawValue).tag(Optional(p)) }
+            }
+
+            Toggle("Is the skin over it red?", isOn: $answers.lumpSkinRed)
+        } header: {
+            Label("The Lump or Swelling", systemImage: "2.circle.fill")
+                .textCase(nil).scaledFont(size: 11, weight: .semibold)
+        }
+
+        if cc.lumpVariant == "hernia" {
+            Section {
+                QCheckboxGrid(label: "Tick any that apply",
+                              options: LumpBehaviour.allCases.map(\.rawValue),
+                              selection: lumpBehaviourLabels)
+            } header: {
+                Label("Does It Go Back In?", systemImage: "3.circle.fill")
+                    .textCase(nil).scaledFont(size: 11, weight: .semibold)
+            }
+        }
+
+        if cc.lumpVariant == "neck" {
+            Section {
+                Toggle("Does it move up and down when you swallow?", isOn: $answers.lumpMovesOnSwallowing)
+            } header: {
+                Label("Swallowing", systemImage: "3.circle.fill")
+                    .textCase(nil).scaledFont(size: 11, weight: .semibold)
+            }
+        }
+    }
+
+    /// The hernia answers as the checkbox grid's labels.
+    var lumpBehaviourLabels: Binding<Set<String>> {
+        Binding(
+            get: { Set(answers.lumpBehaviour.map(\.rawValue)) },
+            set: { labels in answers.lumpBehaviour = Set(labels.compactMap { LumpBehaviour(rawValue: $0) }) }
+        )
+    }
+
+    // ── Phase 3: Associated symptoms (CC-specific list, with type-to-search) ───
+
+    @ViewBuilder
+    var phase3AssociatedSection: some View {
+        if let cc = answers.ccCategory {
+            Section {
+                // Type-to-filter (matches web version's symptom entry)
+                HStack(spacing: 8) {
+                    Image(systemName: "magnifyingglass")
+                        .foregroundStyle(.secondary)
+                        .scaledFont(size: 14)
+                        .accessibilityHidden(true)
+                    TextField("Type to search or add a symptom…", text: $symptomFilter)
+                        .autocorrectionDisabled()
+                        .textInputAutocapitalization(.words)
+                }
+
+                let q = symptomFilter.trimmingCharacters(in: .whitespaces)
+                let filtered = q.isEmpty
+                    ? cc.associatedSymptoms
+                    : cc.associatedSymptoms.filter { $0.lowercased().contains(q.lowercased()) }
+
+                if !filtered.isEmpty {
+                    QCheckboxGrid(label: nil, options: filtered, selection: $answers.associatedSymptoms)
+                }
+
+                // Show already-selected custom symptoms not in the filtered list
+                let custom = answers.associatedSymptoms.filter { !cc.associatedSymptoms.contains($0) }
+                if !custom.isEmpty {
+                    QCheckboxGrid(label: "Added", options: custom.sorted(), selection: $answers.associatedSymptoms)
+                }
+
+                // "Add custom" when query doesn't match any preset
+                if !q.isEmpty && !cc.associatedSymptoms.contains(where: { $0.lowercased() == q.lowercased() }) {
+                    Button {
+                        answers.associatedSymptoms.insert(q)
+                        symptomFilter = ""
+                    } label: {
+                        Label("Add \"\(q)\"", systemImage: "plus.circle.fill")
+                            .foregroundStyle(AMColor.accent)
+                    }
+                    .buttonStyle(.plain)
+                }
+
+                if !answers.associatedSymptoms.isEmpty {
+                    Text("Selected: \(answers.associatedSymptoms.sorted().joined(separator: " · "))")
+                        .font(.caption2)
+                        .foregroundStyle(AMColor.accent)
+                        .accessibilityLabel("Selected: \(answers.associatedSymptoms.sorted().joined(separator: ", "))")
+                }
+
+            } header: {
+                Label("Associated Symptoms", systemImage: "list.bullet")
+                    .textCase(nil).scaledFont(size: 11, weight: .semibold)
+            } footer: {
+                Text("Search or tap to select. Showing symptoms relevant to \(cc.rawValue.lowercased()).")
+                    .font(.caption).foregroundStyle(.secondary)
+            }
+        }
+    }
+
+    // ── Phase 4: Red flags (demographic-gated) ────────────────────────────────
+
+}

@@ -1,0 +1,270 @@
+{
+  "schemaVersion": 1,
+  "id": "anal-fissure-atypical-lateral-hiv",
+  "condition": "Atypical (lateral) anal ulcer — exclude Crohn’s, syphilis, HSV, TB, HIV-related ulcer and anal cancer",
+  "category": "anorectal",
+  "permutationOf": "anal-fissure-acute-posterior",
+  "permutationLabel": "Atypical: lateral, painless, indurated; HIV",
+  "summary": "35-year-old man living with HIV (MSM) with a broad, indurated, relatively painless lateral anal ulcer and inguinal lymphadenopathy. Atypical fissure: EUA and biopsy, syphilis/HSV/TB testing, Crohn’s assessment. No sphincterotomy before a diagnosis.",
+  "tags": [
+    "anorectal",
+    "fissure",
+    "atypical",
+    "hiv",
+    "must-not-miss"
+  ],
+  "inputs": {
+    "patient": {
+      "ageYears": 35,
+      "sex": "male",
+      "pregnancy": {
+        "status": "not-applicable"
+      },
+      "heightCm": 180,
+      "weightKg": 74
+    },
+    "encounter": {
+      "setting": "outpatient",
+      "visitType": "newConsult",
+      "acuity": "routine"
+    },
+    "chiefComplaint": "Sore near the back passage",
+    "hpi": "Six weeks of a sore beside the anus with some discharge and spotting of blood, only mildly painful. HIV on antiretrovirals (last viral load undetectable, CD4 420). New partner 3 months ago. No bowel change, no weight loss.",
+    "socrates": {
+      "onset": [
+        "1–6 months ago"
+      ],
+      "site": [
+        "Anal canal",
+        "Right lateral"
+      ],
+      "character": [
+        "Aching"
+      ],
+      "associations": [
+        "Rectal bleeding",
+        "Mucus discharge"
+      ],
+      "timing": [
+        "Constant"
+      ],
+      "severity": [
+        "Mild (1–3/10)"
+      ]
+    },
+    "symptoms": [
+      "rectal pain",
+      "rectal bleeding",
+      "anal discharge",
+      "lymphadenopathy"
+    ],
+    "negatives": [
+      "weight loss",
+      "change in bowel habit"
+    ],
+    "exam": {
+      "general": "Well. Bilateral tender inguinal lymphadenopathy.",
+      "abdomen": "Soft.",
+      "other": "Perianal: 2 cm broad-based ulcer in the right lateral position with indurated, rolled edges, extending beyond the dentate line; no sentinel tag."
+    },
+    "vitals": [
+      {
+        "minutesAgo": 20,
+        "heartRate": 74,
+        "systolicBp": 124,
+        "diastolicBp": 76,
+        "respiratoryRate": 14,
+        "temperatureC": 36.8,
+        "spo2": 99,
+        "avpu": "A",
+        "onSupplementalO2": false
+      }
+    ],
+    "labs": [
+      {
+        "analyte": "cd4",
+        "name": "CD4 count",
+        "value": 420,
+        "unit": "cells/µL",
+        "minutesAgo": 60
+      }
+    ],
+    "comorbidities": [
+      "HIV infection (on ART, viral load undetectable)"
+    ],
+    "surgicalHistory": [],
+    "medications": [
+      {
+        "drug": "Bictegravir/emtricitabine/tenofovir alafenamide",
+        "frequency": "OD",
+        "indication": "HIV"
+      }
+    ],
+    "allergies": [],
+    "nkda": true,
+    "socialHistory": "Graphic designer. MSM.",
+    "confirmedDiagnosis": {
+      "name": "Atypical lateral anal fissure/ulcer — cause to be established",
+      "icd10": "K60.2",
+      "paneDiseaseId": "anal_fissure",
+      "assessmentText": "Atypical lateral anal ulcer with indurated edges and inguinal nodes in a man with HIV. Exclude syphilis, HSV, TB, Crohn’s and anal squamous cell carcinoma: EUA and biopsy, serology and swabs."
+    },
+    "platform": {
+      "web": {
+        "ccTemplate": "Other / general surgical",
+        "symptoms": [
+          "rectal pain",
+          "rectal bleeding",
+          "anal discharge",
+          "lymphadenopathy"
+        ],
+        "examFindings": {
+          "perineal": [
+            "Fissure",
+            "Discharge"
+          ],
+          "anal": [
+            "Fissure"
+          ]
+        },
+        "paneAnswers": {
+          "anal_pain": true,
+          "pr_bleeding": true,
+          "ulcerated_lesion": true
+        },
+        "durationDays": 42,
+        "painScore": 2
+      }
+    }
+  },
+  "expected": {
+    "differential": {
+      "mustNotMiss": [
+        {
+          "id": "mnm-anal-cancer",
+          "severity": "critical",
+          "match": [
+            "anal cancer",
+            "anal carcinoma",
+            "carcinoma of the anus",
+            "squamous cell carcinoma of the anus",
+            "anal scc"
+          ],
+          "guidelineRefs": [
+            "ascrs-fissure-2023",
+            "ascrs-anal-scc-2018"
+          ]
+        },
+        {
+          "id": "mnm-sti-crohn",
+          "severity": "quality",
+          "match": [
+            "syphilis",
+            "herpes",
+            "hsv",
+            "crohn",
+            "tuberculosis",
+            "sexually transmitted"
+          ],
+          "guidelineRefs": [
+            "ascrs-fissure-2023"
+          ],
+          "knownGap": [
+            "web",
+            "ios"
+          ],
+          "knownGapNote": "Syphilis/HSV/TB/Crohn’s are not in the PANE top 3 for an atypical fissure (the protocol red flag mentions them). | iOS CI 2026-09-25 (run 36169134350, database mode): not in top 5 of ios.bayes: 1. Perianal Abscess | 2. Anal Carcinoma | 3. Inguinal Hernia | 4. Fournier's Gangrene | 5. Femoral Hernia"
+        }
+      ]
+    },
+    "safety": {
+      "redFlags": [
+        {
+          "id": "flag-atypical",
+          "severity": "critical",
+          "match": [
+            "lateral",
+            "atypical",
+            "crohn",
+            "re:\\bsti\\b",
+            "syphilis"
+          ],
+          "guidelineRefs": [
+            "ascrs-fissure-2023"
+          ]
+        }
+      ]
+    },
+    "investigations": {
+      "mustInclude": [
+        {
+          "id": "inv-eua-biopsy",
+          "severity": "critical",
+          "match": [
+            "biopsy",
+            "eua",
+            "examination under anaesthesia"
+          ],
+          "guidelineRefs": [
+            "ascrs-fissure-2023",
+            "ascrs-anal-scc-2018"
+          ],
+          "proposedFix": "Add an \"atypical fissure\" dx-variant (lateral, multiple, painless, indurated, HIV/IBD) that replaces the treatment phases with EUA + biopsy, syphilis/HSV/HIV/TB testing and Crohn’s assessment (ASCRS 2023)."
+        }
+      ]
+    },
+    "management": {
+      "mustExclude": [
+        {
+          "id": "mgmt-no-sphincterotomy",
+          "severity": "critical",
+          "match": [
+            "sphincterotomy"
+          ],
+          "unless": [
+            "avoid",
+            "not ",
+            "contraindicat",
+            "do not",
+            "unless",
+            "caution"
+          ],
+          "sources": [
+            "web.plan",
+            "web.protocol.medications",
+            "ios.radiation",
+            "ios.soap"
+          ],
+          "guidelineRefs": [
+            "ascrs-fissure-2023"
+          ],
+          "note": "Sphincterotomy (or botulinum) for an undiagnosed atypical ulcer risks incontinence and delays a cancer or infection diagnosis."
+        }
+      ]
+    }
+  },
+  "guideline": [
+    {
+      "id": "ascrs-fissure-2023",
+      "name": "ASCRS clinical practice guidelines — management of anal fissures",
+      "year": 2023,
+      "section": "Atypical fissures (lateral, multiple, painless, large, indurated): evaluate for Crohn’s disease, HIV, syphilis, tuberculosis, malignancy — EUA and biopsy",
+      "citation": "Davids JS, Hawkins AT, Bhama AR, et al. The American Society of Colon and Rectal Surgeons clinical practice guidelines for the management of anal fissures. Dis Colon Rectum. 2023;66:190–199.",
+      "verified": false
+    },
+    {
+      "id": "ascrs-anal-scc-2018",
+      "name": "ASCRS clinical practice guidelines — anal squamous cell cancers (revised 2018)",
+      "year": 2018,
+      "section": "Biopsy suspicious anal lesions; people with HIV are at high risk of anal cancer",
+      "citation": "Stewart DB, Gaertner WB, Glasgow SC, et al. The American Society of Colon and Rectal Surgeons clinical practice guidelines for anal squamous cell cancers (revised 2018). Dis Colon Rectum. 2018;61:755–774.",
+      "verified": false
+    }
+  ],
+  "rationale": "Permutation: every \"atypical\" feature (lateral, painless, indurated, nodes) plus HIV. The plan must investigate, not treat as a fissure. Coded K60.2 (anal fissure, unspecified) because that is what the clinician would pick before the biopsy.",
+  "authoring": {
+    "author": "Claude (colorectal/anorectal cluster)",
+    "date": "2026-09-25",
+    "notes": "Expectations need surgeon sign-off (reviewedBy). Citations verified: false until checked against the source."
+  }
+}

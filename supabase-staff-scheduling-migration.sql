@@ -16,9 +16,12 @@ UPDATE appointment_requests
  WHERE source IS NULL;
 
 -- Constraint (optional — add after backfill)
-ALTER TABLE appointment_requests
-  ADD CONSTRAINT chk_appt_source
-  CHECK (source IN ('web', 'staff', 'whatsapp', 'phone', 'kiosk', 'referral'));
+DO $guard$ BEGIN
+  ALTER TABLE appointment_requests
+    ADD CONSTRAINT chk_appt_source
+    CHECK (source IN ('web', 'staff', 'whatsapp', 'phone', 'kiosk', 'referral'));
+EXCEPTION WHEN duplicate_object THEN NULL;
+END $guard$;
 
 -- Indexes for common queries
 CREATE INDEX IF NOT EXISTS idx_appt_source

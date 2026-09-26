@@ -463,25 +463,37 @@ alter table consent_records          enable row level security;
 --      Read-only for all authenticated staff.
 --      Mutations restricted to admin and service_role.
 -- ─────────────────────────────────────────────────────────────
-create policy "apcq_tmpl_staff_select"
-  on questionnaire_templates
-  for select
-  using (auth.uid() is not null);
+do $guard$ begin
+  create policy "apcq_tmpl_staff_select"
+    on questionnaire_templates
+    for select
+    using (auth.uid() is not null);
+exception when duplicate_object then null;
+end $guard$;
 
-create policy "apcq_tmpl_admin_insert"
-  on questionnaire_templates
-  for insert
-  with check (auth_role() = 'admin');
+do $guard$ begin
+  create policy "apcq_tmpl_admin_insert"
+    on questionnaire_templates
+    for insert
+    with check (auth_role() = 'admin');
+exception when duplicate_object then null;
+end $guard$;
 
-create policy "apcq_tmpl_admin_update"
-  on questionnaire_templates
-  for update
-  using (auth_role() = 'admin');
+do $guard$ begin
+  create policy "apcq_tmpl_admin_update"
+    on questionnaire_templates
+    for update
+    using (auth_role() = 'admin');
+exception when duplicate_object then null;
+end $guard$;
 
-create policy "apcq_tmpl_admin_delete"
-  on questionnaire_templates
-  for delete
-  using (auth_role() = 'admin');
+do $guard$ begin
+  create policy "apcq_tmpl_admin_delete"
+    on questionnaire_templates
+    for delete
+    using (auth_role() = 'admin');
+exception when duplicate_object then null;
+end $guard$;
 
 
 -- ─────────────────────────────────────────────────────────────
@@ -489,50 +501,74 @@ create policy "apcq_tmpl_admin_delete"
 --      Read-only for all authenticated staff.
 --      Mutations restricted to admin and service_role.
 -- ─────────────────────────────────────────────────────────────
-create policy "apcq_qb_staff_select"
-  on question_bank
-  for select
-  using (auth.uid() is not null);
+do $guard$ begin
+  create policy "apcq_qb_staff_select"
+    on question_bank
+    for select
+    using (auth.uid() is not null);
+exception when duplicate_object then null;
+end $guard$;
 
-create policy "apcq_qb_admin_insert"
-  on question_bank
-  for insert
-  with check (auth_role() = 'admin');
+do $guard$ begin
+  create policy "apcq_qb_admin_insert"
+    on question_bank
+    for insert
+    with check (auth_role() = 'admin');
+exception when duplicate_object then null;
+end $guard$;
 
-create policy "apcq_qb_admin_update"
-  on question_bank
-  for update
-  using (auth_role() = 'admin');
+do $guard$ begin
+  create policy "apcq_qb_admin_update"
+    on question_bank
+    for update
+    using (auth_role() = 'admin');
+exception when duplicate_object then null;
+end $guard$;
 
-create policy "apcq_qb_admin_delete"
-  on question_bank
-  for delete
-  using (auth_role() = 'admin');
+do $guard$ begin
+  create policy "apcq_qb_admin_delete"
+    on question_bank
+    for delete
+    using (auth_role() = 'admin');
+exception when duplicate_object then null;
+end $guard$;
 
 
 -- ─────────────────────────────────────────────────────────────
 -- 7.3  branching_rules
 --      Same access pattern as question_bank.
 -- ─────────────────────────────────────────────────────────────
-create policy "apcq_br_staff_select"
-  on branching_rules
-  for select
-  using (auth.uid() is not null);
+do $guard$ begin
+  create policy "apcq_br_staff_select"
+    on branching_rules
+    for select
+    using (auth.uid() is not null);
+exception when duplicate_object then null;
+end $guard$;
 
-create policy "apcq_br_admin_insert"
-  on branching_rules
-  for insert
-  with check (auth_role() = 'admin');
+do $guard$ begin
+  create policy "apcq_br_admin_insert"
+    on branching_rules
+    for insert
+    with check (auth_role() = 'admin');
+exception when duplicate_object then null;
+end $guard$;
 
-create policy "apcq_br_admin_update"
-  on branching_rules
-  for update
-  using (auth_role() = 'admin');
+do $guard$ begin
+  create policy "apcq_br_admin_update"
+    on branching_rules
+    for update
+    using (auth_role() = 'admin');
+exception when duplicate_object then null;
+end $guard$;
 
-create policy "apcq_br_admin_delete"
-  on branching_rules
-  for delete
-  using (auth_role() = 'admin');
+do $guard$ begin
+  create policy "apcq_br_admin_delete"
+    on branching_rules
+    for delete
+    using (auth_role() = 'admin');
+exception when duplicate_object then null;
+end $guard$;
 
 
 -- ─────────────────────────────────────────────────────────────
@@ -548,47 +584,62 @@ create policy "apcq_br_admin_delete"
 -- ─────────────────────────────────────────────────────────────
 
 -- Anon: read own session by token
-create policy "apcq_sess_anon_select_by_token"
-  on questionnaire_sessions
-  for select
-  to anon
-  using (
-    session_token = current_setting('app.session_token', true)
-  );
+do $guard$ begin
+  create policy "apcq_sess_anon_select_by_token"
+    on questionnaire_sessions
+    for select
+    to anon
+    using (
+      session_token = current_setting('app.session_token', true)
+    );
+exception when duplicate_object then null;
+end $guard$;
 
 -- Anon: create new session (token will be auto-generated)
-create policy "apcq_sess_anon_insert"
-  on questionnaire_sessions
-  for insert
-  to anon
-  with check (true);
+do $guard$ begin
+  create policy "apcq_sess_anon_insert"
+    on questionnaire_sessions
+    for insert
+    to anon
+    with check (true);
+exception when duplicate_object then null;
+end $guard$;
 
 -- Authenticated staff: read all sessions
-create policy "apcq_sess_staff_select"
-  on questionnaire_sessions
-  for select
-  to authenticated
-  using (
-    auth_role() in ('nurse', 'doctor', 'admin', 'front_desk')
-  );
+do $guard$ begin
+  create policy "apcq_sess_staff_select"
+    on questionnaire_sessions
+    for select
+    to authenticated
+    using (
+      auth_role() in ('nurse', 'doctor', 'admin', 'front_desk')
+    );
+exception when duplicate_object then null;
+end $guard$;
 
 -- Authenticated staff: create sessions on behalf of patients
-create policy "apcq_sess_staff_insert"
-  on questionnaire_sessions
-  for insert
-  to authenticated
-  with check (
-    auth_role() in ('nurse', 'doctor', 'admin', 'front_desk')
-  );
+do $guard$ begin
+  create policy "apcq_sess_staff_insert"
+    on questionnaire_sessions
+    for insert
+    to authenticated
+    with check (
+      auth_role() in ('nurse', 'doctor', 'admin', 'front_desk')
+    );
+exception when duplicate_object then null;
+end $guard$;
 
 -- Nurses, doctors, admins: update status and review fields
-create policy "apcq_sess_clinical_update"
-  on questionnaire_sessions
-  for update
-  to authenticated
-  using (
-    auth_role() in ('nurse', 'doctor', 'admin')
-  );
+do $guard$ begin
+  create policy "apcq_sess_clinical_update"
+    on questionnaire_sessions
+    for update
+    to authenticated
+    using (
+      auth_role() in ('nurse', 'doctor', 'admin')
+    );
+exception when duplicate_object then null;
+end $guard$;
 
 
 -- ─────────────────────────────────────────────────────────────
@@ -617,31 +668,40 @@ as $$
 $$;
 
 -- Anon: insert responses only if they own the parent session
-create policy "apcq_resp_anon_insert"
-  on questionnaire_responses
-  for insert
-  to anon
-  with check (
-    anon_owns_session(session_id)
-  );
+do $guard$ begin
+  create policy "apcq_resp_anon_insert"
+    on questionnaire_responses
+    for insert
+    to anon
+    with check (
+      anon_owns_session(session_id)
+    );
+exception when duplicate_object then null;
+end $guard$;
 
 -- Authenticated staff: read all responses
-create policy "apcq_resp_staff_select"
-  on questionnaire_responses
-  for select
-  to authenticated
-  using (
-    auth_role() in ('nurse', 'doctor', 'admin', 'front_desk')
-  );
+do $guard$ begin
+  create policy "apcq_resp_staff_select"
+    on questionnaire_responses
+    for select
+    to authenticated
+    using (
+      auth_role() in ('nurse', 'doctor', 'admin', 'front_desk')
+    );
+exception when duplicate_object then null;
+end $guard$;
 
 -- Authenticated staff: insert responses (staff-assisted delivery)
-create policy "apcq_resp_staff_insert"
-  on questionnaire_responses
-  for insert
-  to authenticated
-  with check (
-    auth_role() in ('nurse', 'doctor', 'admin', 'front_desk')
-  );
+do $guard$ begin
+  create policy "apcq_resp_staff_insert"
+    on questionnaire_responses
+    for insert
+    to authenticated
+    with check (
+      auth_role() in ('nurse', 'doctor', 'admin', 'front_desk')
+    );
+exception when duplicate_object then null;
+end $guard$;
 
 
 -- ─────────────────────────────────────────────────────────────
@@ -652,13 +712,16 @@ create policy "apcq_resp_staff_insert"
 --      (Claude-generated content; never written by browser
 --      clients directly).
 -- ─────────────────────────────────────────────────────────────
-create policy "apcq_is_clinical_select"
-  on intake_summaries
-  for select
-  to authenticated
-  using (
-    auth_role() in ('nurse', 'doctor', 'admin')
-  );
+do $guard$ begin
+  create policy "apcq_is_clinical_select"
+    on intake_summaries
+    for select
+    to authenticated
+    using (
+      auth_role() in ('nurse', 'doctor', 'admin')
+    );
+exception when duplicate_object then null;
+end $guard$;
 
 -- No INSERT/UPDATE policies for authenticated or anon roles.
 -- The service_role bypasses RLS entirely and may write freely.
@@ -671,27 +734,36 @@ create policy "apcq_is_clinical_select"
 --      or QR session). Authenticated staff can SELECT all.
 --      No client-side UPDATE or DELETE — consent is immutable.
 -- ─────────────────────────────────────────────────────────────
-create policy "apcq_cr_anon_insert"
-  on consent_records
-  for insert
-  to anon
-  with check (true);
+do $guard$ begin
+  create policy "apcq_cr_anon_insert"
+    on consent_records
+    for insert
+    to anon
+    with check (true);
+exception when duplicate_object then null;
+end $guard$;
 
-create policy "apcq_cr_staff_insert"
-  on consent_records
-  for insert
-  to authenticated
-  with check (
-    auth_role() in ('nurse', 'doctor', 'admin', 'front_desk')
-  );
+do $guard$ begin
+  create policy "apcq_cr_staff_insert"
+    on consent_records
+    for insert
+    to authenticated
+    with check (
+      auth_role() in ('nurse', 'doctor', 'admin', 'front_desk')
+    );
+exception when duplicate_object then null;
+end $guard$;
 
-create policy "apcq_cr_staff_select"
-  on consent_records
-  for select
-  to authenticated
-  using (
-    auth_role() in ('nurse', 'doctor', 'admin', 'front_desk')
-  );
+do $guard$ begin
+  create policy "apcq_cr_staff_select"
+    on consent_records
+    for select
+    to authenticated
+    using (
+      auth_role() in ('nurse', 'doctor', 'admin', 'front_desk')
+    );
+exception when duplicate_object then null;
+end $guard$;
 
 
 -- ============================================================

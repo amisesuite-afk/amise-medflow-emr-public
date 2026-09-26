@@ -2,9 +2,9 @@
 
 export const dynamic = 'force-dynamic';
 
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useSearchParams } from 'next/navigation';
-import { getStaffClient } from '@/lib/staff-supabase';
+import { getStaffClient, signOutStaff, syncStaffSessionCookie } from '@/lib/staff-supabase';
 import { Suspense } from 'react';
 
 const TEAL = '#0d9488';
@@ -73,11 +73,20 @@ const s = {
 
 function LoginContent() {
   const params  = useSearchParams();
-  const next    = params.get('next') ?? '/staff/schedule';
+  // Only follow same-site staff paths after sign-in (no open redirect).
+  const rawNext = params.get('next') ?? '';
+  const next    = rawNext.startsWith('/staff') && !rawNext.startsWith('//') ? rawNext : '/staff/schedule';
+  const signingOut = params.get('signout') === '1';
+  const idleSignedOut = params.get('reason') === 'idle';
   const [email, setEmail]   = useState('');
   const [pass,  setPass]    = useState('');
   const [err,   setErr]     = useState('');
   const [busy,  setBusy]    = useState(false);
+
+  // "Sign out" in the staff header links here with ?signout=1.
+  useEffect(() => {
+    if (signingOut) void signOutStaff();
+  }, [signingOut]);
 
   async function submit(e: React.FormEvent) {
     e.preventDefault();
@@ -85,8 +94,11 @@ function LoginContent() {
     setBusy(true);
     try {
       const sb = getStaffClient();
-      const { error } = await sb.auth.signInWithPassword({ email: email.trim(), password: pass });
+      const { data, error } = await sb.auth.signInWithPassword({ email: email.trim(), password: pass });
       if (error) { setErr(error.message); setBusy(false); return; }
+      // Set the session cookie before navigating, so middleware and the
+      // /api/staff/* handlers see it on the very next request.
+      syncStaffSessionCookie(data.session);
       window.location.href = next;
     } catch {
       setErr('Login failed — please try again.');
@@ -104,9 +116,14 @@ function LoginContent() {
           <div style={{ color: '#94a3b8', fontSize: 14 }}>Staff scheduling portal</div>
         </div>
 
+        {idleSignedOut && !err && (
+          <div role="status" style={{ ...s.err, background: 'rgba(45,212,191,.08)', border: '1px solid rgba(45,212,191,.3)', color: '#5eead4' }}>
+            You were signed out after a period of inactivity.
+          </div>
+        )}
         {err && <div style={s.err}>{err}</div>}
 
-        <form onSubmit={void submit}>
+        <form onSubmit={e => void submit(e)}>
           <div style={{ marginBottom: 16 }}>
             <label style={s.label}>Staff email</label>
             <input

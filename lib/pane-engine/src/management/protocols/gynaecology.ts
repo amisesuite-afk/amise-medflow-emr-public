@@ -1,14 +1,18 @@
 import type { ManagementProtocol } from '../types.js';
+import { OBSTETRIC_REDIRECT } from './shared.js';
 
 export const gynaecologyProtocols: ManagementProtocol[] = [
   {
     diseaseId: 'ectopic_pregnancy',
-    icd10Prefixes: ['O00.9'],
+    icd10Prefixes: ['O00'],
     label: 'Ectopic Pregnancy',
+    pregnancySpecific: true,
+    guidelines: ['NICE NG126 (2019, updated 2023) ectopic pregnancy and miscarriage', 'RCOG/AEPU Green-top Guideline 21 (2016) diagnosis and management of ectopic pregnancy'],
     keyPoints: [
       'Classic triad: amenorrhoea, lower abdominal pain, and vaginal bleeding — but only 50% present classically.',
       'Positive β-hCG with empty uterus on transvaginal ultrasound (TVUS) = ectopic until proven otherwise.',
       'Ruptured ectopic is a life-threatening emergency: shoulder-tip pain from diaphragmatic irritation, haemodynamic collapse.',
+      'Ruptured or haemodynamically unstable ectopic: methotrexate and expectant management are contraindicated — emergency surgery (NICE NG126).',
     ],
     redFlags: [
       'Haemodynamic instability (hypotension, tachycardia) — ruptured ectopic; immediate resuscitation and emergency surgery',
@@ -22,21 +26,22 @@ export const gynaecologyProtocols: ManagementProtocol[] = [
       { label: 'FBC, group and crossmatch, coagulation', urgency: 'stat' },
       { label: 'Serum β-hCG at 48 hours (discriminatory zone approach)', urgency: 'urgent' },
       { label: 'Progesterone level (low in failing pregnancies)', urgency: 'urgent' },
-      { label: 'Renal function, LFTs (methotrexate suitability)', urgency: 'urgent' },
+      { label: 'Renal function, LFTs — only if medical (methotrexate) management is being considered for an unruptured ectopic', urgency: 'urgent' },
     ],
     management: [
+      { phase: 'immediate', step: `Suspected ectopic pregnancy seen in clinic (pain, bleeding or collapse with a positive pregnancy test): ${OBSTETRIC_REDIRECT}` },
       { phase: 'immediate', step: 'Resuscitation: two large-bore IV cannulae; IV fluids; O2; crossmatch; urgent gynaecology review.' },
-      { phase: 'surgical', step: 'Ruptured/haemodynamically unstable: emergency laparoscopy (salpingectomy); laparotomy if unstable.' },
+      { phase: 'surgical', step: 'Ruptured/haemodynamically unstable: emergency surgery — laparoscopy (salpingectomy), laparotomy if unstable; methotrexate and expectant management are contraindicated (NICE NG126).' },
       { phase: 'surgical', step: 'Unruptured ectopic with haemodynamic stability: laparoscopic salpingectomy (preferred) or salpingostomy (if contralateral tube damaged).' },
-      { phase: 'conservative', step: 'Medical management with methotrexate (50 mg/m²) for selected unruptured ectopics: β-hCG <5000 IU/L, no cardiac activity, haemodynamically stable.' },
-      { phase: 'conservative', step: 'Expectant management only for very low/falling β-hCG (<1500 IU/L) in truly asymptomatic patients under close surveillance.' },
-      { phase: 'followup', step: 'Serial β-hCG until undetectable (<5 IU/L) after medical/surgical management; anti-D 250 IU IM if Rh negative.' },
+      { phase: 'conservative', step: 'Medical management with methotrexate (50 mg/m² IM, single dose) only for selected unruptured ectopics: haemodynamically stable, no significant pain, adnexal mass < 35 mm with no visible heartbeat, serum hCG < 1500 IU/L (may be offered up to 5000 IU/L), able to attend follow-up (NICE NG126).' },
+      { phase: 'conservative', step: 'Expectant management only for clinically stable, pain-free women with a tubal ectopic < 35 mm, no visible heartbeat and serum hCG ≤ 1000 IU/L, with close follow-up (NICE NG126).' },
+      { phase: 'followup', step: 'Serial β-hCG until negative when an unruptured ectopic was managed medically or expectantly (urine pregnancy test at 3 weeks after salpingectomy); anti-D immunoglobulin 250 IU for rhesus-negative women having surgery for an ectopic pregnancy (NICE NG126).' },
     ],
     medications: [
-      { drugName: 'Methotrexate', dose: '50 mg/m²', frequency: 'Single dose', route: 'IM (intramuscular)', indication: 'Medical management — β-hCG <5000 IU/L, no cardiac activity, haemodynamically stable; folic acid antagonist', phase: 'immediate' },
-      { drugName: 'Anti-D immunoglobulin', dose: '250 IU', frequency: 'Single dose', route: 'IM (intramuscular)', indication: 'Rh-negative patients — prevents Rh sensitisation', phase: 'immediate' },
+      { drugName: 'Methotrexate', dose: '50 mg/m²', frequency: 'Single dose', route: 'IM (intramuscular)', indication: 'Only for an unruptured, haemodynamically stable ectopic meeting NICE NG126 criteria — contraindicated if ruptured', phase: 'immediate' },
+      { drugName: 'Anti-D immunoglobulin', dose: '250 IU', frequency: 'Single dose', route: 'IM (intramuscular)', indication: 'Rhesus-negative women having surgery for an ectopic pregnancy (NICE NG126)', phase: 'immediate' },
       { drugName: 'Morphine sulfate', dose: '2.5–5 mg', frequency: 'Q4H (every 4 hours)', route: 'IV (intravenous)', indication: 'Analgesia — pre-surgery or during expectant monitoring', phase: 'immediate' },
-      { drugName: 'Ondansetron', dose: '4 mg', frequency: 'TDS (three times daily)', route: 'IV (intravenous)', indication: 'Antiemetic — post-methotrexate', phase: 'immediate' },
+      { drugName: 'Ondansetron', dose: '4 mg', frequency: 'TDS (three times daily)', route: 'IV (intravenous)', indication: 'Antiemetic', phase: 'immediate' },
       { drugName: 'Paracetamol', dose: '1 g', frequency: 'QDS (four times daily)', route: 'PO (oral)', indication: 'Analgesia post-procedure', phase: 'discharge' },
     ],
     referral: 'Gynaecology immediately for all suspected ectopic pregnancies; Emergency Surgery if haemodynamically unstable and gynaecology unavailable.',

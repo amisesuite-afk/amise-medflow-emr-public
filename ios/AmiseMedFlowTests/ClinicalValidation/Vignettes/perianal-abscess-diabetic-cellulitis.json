@@ -1,0 +1,338 @@
+{
+  "schemaVersion": 1,
+  "id": "perianal-abscess-diabetic-cellulitis",
+  "condition": "Perianal abscess with cellulitis in poorly controlled diabetes",
+  "category": "anorectal",
+  "permutationOf": "perianal-abscess-simple",
+  "permutationLabel": "Diabetes (HbA1c 86), cellulitis, systemic signs",
+  "summary": "58-year-old man with poorly controlled type 2 diabetes, five days of perianal pain, 6 cm of surrounding cellulitis, T 38.4, HR 104, glucose 19. Drain today and give antibiotics; glycaemic control; examine for necrotising infection.",
+  "tags": [
+    "anorectal",
+    "abscess",
+    "diabetes",
+    "cellulitis"
+  ],
+  "inputs": {
+    "patient": {
+      "ageYears": 58,
+      "sex": "male",
+      "pregnancy": {
+        "status": "not-applicable"
+      },
+      "heightCm": 172,
+      "weightKg": 98
+    },
+    "encounter": {
+      "setting": "emergency",
+      "visitType": "urgentReview",
+      "acuity": "urgent"
+    },
+    "chiefComplaint": "Painful swelling beside the back passage with fever",
+    "hpi": "Five days of worsening pain and swelling to the left of the anus, now spreading redness onto the buttock, fevers and sweats. Type 2 diabetes on metformin and gliclazide, sugars 15–20 at home this week. No pain out of proportion, no skin discolouration, no crackling under the skin.",
+    "socrates": {
+      "onset": [
+        "4–7 days ago"
+      ],
+      "site": [
+        "Perianal",
+        "Left lateral"
+      ],
+      "character": [
+        "Throbbing"
+      ],
+      "exacerbating": [
+        "Sitting"
+      ],
+      "timing": [
+        "Constant",
+        "Progressive"
+      ],
+      "severity": [
+        "Severe (7–9/10)"
+      ]
+    },
+    "symptoms": [
+      "perianal pain",
+      "perianal lump",
+      "fever",
+      "cellulitis"
+    ],
+    "negatives": [
+      "crepitus",
+      "skin necrosis"
+    ],
+    "exam": {
+      "general": "Flushed. Temperature 38.4°C, HR 104, BP 132/80, RR 18.",
+      "abdomen": "Soft, non-tender.",
+      "other": "Perianal: 5 cm fluctuant tender left ischioanal swelling with 6 cm of surrounding erythema onto the buttock; no crepitus, no skin necrosis, no scrotal involvement."
+    },
+    "vitals": [
+      {
+        "minutesAgo": 20,
+        "heartRate": 104,
+        "systolicBp": 132,
+        "diastolicBp": 80,
+        "respiratoryRate": 18,
+        "temperatureC": 38.4,
+        "spo2": 98,
+        "avpu": "A",
+        "onSupplementalO2": false,
+        "glucoseMmol": 19.2
+      }
+    ],
+    "labs": [
+      {
+        "analyte": "wbc",
+        "name": "WBC",
+        "value": 17.8,
+        "unit": "×10⁹/L",
+        "minutesAgo": 60
+      },
+      {
+        "analyte": "crp",
+        "name": "CRP",
+        "value": 164,
+        "unit": "mg/L",
+        "minutesAgo": 60
+      },
+      {
+        "analyte": "glucose",
+        "name": "Glucose",
+        "value": 19.2,
+        "unit": "mmol/L",
+        "minutesAgo": 60
+      },
+      {
+        "analyte": "sodium",
+        "name": "Sodium",
+        "value": 134,
+        "unit": "mmol/L",
+        "minutesAgo": 60
+      },
+      {
+        "analyte": "creatinine",
+        "name": "Creatinine",
+        "value": 102,
+        "unit": "µmol/L",
+        "minutesAgo": 60
+      },
+      {
+        "analyte": "haemoglobin",
+        "name": "Haemoglobin",
+        "value": 14.1,
+        "unit": "g/dL",
+        "minutesAgo": 60
+      },
+      {
+        "analyte": "hba1c",
+        "name": "HbA1c",
+        "value": 86,
+        "unit": "mmol/mol",
+        "minutesAgo": 60
+      }
+    ],
+    "comorbidities": [
+      "Type 2 diabetes mellitus",
+      "Obesity",
+      "Hypertension"
+    ],
+    "surgicalHistory": [],
+    "medications": [
+      {
+        "drug": "Metformin",
+        "dose": "1 g",
+        "frequency": "BD",
+        "indication": "Type 2 diabetes"
+      },
+      {
+        "drug": "Gliclazide",
+        "dose": "80 mg",
+        "frequency": "BD",
+        "indication": "Type 2 diabetes"
+      },
+      {
+        "drug": "Lisinopril",
+        "dose": "10 mg",
+        "frequency": "OD",
+        "indication": "Hypertension"
+      }
+    ],
+    "allergies": [],
+    "nkda": true,
+    "socialHistory": "Taxi driver.",
+    "confirmedDiagnosis": {
+      "name": "Ischioanal abscess with cellulitis, poorly controlled type 2 diabetes",
+      "icd10": "K61.3",
+      "paneDiseaseId": "perianal_abscess",
+      "assessmentText": "Left ischioanal abscess with surrounding cellulitis and systemic features in poorly controlled diabetes. Drainage under GA today, IV antibiotics, glycaemic control; low threshold for necrotising infection."
+    },
+    "platform": {
+      "web": {
+        "ccTemplate": "Other / general surgical",
+        "symptoms": [
+          "perianal pain",
+          "perianal lump",
+          "fever",
+          "cellulitis"
+        ],
+        "examFindings": {
+          "perineal": [
+            "Erythema",
+            "Mass / swelling"
+          ],
+          "anal": [
+            "Perianal abscess"
+          ]
+        },
+        "paneAnswers": {
+          "anal_pain": true,
+          "perianal_swelling": true,
+          "fever": true,
+          "erythema_surrounding": true
+        },
+        "durationDays": 5,
+        "painScore": 8
+      }
+    }
+  },
+  "expected": {
+    "differential": {
+      "mustRankTopK": [
+        {
+          "id": "dx-abscess-top3",
+          "severity": "critical",
+          "match": [
+            "perianal abscess",
+            "anorectal abscess",
+            "perianal sepsis",
+            "ischiorectal abscess",
+            "icd:K61"
+          ],
+          "k": 3,
+          "guidelineRefs": [
+            "ascrs-abscess-2022"
+          ]
+        }
+      ],
+      "mustNotMiss": [
+        {
+          "id": "mnm-nsti",
+          "severity": "quality",
+          "match": [
+            "fournier",
+            "necrotising",
+            "necrotizing",
+            "nsti"
+          ],
+          "guidelineRefs": [
+            "wses-ssti-2018"
+          ],
+          "note": "Diabetes + perianal sepsis with cellulitis: necrotising infection must be considered.",
+          "knownGap": [
+            "web",
+            "ios"
+          ],
+          "knownGapNote": "PANE does not carry necrotising infection for diabetic perianal sepsis (top 3: perianal abscess, hernia, pilonidal); symptom inference ranks Fournier’s #1. | iOS CI 2026-09-25 (run 36169134350, database mode): not in top 5 of ios.bayes: 1. Skin Abscess | 2. Perianal Abscess | 3. Inguinal Hernia | 4. Infective Endocarditis | 5. Acute Pyelonephritis"
+        }
+      ]
+    },
+    "safety": {
+      "emergencyLevel": {
+        "id": "level-same-day",
+        "severity": "critical",
+        "atLeast": "urgent",
+        "guidelineRefs": [
+          "ascrs-abscess-2022"
+        ]
+      },
+      "redFlags": [
+        {
+          "id": "flag-diabetes",
+          "severity": "quality",
+          "match": [
+            "diabet",
+            "glucose",
+            "hyperglyc"
+          ],
+          "guidelineRefs": [
+            "ascrs-abscess-2022"
+          ]
+        }
+      ]
+    },
+    "management": {
+      "mustInclude": [
+        {
+          "id": "mgmt-drainage",
+          "severity": "critical",
+          "match": [
+            "incision and drainage",
+            "re:\\bi&d\\b",
+            "re:\\bi & d\\b",
+            "drainage"
+          ],
+          "guidelineRefs": [
+            "ascrs-abscess-2022"
+          ]
+        },
+        {
+          "id": "mgmt-antibiotics",
+          "severity": "critical",
+          "match": [
+            "antibiotic",
+            "co-amoxiclav",
+            "amoxicillin",
+            "metronidazole",
+            "piperacillin",
+            "flucloxacillin",
+            "clindamycin",
+            "ceftriaxone",
+            "meropenem"
+          ],
+          "guidelineRefs": [
+            "ascrs-abscess-2022"
+          ],
+          "note": "Cellulitis and systemic signs in a diabetic: antibiotics are indicated after drainage."
+        },
+        {
+          "id": "mgmt-glycaemic",
+          "severity": "quality",
+          "match": [
+            "glucose",
+            "insulin",
+            "glycaem",
+            "sliding scale",
+            "vriii"
+          ],
+          "guidelineRefs": [
+            "ascrs-abscess-2022"
+          ]
+        }
+      ]
+    }
+  },
+  "guideline": [
+    {
+      "id": "ascrs-abscess-2022",
+      "name": "ASCRS clinical practice guidelines — anorectal abscess, fistula-in-ano and rectovaginal fistula",
+      "year": 2022,
+      "section": "Antibiotics after drainage for surrounding cellulitis, systemic infection, diabetes/immunosuppression",
+      "citation": "Gaertner WB, Burgess PL, Davids JS, et al. The American Society of Colon and Rectal Surgeons clinical practice guidelines for the management of anorectal abscess, fistula-in-ano, and rectovaginal fistula. Dis Colon Rectum. 2022;65:964–985.",
+      "verified": false
+    },
+    {
+      "id": "wses-ssti-2018",
+      "name": "WSES/SIS-E consensus — management of skin and soft-tissue infections (incl. necrotising soft-tissue infection, Fournier’s gangrene)",
+      "year": 2018,
+      "section": "Necrotising soft-tissue infection: suspect in diabetics with perineal infection; early surgical exploration",
+      "citation": "Sartelli M, Guirao X, Hardcastle TC, et al. 2018 WSES/SIS-E consensus conference: recommendations for the management of skin and soft-tissue infections. World J Emerg Surg. 2018;13:58.",
+      "verified": false
+    }
+  ],
+  "rationale": "Permutation: diabetes, cellulitis and SIRS. Antibiotics become indicated; necrotising infection moves onto the differential.",
+  "authoring": {
+    "author": "Claude (colorectal/anorectal cluster)",
+    "date": "2026-09-25",
+    "notes": "Expectations need surgeon sign-off (reviewedBy). Citations verified: false until checked against the source."
+  }
+}

@@ -705,5 +705,114 @@ jobs:
             -H "Content-Type: application/json" \
             -d "{\"query\": $QUERY}" | jq -e 'if type == "array" then . else error(.message // "SQL error") end'
 
+      - name: "Migration 85: patients — procedure form JSON blobs + missing iOS clinical fields"
+        run: |
+          QUERY=$(jq -Rs . < supabase-procedure-form-data-migration.sql)
+          curl -sf -X POST "https://api.supabase.com/v1/projects/$PROJECT_REF/database/query" \
+            -H "Authorization: Bearer $SUPABASE_ACCESS_TOKEN" \
+            -H "Content-Type: application/json" \
+            -d "{\"query\": $QUERY}" | jq -e 'if type == "array" then . else error(.message // "SQL error") end'
+
+      - name: "Migration 86: patients — consultation pathway data (burns, wellness, ward review)"
+        run: |
+          QUERY=$(jq -Rs . < supabase-pathway-data-migration.sql)
+          curl -sf -X POST "https://api.supabase.com/v1/projects/$PROJECT_REF/database/query" \
+            -H "Authorization: Bearer $SUPABASE_ACCESS_TOKEN" \
+            -H "Content-Type: application/json" \
+            -d "{\"query\": $QUERY}" | jq -e 'if type == "array" then . else error(.message // "SQL error") end'
+
+      - name: "Migration 87: soft delete — deleted_at/deleted_by on notes, prescriptions, patient_vitals, patient_billing_items, patient_documents + soft_delete() RPC"
+        run: |
+          QUERY=$(jq -Rs . < supabase-soft-delete-migration.sql)
+          curl -sf -X POST "https://api.supabase.com/v1/projects/$PROJECT_REF/database/query" \
+            -H "Authorization: Bearer $SUPABASE_ACCESS_TOKEN" \
+            -H "Content-Type: application/json" \
+            -d "{\"query\": $QUERY}" | jq -e 'if type == "array" then . else error(.message // "SQL error") end'
+
+      - name: "Migration 88: patients — news2_spo2_scale2 (iOS NEWS2 SpO2 Scale 2 opt-in)"
+        run: |
+          QUERY=$(jq -Rs . < supabase-news2-scale2-migration.sql)
+          curl -sf -X POST "https://api.supabase.com/v1/projects/$PROJECT_REF/database/query" \
+            -H "Authorization: Bearer $SUPABASE_ACCESS_TOKEN" \
+            -H "Content-Type: application/json" \
+            -d "{\"query\": $QUERY}" | jq -e 'if type == "array" then . else error(.message // "SQL error") end'
+
+      # Must stay AFTER every step that creates the staff policies it rewrites.
+      - name: "Migration 89: staff-only RLS on PHI tables + stop auto-granting front_desk to portal users (S-2)"
+        run: |
+          QUERY=$(jq -Rs . < supabase-staff-only-rls-migration.sql)
+          curl -sf -X POST "https://api.supabase.com/v1/projects/$PROJECT_REF/database/query" \
+            -H "Authorization: Bearer $SUPABASE_ACCESS_TOKEN" \
+            -H "Content-Type: application/json" \
+            -d "{\"query\": $QUERY}" | jq -e 'if type == "array" then . else error(.message // "SQL error") end'
+
+      # Deferred parts of earlier steps that referenced objects a later step
+      # creates (a fresh database has none of production's hand-made objects).
+      # Checked by `pnpm --filter @workspace/scripts run check:migrations-fresh`.
+      - name: "Migration 90: deferred forward references (patients_select_own_sessions from Migration 2)"
+        run: |
+          QUERY=$(jq -Rs . < supabase-deferred-forward-refs-migration.sql)
+          curl -sf -X POST "https://api.supabase.com/v1/projects/$PROJECT_REF/database/query" \
+            -H "Authorization: Bearer $SUPABASE_ACCESS_TOKEN" \
+            -H "Content-Type: application/json" \
+            -d "{\"query\": $QUERY}" | jq -e 'if type == "array" then . else error(.message // "SQL error") end'
+
+      - name: "Migration 91: vitals — avpu + on_supplemental_o2 (web dashboard NEWS2 fields)"
+        run: |
+          QUERY=$(jq -Rs . < supabase-web-vitals-news2-fields-migration.sql)
+          curl -sf -X POST "https://api.supabase.com/v1/projects/$PROJECT_REF/database/query" \
+            -H "Authorization: Bearer $SUPABASE_ACCESS_TOKEN" \
+            -H "Content-Type: application/json" \
+            -d "{\"query\": $QUERY}" | jq -e 'if type == "array" then . else error(.message // "SQL error") end'
+
+      - name: "Migration 92: patients.visit_type (iOS visit type; column was never created)"
+        run: |
+          QUERY=$(jq -Rs . < supabase-patients-visit-type-migration.sql)
+          curl -sf -X POST "https://api.supabase.com/v1/projects/$PROJECT_REF/database/query" \
+            -H "Authorization: Bearer $SUPABASE_ACCESS_TOKEN" \
+            -H "Content-Type: application/json" \
+            -d "{\"query\": $QUERY}" | jq -e 'if type == "array" then . else error(.message // "SQL error") end'
+      - name: "Migration 93: iOS sync column reconciliation (add any iOS-synced column the database lacks)"
+        run: |
+          QUERY=$(jq -Rs . < supabase-ios-sync-columns-migration.sql)
+          curl -sf -X POST "https://api.supabase.com/v1/projects/$PROJECT_REF/database/query" \
+            -H "Authorization: Bearer $SUPABASE_ACCESS_TOKEN" \
+            -H "Content-Type: application/json" \
+            -d "{\"query\": $QUERY}" | jq -e 'if type == "array" then . else error(.message // "SQL error") end'
+      - name: "Migration 94: outcomes loop — prediction_snapshots + diagnosis_outcomes (calibration, clinician roles only)"
+        run: |
+          QUERY=$(jq -Rs . < supabase-outcomes-calibration-migration.sql)
+          curl -sf -X POST "https://api.supabase.com/v1/projects/$PROJECT_REF/database/query" \
+            -H "Authorization: Bearer $SUPABASE_ACCESS_TOKEN" \
+            -H "Content-Type: application/json" \
+            -d "{\"query\": $QUERY}" | jq -e 'if type == "array" then . else error(.message // "SQL error") end'
+      - name: "Migration 95: clinical sign-off register — clinical_signoffs (append-only; doctor/admin record, nurse reads)"
+        run: |
+          QUERY=$(jq -Rs . < supabase-clinical-signoffs-migration.sql)
+          curl -sf -X POST "https://api.supabase.com/v1/projects/$PROJECT_REF/database/query" \
+            -H "Authorization: Bearer $SUPABASE_ACCESS_TOKEN" \
+            -H "Content-Type: application/json" \
+            -d "{\"query\": $QUERY}" | jq -e 'if type == "array" then . else error(.message // "SQL error") end'
+      - name: "Migration 96: lab results feed — lab_reference_ranges (seeded defaults), lab_feed_messages, lab_results_to_reconcile, investigation_results provenance"
+        run: |
+          QUERY=$(jq -Rs . < supabase-lab-feed-migration.sql)
+          curl -sf -X POST "https://api.supabase.com/v1/projects/$PROJECT_REF/database/query" \
+            -H "Authorization: Bearer $SUPABASE_ACCESS_TOKEN" \
+            -H "Content-Type: application/json" \
+            -d "{\"query\": $QUERY}" | jq -e 'if type == "array" then . else error(.message // "SQL error") end'
+      - name: "Migration 97: patients.appointment_type (front-desk booking type; column was never created)"
+        run: |
+          QUERY=$(jq -Rs . < supabase-patients-appointment-type-migration.sql)
+          curl -sf -X POST "https://api.supabase.com/v1/projects/$PROJECT_REF/database/query" \
+            -H "Authorization: Bearer $SUPABASE_ACCESS_TOKEN" \
+            -H "Content-Type: application/json" \
+            -d "{\"query\": $QUERY}" | jq -e 'if type == "array" then . else error(.message // "SQL error") end'
+      - name: "Migration 98: approved-content channel — clinical_content_releases (signed-off rule-file releases; append-only except revocation; staff read, doctor/admin publish)"
+        run: |
+          QUERY=$(jq -Rs . < supabase-approved-content-migration.sql)
+          curl -sf -X POST "https://api.supabase.com/v1/projects/$PROJECT_REF/database/query" \
+            -H "Authorization: Bearer $SUPABASE_ACCESS_TOKEN" \
+            -H "Content-Type: application/json" \
+            -d "{\"query\": $QUERY}" | jq -e 'if type == "array" then . else error(.message // "SQL error") end'
       - name: Done
-        run: echo "All 84 migrations completed successfully. See migrations/README.md for files intentionally excluded (conflicting duplicate table definitions) and how to add the next migration."
+        run: echo "All 98 migrations completed successfully. See migrations/README.md for files intentionally excluded (conflicting duplicate table definitions) and how to add the next migration."

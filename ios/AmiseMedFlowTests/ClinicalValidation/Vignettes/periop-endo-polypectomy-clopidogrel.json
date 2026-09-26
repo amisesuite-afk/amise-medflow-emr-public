@@ -1,0 +1,237 @@
+{
+  "schemaVersion": 1,
+  "id": "periop-endo-polypectomy-clopidogrel",
+  "condition": "Endoscopy antithrombotic management — clopidogrel before EMR of a 25 mm polyp",
+  "category": "other",
+  "permutationOf": null,
+  "summary": "67-year-old man on clopidogrel after an ischaemic stroke (no stents) booked for EMR of a 25 mm colonic polyp (high bleeding-risk procedure, low thrombotic risk).",
+  "tags": [
+    "periop",
+    "endoscopy",
+    "antiplatelet",
+    "polypectomy",
+    "bsg-esge"
+  ],
+  "inputs": {
+    "patient": {
+      "ageYears": 67,
+      "sex": "male",
+      "pregnancy": {
+        "status": "not-applicable"
+      },
+      "heightCm": 172,
+      "weightKg": 80
+    },
+    "encounter": {
+      "setting": "endoscopy",
+      "visitType": "colonoscopy",
+      "acuity": "routine"
+    },
+    "chiefComplaint": "Planned removal of a large bowel polyp — takes a blood thinner",
+    "hpi": "Surveillance colonoscopy 2 weeks ago found a 25 mm sessile polyp in the descending colon, tattooed, booked for endoscopic mucosal resection. Ischaemic stroke 2020 with full recovery, on clopidogrel monotherapy since. No coronary stents, no atrial fibrillation. No bowel symptoms.",
+    "symptoms": [],
+    "negatives": [
+      "rectal bleeding",
+      "weight loss",
+      "change in bowel habit"
+    ],
+    "exam": {
+      "general": "Well. HR 70, BP 134/80, RR 14, SpO2 98% on air, T 36.6°C.",
+      "abdomen": "Soft, non-tender."
+    },
+    "vitals": [
+      {
+        "minutesAgo": 5,
+        "heartRate": 70,
+        "systolicBp": 134,
+        "diastolicBp": 80,
+        "respiratoryRate": 14,
+        "temperatureC": 36.6,
+        "spo2": 98,
+        "avpu": "A",
+        "onSupplementalO2": false
+      }
+    ],
+    "labs": [
+      {
+        "analyte": "haemoglobin",
+        "name": "Haemoglobin",
+        "value": 13.9,
+        "unit": "g/dL",
+        "minutesAgo": 20160
+      },
+      {
+        "analyte": "platelets",
+        "name": "Platelets",
+        "value": 250,
+        "unit": "×10⁹/L",
+        "minutesAgo": 20160
+      },
+      {
+        "analyte": "creatinine",
+        "name": "Creatinine",
+        "value": 88,
+        "unit": "µmol/L",
+        "minutesAgo": 20160
+      }
+    ],
+    "imaging": [
+      {
+        "name": "Colonoscopy",
+        "modality": "Endoscopy",
+        "region": "Colon",
+        "result": "25 mm sessile (Paris 0-Is) polyp at 40 cm, descending colon, NICE type 2, tattooed distally. Not removed.",
+        "minutesAgo": 20160
+      }
+    ],
+    "comorbidities": [
+      "Ischaemic stroke 2020",
+      "Hypertension",
+      "Colonic polyp for EMR"
+    ],
+    "surgicalHistory": [],
+    "medications": [
+      {
+        "drug": "Clopidogrel",
+        "dose": "75 mg",
+        "frequency": "OD",
+        "indication": "Secondary prevention after stroke"
+      },
+      {
+        "drug": "Atorvastatin",
+        "dose": "40 mg",
+        "frequency": "OD",
+        "indication": "Secondary prevention"
+      },
+      {
+        "drug": "Ramipril",
+        "dose": "5 mg",
+        "frequency": "OD",
+        "indication": "Hypertension"
+      }
+    ],
+    "allergies": [],
+    "nkda": true,
+    "socialHistory": "Ex-smoker. Retired.",
+    "confirmedDiagnosis": {
+      "name": "Colonic polyp 25 mm — planned endoscopic mucosal resection; on clopidogrel",
+      "icd10": "D12.4",
+      "assessmentText": "25 mm sessile descending colon polyp for EMR (high bleeding-risk procedure). Clopidogrel for previous ischaemic stroke — low thrombotic risk."
+    },
+    "platform": {
+      "web": {
+        "ccTemplate": "Colonoscopy (diagnostic / surveillance)",
+        "symptoms": [],
+        "durationDays": 14,
+        "painScore": 0
+      }
+    }
+  },
+  "expected": {
+    "safety": {
+      "redFlags": [
+        {
+          "id": "flag-antiplatelet",
+          "severity": "critical",
+          "match": [
+            "antiplatelet",
+            "clopidogrel"
+          ],
+          "guidelineRefs": [
+            "bsg-esge-2021-anticoag"
+          ]
+        }
+      ],
+      "emergencyLevel": {
+        "id": "level-not-urgent",
+        "severity": "quality",
+        "atMost": "priority",
+        "knownGap": [
+          "web"
+        ],
+        "knownGapNote": "Triage same_day_call (score 31) from age, comorbidity and the antiplatelet reason for a booked elective EMR.",
+        "proposedFix": "adaptiveTriage is a front-desk intake engine: its keyword red flags ('bleeding', 'breathless', 'collapse', 'jaundice', 'drain', 'procedure') fire on negated or historical mentions in a clinician's pre-operative note. Use negation handling and do not derive the consultation's emergency level from free-text keyword hits alone in a scheduled pre-operative/endoscopy encounter."
+      }
+    },
+    "management": {
+      "mustInclude": [
+        {
+          "id": "mgmt-stop-clopidogrel",
+          "severity": "critical",
+          "match": [
+            "re:(stop|withh|hold|omit|discontinu|suspend)\\w*[^.;\\n]{0,40}clopidogrel",
+            "re:clopidogrel[^.;\\n]{0,40}(stop|withh|hold|omit|discontinu|suspend)"
+          ],
+          "guidelineRefs": [
+            "bsg-esge-2021-anticoag"
+          ],
+          "note": "High-risk procedure, low thrombotic risk: stop clopidogrel 7 days before (BSG/ESGE 2021)."
+        }
+      ],
+      "mustExclude": [
+        {
+          "id": "mgmt-no-bridging",
+          "severity": "quality",
+          "match": [
+            "bridg"
+          ],
+          "unless": [
+            "no bridging",
+            "bridging not",
+            "not routinely bridge",
+            "without bridging",
+            "mechanical valve",
+            "mechanical heart valve"
+          ],
+          "guidelineRefs": [
+            "bsg-esge-2021-anticoag",
+            "esc-ncs-2022"
+          ],
+          "note": "No heparin bridging for antiplatelet interruption.",
+          "knownGap": [
+            "ios"
+          ],
+          "knownGapNote": "iOS CI 2026-09-25 (run 36169134350, database mode): forbidden management item present in ios.radiation.plan: \"...ocedural plan below when the patient takes one - no routine bridging\""
+        },
+        {
+          "id": "mgmt-no-appendicectomy",
+          "severity": "critical",
+          "match": [
+            "appendicectomy",
+            "appendectomy"
+          ],
+          "unless": [
+            "not indicated",
+            "no role",
+            "exclude appendicitis"
+          ],
+          "note": "Not an appendix presentation: an appendicectomy operative plan (consent, theatre booking, post-operative orders) is a wrong-procedure suggestion."
+        }
+      ]
+    }
+  },
+  "guideline": [
+    {
+      "id": "bsg-esge-2021-anticoag",
+      "name": "BSG/ESGE guideline — endoscopy in patients on antiplatelet or anticoagulant therapy (2021 update)",
+      "year": 2021,
+      "section": "Low-risk procedures (diagnostic ± biopsy): continue P2Y12 inhibitors and warfarin (INR in the week before, within therapeutic range), omit the morning DOAC dose. High-risk procedures (polypectomy, EMR, ERCP with sphincterotomy): P2Y12 inhibitor stopped 7 days before when thrombotic risk is low; high thrombotic risk (coronary stents) — continue aspirin and liaise with the cardiologist about stopping the P2Y12 inhibitor; warfarin stopped 5 days before (INR <1.5), bridging only for high thrombotic risk; DOAC stopped before the procedure (interval by drug and renal function), no bridging",
+      "citation": "Veitch AM, Radaelli F, Alikhan R, et al. Gut. 2021;70:1611–28.",
+      "verified": false
+    },
+    {
+      "id": "esc-ncs-2022",
+      "name": "2022 ESC guidelines — cardiovascular assessment and management of patients undergoing non-cardiac surgery (with ESAIC)",
+      "year": 2022,
+      "section": "Clinical risk (RCRI), functional capacity (e.g. climbing two flights of stairs); ECG and NT-proBNP/BNP and troponin in patients with risk factors before intermediate/high-risk surgery; echocardiography in poor functional capacity, raised NT-proBNP or known HF; delay elective surgery until 6 months after elective PCI and 12 months after ACS; continue aspirin after PCI if bleeding risk allows; interrupt P2Y12 inhibitors only in agreement with the cardiologist; bridging not recommended for antiplatelet interruption",
+      "citation": "Halvorsen S, Mehilli J, Cassese S, et al. 2022 ESC Guidelines on cardiovascular assessment and management of patients undergoing non-cardiac surgery. Eur Heart J. 2022;43:3826–924.",
+      "verified": false
+    }
+  ],
+  "rationale": "Base endoscopy antithrombotic case: P2Y12 monotherapy, low thrombotic risk, high-risk polypectomy.",
+  "authoring": {
+    "author": "Claude (perioperative medicine cluster)",
+    "date": "2026-09-25",
+    "notes": "Expectations and citations need surgeon sign-off (reviewedBy). Citations verified: false. iOS outcomes not yet observed (unverified: ios) — triage after the next CI run."
+  }
+}

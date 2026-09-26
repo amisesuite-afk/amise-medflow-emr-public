@@ -1,0 +1,292 @@
+{
+  "schemaVersion": 1,
+  "id": "mimic-ectopic-pregnancy",
+  "condition": "Ectopic pregnancy (GI emergency mimic)",
+  "category": "other",
+  "permutationOf": null,
+  "permutationLabel": "RIF pain labelled appendicitis, pregnancy status unknown (base case)",
+  "summary": "27-year-old woman, 20 h RIF pain referred as '?appendicitis', LMP 7 weeks ago, spotting, right shoulder-tip pain, pre-syncope, HR 112, BP 102/64; no pregnancy test yet.",
+  "tags": [
+    "mimic",
+    "pregnancy",
+    "do-not-miss"
+  ],
+  "inputs": {
+    "patient": {
+      "ageYears": 27,
+      "sex": "female",
+      "pregnancy": {
+        "status": "unknown"
+      },
+      "heightCm": 164,
+      "weightKg": 60
+    },
+    "encounter": {
+      "setting": "emergency",
+      "visitType": "urgentReview",
+      "acuity": "urgent"
+    },
+    "chiefComplaint": "Right lower abdominal pain",
+    "hpi": "20 hours of right lower abdominal pain, referred as '?appendicitis'. Last menstrual period 7 weeks ago (usually regular). Light vaginal spotting for 2 days. Pain in the right shoulder tip when lying flat. Felt light-headed and nearly fainted when standing this morning. No fever.",
+    "socrates": {
+      "onset": [
+        "Yesterday"
+      ],
+      "site": [
+        "RLQ",
+        "Suprapubic"
+      ],
+      "character": [
+        "Sharp"
+      ],
+      "radiation": [
+        "Right shoulder"
+      ],
+      "associations": [
+        "Nausea"
+      ],
+      "timing": [
+        "Constant",
+        "Progressive"
+      ],
+      "exacerbating": [
+        "Movement",
+        "Lying flat"
+      ],
+      "relieving": [
+        "Nothing"
+      ],
+      "severity": [
+        "Severe (7–9/10)"
+      ]
+    },
+    "symptoms": [
+      "abdominal pain",
+      "vaginal bleeding",
+      "amenorrhoea",
+      "shoulder tip pain",
+      "pre-syncope"
+    ],
+    "negatives": [
+      "fever",
+      "dysuria",
+      "vomiting"
+    ],
+    "exam": {
+      "general": "Pale. Temperature 37.0°C, pulse 112/min, BP 102/64.",
+      "abdomen": "Tender in the right iliac fossa and suprapubic region with guarding. No mass."
+    },
+    "vitals": [
+      {
+        "minutesAgo": 10,
+        "heartRate": 112,
+        "systolicBp": 102,
+        "diastolicBp": 64,
+        "respiratoryRate": 20,
+        "temperatureC": 37.0,
+        "spo2": 98,
+        "avpu": "A",
+        "onSupplementalO2": false
+      }
+    ],
+    "labs": [
+      {
+        "analyte": "haemoglobin",
+        "name": "Haemoglobin",
+        "value": 10.9,
+        "unit": "g/dL",
+        "minutesAgo": 30
+      },
+      {
+        "analyte": "wbc",
+        "name": "WBC",
+        "value": 11.2,
+        "unit": "×10⁹/L",
+        "minutesAgo": 30
+      },
+      {
+        "analyte": "crp",
+        "name": "CRP",
+        "value": 8,
+        "unit": "mg/L",
+        "minutesAgo": 30
+      }
+    ],
+    "imaging": [],
+    "comorbidities": [],
+    "surgicalHistory": [],
+    "medications": [],
+    "allergies": [],
+    "nkda": true,
+    "socialHistory": "Teacher. Not using contraception.",
+    "confirmedDiagnosis": {
+      "name": "Suspected ectopic pregnancy",
+      "icd10": "O00.90",
+      "paneDiseaseId": "ectopic_pregnancy",
+      "assessmentText": "Right iliac fossa pain with 7 weeks' amenorrhoea, spotting, shoulder-tip pain and pre-syncope: ectopic pregnancy until proven otherwise. Pregnancy test now, transvaginal ultrasound, emergency gynaecology."
+    },
+    "platform": {
+      "web": {
+        "ccTemplate": "Acute abdominal pain",
+        "socratesAnswers": {
+          "site": "Right lower (RLQ) and suprapubic",
+          "onset": "Yesterday",
+          "character": "Sharp",
+          "radiation": "Right shoulder tip",
+          "associated": "Nausea, vaginal spotting, light-headed",
+          "timing": "Constant, worsening",
+          "triggers": "Movement, lying flat",
+          "relief": "Nothing helps",
+          "severity": "7/10",
+          "lmp": "7 weeks ago — missed period; spotting for 2 days"
+        },
+        "symptoms": [
+          "abdominal pain",
+          "vaginal bleeding",
+          "amenorrhoea",
+          "pre-syncope"
+        ],
+        "symptomDetails": {
+          "abdominal pain": [
+            "RLQ",
+            "Suprapubic",
+            "6–24 hours",
+            "Sharp",
+            "Severe (7–9)",
+            "Shoulder tip",
+            "Nausea",
+            "Continuous",
+            "Movement",
+            "Lying flat"
+          ]
+        },
+        "examFindings": {
+          "abdomen": [
+            "Tender RLQ",
+            "Guarding"
+          ]
+        },
+        "durationDays": 1,
+        "painScore": 7
+      }
+    }
+  },
+  "expected": {
+    "differential": {
+      "mustRankTopK": [
+        {
+          "id": "dx-ectopic-top3",
+          "severity": "critical",
+          "match": [
+            "ectopic"
+          ],
+          "k": 3,
+          "guidelineRefs": [
+            "nice-ng126"
+          ]
+        }
+      ]
+    },
+    "safety": {
+      "emergencyLevel": {
+        "id": "level-emergency",
+        "severity": "critical",
+        "atLeast": "emergency",
+        "guidelineRefs": [
+          "nice-ng126"
+        ],
+        "note": "Shoulder-tip pain, pre-syncope and tachycardia suggest haemoperitoneum: immediate emergency assessment.",
+        "knownGapNote": "iOS: ClinicalPathwayEngine reads only CC/PMH keywords; CC 'Right lower abdominal pain' gives 'routine'."
+      }
+    },
+    "investigations": {
+      "mustInclude": [
+        {
+          "id": "inv-pregnancy-test",
+          "severity": "critical",
+          "match": [
+            "hcg",
+            "pregnancy test"
+          ],
+          "guidelineRefs": [
+            "nice-ng126"
+          ],
+          "note": "Mandatory in every woman of reproductive age with abdominal pain."
+        },
+        {
+          "id": "inv-transvaginal-us",
+          "severity": "critical",
+          "match": [
+            "transvaginal",
+            "tvus",
+            "re:\\btvs\\b",
+            "pelvic ultrasound",
+            "uss pelvis"
+          ],
+          "guidelineRefs": [
+            "nice-ng126"
+          ]
+        }
+      ]
+    },
+    "management": {
+      "mustInclude": [
+        {
+          "id": "mgmt-gynaecology",
+          "severity": "critical",
+          "match": [
+            "gynaecolog",
+            "gynecolog"
+          ],
+          "guidelineRefs": [
+            "nice-ng126"
+          ]
+        }
+      ],
+      "mustExclude": [
+        {
+          "id": "mgmt-no-assumed-negative-hcg",
+          "severity": "critical",
+          "match": [
+            "re:(β|b|beta)[- ]?hcg (confirmed )?negative"
+          ],
+          "guidelineRefs": [
+            "nice-ng126"
+          ],
+          "note": "No pregnancy test has been done; a template asserting 'β-HCG confirmed negative' can let an ectopic go to theatre as 'appendicitis'."
+        },
+        {
+          "id": "mgmt-no-appendicectomy-booked",
+          "severity": "quality",
+          "match": [
+            "re:appendicectomy[^\\n]{0,40}(theatre booked|consent obtained)"
+          ],
+          "guidelineRefs": [
+            "nice-ng126"
+          ]
+        }
+      ]
+    },
+    "pathway": {
+      "id": "pathway-first-visit",
+      "severity": "quality",
+      "equals": "firstVisit"
+    }
+  },
+  "guideline": [
+    {
+      "id": "nice-ng126",
+      "name": "NICE NG126 — ectopic pregnancy and miscarriage: diagnosis and initial management",
+      "year": 2019,
+      "section": "Pregnancy test in every woman of reproductive age with abdominal pain; transvaginal ultrasound; immediate referral if haemodynamically unstable; surgical management of ruptured ectopic; anti-D",
+      "citation": "National Institute for Health and Care Excellence. Ectopic pregnancy and miscarriage: diagnosis and initial management. NICE guideline NG126, 2019 (updated 2023).",
+      "verified": false
+    }
+  ],
+  "rationale": "Dangerous mimic of appendicitis. A pregnancy test is mandatory in a woman of reproductive age with abdominal pain; amenorrhoea, spotting and shoulder-tip pain make ectopic pregnancy the leading diagnosis.",
+  "authoring": {
+    "author": "Claude (GI surgical emergencies cluster)",
+    "date": "2026-09-25",
+    "notes": "Expectations need surgeon sign-off (reviewedBy). Every citation is verified: false."
+  }
+}

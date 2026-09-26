@@ -1,0 +1,288 @@
+{
+  "schemaVersion": 1,
+  "id": "acutemed-anaphylaxis-adult-amoxicillin",
+  "condition": "Anaphylaxis (adult, first dose of amoxicillin)",
+  "category": "general-medicine",
+  "permutationOf": null,
+  "summary": "44-year-old woman 20 minutes after her first amoxicillin dose: urticaria, lip and tongue swelling, hoarse voice, wheeze; BP 78/44, HR 128, SpO₂ 91 %. RCUK 2021: IM adrenaline 500 micrograms first-line.",
+  "tags": [
+    "anaphylaxis",
+    "drug-allergy",
+    "shock",
+    "emergency-redirect"
+  ],
+  "inputs": {
+    "patient": {
+      "ageYears": 44,
+      "sex": "female",
+      "pregnancy": {
+        "status": "not-pregnant"
+      },
+      "heightCm": 164,
+      "weightKg": 72
+    },
+    "encounter": {
+      "setting": "outpatient",
+      "visitType": "urgentReview",
+      "acuity": "emergency"
+    },
+    "chiefComplaint": "Swollen lips, rash and difficulty breathing",
+    "hpi": "Prescribed amoxicillin in clinic this morning for a mildly infected wound after abscess drainage; took the first capsule 20 minutes ago in the car park. Now itchy blotchy rash all over, swollen lips and tongue, hoarse voice, wheezy, feels faint.",
+    "symptoms": [
+      "generalised urticaria",
+      "lip and tongue swelling",
+      "hoarse voice",
+      "wheeze",
+      "faintness"
+    ],
+    "negatives": [
+      "chest pain",
+      "fever",
+      "previous reactions"
+    ],
+    "exam": {
+      "general": "Anxious, flushed, widespread urticaria, lip and tongue angioedema.",
+      "respiratory": "Hoarse voice, bilateral wheeze, RR 28.",
+      "cardiovascular": "HR 128, BP 78/44, cool peripheries.",
+      "skin": "Healing drained abscess left axilla."
+    },
+    "vitals": [
+      {
+        "minutesAgo": 2,
+        "heartRate": 128,
+        "systolicBp": 78,
+        "diastolicBp": 44,
+        "respiratoryRate": 28,
+        "temperatureC": 36.8,
+        "spo2": 91,
+        "avpu": "A",
+        "onSupplementalO2": false
+      }
+    ],
+    "labs": [],
+    "imaging": [],
+    "comorbidities": [
+      "Axillary abscess (drained)"
+    ],
+    "surgicalHistory": [
+      "Incision and drainage left axillary abscess (today)"
+    ],
+    "medications": [
+      {
+        "drug": "Amoxicillin",
+        "dose": "500 mg",
+        "frequency": "TDS (first dose 20 min ago)",
+        "indication": "Wound infection"
+      }
+    ],
+    "allergies": [
+      {
+        "name": "Amoxicillin",
+        "severity": "Severe",
+        "reaction": "Anaphylaxis (today)"
+      }
+    ],
+    "socialHistory": "Non-smoker.",
+    "confirmedDiagnosis": {
+      "name": "Anaphylaxis (amoxicillin)",
+      "icd10": "T88.6",
+      "assessmentText": "Anaphylaxis to amoxicillin with airway, breathing and circulation involvement: IM adrenaline 500 micrograms now and repeat at 5 minutes if needed, 999, oxygen, IV fluid."
+    },
+    "platform": {
+      "web": {
+        "ccTemplate": "Other / general surgical",
+        "symptoms": [
+          "rash",
+          "wheeze",
+          "hoarse voice",
+          "shortness of breath",
+          "pre-syncope"
+        ],
+        "symptomDetails": {
+          "rash": [
+            "Generalised",
+            "Urticarial (wheals)",
+            "Recent medication"
+          ],
+          "shortness of breath": [
+            "Sudden",
+            "Wheeze"
+          ]
+        },
+        "examFindings": {
+          "respiratory": [
+            "Wheeze"
+          ],
+          "cardiovascular": [
+            "Tachycardia"
+          ],
+          "general": [
+            "In distress"
+          ]
+        },
+        "durationDays": 0.01,
+        "painScore": 0
+      }
+    }
+  },
+  "expected": {
+    "differential": {
+      "mustRankTopK": [
+        {
+          "id": "dx-anaphylaxis-top3",
+          "severity": "critical",
+          "match": [
+            "anaphyla",
+            "icd:T78.2",
+            "icd:T88.6",
+            "icd:T78.0"
+          ],
+          "k": 3,
+          "guidelineRefs": [
+            "rcuk-anaphylaxis-2021"
+          ]
+        }
+      ]
+    },
+    "safety": {
+      "emergencyLevel": {
+        "id": "level-emergency",
+        "severity": "critical",
+        "atLeast": "emergency",
+        "guidelineRefs": [
+          "rcuk-anaphylaxis-2021"
+        ]
+      },
+      "mustAlarm": [
+        {
+          "id": "alarm-anaphylaxis",
+          "severity": "critical",
+          "match": [
+            "anaphyla",
+            "icd:T78.2",
+            "icd:T88.6",
+            "icd:T78.0",
+            "adrenaline"
+          ],
+          "guidelineRefs": [
+            "rcuk-anaphylaxis-2021"
+          ]
+        }
+      ],
+      "redFlags": [
+        {
+          "id": "rf-allergy-visible",
+          "severity": "quality",
+          "match": [
+            "amoxicillin"
+          ],
+          "guidelineRefs": [
+            "rcuk-anaphylaxis-2021"
+          ],
+          "note": "The new allergy must be visible during the consultation."
+        }
+      ]
+    },
+    "management": {
+      "mustInclude": [
+        {
+          "id": "mgmt-adrenaline",
+          "severity": "critical",
+          "match": [
+            "adrenaline",
+            "epinephrine"
+          ],
+          "guidelineRefs": [
+            "rcuk-anaphylaxis-2021"
+          ]
+        },
+        {
+          "id": "mgmt-adrenaline-im-dose-adult",
+          "severity": "quality",
+          "match": [
+            "re:500 ?(micrograms|mcg|µg)",
+            "re:0\\.5 ?mg"
+          ],
+          "unless": [
+            "nebulis"
+          ],
+          "guidelineRefs": [
+            "rcuk-anaphylaxis-2021"
+          ]
+        },
+        {
+          "id": "mgmt-iv-fluid",
+          "severity": "quality",
+          "match": [
+            "iv fluid",
+            "intravenous fluid",
+            "hartmann",
+            "crystalloid",
+            "sodium chloride 0.9",
+            "0.9% saline",
+            "fluid resuscitation",
+            "fluid challenge",
+            "re:fluid bolus"
+          ],
+          "guidelineRefs": [
+            "rcuk-anaphylaxis-2021"
+          ]
+        }
+      ],
+      "mustExclude": [
+        {
+          "id": "mgmt-no-penicillin",
+          "severity": "critical",
+          "match": [
+            "amoxicillin",
+            "co-amoxiclav",
+            "piperacillin",
+            "tazocin",
+            "flucloxacillin",
+            "benzylpenicillin",
+            "phenoxymethylpenicillin",
+            "penicillin v",
+            "augmentin"
+          ],
+          "guidelineRefs": [
+            "rcuk-anaphylaxis-2021"
+          ],
+          "note": "A penicillin in any plan for a patient in penicillin anaphylaxis is contraindicated."
+        },
+        {
+          "id": "mgmt-no-antihistamine-steroid-without-adrenaline",
+          "severity": "quality",
+          "match": [
+            "chlorphenamine",
+            "antihistamine",
+            "hydrocortisone"
+          ],
+          "unless": [
+            "adrenaline",
+            "epinephrine"
+          ],
+          "guidelineRefs": [
+            "rcuk-anaphylaxis-2021"
+          ],
+          "note": "RCUK 2021: antihistamines and steroids are not first-line and must never replace adrenaline."
+        }
+      ]
+    }
+  },
+  "guideline": [
+    {
+      "id": "rcuk-anaphylaxis-2021",
+      "verified": false,
+      "name": "Resuscitation Council UK - Emergency treatment of anaphylaxis: guidelines for healthcare providers",
+      "year": 2021,
+      "section": "IM adrenaline (1 mg/mL) is the first-line treatment: adult and child >12 years 500 micrograms, child 6-12 years 300 micrograms, 6 months-6 years 150 micrograms; repeat after 5 minutes if no improvement; refractory anaphylaxis (no improvement after two IM doses) -> adrenaline infusion with critical care; antihistamines are not first-line and corticosteroids are no longer advised routinely; IV fluid bolus for shock",
+      "citation": "Resuscitation Council UK. Emergency treatment of anaphylaxis: guidelines for healthcare providers. London: RCUK; May 2021."
+    }
+  ],
+  "rationale": "Base anaphylaxis case, caused by our own prescription. The web shock prompt reads hypotension without fever as haemorrhagic/cardiogenic/obstructive shock; distributive (anaphylactic) shock is the test.",
+  "authoring": {
+    "author": "Claude (acute medicine cluster)",
+    "date": "2026-09-25",
+    "notes": "Expectations need surgeon sign-off (reviewedBy). Citations written from the guideline texts, not yet checked against the source (verified: false). iOS outcomes are unverified until the next CI run."
+  }
+}

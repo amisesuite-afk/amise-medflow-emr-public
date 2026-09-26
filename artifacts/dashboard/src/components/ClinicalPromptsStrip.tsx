@@ -61,6 +61,8 @@ export default function ClinicalPromptsStrip() {
     investigationResults, radiologyRequests,
     vitals, assessment,
     patientName,
+    freeText, hpiNotes, surgicalHistory, allergies, icdCodes, workingDiagnosis, isPostOp, postOpDays, examWound,
+    supplementHistory,
   } = useAppContext();
 
   const [dismissed, setDismissed] = useState<Set<string>>(new Set());
@@ -84,6 +86,15 @@ export default function ClinicalPromptsStrip() {
     })),
     vitals,
     assessment,
+    // Emergency layer + peri-operative alerts (clinical-inference InferenceInput optional fields).
+    historyText: [freeText, hpiNotes].filter(Boolean).join('. '),
+    surgicalHistory,
+    allergies: allergies.split(',').map(a => a.trim()).filter(Boolean),
+    icdCodes: [...icdCodes, ...(workingDiagnosis?.icdCode ? [workingDiagnosis.icdCode] : [])],
+    isPostOp,
+    postOpDays: postOpDays.trim() && Number.isFinite(Number(postOpDays)) ? Number(postOpDays) : null,
+    examOther: examWound,
+    supplementHistory,
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }), [age, sex, symptoms.join(), comorbidities.join(), familyHistory.join(),
        toxicHabits.join(), medications.join(), medicationsText, pregnancyPossible,
@@ -95,7 +106,8 @@ export default function ClinicalPromptsStrip() {
        // eslint-disable-next-line react-hooks/exhaustive-deps
        JSON.stringify(radiologyRequests.map(r => r.resultNotes + r.resultReceived)),
        // eslint-disable-next-line react-hooks/exhaustive-deps
-       JSON.stringify(vitals), assessment]);
+       JSON.stringify(vitals), assessment,
+       freeText, hpiNotes, surgicalHistory.join(), allergies, icdCodes.join(), workingDiagnosis?.icdCode, isPostOp, postOpDays, examWound, supplementHistory]);
 
   const activePrompts = allPrompts.filter(p => !dismissed.has(p.id) && !confirmed.has(p.id));
   const actionableCount = activePrompts.filter(p => p.urgency !== 'routine').length;
@@ -140,7 +152,7 @@ export default function ClinicalPromptsStrip() {
   if (allPrompts.length === 0) return null;
 
   return (
-    <div style={{
+    <div data-testid="clinical-prompts-strip" style={{
       borderRadius: 10, marginBottom: 8, overflow: 'hidden',
       border: `1px solid ${hasUrgent ? '#7f1d1d' : actionableCount > 0 ? '#431407' : '#1e293b'}`,
       background: '#0f172a',

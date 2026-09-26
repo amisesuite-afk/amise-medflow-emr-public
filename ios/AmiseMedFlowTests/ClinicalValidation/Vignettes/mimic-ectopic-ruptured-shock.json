@@ -1,0 +1,302 @@
+{
+  "schemaVersion": 1,
+  "id": "mimic-ectopic-ruptured-shock",
+  "condition": "Ectopic pregnancy (GI emergency mimic)",
+  "category": "other",
+  "permutationOf": "mimic-ectopic-pregnancy",
+  "permutationLabel": "Ruptured, haemorrhagic shock (positive hCG)",
+  "summary": "31-year-old woman ~6 weeks pregnant (positive home test), sudden lower abdominal pain and collapse, HR 134, BP 78/40; FAST: haemoperitoneum.",
+  "tags": [
+    "mimic",
+    "pregnancy",
+    "shock",
+    "do-not-miss"
+  ],
+  "inputs": {
+    "patient": {
+      "ageYears": 31,
+      "sex": "female",
+      "pregnancy": {
+        "status": "pregnant",
+        "gestationWeeks": 6
+      },
+      "heightCm": 170,
+      "weightKg": 66
+    },
+    "encounter": {
+      "setting": "emergency",
+      "visitType": "urgentReview",
+      "acuity": "emergency"
+    },
+    "chiefComplaint": "Sudden lower abdominal pain and collapse",
+    "hpi": "Positive home pregnancy test last week, about 6 weeks since LMP. Sudden severe lower abdominal pain an hour ago, then collapsed at work. Shoulder-tip pain. Small vaginal bleed.",
+    "socrates": {
+      "onset": [
+        "Today",
+        "Sudden"
+      ],
+      "site": [
+        "Suprapubic",
+        "Diffuse"
+      ],
+      "character": [
+        "Sharp"
+      ],
+      "radiation": [
+        "Right shoulder"
+      ],
+      "associations": [
+        "Nausea"
+      ],
+      "timing": [
+        "Constant"
+      ],
+      "exacerbating": [
+        "Movement"
+      ],
+      "relieving": [
+        "Nothing"
+      ],
+      "severity": [
+        "Worst (10/10)"
+      ]
+    },
+    "symptoms": [
+      "abdominal pain",
+      "collapse",
+      "shoulder tip pain",
+      "vaginal bleeding"
+    ],
+    "negatives": [
+      "fever"
+    ],
+    "exam": {
+      "general": "Pale, clammy, drowsy. Temperature 36.2°C, pulse 134/min, BP 78/40, RR 26.",
+      "abdomen": "Distended, generalised tenderness with guarding and rebound."
+    },
+    "vitals": [
+      {
+        "minutesAgo": 5,
+        "heartRate": 134,
+        "systolicBp": 78,
+        "diastolicBp": 40,
+        "respiratoryRate": 26,
+        "temperatureC": 36.2,
+        "spo2": 96,
+        "avpu": "V",
+        "onSupplementalO2": false
+      }
+    ],
+    "labs": [
+      {
+        "analyte": "bhcg",
+        "name": "Urine hCG",
+        "resultText": "Urine hCG positive",
+        "minutesAgo": 15
+      },
+      {
+        "analyte": "haemoglobin",
+        "name": "Haemoglobin",
+        "value": 8.1,
+        "unit": "g/dL",
+        "minutesAgo": 30
+      }
+    ],
+    "imaging": [
+      {
+        "name": "FAST ultrasound (ED)",
+        "modality": "US",
+        "region": "Abdomen",
+        "result": "Free fluid in Morison's pouch and the pelvis (haemoperitoneum).",
+        "minutesAgo": 5
+      }
+    ],
+    "comorbidities": [],
+    "surgicalHistory": [
+      "Laparoscopic treatment of pelvic inflammatory disease"
+    ],
+    "medications": [],
+    "allergies": [],
+    "nkda": true,
+    "socialHistory": "Nurse.",
+    "confirmedDiagnosis": {
+      "name": "Ruptured ectopic pregnancy",
+      "icd10": "O00.90",
+      "paneDiseaseId": "ectopic_pregnancy",
+      "assessmentText": "Ruptured ectopic pregnancy with haemorrhagic shock (haemoperitoneum on FAST). Major haemorrhage protocol, emergency laparoscopy/laparotomy and salpingectomy."
+    },
+    "platform": {
+      "web": {
+        "ccTemplate": "Acute abdominal pain",
+        "socratesAnswers": {
+          "site": "Lower abdomen, generalised",
+          "onset": "Sudden, 1 hour ago",
+          "character": "Sharp",
+          "radiation": "Shoulder tip",
+          "associated": "Collapse, vaginal bleeding",
+          "timing": "Constant",
+          "triggers": "Movement",
+          "relief": "Nothing helps",
+          "severity": "10/10",
+          "lmp": "6 weeks ago; positive pregnancy test"
+        },
+        "symptoms": [
+          "abdominal pain",
+          "syncope",
+          "vaginal bleeding"
+        ],
+        "symptomDetails": {
+          "abdominal pain": [
+            "Suprapubic",
+            "Diffuse",
+            "Sudden",
+            "< 6 hours",
+            "Sharp",
+            "Worst ever (10)",
+            "Shoulder tip",
+            "Continuous"
+          ]
+        },
+        "examFindings": {
+          "abdomen": [
+            "Distended",
+            "Diffuse tenderness",
+            "Guarding",
+            "Rebound tenderness"
+          ]
+        },
+        "durationDays": 0.05,
+        "painScore": 10
+      }
+    }
+  },
+  "expected": {
+    "differential": {
+      "mustRankTopK": [
+        {
+          "id": "dx-ectopic-top3",
+          "severity": "critical",
+          "match": [
+            "ectopic"
+          ],
+          "k": 3,
+          "guidelineRefs": [
+            "nice-ng126"
+          ]
+        }
+      ]
+    },
+    "safety": {
+      "emergencyLevel": {
+        "id": "level-emergency",
+        "severity": "critical",
+        "atLeast": "emergency",
+        "guidelineRefs": [
+          "nice-ng126"
+        ],
+        "knownGapNote": "iOS: ClinicalPathwayEngine reads only CC/PMH keywords; CC 'Sudden lower abdominal pain and collapse' gives 'routine'."
+      },
+      "mustAlarm": [
+        {
+          "id": "alarm-shock",
+          "severity": "critical",
+          "match": [
+            "haemodynamic",
+            "hemodynamic",
+            "hypotension",
+            "shock"
+          ],
+          "guidelineRefs": [
+            "nice-ng126"
+          ]
+        },
+        {
+          "id": "alarm-ectopic",
+          "severity": "critical",
+          "match": [
+            "ectopic",
+            "haemoperitoneum"
+          ],
+          "guidelineRefs": [
+            "nice-ng126"
+          ]
+        }
+      ]
+    },
+    "investigations": {
+      "mustInclude": [
+        {
+          "id": "inv-crossmatch",
+          "severity": "critical",
+          "match": [
+            "crossmatch",
+            "cross-match",
+            "group and",
+            "group &",
+            "o-neg",
+            "major haemorrhage"
+          ],
+          "guidelineRefs": [
+            "nice-ng126"
+          ]
+        }
+      ]
+    },
+    "management": {
+      "mustInclude": [
+        {
+          "id": "mgmt-emergency-surgery",
+          "severity": "critical",
+          "match": [
+            "salpingectomy",
+            "emergency laparoscopy",
+            "laparotomy"
+          ],
+          "guidelineRefs": [
+            "nice-ng126"
+          ]
+        }
+      ],
+      "mustExclude": [
+        {
+          "id": "mgmt-no-medical-management-when-ruptured",
+          "severity": "critical",
+          "match": [
+            "methotrexate",
+            "expectant management"
+          ],
+          "unless": [
+            "haemodynamically stable",
+            "unruptured",
+            "not",
+            "contraindicated",
+            "only for",
+            "only if"
+          ],
+          "guidelineRefs": [
+            "nice-ng126"
+          ],
+          "note": "Methotrexate or expectant management is contraindicated in a ruptured ectopic with shock.",
+          "knownGapNote": "Web: Plan shows every ectopic protocol phase regardless of rupture: methotrexate suitability tests and the methotrexate/expectant steps appear for a shocked patient (no ectopic dx-variant group).",
+          "proposedFix": "Add ectopic dx-variants (ruptured/unstable → immediate + surgical; unruptured stable → conservative options)."
+        }
+      ]
+    }
+  },
+  "guideline": [
+    {
+      "id": "nice-ng126",
+      "name": "NICE NG126 — ectopic pregnancy and miscarriage: diagnosis and initial management",
+      "year": 2019,
+      "section": "Pregnancy test in every woman of reproductive age with abdominal pain; transvaginal ultrasound; immediate referral if haemodynamically unstable; surgical management of ruptured ectopic; anti-D",
+      "citation": "National Institute for Health and Care Excellence. Ectopic pregnancy and miscarriage: diagnosis and initial management. NICE guideline NG126, 2019 (updated 2023).",
+      "verified": false
+    }
+  ],
+  "rationale": "Permutation: rupture with shock. Tests shock alarms, blood products and emergency surgery; medical or expectant management must not be offered.",
+  "authoring": {
+    "author": "Claude (GI surgical emergencies cluster)",
+    "date": "2026-09-25",
+    "notes": "Expectations need surgeon sign-off (reviewedBy). Every citation is verified: false."
+  }
+}

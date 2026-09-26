@@ -1,0 +1,288 @@
+{
+  "schemaVersion": 1,
+  "id": "haematuria-anticoagulated-clot-retention",
+  "condition": "Visible haematuria with clot retention (anticoagulated)",
+  "category": "urology",
+  "permutationOf": "haematuria-visible-smoker-2ww",
+  "permutationLabel": "Anticoagulated (apixaban), clot retention",
+  "summary": "78-year-old man on apixaban with 2 days of visible haematuria and clots, now in retention (850 mL with clot), Hb 10.8 from 13.2.",
+  "tags": [
+    "haematuria",
+    "anticoagulated",
+    "retention",
+    "elderly"
+  ],
+  "inputs": {
+    "patient": {
+      "ageYears": 78,
+      "sex": "male",
+      "pregnancy": {
+        "status": "not-applicable"
+      },
+      "heightCm": 172,
+      "weightKg": 74
+    },
+    "encounter": {
+      "setting": "emergency",
+      "visitType": "urgentReview",
+      "acuity": "urgent"
+    },
+    "chiefComplaint": "Blood clots in the urine and now cannot pass water",
+    "hpi": "Atrial fibrillation on apixaban. Two days of heavy red urine with clots; unable to pass urine for 6 hours with painful lower abdomen. No trauma, no catheter history. GP had assumed the bleeding was \"from the blood thinner\".",
+    "socrates": {
+      "onset": [
+        "Today"
+      ],
+      "site": [
+        "Suprapubic"
+      ],
+      "character": [
+        "Pressure"
+      ],
+      "radiation": [
+        "No radiation"
+      ],
+      "associations": [
+        "Haematuria"
+      ],
+      "timing": [
+        "Constant"
+      ],
+      "exacerbating": [],
+      "relieving": [
+        "Nothing"
+      ],
+      "severity": [
+        "Severe (7–9/10)"
+      ]
+    },
+    "symptoms": [
+      "haematuria",
+      "urinary retention",
+      "suprapubic pain"
+    ],
+    "negatives": [
+      "fever",
+      "loin pain",
+      "trauma"
+    ],
+    "exam": {
+      "general": "Pale, distressed. Pulse 104/min irregular, BP 132/80, RR 18, temperature 36.8°C.",
+      "abdomen": "Tender palpable bladder. PR: smooth moderately enlarged prostate."
+    },
+    "vitals": [
+      {
+        "minutesAgo": 10,
+        "heartRate": 104,
+        "systolicBp": 132,
+        "diastolicBp": 80,
+        "respiratoryRate": 18,
+        "temperatureC": 36.8,
+        "spo2": 97,
+        "avpu": "A",
+        "onSupplementalO2": false,
+        "weightKg": 74
+      }
+    ],
+    "labs": [
+      {
+        "analyte": "haemoglobin",
+        "name": "Haemoglobin",
+        "value": 10.8,
+        "unit": "g/dL",
+        "minutesAgo": 30
+      },
+      {
+        "analyte": "creatinine",
+        "name": "Creatinine",
+        "value": 132,
+        "unit": "µmol/L",
+        "minutesAgo": 30
+      },
+      {
+        "analyte": "platelets",
+        "name": "Platelets",
+        "value": 224,
+        "unit": "×10⁹/L",
+        "minutesAgo": 30
+      }
+    ],
+    "imaging": [
+      {
+        "name": "Bladder scan",
+        "modality": "US",
+        "result": "850 mL residual with echogenic clot.",
+        "minutesAgo": 10,
+        "region": "Bladder"
+      }
+    ],
+    "comorbidities": [
+      "Atrial fibrillation",
+      "Hypertension",
+      "Previous haemoglobin 13.2 g/dL"
+    ],
+    "surgicalHistory": [],
+    "medications": [
+      {
+        "drug": "Apixaban",
+        "dose": "5 mg",
+        "frequency": "BD",
+        "indication": "Atrial fibrillation"
+      },
+      {
+        "drug": "Amlodipine",
+        "dose": "5 mg",
+        "frequency": "OD",
+        "indication": "Hypertension"
+      }
+    ],
+    "allergies": [],
+    "nkda": true,
+    "socialHistory": "Ex-smoker 30 pack-years.",
+    "confirmedDiagnosis": {
+      "name": "Clot retention from visible haematuria on apixaban",
+      "icd10": "R33.8",
+      "assessmentText": "Clot retention with visible haematuria on apixaban; 3-way catheter and irrigation; haematuria still needs full investigation (cystoscopy, CT urogram)."
+    },
+    "platform": {
+      "web": {
+        "ccTemplate": "Other / general surgical",
+        "symptoms": [
+          "haematuria",
+          "urinary retention",
+          "suprapubic pain"
+        ],
+        "durationDays": 2,
+        "painScore": 8
+      }
+    }
+  },
+  "expected": {
+    "safety": {
+      "emergencyLevel": {
+        "id": "level-urgent",
+        "severity": "critical",
+        "atLeast": "urgent",
+        "guidelineRefs": [
+          "eau-luts-2024"
+        ]
+      }
+    },
+    "investigations": {
+      "mustInclude": [
+        {
+          "id": "inv-cystoscopy",
+          "severity": "critical",
+          "match": [
+            "cystoscop"
+          ],
+          "guidelineRefs": [
+            "eau-nmibc-2024"
+          ],
+          "note": "Haematuria on anticoagulation is investigated the same way; the anticoagulant does not explain it."
+        },
+        {
+          "id": "inv-fbc-group",
+          "severity": "quality",
+          "match": [
+            "fbc",
+            "full blood count",
+            "haemoglobin",
+            "group and",
+            "group &"
+          ],
+          "guidelineRefs": [
+            "eau-nmibc-2024"
+          ]
+        }
+      ]
+    },
+    "management": {
+      "mustInclude": [
+        {
+          "id": "mgmt-catheterise",
+          "severity": "critical",
+          "match": [
+            "catheter",
+            "catheteris"
+          ],
+          "guidelineRefs": [
+            "eau-luts-2024"
+          ]
+        },
+        {
+          "id": "mgmt-three-way-irrigation",
+          "severity": "quality",
+          "match": [
+            "three-way",
+            "3-way",
+            "irrigation",
+            "washout"
+          ],
+          "guidelineRefs": [
+            "eau-luts-2024"
+          ],
+          "note": "Standard practice for clot retention; not a specific guideline statement.",
+          "knownGapNote": "Web: No three-way catheter or irrigation; a standard Foley is suggested.",
+          "proposedFix": "As inv-cystoscopy."
+        },
+        {
+          "id": "mgmt-anticoagulant-review",
+          "severity": "quality",
+          "match": [
+            "apixaban",
+            "anticoag",
+            "doac"
+          ],
+          "guidelineRefs": [
+            "eau-nmibc-2024"
+          ]
+        },
+        {
+          "id": "mgmt-urology-referral",
+          "severity": "quality",
+          "match": [
+            "urolog",
+            "2ww",
+            "suspected cancer pathway"
+          ],
+          "guidelineRefs": [
+            "nice-ng12"
+          ]
+        }
+      ]
+    }
+  },
+  "guideline": [
+    {
+      "id": "eau-nmibc-2024",
+      "name": "EAU Guidelines on Non-muscle-invasive Bladder Cancer (diagnosis)",
+      "year": 2024,
+      "section": "Visible haematuria: cystoscopy and upper tract imaging (CT urography); haematuria in patients on anticoagulant or antiplatelet treatment is investigated in the same way",
+      "citation": "Gontero P, Birtle A, Compérat E, et al. EAU Guidelines on Non-muscle-invasive Bladder Cancer (TaT1 and CIS). EAU Guidelines Office, Arnhem; 2024 edition.",
+      "verified": false
+    },
+    {
+      "id": "nice-ng12",
+      "name": "NICE NG12 — Suspected cancer: recognition and referral",
+      "year": 2015,
+      "section": "Urological cancers: refer using a suspected cancer pathway (2-week wait) for bladder or kidney cancer if aged ≥45 with unexplained visible haematuria without urinary tract infection, or visible haematuria that persists or recurs after successful treatment of UTI; suspected spinal metastases in people with cancer",
+      "citation": "National Institute for Health and Care Excellence. Suspected cancer: recognition and referral. NICE guideline NG12. London: NICE; 2015 (updated).",
+      "verified": false
+    },
+    {
+      "id": "eau-luts-2024",
+      "name": "EAU Guidelines on the management of non-neurogenic male LUTS (acute urinary retention)",
+      "year": 2024,
+      "section": "Acute urinary retention: bladder decompression by urethral (or suprapubic) catheter; alpha-blocker before trial without catheter; renal function; identify precipitants (anticholinergics, constipation)",
+      "citation": "Gravas S, Gacci M, Gratzke C, et al. EAU Guidelines on Management of Non-Neurogenic Male LUTS. EAU Guidelines Office, Arnhem; 2024 edition.",
+      "verified": false
+    }
+  ],
+  "rationale": "Clot retention needs catheter drainage; anticoagulation does not explain visible haematuria, so it is still investigated (EAU NMIBC, NICE NG12).",
+  "authoring": {
+    "author": "Claude (endocrine / renal / urology / neuro cluster)",
+    "date": "2026-09-25",
+    "notes": "Expectations need surgeon sign-off (reviewedBy). Every citation is verified: false. iOS outcomes not observed (Linux)."
+  }
+}

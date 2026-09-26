@@ -1,0 +1,4787 @@
+{
+  "version": "1.0.0",
+  "fill": [
+    {
+      "id": "alvarado-empty",
+      "score": "alvarado",
+      "record": {
+        "ageYears": 22,
+        "sex": "male",
+        "weightKg": null,
+        "heightCm": null,
+        "vitals": {
+          "hr": null,
+          "sbp": null,
+          "dbp": null,
+          "rr": null,
+          "tempC": null,
+          "spo2": null,
+          "avpu": null,
+          "onOxygen": null
+        },
+        "labs": {
+          "wbc": null,
+          "neutrophils": null,
+          "crp": null,
+          "urea": null,
+          "hb": null,
+          "creatinine": null,
+          "egfr": null,
+          "bilirubin": null,
+          "albumin": null,
+          "inr": null
+        },
+        "imagingReported": false,
+        "pleuralEffusion": false,
+        "history": {
+          "cancer": false,
+          "priorDvt": false,
+          "priorPe": false,
+          "chf": false,
+          "ihd": false,
+          "cva": false,
+          "insulin": false,
+          "liverDisease": false,
+          "ibd": false,
+          "varicoseVeins": false,
+          "ocpHrt": false,
+          "immobile": false,
+          "pregnant": false,
+          "recentSurgery4w": false,
+          "recentSurgery12w": false
+        },
+        "findings": {
+          "migration": false,
+          "anorexia": false,
+          "nausea": false,
+          "vomiting": false,
+          "rifPain": false,
+          "rifTenderness": false,
+          "rebound": false,
+          "melaena": false,
+          "syncope": false,
+          "haemoptysis": false,
+          "dvtSigns": false,
+          "confusion": false
+        }
+      },
+      "expected": {
+        "score": "alvarado",
+        "fields": [],
+        "missing": [
+          "temp",
+          "wbc",
+          "neutrophils"
+        ]
+      }
+    },
+    {
+      "id": "alvarado-full",
+      "score": "alvarado",
+      "record": {
+        "ageYears": 22,
+        "sex": "male",
+        "weightKg": null,
+        "heightCm": null,
+        "vitals": {
+          "hr": null,
+          "sbp": null,
+          "dbp": null,
+          "rr": null,
+          "tempC": 37.8,
+          "spo2": null,
+          "avpu": null,
+          "onOxygen": null
+        },
+        "labs": {
+          "wbc": 14.2,
+          "neutrophils": 82,
+          "crp": null,
+          "urea": null,
+          "hb": null,
+          "creatinine": null,
+          "egfr": null,
+          "bilirubin": null,
+          "albumin": null,
+          "inr": null
+        },
+        "imagingReported": false,
+        "pleuralEffusion": false,
+        "history": {
+          "cancer": false,
+          "priorDvt": false,
+          "priorPe": false,
+          "chf": false,
+          "ihd": false,
+          "cva": false,
+          "insulin": false,
+          "liverDisease": false,
+          "ibd": false,
+          "varicoseVeins": false,
+          "ocpHrt": false,
+          "immobile": false,
+          "pregnant": false,
+          "recentSurgery4w": false,
+          "recentSurgery12w": false
+        },
+        "findings": {
+          "migration": true,
+          "anorexia": false,
+          "nausea": true,
+          "vomiting": false,
+          "rifPain": false,
+          "rifTenderness": true,
+          "rebound": true,
+          "melaena": false,
+          "syncope": false,
+          "haemoptysis": false,
+          "dvtSigns": false,
+          "confusion": false
+        }
+      },
+      "expected": {
+        "score": "alvarado",
+        "fields": [
+          {
+            "key": "migratoryPain",
+            "value": true,
+            "source": "findings"
+          },
+          {
+            "key": "nausea",
+            "value": true,
+            "source": "findings"
+          },
+          {
+            "key": "rifTenderness",
+            "value": true,
+            "source": "findings"
+          },
+          {
+            "key": "rebound",
+            "value": true,
+            "source": "findings"
+          },
+          {
+            "key": "fever",
+            "value": true,
+            "source": "vitals"
+          },
+          {
+            "key": "wbcAbove10",
+            "value": true,
+            "source": "labs"
+          },
+          {
+            "key": "leftShift",
+            "value": true,
+            "source": "labs"
+          }
+        ],
+        "missing": []
+      }
+    },
+    {
+      "id": "alvarado-absolute-neutrophils",
+      "score": "alvarado",
+      "record": {
+        "ageYears": null,
+        "sex": "unknown",
+        "weightKg": null,
+        "heightCm": null,
+        "vitals": {
+          "hr": null,
+          "sbp": null,
+          "dbp": null,
+          "rr": null,
+          "tempC": 37.2,
+          "spo2": null,
+          "avpu": null,
+          "onOxygen": null
+        },
+        "labs": {
+          "wbc": 12000,
+          "neutrophils": 9.6,
+          "crp": null,
+          "urea": null,
+          "hb": null,
+          "creatinine": null,
+          "egfr": null,
+          "bilirubin": null,
+          "albumin": null,
+          "inr": null
+        },
+        "imagingReported": false,
+        "pleuralEffusion": false,
+        "history": {
+          "cancer": false,
+          "priorDvt": false,
+          "priorPe": false,
+          "chf": false,
+          "ihd": false,
+          "cva": false,
+          "insulin": false,
+          "liverDisease": false,
+          "ibd": false,
+          "varicoseVeins": false,
+          "ocpHrt": false,
+          "immobile": false,
+          "pregnant": false,
+          "recentSurgery4w": false,
+          "recentSurgery12w": false
+        },
+        "findings": {
+          "migration": false,
+          "anorexia": false,
+          "nausea": false,
+          "vomiting": false,
+          "rifPain": false,
+          "rifTenderness": false,
+          "rebound": false,
+          "melaena": false,
+          "syncope": false,
+          "haemoptysis": false,
+          "dvtSigns": false,
+          "confusion": false
+        }
+      },
+      "expected": {
+        "score": "alvarado",
+        "fields": [
+          {
+            "key": "fever",
+            "value": false,
+            "source": "vitals"
+          },
+          {
+            "key": "wbcAbove10",
+            "value": true,
+            "source": "labs"
+          },
+          {
+            "key": "leftShift",
+            "value": true,
+            "source": "labs"
+          }
+        ],
+        "missing": []
+      }
+    },
+    {
+      "id": "air-labs",
+      "score": "air",
+      "record": {
+        "ageYears": null,
+        "sex": "unknown",
+        "weightKg": null,
+        "heightCm": null,
+        "vitals": {
+          "hr": null,
+          "sbp": null,
+          "dbp": null,
+          "rr": null,
+          "tempC": 38.6,
+          "spo2": null,
+          "avpu": null,
+          "onOxygen": null
+        },
+        "labs": {
+          "wbc": 16.1,
+          "neutrophils": 86,
+          "crp": 62,
+          "urea": null,
+          "hb": null,
+          "creatinine": null,
+          "egfr": null,
+          "bilirubin": null,
+          "albumin": null,
+          "inr": null
+        },
+        "imagingReported": false,
+        "pleuralEffusion": false,
+        "history": {
+          "cancer": false,
+          "priorDvt": false,
+          "priorPe": false,
+          "chf": false,
+          "ihd": false,
+          "cva": false,
+          "insulin": false,
+          "liverDisease": false,
+          "ibd": false,
+          "varicoseVeins": false,
+          "ocpHrt": false,
+          "immobile": false,
+          "pregnant": false,
+          "recentSurgery4w": false,
+          "recentSurgery12w": false
+        },
+        "findings": {
+          "migration": false,
+          "anorexia": false,
+          "nausea": false,
+          "vomiting": true,
+          "rifPain": true,
+          "rifTenderness": false,
+          "rebound": false,
+          "melaena": false,
+          "syncope": false,
+          "haemoptysis": false,
+          "dvtSigns": false,
+          "confusion": false
+        }
+      },
+      "expected": {
+        "score": "air",
+        "fields": [
+          {
+            "key": "vomiting",
+            "value": true,
+            "source": "findings"
+          },
+          {
+            "key": "painRIF",
+            "value": true,
+            "source": "findings"
+          },
+          {
+            "key": "tempAbove38point5",
+            "value": true,
+            "source": "vitals"
+          },
+          {
+            "key": "pmn",
+            "value": 2,
+            "source": "labs"
+          },
+          {
+            "key": "wbc",
+            "value": 2,
+            "source": "labs"
+          },
+          {
+            "key": "crp",
+            "value": 2,
+            "source": "labs"
+          }
+        ],
+        "missing": []
+      }
+    },
+    {
+      "id": "air-mid-bands",
+      "score": "air",
+      "record": {
+        "ageYears": null,
+        "sex": "unknown",
+        "weightKg": null,
+        "heightCm": null,
+        "vitals": {
+          "hr": null,
+          "sbp": null,
+          "dbp": null,
+          "rr": null,
+          "tempC": 38,
+          "spo2": null,
+          "avpu": null,
+          "onOxygen": null
+        },
+        "labs": {
+          "wbc": 11,
+          "neutrophils": 72,
+          "crp": 20,
+          "urea": null,
+          "hb": null,
+          "creatinine": null,
+          "egfr": null,
+          "bilirubin": null,
+          "albumin": null,
+          "inr": null
+        },
+        "imagingReported": false,
+        "pleuralEffusion": false,
+        "history": {
+          "cancer": false,
+          "priorDvt": false,
+          "priorPe": false,
+          "chf": false,
+          "ihd": false,
+          "cva": false,
+          "insulin": false,
+          "liverDisease": false,
+          "ibd": false,
+          "varicoseVeins": false,
+          "ocpHrt": false,
+          "immobile": false,
+          "pregnant": false,
+          "recentSurgery4w": false,
+          "recentSurgery12w": false
+        },
+        "findings": {
+          "migration": false,
+          "anorexia": false,
+          "nausea": false,
+          "vomiting": false,
+          "rifPain": false,
+          "rifTenderness": false,
+          "rebound": false,
+          "melaena": false,
+          "syncope": false,
+          "haemoptysis": false,
+          "dvtSigns": false,
+          "confusion": false
+        }
+      },
+      "expected": {
+        "score": "air",
+        "fields": [
+          {
+            "key": "tempAbove38point5",
+            "value": false,
+            "source": "vitals"
+          },
+          {
+            "key": "pmn",
+            "value": 1,
+            "source": "labs"
+          },
+          {
+            "key": "wbc",
+            "value": 1,
+            "source": "labs"
+          },
+          {
+            "key": "crp",
+            "value": 1,
+            "source": "labs"
+          }
+        ],
+        "missing": []
+      }
+    },
+    {
+      "id": "air-missing",
+      "score": "air",
+      "record": {
+        "ageYears": null,
+        "sex": "unknown",
+        "weightKg": null,
+        "heightCm": null,
+        "vitals": {
+          "hr": null,
+          "sbp": null,
+          "dbp": null,
+          "rr": null,
+          "tempC": null,
+          "spo2": null,
+          "avpu": null,
+          "onOxygen": null
+        },
+        "labs": {
+          "wbc": null,
+          "neutrophils": null,
+          "crp": null,
+          "urea": null,
+          "hb": null,
+          "creatinine": null,
+          "egfr": null,
+          "bilirubin": null,
+          "albumin": null,
+          "inr": null
+        },
+        "imagingReported": false,
+        "pleuralEffusion": false,
+        "history": {
+          "cancer": false,
+          "priorDvt": false,
+          "priorPe": false,
+          "chf": false,
+          "ihd": false,
+          "cva": false,
+          "insulin": false,
+          "liverDisease": false,
+          "ibd": false,
+          "varicoseVeins": false,
+          "ocpHrt": false,
+          "immobile": false,
+          "pregnant": false,
+          "recentSurgery4w": false,
+          "recentSurgery12w": false
+        },
+        "findings": {
+          "migration": false,
+          "anorexia": false,
+          "nausea": false,
+          "vomiting": false,
+          "rifPain": false,
+          "rifTenderness": true,
+          "rebound": false,
+          "melaena": false,
+          "syncope": false,
+          "haemoptysis": false,
+          "dvtSigns": false,
+          "confusion": false
+        }
+      },
+      "expected": {
+        "score": "air",
+        "fields": [
+          {
+            "key": "painRIF",
+            "value": true,
+            "source": "findings"
+          }
+        ],
+        "missing": [
+          "temp",
+          "neutrophils",
+          "wbc",
+          "crp"
+        ]
+      }
+    },
+    {
+      "id": "gbs-full",
+      "score": "glasgow-blatchford",
+      "record": {
+        "ageYears": null,
+        "sex": "male",
+        "weightKg": null,
+        "heightCm": null,
+        "vitals": {
+          "hr": 112,
+          "sbp": 96,
+          "dbp": null,
+          "rr": null,
+          "tempC": null,
+          "spo2": null,
+          "avpu": null,
+          "onOxygen": null
+        },
+        "labs": {
+          "wbc": null,
+          "neutrophils": null,
+          "crp": null,
+          "urea": 11.2,
+          "hb": 98,
+          "creatinine": null,
+          "egfr": null,
+          "bilirubin": null,
+          "albumin": null,
+          "inr": null
+        },
+        "imagingReported": false,
+        "pleuralEffusion": false,
+        "history": {
+          "cancer": false,
+          "priorDvt": false,
+          "priorPe": false,
+          "chf": false,
+          "ihd": false,
+          "cva": false,
+          "insulin": false,
+          "liverDisease": true,
+          "ibd": false,
+          "varicoseVeins": false,
+          "ocpHrt": false,
+          "immobile": false,
+          "pregnant": false,
+          "recentSurgery4w": false,
+          "recentSurgery12w": false
+        },
+        "findings": {
+          "migration": false,
+          "anorexia": false,
+          "nausea": false,
+          "vomiting": false,
+          "rifPain": false,
+          "rifTenderness": false,
+          "rebound": false,
+          "melaena": true,
+          "syncope": false,
+          "haemoptysis": false,
+          "dvtSigns": false,
+          "confusion": false
+        }
+      },
+      "expected": {
+        "score": "glasgow-blatchford",
+        "fields": [
+          {
+            "key": "ureaMmol",
+            "value": 11.2,
+            "source": "labs"
+          },
+          {
+            "key": "haemoglobin",
+            "value": 9.8,
+            "source": "labs"
+          },
+          {
+            "key": "isMale",
+            "value": true,
+            "source": "demographics"
+          },
+          {
+            "key": "systolicBp",
+            "value": 96,
+            "source": "vitals"
+          },
+          {
+            "key": "heartRateAbove100",
+            "value": true,
+            "source": "vitals"
+          },
+          {
+            "key": "melaena",
+            "value": true,
+            "source": "findings"
+          },
+          {
+            "key": "liverDisease",
+            "value": true,
+            "source": "history"
+          }
+        ],
+        "missing": []
+      }
+    },
+    {
+      "id": "gbs-missing-labs",
+      "score": "glasgow-blatchford",
+      "record": {
+        "ageYears": null,
+        "sex": "female",
+        "weightKg": null,
+        "heightCm": null,
+        "vitals": {
+          "hr": 80,
+          "sbp": 120,
+          "dbp": null,
+          "rr": null,
+          "tempC": null,
+          "spo2": null,
+          "avpu": null,
+          "onOxygen": null
+        },
+        "labs": {
+          "wbc": null,
+          "neutrophils": null,
+          "crp": null,
+          "urea": null,
+          "hb": null,
+          "creatinine": null,
+          "egfr": null,
+          "bilirubin": null,
+          "albumin": null,
+          "inr": null
+        },
+        "imagingReported": false,
+        "pleuralEffusion": false,
+        "history": {
+          "cancer": false,
+          "priorDvt": false,
+          "priorPe": false,
+          "chf": false,
+          "ihd": false,
+          "cva": false,
+          "insulin": false,
+          "liverDisease": false,
+          "ibd": false,
+          "varicoseVeins": false,
+          "ocpHrt": false,
+          "immobile": false,
+          "pregnant": false,
+          "recentSurgery4w": false,
+          "recentSurgery12w": false
+        },
+        "findings": {
+          "migration": false,
+          "anorexia": false,
+          "nausea": false,
+          "vomiting": false,
+          "rifPain": false,
+          "rifTenderness": false,
+          "rebound": false,
+          "melaena": false,
+          "syncope": false,
+          "haemoptysis": false,
+          "dvtSigns": false,
+          "confusion": false
+        }
+      },
+      "expected": {
+        "score": "glasgow-blatchford",
+        "fields": [
+          {
+            "key": "isMale",
+            "value": false,
+            "source": "demographics"
+          },
+          {
+            "key": "systolicBp",
+            "value": 120,
+            "source": "vitals"
+          },
+          {
+            "key": "heartRateAbove100",
+            "value": false,
+            "source": "vitals"
+          }
+        ],
+        "missing": [
+          "urea",
+          "hb"
+        ]
+      }
+    },
+    {
+      "id": "curb65-avpu-confused",
+      "score": "curb65",
+      "record": {
+        "ageYears": 78,
+        "sex": "unknown",
+        "weightKg": null,
+        "heightCm": null,
+        "vitals": {
+          "hr": null,
+          "sbp": 100,
+          "dbp": 58,
+          "rr": 32,
+          "tempC": null,
+          "spo2": null,
+          "avpu": "C",
+          "onOxygen": null
+        },
+        "labs": {
+          "wbc": null,
+          "neutrophils": null,
+          "crp": null,
+          "urea": 9,
+          "hb": null,
+          "creatinine": null,
+          "egfr": null,
+          "bilirubin": null,
+          "albumin": null,
+          "inr": null
+        },
+        "imagingReported": false,
+        "pleuralEffusion": false,
+        "history": {
+          "cancer": false,
+          "priorDvt": false,
+          "priorPe": false,
+          "chf": false,
+          "ihd": false,
+          "cva": false,
+          "insulin": false,
+          "liverDisease": false,
+          "ibd": false,
+          "varicoseVeins": false,
+          "ocpHrt": false,
+          "immobile": false,
+          "pregnant": false,
+          "recentSurgery4w": false,
+          "recentSurgery12w": false
+        },
+        "findings": {
+          "migration": false,
+          "anorexia": false,
+          "nausea": false,
+          "vomiting": false,
+          "rifPain": false,
+          "rifTenderness": false,
+          "rebound": false,
+          "melaena": false,
+          "syncope": false,
+          "haemoptysis": false,
+          "dvtSigns": false,
+          "confusion": false
+        }
+      },
+      "expected": {
+        "score": "curb65",
+        "fields": [
+          {
+            "key": "confusion",
+            "value": true,
+            "source": "vitals"
+          },
+          {
+            "key": "ureaMmolAbove7",
+            "value": true,
+            "source": "labs"
+          },
+          {
+            "key": "respiratoryRateAbove30",
+            "value": true,
+            "source": "vitals"
+          },
+          {
+            "key": "bpLow",
+            "value": true,
+            "source": "vitals"
+          },
+          {
+            "key": "age65orAbove",
+            "value": true,
+            "source": "demographics"
+          }
+        ],
+        "missing": []
+      }
+    },
+    {
+      "id": "curb65-missing",
+      "score": "curb65",
+      "record": {
+        "ageYears": 50,
+        "sex": "unknown",
+        "weightKg": null,
+        "heightCm": null,
+        "vitals": {
+          "hr": null,
+          "sbp": null,
+          "dbp": null,
+          "rr": null,
+          "tempC": null,
+          "spo2": null,
+          "avpu": null,
+          "onOxygen": null
+        },
+        "labs": {
+          "wbc": null,
+          "neutrophils": null,
+          "crp": null,
+          "urea": null,
+          "hb": null,
+          "creatinine": null,
+          "egfr": null,
+          "bilirubin": null,
+          "albumin": null,
+          "inr": null
+        },
+        "imagingReported": false,
+        "pleuralEffusion": false,
+        "history": {
+          "cancer": false,
+          "priorDvt": false,
+          "priorPe": false,
+          "chf": false,
+          "ihd": false,
+          "cva": false,
+          "insulin": false,
+          "liverDisease": false,
+          "ibd": false,
+          "varicoseVeins": false,
+          "ocpHrt": false,
+          "immobile": false,
+          "pregnant": false,
+          "recentSurgery4w": false,
+          "recentSurgery12w": false
+        },
+        "findings": {
+          "migration": false,
+          "anorexia": false,
+          "nausea": false,
+          "vomiting": false,
+          "rifPain": false,
+          "rifTenderness": false,
+          "rebound": false,
+          "melaena": false,
+          "syncope": false,
+          "haemoptysis": false,
+          "dvtSigns": false,
+          "confusion": false
+        }
+      },
+      "expected": {
+        "score": "curb65",
+        "fields": [
+          {
+            "key": "age65orAbove",
+            "value": false,
+            "source": "demographics"
+          }
+        ],
+        "missing": [
+          "urea",
+          "rr",
+          "sbp"
+        ]
+      }
+    },
+    {
+      "id": "wells-pe",
+      "score": "wells-pe",
+      "record": {
+        "ageYears": null,
+        "sex": "unknown",
+        "weightKg": null,
+        "heightCm": null,
+        "vitals": {
+          "hr": 118,
+          "sbp": null,
+          "dbp": null,
+          "rr": null,
+          "tempC": null,
+          "spo2": null,
+          "avpu": null,
+          "onOxygen": null
+        },
+        "labs": {
+          "wbc": null,
+          "neutrophils": null,
+          "crp": null,
+          "urea": null,
+          "hb": null,
+          "creatinine": null,
+          "egfr": null,
+          "bilirubin": null,
+          "albumin": null,
+          "inr": null
+        },
+        "imagingReported": false,
+        "pleuralEffusion": false,
+        "history": {
+          "cancer": true,
+          "priorDvt": false,
+          "priorPe": false,
+          "chf": false,
+          "ihd": false,
+          "cva": false,
+          "insulin": false,
+          "liverDisease": false,
+          "ibd": false,
+          "varicoseVeins": false,
+          "ocpHrt": false,
+          "immobile": false,
+          "pregnant": false,
+          "recentSurgery4w": true,
+          "recentSurgery12w": false
+        },
+        "findings": {
+          "migration": false,
+          "anorexia": false,
+          "nausea": false,
+          "vomiting": false,
+          "rifPain": false,
+          "rifTenderness": false,
+          "rebound": false,
+          "melaena": false,
+          "syncope": false,
+          "haemoptysis": true,
+          "dvtSigns": false,
+          "confusion": false
+        }
+      },
+      "expected": {
+        "score": "wells-pe",
+        "fields": [
+          {
+            "key": "hrAbove100",
+            "value": true,
+            "source": "vitals"
+          },
+          {
+            "key": "immobilised",
+            "value": true,
+            "source": "history"
+          },
+          {
+            "key": "haemoptysis",
+            "value": true,
+            "source": "findings"
+          },
+          {
+            "key": "cancer",
+            "value": true,
+            "source": "history"
+          }
+        ],
+        "missing": []
+      }
+    },
+    {
+      "id": "wells-pe-no-hr",
+      "score": "wells-pe",
+      "record": {
+        "ageYears": null,
+        "sex": "unknown",
+        "weightKg": null,
+        "heightCm": null,
+        "vitals": {
+          "hr": null,
+          "sbp": null,
+          "dbp": null,
+          "rr": null,
+          "tempC": null,
+          "spo2": null,
+          "avpu": null,
+          "onOxygen": null
+        },
+        "labs": {
+          "wbc": null,
+          "neutrophils": null,
+          "crp": null,
+          "urea": null,
+          "hb": null,
+          "creatinine": null,
+          "egfr": null,
+          "bilirubin": null,
+          "albumin": null,
+          "inr": null
+        },
+        "imagingReported": false,
+        "pleuralEffusion": false,
+        "history": {
+          "cancer": false,
+          "priorDvt": false,
+          "priorPe": true,
+          "chf": false,
+          "ihd": false,
+          "cva": false,
+          "insulin": false,
+          "liverDisease": false,
+          "ibd": false,
+          "varicoseVeins": false,
+          "ocpHrt": false,
+          "immobile": false,
+          "pregnant": false,
+          "recentSurgery4w": false,
+          "recentSurgery12w": false
+        },
+        "findings": {
+          "migration": false,
+          "anorexia": false,
+          "nausea": false,
+          "vomiting": false,
+          "rifPain": false,
+          "rifTenderness": false,
+          "rebound": false,
+          "melaena": false,
+          "syncope": false,
+          "haemoptysis": false,
+          "dvtSigns": false,
+          "confusion": false
+        }
+      },
+      "expected": {
+        "score": "wells-pe",
+        "fields": [
+          {
+            "key": "priorDvtPe",
+            "value": true,
+            "source": "history"
+          }
+        ],
+        "missing": [
+          "hr"
+        ]
+      }
+    },
+    {
+      "id": "wells-dvt",
+      "score": "wells-dvt",
+      "record": {
+        "ageYears": null,
+        "sex": "unknown",
+        "weightKg": null,
+        "heightCm": null,
+        "vitals": {
+          "hr": null,
+          "sbp": null,
+          "dbp": null,
+          "rr": null,
+          "tempC": null,
+          "spo2": null,
+          "avpu": null,
+          "onOxygen": null
+        },
+        "labs": {
+          "wbc": null,
+          "neutrophils": null,
+          "crp": null,
+          "urea": null,
+          "hb": null,
+          "creatinine": null,
+          "egfr": null,
+          "bilirubin": null,
+          "albumin": null,
+          "inr": null
+        },
+        "imagingReported": false,
+        "pleuralEffusion": false,
+        "history": {
+          "cancer": true,
+          "priorDvt": true,
+          "priorPe": false,
+          "chf": false,
+          "ihd": false,
+          "cva": false,
+          "insulin": false,
+          "liverDisease": false,
+          "ibd": false,
+          "varicoseVeins": false,
+          "ocpHrt": false,
+          "immobile": true,
+          "pregnant": false,
+          "recentSurgery4w": false,
+          "recentSurgery12w": false
+        },
+        "findings": {
+          "migration": false,
+          "anorexia": false,
+          "nausea": false,
+          "vomiting": false,
+          "rifPain": false,
+          "rifTenderness": false,
+          "rebound": false,
+          "melaena": false,
+          "syncope": false,
+          "haemoptysis": false,
+          "dvtSigns": false,
+          "confusion": false
+        }
+      },
+      "expected": {
+        "score": "wells-dvt",
+        "fields": [
+          {
+            "key": "activeCancer",
+            "value": true,
+            "source": "history"
+          },
+          {
+            "key": "bedridden3Days",
+            "value": true,
+            "source": "history"
+          },
+          {
+            "key": "previousDvt",
+            "value": true,
+            "source": "history"
+          }
+        ],
+        "missing": []
+      }
+    },
+    {
+      "id": "caprini-bmi",
+      "score": "caprini",
+      "record": {
+        "ageYears": 67,
+        "sex": "unknown",
+        "weightKg": 96,
+        "heightCm": 170,
+        "vitals": {
+          "hr": null,
+          "sbp": null,
+          "dbp": null,
+          "rr": null,
+          "tempC": null,
+          "spo2": null,
+          "avpu": null,
+          "onOxygen": null
+        },
+        "labs": {
+          "wbc": null,
+          "neutrophils": null,
+          "crp": null,
+          "urea": null,
+          "hb": null,
+          "creatinine": null,
+          "egfr": null,
+          "bilirubin": null,
+          "albumin": null,
+          "inr": null
+        },
+        "imagingReported": false,
+        "pleuralEffusion": false,
+        "history": {
+          "cancer": false,
+          "priorDvt": false,
+          "priorPe": false,
+          "chf": false,
+          "ihd": false,
+          "cva": false,
+          "insulin": false,
+          "liverDisease": false,
+          "ibd": false,
+          "varicoseVeins": true,
+          "ocpHrt": true,
+          "immobile": false,
+          "pregnant": false,
+          "recentSurgery4w": false,
+          "recentSurgery12w": false
+        },
+        "findings": {
+          "migration": false,
+          "anorexia": false,
+          "nausea": false,
+          "vomiting": false,
+          "rifPain": false,
+          "rifTenderness": false,
+          "rebound": false,
+          "melaena": false,
+          "syncope": false,
+          "haemoptysis": false,
+          "dvtSigns": false,
+          "confusion": false
+        }
+      },
+      "expected": {
+        "score": "caprini",
+        "fields": [
+          {
+            "key": "age41_60",
+            "value": false,
+            "source": "demographics"
+          },
+          {
+            "key": "age61_74",
+            "value": true,
+            "source": "demographics"
+          },
+          {
+            "key": "age75plus",
+            "value": false,
+            "source": "demographics"
+          },
+          {
+            "key": "bmi25",
+            "value": true,
+            "source": "demographics"
+          },
+          {
+            "key": "varicoseVeins",
+            "value": true,
+            "source": "history"
+          },
+          {
+            "key": "ocp_hrt",
+            "value": true,
+            "source": "history"
+          }
+        ],
+        "missing": []
+      }
+    },
+    {
+      "id": "caprini-no-height",
+      "score": "caprini",
+      "record": {
+        "ageYears": 45,
+        "sex": "unknown",
+        "weightKg": 70,
+        "heightCm": null,
+        "vitals": {
+          "hr": null,
+          "sbp": null,
+          "dbp": null,
+          "rr": null,
+          "tempC": null,
+          "spo2": null,
+          "avpu": null,
+          "onOxygen": null
+        },
+        "labs": {
+          "wbc": null,
+          "neutrophils": null,
+          "crp": null,
+          "urea": null,
+          "hb": null,
+          "creatinine": null,
+          "egfr": null,
+          "bilirubin": null,
+          "albumin": null,
+          "inr": null
+        },
+        "imagingReported": false,
+        "pleuralEffusion": false,
+        "history": {
+          "cancer": false,
+          "priorDvt": false,
+          "priorPe": false,
+          "chf": false,
+          "ihd": false,
+          "cva": false,
+          "insulin": false,
+          "liverDisease": false,
+          "ibd": false,
+          "varicoseVeins": false,
+          "ocpHrt": false,
+          "immobile": false,
+          "pregnant": false,
+          "recentSurgery4w": false,
+          "recentSurgery12w": false
+        },
+        "findings": {
+          "migration": false,
+          "anorexia": false,
+          "nausea": false,
+          "vomiting": false,
+          "rifPain": false,
+          "rifTenderness": false,
+          "rebound": false,
+          "melaena": false,
+          "syncope": false,
+          "haemoptysis": false,
+          "dvtSigns": false,
+          "confusion": false
+        }
+      },
+      "expected": {
+        "score": "caprini",
+        "fields": [
+          {
+            "key": "age41_60",
+            "value": true,
+            "source": "demographics"
+          },
+          {
+            "key": "age61_74",
+            "value": false,
+            "source": "demographics"
+          },
+          {
+            "key": "age75plus",
+            "value": false,
+            "source": "demographics"
+          }
+        ],
+        "missing": [
+          "height"
+        ]
+      }
+    },
+    {
+      "id": "rcri-creatinine-mgdl",
+      "score": "rcri",
+      "record": {
+        "ageYears": null,
+        "sex": "unknown",
+        "weightKg": null,
+        "heightCm": null,
+        "vitals": {
+          "hr": null,
+          "sbp": null,
+          "dbp": null,
+          "rr": null,
+          "tempC": null,
+          "spo2": null,
+          "avpu": null,
+          "onOxygen": null
+        },
+        "labs": {
+          "wbc": null,
+          "neutrophils": null,
+          "crp": null,
+          "urea": null,
+          "hb": null,
+          "creatinine": 2.4,
+          "egfr": null,
+          "bilirubin": null,
+          "albumin": null,
+          "inr": null
+        },
+        "imagingReported": false,
+        "pleuralEffusion": false,
+        "history": {
+          "cancer": false,
+          "priorDvt": false,
+          "priorPe": false,
+          "chf": false,
+          "ihd": true,
+          "cva": false,
+          "insulin": true,
+          "liverDisease": false,
+          "ibd": false,
+          "varicoseVeins": false,
+          "ocpHrt": false,
+          "immobile": false,
+          "pregnant": false,
+          "recentSurgery4w": false,
+          "recentSurgery12w": false
+        },
+        "findings": {
+          "migration": false,
+          "anorexia": false,
+          "nausea": false,
+          "vomiting": false,
+          "rifPain": false,
+          "rifTenderness": false,
+          "rebound": false,
+          "melaena": false,
+          "syncope": false,
+          "haemoptysis": false,
+          "dvtSigns": false,
+          "confusion": false
+        }
+      },
+      "expected": {
+        "score": "rcri",
+        "fields": [
+          {
+            "key": "ischemicHeartDisease",
+            "value": true,
+            "source": "history"
+          },
+          {
+            "key": "insulinDependentDiabetes",
+            "value": true,
+            "source": "history"
+          },
+          {
+            "key": "creatinineAbove177",
+            "value": true,
+            "source": "labs"
+          }
+        ],
+        "missing": []
+      }
+    },
+    {
+      "id": "rcri-missing",
+      "score": "rcri",
+      "record": {
+        "ageYears": null,
+        "sex": "unknown",
+        "weightKg": null,
+        "heightCm": null,
+        "vitals": {
+          "hr": null,
+          "sbp": null,
+          "dbp": null,
+          "rr": null,
+          "tempC": null,
+          "spo2": null,
+          "avpu": null,
+          "onOxygen": null
+        },
+        "labs": {
+          "wbc": null,
+          "neutrophils": null,
+          "crp": null,
+          "urea": null,
+          "hb": null,
+          "creatinine": null,
+          "egfr": null,
+          "bilirubin": null,
+          "albumin": null,
+          "inr": null
+        },
+        "imagingReported": false,
+        "pleuralEffusion": false,
+        "history": {
+          "cancer": false,
+          "priorDvt": false,
+          "priorPe": false,
+          "chf": false,
+          "ihd": false,
+          "cva": true,
+          "insulin": false,
+          "liverDisease": false,
+          "ibd": false,
+          "varicoseVeins": false,
+          "ocpHrt": false,
+          "immobile": false,
+          "pregnant": false,
+          "recentSurgery4w": false,
+          "recentSurgery12w": false
+        },
+        "findings": {
+          "migration": false,
+          "anorexia": false,
+          "nausea": false,
+          "vomiting": false,
+          "rifPain": false,
+          "rifTenderness": false,
+          "rebound": false,
+          "melaena": false,
+          "syncope": false,
+          "haemoptysis": false,
+          "dvtSigns": false,
+          "confusion": false
+        }
+      },
+      "expected": {
+        "score": "rcri",
+        "fields": [
+          {
+            "key": "cerebrovascularDisease",
+            "value": true,
+            "source": "history"
+          }
+        ],
+        "missing": [
+          "creatinine"
+        ]
+      }
+    },
+    {
+      "id": "bisap-sirs-met",
+      "score": "bisap",
+      "record": {
+        "ageYears": 64,
+        "sex": "unknown",
+        "weightKg": null,
+        "heightCm": null,
+        "vitals": {
+          "hr": 104,
+          "sbp": null,
+          "dbp": null,
+          "rr": null,
+          "tempC": 38.4,
+          "spo2": null,
+          "avpu": "A",
+          "onOxygen": null
+        },
+        "labs": {
+          "wbc": null,
+          "neutrophils": null,
+          "crp": null,
+          "urea": 10.1,
+          "hb": null,
+          "creatinine": null,
+          "egfr": null,
+          "bilirubin": null,
+          "albumin": null,
+          "inr": null
+        },
+        "imagingReported": false,
+        "pleuralEffusion": true,
+        "history": {
+          "cancer": false,
+          "priorDvt": false,
+          "priorPe": false,
+          "chf": false,
+          "ihd": false,
+          "cva": false,
+          "insulin": false,
+          "liverDisease": false,
+          "ibd": false,
+          "varicoseVeins": false,
+          "ocpHrt": false,
+          "immobile": false,
+          "pregnant": false,
+          "recentSurgery4w": false,
+          "recentSurgery12w": false
+        },
+        "findings": {
+          "migration": false,
+          "anorexia": false,
+          "nausea": false,
+          "vomiting": false,
+          "rifPain": false,
+          "rifTenderness": false,
+          "rebound": false,
+          "melaena": false,
+          "syncope": false,
+          "haemoptysis": false,
+          "dvtSigns": false,
+          "confusion": false
+        }
+      },
+      "expected": {
+        "score": "bisap",
+        "fields": [
+          {
+            "key": "bunAbove25",
+            "value": true,
+            "source": "labs"
+          },
+          {
+            "key": "impairedMentalStatus",
+            "value": false,
+            "source": "vitals"
+          },
+          {
+            "key": "sirs",
+            "value": true,
+            "source": "vitals"
+          },
+          {
+            "key": "ageAbove60",
+            "value": true,
+            "source": "demographics"
+          },
+          {
+            "key": "pleuralEffusion",
+            "value": true,
+            "source": "imaging"
+          }
+        ],
+        "missing": []
+      }
+    },
+    {
+      "id": "bisap-sirs-undecided",
+      "score": "bisap",
+      "record": {
+        "ageYears": 40,
+        "sex": "unknown",
+        "weightKg": null,
+        "heightCm": null,
+        "vitals": {
+          "hr": 96,
+          "sbp": null,
+          "dbp": null,
+          "rr": null,
+          "tempC": null,
+          "spo2": null,
+          "avpu": null,
+          "onOxygen": null
+        },
+        "labs": {
+          "wbc": null,
+          "neutrophils": null,
+          "crp": null,
+          "urea": null,
+          "hb": null,
+          "creatinine": null,
+          "egfr": null,
+          "bilirubin": null,
+          "albumin": null,
+          "inr": null
+        },
+        "imagingReported": false,
+        "pleuralEffusion": false,
+        "history": {
+          "cancer": false,
+          "priorDvt": false,
+          "priorPe": false,
+          "chf": false,
+          "ihd": false,
+          "cva": false,
+          "insulin": false,
+          "liverDisease": false,
+          "ibd": false,
+          "varicoseVeins": false,
+          "ocpHrt": false,
+          "immobile": false,
+          "pregnant": false,
+          "recentSurgery4w": false,
+          "recentSurgery12w": false
+        },
+        "findings": {
+          "migration": false,
+          "anorexia": false,
+          "nausea": false,
+          "vomiting": false,
+          "rifPain": false,
+          "rifTenderness": false,
+          "rebound": false,
+          "melaena": false,
+          "syncope": false,
+          "haemoptysis": false,
+          "dvtSigns": false,
+          "confusion": false
+        }
+      },
+      "expected": {
+        "score": "bisap",
+        "fields": [
+          {
+            "key": "ageAbove60",
+            "value": false,
+            "source": "demographics"
+          }
+        ],
+        "missing": [
+          "urea",
+          "avpu",
+          "temp",
+          "rr",
+          "wbc"
+        ]
+      }
+    },
+    {
+      "id": "bisap-sirs-not-met",
+      "score": "bisap",
+      "record": {
+        "ageYears": 40,
+        "sex": "unknown",
+        "weightKg": null,
+        "heightCm": null,
+        "vitals": {
+          "hr": 80,
+          "sbp": null,
+          "dbp": null,
+          "rr": 14,
+          "tempC": 37,
+          "spo2": null,
+          "avpu": "V",
+          "onOxygen": null
+        },
+        "labs": {
+          "wbc": null,
+          "neutrophils": null,
+          "crp": null,
+          "urea": 5,
+          "hb": null,
+          "creatinine": null,
+          "egfr": null,
+          "bilirubin": null,
+          "albumin": null,
+          "inr": null
+        },
+        "imagingReported": false,
+        "pleuralEffusion": false,
+        "history": {
+          "cancer": false,
+          "priorDvt": false,
+          "priorPe": false,
+          "chf": false,
+          "ihd": false,
+          "cva": false,
+          "insulin": false,
+          "liverDisease": false,
+          "ibd": false,
+          "varicoseVeins": false,
+          "ocpHrt": false,
+          "immobile": false,
+          "pregnant": false,
+          "recentSurgery4w": false,
+          "recentSurgery12w": false
+        },
+        "findings": {
+          "migration": false,
+          "anorexia": false,
+          "nausea": false,
+          "vomiting": false,
+          "rifPain": false,
+          "rifTenderness": false,
+          "rebound": false,
+          "melaena": false,
+          "syncope": false,
+          "haemoptysis": false,
+          "dvtSigns": false,
+          "confusion": false
+        }
+      },
+      "expected": {
+        "score": "bisap",
+        "fields": [
+          {
+            "key": "bunAbove25",
+            "value": false,
+            "source": "labs"
+          },
+          {
+            "key": "impairedMentalStatus",
+            "value": true,
+            "source": "vitals"
+          },
+          {
+            "key": "sirs",
+            "value": false,
+            "source": "vitals"
+          },
+          {
+            "key": "ageAbove60",
+            "value": false,
+            "source": "demographics"
+          }
+        ],
+        "missing": []
+      }
+    },
+    {
+      "id": "tg18-cholecystitis-missing",
+      "score": "tg18-cholecystitis",
+      "record": {
+        "ageYears": null,
+        "sex": "unknown",
+        "weightKg": null,
+        "heightCm": null,
+        "vitals": {
+          "hr": null,
+          "sbp": null,
+          "dbp": null,
+          "rr": null,
+          "tempC": 38.2,
+          "spo2": null,
+          "avpu": null,
+          "onOxygen": null
+        },
+        "labs": {
+          "wbc": null,
+          "neutrophils": null,
+          "crp": null,
+          "urea": null,
+          "hb": null,
+          "creatinine": null,
+          "egfr": null,
+          "bilirubin": null,
+          "albumin": null,
+          "inr": null
+        },
+        "imagingReported": false,
+        "pleuralEffusion": false,
+        "history": {
+          "cancer": false,
+          "priorDvt": false,
+          "priorPe": false,
+          "chf": false,
+          "ihd": false,
+          "cva": false,
+          "insulin": false,
+          "liverDisease": false,
+          "ibd": false,
+          "varicoseVeins": false,
+          "ocpHrt": false,
+          "immobile": false,
+          "pregnant": false,
+          "recentSurgery4w": false,
+          "recentSurgery12w": false
+        },
+        "findings": {
+          "migration": false,
+          "anorexia": false,
+          "nausea": false,
+          "vomiting": false,
+          "rifPain": false,
+          "rifTenderness": false,
+          "rebound": false,
+          "melaena": false,
+          "syncope": false,
+          "haemoptysis": false,
+          "dvtSigns": false,
+          "confusion": false
+        }
+      },
+      "expected": {
+        "score": "tg18-cholecystitis",
+        "fields": [],
+        "missing": [
+          "wbc",
+          "crp",
+          "imaging-us"
+        ]
+      }
+    },
+    {
+      "id": "tg18-cholangitis-missing",
+      "score": "tg18-cholangitis",
+      "record": {
+        "ageYears": null,
+        "sex": "unknown",
+        "weightKg": null,
+        "heightCm": null,
+        "vitals": {
+          "hr": null,
+          "sbp": null,
+          "dbp": null,
+          "rr": null,
+          "tempC": null,
+          "spo2": null,
+          "avpu": null,
+          "onOxygen": null
+        },
+        "labs": {
+          "wbc": 15,
+          "neutrophils": null,
+          "crp": null,
+          "urea": null,
+          "hb": null,
+          "creatinine": null,
+          "egfr": null,
+          "bilirubin": null,
+          "albumin": null,
+          "inr": null
+        },
+        "imagingReported": true,
+        "pleuralEffusion": false,
+        "history": {
+          "cancer": false,
+          "priorDvt": false,
+          "priorPe": false,
+          "chf": false,
+          "ihd": false,
+          "cva": false,
+          "insulin": false,
+          "liverDisease": false,
+          "ibd": false,
+          "varicoseVeins": false,
+          "ocpHrt": false,
+          "immobile": false,
+          "pregnant": false,
+          "recentSurgery4w": false,
+          "recentSurgery12w": false
+        },
+        "findings": {
+          "migration": false,
+          "anorexia": false,
+          "nausea": false,
+          "vomiting": false,
+          "rifPain": false,
+          "rifTenderness": false,
+          "rebound": false,
+          "melaena": false,
+          "syncope": false,
+          "haemoptysis": false,
+          "dvtSigns": false,
+          "confusion": false
+        }
+      },
+      "expected": {
+        "score": "tg18-cholangitis",
+        "fields": [],
+        "missing": [
+          "crp",
+          "temp",
+          "bilirubin"
+        ]
+      }
+    },
+    {
+      "id": "news2-partial",
+      "score": "news2",
+      "record": {
+        "ageYears": null,
+        "sex": "unknown",
+        "weightKg": null,
+        "heightCm": null,
+        "vitals": {
+          "hr": 100,
+          "sbp": 110,
+          "dbp": null,
+          "rr": null,
+          "tempC": 37.9,
+          "spo2": null,
+          "avpu": null,
+          "onOxygen": null
+        },
+        "labs": {
+          "wbc": null,
+          "neutrophils": null,
+          "crp": null,
+          "urea": null,
+          "hb": null,
+          "creatinine": null,
+          "egfr": null,
+          "bilirubin": null,
+          "albumin": null,
+          "inr": null
+        },
+        "imagingReported": false,
+        "pleuralEffusion": false,
+        "history": {
+          "cancer": false,
+          "priorDvt": false,
+          "priorPe": false,
+          "chf": false,
+          "ihd": false,
+          "cva": false,
+          "insulin": false,
+          "liverDisease": false,
+          "ibd": false,
+          "varicoseVeins": false,
+          "ocpHrt": false,
+          "immobile": false,
+          "pregnant": false,
+          "recentSurgery4w": false,
+          "recentSurgery12w": false
+        },
+        "findings": {
+          "migration": false,
+          "anorexia": false,
+          "nausea": false,
+          "vomiting": false,
+          "rifPain": false,
+          "rifTenderness": false,
+          "rebound": false,
+          "melaena": false,
+          "syncope": false,
+          "haemoptysis": false,
+          "dvtSigns": false,
+          "confusion": false
+        }
+      },
+      "expected": {
+        "score": "news2",
+        "fields": [],
+        "missing": [
+          "rr",
+          "spo2",
+          "o2",
+          "avpu"
+        ]
+      }
+    },
+    {
+      "id": "qsofa-partial",
+      "score": "qsofa",
+      "record": {
+        "ageYears": null,
+        "sex": "unknown",
+        "weightKg": null,
+        "heightCm": null,
+        "vitals": {
+          "hr": null,
+          "sbp": 95,
+          "dbp": null,
+          "rr": null,
+          "tempC": null,
+          "spo2": null,
+          "avpu": null,
+          "onOxygen": null
+        },
+        "labs": {
+          "wbc": null,
+          "neutrophils": null,
+          "crp": null,
+          "urea": null,
+          "hb": null,
+          "creatinine": null,
+          "egfr": null,
+          "bilirubin": null,
+          "albumin": null,
+          "inr": null
+        },
+        "imagingReported": false,
+        "pleuralEffusion": false,
+        "history": {
+          "cancer": false,
+          "priorDvt": false,
+          "priorPe": false,
+          "chf": false,
+          "ihd": false,
+          "cva": false,
+          "insulin": false,
+          "liverDisease": false,
+          "ibd": false,
+          "varicoseVeins": false,
+          "ocpHrt": false,
+          "immobile": false,
+          "pregnant": false,
+          "recentSurgery4w": false,
+          "recentSurgery12w": false
+        },
+        "findings": {
+          "migration": false,
+          "anorexia": false,
+          "nausea": false,
+          "vomiting": false,
+          "rifPain": false,
+          "rifTenderness": false,
+          "rebound": false,
+          "melaena": false,
+          "syncope": false,
+          "haemoptysis": false,
+          "dvtSigns": false,
+          "confusion": false
+        }
+      },
+      "expected": {
+        "score": "qsofa",
+        "fields": [],
+        "missing": [
+          "rr",
+          "avpu"
+        ]
+      }
+    }
+  ],
+  "probe": [
+    {
+      "id": "chole-78-nothing-recorded",
+      "description": "78-year-old, confirmed cholecystitis, no CFS / ASA / eGFR / BMI / NEWS2: probes flip early laparoscopic cholecystectomy.",
+      "input": {
+        "patient": {
+          "ageYears": 78,
+          "sex": "female",
+          "cfs": null,
+          "asa": null,
+          "egfr": null,
+          "bmi": null,
+          "news2": null,
+          "sbp": null,
+          "anticoagulant": "none",
+          "antiplatelet": false,
+          "hasBled": null,
+          "pregnancy": "not-pregnant",
+          "allergyClasses": [],
+          "diabetes": false,
+          "immunosuppressed": false,
+          "recentSurgeryDays": null,
+          "procedurePlanned": false,
+          "appendicolith": false,
+          "mechanicalValve": false,
+          "recentVte3m": false
+        },
+        "diagnoses": [
+          {
+            "name": "Acute cholecystitis",
+            "id": "cholecystitis",
+            "icd10": "K81.0",
+            "probability": 0.62,
+            "confirmed": true
+          }
+        ],
+        "scores": [],
+        "labs": {}
+      },
+      "expected": [
+        {
+          "key": "cfs",
+          "decisionId": "cholecystitis",
+          "decisionLabel": "Acute calculous cholecystitis",
+          "effect": "frailty raises the harm of operations and procedures",
+          "flip": null,
+          "distance": null
+        },
+        {
+          "key": "asa",
+          "decisionId": "cholecystitis",
+          "decisionLabel": "Acute calculous cholecystitis",
+          "effect": "ASA III-IV raises operative harm",
+          "flip": null,
+          "distance": null
+        },
+        {
+          "key": "egfr",
+          "decisionId": "cholecystitis",
+          "decisionLabel": "Acute calculous cholecystitis",
+          "effect": "eGFR below 30 raises operative and anticoagulant harm",
+          "flip": null,
+          "distance": null
+        },
+        {
+          "key": "bmi",
+          "decisionId": "cholecystitis",
+          "decisionLabel": "Acute calculous cholecystitis",
+          "effect": "BMI 40 or more raises operative harm",
+          "flip": null,
+          "distance": null
+        },
+        {
+          "key": "news2",
+          "decisionId": "cholecystitis",
+          "decisionLabel": "Acute calculous cholecystitis",
+          "effect": "NEWS2 7 or more or shock changes the balance",
+          "flip": null,
+          "distance": null
+        }
+      ]
+    },
+    {
+      "id": "chole-45-fit-recorded",
+      "description": "Fit 45-year-old with everything recorded: no gaps.",
+      "input": {
+        "patient": {
+          "ageYears": 45,
+          "sex": "female",
+          "cfs": null,
+          "asa": 1,
+          "egfr": 95,
+          "bmi": 26,
+          "news2": 1,
+          "sbp": 128,
+          "anticoagulant": "none",
+          "antiplatelet": false,
+          "hasBled": null,
+          "pregnancy": "not-pregnant",
+          "allergyClasses": [],
+          "diabetes": false,
+          "immunosuppressed": false,
+          "recentSurgeryDays": null,
+          "procedurePlanned": false,
+          "appendicolith": false,
+          "mechanicalValve": false,
+          "recentVte3m": false
+        },
+        "diagnoses": [
+          {
+            "name": "Acute cholecystitis",
+            "id": "cholecystitis",
+            "icd10": "K81.0",
+            "probability": 0.62,
+            "confirmed": true
+          }
+        ],
+        "scores": [],
+        "labs": {}
+      },
+      "expected": []
+    },
+    {
+      "id": "appendicitis-woman-30-pregnancy-unknown",
+      "description": "Woman 30, confirmed appendicitis, pregnancy unknown.",
+      "input": {
+        "patient": {
+          "ageYears": 30,
+          "sex": "female",
+          "cfs": null,
+          "asa": 1,
+          "egfr": 110,
+          "bmi": 24,
+          "news2": 2,
+          "sbp": 120,
+          "anticoagulant": "none",
+          "antiplatelet": false,
+          "hasBled": null,
+          "pregnancy": "unknown",
+          "allergyClasses": [],
+          "diabetes": false,
+          "immunosuppressed": false,
+          "recentSurgeryDays": null,
+          "procedurePlanned": false,
+          "appendicolith": false,
+          "mechanicalValve": false,
+          "recentVte3m": false
+        },
+        "diagnoses": [
+          {
+            "name": "Acute appendicitis",
+            "id": "appendicitis",
+            "icd10": "K35.80",
+            "probability": 0.7,
+            "confirmed": true
+          }
+        ],
+        "scores": [],
+        "labs": {}
+      },
+      "expected": [
+        {
+          "key": "pregnancy",
+          "decisionId": "appendicitis",
+          "decisionLabel": "Acute appendicitis (uncomplicated)",
+          "effect": "pregnancy changes the harm of operations and thrombolysis and excludes some options",
+          "flip": null,
+          "distance": null
+        }
+      ]
+    },
+    {
+      "id": "ugib-no-gbs",
+      "description": "Upper GI bleed confirmed, no Glasgow-Blatchford: risk score gap.",
+      "input": {
+        "patient": {
+          "ageYears": 60,
+          "sex": "male",
+          "cfs": null,
+          "asa": null,
+          "egfr": 80,
+          "bmi": null,
+          "news2": 3,
+          "sbp": 118,
+          "anticoagulant": "none",
+          "antiplatelet": false,
+          "hasBled": null,
+          "pregnancy": "not-pregnant",
+          "allergyClasses": [],
+          "diabetes": false,
+          "immunosuppressed": false,
+          "recentSurgeryDays": null,
+          "procedurePlanned": false,
+          "appendicolith": false,
+          "mechanicalValve": false,
+          "recentVte3m": false
+        },
+        "diagnoses": [
+          {
+            "name": "Upper GI bleed",
+            "id": "upper_gi_bleed",
+            "icd10": "K92.2",
+            "probability": 0.8,
+            "confirmed": true
+          }
+        ],
+        "scores": [],
+        "labs": {}
+      },
+      "expected": [
+        {
+          "key": "score:glasgow-blatchford",
+          "decisionId": "upper-gi-bleed",
+          "decisionLabel": "Upper GI bleeding — admission and endoscopy timing",
+          "effect": "",
+          "flip": null,
+          "distance": null
+        }
+      ]
+    },
+    {
+      "id": "hernia-82",
+      "description": "Inguinal hernia, 82-year-old, no frailty recorded.",
+      "input": {
+        "patient": {
+          "ageYears": 82,
+          "sex": "male",
+          "cfs": null,
+          "asa": null,
+          "egfr": 70,
+          "bmi": 25,
+          "news2": 0,
+          "sbp": 140,
+          "anticoagulant": "none",
+          "antiplatelet": false,
+          "hasBled": null,
+          "pregnancy": "not-pregnant",
+          "allergyClasses": [],
+          "diabetes": false,
+          "immunosuppressed": false,
+          "recentSurgeryDays": null,
+          "procedurePlanned": false,
+          "appendicolith": false,
+          "mechanicalValve": false,
+          "recentVte3m": false
+        },
+        "diagnoses": [
+          {
+            "name": "Inguinal hernia",
+            "id": "inguinal_hernia",
+            "icd10": "K40.90",
+            "probability": 0.9,
+            "confirmed": true
+          }
+        ],
+        "scores": [],
+        "labs": {}
+      },
+      "expected": [
+        {
+          "key": "cfs",
+          "decisionId": "inguinal-hernia",
+          "decisionLabel": "Inguinal hernia (reducible, minimally symptomatic)",
+          "effect": "frailty raises the harm of operations and procedures",
+          "flip": {
+            "option": "Elective inguinal hernia repair",
+            "from": "treat",
+            "to": "observe"
+          },
+          "distance": 0.5578
+        },
+        {
+          "key": "asa",
+          "decisionId": "inguinal-hernia",
+          "decisionLabel": "Inguinal hernia (reducible, minimally symptomatic)",
+          "effect": "ASA III-IV raises operative harm",
+          "flip": {
+            "option": "Elective inguinal hernia repair",
+            "from": "treat",
+            "to": "observe"
+          },
+          "distance": 0.5578
+        }
+      ]
+    }
+  ],
+  "rank": [
+    {
+      "id": "nothing-missing",
+      "description": "Adult, allergies recorded, full observations, nothing planned: empty list.",
+      "input": {
+        "record": {
+          "ageYears": 40,
+          "sex": "male",
+          "weightKg": null,
+          "heightCm": null,
+          "vitals": {
+            "hr": 88,
+            "sbp": 128,
+            "dbp": 76,
+            "rr": 16,
+            "tempC": 36.9,
+            "spo2": 98,
+            "avpu": "A",
+            "onOxygen": false
+          },
+          "labs": {
+            "wbc": null,
+            "neutrophils": null,
+            "crp": null,
+            "urea": null,
+            "hb": null,
+            "creatinine": null,
+            "egfr": null,
+            "bilirubin": null,
+            "albumin": null,
+            "inr": null
+          },
+          "imagingReported": false,
+          "pleuralEffusion": false,
+          "history": {
+            "cancer": false,
+            "priorDvt": false,
+            "priorPe": false,
+            "chf": false,
+            "ihd": false,
+            "cva": false,
+            "insulin": false,
+            "liverDisease": false,
+            "ibd": false,
+            "varicoseVeins": false,
+            "ocpHrt": false,
+            "immobile": false,
+            "pregnant": false,
+            "recentSurgery4w": false,
+            "recentSurgery12w": false
+          },
+          "findings": {
+            "migration": false,
+            "anorexia": false,
+            "nausea": false,
+            "vomiting": false,
+            "rifPain": false,
+            "rifTenderness": false,
+            "rebound": false,
+            "melaena": false,
+            "syncope": false,
+            "haemoptysis": false,
+            "dvtSigns": false,
+            "confusion": false
+          }
+        },
+        "facts": {
+          "allergyStatusRecorded": true,
+          "pregnancyStatusRecorded": false,
+          "supplementsAsked": true,
+          "medications": [],
+          "plannedMedications": [],
+          "medicationNotes": "",
+          "plannedInvestigations": [],
+          "procedurePlanned": false,
+          "acute": false
+        },
+        "activeScores": [],
+        "decisionGaps": [],
+        "ferritinMissing": false,
+        "discriminator": null
+      },
+      "expected": {
+        "version": "1.0.0",
+        "topN": 5,
+        "items": []
+      }
+    },
+    {
+      "id": "child-no-weight",
+      "description": "Child 6 without weight or allergy status: weight first, then allergy.",
+      "input": {
+        "record": {
+          "ageYears": 6,
+          "sex": "male",
+          "weightKg": null,
+          "heightCm": null,
+          "vitals": {
+            "hr": 110,
+            "sbp": null,
+            "dbp": null,
+            "rr": null,
+            "tempC": 38.1,
+            "spo2": null,
+            "avpu": null,
+            "onOxygen": null
+          },
+          "labs": {
+            "wbc": null,
+            "neutrophils": null,
+            "crp": null,
+            "urea": null,
+            "hb": null,
+            "creatinine": null,
+            "egfr": null,
+            "bilirubin": null,
+            "albumin": null,
+            "inr": null
+          },
+          "imagingReported": false,
+          "pleuralEffusion": false,
+          "history": {
+            "cancer": false,
+            "priorDvt": false,
+            "priorPe": false,
+            "chf": false,
+            "ihd": false,
+            "cva": false,
+            "insulin": false,
+            "liverDisease": false,
+            "ibd": false,
+            "varicoseVeins": false,
+            "ocpHrt": false,
+            "immobile": false,
+            "pregnant": false,
+            "recentSurgery4w": false,
+            "recentSurgery12w": false
+          },
+          "findings": {
+            "migration": false,
+            "anorexia": false,
+            "nausea": false,
+            "vomiting": false,
+            "rifPain": false,
+            "rifTenderness": false,
+            "rebound": false,
+            "melaena": false,
+            "syncope": false,
+            "haemoptysis": false,
+            "dvtSigns": false,
+            "confusion": false
+          }
+        },
+        "facts": {
+          "allergyStatusRecorded": false,
+          "pregnancyStatusRecorded": false,
+          "supplementsAsked": true,
+          "medications": [],
+          "plannedMedications": [
+            "Paracetamol"
+          ],
+          "medicationNotes": "",
+          "plannedInvestigations": [],
+          "procedurePlanned": false,
+          "acute": false
+        },
+        "activeScores": [],
+        "decisionGaps": [],
+        "ferritinMissing": false,
+        "discriminator": null
+      },
+      "expected": {
+        "version": "1.0.0",
+        "topN": 5,
+        "items": [
+          {
+            "id": "weight",
+            "tier": "safety",
+            "what": "Weight not recorded",
+            "why": "Under 16: every dose is per kilogram — weigh before prescribing",
+            "also": [],
+            "action": {
+              "kind": "field",
+              "field": "weight"
+            },
+            "alt": null,
+            "sources": [
+              "safety"
+            ]
+          },
+          {
+            "id": "allergy",
+            "tier": "safety",
+            "what": "Allergy status not recorded",
+            "why": "Needed before prescribing — record the allergies or NKDA",
+            "also": [],
+            "action": {
+              "kind": "field",
+              "field": "allergies"
+            },
+            "alt": null,
+            "sources": [
+              "safety"
+            ]
+          },
+          {
+            "id": "obs",
+            "tier": "score",
+            "what": "Observations not recorded: RR, SpO₂, air/O₂, BP and ACVPU",
+            "why": "NEWS2 is incomplete and may under-estimate risk",
+            "also": [],
+            "action": {
+              "kind": "field",
+              "field": "vitals"
+            },
+            "alt": null,
+            "sources": [
+              "news2"
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "id": "woman-30-ct-planned",
+      "description": "Woman 30 with CT abdomen planned, pregnancy not recorded: pregnancy status first.",
+      "input": {
+        "record": {
+          "ageYears": 30,
+          "sex": "female",
+          "weightKg": null,
+          "heightCm": null,
+          "vitals": {
+            "hr": 88,
+            "sbp": 128,
+            "dbp": 76,
+            "rr": 16,
+            "tempC": 36.9,
+            "spo2": 98,
+            "avpu": "A",
+            "onOxygen": false
+          },
+          "labs": {
+            "wbc": null,
+            "neutrophils": null,
+            "crp": null,
+            "urea": null,
+            "hb": null,
+            "creatinine": null,
+            "egfr": null,
+            "bilirubin": null,
+            "albumin": null,
+            "inr": null
+          },
+          "imagingReported": false,
+          "pleuralEffusion": false,
+          "history": {
+            "cancer": false,
+            "priorDvt": false,
+            "priorPe": false,
+            "chf": false,
+            "ihd": false,
+            "cva": false,
+            "insulin": false,
+            "liverDisease": false,
+            "ibd": false,
+            "varicoseVeins": false,
+            "ocpHrt": false,
+            "immobile": false,
+            "pregnant": false,
+            "recentSurgery4w": false,
+            "recentSurgery12w": false
+          },
+          "findings": {
+            "migration": false,
+            "anorexia": false,
+            "nausea": false,
+            "vomiting": false,
+            "rifPain": false,
+            "rifTenderness": false,
+            "rebound": false,
+            "melaena": false,
+            "syncope": false,
+            "haemoptysis": false,
+            "dvtSigns": false,
+            "confusion": false
+          }
+        },
+        "facts": {
+          "allergyStatusRecorded": true,
+          "pregnancyStatusRecorded": false,
+          "supplementsAsked": true,
+          "medications": [],
+          "plannedMedications": [],
+          "medicationNotes": "",
+          "plannedInvestigations": [
+            "CT abdomen and pelvis with contrast"
+          ],
+          "procedurePlanned": false,
+          "acute": false
+        },
+        "activeScores": [],
+        "decisionGaps": [],
+        "ferritinMissing": false,
+        "discriminator": null
+      },
+      "expected": {
+        "version": "1.0.0",
+        "topN": 5,
+        "items": [
+          {
+            "id": "pregnancy",
+            "tier": "safety",
+            "what": "Pregnancy status not recorded",
+            "why": "Female aged 30: confirm before ionising imaging (CT abdomen and pelvis with contrast)",
+            "also": [],
+            "action": {
+              "kind": "test",
+              "test": "Urine pregnancy test (β-hCG)"
+            },
+            "alt": {
+              "kind": "field",
+              "field": "pregnancy"
+            },
+            "sources": [
+              "safety"
+            ]
+          },
+          {
+            "id": "renal",
+            "tier": "safety",
+            "what": "Renal function: eGFR not on file",
+            "why": "Needed before iodinated contrast",
+            "also": [],
+            "action": {
+              "kind": "test",
+              "test": "U&E with creatinine and eGFR"
+            },
+            "alt": null,
+            "sources": [
+              "safety"
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "id": "woman-60-ct-planned",
+      "description": "Woman 60: outside 12–55, no pregnancy item; contrast CT without eGFR → renal function.",
+      "input": {
+        "record": {
+          "ageYears": 60,
+          "sex": "female",
+          "weightKg": null,
+          "heightCm": null,
+          "vitals": {
+            "hr": 88,
+            "sbp": 128,
+            "dbp": 76,
+            "rr": 16,
+            "tempC": 36.9,
+            "spo2": 98,
+            "avpu": "A",
+            "onOxygen": false
+          },
+          "labs": {
+            "wbc": null,
+            "neutrophils": null,
+            "crp": null,
+            "urea": null,
+            "hb": null,
+            "creatinine": null,
+            "egfr": null,
+            "bilirubin": null,
+            "albumin": null,
+            "inr": null
+          },
+          "imagingReported": false,
+          "pleuralEffusion": false,
+          "history": {
+            "cancer": false,
+            "priorDvt": false,
+            "priorPe": false,
+            "chf": false,
+            "ihd": false,
+            "cva": false,
+            "insulin": false,
+            "liverDisease": false,
+            "ibd": false,
+            "varicoseVeins": false,
+            "ocpHrt": false,
+            "immobile": false,
+            "pregnant": false,
+            "recentSurgery4w": false,
+            "recentSurgery12w": false
+          },
+          "findings": {
+            "migration": false,
+            "anorexia": false,
+            "nausea": false,
+            "vomiting": false,
+            "rifPain": false,
+            "rifTenderness": false,
+            "rebound": false,
+            "melaena": false,
+            "syncope": false,
+            "haemoptysis": false,
+            "dvtSigns": false,
+            "confusion": false
+          }
+        },
+        "facts": {
+          "allergyStatusRecorded": true,
+          "pregnancyStatusRecorded": false,
+          "supplementsAsked": true,
+          "medications": [],
+          "plannedMedications": [],
+          "medicationNotes": "",
+          "plannedInvestigations": [
+            "CT abdomen and pelvis with contrast"
+          ],
+          "procedurePlanned": false,
+          "acute": false
+        },
+        "activeScores": [],
+        "decisionGaps": [],
+        "ferritinMissing": false,
+        "discriminator": null
+      },
+      "expected": {
+        "version": "1.0.0",
+        "topN": 5,
+        "items": [
+          {
+            "id": "renal",
+            "tier": "safety",
+            "what": "Renal function: eGFR not on file",
+            "why": "Needed before iodinated contrast",
+            "also": [],
+            "action": {
+              "kind": "test",
+              "test": "U&E with creatinine and eGFR"
+            },
+            "alt": null,
+            "sources": [
+              "safety"
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "id": "nsaid-no-egfr",
+      "description": "Ibuprofen planned without eGFR: renal function (safety) merges with BISAP urea.",
+      "input": {
+        "record": {
+          "ageYears": 50,
+          "sex": "male",
+          "weightKg": null,
+          "heightCm": null,
+          "vitals": {
+            "hr": 88,
+            "sbp": 128,
+            "dbp": 76,
+            "rr": 16,
+            "tempC": 36.9,
+            "spo2": 98,
+            "avpu": "A",
+            "onOxygen": false
+          },
+          "labs": {
+            "wbc": null,
+            "neutrophils": null,
+            "crp": null,
+            "urea": null,
+            "hb": null,
+            "creatinine": null,
+            "egfr": null,
+            "bilirubin": null,
+            "albumin": null,
+            "inr": null
+          },
+          "imagingReported": false,
+          "pleuralEffusion": false,
+          "history": {
+            "cancer": false,
+            "priorDvt": false,
+            "priorPe": false,
+            "chf": false,
+            "ihd": false,
+            "cva": false,
+            "insulin": false,
+            "liverDisease": false,
+            "ibd": false,
+            "varicoseVeins": false,
+            "ocpHrt": false,
+            "immobile": false,
+            "pregnant": false,
+            "recentSurgery4w": false,
+            "recentSurgery12w": false
+          },
+          "findings": {
+            "migration": false,
+            "anorexia": false,
+            "nausea": false,
+            "vomiting": false,
+            "rifPain": false,
+            "rifTenderness": false,
+            "rebound": false,
+            "melaena": false,
+            "syncope": false,
+            "haemoptysis": false,
+            "dvtSigns": false,
+            "confusion": false
+          }
+        },
+        "facts": {
+          "allergyStatusRecorded": true,
+          "pregnancyStatusRecorded": false,
+          "supplementsAsked": true,
+          "medications": [],
+          "plannedMedications": [
+            "Ibuprofen 400 mg TDS"
+          ],
+          "medicationNotes": "",
+          "plannedInvestigations": [],
+          "procedurePlanned": false,
+          "acute": false
+        },
+        "activeScores": [
+          "bisap"
+        ],
+        "decisionGaps": [],
+        "ferritinMissing": false,
+        "discriminator": null
+      },
+      "expected": {
+        "version": "1.0.0",
+        "topN": 5,
+        "items": [
+          {
+            "id": "renal",
+            "tier": "safety",
+            "what": "Renal function: urea and eGFR not on file",
+            "why": "Needed before ibuprofen (renally cleared / NSAID)",
+            "also": [
+              "Needed for BISAP"
+            ],
+            "action": {
+              "kind": "test",
+              "test": "U&E with creatinine and eGFR"
+            },
+            "alt": null,
+            "sources": [
+              "safety",
+              "score:bisap"
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "id": "cholecystitis-no-wbc",
+      "description": "Cholecystitis, TG18 recommended, no WBC / CRP / imaging: FBC first (needed by the most scores).",
+      "input": {
+        "record": {
+          "ageYears": 45,
+          "sex": "male",
+          "weightKg": null,
+          "heightCm": null,
+          "vitals": {
+            "hr": 88,
+            "sbp": 128,
+            "dbp": 76,
+            "rr": 16,
+            "tempC": 36.9,
+            "spo2": 98,
+            "avpu": "A",
+            "onOxygen": false
+          },
+          "labs": {
+            "wbc": null,
+            "neutrophils": null,
+            "crp": null,
+            "urea": null,
+            "hb": null,
+            "creatinine": null,
+            "egfr": null,
+            "bilirubin": null,
+            "albumin": null,
+            "inr": null
+          },
+          "imagingReported": false,
+          "pleuralEffusion": false,
+          "history": {
+            "cancer": false,
+            "priorDvt": false,
+            "priorPe": false,
+            "chf": false,
+            "ihd": false,
+            "cva": false,
+            "insulin": false,
+            "liverDisease": false,
+            "ibd": false,
+            "varicoseVeins": false,
+            "ocpHrt": false,
+            "immobile": false,
+            "pregnant": false,
+            "recentSurgery4w": false,
+            "recentSurgery12w": false
+          },
+          "findings": {
+            "migration": false,
+            "anorexia": false,
+            "nausea": false,
+            "vomiting": false,
+            "rifPain": false,
+            "rifTenderness": false,
+            "rebound": false,
+            "melaena": false,
+            "syncope": false,
+            "haemoptysis": false,
+            "dvtSigns": false,
+            "confusion": false
+          }
+        },
+        "facts": {
+          "allergyStatusRecorded": true,
+          "pregnancyStatusRecorded": false,
+          "supplementsAsked": true,
+          "medications": [],
+          "plannedMedications": [],
+          "medicationNotes": "",
+          "plannedInvestigations": [],
+          "procedurePlanned": false,
+          "acute": false
+        },
+        "activeScores": [
+          "tg18-cholecystitis",
+          "alvarado"
+        ],
+        "decisionGaps": [],
+        "ferritinMissing": false,
+        "discriminator": null
+      },
+      "expected": {
+        "version": "1.0.0",
+        "topN": 5,
+        "items": [
+          {
+            "id": "fbc",
+            "tier": "score",
+            "what": "Full blood count: WBC and neutrophils not on file",
+            "why": "Needed for TG18 cholecystitis and Alvarado",
+            "also": [],
+            "action": {
+              "kind": "test",
+              "test": "Full blood count (FBC)"
+            },
+            "alt": null,
+            "sources": [
+              "score:tg18-cholecystitis",
+              "score:alvarado"
+            ]
+          },
+          {
+            "id": "crp",
+            "tier": "score",
+            "what": "CRP not on file",
+            "why": "Needed for TG18 cholecystitis",
+            "also": [],
+            "action": {
+              "kind": "test",
+              "test": "C-reactive protein (CRP)"
+            },
+            "alt": null,
+            "sources": [
+              "score:tg18-cholecystitis"
+            ]
+          },
+          {
+            "id": "imaging-us",
+            "tier": "score",
+            "what": "No ultrasound report on file",
+            "why": "Needed for TG18 cholecystitis",
+            "also": [],
+            "action": {
+              "kind": "test",
+              "test": "Ultrasound abdomen (RUQ)"
+            },
+            "alt": null,
+            "sources": [
+              "score:tg18-cholecystitis"
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "id": "news2-partial-with-curb",
+      "description": "Partial observations plus CURB-65 needing RR and urea: one observations item.",
+      "input": {
+        "record": {
+          "ageYears": 70,
+          "sex": "male",
+          "weightKg": null,
+          "heightCm": null,
+          "vitals": {
+            "hr": 104,
+            "sbp": 100,
+            "dbp": null,
+            "rr": null,
+            "tempC": 38.3,
+            "spo2": null,
+            "avpu": null,
+            "onOxygen": null
+          },
+          "labs": {
+            "wbc": null,
+            "neutrophils": null,
+            "crp": null,
+            "urea": null,
+            "hb": null,
+            "creatinine": null,
+            "egfr": null,
+            "bilirubin": null,
+            "albumin": null,
+            "inr": null
+          },
+          "imagingReported": false,
+          "pleuralEffusion": false,
+          "history": {
+            "cancer": false,
+            "priorDvt": false,
+            "priorPe": false,
+            "chf": false,
+            "ihd": false,
+            "cva": false,
+            "insulin": false,
+            "liverDisease": false,
+            "ibd": false,
+            "varicoseVeins": false,
+            "ocpHrt": false,
+            "immobile": false,
+            "pregnant": false,
+            "recentSurgery4w": false,
+            "recentSurgery12w": false
+          },
+          "findings": {
+            "migration": false,
+            "anorexia": false,
+            "nausea": false,
+            "vomiting": false,
+            "rifPain": false,
+            "rifTenderness": false,
+            "rebound": false,
+            "melaena": false,
+            "syncope": false,
+            "haemoptysis": false,
+            "dvtSigns": false,
+            "confusion": false
+          }
+        },
+        "facts": {
+          "allergyStatusRecorded": true,
+          "pregnancyStatusRecorded": false,
+          "supplementsAsked": true,
+          "medications": [],
+          "plannedMedications": [],
+          "medicationNotes": "",
+          "plannedInvestigations": [],
+          "procedurePlanned": false,
+          "acute": false
+        },
+        "activeScores": [
+          "curb65"
+        ],
+        "decisionGaps": [],
+        "ferritinMissing": false,
+        "discriminator": null
+      },
+      "expected": {
+        "version": "1.0.0",
+        "topN": 5,
+        "items": [
+          {
+            "id": "obs",
+            "tier": "score",
+            "what": "Observations not recorded: RR, SpO₂, air/O₂ and ACVPU",
+            "why": "NEWS2 is incomplete and may under-estimate risk",
+            "also": [
+              "Needed for CURB-65"
+            ],
+            "action": {
+              "kind": "field",
+              "field": "vitals"
+            },
+            "alt": null,
+            "sources": [
+              "news2",
+              "score:curb65"
+            ]
+          },
+          {
+            "id": "renal",
+            "tier": "score",
+            "what": "Renal function: urea not on file",
+            "why": "Needed for CURB-65",
+            "also": [],
+            "action": {
+              "kind": "test",
+              "test": "U&E with creatinine and eGFR"
+            },
+            "alt": null,
+            "sources": [
+              "score:curb65"
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "id": "no-obs-acute",
+      "description": "Emergency, no observations: whole NEWS2 set.",
+      "input": {
+        "record": {
+          "ageYears": 35,
+          "sex": "male",
+          "weightKg": null,
+          "heightCm": null,
+          "vitals": {
+            "hr": null,
+            "sbp": null,
+            "dbp": null,
+            "rr": null,
+            "tempC": null,
+            "spo2": null,
+            "avpu": null,
+            "onOxygen": null
+          },
+          "labs": {
+            "wbc": null,
+            "neutrophils": null,
+            "crp": null,
+            "urea": null,
+            "hb": null,
+            "creatinine": null,
+            "egfr": null,
+            "bilirubin": null,
+            "albumin": null,
+            "inr": null
+          },
+          "imagingReported": false,
+          "pleuralEffusion": false,
+          "history": {
+            "cancer": false,
+            "priorDvt": false,
+            "priorPe": false,
+            "chf": false,
+            "ihd": false,
+            "cva": false,
+            "insulin": false,
+            "liverDisease": false,
+            "ibd": false,
+            "varicoseVeins": false,
+            "ocpHrt": false,
+            "immobile": false,
+            "pregnant": false,
+            "recentSurgery4w": false,
+            "recentSurgery12w": false
+          },
+          "findings": {
+            "migration": false,
+            "anorexia": false,
+            "nausea": false,
+            "vomiting": false,
+            "rifPain": false,
+            "rifTenderness": false,
+            "rebound": false,
+            "melaena": false,
+            "syncope": false,
+            "haemoptysis": false,
+            "dvtSigns": false,
+            "confusion": false
+          }
+        },
+        "facts": {
+          "allergyStatusRecorded": true,
+          "pregnancyStatusRecorded": false,
+          "supplementsAsked": true,
+          "medications": [],
+          "plannedMedications": [],
+          "medicationNotes": "",
+          "plannedInvestigations": [],
+          "procedurePlanned": false,
+          "acute": true
+        },
+        "activeScores": [],
+        "decisionGaps": [],
+        "ferritinMissing": false,
+        "discriminator": null
+      },
+      "expected": {
+        "version": "1.0.0",
+        "topN": 5,
+        "items": [
+          {
+            "id": "obs",
+            "tier": "score",
+            "what": "Observations not recorded: RR, SpO₂, air/O₂, BP, HR, ACVPU and temperature",
+            "why": "No observations recorded — NEWS2 cannot be scored",
+            "also": [],
+            "action": {
+              "kind": "field",
+              "field": "vitals"
+            },
+            "alt": null,
+            "sources": [
+              "news2"
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "id": "no-obs-clinic",
+      "description": "Clinic, no observations and no score needing them: nothing.",
+      "input": {
+        "record": {
+          "ageYears": 35,
+          "sex": "male",
+          "weightKg": null,
+          "heightCm": null,
+          "vitals": {
+            "hr": null,
+            "sbp": null,
+            "dbp": null,
+            "rr": null,
+            "tempC": null,
+            "spo2": null,
+            "avpu": null,
+            "onOxygen": null
+          },
+          "labs": {
+            "wbc": null,
+            "neutrophils": null,
+            "crp": null,
+            "urea": null,
+            "hb": null,
+            "creatinine": null,
+            "egfr": null,
+            "bilirubin": null,
+            "albumin": null,
+            "inr": null
+          },
+          "imagingReported": false,
+          "pleuralEffusion": false,
+          "history": {
+            "cancer": false,
+            "priorDvt": false,
+            "priorPe": false,
+            "chf": false,
+            "ihd": false,
+            "cva": false,
+            "insulin": false,
+            "liverDisease": false,
+            "ibd": false,
+            "varicoseVeins": false,
+            "ocpHrt": false,
+            "immobile": false,
+            "pregnant": false,
+            "recentSurgery4w": false,
+            "recentSurgery12w": false
+          },
+          "findings": {
+            "migration": false,
+            "anorexia": false,
+            "nausea": false,
+            "vomiting": false,
+            "rifPain": false,
+            "rifTenderness": false,
+            "rebound": false,
+            "melaena": false,
+            "syncope": false,
+            "haemoptysis": false,
+            "dvtSigns": false,
+            "confusion": false
+          }
+        },
+        "facts": {
+          "allergyStatusRecorded": true,
+          "pregnancyStatusRecorded": false,
+          "supplementsAsked": true,
+          "medications": [],
+          "plannedMedications": [],
+          "medicationNotes": "",
+          "plannedInvestigations": [],
+          "procedurePlanned": false,
+          "acute": false
+        },
+        "activeScores": [],
+        "decisionGaps": [],
+        "ferritinMissing": false,
+        "discriminator": null
+      },
+      "expected": {
+        "version": "1.0.0",
+        "topN": 5,
+        "items": []
+      }
+    },
+    {
+      "id": "procedure-anticoag",
+      "description": "Procedure on warfarin, supplements not asked, no last dose: anticoagulant then supplements.",
+      "input": {
+        "record": {
+          "ageYears": 70,
+          "sex": "male",
+          "weightKg": null,
+          "heightCm": null,
+          "vitals": {
+            "hr": 88,
+            "sbp": 128,
+            "dbp": 76,
+            "rr": 16,
+            "tempC": 36.9,
+            "spo2": 98,
+            "avpu": "A",
+            "onOxygen": false
+          },
+          "labs": {
+            "wbc": null,
+            "neutrophils": null,
+            "crp": null,
+            "urea": null,
+            "hb": null,
+            "creatinine": null,
+            "egfr": 60,
+            "bilirubin": null,
+            "albumin": null,
+            "inr": null
+          },
+          "imagingReported": false,
+          "pleuralEffusion": false,
+          "history": {
+            "cancer": false,
+            "priorDvt": false,
+            "priorPe": false,
+            "chf": false,
+            "ihd": false,
+            "cva": false,
+            "insulin": false,
+            "liverDisease": false,
+            "ibd": false,
+            "varicoseVeins": false,
+            "ocpHrt": false,
+            "immobile": false,
+            "pregnant": false,
+            "recentSurgery4w": false,
+            "recentSurgery12w": false
+          },
+          "findings": {
+            "migration": false,
+            "anorexia": false,
+            "nausea": false,
+            "vomiting": false,
+            "rifPain": false,
+            "rifTenderness": false,
+            "rebound": false,
+            "melaena": false,
+            "syncope": false,
+            "haemoptysis": false,
+            "dvtSigns": false,
+            "confusion": false
+          }
+        },
+        "facts": {
+          "allergyStatusRecorded": true,
+          "pregnancyStatusRecorded": true,
+          "supplementsAsked": false,
+          "medications": [
+            "Warfarin 3 mg OD"
+          ],
+          "plannedMedications": [],
+          "medicationNotes": "",
+          "plannedInvestigations": [],
+          "procedurePlanned": true,
+          "acute": false
+        },
+        "activeScores": [],
+        "decisionGaps": [],
+        "ferritinMissing": false,
+        "discriminator": null
+      },
+      "expected": {
+        "version": "1.0.0",
+        "topN": 5,
+        "items": [
+          {
+            "id": "anticoag-last-dose",
+            "tier": "safety",
+            "what": "Anticoagulant last dose not recorded",
+            "why": "Warfarin: the last dose times the procedure (and any reversal)",
+            "also": [],
+            "action": {
+              "kind": "field",
+              "field": "medications"
+            },
+            "alt": null,
+            "sources": [
+              "safety"
+            ]
+          },
+          {
+            "id": "supplements",
+            "tier": "safety",
+            "what": "Herbs and supplements not asked",
+            "why": "Procedure planned: herbs and supplements can add bleeding, sedation or glucose risk",
+            "also": [],
+            "action": {
+              "kind": "field",
+              "field": "supplements"
+            },
+            "alt": null,
+            "sources": [
+              "safety"
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "id": "procedure-anticoag-last-dose",
+      "description": "Last dose documented: no anticoagulant item.",
+      "input": {
+        "record": {
+          "ageYears": 70,
+          "sex": "male",
+          "weightKg": null,
+          "heightCm": null,
+          "vitals": {
+            "hr": 88,
+            "sbp": 128,
+            "dbp": 76,
+            "rr": 16,
+            "tempC": 36.9,
+            "spo2": 98,
+            "avpu": "A",
+            "onOxygen": false
+          },
+          "labs": {
+            "wbc": null,
+            "neutrophils": null,
+            "crp": null,
+            "urea": null,
+            "hb": null,
+            "creatinine": null,
+            "egfr": 60,
+            "bilirubin": null,
+            "albumin": null,
+            "inr": null
+          },
+          "imagingReported": false,
+          "pleuralEffusion": false,
+          "history": {
+            "cancer": false,
+            "priorDvt": false,
+            "priorPe": false,
+            "chf": false,
+            "ihd": false,
+            "cva": false,
+            "insulin": false,
+            "liverDisease": false,
+            "ibd": false,
+            "varicoseVeins": false,
+            "ocpHrt": false,
+            "immobile": false,
+            "pregnant": false,
+            "recentSurgery4w": false,
+            "recentSurgery12w": false
+          },
+          "findings": {
+            "migration": false,
+            "anorexia": false,
+            "nausea": false,
+            "vomiting": false,
+            "rifPain": false,
+            "rifTenderness": false,
+            "rebound": false,
+            "melaena": false,
+            "syncope": false,
+            "haemoptysis": false,
+            "dvtSigns": false,
+            "confusion": false
+          }
+        },
+        "facts": {
+          "allergyStatusRecorded": true,
+          "pregnancyStatusRecorded": false,
+          "supplementsAsked": true,
+          "medications": [
+            "Apixaban 5 mg BD"
+          ],
+          "plannedMedications": [],
+          "medicationNotes": "Apixaban last dose 08:00 yesterday",
+          "plannedInvestigations": [],
+          "procedurePlanned": true,
+          "acute": false
+        },
+        "activeScores": [],
+        "decisionGaps": [],
+        "ferritinMissing": false,
+        "discriminator": null
+      },
+      "expected": {
+        "version": "1.0.0",
+        "topN": 5,
+        "items": []
+      }
+    },
+    {
+      "id": "decision-flip-and-score",
+      "description": "A decision flip ranks above score completeness; eGFR flip merges into the renal item.",
+      "input": {
+        "record": {
+          "ageYears": 78,
+          "sex": "female",
+          "weightKg": null,
+          "heightCm": null,
+          "vitals": {
+            "hr": 88,
+            "sbp": 128,
+            "dbp": 76,
+            "rr": 16,
+            "tempC": 36.9,
+            "spo2": 98,
+            "avpu": "A",
+            "onOxygen": false
+          },
+          "labs": {
+            "wbc": null,
+            "neutrophils": null,
+            "crp": null,
+            "urea": null,
+            "hb": null,
+            "creatinine": null,
+            "egfr": null,
+            "bilirubin": null,
+            "albumin": null,
+            "inr": null
+          },
+          "imagingReported": false,
+          "pleuralEffusion": false,
+          "history": {
+            "cancer": false,
+            "priorDvt": false,
+            "priorPe": false,
+            "chf": false,
+            "ihd": false,
+            "cva": false,
+            "insulin": false,
+            "liverDisease": false,
+            "ibd": false,
+            "varicoseVeins": false,
+            "ocpHrt": false,
+            "immobile": false,
+            "pregnant": false,
+            "recentSurgery4w": false,
+            "recentSurgery12w": false
+          },
+          "findings": {
+            "migration": false,
+            "anorexia": false,
+            "nausea": false,
+            "vomiting": false,
+            "rifPain": false,
+            "rifTenderness": false,
+            "rebound": false,
+            "melaena": false,
+            "syncope": false,
+            "haemoptysis": false,
+            "dvtSigns": false,
+            "confusion": false
+          }
+        },
+        "facts": {
+          "allergyStatusRecorded": true,
+          "pregnancyStatusRecorded": true,
+          "supplementsAsked": true,
+          "medications": [],
+          "plannedMedications": [],
+          "medicationNotes": "",
+          "plannedInvestigations": [],
+          "procedurePlanned": false,
+          "acute": false
+        },
+        "activeScores": [
+          "tg18-cholecystitis"
+        ],
+        "decisionGaps": [
+          {
+            "key": "cfs",
+            "decisionId": "cholecystitis",
+            "decisionLabel": "Acute cholecystitis",
+            "effect": "",
+            "flip": {
+              "option": "Early laparoscopic cholecystectomy",
+              "from": "treat",
+              "to": "observe"
+            },
+            "distance": 0.21
+          },
+          {
+            "key": "egfr",
+            "decisionId": "cholecystitis",
+            "decisionLabel": "Acute cholecystitis",
+            "effect": "",
+            "flip": {
+              "option": "Early laparoscopic cholecystectomy",
+              "from": "treat",
+              "to": "test"
+            },
+            "distance": 0.08
+          },
+          {
+            "key": "asa",
+            "decisionId": "cholecystitis",
+            "decisionLabel": "Acute cholecystitis",
+            "effect": "ASA III-IV raises operative harm",
+            "flip": null,
+            "distance": null
+          }
+        ],
+        "ferritinMissing": false,
+        "discriminator": null
+      },
+      "expected": {
+        "version": "1.0.0",
+        "topN": 5,
+        "items": [
+          {
+            "id": "renal",
+            "tier": "decision",
+            "what": "Renal function: eGFR not on file",
+            "why": "May change Treat → Test further for early laparoscopic cholecystectomy (acute cholecystitis)",
+            "also": [],
+            "action": {
+              "kind": "test",
+              "test": "U&E with creatinine and eGFR"
+            },
+            "alt": null,
+            "sources": [
+              "decision:cholecystitis"
+            ]
+          },
+          {
+            "id": "cfs",
+            "tier": "decision",
+            "what": "Clinical Frailty Scale not recorded",
+            "why": "May change Treat → Observe for early laparoscopic cholecystectomy (acute cholecystitis)",
+            "also": [],
+            "action": {
+              "kind": "field",
+              "field": "score:cfs"
+            },
+            "alt": null,
+            "sources": [
+              "decision:cholecystitis"
+            ]
+          },
+          {
+            "id": "fbc",
+            "tier": "score",
+            "what": "Full blood count: WBC not on file",
+            "why": "Needed for TG18 cholecystitis",
+            "also": [],
+            "action": {
+              "kind": "test",
+              "test": "Full blood count (FBC)"
+            },
+            "alt": null,
+            "sources": [
+              "score:tg18-cholecystitis"
+            ]
+          },
+          {
+            "id": "crp",
+            "tier": "score",
+            "what": "CRP not on file",
+            "why": "Needed for TG18 cholecystitis",
+            "also": [],
+            "action": {
+              "kind": "test",
+              "test": "C-reactive protein (CRP)"
+            },
+            "alt": null,
+            "sources": [
+              "score:tg18-cholecystitis"
+            ]
+          },
+          {
+            "id": "imaging-us",
+            "tier": "score",
+            "what": "No ultrasound report on file",
+            "why": "Needed for TG18 cholecystitis",
+            "also": [],
+            "action": {
+              "kind": "test",
+              "test": "Ultrasound abdomen (RUQ)"
+            },
+            "alt": null,
+            "sources": [
+              "score:tg18-cholecystitis"
+            ]
+          },
+          {
+            "id": "asa",
+            "tier": "score",
+            "what": "ASA grade not recorded",
+            "why": "Refines acute cholecystitis: ASA III-IV raises operative harm",
+            "also": [],
+            "action": {
+              "kind": "field",
+              "field": "score:asa"
+            },
+            "alt": null,
+            "sources": [
+              "decision:cholecystitis"
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "id": "risk-score-gap",
+      "description": "Decision needs a risk score (Glasgow-Blatchford) and the reasoning discriminator is a lab.",
+      "input": {
+        "record": {
+          "ageYears": 60,
+          "sex": "male",
+          "weightKg": null,
+          "heightCm": null,
+          "vitals": {
+            "hr": 88,
+            "sbp": 128,
+            "dbp": 76,
+            "rr": 16,
+            "tempC": 36.9,
+            "spo2": 98,
+            "avpu": "A",
+            "onOxygen": false
+          },
+          "labs": {
+            "wbc": null,
+            "neutrophils": null,
+            "crp": null,
+            "urea": 7,
+            "hb": 11,
+            "creatinine": null,
+            "egfr": null,
+            "bilirubin": null,
+            "albumin": null,
+            "inr": null
+          },
+          "imagingReported": false,
+          "pleuralEffusion": false,
+          "history": {
+            "cancer": false,
+            "priorDvt": false,
+            "priorPe": false,
+            "chf": false,
+            "ihd": false,
+            "cva": false,
+            "insulin": false,
+            "liverDisease": false,
+            "ibd": false,
+            "varicoseVeins": false,
+            "ocpHrt": false,
+            "immobile": false,
+            "pregnant": false,
+            "recentSurgery4w": false,
+            "recentSurgery12w": false
+          },
+          "findings": {
+            "migration": false,
+            "anorexia": false,
+            "nausea": false,
+            "vomiting": false,
+            "rifPain": false,
+            "rifTenderness": false,
+            "rebound": false,
+            "melaena": false,
+            "syncope": false,
+            "haemoptysis": false,
+            "dvtSigns": false,
+            "confusion": false
+          }
+        },
+        "facts": {
+          "allergyStatusRecorded": true,
+          "pregnancyStatusRecorded": false,
+          "supplementsAsked": true,
+          "medications": [],
+          "plannedMedications": [],
+          "medicationNotes": "",
+          "plannedInvestigations": [],
+          "procedurePlanned": false,
+          "acute": false
+        },
+        "activeScores": [],
+        "decisionGaps": [
+          {
+            "key": "score:glasgow-blatchford",
+            "decisionId": "upper-gi-bleed",
+            "decisionLabel": "Upper GI bleeding",
+            "effect": "",
+            "flip": null,
+            "distance": null
+          }
+        ],
+        "ferritinMissing": false,
+        "discriminator": {
+          "label": "Serum lipase",
+          "kind": "lab",
+          "separates": [
+            "Acute pancreatitis",
+            "Peptic ulcer disease",
+            "Biliary colic"
+          ],
+          "confirmed": false
+        }
+      },
+      "expected": {
+        "version": "1.0.0",
+        "topN": 5,
+        "items": [
+          {
+            "id": "score:glasgow-blatchford",
+            "tier": "decision",
+            "what": "Glasgow-Blatchford not calculated",
+            "why": "Sets the risk for upper GI bleeding",
+            "also": [],
+            "action": {
+              "kind": "field",
+              "field": "score:glasgow-blatchford"
+            },
+            "alt": null,
+            "sources": [
+              "decision:upper-gi-bleed"
+            ]
+          },
+          {
+            "id": "discriminator",
+            "tier": "decision",
+            "what": "Best next discriminator: Serum lipase",
+            "why": "Best separates Acute pancreatitis, Peptic ulcer disease and Biliary colic",
+            "also": [],
+            "action": {
+              "kind": "test",
+              "test": "Serum lipase"
+            },
+            "alt": null,
+            "sources": [
+              "reasoning"
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "id": "ferritin",
+      "description": "NG12 ferritin prompt and an \"ask\" discriminator.",
+      "input": {
+        "record": {
+          "ageYears": 66,
+          "sex": "female",
+          "weightKg": null,
+          "heightCm": null,
+          "vitals": {
+            "hr": 88,
+            "sbp": 128,
+            "dbp": 76,
+            "rr": 16,
+            "tempC": 36.9,
+            "spo2": 98,
+            "avpu": "A",
+            "onOxygen": false
+          },
+          "labs": {
+            "wbc": null,
+            "neutrophils": null,
+            "crp": null,
+            "urea": null,
+            "hb": 9.8,
+            "creatinine": null,
+            "egfr": null,
+            "bilirubin": null,
+            "albumin": null,
+            "inr": null
+          },
+          "imagingReported": false,
+          "pleuralEffusion": false,
+          "history": {
+            "cancer": false,
+            "priorDvt": false,
+            "priorPe": false,
+            "chf": false,
+            "ihd": false,
+            "cva": false,
+            "insulin": false,
+            "liverDisease": false,
+            "ibd": false,
+            "varicoseVeins": false,
+            "ocpHrt": false,
+            "immobile": false,
+            "pregnant": false,
+            "recentSurgery4w": false,
+            "recentSurgery12w": false
+          },
+          "findings": {
+            "migration": false,
+            "anorexia": false,
+            "nausea": false,
+            "vomiting": false,
+            "rifPain": false,
+            "rifTenderness": false,
+            "rebound": false,
+            "melaena": false,
+            "syncope": false,
+            "haemoptysis": false,
+            "dvtSigns": false,
+            "confusion": false
+          }
+        },
+        "facts": {
+          "allergyStatusRecorded": true,
+          "pregnancyStatusRecorded": true,
+          "supplementsAsked": true,
+          "medications": [],
+          "plannedMedications": [],
+          "medicationNotes": "",
+          "plannedInvestigations": [],
+          "procedurePlanned": false,
+          "acute": false
+        },
+        "activeScores": [],
+        "decisionGaps": [],
+        "ferritinMissing": true,
+        "discriminator": {
+          "label": "Change in bowel habit",
+          "kind": "ask",
+          "separates": [
+            "Colorectal cancer",
+            "Iron deficiency anaemia"
+          ],
+          "confirmed": false
+        }
+      },
+      "expected": {
+        "version": "1.0.0",
+        "topN": 5,
+        "items": [
+          {
+            "id": "ferritin",
+            "tier": "decision",
+            "what": "Ferritin not on file",
+            "why": "Microcytic anaemia — ferritin confirms iron deficiency, which decides the NG12 / BSG investigation pathway",
+            "also": [],
+            "action": {
+              "kind": "test",
+              "test": "Ferritin"
+            },
+            "alt": null,
+            "sources": [
+              "ng12"
+            ]
+          },
+          {
+            "id": "discriminator",
+            "tier": "decision",
+            "what": "Best next discriminator: Change in bowel habit",
+            "why": "Best separates Colorectal cancer and Iron deficiency anaemia",
+            "also": [],
+            "action": {
+              "kind": "field",
+              "field": "history"
+            },
+            "alt": null,
+            "sources": [
+              "reasoning"
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "id": "pregnancy-merge",
+      "description": "Pregnancy from safety (procedure) and from the decision layer: one item, safety tier.",
+      "input": {
+        "record": {
+          "ageYears": 30,
+          "sex": "female",
+          "weightKg": null,
+          "heightCm": null,
+          "vitals": {
+            "hr": 88,
+            "sbp": 128,
+            "dbp": 76,
+            "rr": 16,
+            "tempC": 36.9,
+            "spo2": 98,
+            "avpu": "A",
+            "onOxygen": false
+          },
+          "labs": {
+            "wbc": null,
+            "neutrophils": null,
+            "crp": null,
+            "urea": null,
+            "hb": null,
+            "creatinine": null,
+            "egfr": 100,
+            "bilirubin": null,
+            "albumin": null,
+            "inr": null
+          },
+          "imagingReported": false,
+          "pleuralEffusion": false,
+          "history": {
+            "cancer": false,
+            "priorDvt": false,
+            "priorPe": false,
+            "chf": false,
+            "ihd": false,
+            "cva": false,
+            "insulin": false,
+            "liverDisease": false,
+            "ibd": false,
+            "varicoseVeins": false,
+            "ocpHrt": false,
+            "immobile": false,
+            "pregnant": false,
+            "recentSurgery4w": false,
+            "recentSurgery12w": false
+          },
+          "findings": {
+            "migration": false,
+            "anorexia": false,
+            "nausea": false,
+            "vomiting": false,
+            "rifPain": false,
+            "rifTenderness": false,
+            "rebound": false,
+            "melaena": false,
+            "syncope": false,
+            "haemoptysis": false,
+            "dvtSigns": false,
+            "confusion": false
+          }
+        },
+        "facts": {
+          "allergyStatusRecorded": true,
+          "pregnancyStatusRecorded": false,
+          "supplementsAsked": true,
+          "medications": [],
+          "plannedMedications": [],
+          "medicationNotes": "",
+          "plannedInvestigations": [],
+          "procedurePlanned": true,
+          "acute": false
+        },
+        "activeScores": [],
+        "decisionGaps": [
+          {
+            "key": "pregnancy",
+            "decisionId": "appendicitis",
+            "decisionLabel": "Appendicitis",
+            "effect": "",
+            "flip": {
+              "option": "Appendicectomy",
+              "from": "treat",
+              "to": "test"
+            },
+            "distance": 0.3
+          }
+        ],
+        "ferritinMissing": false,
+        "discriminator": null
+      },
+      "expected": {
+        "version": "1.0.0",
+        "topN": 5,
+        "items": [
+          {
+            "id": "pregnancy",
+            "tier": "safety",
+            "what": "Pregnancy status not recorded",
+            "why": "Female aged 30: confirm before the procedure",
+            "also": [
+              "May change Treat → Test further for appendicectomy (appendicitis)"
+            ],
+            "action": {
+              "kind": "test",
+              "test": "Urine pregnancy test (β-hCG)"
+            },
+            "alt": {
+              "kind": "field",
+              "field": "pregnancy"
+            },
+            "sources": [
+              "safety",
+              "decision:appendicitis"
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "id": "discriminator-after-confirmation",
+      "description": "Confirmed diagnosis: the discriminator ranks after score completeness.",
+      "input": {
+        "record": {
+          "ageYears": 50,
+          "sex": "male",
+          "weightKg": null,
+          "heightCm": null,
+          "vitals": {
+            "hr": 88,
+            "sbp": 128,
+            "dbp": 76,
+            "rr": 16,
+            "tempC": 36.9,
+            "spo2": 98,
+            "avpu": "A",
+            "onOxygen": false
+          },
+          "labs": {
+            "wbc": null,
+            "neutrophils": null,
+            "crp": null,
+            "urea": null,
+            "hb": null,
+            "creatinine": null,
+            "egfr": null,
+            "bilirubin": null,
+            "albumin": null,
+            "inr": null
+          },
+          "imagingReported": false,
+          "pleuralEffusion": false,
+          "history": {
+            "cancer": false,
+            "priorDvt": false,
+            "priorPe": false,
+            "chf": false,
+            "ihd": false,
+            "cva": false,
+            "insulin": false,
+            "liverDisease": false,
+            "ibd": false,
+            "varicoseVeins": false,
+            "ocpHrt": false,
+            "immobile": false,
+            "pregnant": false,
+            "recentSurgery4w": false,
+            "recentSurgery12w": false
+          },
+          "findings": {
+            "migration": false,
+            "anorexia": false,
+            "nausea": false,
+            "vomiting": false,
+            "rifPain": false,
+            "rifTenderness": false,
+            "rebound": false,
+            "melaena": false,
+            "syncope": false,
+            "haemoptysis": false,
+            "dvtSigns": false,
+            "confusion": false
+          }
+        },
+        "facts": {
+          "allergyStatusRecorded": true,
+          "pregnancyStatusRecorded": false,
+          "supplementsAsked": true,
+          "medications": [],
+          "plannedMedications": [],
+          "medicationNotes": "",
+          "plannedInvestigations": [],
+          "procedurePlanned": false,
+          "acute": false
+        },
+        "activeScores": [
+          "tg18-cholecystitis"
+        ],
+        "decisionGaps": [],
+        "ferritinMissing": false,
+        "discriminator": {
+          "label": "Episodic / intermittent pain",
+          "kind": "ask",
+          "separates": [
+            "Acute cholecystitis",
+            "Biliary colic"
+          ],
+          "confirmed": true
+        }
+      },
+      "expected": {
+        "version": "1.0.0",
+        "topN": 5,
+        "items": [
+          {
+            "id": "fbc",
+            "tier": "score",
+            "what": "Full blood count: WBC not on file",
+            "why": "Needed for TG18 cholecystitis",
+            "also": [],
+            "action": {
+              "kind": "test",
+              "test": "Full blood count (FBC)"
+            },
+            "alt": null,
+            "sources": [
+              "score:tg18-cholecystitis"
+            ]
+          },
+          {
+            "id": "crp",
+            "tier": "score",
+            "what": "CRP not on file",
+            "why": "Needed for TG18 cholecystitis",
+            "also": [],
+            "action": {
+              "kind": "test",
+              "test": "C-reactive protein (CRP)"
+            },
+            "alt": null,
+            "sources": [
+              "score:tg18-cholecystitis"
+            ]
+          },
+          {
+            "id": "imaging-us",
+            "tier": "score",
+            "what": "No ultrasound report on file",
+            "why": "Needed for TG18 cholecystitis",
+            "also": [],
+            "action": {
+              "kind": "test",
+              "test": "Ultrasound abdomen (RUQ)"
+            },
+            "alt": null,
+            "sources": [
+              "score:tg18-cholecystitis"
+            ]
+          },
+          {
+            "id": "discriminator",
+            "tier": "score",
+            "what": "Best next discriminator: Episodic / intermittent pain",
+            "why": "Best separates Acute cholecystitis and Biliary colic",
+            "also": [],
+            "action": {
+              "kind": "field",
+              "field": "history"
+            },
+            "alt": null,
+            "sources": [
+              "reasoning"
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "id": "bmi-refine",
+      "description": "BMI missing without a flip: score tier, height and weight.",
+      "input": {
+        "record": {
+          "ageYears": 50,
+          "sex": "male",
+          "weightKg": null,
+          "heightCm": null,
+          "vitals": {
+            "hr": 88,
+            "sbp": 128,
+            "dbp": 76,
+            "rr": 16,
+            "tempC": 36.9,
+            "spo2": 98,
+            "avpu": "A",
+            "onOxygen": false
+          },
+          "labs": {
+            "wbc": null,
+            "neutrophils": null,
+            "crp": null,
+            "urea": null,
+            "hb": null,
+            "creatinine": null,
+            "egfr": null,
+            "bilirubin": null,
+            "albumin": null,
+            "inr": null
+          },
+          "imagingReported": false,
+          "pleuralEffusion": false,
+          "history": {
+            "cancer": false,
+            "priorDvt": false,
+            "priorPe": false,
+            "chf": false,
+            "ihd": false,
+            "cva": false,
+            "insulin": false,
+            "liverDisease": false,
+            "ibd": false,
+            "varicoseVeins": false,
+            "ocpHrt": false,
+            "immobile": false,
+            "pregnant": false,
+            "recentSurgery4w": false,
+            "recentSurgery12w": false
+          },
+          "findings": {
+            "migration": false,
+            "anorexia": false,
+            "nausea": false,
+            "vomiting": false,
+            "rifPain": false,
+            "rifTenderness": false,
+            "rebound": false,
+            "melaena": false,
+            "syncope": false,
+            "haemoptysis": false,
+            "dvtSigns": false,
+            "confusion": false
+          }
+        },
+        "facts": {
+          "allergyStatusRecorded": true,
+          "pregnancyStatusRecorded": false,
+          "supplementsAsked": true,
+          "medications": [],
+          "plannedMedications": [],
+          "medicationNotes": "",
+          "plannedInvestigations": [],
+          "procedurePlanned": false,
+          "acute": false
+        },
+        "activeScores": [
+          "caprini"
+        ],
+        "decisionGaps": [
+          {
+            "key": "bmi",
+            "decisionId": "inguinal-hernia",
+            "decisionLabel": "Elective inguinal hernia repair",
+            "effect": "BMI 40 or more raises operative harm",
+            "flip": null,
+            "distance": null
+          }
+        ],
+        "ferritinMissing": false,
+        "discriminator": null
+      },
+      "expected": {
+        "version": "1.0.0",
+        "topN": 5,
+        "items": [
+          {
+            "id": "weight",
+            "tier": "score",
+            "what": "Height and weight not recorded",
+            "why": "Needed for Caprini",
+            "also": [
+              "Refines elective inguinal hernia repair: BMI 40 or more raises operative harm"
+            ],
+            "action": {
+              "kind": "field",
+              "field": "weight"
+            },
+            "alt": null,
+            "sources": [
+              "score:caprini",
+              "decision:inguinal-hernia"
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "id": "many-items",
+      "description": "More than five items: ranked order across tiers.",
+      "input": {
+        "record": {
+          "ageYears": 14,
+          "sex": "female",
+          "weightKg": null,
+          "heightCm": null,
+          "vitals": {
+            "hr": 120,
+            "sbp": null,
+            "dbp": null,
+            "rr": null,
+            "tempC": null,
+            "spo2": null,
+            "avpu": null,
+            "onOxygen": null
+          },
+          "labs": {
+            "wbc": null,
+            "neutrophils": null,
+            "crp": null,
+            "urea": null,
+            "hb": null,
+            "creatinine": null,
+            "egfr": null,
+            "bilirubin": null,
+            "albumin": null,
+            "inr": null
+          },
+          "imagingReported": false,
+          "pleuralEffusion": false,
+          "history": {
+            "cancer": false,
+            "priorDvt": false,
+            "priorPe": false,
+            "chf": false,
+            "ihd": false,
+            "cva": false,
+            "insulin": false,
+            "liverDisease": false,
+            "ibd": false,
+            "varicoseVeins": false,
+            "ocpHrt": false,
+            "immobile": false,
+            "pregnant": false,
+            "recentSurgery4w": false,
+            "recentSurgery12w": false
+          },
+          "findings": {
+            "migration": false,
+            "anorexia": false,
+            "nausea": false,
+            "vomiting": false,
+            "rifPain": false,
+            "rifTenderness": false,
+            "rebound": false,
+            "melaena": false,
+            "syncope": false,
+            "haemoptysis": false,
+            "dvtSigns": false,
+            "confusion": false
+          }
+        },
+        "facts": {
+          "allergyStatusRecorded": false,
+          "pregnancyStatusRecorded": false,
+          "supplementsAsked": false,
+          "medications": [],
+          "plannedMedications": [
+            "Ibuprofen"
+          ],
+          "medicationNotes": "",
+          "plannedInvestigations": [
+            "CT abdomen"
+          ],
+          "procedurePlanned": true,
+          "acute": false
+        },
+        "activeScores": [
+          "alvarado",
+          "air"
+        ],
+        "decisionGaps": [],
+        "ferritinMissing": false,
+        "discriminator": {
+          "label": "Ultrasound abdomen",
+          "kind": "imaging",
+          "separates": [
+            "Acute appendicitis",
+            "Ovarian torsion"
+          ],
+          "confirmed": false
+        }
+      },
+      "expected": {
+        "version": "1.0.0",
+        "topN": 5,
+        "items": [
+          {
+            "id": "weight",
+            "tier": "safety",
+            "what": "Weight not recorded",
+            "why": "Under 16: every dose is per kilogram — weigh before prescribing",
+            "also": [],
+            "action": {
+              "kind": "field",
+              "field": "weight"
+            },
+            "alt": null,
+            "sources": [
+              "safety"
+            ]
+          },
+          {
+            "id": "allergy",
+            "tier": "safety",
+            "what": "Allergy status not recorded",
+            "why": "Needed before prescribing — record the allergies or NKDA",
+            "also": [],
+            "action": {
+              "kind": "field",
+              "field": "allergies"
+            },
+            "alt": null,
+            "sources": [
+              "safety"
+            ]
+          },
+          {
+            "id": "pregnancy",
+            "tier": "safety",
+            "what": "Pregnancy status not recorded",
+            "why": "Female aged 14: confirm before ionising imaging (CT abdomen)",
+            "also": [],
+            "action": {
+              "kind": "test",
+              "test": "Urine pregnancy test (β-hCG)"
+            },
+            "alt": {
+              "kind": "field",
+              "field": "pregnancy"
+            },
+            "sources": [
+              "safety"
+            ]
+          },
+          {
+            "id": "renal",
+            "tier": "safety",
+            "what": "Renal function: eGFR not on file",
+            "why": "Needed before ibuprofen (renally cleared / NSAID)",
+            "also": [],
+            "action": {
+              "kind": "test",
+              "test": "U&E with creatinine and eGFR"
+            },
+            "alt": null,
+            "sources": [
+              "safety"
+            ]
+          },
+          {
+            "id": "supplements",
+            "tier": "safety",
+            "what": "Herbs and supplements not asked",
+            "why": "Procedure planned: herbs and supplements can add bleeding, sedation or glucose risk",
+            "also": [],
+            "action": {
+              "kind": "field",
+              "field": "supplements"
+            },
+            "alt": null,
+            "sources": [
+              "safety"
+            ]
+          },
+          {
+            "id": "discriminator",
+            "tier": "decision",
+            "what": "Best next discriminator: Ultrasound abdomen",
+            "why": "Best separates Acute appendicitis and Ovarian torsion",
+            "also": [],
+            "action": {
+              "kind": "test",
+              "test": "Ultrasound abdomen"
+            },
+            "alt": null,
+            "sources": [
+              "reasoning"
+            ]
+          },
+          {
+            "id": "obs",
+            "tier": "score",
+            "what": "Observations not recorded: RR, SpO₂, air/O₂, BP, ACVPU and temperature",
+            "why": "NEWS2 is incomplete and may under-estimate risk",
+            "also": [
+              "Needed for Alvarado and AIR"
+            ],
+            "action": {
+              "kind": "field",
+              "field": "vitals"
+            },
+            "alt": null,
+            "sources": [
+              "news2",
+              "score:alvarado",
+              "score:air"
+            ]
+          },
+          {
+            "id": "fbc",
+            "tier": "score",
+            "what": "Full blood count: WBC and neutrophils not on file",
+            "why": "Needed for Alvarado and AIR",
+            "also": [],
+            "action": {
+              "kind": "test",
+              "test": "Full blood count (FBC)"
+            },
+            "alt": null,
+            "sources": [
+              "score:alvarado",
+              "score:air"
+            ]
+          },
+          {
+            "id": "crp",
+            "tier": "score",
+            "what": "CRP not on file",
+            "why": "Needed for AIR",
+            "also": [],
+            "action": {
+              "kind": "test",
+              "test": "C-reactive protein (CRP)"
+            },
+            "alt": null,
+            "sources": [
+              "score:air"
+            ]
+          }
+        ]
+      }
+    }
+  ],
+  "terms": [
+    {
+      "text": "CT abdomen",
+      "term": "ct",
+      "expected": true
+    },
+    {
+      "text": "Acute abdomen",
+      "term": "ct",
+      "expected": false
+    },
+    {
+      "text": "Initial TIA 2019",
+      "term": "tia",
+      "expected": true
+    },
+    {
+      "text": "Initial assessment",
+      "term": "tia",
+      "expected": false
+    },
+    {
+      "text": "Ibuprofen 400mg",
+      "term": "ibuprofen",
+      "expected": true
+    },
+    {
+      "text": "NSAIDs regularly",
+      "term": "nsaid",
+      "expected": true
+    },
+    {
+      "text": "enoxaparin 40 mg",
+      "term": "heparin",
+      "expected": false
+    },
+    {
+      "text": "CTPA tomorrow",
+      "term": "ctpa",
+      "expected": true
+    },
+    {
+      "text": "x-ray chest",
+      "term": "x-ray",
+      "expected": true
+    }
+  ],
+  "parts": [
+    {
+      "parts": [],
+      "expected": ""
+    },
+    {
+      "parts": [
+        "a"
+      ],
+      "expected": "a"
+    },
+    {
+      "parts": [
+        "a",
+        "b"
+      ],
+      "expected": "a and b"
+    },
+    {
+      "parts": [
+        "RR",
+        "SpO₂",
+        "temperature"
+      ],
+      "expected": "RR, SpO₂ and temperature"
+    }
+  ]
+}

@@ -1,0 +1,99 @@
+{
+  "schemaVersion": 1,
+  "id": "missing-nsaid-no-egfr",
+  "condition": "Musculoskeletal back pain, NSAID planned",
+  "category": "general-medicine",
+  "permutationOf": null,
+  "permutationLabel": "What's missing — top item",
+  "summary": "45-year-old man with mechanical back pain; ibuprofen planned; no renal function on file.",
+  "tags": [
+    "whats-missing"
+  ],
+  "inputs": {
+    "patient": {
+      "ageYears": 45,
+      "sex": "male"
+    },
+    "encounter": {
+      "setting": "outpatient",
+      "visitType": "newConsult",
+      "acuity": "routine"
+    },
+    "chiefComplaint": "Low back pain",
+    "hpi": "Three weeks of mechanical low back pain after lifting. No leg weakness, no bladder or bowel symptoms.",
+    "exam": {
+      "msk": "Paraspinal tenderness, straight leg raise negative."
+    },
+    "vitals": [
+      {
+        "minutesAgo": 15,
+        "heartRate": 84,
+        "systolicBp": 128,
+        "diastolicBp": 78,
+        "respiratoryRate": 16,
+        "temperatureC": 36.9,
+        "spo2": 98,
+        "avpu": "A",
+        "onSupplementalO2": false
+      }
+    ],
+    "labs": [],
+    "imaging": [],
+    "comorbidities": [
+      "Hypertension"
+    ],
+    "surgicalHistory": [],
+    "medications": [
+      {
+        "drug": "Amlodipine"
+      }
+    ],
+    "allergies": [],
+    "nkda": true,
+    "orders": {
+      "prescriptions": [
+        "Ibuprofen 400 mg TDS"
+      ]
+    },
+    "platform": {
+      "web": {
+        "ccTemplate": "Back pain",
+        "symptoms": [
+          "back pain"
+        ]
+      }
+    }
+  },
+  "expected": {
+    "missing": {
+      "top": {
+        "id": "missing-top-renal",
+        "severity": "quality",
+        "match": [
+          "renal function: creatinine and egfr not on file",
+          "renal function: egfr not on file"
+        ],
+        "guidelineRefs": [
+          "nice-nsaid-renal"
+        ],
+        "note": "An NSAID is planned without an eGFR on file."
+      }
+    }
+  },
+  "guideline": [
+    {
+      "id": "nice-nsaid-renal",
+      "name": "NICE NG148 — Acute kidney injury: prevention, detection and management",
+      "year": 2019,
+      "section": "Assess renal function before nephrotoxic medicines (NSAIDs) in people at risk",
+      "citation": "National Institute for Health and Care Excellence. Acute kidney injury (NG148). 2019.",
+      "verified": false
+    }
+  ],
+  "rationale": "Owner's example: NSAID planned without an eGFR.",
+  "authoring": {
+    "author": "Claude (whats-missing)",
+    "date": "2026-09-26",
+    "notes": "What's missing strip vignette. Expectations need surgeon sign-off (reviewedBy)."
+  }
+}

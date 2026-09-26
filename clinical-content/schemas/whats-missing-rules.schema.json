@@ -1,0 +1,185 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://amise-medflow.local/clinical-content/whats-missing-rules.schema.json",
+  "title": "What's missing: gap groups, concepts, score inputs, decision probes, thresholds, terms and wording",
+  "description": "clinical-content/rules/whats-missing-rules.json: the rules of the \"What's missing\" strip. A shared clinical rule file read by the web (lib/pane-engine/src/whats-missing, rules.ts) and iOS (WhatsMissingRules.swift through SharedClinicalContent). Registered as whats-missing.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["id", "version", "status", "topN", "tiers", "groups", "concepts", "scores", "decisionInputs", "thresholds", "terms", "text"],
+  "properties": {
+    "$schema": { "type": "string" },
+    "$comment": { "type": "string" },
+    "id": { "const": "whats-missing" },
+    "version": { "type": "string", "pattern": "^\\d+\\.\\d+\\.\\d+$" },
+    "status": { "type": "string" },
+    "topN": { "type": "integer", "minimum": 1 },
+    "tiers": { "type": "array", "items": { "$ref": "#/$defs/tier" } },
+    "groups": { "type": "array", "minItems": 1, "items": { "$ref": "#/$defs/group" } },
+    "concepts": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["id", "group", "part"],
+        "properties": {
+          "id": { "type": "string" },
+          "group": { "type": "string" },
+          "part": { "type": "string" }
+        }
+      }
+    },
+    "scores": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["id", "label"],
+        "properties": {
+          "id": { "type": "string" },
+          "label": { "type": "string" }
+        }
+      }
+    },
+    "decisionInputs": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["key", "group", "probe"],
+        "properties": {
+          "key": { "type": "string" },
+          "group": { "type": "string" },
+          "concept": { "type": "string" },
+          "concepts": { "type": "array", "items": { "type": "string" } },
+          "probe": { "description": "A number (CFS 7, eGFR 25 …) or a word (\"pregnant\").", "type": ["number", "string"] }
+        }
+      }
+    },
+    "thresholds": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "pregnancyAgeMin", "pregnancyAgeMax", "weightAgeBelow", "alvaradoFeverC", "alvaradoWbc", "alvaradoNeutrophilPct",
+        "airFeverC", "airPmnPct", "airWbc", "airCrp", "gbsHrAbove", "curbUreaAbove", "curbRrAtLeast", "curbSbpBelow",
+        "curbDbpAtMost", "curbAgeAtLeast", "wellsPeHrAbove", "capriniBmiAbove", "rcriCreatinineAbove", "bisapUreaAbove",
+        "bisapAgeAbove", "sirsTempBelow", "sirsTempAbove", "sirsHrAbove", "sirsRrAbove", "sirsWbcBelow", "sirsWbcAbove",
+        "neutrophilAbsoluteMax"
+      ],
+      "properties": {
+        "pregnancyAgeMin": { "type": "number" },
+        "pregnancyAgeMax": { "type": "number" },
+        "weightAgeBelow": { "type": "number" },
+        "alvaradoFeverC": { "type": "number" },
+        "alvaradoWbc": { "type": "number" },
+        "alvaradoNeutrophilPct": { "type": "number" },
+        "airFeverC": { "type": "number" },
+        "airPmnPct": { "$ref": "#/$defs/pair" },
+        "airWbc": { "$ref": "#/$defs/pair" },
+        "airCrp": { "$ref": "#/$defs/pair" },
+        "gbsHrAbove": { "type": "number" },
+        "curbUreaAbove": { "type": "number" },
+        "curbRrAtLeast": { "type": "number" },
+        "curbSbpBelow": { "type": "number" },
+        "curbDbpAtMost": { "type": "number" },
+        "curbAgeAtLeast": { "type": "number" },
+        "wellsPeHrAbove": { "type": "number" },
+        "capriniBmiAbove": { "type": "number" },
+        "rcriCreatinineAbove": { "type": "number" },
+        "bisapUreaAbove": { "type": "number" },
+        "bisapAgeAbove": { "type": "number" },
+        "sirsTempBelow": { "type": "number" },
+        "sirsTempAbove": { "type": "number" },
+        "sirsHrAbove": { "type": "number" },
+        "sirsRrAbove": { "type": "number" },
+        "sirsWbcBelow": { "type": "number" },
+        "sirsWbcAbove": { "type": "number" },
+        "neutrophilAbsoluteMax": { "type": "number" }
+      }
+    },
+    "terms": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["anticoagulants", "renalDrugs", "nsaids", "ionisingImaging", "contrast", "insulinDrugs", "lastDose", "history", "findings", "pleuralEffusion"],
+      "properties": {
+        "anticoagulants": { "$ref": "#/$defs/terms" },
+        "renalDrugs": { "$ref": "#/$defs/terms" },
+        "nsaids": { "$ref": "#/$defs/terms" },
+        "ionisingImaging": { "$ref": "#/$defs/terms" },
+        "contrast": { "$ref": "#/$defs/terms" },
+        "insulinDrugs": { "$ref": "#/$defs/terms" },
+        "lastDose": { "$ref": "#/$defs/terms" },
+        "history": { "type": "object", "additionalProperties": { "$ref": "#/$defs/terms" } },
+        "findings": { "type": "object", "additionalProperties": { "$ref": "#/$defs/terms" } },
+        "pleuralEffusion": { "$ref": "#/$defs/terms" }
+      }
+    },
+    "text": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "weightWhy", "allergyWhy", "pregnancyWhy", "pregnancyReasonImaging", "pregnancyReasonProcedure", "pregnancyReasonDrugs",
+        "renalWhyDrugs", "renalWhyContrast", "anticoagWhy", "supplementsWhy", "decisionFlipWhy", "decisionRefineWhy",
+        "riskScoreWhy", "ferritinWhy", "discriminatorWhat", "discriminatorWhy", "news2PartialWhy", "news2NoneWhy",
+        "scoreWhy", "scoreWhat", "bandLabels"
+      ],
+      "properties": {
+        "weightWhy": { "type": "string" },
+        "allergyWhy": { "type": "string" },
+        "pregnancyWhy": { "type": "string" },
+        "pregnancyReasonImaging": { "type": "string" },
+        "pregnancyReasonProcedure": { "type": "string" },
+        "pregnancyReasonDrugs": { "type": "string" },
+        "renalWhyDrugs": { "type": "string" },
+        "renalWhyContrast": { "type": "string" },
+        "anticoagWhy": { "type": "string" },
+        "supplementsWhy": { "type": "string" },
+        "decisionFlipWhy": { "type": "string" },
+        "decisionRefineWhy": { "type": "string" },
+        "riskScoreWhy": { "type": "string" },
+        "ferritinWhy": { "type": "string" },
+        "discriminatorWhat": { "type": "string" },
+        "discriminatorWhy": { "type": "string" },
+        "news2PartialWhy": { "type": "string" },
+        "news2NoneWhy": { "type": "string" },
+        "scoreWhy": { "type": "string" },
+        "scoreWhat": { "type": "string" },
+        "bandLabels": { "type": "object", "additionalProperties": { "type": "string" } }
+      }
+    }
+  },
+  "$defs": {
+    "tier": { "enum": ["safety", "decision", "score"] },
+    "terms": { "type": "array", "items": { "type": "string" } },
+    "pair": {
+      "description": "Two cut-offs [lower, upper].",
+      "type": "array",
+      "items": { "type": "number" },
+      "minItems": 2,
+      "maxItems": 2
+    },
+    "action": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["kind"],
+      "properties": {
+        "kind": { "enum": ["field", "test"] },
+        "field": { "type": "string" },
+        "test": { "type": "string" }
+      }
+    },
+    "group": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["id", "tier", "what", "action"],
+      "properties": {
+        "id": { "type": "string" },
+        "tier": { "$ref": "#/$defs/tier" },
+        "safetyOrder": { "type": "number" },
+        "what": { "type": "string" },
+        "partsWhat": { "type": "string" },
+        "action": { "$ref": "#/$defs/action" },
+        "alt": { "$ref": "#/$defs/action" }
+      }
+    }
+  }
+}

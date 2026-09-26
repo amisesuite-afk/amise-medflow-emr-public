@@ -1,0 +1,367 @@
+{
+  "schemaVersion": 1,
+  "id": "diverticulitis-faecal-peritonitis-shock",
+  "condition": "Acute diverticulitis",
+  "category": "colorectal",
+  "permutationOf": "diverticulitis-uncomplicated-outpatient",
+  "permutationLabel": "Hinchey IV with septic shock (elderly, diabetic)",
+  "summary": "71-year-old diabetic woman found collapsed, T 38.9 °C, HR 132, BP 78/44 on noradrenaline, lactate 6.1, WBC 2.8; CT: faecal peritonitis from a perforated sigmoid.",
+  "tags": [
+    "acute-abdomen",
+    "diverticulitis",
+    "sepsis",
+    "elderly",
+    "diabetes"
+  ],
+  "inputs": {
+    "patient": {
+      "ageYears": 71,
+      "sex": "female",
+      "pregnancy": {
+        "status": "not-applicable"
+      },
+      "heightCm": 158,
+      "weightKg": 74
+    },
+    "encounter": {
+      "setting": "emergency",
+      "visitType": "urgentReview",
+      "acuity": "emergency"
+    },
+    "chiefComplaint": "Abdominal pain and collapse",
+    "hpi": "Found collapsed at home after 2 days of abdominal pain. Confused. Diabetic on insulin.",
+    "socrates": {
+      "onset": [
+        "2–3 days ago"
+      ],
+      "site": [
+        "Diffuse"
+      ],
+      "character": [
+        "Sharp"
+      ],
+      "radiation": [
+        "No radiation"
+      ],
+      "associations": [
+        "Vomiting",
+        "Fever"
+      ],
+      "timing": [
+        "Constant"
+      ],
+      "exacerbating": [
+        "Movement"
+      ],
+      "relieving": [
+        "Nothing"
+      ],
+      "severity": [
+        "Severe (7–9/10)"
+      ]
+    },
+    "symptoms": [
+      "abdominal pain",
+      "collapse",
+      "confusion",
+      "fever",
+      "vomiting"
+    ],
+    "negatives": [],
+    "exam": {
+      "general": "Confused, mottled. Temperature 38.9°C, pulse 132/min, BP 78/44, RR 30. Noradrenaline started.",
+      "abdomen": "Rigid, generalised peritonitis."
+    },
+    "vitals": [
+      {
+        "minutesAgo": 5,
+        "heartRate": 132,
+        "systolicBp": 78,
+        "diastolicBp": 44,
+        "respiratoryRate": 30,
+        "temperatureC": 38.9,
+        "spo2": 90,
+        "avpu": "V",
+        "onSupplementalO2": true,
+        "glucoseMmol": 16.8
+      }
+    ],
+    "labs": [
+      {
+        "analyte": "wbc",
+        "name": "WBC",
+        "value": 2.8,
+        "unit": "×10⁹/L",
+        "minutesAgo": 30
+      },
+      {
+        "analyte": "lactate",
+        "name": "Lactate",
+        "value": 6.1,
+        "unit": "mmol/L",
+        "minutesAgo": 30
+      },
+      {
+        "analyte": "creatinine",
+        "name": "Creatinine",
+        "value": 262,
+        "unit": "µmol/L",
+        "minutesAgo": 30
+      },
+      {
+        "analyte": "platelets",
+        "name": "Platelets",
+        "value": 84,
+        "unit": "×10⁹/L",
+        "minutesAgo": 30
+      },
+      {
+        "analyte": "crp",
+        "name": "CRP",
+        "value": 340,
+        "unit": "mg/L",
+        "minutesAgo": 30
+      }
+    ],
+    "imaging": [
+      {
+        "name": "CT abdomen/pelvis (non-contrast)",
+        "modality": "CT",
+        "region": "Abdomen/pelvis",
+        "result": "Perforated sigmoid colon with free gas, faecal material in the pelvis and generalised free fluid — faecal peritonitis.",
+        "minutesAgo": 10
+      }
+    ],
+    "comorbidities": [
+      "Type 2 diabetes mellitus",
+      "Chronic kidney disease stage 3"
+    ],
+    "surgicalHistory": [],
+    "medications": [
+      {
+        "drug": "Insulin (basal-bolus)",
+        "indication": "Diabetes"
+      },
+      {
+        "drug": "Metformin",
+        "dose": "500 mg",
+        "frequency": "BD",
+        "indication": "Diabetes"
+      }
+    ],
+    "allergies": [],
+    "nkda": true,
+    "socialHistory": "Lives alone.",
+    "confirmedDiagnosis": {
+      "name": "Perforated diverticulitis with faecal peritonitis and septic shock",
+      "icd10": "K57.20",
+      "paneDiseaseId": "diverticulitis",
+      "assessmentText": "Perforated sigmoid diverticulitis with faecal peritonitis (Hinchey IV) and septic shock on noradrenaline. Resuscitation, antibiotics, emergency Hartmann's procedure (damage control if unstable), ICU."
+    },
+    "platform": {
+      "web": {
+        "ccTemplate": "Acute abdominal pain",
+        "socratesAnswers": {
+          "site": "Generalised",
+          "onset": "2 days ago",
+          "character": "Constant ache",
+          "associated": "Fever, vomiting, confusion, collapse",
+          "timing": "Constant",
+          "triggers": "Movement",
+          "relief": "Paracetamol partly",
+          "severity": "8/10"
+        },
+        "symptoms": [
+          "abdominal pain",
+          "fever",
+          "vomiting",
+          "confusion",
+          "syncope"
+        ],
+        "symptomDetails": {
+          "abdominal pain": [
+            "Diffuse",
+            "1–3 days",
+            "Sharp",
+            "Severe (7–9)",
+            "Fever",
+            "Vomiting",
+            "Continuous"
+          ]
+        },
+        "examFindings": {
+          "abdomen": [
+            "Rigidity",
+            "Guarding",
+            "Diffuse tenderness"
+          ]
+        },
+        "durationDays": 2,
+        "painScore": 8
+      }
+    }
+  },
+  "expected": {
+    "safety": {
+      "emergencyLevel": {
+        "id": "level-emergency",
+        "severity": "critical",
+        "atLeast": "emergency",
+        "guidelineRefs": [
+          "ssc-2021",
+          "wses-diverticulitis-2020"
+        ],
+        "knownGapNote": "iOS: ClinicalPathwayEngine reads only CC/PMH keywords; CC 'Abdominal pain and collapse' gives 'routine'."
+      },
+      "mustAlarm": [
+        {
+          "id": "alarm-sepsis",
+          "severity": "critical",
+          "match": [
+            "sepsis",
+            "septic"
+          ],
+          "guidelineRefs": [
+            "ssc-2021"
+          ]
+        },
+        {
+          "id": "alarm-shock",
+          "severity": "critical",
+          "match": [
+            "haemodynamic",
+            "hemodynamic",
+            "hypotension",
+            "shock"
+          ],
+          "guidelineRefs": [
+            "ssc-2021"
+          ]
+        }
+      ]
+    },
+    "investigations": {
+      "mustInclude": [
+        {
+          "id": "inv-blood-cultures",
+          "severity": "critical",
+          "match": [
+            "blood culture"
+          ],
+          "guidelineRefs": [
+            "ssc-2021"
+          ]
+        }
+      ]
+    },
+    "management": {
+      "mustInclude": [
+        {
+          "id": "mgmt-hartmanns-or-damage-control",
+          "severity": "critical",
+          "match": [
+            "re:hartmann'?s?'? (procedure|operation)",
+            "emergency hartmann",
+            "damage control"
+          ],
+          "guidelineRefs": [
+            "wses-diverticulitis-2020"
+          ],
+          "note": "WSES 2020: Hartmann's (or damage-control surgery) for faecal peritonitis in an unstable/septic-shock patient."
+        },
+        {
+          "id": "mgmt-antibiotics",
+          "severity": "critical",
+          "match": [
+            "antibiotic",
+            "co-amoxiclav",
+            "piperacillin",
+            "tazocin",
+            "cefuroxime",
+            "ceftriaxone",
+            "metronidazole",
+            "meropenem",
+            "pip-tazo"
+          ],
+          "guidelineRefs": [
+            "ssc-2021"
+          ]
+        },
+        {
+          "id": "mgmt-icu",
+          "severity": "critical",
+          "match": [
+            "re:\\bicu\\b",
+            "intensive care",
+            "re:\\bhdu\\b",
+            "critical care"
+          ],
+          "guidelineRefs": [
+            "ssc-2021"
+          ],
+          "note": "Septic shock on vasopressors needs critical care."
+        }
+      ],
+      "mustExclude": [
+        {
+          "id": "mgmt-no-primary-anastomosis-in-shock",
+          "severity": "quality",
+          "match": [
+            "primary anastomosis"
+          ],
+          "unless": [
+            "hartmann",
+            "not",
+            "avoid",
+            "stable"
+          ],
+          "guidelineRefs": [
+            "wses-diverticulitis-2020"
+          ],
+          "note": "Primary anastomosis is not advised in septic shock / faecal peritonitis."
+        }
+      ]
+    },
+    "dxVariant": {
+      "id": "variant-peritonitis",
+      "severity": "quality",
+      "equals": "diverticulitis_peritonitis",
+      "guidelineRefs": [
+        "wses-diverticulitis-2020",
+        "hinchey-mod-1999"
+      ]
+    }
+  },
+  "guideline": [
+    {
+      "id": "wses-diverticulitis-2020",
+      "name": "WSES guidelines — acute colonic diverticulitis in the emergency setting (2020 update)",
+      "year": 2020,
+      "section": "CT staging (WSES CT classification); uncomplicated: antibiotics not always needed in immunocompetent patients, outpatient care; abscess >4–5 cm: percutaneous drainage + antibiotics; generalised peritonitis: emergency surgery (Hartmann's or resection with primary anastomosis ± stoma); immunocompromised: high risk, antibiotics, low threshold for surgery",
+      "citation": "Sartelli M, Weber DG, Kluger Y, et al. 2020 update of the WSES guidelines for the management of acute colonic diverticulitis in the emergency setting. World J Emerg Surg. 2020;15:32.",
+      "verified": false
+    },
+    {
+      "id": "hinchey-mod-1999",
+      "name": "Modified Hinchey classification",
+      "year": 1999,
+      "section": "0 mild; Ia confined pericolic inflammation/phlegmon; Ib pericolic or mesocolic abscess; II pelvic/distant abscess; III generalised purulent peritonitis; IV faecal peritonitis",
+      "citation": "Wasvary H, Turfah F, Kadro O, Beauregard W. Same hospitalization resection for acute diverticulitis. Am Surg. 1999;65:632–5.",
+      "verified": false
+    },
+    {
+      "id": "ssc-2021",
+      "name": "Surviving Sepsis Campaign — international guidelines for sepsis and septic shock 2021",
+      "year": 2021,
+      "section": "Screening (do not use qSOFA alone), antibiotics within 1 h of shock, blood cultures, lactate, 30 mL/kg crystalloid for hypoperfusion, vasopressors, source control",
+      "citation": "Evans L, Rhodes A, Alhazzani W, et al. Surviving Sepsis Campaign: international guidelines for management of sepsis and septic shock 2021. Crit Care Med. 2021;49:e1063–e1143.",
+      "verified": false
+    }
+  ],
+  "rationale": "Permutation: Hinchey IV with septic shock, leucopenia and diabetes. Sepsis bundle, ICU and Hartmann's/damage control; not a primary anastomosis.",
+  "authoring": {
+    "author": "Claude (GI surgical emergencies cluster)",
+    "date": "2026-09-25",
+    "notes": "Expectations need surgeon sign-off (reviewedBy). Every citation is verified: false."
+  }
+}

@@ -1,0 +1,442 @@
+{
+  "schemaVersion": 1,
+  "id": "dka-pregnant-28wk",
+  "condition": "Diabetic ketoacidosis in pregnancy",
+  "category": "general-medicine",
+  "permutationOf": "dka-type1-young-typical",
+  "permutationLabel": "Pregnant, 28 weeks, pump failure",
+  "summary": "27-year-old at 28 weeks with type 1 diabetes on a pump, 36 h of vomiting and diffuse abdominal pain; glucose 15.8, ketones 4.2, pH 7.21, reduced fetal movements.",
+  "tags": [
+    "diabetes",
+    "pregnancy",
+    "do-not-miss",
+    "metabolic"
+  ],
+  "inputs": {
+    "patient": {
+      "ageYears": 27,
+      "sex": "female",
+      "pregnancy": {
+        "status": "pregnant",
+        "gestationWeeks": 28
+      },
+      "heightCm": 162,
+      "weightKg": 71
+    },
+    "encounter": {
+      "setting": "emergency",
+      "visitType": "urgentReview",
+      "acuity": "urgent"
+    },
+    "chiefComplaint": "Vomiting and abdominal pain in pregnancy",
+    "hpi": "28 weeks pregnant (first pregnancy), type 1 diabetes since age 9 on insulin pump. Vomiting for 36 hours with a cold, pump cannula site red and possibly blocked. Generalised abdominal discomfort, thirsty, breathless. Fetal movements present but reduced today. No vaginal bleeding, no fluid loss, no contractions.",
+    "socrates": {
+      "onset": [
+        "Yesterday"
+      ],
+      "site": [
+        "Diffuse"
+      ],
+      "character": [
+        "Aching"
+      ],
+      "radiation": [
+        "No radiation"
+      ],
+      "associations": [
+        "Nausea",
+        "Vomiting"
+      ],
+      "timing": [
+        "Constant"
+      ],
+      "exacerbating": [],
+      "relieving": [
+        "Nothing"
+      ],
+      "severity": [
+        "Moderate (4–6/10)"
+      ]
+    },
+    "symptoms": [
+      "vomiting",
+      "abdominal pain",
+      "polydipsia",
+      "shortness of breath"
+    ],
+    "negatives": [
+      "vaginal bleeding",
+      "contractions",
+      "headache",
+      "visual disturbance"
+    ],
+    "exam": {
+      "general": "Dry, tachypnoeic with deep breathing. Pulse 116/min, BP 112/68, RR 26, temperature 37.3°C.",
+      "abdomen": "Gravid uterus, fundus consistent with dates, soft and non-tender uterus; mild diffuse abdominal tenderness, no peritonism."
+    },
+    "vitals": [
+      {
+        "minutesAgo": 10,
+        "heartRate": 116,
+        "systolicBp": 112,
+        "diastolicBp": 68,
+        "respiratoryRate": 26,
+        "temperatureC": 37.3,
+        "spo2": 98,
+        "avpu": "A",
+        "onSupplementalO2": false,
+        "glucoseMmol": 15.8,
+        "weightKg": 71
+      }
+    ],
+    "labs": [
+      {
+        "analyte": "glucose",
+        "name": "Glucose",
+        "value": 15.8,
+        "unit": "mmol/L",
+        "minutesAgo": 30
+      },
+      {
+        "analyte": "ketones",
+        "name": "Blood ketones",
+        "value": 4.2,
+        "unit": "mmol/L",
+        "minutesAgo": 30
+      },
+      {
+        "analyte": "ph",
+        "name": "Venous pH",
+        "value": 7.21,
+        "minutesAgo": 30
+      },
+      {
+        "analyte": "bicarbonate",
+        "name": "Bicarbonate",
+        "value": 12,
+        "unit": "mmol/L",
+        "minutesAgo": 30
+      },
+      {
+        "analyte": "potassium",
+        "name": "Potassium",
+        "value": 4.4,
+        "unit": "mmol/L",
+        "minutesAgo": 30
+      },
+      {
+        "analyte": "sodium",
+        "name": "Sodium",
+        "value": 134,
+        "unit": "mmol/L",
+        "minutesAgo": 30
+      },
+      {
+        "analyte": "creatinine",
+        "name": "Creatinine",
+        "value": 58,
+        "unit": "µmol/L",
+        "minutesAgo": 30
+      },
+      {
+        "analyte": "wbc",
+        "name": "WBC",
+        "value": 13.1,
+        "unit": "×10⁹/L",
+        "minutesAgo": 30
+      }
+    ],
+    "imaging": [],
+    "comorbidities": [
+      "Type 1 diabetes mellitus"
+    ],
+    "surgicalHistory": [],
+    "medications": [
+      {
+        "drug": "Insulin aspart (CSII pump)",
+        "dose": "basal 0.8 units/h + boluses",
+        "frequency": "continuous",
+        "indication": "Type 1 diabetes"
+      },
+      {
+        "drug": "Folic acid",
+        "dose": "5 mg",
+        "frequency": "OD",
+        "indication": "Pregnancy"
+      }
+    ],
+    "allergies": [],
+    "nkda": true,
+    "socialHistory": "Bank clerk. Non-smoker.",
+    "confirmedDiagnosis": {
+      "name": "Diabetic ketoacidosis in pregnancy (28 weeks)",
+      "icd10": "O24.01",
+      "assessmentText": "DKA at 28 weeks gestation (glucose 15.8, ketones 4.2, pH 7.21) with probable pump failure; joint medical and obstetric care, fetal monitoring."
+    },
+    "platform": {
+      "web": {
+        "ccTemplate": "Acute abdominal pain",
+        "socratesAnswers": {
+          "onset": "Yesterday",
+          "site": "Generalised",
+          "character": "Aching",
+          "associated": "Vomiting, thirsty, breathless",
+          "timing": "Constant",
+          "relief": "Nothing",
+          "severity": "5/10"
+        },
+        "symptoms": [
+          "vomiting",
+          "abdominal pain",
+          "polydipsia",
+          "shortness of breath"
+        ],
+        "symptomDetails": {
+          "abdominal pain": [
+            "Diffuse",
+            "1–3 days",
+            "Dull",
+            "Moderate (4–6)",
+            "Vomiting",
+            "Nausea",
+            "Continuous"
+          ]
+        },
+        "durationDays": 1.5,
+        "painScore": 5
+      }
+    }
+  },
+  "expected": {
+    "differential": {
+      "mustNotMiss": [
+        {
+          "id": "mnm-dka",
+          "severity": "critical",
+          "match": [
+            "ketoacidosis",
+            "dka"
+          ],
+          "guidelineRefs": [
+            "nice-ng3",
+            "jbds-dka-2023",
+            "ada-hhc-2024"
+          ],
+          "note": "DKA in pregnancy can occur at lower glucose levels."
+        }
+      ]
+    },
+    "safety": {
+      "emergencyLevel": {
+        "id": "level-emergency",
+        "severity": "critical",
+        "atLeast": "emergency",
+        "guidelineRefs": [
+          "nice-ng3",
+          "jbds-dka-2023",
+          "ada-hhc-2024"
+        ]
+      },
+      "mustAlarm": [
+        {
+          "id": "alarm-dka",
+          "severity": "critical",
+          "match": [
+            "ketoacidosis",
+            "dka",
+            "hyperglyc"
+          ],
+          "guidelineRefs": [
+            "nice-ng3",
+            "jbds-dka-2023",
+            "ada-hhc-2024"
+          ]
+        }
+      ]
+    },
+    "management": {
+      "mustInclude": [
+        {
+          "id": "mgmt-ketone-monitoring",
+          "severity": "critical",
+          "match": [
+            "ketone"
+          ],
+          "guidelineRefs": [
+            "nice-ng3",
+            "jbds-dka-2023",
+            "ada-hhc-2024"
+          ],
+          "note": "Blood ketones diagnose and monitor DKA (JBDS). Graded as management because the web prompts add ketone testing as a plan line, not an investigation order."
+        },
+        {
+          "id": "mgmt-obstetric-fetal",
+          "severity": "critical",
+          "match": [
+            "obstetric",
+            "fetal",
+            "foetal",
+            "ctg",
+            "cardiotocograph",
+            "maternity",
+            "midwif"
+          ],
+          "guidelineRefs": [
+            "nice-ng3"
+          ],
+          "note": "NICE NG3: admit for level 2 critical care where both medical and obstetric care are available; fetal monitoring."
+        },
+        {
+          "id": "mgmt-fixed-rate-insulin",
+          "severity": "critical",
+          "match": [
+            "fixed-rate",
+            "fixed rate",
+            "friii",
+            "0.1 units/kg"
+          ],
+          "unless": [
+            "hold",
+            "omit"
+          ],
+          "guidelineRefs": [
+            "nice-ng3",
+            "jbds-dka-2023",
+            "ada-hhc-2024"
+          ]
+        },
+        {
+          "id": "mgmt-iv-fluids",
+          "severity": "quality",
+          "match": [
+            "0.9% sodium chloride",
+            "0.9% saline",
+            "0.9% nacl",
+            "sodium chloride 0.9%",
+            "crystalloid",
+            "iv fluid",
+            "hartmann's",
+            "fluid resuscitation",
+            "rehydrat"
+          ],
+          "guidelineRefs": [
+            "nice-ng3",
+            "jbds-dka-2023",
+            "ada-hhc-2024"
+          ]
+        },
+        {
+          "id": "mgmt-potassium-replacement",
+          "severity": "quality",
+          "match": [
+            "potassium replacement",
+            "potassium chloride",
+            "kcl",
+            "replace potassium",
+            "k+ replacement",
+            "re:potassium[^.;\\n]{0,40}(replac|infusion|supplement)",
+            "re:(replac|add)[^.;\\n]{0,30}potassium"
+          ],
+          "guidelineRefs": [
+            "nice-ng3",
+            "jbds-dka-2023",
+            "ada-hhc-2024"
+          ]
+        }
+      ],
+      "mustExclude": [
+        {
+          "id": "mgmt-no-nsaid-pregnancy",
+          "severity": "critical",
+          "match": [
+            "re:ibuprofen \\d",
+            "re:diclofenac \\d",
+            "re:naproxen \\d",
+            "re:ketorolac",
+            "re:\\bnsaid\\b[^.;\\n]{0,30}(first|analges)"
+          ],
+          "unless": [
+            "avoid nsaid",
+            "avoid in pregnancy",
+            "not in pregnancy",
+            "contraindicated in pregnancy",
+            "hold nsaid",
+            "stop nsaid",
+            "do not give"
+          ],
+          "guidelineRefs": [
+            "fda-nsaid-2020"
+          ]
+        },
+        {
+          "id": "mgmt-no-appendicectomy",
+          "severity": "critical",
+          "match": [
+            "re:laparoscopic append(ic)?ectomy",
+            "appendicectomy — consent",
+            "emergency laparoscopic appendicectomy"
+          ],
+          "guidelineRefs": [
+            "nice-ng3",
+            "jbds-dka-2023",
+            "ada-hhc-2024"
+          ]
+        },
+        {
+          "id": "mgmt-no-laparotomy",
+          "severity": "critical",
+          "match": [
+            "emergency laparotomy",
+            "re:\\blaparotomy\\b",
+            "bowel obstruction — operative plan"
+          ],
+          "guidelineRefs": [
+            "nice-ng3",
+            "jbds-dka-2023",
+            "ada-hhc-2024"
+          ]
+        }
+      ]
+    }
+  },
+  "guideline": [
+    {
+      "id": "nice-ng3",
+      "name": "NICE NG3 — Diabetes in pregnancy: management from preconception to the postnatal period",
+      "year": 2015,
+      "section": "Pregnant women with type 1 diabetes who become unwell: test capillary ketones immediately; suspected DKA → admit immediately for level 2 critical care where both medical and obstetric care are available",
+      "citation": "National Institute for Health and Care Excellence. Diabetes in pregnancy: management from preconception to the postnatal period. NICE guideline NG3. London: NICE; 2015 (updated 2020).",
+      "verified": false
+    },
+    {
+      "id": "jbds-dka-2023",
+      "name": "JBDS-IP — The management of diabetic ketoacidosis in adults (current revision)",
+      "year": 2023,
+      "section": "Diagnosis (ketonaemia ≥3.0 mmol/L or ketonuria ≥2+, bicarbonate <15 mmol/L and/or venous pH <7.3, glucose >11 mmol/L or known diabetes); fixed-rate IV insulin infusion (0.1 units/kg/h); 0.9% sodium chloride; potassium replacement by serum level; continue long-acting insulin; add 10% glucose when glucose falls below 14 mmol/L; euglycaemic DKA with SGLT2 inhibitors (glucose may be normal)",
+      "citation": "Dhatariya KK; Joint British Diabetes Societies for Inpatient Care. The management of diabetic ketoacidosis in adults — an updated guideline from the Joint British Diabetes Society for Inpatient Care. Diabet Med. 2022;39:e14788 (JBDS-IP 02; edition/year to be confirmed against the current JBDS document).",
+      "verified": false
+    },
+    {
+      "id": "ada-hhc-2024",
+      "name": "Hyperglycaemic crises in adults with diabetes — consensus report (ADA/EASD/JBDS/AACE/DTS)",
+      "year": 2024,
+      "section": "DKA diagnosis (glucose or prior diabetes, ketones, pH/bicarbonate) including euglycaemic DKA with SGLT2 inhibitors; HHS diagnosis (marked hyperglycaemia, hyperosmolality, no significant ketoacidosis); IV fluids, insulin, potassium; search for precipitant",
+      "citation": "Umpierrez GE, Davis GM, ElSayed NA, et al. Hyperglycemic crises in adults with diabetes: a consensus report. Diabetes Care. 2024;47:1257–75.",
+      "verified": false
+    },
+    {
+      "id": "fda-nsaid-2020",
+      "name": "FDA Drug Safety Communication — avoid NSAIDs in pregnancy at 20 weeks or later",
+      "year": 2020,
+      "section": "NSAIDs at about 20 weeks of gestation or later can cause fetal renal dysfunction and oligohydramnios; avoid unless specifically advised (low-dose aspirin excepted)",
+      "citation": "US Food and Drug Administration. FDA recommends avoiding use of NSAIDs in pregnancy at 20 weeks or later because they can result in low amniotic fluid. Drug Safety Communication, 15 October 2020.",
+      "verified": false
+    }
+  ],
+  "rationale": "DKA in pregnancy occurs at lower glucose and threatens the fetus. NICE NG3: ketones, immediate admission with joint obstetric care. Abdominal pain must not trigger an operative or NSAID plan.",
+  "authoring": {
+    "author": "Claude (endocrine / renal / urology / neuro cluster)",
+    "date": "2026-09-25",
+    "notes": "Expectations need surgeon sign-off (reviewedBy). Every citation is verified: false. iOS outcomes not observed (Linux)."
+  }
+}

@@ -1,0 +1,335 @@
+{
+  "schemaVersion": 1,
+  "id": "cholangitis-tg18-charcot-sepsis",
+  "condition": "Acute cholangitis",
+  "category": "hpb",
+  "permutationOf": null,
+  "permutationLabel": "Charcot's triad with sepsis — TG18 Grade II (base case)",
+  "summary": "68-year-old woman with RUQ pain, rigors (39.4 °C) and jaundice; WBC 17.8, bilirubin 72 µmol/L, CBD 11 mm with a distal stone. qSOFA 2 (RR 22, SBP 100) without TG18 organ dysfunction: Grade II.",
+  "tags": ["biliary", "sepsis", "ercp"],
+  "inputs": {
+    "patient": {
+      "ageYears": 68,
+      "sex": "female",
+      "pregnancy": { "status": "not-applicable" },
+      "heightCm": 160,
+      "weightKg": 66
+    },
+    "encounter": { "setting": "emergency", "visitType": "urgentReview", "acuity": "urgent" },
+    "chiefComplaint": "Jaundice with fever and rigors",
+    "hpi": "Two days of right upper quadrant pain, high fevers with shaking rigors, and yellow eyes since yesterday. Dark urine and pale stools. Known gallstones; cholecystectomy was planned but never done. Feels unwell and weak.",
+    "socrates": {
+      "onset": ["2–3 days ago"],
+      "site": ["RUQ"],
+      "character": ["Aching"],
+      "radiation": ["No radiation"],
+      "associations": ["Fever", "Rigors", "Jaundice", "Nausea"],
+      "timing": ["Constant"],
+      "exacerbating": ["Movement"],
+      "relieving": ["Nothing"],
+      "severity": ["Moderate (4–6/10)"]
+    },
+    "symptoms": ["right upper quadrant pain", "fever", "rigors", "jaundice", "dark urine", "pale stools"],
+    "negatives": [],
+    "exam": {
+      "general": "Jaundiced, flushed, alert and orientated. Temperature 39.4°C with rigors, tachycardia 112/min, BP 100/64, respiratory rate 22/min.",
+      "abdomen": "Tender right upper quadrant without guarding; gallbladder not palpable. Murphy's sign negative."
+    },
+    "vitals": [
+      {
+        "minutesAgo": 15,
+        "heartRate": 112,
+        "systolicBp": 100,
+        "diastolicBp": 64,
+        "respiratoryRate": 22,
+        "temperatureC": 39.4,
+        "spo2": 96,
+        "avpu": "A",
+        "onSupplementalO2": false
+      }
+    ],
+    "labs": [
+      { "analyte": "wbc", "name": "WBC", "value": 17.8, "unit": "×10⁹/L", "minutesAgo": 30 },
+      { "analyte": "crp", "name": "CRP", "value": 196, "unit": "mg/L", "minutesAgo": 30 },
+      { "analyte": "bilirubin", "name": "Bilirubin", "value": 72, "unit": "µmol/L", "minutesAgo": 30 },
+      { "analyte": "alp", "name": "ALP", "value": 410, "unit": "U/L", "minutesAgo": 30 },
+      { "analyte": "ggt", "name": "GGT", "value": 520, "unit": "U/L", "minutesAgo": 30 },
+      { "analyte": "alt", "name": "ALT", "value": 180, "unit": "U/L", "minutesAgo": 30 },
+      { "analyte": "ast", "name": "AST", "value": 150, "unit": "U/L", "minutesAgo": 30 },
+      { "analyte": "albumin", "name": "Albumin", "value": 33, "unit": "g/L", "minutesAgo": 30 },
+      { "analyte": "creatinine", "name": "Creatinine", "value": 92, "unit": "µmol/L", "minutesAgo": 30 },
+      { "analyte": "platelets", "name": "Platelets", "value": 190, "unit": "×10⁹/L", "minutesAgo": 30 },
+      { "analyte": "inr", "name": "INR", "value": 1.2, "unit": "", "minutesAgo": 30 },
+      { "analyte": "lactate", "name": "Lactate", "value": 2.1, "unit": "mmol/L", "minutesAgo": 30 },
+      { "analyte": "lipase", "name": "Lipase", "value": 55, "unit": "U/L", "minutesAgo": 30 }
+    ],
+    "imaging": [
+      {
+        "name": "USS abdomen",
+        "modality": "US",
+        "region": "Abdomen",
+        "result": "Multiple gallstones in a thin-walled gallbladder. Common bile duct dilated to 11 mm with a 9 mm echogenic stone in the distal duct. Mild intrahepatic duct dilatation.",
+        "minutesAgo": 20
+      }
+    ],
+    "comorbidities": ["Hypertension"],
+    "surgicalHistory": [],
+    "medications": [{ "drug": "Amlodipine", "dose": "10 mg", "frequency": "OD", "indication": "Hypertension" }],
+    "allergies": [],
+    "nkda": true,
+    "socialHistory": "Retired teacher. Non-smoker.",
+    "scoreForms": {
+      "tg18-cholangitis": {
+        "systemicInflammation": true,
+        "cholestasis": true,
+        "imaging": true,
+        "wbcAbnormal": true,
+        "feverAtLeast39": true,
+        "ageAtLeast75": false,
+        "bilirubinAtLeast5mgdl": false,
+        "albuminBelow07LLN": false,
+        "organDysfunction": []
+      },
+      "qsofa": { "alteredMentation": false, "rrAtLeast22": true, "sbpAtMost100": true, "suspectedInfection": true }
+    },
+    "confirmedDiagnosis": {
+      "name": "Acute cholangitis",
+      "icd10": "K83.09",
+      "paneDiseaseId": "cholangitis",
+      "assessmentText": "Acute ascending cholangitis secondary to choledocholithiasis — Tokyo (TG18) Grade II (moderate): WBC >12 and temperature ≥39 °C. Sepsis (qSOFA 2) without organ dysfunction."
+    },
+    "platform": {
+      "web": {
+        "ccTemplate": "Obstructive jaundice",
+        "symptoms": ["jaundice", "right upper quadrant pain", "fever", "rigors", "dark urine", "pale stool"],
+        "symptomDetails": {
+          "jaundice": ["Fever", "Rigors", "Dark urine", "Pale stool", "Abdominal pain", "Known gallstones"]
+        },
+        "examFindings": { "abdomen": ["Tender RUQ"], "general": ["Jaundiced"] },
+        "durationDays": 2,
+        "painScore": 5
+      }
+    }
+  },
+  "expected": {
+    "differential": {
+      "mustRankTopK": [
+        {
+          "id": "dx-cholangitis-top3",
+          "severity": "critical",
+          "match": ["cholangitis"],
+          "unless": ["sclerosing"],
+          "k": 3,
+          "guidelineRefs": ["tg18-dx-cholangitis"],
+          "note": "TG18 definite diagnosis (systemic inflammation + cholestasis + biliary dilatation with a stone)."
+        },
+        {
+          "id": "dx-cholangitis-top1",
+          "severity": "quality",
+          "match": ["cholangitis"],
+          "unless": ["sclerosing"],
+          "k": 1
+        }
+      ],
+      "mustNotMiss": [
+        {
+          "id": "mnm-choledocholithiasis",
+          "severity": "quality",
+          "match": ["choledocholithiasis", "cbd stone", "common bile duct stone"]
+        }
+      ]
+    },
+    "safety": {
+      "emergencyLevel": {
+        "id": "level-at-least-urgent",
+        "severity": "critical",
+        "atLeast": "urgent",
+        "guidelineRefs": ["tg18-mgmt-cholangitis", "ssc-2021"],
+        "note": "Grade II cholangitis with sepsis: admit, antibiotics without delay, early biliary drainage."
+      },
+      "mustAlarm": [
+        {
+          "id": "alarm-sepsis",
+          "severity": "critical",
+          "match": ["sepsis", "septic", "cholangitis"],
+          "guidelineRefs": ["ssc-2021", "tg18-mgmt-cholangitis"],
+          "note": "Charcot's triad with rigors, tachycardia and qSOFA 2 must raise an interruptive sepsis / cholangitis alarm."
+        }
+      ],
+      "redFlags": [
+        {
+          "id": "flag-charcot",
+          "severity": "quality",
+          "match": ["charcot", "cholangitis"],
+          "guidelineRefs": ["tg18-dx-cholangitis"]
+        }
+      ]
+    },
+    "scores": {
+      "recommended": [
+        {
+          "id": "score-rec-tg18-cholangitis",
+          "severity": "quality",
+          "score": "tg18-cholangitis",
+          "guidelineRefs": ["tg18-dx-cholangitis"]
+        }
+      ],
+      "values": [
+        {
+          "id": "score-tg18-calculator",
+          "severity": "critical",
+          "score": "tg18-cholangitis",
+          "mode": "calculator",
+          "equals": 2,
+          "guidelineRefs": ["tg18-dx-cholangitis"],
+          "note": "Two Grade II criteria (WBC >12 ×10⁹/L; temperature ≥39 °C), no organ dysfunction = Grade II. A calculator that omits the WBC criterion under-grades to Grade I and delays drainage."
+        },
+        {
+          "id": "score-tg18-autofill",
+          "severity": "quality",
+          "score": "tg18-cholangitis",
+          "mode": "autofill",
+          "equals": 2,
+          "guidelineRefs": ["tg18-dx-cholangitis"]
+        },
+        {
+          "id": "score-qsofa-calculator",
+          "severity": "quality",
+          "score": "qsofa",
+          "mode": "calculator",
+          "equals": 2,
+          "platforms": ["ios"],
+          "guidelineRefs": ["sepsis-3"]
+        },
+        {
+          "id": "score-qsofa-autofill",
+          "severity": "quality",
+          "score": "qsofa",
+          "mode": "autofill",
+          "equals": 2,
+          "platforms": ["ios"],
+          "guidelineRefs": ["sepsis-3"],
+          "note": "Sepsis-3 qSOFA criteria are RR ≥22 and SBP ≤100; this patient sits exactly on both boundaries.",
+          "knownGap": ["ios"],
+          "knownGapNote": "iOS qSOFA auto-fill uses RR >22 and SBP <100 instead of Sepsis-3 RR ≥22 and SBP ≤100, so boundary values are missed."
+        }
+      ]
+    },
+    "investigations": {
+      "mustInclude": [
+        {
+          "id": "inv-blood-cultures",
+          "severity": "critical",
+          "match": ["blood culture"],
+          "guidelineRefs": ["tg18-antimicrobial", "ssc-2021"],
+          "note": "TG18: blood cultures in Grade II/III cholangitis, before antimicrobials."
+        },
+        { "id": "inv-lfts", "severity": "quality", "match": ["lft", "liver function", "bilirubin"] },
+        {
+          "id": "inv-coagulation",
+          "severity": "quality",
+          "match": ["inr", "coagulation", "clotting", "pt "],
+          "note": "Before ERCP/sphincterotomy."
+        },
+        { "id": "inv-mrcp-or-eus", "severity": "quality", "match": ["mrcp", "eus", "endoscopic ultrasound"] }
+      ],
+      "mustExclude": []
+    },
+    "management": {
+      "mustInclude": [
+        {
+          "id": "mgmt-biliary-drainage",
+          "severity": "critical",
+          "match": ["ercp", "biliary drainage", "biliary decompression", "percutaneous transhepatic", "re:\\bptc\\b"],
+          "guidelineRefs": ["tg18-mgmt-cholangitis", "tg18-drainage"],
+          "note": "TG18 Grade II: early biliary drainage (endoscopic transpapillary first line) together with antibiotics."
+        },
+        {
+          "id": "mgmt-drainage-in-generated-plan",
+          "severity": "quality",
+          "match": ["ercp", "biliary drainage", "biliary decompression"],
+          "sources": ["web.plan", "ios.radiation.plan"],
+          "note": "Drainage must reach the generated plan text, not only a side panel."
+        },
+        {
+          "id": "mgmt-antibiotics",
+          "severity": "critical",
+          "match": ["antibiotic", "piperacillin", "tazocin", "meropenem", "ceftriaxone", "co-amoxiclav"],
+          "guidelineRefs": ["tg18-antimicrobial", "ssc-2021"]
+        },
+        { "id": "mgmt-iv-fluids", "severity": "quality", "match": ["fluid", "hartmann", "crystalloid"] },
+        {
+          "id": "mgmt-interval-cholecystectomy",
+          "severity": "quality",
+          "match": ["cholecystectomy"],
+          "guidelineRefs": ["tg18-mgmt-cholangitis"],
+          "note": "Cholecystectomy after recovery to prevent recurrence (gallstones present)."
+        }
+      ],
+      "mustExclude": []
+    },
+    "pathway": { "id": "pathway-first-visit", "severity": "quality", "equals": "firstVisit" },
+    "dxVariant": {
+      "id": "variant-grade2",
+      "severity": "quality",
+      "equals": "cholangitis_grade2",
+      "guidelineRefs": ["tg18-mgmt-cholangitis"]
+    }
+  },
+  "guideline": [
+    {
+      "id": "tg18-dx-cholangitis",
+      "name": "Tokyo Guidelines 2018 — diagnostic criteria and severity grading of acute cholangitis",
+      "year": 2018,
+      "section": "Diagnosis A (fever/chills; inflammatory response) + B (jaundice T-Bil ≥2 mg/dL; abnormal LFTs) + C (biliary dilatation; aetiology on imaging). Grade II: any TWO of WBC >12,000 or <4,000/mm³, fever ≥39 °C, age ≥75, T-Bil ≥5 mg/dL, albumin <0.7 × lower limit of normal. Grade III: organ dysfunction.",
+      "citation": "Kiriyama S, Kozaka K, Takada T, et al. Tokyo Guidelines 2018: diagnostic criteria and severity grading of acute cholangitis. J Hepatobiliary Pancreat Sci. 2018;25:17–30.",
+      "verified": false
+    },
+    {
+      "id": "tg18-mgmt-cholangitis",
+      "name": "Tokyo Guidelines 2018 — initial management of acute biliary infection and flowchart for acute cholangitis",
+      "year": 2018,
+      "section": "Grade I: antibiotics, drainage if no response; Grade II: early biliary drainage + antibiotics; Grade III: organ support then urgent drainage; treat the aetiology (e.g. cholecystectomy) after recovery",
+      "citation": "Miura F, Okamoto K, Takada T, et al. Tokyo Guidelines 2018: initial management of acute biliary infection and flowchart for acute cholangitis. J Hepatobiliary Pancreat Sci. 2018;25:31–40.",
+      "verified": false
+    },
+    {
+      "id": "tg18-drainage",
+      "name": "Tokyo Guidelines 2018 — indications and techniques of biliary drainage for acute cholangitis",
+      "year": 2018,
+      "section": "Endoscopic transpapillary drainage is first line; percutaneous transhepatic drainage when endoscopy fails or is unavailable",
+      "citation": "Mukai S, Itoi T, Baron TH, et al. J Hepatobiliary Pancreat Sci. 2017;24:537–49 (TG18 update).",
+      "verified": false
+    },
+    {
+      "id": "tg18-antimicrobial",
+      "name": "Tokyo Guidelines 2018 — antimicrobial therapy",
+      "year": 2018,
+      "section": "Blood cultures in Grade II/III; antimicrobial choice by severity",
+      "citation": "Gomi H, Solomkin JS, Schlossberg D, et al. J Hepatobiliary Pancreat Sci. 2018;25:3–16.",
+      "verified": false
+    },
+    {
+      "id": "ssc-2021",
+      "name": "Surviving Sepsis Campaign guidelines 2021",
+      "year": 2021,
+      "section": "Blood cultures before antimicrobials; timely antimicrobials; source control",
+      "citation": "Evans L, Rhodes A, Alhazzani W, et al. Crit Care Med. 2021;49:e1063–e1143.",
+      "verified": false
+    },
+    {
+      "id": "sepsis-3",
+      "name": "Sepsis-3 consensus definitions",
+      "year": 2016,
+      "section": "qSOFA: RR ≥22/min, altered mentation, SBP ≤100 mmHg",
+      "citation": "Singer M, Deutschman CS, Seymour CW, et al. JAMA. 2016;315:801–10.",
+      "verified": false
+    }
+  ],
+  "rationale": "Base case for cholangitis. Exactly two TG18 Grade II criteria, so the calculators must implement the 'any two of five' rule including the WBC criterion. qSOFA sits on both boundaries (RR 22, SBP 100) to test ≥/≤ handling. Early ERCP must appear, in the generated plan as well as in reference panels.",
+  "authoring": {
+    "author": "Claude (phase 0 seed)",
+    "date": "2026-09-25",
+    "notes": "Expectations need surgeon sign-off (reviewedBy). tg18-drainage citation details to be checked."
+  }
+}

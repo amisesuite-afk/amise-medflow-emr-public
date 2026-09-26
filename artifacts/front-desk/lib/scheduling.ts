@@ -36,7 +36,13 @@ export const TRACK_CONFIG: Record<BookingTrack, TrackConfig> = {
   },
 };
 
-export const APPOINTMENT_TYPES: Record<string, { label: string; location: string; group: string }> = {
+export interface AppointmentTypeConfig { label: string; location: string; group: string }
+
+// `satisfies` (not a Record<string, …> annotation) keeps the literal keys, so
+// AppointmentTypeKey below is the exact set of bookable types. Adding a type
+// here without a patient-instructions mapping (lib/instructions.ts
+// APPOINTMENT_INSTRUCTIONS) is a type error.
+export const APPOINTMENT_TYPES = {
   // Consultations
   new_consult:    { label: 'New consultation with Dr Kabiye',  location: 'rodney_bay', group: 'Consultations' },
   follow_up:      { label: 'Follow-up appointment',            location: 'rodney_bay', group: 'Consultations' },
@@ -60,7 +66,13 @@ export const APPOINTMENT_TYPES: Record<string, { label: string; location: string
   lab_collection: { label: 'Lab collection — non-fasting',     location: 'rodney_bay', group: 'Laboratory' },
   lab_urine:      { label: 'Lab collection — urine / culture', location: 'rodney_bay', group: 'Laboratory' },
   lab_histology:  { label: 'Histology / biopsy submission',    location: 'tapion',     group: 'Laboratory' },
-};
+} satisfies Record<string, AppointmentTypeConfig>;
+
+export type AppointmentTypeKey = keyof typeof APPOINTMENT_TYPES;
+
+export function isAppointmentTypeKey(key: string): key is AppointmentTypeKey {
+  return Object.prototype.hasOwnProperty.call(APPOINTMENT_TYPES, key);
+}
 
 export function getApptGroups(): Record<string, { key: string; label: string; location: string }[]> {
   const result: Record<string, { key: string; label: string; location: string }[]> = {};

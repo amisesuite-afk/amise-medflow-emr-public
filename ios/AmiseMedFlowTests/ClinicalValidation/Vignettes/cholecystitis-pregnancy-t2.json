@@ -1,0 +1,475 @@
+{
+  "schemaVersion": 1,
+  "id": "cholecystitis-pregnancy-t2",
+  "condition": "Acute calculous cholecystitis",
+  "category": "hpb",
+  "permutationOf": "cholecystitis-tg18-grade1",
+  "permutationLabel": "Pregnancy, 22 weeks — TG18 Grade I",
+  "summary": "29-year-old at 22 weeks’ gestation with 36 h of RUQ pain, fever 38.2 °C, positive Murphy’s; WBC 14.8 and ALP 210 (both partly physiological in pregnancy); ultrasound shows gallstones with a 5 mm wall and pericholecystic fluid; live fetus.",
+  "tags": [
+    "biliary",
+    "pregnancy"
+  ],
+  "inputs": {
+    "patient": {
+      "ageYears": 29,
+      "sex": "female",
+      "pregnancy": {
+        "status": "pregnant",
+        "gestationWeeks": 22
+      },
+      "heightCm": 165,
+      "weightKg": 74
+    },
+    "encounter": {
+      "setting": "emergency",
+      "visitType": "urgentReview",
+      "acuity": "urgent"
+    },
+    "chiefComplaint": "Right upper abdominal pain and fever in pregnancy",
+    "hpi": "G2P1 at 22 weeks. 36 hours of constant right upper quadrant pain after a fried meal, with fever and vomiting. Similar short episodes earlier in the pregnancy. Fetal movements normal; no vaginal bleeding, no contractions. No jaundice.",
+    "socrates": {
+      "onset": [
+        "Yesterday"
+      ],
+      "site": [
+        "RUQ"
+      ],
+      "character": [
+        "Sharp",
+        "Aching"
+      ],
+      "radiation": [
+        "Right shoulder"
+      ],
+      "associations": [
+        "Nausea",
+        "Vomiting",
+        "Fever"
+      ],
+      "timing": [
+        "Constant"
+      ],
+      "exacerbating": [
+        "Fatty food",
+        "Deep breathing"
+      ],
+      "relieving": [
+        "Nothing"
+      ],
+      "severity": [
+        "Severe (7–9/10)"
+      ]
+    },
+    "symptoms": [
+      "right upper quadrant pain",
+      "fever",
+      "vomiting"
+    ],
+    "negatives": [
+      "jaundice",
+      "vaginal bleeding",
+      "contractions"
+    ],
+    "exam": {
+      "general": "Unwell. Temperature 38.2°C, pulse 104/min, BP 116/70. Gravid uterus, fundus at the umbilicus.",
+      "abdomen": "Right upper quadrant tenderness with positive Murphy's sign. Uterus soft and non-tender."
+    },
+    "vitals": [
+      {
+        "minutesAgo": 20,
+        "heartRate": 104,
+        "systolicBp": 116,
+        "diastolicBp": 70,
+        "respiratoryRate": 18,
+        "temperatureC": 38.2,
+        "spo2": 98,
+        "avpu": "A",
+        "onSupplementalO2": false
+      }
+    ],
+    "labs": [
+      {
+        "analyte": "wbc",
+        "name": "WBC",
+        "value": 14.8,
+        "unit": "×10⁹/L",
+        "minutesAgo": 40
+      },
+      {
+        "analyte": "crp",
+        "name": "CRP",
+        "value": 96,
+        "unit": "mg/L",
+        "minutesAgo": 40
+      },
+      {
+        "analyte": "bilirubin",
+        "name": "Bilirubin",
+        "value": 14,
+        "unit": "µmol/L",
+        "minutesAgo": 40
+      },
+      {
+        "analyte": "alp",
+        "name": "ALP",
+        "value": 210,
+        "unit": "U/L",
+        "minutesAgo": 40
+      },
+      {
+        "analyte": "alt",
+        "name": "ALT",
+        "value": 38,
+        "unit": "U/L",
+        "minutesAgo": 40
+      },
+      {
+        "analyte": "lipase",
+        "name": "Lipase",
+        "value": 40,
+        "unit": "U/L",
+        "minutesAgo": 40
+      },
+      {
+        "analyte": "haemoglobin",
+        "name": "Haemoglobin",
+        "value": 11.2,
+        "unit": "g/dL",
+        "minutesAgo": 40
+      },
+      {
+        "analyte": "creatinine",
+        "name": "Creatinine",
+        "value": 50,
+        "unit": "µmol/L",
+        "minutesAgo": 40
+      }
+    ],
+    "imaging": [
+      {
+        "name": "USS abdomen",
+        "modality": "US",
+        "region": "Abdomen",
+        "minutesAgo": 20,
+        "result": "Gallstones with a stone in the gallbladder neck; wall 5 mm with pericholecystic fluid; sonographic Murphy's positive. CBD 5 mm. Single live intrauterine fetus, FHR 148/min."
+      }
+    ],
+    "comorbidities": [],
+    "medications": [
+      {
+        "drug": "Folic acid",
+        "dose": "400 µg",
+        "frequency": "OD",
+        "indication": "Pregnancy"
+      }
+    ],
+    "allergies": [],
+    "nkda": true,
+    "socialHistory": "Shop assistant. Non-smoker.",
+    "scoreForms": {
+      "tg18-cholecystitis": {
+        "localSigns": true,
+        "systemicSigns": true,
+        "imagingCharacteristic": true,
+        "wbcAbove18": false,
+        "palpableTenderRUQMass": false,
+        "durationOver72h": false,
+        "markedLocalInflammation": false,
+        "organDysfunction": []
+      }
+    },
+    "confirmedDiagnosis": {
+      "name": "Acute calculous cholecystitis",
+      "icd10": "K81.0",
+      "paneDiseaseId": "cholecystitis",
+      "assessmentText": "Acute calculous cholecystitis, Tokyo (TG18) Grade I, at 22 weeks’ gestation."
+    },
+    "platform": {
+      "web": {
+        "ccTemplate": "Acute abdominal pain",
+        "symptoms": [
+          "abdominal pain",
+          "right upper quadrant pain",
+          "fever",
+          "vomiting"
+        ],
+        "symptomDetails": {
+          "abdominal pain": [
+            "RUQ",
+            "1–3 days",
+            "Constant",
+            "Sharp",
+            "Severe (7–9)",
+            "Shoulder tip",
+            "Vomiting",
+            "Fever",
+            "Continuous",
+            "Fatty meal"
+          ]
+        },
+        "examFindings": {
+          "abdomen": [
+            "Tender RUQ",
+            "Murphy's sign +"
+          ]
+        },
+        "paneAnswers": {
+          "us_gallstones": true,
+          "murphy_sign": true
+        },
+        "durationDays": 1.5,
+        "painScore": 7
+      }
+    }
+  },
+  "expected": {
+    "differential": {
+      "mustRankTopK": [
+        {
+          "id": "dx-cholecystitis-top3",
+          "severity": "critical",
+          "match": [
+            "cholecystitis"
+          ],
+          "k": 3,
+          "guidelineRefs": [
+            "tg18-dx-cholecystitis"
+          ]
+        }
+      ]
+    },
+    "safety": {
+      "emergencyLevel": {
+        "id": "level-at-least-urgent",
+        "severity": "critical",
+        "atLeast": "urgent",
+        "guidelineRefs": [
+          "sages-2017"
+        ],
+        "note": "Same-day surgical and obstetric assessment. iOS (predicted, not observed): routine — the CC has no urgent keyword and \"right upper\" selects the biliary pathway, which only escalates for jaundice/cholangitis."
+      },
+      "redFlags": [
+        {
+          "id": "flag-pregnancy",
+          "severity": "critical",
+          "match": [
+            "pregnan"
+          ],
+          "guidelineRefs": [
+            "acog-co723-2017"
+          ],
+          "note": "Pregnancy must be surfaced before imaging, drugs or theatre."
+        }
+      ]
+    },
+    "scores": {
+      "values": [
+        {
+          "id": "score-tg18-calculator",
+          "severity": "critical",
+          "score": "tg18-cholecystitis",
+          "mode": "calculator",
+          "equals": 1,
+          "guidelineRefs": [
+            "tg18-dx-cholecystitis"
+          ],
+          "note": "WBC 14.8 is below the Grade II threshold (and partly physiological in pregnancy)."
+        }
+      ]
+    },
+    "investigations": {
+      "mustExclude": [
+        {
+          "id": "inv-no-unqualified-ct",
+          "severity": "quality",
+          "match": [
+            "re:\\bct\\b"
+          ],
+          "unless": [
+            "pregnan",
+            "mri unavailable",
+            "mri not available",
+            "if mri",
+            "if mrcp unavailable"
+          ],
+          "guidelineRefs": [
+            "acog-co723-2017"
+          ],
+          "note": "US (and MRI/MRCP if needed) preferred; CT is not contraindicated but should not be the unqualified default."
+        }
+      ]
+    },
+    "management": {
+      "mustInclude": [
+        {
+          "id": "mgmt-lap-chole",
+          "severity": "critical",
+          "match": [
+            "laparoscopic cholecystectomy",
+            "lap chole",
+            "re:lap(\\.|aroscopic)? cholecystectomy",
+            "cholecystectomy"
+          ],
+          "guidelineRefs": [
+            "sages-2017"
+          ],
+          "note": "SAGES 2017: laparoscopic cholecystectomy is safe in any trimester and reduces recurrence and fetal loss compared with conservative management."
+        },
+        {
+          "id": "mgmt-obstetric-involvement",
+          "severity": "quality",
+          "match": [
+            "obstetric",
+            "obstetrician",
+            "o&g",
+            "maternity",
+            "fetal monitoring",
+            "fetal heart"
+          ],
+          "guidelineRefs": [
+            "sages-2017",
+            "acog-co775-2019"
+          ]
+        },
+        {
+          "id": "mgmt-antibiotics",
+          "severity": "quality",
+          "match": [
+            "antibiotic",
+            "antimicrobial",
+            "co-amoxiclav",
+            "amoxicillin-clavulanate",
+            "piperacillin",
+            "tazocin",
+            "cefuroxime",
+            "ceftriaxone",
+            "meropenem",
+            "imipenem",
+            "carbapenem",
+            "metronidazole"
+          ],
+          "guidelineRefs": [
+            "tg18-antimicrobial"
+          ]
+        }
+      ],
+      "mustExclude": [
+        {
+          "id": "mgmt-no-nsaid-after-20-weeks",
+          "severity": "critical",
+          "match": [
+            "nsaid",
+            "ibuprofen",
+            "diclofenac",
+            "naproxen",
+            "ketorolac",
+            "parecoxib",
+            "celecoxib"
+          ],
+          "unless": [
+            "re:(avoid|no|not|contraindicated|do not (give|use|prescribe))[^.;\\n]{0,20}(nsaid|ibuprofen|diclofenac|naproxen|ketorolac)",
+            "re:(nsaid|ibuprofen|diclofenac|naproxen|ketorolac)s?[^.;\\n]{0,30}(contraindicated|avoid|not in pregnan)"
+          ],
+          "guidelineRefs": [
+            "fda-2020-nsaid"
+          ],
+          "note": "NSAIDs should be avoided from 20 weeks’ gestation."
+        },
+        {
+          "id": "mgmt-no-teratogenic-antibiotic",
+          "severity": "quality",
+          "match": [
+            "ciprofloxacin",
+            "levofloxacin",
+            "doxycycline",
+            "tetracycline"
+          ],
+          "unless": [
+            "avoid",
+            "not in pregnan",
+            "contraindicated"
+          ]
+        },
+        {
+          "id": "mgmt-no-bhcg-negative-assumption",
+          "severity": "quality",
+          "match": [
+            "re:(β|b|beta)[- ]?hcg (confirmed )?negative"
+          ],
+          "note": "The patient is pregnant; templates must not assert a negative pregnancy test."
+        },
+        {
+          "id": "mgmt-no-appendicectomy",
+          "severity": "critical",
+          "match": [
+            "appendicectomy",
+            "appendectomy"
+          ],
+          "unless": [
+            "not indicated",
+            "no role",
+            "exclude appendicitis"
+          ],
+          "note": "Not an appendix presentation: an appendicectomy operative plan (consent, theatre booking, post-operative orders) is a wrong-procedure suggestion."
+        }
+      ]
+    }
+  },
+  "guideline": [
+    {
+      "id": "tg18-dx-cholecystitis",
+      "name": "Tokyo Guidelines 2018 — diagnostic criteria and severity grading of acute cholecystitis",
+      "year": 2018,
+      "section": "Diagnostic criteria (A local + B systemic + C imaging); Grade II: WBC >18,000/mm³, palpable tender RUQ mass, duration >72 h, marked local inflammation (gangrenous, emphysematous, abscess, biliary peritonitis); Grade III: organ dysfunction",
+      "citation": "Yokoe M, Hata J, Takada T, et al. J Hepatobiliary Pancreat Sci. 2018;25:41–54.",
+      "verified": false
+    },
+    {
+      "id": "tg18-antimicrobial",
+      "name": "Tokyo Guidelines 2018 — antimicrobial therapy for acute cholangitis and cholecystitis",
+      "year": 2018,
+      "section": "Blood cultures in Grade II/III; antimicrobial choice by severity; duration after source control",
+      "citation": "Gomi H, Solomkin JS, Schlossberg D, et al. J Hepatobiliary Pancreat Sci. 2018;25:3–16.",
+      "verified": false
+    },
+    {
+      "id": "sages-2017",
+      "name": "SAGES guidelines for the use of laparoscopy during pregnancy",
+      "year": 2017,
+      "section": "Laparoscopic cholecystectomy is safe in any trimester and is the treatment of choice for symptomatic gallbladder disease/gallstone pancreatitis; obstetric consultation; fetal heart monitoring; VTE prophylaxis",
+      "citation": "Pearl JP, Price RR, Tonkin AE, Richardson WS, Stefanidis D. Surg Endosc. 2017;31:3767–3782.",
+      "verified": false
+    },
+    {
+      "id": "acog-co723-2017",
+      "name": "ACOG Committee Opinion No. 723 — Guidelines for diagnostic imaging during pregnancy and lactation",
+      "year": 2017,
+      "section": "US and MRI preferred; CT not contraindicated when needed; gadolinium only if it clearly improves diagnosis",
+      "citation": "ACOG Committee Opinion No. 723. Obstet Gynecol. 2017;130:e210–e216.",
+      "verified": false
+    },
+    {
+      "id": "acog-co775-2019",
+      "name": "ACOG Committee Opinion No. 775 — Nonobstetric surgery during pregnancy",
+      "year": 2019,
+      "section": "Obstetric consultation before non-obstetric surgery; fetal heart rate assessment before and after the procedure",
+      "citation": "ACOG Committee Opinion No. 775. Obstet Gynecol. 2019;133:e285–e286.",
+      "verified": false
+    },
+    {
+      "id": "fda-2020-nsaid",
+      "name": "US FDA Drug Safety Communication — NSAIDs in pregnancy at 20 weeks or later",
+      "year": 2020,
+      "section": "Avoid NSAIDs from about 20 weeks’ gestation (fetal renal dysfunction, oligohydramnios)",
+      "citation": "US Food and Drug Administration. Drug Safety Communication, 15 October 2020.",
+      "verified": false
+    }
+  ],
+  "rationale": "Permutation: pregnancy in the second trimester. Tests the pregnancy flag, that physiological leucocytosis/ALP do not over-grade, that cholecystectomy is still offered (SAGES), and that NSAIDs, unqualified CT and teratogenic antibiotics are avoided.",
+  "authoring": {
+    "author": "Claude (HPB cluster)",
+    "date": "2026-09-25",
+    "notes": "Expectations and citations need surgeon sign-off (reviewedBy). iOS outcomes not yet observed (unverified: ios) — triage after the first CI run."
+  }
+}

@@ -4,13 +4,17 @@ options:
   bundleIdPrefix: com.amise
   deploymentTarget:
     iOS: "17.0"
-  xcodeVersion: "16"
+  xcodeVersion: "26.0"   # sets LastUpgradeCheck so Xcode 26 stops showing "Update to recommended settings"
   defaultConfig: Debug
 
 packages:
   Supabase:
     url: https://github.com/supabase/supabase-swift
     from: 2.5.1
+  # Crash + app-hang reporting (see Services/CrashReporting.swift). Pinned to 8.x.
+  Sentry:
+    url: https://github.com/getsentry/sentry-cocoa
+    from: 8.36.0
 
 targets:
   AmiseMedFlow:
@@ -22,6 +26,24 @@ targets:
       - path: AmiseMedFlow
         excludes:
           - "**/.DS_Store"
+      # Clinical rules shared with the web (clinical-content/rules/*.json at the repository root),
+      # copied into the app bundle as the "rules" folder reference, so a new file needs no
+      # per-file registration. Read by Services/SharedClinicalContent.swift; the web imports the
+      # same files. lint:shared-content fails if this entry goes.
+      - path: ../clinical-content/rules
+        type: folder
+        buildPhase: resources
+      # Disease-centred vademecum (phase 1, shadow: decoded only, VademecumContent.swift), bundled
+      # as the "vademecum" folder reference. lint:shared-content fails if this entry goes.
+      - path: ../clinical-content/vademecum
+        type: folder
+        buildPhase: resources
+      # Their JSON Schemas, bundled as the "schemas" folder reference: the approved-content channel
+      # (ApprovedContentStore.swift, docs/APPROVED-CONTENT-CHANNEL.md) checks a published release
+      # against the schema of this build before it may replace a bundled rule file.
+      - path: ../clinical-content/schemas
+        type: folder
+        buildPhase: resources
 
     resources:
       - path: AmiseMedFlow/Assets.xcassets
@@ -41,7 +63,12 @@ targets:
         UIApplicationSceneManifest:
           UIApplicationSupportsMultipleScenes: false
         UIRequiredDeviceCapabilities:
-          - armv7
+          - arm64
+        # NAS backup over Tailscale uses the NAS's short MagicDNS name over HTTP (e.g.
+        # http://amise-storage:5005). Tailscale encrypts that traffic end to end (WireGuard), so
+        # plain HTTP is allowed for local names only; every other connection stays HTTPS-only.
+        NSAppTransportSecurity:
+          NSAllowsLocalNetworking: true
         UISupportedInterfaceOrientations:
           - UIInterfaceOrientationPortrait
           - UIInterfaceOrientationLandscapeLeft
@@ -54,6 +81,8 @@ targets:
         # Supabase — resolved at build time via Configuration.xcconfig
         SUPABASE_URL: "$(SUPABASE_URL)"
         SUPABASE_ANON_KEY: "$(SUPABASE_ANON_KEY)"
+        # Sentry crash reporting — empty = reporting off
+        SENTRY_DSN: "$(SENTRY_DSN)"
         # Privacy usage strings
         NSCameraUsageDescription: "Camera is used for patient photo documentation."
         NSPhotoLibraryUsageDescription: "Photo library is used for attaching clinical images."
@@ -69,15 +98,28 @@ targets:
           - "_amise-medflow._udp"
         # Encryption compliance — app uses HTTPS (exempt from export regs)
         ITSAppUsesNonExemptEncryption: false
+        # Report PDFs shared from another app (Laboratory Services Ltd "SLUlabservices", Files,
+        # Safari): "Open in / Copy to MedFlow". Not in place: iOS copies the file into
+        # Documents/Inbox and calls .onOpenURL (Services/IncomingReportStaging.swift).
+        CFBundleDocumentTypes:
+          - CFBundleTypeName: "PDF report"
+            CFBundleTypeRole: Viewer
+            LSHandlerRank: Alternate
+            LSItemContentTypes:
+              - com.adobe.pdf
+        LSSupportsOpeningDocumentsInPlace: false
 
     entitlements:
       path: AmiseMedFlow/AmiseMedFlow.entitlements
       properties: {}
 
+    # Target-level key: XcodeGen ignores configFiles nested under settings, which is why
+    # Configuration.xcconfig (SENTRY_DSN, SUPABASE_*) was never applied before.
+    configFiles:
+      Debug: Configuration.xcconfig
+      Release: Configuration.xcconfig
+
     settings:
-      configFiles:
-        Debug: Configuration.xcconfig
-        Release: Configuration.xcconfig
       base:
         PRODUCT_NAME: AmiseMedFlow
         PRODUCT_BUNDLE_IDENTIFIER: com.amise.medflow
@@ -98,6 +140,8 @@ targets:
     dependencies:
       - package: Supabase
         product: Supabase
+      - package: Sentry
+        product: Sentry
 
   AmiseMedFlowTests:
     type: bundle.unit-test
@@ -108,6 +152,13 @@ targets:
       - path: AmiseMedFlowTests
         excludes:
           - "**/.DS_Store"
+          - "ClinicalValidation/Vignettes"
+          - "ClinicalValidation/Vignettes/**"
+      # Clinical validation vignettes (JSON), copied into the test bundle as a "Vignettes" folder
+      # reference so ClinicalValidationTests can enumerate them. The web harness reads the same files.
+      - path: AmiseMedFlowTests/ClinicalValidation/Vignettes
+        type: folder
+        buildPhase: resources
 
     settings:
       base:
@@ -118,6 +169,33 @@ targets:
         GENERATE_INFOPLIST_FILE: "YES"
         TEST_HOST: $(BUILT_PRODUCTS_DIR)/AmiseMedFlow.app/$(BUNDLE_EXECUTABLE_FOLDER_PATH)/AmiseMedFlow
         BUNDLE_LOADER: $(TEST_HOST)
+
+    dependencies:
+      - target: AmiseMedFlow
+
+  # UI walkthrough (XCUITest): launches the app in DEBUG demo mode (-UITestDemoMode, synthetic
+  # in-memory data, no sync) and screenshots each step. Run through the AmiseMedFlowUIWalkthrough
+  # scheme only (ios/ui-walkthrough.sh, .github/workflows/ios-ui-walkthrough.yml), so the
+  # AmiseMedFlow scheme's unit tests are unchanged.
+  AmiseMedFlowUITests:
+    type: bundle.ui-testing
+    platform: iOS
+    deploymentTarget: "17.0"
+
+    sources:
+      - path: AmiseMedFlowUITests
+        excludes:
+          - "**/.DS_Store"
+
+    settings:
+      base:
+        PRODUCT_NAME: AmiseMedFlowUITests
+        PRODUCT_BUNDLE_IDENTIFIER: com.amise.medflow.uitests
+        SWIFT_VERSION: "5.0"
+        DEVELOPMENT_TEAM: A5KKWX89SG
+        GENERATE_INFOPLIST_FILE: "YES"
+        TARGETED_DEVICE_FAMILY: "1,2"
+        TEST_TARGET_NAME: AmiseMedFlow
 
     dependencies:
       - target: AmiseMedFlow
@@ -140,3 +218,16 @@ schemes:
       config: Debug
     archive:
       config: Release
+
+  # UI walkthrough only (Debug: demo mode exists only in DEBUG builds).
+  AmiseMedFlowUIWalkthrough:
+    build:
+      targets:
+        AmiseMedFlow: all
+        AmiseMedFlowUITests: [test]
+    run:
+      config: Debug
+    test:
+      config: Debug
+      targets:
+        - AmiseMedFlowUITests

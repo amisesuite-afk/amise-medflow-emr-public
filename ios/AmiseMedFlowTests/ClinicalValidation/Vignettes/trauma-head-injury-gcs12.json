@@ -1,0 +1,296 @@
+{
+  "schemaVersion": 1,
+  "id": "trauma-head-injury-gcs12",
+  "condition": "Traumatic brain injury (moderate)",
+  "category": "trauma-burns",
+  "permutationOf": null,
+  "summary": "24-year-old man assaulted, struck his head on the kerb: loss of consciousness ~2 min, vomited twice, GCS 12 (E3 V4 M5) on arrival, occipital boggy swelling.",
+  "tags": [
+    "trauma",
+    "head-injury",
+    "nice-ng232"
+  ],
+  "inputs": {
+    "patient": {
+      "ageYears": 24,
+      "sex": "male",
+      "pregnancy": {
+        "status": "not-applicable"
+      },
+      "heightCm": 179,
+      "weightKg": 75
+    },
+    "encounter": {
+      "setting": "emergency",
+      "visitType": "trauma",
+      "acuity": "emergency"
+    },
+    "chiefComplaint": "Head injury after assault",
+    "hpi": "Punched and fell backwards striking the back of his head on a kerb 1 hour ago. Knocked out for about 2 minutes per friends. Vomited twice since. Drowsy and repetitive. No anticoagulants. Had 4 beers.",
+    "socrates": {
+      "onset": [
+        "Today",
+        "Sudden"
+      ],
+      "site": [
+        "Scalp"
+      ],
+      "character": [
+        "Throbbing"
+      ],
+      "radiation": [
+        "No radiation"
+      ],
+      "associations": [
+        "Vomiting"
+      ],
+      "timing": [
+        "Constant"
+      ],
+      "exacerbating": [],
+      "relieving": [
+        "Nothing"
+      ],
+      "severity": [
+        "Moderate (4–6/10)"
+      ]
+    },
+    "symptoms": [
+      "head injury",
+      "headache",
+      "vomiting",
+      "loss of consciousness",
+      "confusion"
+    ],
+    "negatives": [
+      "seizure",
+      "limb weakness"
+    ],
+    "exam": {
+      "general": "GCS 12 (E3 V4 M5). HR 64, BP 146/88, RR 16, SpO2 98%.",
+      "neuro": "GCS 12, pupils equal and reactive 3 mm. Moves all limbs. No focal deficit. Boggy occipital scalp swelling. No CSF rhinorrhoea or otorrhoea, no Battle sign."
+    },
+    "vitals": [
+      {
+        "minutesAgo": 5,
+        "heartRate": 64,
+        "systolicBp": 146,
+        "diastolicBp": 88,
+        "respiratoryRate": 16,
+        "temperatureC": 36.7,
+        "spo2": 98,
+        "avpu": "V",
+        "onSupplementalO2": false
+      }
+    ],
+    "labs": [],
+    "imaging": [],
+    "comorbidities": [],
+    "surgicalHistory": [],
+    "medications": [],
+    "allergies": [],
+    "nkda": true,
+    "socialHistory": "Bar worker. Alcohol at weekends.",
+    "confirmedDiagnosis": {
+      "name": "Traumatic brain injury (moderate, GCS 12) with loss of consciousness",
+      "icd10": "S06.0X1A",
+      "paneDiseaseId": "traumatic_brain_injury",
+      "assessmentText": "Moderate traumatic brain injury, GCS 12 with loss of consciousness and repeated vomiting after assault. CT head within 1 hour (NICE NG232), cervical spine imaging, neurosurgical discussion."
+    },
+    "platform": {
+      "web": {
+        "ccTemplate": "Other / general surgical",
+        "symptoms": [
+          "headache",
+          "vomiting",
+          "loss of consciousness",
+          "confusion"
+        ],
+        "symptomDetails": {
+          "headache": [
+            "Occipital",
+            "Nausea / vomiting"
+          ]
+        },
+        "examFindings": {
+          "neurological": [
+            "GCS < 15",
+            "Confused",
+            "No focal deficit"
+          ],
+          "general": [
+            "GCS < 15"
+          ]
+        },
+        "paneAnswers": {
+          "mechanism_blunt": true,
+          "loss_of_consciousness": true,
+          "gcs_drop": true,
+          "vomiting_post_trauma": true,
+          "headache": true,
+          "pupil_asymmetry": false
+        },
+        "toxicHabits": [
+          "Alcohol"
+        ],
+        "durationDays": 0,
+        "painScore": 5
+      }
+    }
+  },
+  "expected": {
+    "differential": {
+      "mustRankTopK": [
+        {
+          "id": "dx-tbi-top3",
+          "severity": "quality",
+          "match": [
+            "brain injury",
+            "head injury",
+            "tbi",
+            "haematoma",
+            "intracranial"
+          ],
+          "k": 3,
+          "guidelineRefs": [
+            "nice-ng232"
+          ]
+        }
+      ]
+    },
+    "safety": {
+      "emergencyLevel": {
+        "id": "level-emergency",
+        "severity": "critical",
+        "atLeast": "emergency",
+        "guidelineRefs": [
+          "nice-ng232",
+          "atls-10-head"
+        ]
+      },
+      "redFlags": [
+        {
+          "id": "flag-gcs",
+          "severity": "critical",
+          "match": [
+            "gcs",
+            "reduced consciousness",
+            "conscious"
+          ],
+          "guidelineRefs": [
+            "nice-ng232"
+          ]
+        }
+      ]
+    },
+    "scores": {
+      "recommended": [
+        {
+          "id": "score-rec-gcs",
+          "severity": "quality",
+          "score": "gcs",
+          "guidelineRefs": [
+            "nice-ng232"
+          ],
+          "knownGap": [
+            "ios"
+          ],
+          "knownGapNote": "iOS CI 2026-09-25 (run 36169134350, database mode): gcs not recommended; recommended: (none)"
+        }
+      ]
+    },
+    "investigations": {
+      "mustInclude": [
+        {
+          "id": "inv-ct-head",
+          "severity": "critical",
+          "match": [
+            "re:\\bct\\b[^.;\\n]{0,20}head",
+            "ct brain",
+            "computed tomography of the head"
+          ],
+          "guidelineRefs": [
+            "nice-ng232"
+          ],
+          "note": "GCS <13 on assessment and more than one vomit: CT head within 1 hour."
+        },
+        {
+          "id": "inv-c-spine",
+          "severity": "quality",
+          "match": [
+            "c-spine",
+            "cervical spine"
+          ],
+          "guidelineRefs": [
+            "nice-ng232"
+          ],
+          "knownGap": [
+            "ios"
+          ],
+          "knownGapNote": "iOS CI 2026-09-25 (run 36169134350, database mode): no investigation matched among 2 (ios.radiation)"
+        }
+      ]
+    },
+    "management": {
+      "mustInclude": [
+        {
+          "id": "mgmt-neurosurgery",
+          "severity": "quality",
+          "match": [
+            "neurosurg"
+          ],
+          "guidelineRefs": [
+            "nice-ng232",
+            "atls-10-head"
+          ]
+        }
+      ],
+      "mustExclude": [
+        {
+          "id": "mgmt-no-discharge",
+          "severity": "quality",
+          "match": [
+            "re:discharge[^.;]{0,40}head[- ]injury advice"
+          ],
+          "unless": [
+            "if ",
+            "once",
+            "when"
+          ],
+          "guidelineRefs": [
+            "nice-ng232"
+          ]
+        }
+      ]
+    },
+    "pathway": {
+      "id": "pathway-trauma",
+      "severity": "quality",
+      "equals": "trauma"
+    }
+  },
+  "guideline": [
+    {
+      "id": "nice-ng232",
+      "name": "NICE NG232 — Head injury: assessment and early management",
+      "year": 2023,
+      "section": "Section 1.4 (adults): CT head within 1 h for GCS <13 on initial assessment, GCS <15 at 2 h, suspected open/depressed or basal skull fracture, post-traumatic seizure, focal deficit, >1 episode of vomiting; CT within 8 h for people with no other indication who are taking anticoagulants (wording — \"perform\" or \"consider\" — to be checked against the 2023 text)",
+      "citation": "National Institute for Health and Care Excellence. Head injury: assessment and early management (NG232). London: NICE; 2023.",
+      "verified": false
+    },
+    {
+      "id": "atls-10-head",
+      "name": "ATLS 10th edition — head trauma",
+      "year": 2018,
+      "section": "Chapter 6: GCS, pupils, prevention of secondary brain injury (avoid hypoxia and hypotension), CT head, early neurosurgical consultation; reverse anticoagulation in intracranial haemorrhage",
+      "citation": "American College of Surgeons Committee on Trauma. ATLS Student Course Manual. 10th ed. Chicago: ACS; 2018. Chapter 6.",
+      "verified": false
+    }
+  ],
+  "rationale": "Base head-injury case meeting NICE NG232 1-hour CT criteria (GCS <13, more than one vomit). ICD S06.0X1A (concussion with LOC) is the code a clinician is likely to pick and tests the ICD route (the TBI protocol is registered as S09.9).",
+  "authoring": {
+    "author": "Claude (soft tissue / vascular / trauma / burns cluster)",
+    "date": "2026-09-25",
+    "notes": "Expectations need surgeon sign-off (reviewedBy). Citations verified: false. iOS outcomes are unverified until the first CI run."
+  }
+}

@@ -1,0 +1,239 @@
+{
+  "schemaVersion": 1,
+  "id": "anal-fissure-acute-posterior",
+  "condition": "Anal fissure — acute, posterior midline",
+  "category": "anorectal",
+  "permutationOf": null,
+  "summary": "27-year-old woman with three weeks of tearing pain on defaecation and bright red blood on the paper; posterior midline fissure. ASCRS 2023: fibre, sitz baths, topical calcium-channel blocker or nitrate first-line.",
+  "tags": [
+    "anorectal",
+    "fissure"
+  ],
+  "inputs": {
+    "patient": {
+      "ageYears": 27,
+      "sex": "female",
+      "pregnancy": {
+        "status": "not-pregnant"
+      },
+      "heightCm": 167,
+      "weightKg": 60
+    },
+    "encounter": {
+      "setting": "outpatient",
+      "visitType": "newConsult",
+      "acuity": "routine"
+    },
+    "chiefComplaint": "Pain when opening bowels",
+    "hpi": "Three weeks of severe tearing pain on passing stool, lasting an hour afterwards, with bright red blood on the paper. Started after a hard stool. No change in bowel habit otherwise, no weight loss, no IBD symptoms.",
+    "socrates": {
+      "onset": [
+        "1–4 weeks ago"
+      ],
+      "site": [
+        "Anal canal",
+        "Posterior midline"
+      ],
+      "character": [
+        "Sharp",
+        "Burning"
+      ],
+      "associations": [
+        "Rectal bleeding",
+        "Pain on defaecation"
+      ],
+      "exacerbating": [
+        "Defaecation"
+      ],
+      "relieving": [
+        "Warm bath / sitz bath"
+      ],
+      "timing": [
+        "Episodic"
+      ],
+      "severity": [
+        "Severe (7–9/10)"
+      ]
+    },
+    "symptoms": [
+      "rectal pain",
+      "rectal bleeding",
+      "constipation"
+    ],
+    "negatives": [
+      "weight loss",
+      "fever",
+      "perianal lump"
+    ],
+    "exam": {
+      "general": "Well.",
+      "abdomen": "Soft.",
+      "other": "Perianal: posterior midline fissure with a small sentinel tag on gentle parting of the buttocks. DRE deferred (pain)."
+    },
+    "vitals": [
+      {
+        "minutesAgo": 20,
+        "heartRate": 76,
+        "systolicBp": 116,
+        "diastolicBp": 72,
+        "respiratoryRate": 14,
+        "temperatureC": 36.6,
+        "spo2": 99,
+        "avpu": "A",
+        "onSupplementalO2": false
+      }
+    ],
+    "comorbidities": [],
+    "surgicalHistory": [],
+    "medications": [],
+    "allergies": [],
+    "nkda": true,
+    "socialHistory": "Call-centre worker.",
+    "confirmedDiagnosis": {
+      "name": "Acute anal fissure, posterior midline",
+      "icd10": "K60.0",
+      "paneDiseaseId": "anal_fissure",
+      "assessmentText": "Acute posterior midline anal fissure. Topical diltiazem, fibre, sitz baths; review at 6–8 weeks."
+    },
+    "platform": {
+      "web": {
+        "ccTemplate": "Other / general surgical",
+        "symptoms": [
+          "rectal pain",
+          "rectal bleeding",
+          "constipation"
+        ],
+        "symptomDetails": {
+          "rectal bleeding": [
+            "Fresh red",
+            "Separate from stool",
+            "Pain",
+            "Constipation"
+          ]
+        },
+        "examFindings": {
+          "perineal": [
+            "Fissure",
+            "Skin tags"
+          ],
+          "anal": [
+            "Fissure"
+          ]
+        },
+        "paneAnswers": {
+          "anal_pain": true,
+          "pr_bleeding": true,
+          "perianal_swelling": false
+        },
+        "durationDays": 21,
+        "painScore": 7
+      }
+    }
+  },
+  "expected": {
+    "differential": {
+      "mustRankTopK": [
+        {
+          "id": "dx-fissure-top3",
+          "severity": "quality",
+          "match": [
+            "fissure",
+            "icd:K60.0",
+            "icd:K60.1",
+            "icd:K60.2"
+          ],
+          "k": 3,
+          "guidelineRefs": [
+            "ascrs-fissure-2023"
+          ],
+          "knownGap": [
+            "ios"
+          ],
+          "knownGapNote": "iOS CI 2026-09-25 (run 36169134350, database mode): not in top 3 of ios.bayes: 1. Medication Side Effect / Adverse Drug Reaction | 2. Anxiety Disorder | 3. Acute Kidney Injury | 4. Preventive / Screening Visit | 5. Hypertensive Emergency"
+        }
+      ]
+    },
+    "safety": {
+      "emergencyLevel": {
+        "id": "level-routine",
+        "severity": "quality",
+        "atMost": "priority",
+        "guidelineRefs": [
+          "ascrs-fissure-2023"
+        ],
+        "knownGap": [
+          "web"
+        ],
+        "knownGapNote": "Web adaptiveTriage has no negation handling and treats any \"bleed/bleeding\" as an urgent red flag (RED_FLAGS \"GI or other bleeding\" → emergency_now), so every rectal bleed — including minor outlet bleeding — is \"emergency\"."
+      }
+    },
+    "management": {
+      "mustInclude": [
+        {
+          "id": "mgmt-topical",
+          "severity": "quality",
+          "match": [
+            "diltiazem",
+            "nifedipine",
+            "glyceryl trinitrate",
+            "re:\\bgtn\\b"
+          ],
+          "guidelineRefs": [
+            "ascrs-fissure-2023"
+          ]
+        },
+        {
+          "id": "mgmt-fibre",
+          "severity": "quality",
+          "match": [
+            "fibre",
+            "fiber",
+            "ispaghula",
+            "stool softener"
+          ],
+          "guidelineRefs": [
+            "ascrs-fissure-2023"
+          ]
+        }
+      ],
+      "mustExclude": [
+        {
+          "id": "mgmt-no-resuscitation",
+          "severity": "quality",
+          "match": [
+            "large-bore",
+            "crossmatch",
+            "cross-match"
+          ],
+          "sources": [
+            "web.plan",
+            "web.protocol.medications",
+            "web.clinicalPrompts",
+            "ios.radiation",
+            "ios.soap",
+            "ios.pipeline"
+          ],
+          "guidelineRefs": [
+            "ascrs-fissure-2023"
+          ]
+        }
+      ]
+    }
+  },
+  "guideline": [
+    {
+      "id": "ascrs-fissure-2023",
+      "name": "ASCRS clinical practice guidelines — management of anal fissures",
+      "year": 2023,
+      "section": "Acute fissure: fibre, sitz baths; topical calcium-channel blockers or nitrates; botulinum toxin or lateral internal sphincterotomy for chronic refractory fissure",
+      "citation": "Davids JS, Hawkins AT, Bhama AR, et al. The American Society of Colon and Rectal Surgeons clinical practice guidelines for the management of anal fissures. Dis Colon Rectum. 2023;66:190–199.",
+      "verified": false
+    }
+  ],
+  "rationale": "Base fissure case (benign; all quality). The rectal-bleeding chip is included because patients report it; it also checks that a fissure bleed does not generate a GI-haemorrhage resuscitation plan.",
+  "authoring": {
+    "author": "Claude (colorectal/anorectal cluster)",
+    "date": "2026-09-25",
+    "notes": "Expectations need surgeon sign-off (reviewedBy). Citations verified: false until checked against the source."
+  }
+}

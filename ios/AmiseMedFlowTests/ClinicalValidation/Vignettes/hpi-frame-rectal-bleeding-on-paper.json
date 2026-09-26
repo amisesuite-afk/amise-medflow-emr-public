@@ -1,0 +1,151 @@
+{
+  "schemaVersion": 1,
+  "id": "hpi-frame-rectal-bleeding-on-paper",
+  "condition": "Haemorrhoids",
+  "category": "colorectal",
+  "permutationOf": "rectal-bleeding-young-haemorrhoidal",
+  "permutationLabel": "Typed complaint, bleeding frame (colour, relation to stool)",
+  "summary": "32-year-old woman: 2 months of bright red blood on the toilet paper after straining, separate from the stool; no change in bowel habit or weight loss.",
+  "tags": [
+    "history-frame",
+    "rectal-bleeding",
+    "haemorrhoids"
+  ],
+  "inputs": {
+    "patient": {
+      "ageYears": 32,
+      "sex": "female",
+      "pregnancy": {
+        "status": "not-pregnant"
+      },
+      "heightCm": 165,
+      "weightKg": 62
+    },
+    "encounter": {
+      "setting": "outpatient",
+      "visitType": "newConsult",
+      "acuity": "routine"
+    },
+    "chiefComplaint": "Bleeding from the back passage",
+    "hpi": "Two months of bright red blood on the toilet paper after passing hard stools, sometimes drips into the pan. Separate from the stool. Painless. No change in bowel habit, no mucus, no weight loss. No family history of bowel cancer.",
+    "symptoms": [
+      "rectal bleeding",
+      "constipation"
+    ],
+    "negatives": [
+      "weight loss",
+      "change in bowel habit",
+      "anal pain"
+    ],
+    "exam": {
+      "general": "Well.",
+      "abdomen": "Soft, non-tender.",
+      "other": "PR normal. Proctoscopy: grade I internal haemorrhoids."
+    },
+    "vitals": [
+      {
+        "minutesAgo": 20,
+        "heartRate": 70,
+        "systolicBp": 116,
+        "diastolicBp": 72,
+        "respiratoryRate": 14,
+        "temperatureC": 36.7,
+        "spo2": 99,
+        "avpu": "A",
+        "onSupplementalO2": false
+      }
+    ],
+    "labs": [],
+    "imaging": [],
+    "comorbidities": [],
+    "surgicalHistory": [],
+    "medications": [],
+    "allergies": [],
+    "nkda": true,
+    "socialHistory": "Teacher. Non-smoker.",
+    "confirmedDiagnosis": {
+      "name": "First-degree internal haemorrhoids",
+      "icd10": "K64.0",
+      "paneDiseaseId": "haemorrhoids",
+      "assessmentText": "Outlet-type bleeding from grade I haemorrhoids."
+    },
+    "platform": {
+      "ios": {
+        "specialtyHint": "General & GI Surgery",
+        "socratesSelections": {
+          "character": [
+            "Bright red",
+            "Streaks or spotting"
+          ],
+          "associations": [
+            "On the paper",
+            "Rectal bleeding"
+          ],
+          "exacerbating": [
+            "Straining"
+          ]
+        }
+      },
+      "web": {
+        "ccTemplate": "Bleeding from the back passage",
+        "symptoms": [
+          "rectal bleeding",
+          "constipation"
+        ],
+        "symptomDetails": {
+          "rectal bleeding": [
+            "Fresh red",
+            "Separate from stool",
+            "Constipation"
+          ]
+        },
+        "socratesAnswers": {
+          "bleeding_colour": "Bright red",
+          "bleeding_relation": "On the paper",
+          "bleeding_volume": "Streaks or spotting",
+          "duration": "1–6 months"
+        },
+        "durationDays": 60
+      }
+    }
+  },
+  "expected": {
+    "differential": {
+      "mustRankTopK": [
+        {
+          "id": "dx-haemorrhoids-top3",
+          "severity": "quality",
+          "match": [
+            "haemorrhoid",
+            "hemorrhoid"
+          ],
+          "k": 3,
+          "guidelineRefs": [
+            "ascrs-haem-2024"
+          ],
+          "note": "Bleeding frame: bright red, on the paper (web pr_bleeding).",
+          "knownGap": [
+            "ios"
+          ],
+          "knownGapNote": "iOS CI (run 36221770637): not in top 3 of ios.bayes: 1. Anxiety Disorder | 2. Medication Side Effect / Adverse Drug Reaction | 3. Perianal Abscess | 4. Femoral Hernia | 5. Upper GI Bleeding (Peptic Ulcer)"
+        }
+      ]
+    }
+  },
+  "guideline": [
+    {
+      "id": "ascrs-haem-2024",
+      "name": "ASCRS Clinical Practice Guidelines for the Management of Hemorrhoids",
+      "year": 2024,
+      "section": "Outlet-type bleeding; conservative management first",
+      "citation": "Hawkins AT, et al. Dis Colon Rectum 2024;67:614–23.",
+      "verified": false
+    }
+  ],
+  "rationale": "The bleeding frame asks the colour and where the blood is (on the paper, in the pan, mixed with stool) — the outlet pattern of haemorrhoids — not SOCRATES pain questions.",
+  "authoring": {
+    "author": "Claude (history-by-complaint)",
+    "date": "2026-09-26",
+    "notes": "History-frame permutation: the HPI chips are the frame's (HistoryFrameData.swift / history-frames). Expectations need surgeon sign-off (reviewedBy). Citations not yet checked against the source (verified: false)."
+  }
+}

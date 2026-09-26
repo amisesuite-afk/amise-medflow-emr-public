@@ -1,0 +1,299 @@
+{
+  "schemaVersion": 1,
+  "id": "acutemed-pe-ocp-long-haul",
+  "condition": "Pulmonary embolism (outpatient, provoked: oestrogen + long-haul flight)",
+  "category": "general-medicine",
+  "permutationOf": null,
+  "summary": "34-year-old woman on the combined pill, 5 days after a 10-hour flight: left calf swelling for 3 days, now sudden breathlessness and right pleuritic chest pain; HR 112, SpO₂ 93 %. Wells PE 7.5 (likely).",
+  "tags": [
+    "pe",
+    "vte",
+    "wells",
+    "oestrogen"
+  ],
+  "inputs": {
+    "patient": {
+      "ageYears": 34,
+      "sex": "female",
+      "pregnancy": {
+        "status": "not-pregnant"
+      },
+      "heightCm": 168,
+      "weightKg": 70
+    },
+    "encounter": {
+      "setting": "outpatient",
+      "visitType": "urgentReview",
+      "acuity": "urgent"
+    },
+    "chiefComplaint": "Sudden breathlessness and chest pain",
+    "hpi": "Flew back from London 5 days ago (10 hours). Left calf ache and swelling for 3 days. This morning sudden breathlessness and sharp right-sided chest pain on breathing in. No cough, no haemoptysis. Takes the combined oral contraceptive pill. Attending for a breast lump review. Urine pregnancy test negative today.",
+    "socrates": {
+      "onset": [
+        "Today",
+        "Sudden"
+      ],
+      "site": [
+        "Right chest"
+      ],
+      "character": [
+        "Sharp"
+      ],
+      "radiation": [
+        "No radiation"
+      ],
+      "associations": [
+        "Shortness of breath",
+        "Pleuritic pain"
+      ],
+      "timing": [
+        "Constant"
+      ],
+      "exacerbating": [
+        "Deep breathing"
+      ],
+      "relieving": [
+        "Nothing"
+      ],
+      "severity": [
+        "Moderate (4–6/10)"
+      ]
+    },
+    "symptoms": [
+      "sudden breathlessness",
+      "right pleuritic chest pain",
+      "left calf swelling"
+    ],
+    "negatives": [
+      "cough",
+      "haemoptysis",
+      "fever",
+      "trauma"
+    ],
+    "exam": {
+      "general": "Breathless at rest, speaking in sentences.",
+      "respiratory": "Chest clear, no rub.",
+      "cardiovascular": "HR 112 regular, BP 124/78, heart sounds normal.",
+      "msk": "Left calf 3 cm larger than right, pitting oedema to mid-shin, tender along the deep veins."
+    },
+    "vitals": [
+      {
+        "minutesAgo": 5,
+        "heartRate": 112,
+        "systolicBp": 124,
+        "diastolicBp": 78,
+        "respiratoryRate": 24,
+        "temperatureC": 37.3,
+        "spo2": 93,
+        "avpu": "A",
+        "onSupplementalO2": false
+      }
+    ],
+    "labs": [
+      {
+        "analyte": "bhcg",
+        "name": "Urine pregnancy test",
+        "resultText": "Negative",
+        "minutesAgo": 40
+      }
+    ],
+    "imaging": [],
+    "comorbidities": [],
+    "surgicalHistory": [],
+    "medications": [
+      {
+        "drug": "Combined oral contraceptive (ethinylestradiol/levonorgestrel)",
+        "dose": "30/150 micrograms",
+        "frequency": "OD",
+        "indication": "Contraception"
+      }
+    ],
+    "allergies": [],
+    "nkda": true,
+    "socialHistory": "Non-smoker. Office worker.",
+    "confirmedDiagnosis": {
+      "name": "Suspected pulmonary embolism",
+      "icd10": "I26.99",
+      "paneDiseaseId": "pulmonary_embolism",
+      "assessmentText": "Suspected pulmonary embolism with clinical DVT, Wells PE 7.5 (likely): CTPA now, interim anticoagulation if delayed; stop the combined pill."
+    },
+    "platform": {
+      "web": {
+        "ccTemplate": "Other / general surgical",
+        "symptoms": [
+          "shortness of breath",
+          "pleuritic chest pain",
+          "leg swelling"
+        ],
+        "symptomDetails": {
+          "shortness of breath": [
+            "Sudden",
+            "At rest",
+            "Chest pain"
+          ]
+        },
+        "examFindings": {
+          "respiratory": [
+            "Clear to auscultation"
+          ],
+          "cardiovascular": [
+            "Tachycardia"
+          ],
+          "extremities": [
+            "DVT signs",
+            "Oedema present"
+          ]
+        },
+        "paneAnswers": {
+          "dyspnoea_pe": true,
+          "pleuritic_chest_pain": true,
+          "leg_swelling": true,
+          "calf_tenderness": true,
+          "mechanism_blunt": false,
+          "chest_wall_tenderness": false
+        },
+        "durationDays": 0,
+        "painScore": 5
+      }
+    }
+  },
+  "expected": {
+    "differential": {
+      "mustRankTopK": [
+        {
+          "id": "dx-pe-top3",
+          "severity": "critical",
+          "match": [
+            "pulmonary embol",
+            "re:\\bpe\\b",
+            "icd:I26"
+          ],
+          "k": 3,
+          "guidelineRefs": [
+            "esc-pe-2019",
+            "nice-ng158"
+          ]
+        }
+      ]
+    },
+    "safety": {
+      "emergencyLevel": {
+        "id": "level-at-least-urgent",
+        "severity": "critical",
+        "atLeast": "urgent",
+        "guidelineRefs": [
+          "nice-ng158",
+          "esc-pe-2019"
+        ]
+      },
+      "mustAlarm": [
+        {
+          "id": "alarm-hypoxia",
+          "severity": "critical",
+          "match": [
+            "hypox",
+            "spo₂",
+            "spo2",
+            "oxygen",
+            "saturation"
+          ],
+          "guidelineRefs": [
+            "esc-pe-2019"
+          ]
+        }
+      ]
+    },
+    "scores": {
+      "recommended": [
+        {
+          "id": "score-rec-wells-pe",
+          "severity": "quality",
+          "score": "wells-pe",
+          "guidelineRefs": [
+            "nice-ng158"
+          ]
+        }
+      ]
+    },
+    "investigations": {
+      "mustInclude": [
+        {
+          "id": "inv-ctpa",
+          "severity": "critical",
+          "match": [
+            "ctpa",
+            "ct pulmonary angiogra",
+            "pulmonary angiogra",
+            "re:v/?q scan",
+            "ventilation.perfusion"
+          ],
+          "guidelineRefs": [
+            "nice-ng158",
+            "esc-pe-2019"
+          ]
+        }
+      ]
+    },
+    "management": {
+      "mustInclude": [
+        {
+          "id": "mgmt-anticoagulation",
+          "severity": "quality",
+          "match": [
+            "anticoag",
+            "heparin",
+            "lmwh",
+            "enoxaparin",
+            "dalteparin",
+            "tinzaparin",
+            "apixaban",
+            "rivaroxaban"
+          ],
+          "guidelineRefs": [
+            "nice-ng158",
+            "esc-pe-2019"
+          ],
+          "note": "Interim therapeutic anticoagulation if CTPA is delayed."
+        }
+      ],
+      "mustExclude": [
+        {
+          "id": "mgmt-no-ddimer-gate",
+          "severity": "quality",
+          "match": [
+            "re:ctpa[^.;]{0,40}d-dimer[^.;]{0,15}positive",
+            "re:ctpa if wells[^.;]{0,12}≥ ?2"
+          ],
+          "guidelineRefs": [
+            "nice-ng158"
+          ],
+          "note": "Wells PE >4 -> CTPA directly; a D-dimer gate or the DVT cut-off (≥2) does not follow NICE NG158."
+        }
+      ]
+    }
+  },
+  "guideline": [
+    {
+      "id": "esc-pe-2019",
+      "verified": false,
+      "name": "2019 ESC Guidelines for the diagnosis and management of acute pulmonary embolism",
+      "year": 2019,
+      "section": "Sections 4-6: clinical probability (Wells/Geneva), PERC in low probability, D-dimer only when probability is not high, CTPA; anticoagulation while awaiting results in high/intermediate probability; high-risk (haemodynamically unstable) PE: UFH, bedside echocardiography if CTPA not immediately feasible, systemic thrombolysis; Section 9 pregnancy: D-dimer/CUS/CTPA or V/Q, LMWH (NOACs not recommended in pregnancy)",
+      "citation": "Konstantinides SV, Meyer G, Becattini C, et al. Eur Heart J. 2020;41:543-603."
+    },
+    {
+      "id": "nice-ng158",
+      "verified": false,
+      "name": "NICE NG158 - Venous thromboembolic diseases: diagnosis, management and thrombophilia testing",
+      "year": 2020,
+      "section": "1.1 DVT: two-level Wells; likely -> proximal leg vein ultrasound within 4 h (interim anticoagulation if delayed); 1.1 PE: two-level Wells; likely (>4) -> CTPA immediately (interim anticoagulation if delayed); unlikely -> D-dimer; PERC when pre-test probability is low",
+      "citation": "National Institute for Health and Care Excellence. NG158. London: NICE; 2020 (updated 2023)."
+    }
+  ],
+  "rationale": "Base PE case for this cluster, in an outpatient clinic (the existing pe-postop-day5 is a ward case). Wells PE: clinical DVT 3 + PE most likely 3 + HR >100 1.5 = 7.5. PERC does not apply (HR, SpO₂, oestrogen).",
+  "authoring": {
+    "author": "Claude (acute medicine cluster)",
+    "date": "2026-09-25",
+    "notes": "Expectations need surgeon sign-off (reviewedBy). Citations written from the guideline texts, not yet checked against the source (verified: false). iOS outcomes are unverified until the next CI run."
+  }
+}

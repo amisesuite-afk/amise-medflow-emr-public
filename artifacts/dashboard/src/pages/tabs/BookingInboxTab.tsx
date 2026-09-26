@@ -8,7 +8,7 @@ import ConsultationRequestsView from './ConsultationRequestsView';
 import { errMsg } from '@/lib/err';
 import { fmtPhone } from '@/lib/fmt';
 import { supabase } from '@/lib/supabase';
-import { loadPMH, loadEncounterData, getLatestOpenEncounter, getLatestClosedEncounter, getQuestionnaireIntake } from '@/lib/db';
+import { loadPMH, getLatestOpenEncounter, getQuestionnaireIntake } from '@/lib/db';
 
 // ── Types ─────────────────────────────────────────────────────────────────────
 
@@ -73,7 +73,7 @@ function apiUrl(path: string) {
   return `${(import.meta.env.BASE_URL ?? '/').replace(/\/$/, '')}${path}`;
 }
 
-const PREP_TYPES = new Set(['colonoscopy', 'ogd', 'egd', 'ercp_workup', 'pre_op', 'flexi_sig']);
+const PREP_TYPES = new Set(['colonoscopy', 'ogd', 'egd', 'ercp_workup', 'pre_op', 'flexi_sig', 'lab_fasting']);
 function requiresPrep(type: string) { return PREP_TYPES.has(type.toLowerCase()); }
 
 function mapApptTypeToVisitType(apptType: string): string {
@@ -124,13 +124,18 @@ const STATUS_CONFIG: Record<string, { label: string; bg: string; color: string; 
   cancelled:           { label: 'Cancelled',           bg: '#fef2f2', color: '#b91c1c', border: '#fecaca' },
 };
 
+// Staff-facing summary of the patient prep (the patient text itself comes from
+// api-server lib/sms.ts). Hazard H-10: staff reading this aloud must not give
+// medication take/hold/stop/adjust advice — patients on insulin, diabetes
+// medicines or blood thinners are told to call the clinic for instructions.
 const PREP_INSTRUCTIONS: Record<string, string> = {
-  colonoscopy:  'Clear fluids only the day before. Take prescribed bowel prep solution as directed. Nothing by mouth from midnight. Patient must arrange a driver — sedation given.',
-  ogd:          'Nothing to eat or drink from midnight. May take essential medications with a small sip of water. Arrange a driver home.',
-  egd:          'Nothing to eat or drink from midnight. May take essential medications with a small sip of water. Arrange a driver home.',
-  ercp_workup:  'Nothing by mouth from midnight. Stop blood thinners as advised by doctor. Must arrange a driver — cannot drive after sedation.',
-  pre_op:       'Nothing by mouth from midnight. Continue essential medications with a small sip of water unless instructed otherwise. Bring full medication list to appointment.',
-  flexi_sig:    'Follow bowel prep instructions provided. Clear fluids only on morning of procedure. Arrange a driver home.',
+  colonoscopy:  'Clear fluids only the day before. Take prescribed bowel prep solution as directed. Clear fluids until 2 hours before the procedure (prep needs fluid), then nothing to drink. Patients on insulin, blood thinners or diabetes medicines: ask them to call the clinic for instructions. Patient must arrange a driver — sedation given.',
+  ogd:          'Nothing to eat for 6 hours and nothing to drink for 2 hours before the appointment time (clear fluids such as water are fine until then). Patients on insulin, blood thinners or diabetes medicines: ask them to call the clinic for instructions. Arrange a driver home.',
+  egd:          'Nothing to eat for 6 hours and nothing to drink for 2 hours before the appointment time (clear fluids such as water are fine until then). Patients on insulin, blood thinners or diabetes medicines: ask them to call the clinic for instructions. Arrange a driver home.',
+  ercp_workup:  'ERCP procedure at Tapion Hospital under general anaesthesia — arrive at Tapion at the time given. Nothing to eat for 6 hours and nothing to drink for 2 hours before the appointment time (clear fluids such as water are fine until then). Patients on insulin, blood thinners or diabetes medicines: ask them to call the clinic for instructions. A responsible adult must bring them, take them home and stay with them for 24 hours — no driving after a general anaesthetic.',
+  pre_op:       'Pre-operative ASSESSMENT visit (check-up, not the operation) — no fasting needed unless the clinic has said otherwise. Bring all current medicines in their original packaging, any letter about the planned operation, and any blood test, ECG or scan results. Day-of-surgery instructions are given separately.',
+  flexi_sig:    'Follow bowel prep instructions provided. Light breakfast only on the morning of the procedure (toast, tea — avoid heavy or greasy food). Patients on insulin, blood thinners or diabetes medicines: ask them to call the clinic for instructions. Arrange a driver home.',
+  lab_fasting:  'Fasting blood test — nothing to eat for 8–10 hours before; plain water is fine. Patients on insulin or diabetes medicines: ask them to call the clinic for instructions before fasting. Bring photo ID and the blood test request form.',
 };
 
 const LOCATION_LABELS: Record<string, string> = {
@@ -254,11 +259,10 @@ export default function BookingInboxTab({ filterStatus }: BookingInboxTabProps =
     currentSite,
     setPatientName, setAge, setSex, setDob, setPhone, setPatientId,
     setTopSection, clearPatient,
-    setComorbidities, setAllergies, setMedications, setSurgicalHistory, setSurgicalNotes,
-    setEncounterId, setVisitType,
-    setPriorEncounterSummary,
-    setClinicalScores, setExtractedLabs,
+    setComorbidities, setAllergies, setMedications,
+    setEncounterId, setEncounterStatus, setEncounterClosedAt, setVisitType,
     setHpiNotes, setFreeText, toggleSymptom,
+    beginRecordLoad, loadRecordIntoContext,
   } = useAppContext();
   const narrow = useNarrow();
 
@@ -330,9 +334,11 @@ export default function BookingInboxTab({ filterStatus }: BookingInboxTabProps =
   const nrNameRef                             = useRef<HTMLInputElement>(null);
   const [view, setView]                       = useState<InboxView>('bookings');
 
-  // Pre-populate consultation context from Supabase patient data.
-  // Called fire-and-forget after patient identity is set; errors are non-fatal.
-  const loadPatientContext = useCallback(async (patientId: string, apptType?: string) => {
+  // Pre-populate consultation context from Supabase patient data. `loadToken` comes from
+  // beginRecordLoad(), called right after clearPatient(): autosave stays off until the record is
+  // in state, and a section that could not be read is shown "not loaded" instead of being saved
+  // back as empty (loadRecordIntoContext).
+  async function loadPatientContext(patientId: string, loadToken: number, apptType?: string) {
     if (apptType) setVisitType(mapApptTypeToVisitType(apptType));
     const [pmhResult, encResult] = await Promise.all([
       loadPMH(patientId),
@@ -341,24 +347,15 @@ export default function BookingInboxTab({ filterStatus }: BookingInboxTabProps =
     if (!pmhResult.error && pmhResult.conditions.length > 0) {
       setComorbidities(pmhResult.conditions);
     }
-    if (!encResult.error && encResult.encounterId) {
-      setEncounterId(encResult.encounterId);
-      const encData = await loadEncounterData(encResult.encounterId, patientId);
-      if (!encData.error && encData.data) {
-        const d = encData.data;
-        if (d.allergens.length) setAllergies(d.allergens.join(', '));
-        if (d.medications.length) setMedications(d.medications);
-        if (d.surgicalHistory.length) setSurgicalHistory(d.surgicalHistory);
-        if (d.surgicalNotes) setSurgicalNotes(d.surgicalNotes);
-        if (Object.keys(d.clinicalScores).length) setClinicalScores(d.clinicalScores);
-        if (Object.keys(d.extractedLabs).length) setExtractedLabs(d.extractedLabs);
-      }
+    const encId = !encResult.error && encResult.encounterId ? encResult.encounterId : null;
+    if (encId) {
+      setEncounterId(encId);
+      setEncounterStatus('open');
+      setEncounterClosedAt(null);
     }
-    // Non-blocking: prior closed encounter for follow-up baseline strip
-    void getLatestClosedEncounter(patientId).then(({ data }) => {
-      setPriorEncounterSummary(data);
-    });
-  }, [setVisitType, setComorbidities, setEncounterId, setAllergies, setMedications, setSurgicalHistory, setSurgicalNotes, setPriorEncounterSummary, setClinicalScores, setExtractedLabs]);
+    await loadRecordIntoContext(loadToken, patientId, encId);
+    // The prior closed encounter (Ambient "Prior visit" strip) is loaded by AppContext.
+  }
 
   const load = useCallback(async () => {
     try {
@@ -516,21 +513,30 @@ export default function BookingInboxTab({ filterStatus }: BookingInboxTabProps =
       setPatientName(selected.patient_name);
       if (selected.patient_phone) setPhone(selected.patient_phone);
       if (d.patientId) {
-        setPatientId(d.patientId);
+        const pid = d.patientId;
+        setPatientId(pid);
         setEncounterId(d.encounterId);
+        setEncounterStatus('open');
+        setEncounterClosedAt(null);
+        // Autosave off until the standing history is loaded (the new encounter itself is empty).
+        const loadToken = beginRecordLoad();
         const apptType = resolveApptType(selected);
         setVisitType(mapApptTypeToVisitType(apptType));
-        void loadPMH(d.patientId).then(r => {
+        void loadPMH(pid).then(r => {
           if (!r.error && r.conditions.length > 0) setComorbidities(r.conditions);
         });
-        void getQuestionnaireIntake(d.patientId).then(q => {
-          if (!q) return;
-          if (q.aiSummary) setHpiNotes(q.aiSummary);
-          else if (q.chiefComplaint) setFreeText(q.chiefComplaint);
-          for (const s of q.symptoms) toggleSymptom(s);
-          if (q.medications.length) setMedications(q.medications);
-          if (q.allergies.length) setAllergies(q.allergies.join(', '));
-        });
+        // The questionnaire is applied after the record, so it is not overwritten by the load
+        // (and, being a change from the loaded values, it is saved).
+        void loadRecordIntoContext(loadToken, pid, d.encounterId)
+          .then(() => getQuestionnaireIntake(pid))
+          .then(q => {
+            if (!q) return;
+            if (q.aiSummary) setHpiNotes(q.aiSummary);
+            else if (q.chiefComplaint) setFreeText(q.chiefComplaint);
+            for (const s of q.symptoms) toggleSymptom(s);
+            if (q.medications.length) setMedications(q.medications);
+            if (q.allergies.length) setAllergies(q.allergies.join(', '));
+          });
       }
       setTopSection('consultation');
     } catch (e) {
@@ -1747,8 +1753,9 @@ export default function BookingInboxTab({ filterStatus }: BookingInboxTabProps =
                       if (p.sex) setSex(p.sex as Parameters<typeof setSex>[0]);
                       if (p.phone) setPhone(p.phone);
                       setPatientId(p.id);
+                      const loadToken = beginRecordLoad();
                       setTopSection('consultation');
-                      void loadPatientContext(p.id);
+                      void loadPatientContext(p.id, loadToken);
                     }}
                     style={{
                       flexShrink: 0, padding: '7px 14px', borderRadius: 7,

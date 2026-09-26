@@ -1,0 +1,231 @@
+{
+  "schemaVersion": 1,
+  "id": "adrenal-incidentaloma-indeterminate",
+  "condition": "Adrenal incidentaloma (indeterminate, hypertensive)",
+  "category": "breast-endocrine",
+  "permutationOf": null,
+  "summary": "52-year-old man with a 3.2 cm left adrenal mass found on CT for renal colic; unenhanced attenuation 28 HU (indeterminate); hypertension on two drugs and K 3.3. ESE 2023: 1 mg dexamethasone suppression test, metanephrines (HU >10), aldosterone/renin (hypertension + hypokalaemia); further imaging; no biopsy.",
+  "tags": [
+    "adrenal",
+    "incidentaloma"
+  ],
+  "inputs": {
+    "patient": {
+      "ageYears": 52,
+      "sex": "male",
+      "pregnancy": {
+        "status": "not-applicable"
+      },
+      "heightCm": 178,
+      "weightKg": 88
+    },
+    "encounter": {
+      "setting": "outpatient",
+      "visitType": "newConsult",
+      "acuity": "routine"
+    },
+    "chiefComplaint": "Adrenal lump found on a scan",
+    "hpi": "CT for right renal colic 3 weeks ago (stone passed) showed a left adrenal lump. Hypertension for 4 years on amlodipine and ramipril, still 150s systolic. Occasional headaches. No palpitations or sweating attacks. No weight gain or easy bruising.",
+    "symptoms": [
+      "headache"
+    ],
+    "negatives": [
+      "palpitations",
+      "sweating attacks",
+      "weight gain",
+      "easy bruising"
+    ],
+    "exam": {
+      "general": "BMI 27.8. No Cushingoid features. BP 154/94."
+    },
+    "vitals": [
+      {
+        "minutesAgo": 15,
+        "heartRate": 78,
+        "systolicBp": 154,
+        "diastolicBp": 94,
+        "respiratoryRate": 14,
+        "temperatureC": 36.6,
+        "spo2": 98,
+        "avpu": "A",
+        "onSupplementalO2": false
+      }
+    ],
+    "labs": [
+      {
+        "analyte": "potassium",
+        "name": "Potassium",
+        "value": 3.3,
+        "unit": "mmol/L",
+        "minutesAgo": 20160
+      },
+      {
+        "analyte": "sodium",
+        "name": "Sodium",
+        "value": 142,
+        "unit": "mmol/L",
+        "minutesAgo": 20160
+      },
+      {
+        "analyte": "creatinine",
+        "name": "Creatinine",
+        "value": 84,
+        "unit": "µmol/L",
+        "minutesAgo": 20160
+      }
+    ],
+    "imaging": [
+      {
+        "name": "CT abdomen (unenhanced)",
+        "modality": "CT",
+        "region": "Abdomen",
+        "result": "Left adrenal mass 3.2 cm, homogeneous, unenhanced attenuation 28 HU (indeterminate). Right adrenal normal. Right ureteric calculus.",
+        "minutesAgo": 30240
+      }
+    ],
+    "comorbidities": [
+      "Hypertension"
+    ],
+    "surgicalHistory": [],
+    "medications": [
+      {
+        "drug": "Amlodipine",
+        "dose": "10 mg",
+        "frequency": "OD",
+        "indication": "Hypertension"
+      },
+      {
+        "drug": "Ramipril",
+        "dose": "10 mg",
+        "frequency": "OD",
+        "indication": "Hypertension"
+      }
+    ],
+    "allergies": [],
+    "nkda": true,
+    "socialHistory": "Non-smoker.",
+    "confirmedDiagnosis": {
+      "name": "Left adrenal incidentaloma 3.2 cm, indeterminate (28 HU), with hypertension and hypokalaemia",
+      "icd10": "D44.10",
+      "paneDiseaseId": "adrenal_incidentaloma",
+      "assessmentText": "Adrenal incidentaloma (left) 3.2 cm, indeterminate on unenhanced CT (28 HU). Hormonal work-up: 1 mg overnight dexamethasone suppression, plasma metanephrines, aldosterone/renin ratio (hypertension, K 3.3). Further imaging (washout CT or MRI) and endocrine MDT. No biopsy."
+    },
+    "platform": {
+      "web": {
+        "ccTemplate": "Abdominal mass (incidental / new)",
+        "symptoms": [
+          "headache"
+        ],
+        "durationDays": 21,
+        "painScore": 0
+      }
+    }
+  },
+  "expected": {
+    "safety": {
+      "emergencyLevel": {
+        "id": "level-not-emergency",
+        "severity": "quality",
+        "atMost": "priority"
+      }
+    },
+    "investigations": {
+      "mustInclude": [
+        {
+          "id": "inv-metanephrines",
+          "severity": "critical",
+          "match": [
+            "metanephrine",
+            "catecholamine"
+          ],
+          "guidelineRefs": [
+            "ese-adrenal-2023",
+            "es-phaeo-2014"
+          ],
+          "note": "ESE 2023: metanephrines are required for masses >10 HU; an unrecognised phaeochromocytoma is lethal at surgery or biopsy."
+        },
+        {
+          "id": "inv-dst",
+          "severity": "quality",
+          "match": [
+            "dexamethasone suppression",
+            "1 mg dexamethasone",
+            "dst"
+          ],
+          "guidelineRefs": [
+            "ese-adrenal-2023"
+          ]
+        },
+        {
+          "id": "inv-arr",
+          "severity": "quality",
+          "match": [
+            "aldosterone",
+            "renin"
+          ],
+          "guidelineRefs": [
+            "ese-adrenal-2023"
+          ],
+          "note": "Hypertension with hypokalaemia: aldosterone/renin ratio."
+        },
+        {
+          "id": "inv-further-imaging",
+          "severity": "quality",
+          "match": [
+            "washout",
+            "mri",
+            "fdg-pet"
+          ],
+          "guidelineRefs": [
+            "ese-adrenal-2023"
+          ]
+        }
+      ],
+      "mustExclude": [
+        {
+          "id": "inv-no-adrenal-biopsy",
+          "severity": "critical",
+          "match": [
+            "re:adrenal (biopsy|fna)",
+            "re:(biopsy|fna)[^.]{0,20}adrenal",
+            "re:ct-guided biopsy"
+          ],
+          "unless": [
+            "not ",
+            "no biopsy",
+            "avoid",
+            "before"
+          ],
+          "guidelineRefs": [
+            "ese-adrenal-2023"
+          ],
+          "note": "ESE 2023: adrenal biopsy is not part of the routine work-up and must never precede exclusion of phaeochromocytoma."
+        }
+      ]
+    }
+  },
+  "guideline": [
+    {
+      "id": "ese-adrenal-2023",
+      "name": "ESE/ENSAT guidelines — adrenal incidentalomas (2023 update)",
+      "year": 2023,
+      "section": "Imaging (unenhanced CT HU ≤10 benign; indeterminate masses); hormonal work-up (1 mg dexamethasone suppression test in all; plasma/urine metanephrines unless HU ≤10; aldosterone/renin in hypertension or hypokalaemia); no adrenal biopsy before phaeochromocytoma is excluded; surgery for indeterminate or functioning masses",
+      "citation": "Fassnacht M, Tsagarakis S, Terzolo M, et al. European Society of Endocrinology clinical practice guidelines on the management of adrenal incidentalomas, in collaboration with the European Network for the Study of Adrenal Tumors. Eur J Endocrinol. 2023;189:G1–G42.",
+      "verified": false
+    },
+    {
+      "id": "es-phaeo-2014",
+      "name": "Endocrine Society guideline — phaeochromocytoma and paraganglioma",
+      "year": 2014,
+      "section": "Biochemical testing (plasma free or urinary fractionated metanephrines); pre-operative alpha-adrenoceptor blockade for 7–14 days; beta-blockade only after alpha-blockade",
+      "citation": "Lenders JWM, Duh QY, Eisenhofer G, et al. Pheochromocytoma and paraganglioma: an Endocrine Society clinical practice guideline. J Clin Endocrinol Metab. 2014;99:1915–1942.",
+      "verified": false
+    }
+  ],
+  "rationale": "Base adrenal case. The web CC template \"Abdominal mass (incidental / new)\" is the closest presentation template. D44.10 is the ICD-10-CM code for an adrenal neoplasm of uncertain behaviour.",
+  "authoring": {
+    "author": "Claude (hernia / breast / endocrine cluster)",
+    "date": "2026-09-25",
+    "notes": "Expectations need surgeon sign-off (reviewedBy). Citations verified: false."
+  }
+}

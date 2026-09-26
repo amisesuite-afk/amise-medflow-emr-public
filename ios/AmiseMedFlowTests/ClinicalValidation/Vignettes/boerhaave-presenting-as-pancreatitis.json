@@ -1,0 +1,267 @@
+{
+  "schemaVersion": 1,
+  "id": "boerhaave-presenting-as-pancreatitis",
+  "condition": "Spontaneous oesophageal perforation (Boerhaave's syndrome)",
+  "category": "upper-gi",
+  "permutationOf": "boerhaave-classic-mackler",
+  "permutationLabel": "Presents as epigastric pain after alcohol with raised amylase",
+  "summary": "45-year-old man after binge drinking and vomiting: epigastric pain to the back, amylase 240 (below 3× ULN), no surgical emphysema yet, left pleural effusion on CXR. Pancreatitis-like; perforation must stay on the list.",
+  "tags": [
+    "perforation",
+    "boerhaave",
+    "mimic",
+    "pancreatitis"
+  ],
+  "inputs": {
+    "patient": {
+      "ageYears": 45,
+      "sex": "male",
+      "pregnancy": {
+        "status": "not-applicable"
+      },
+      "heightCm": 176,
+      "weightKg": 80
+    },
+    "encounter": {
+      "setting": "emergency",
+      "visitType": "urgentReview",
+      "acuity": "emergency"
+    },
+    "chiefComplaint": "Upper abdominal pain after vomiting",
+    "hpi": "Binge drinking yesterday. Vomited forcefully several times overnight, then severe upper abdominal pain going to the back and left side of the chest. Hurts to breathe deeply. No previous pancreatitis. No gallstones known.",
+    "socrates": {
+      "onset": [
+        "Today",
+        "Sudden"
+      ],
+      "site": [
+        "Epigastric"
+      ],
+      "character": [
+        "Sharp"
+      ],
+      "radiation": [
+        "Back",
+        "Chest"
+      ],
+      "associations": [
+        "Vomiting",
+        "Nausea"
+      ],
+      "timing": [
+        "Constant"
+      ],
+      "exacerbating": [
+        "Deep breathing",
+        "Movement"
+      ],
+      "relieving": [
+        "Nothing"
+      ],
+      "severity": [
+        "Severe (7–9/10)"
+      ]
+    },
+    "symptoms": [
+      "epigastric pain",
+      "vomiting",
+      "pleuritic chest pain"
+    ],
+    "negatives": [
+      "jaundice",
+      "haematemesis"
+    ],
+    "exam": {
+      "general": "Unwell. Temperature 37.9°C, pulse 116/min, BP 112/70, RR 24, SpO₂ 94%.",
+      "respiratory": "Dull left base.",
+      "abdomen": "Epigastric tenderness with guarding."
+    },
+    "vitals": [
+      {
+        "minutesAgo": 5,
+        "heartRate": 116,
+        "systolicBp": 112,
+        "diastolicBp": 70,
+        "respiratoryRate": 24,
+        "temperatureC": 37.9,
+        "spo2": 94,
+        "avpu": "A",
+        "onSupplementalO2": false
+      }
+    ],
+    "labs": [
+      {
+        "analyte": "amylase",
+        "name": "Amylase",
+        "value": 240,
+        "unit": "U/L",
+        "minutesAgo": 20
+      },
+      {
+        "analyte": "lipase",
+        "name": "Lipase",
+        "value": 110,
+        "unit": "U/L",
+        "minutesAgo": 20
+      },
+      {
+        "analyte": "wbc",
+        "name": "WBC",
+        "value": 16.8,
+        "unit": "×10⁹/L",
+        "minutesAgo": 20
+      },
+      {
+        "analyte": "crp",
+        "name": "CRP",
+        "value": 88,
+        "unit": "mg/L",
+        "minutesAgo": 20
+      },
+      {
+        "analyte": "haemoglobin",
+        "name": "Haemoglobin",
+        "value": 15.2,
+        "unit": "g/dL",
+        "minutesAgo": 20
+      },
+      {
+        "analyte": "creatinine",
+        "name": "Creatinine",
+        "value": 98,
+        "unit": "µmol/L",
+        "minutesAgo": 20
+      }
+    ],
+    "imaging": [
+      {
+        "name": "Chest X-ray",
+        "modality": "XR",
+        "region": "Chest",
+        "result": "Small left pleural effusion. No free subdiaphragmatic gas. Mediastinal outline normal.",
+        "minutesAgo": 15
+      }
+    ],
+    "comorbidities": [],
+    "surgicalHistory": [],
+    "medications": [],
+    "allergies": [],
+    "nkda": true,
+    "socialHistory": "Drinks heavily at weekends. Smoker.",
+    "confirmedDiagnosis": {
+      "name": "Boerhaave's syndrome (spontaneous oesophageal perforation)",
+      "icd10": "K22.3",
+      "paneDiseaseId": "oesophageal_perforation",
+      "assessmentText": "Epigastric pain after forceful vomiting with a left pleural effusion and amylase below 3× ULN — oesophageal perforation to be excluded before labelling pancreatitis; CT with oral contrast."
+    },
+    "platform": {
+      "web": {
+        "ccTemplate": "Acute abdominal pain",
+        "symptoms": [
+          "abdominal pain",
+          "epigastric pain",
+          "vomiting",
+          "pleuritic chest pain"
+        ],
+        "symptomDetails": {
+          "abdominal pain": [
+            "Epigastric",
+            "Sudden",
+            "Sharp",
+            "Back",
+            "Chest",
+            "Severe (7–9)",
+            "Vomiting"
+          ]
+        },
+        "examFindings": {
+          "abdomen": [
+            "Epigastric tenderness",
+            "Guarding"
+          ]
+        },
+        "toxicHabits": [
+          "alcohol"
+        ],
+        "durationDays": 0.5,
+        "painScore": 8
+      }
+    }
+  },
+  "expected": {
+    "differential": {
+      "mustNotMiss": [
+        {
+          "id": "mnm-perforation",
+          "severity": "critical",
+          "match": [
+            "perforation",
+            "boerhaave",
+            "icd:K22.3"
+          ],
+          "guidelineRefs": [
+            "wses-2019"
+          ]
+        }
+      ]
+    },
+    "safety": {
+      "emergencyLevel": {
+        "id": "level-emergency",
+        "severity": "critical",
+        "atLeast": "emergency",
+        "guidelineRefs": [
+          "wses-2019"
+        ]
+      }
+    },
+    "investigations": {
+      "mustInclude": [
+        {
+          "id": "inv-ct-oral-contrast",
+          "severity": "critical",
+          "match": [
+            "re:\\bct\\b[^.;\\n]{0,40}(oral|contrast|chest)",
+            "contrast swallow",
+            "water-soluble"
+          ],
+          "guidelineRefs": [
+            "wses-2019"
+          ]
+        }
+      ]
+    },
+    "management": {
+      "mustInclude": [
+        {
+          "id": "mgmt-nil-by-mouth",
+          "severity": "quality",
+          "match": [
+            "nbm",
+            "nil by mouth",
+            "nil-by-mouth"
+          ],
+          "guidelineRefs": [
+            "wses-2019"
+          ]
+        }
+      ]
+    }
+  },
+  "guideline": [
+    {
+      "id": "wses-2019",
+      "name": "WSES guidelines — esophageal emergencies (perforation, caustic ingestion, foreign bodies)",
+      "year": 2019,
+      "section": "Oesophageal perforation mimics pancreatitis, MI and perforated ulcer; CT with oral contrast; early treatment",
+      "citation": "Chirica M, Kelly MD, Siboni S, et al. World J Emerg Surg. 2019;14:26.",
+      "verified": false
+    }
+  ],
+  "rationale": "Pancreatitis-mimic permutation: alcohol, epigastric pain to the back and a raised amylase pull towards pancreatitis, but amylase is below 3× ULN and the sequence (vomiting then pain) with a left effusion is Boerhaave until CT says otherwise.",
+  "authoring": {
+    "author": "Claude (upper-GI cluster)",
+    "date": "2026-09-25",
+    "notes": "Expectations need surgeon sign-off (reviewedBy). Citations written from the guideline texts, not yet checked against the source (verified: false)."
+  }
+}

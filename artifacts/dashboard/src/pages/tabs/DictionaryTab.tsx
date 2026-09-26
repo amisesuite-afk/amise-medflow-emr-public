@@ -1,10 +1,12 @@
 import React, { useState, useMemo } from 'react';
-import { DISEASES, getDiseaseSpecialty, getProtocol, applyModifiers, initPaneState, type PaneState } from '@workspace/pane-engine';
+import { DISEASES, getDiseaseSpecialty, applyModifiers, initPaneState, type PaneState } from '@workspace/pane-engine';
 import IcdCodeBadge from '@/components/IcdCode';
 import { ManagementPanel } from '@/components/ManagementPanel';
 import { useAppContext } from '@/context/AppContext';
 import { getMatrixByName } from '@/lib/cc-matrices';
-import { filterNewInvestigations, splitEssentialSecondary } from '@/lib/investigation-merge';
+import { filterNewInvestigations } from '@/lib/investigation-merge';
+import { planProtocolFor, seedInvestigations } from '@/lib/plan-builder';
+import { usePlanPatientContext } from '@/hooks/usePlanPatientContext';
 
 const SPECIALTY_LABELS: Record<string, string> = {
   general_surgery: 'General Surgery',
@@ -26,9 +28,13 @@ const SPECIALTIES = Array.from(
 export default function DictionaryTab() {
   const {
     setActiveCcKey, setEncounterType, setProcedureData, procedureData,
-    setTopSection, setActiveSection, age, sex,
+    setTopSection, setActiveSection, age, sex, pregnancyPossible, patientId,
     setPaneState, setIcdCodes, orderedInvestigations, setOrderedInvestigations,
   } = useAppContext();
+  // The patient on record (plan-safety filter). The protocol reference below is adapted to it when
+  // a patient is open; with no patient it shows the raw protocol, every conditional branch labelled.
+  const planPatient = usePlanPatientContext();
+  const hasPatient = !!(patientId || age.trim());
   const [query, setQuery]       = useState('');
   const [specialty, setSpecialty] = useState('');
   const [expanded, setExpanded] = useState<string | null>(null);
@@ -42,7 +48,7 @@ export default function DictionaryTab() {
     // Seed PANE to ≥85% for this disease so Assessment tab shows protocol immediately.
     if (diseaseId) {
       const parsedAge = parseInt(age, 10) || null;
-      const diseases  = applyModifiers(DISEASES, parsedAge, sex);
+      const diseases  = applyModifiers(DISEASES, parsedAge, sex, undefined, { pregnancyPossible });
       const fresh     = initPaneState(diseases);
       const n         = Object.keys(fresh.posteriors).length;
       const TARGET    = 0.90;
@@ -61,19 +67,16 @@ export default function DictionaryTab() {
       setIcdCodes([icd10]);
     }
 
-    // Pre-populate essential (stat/urgent) investigations from protocol; routine
-    // ones are left as tap-to-add suggestions in InvestigationsTab.
+    // Pre-populate essential (stat/urgent) investigations from the protocol, adapted to the patient
+    // on record (plan-builder.ts seedInvestigations: conditional branches resolved, e.g. no β-hCG in
+    // a known pregnancy); the chosen disease and its ICD code are the clinician's pick, so it counts
+    // as confirmed. A test that carries a patient caveat (ionising imaging in pregnancy, CT in a
+    // child, contrast allergy) is not pre-added: it stays in the Investigations protocol panel with
+    // its caveat. Routine ones are tap-to-add suggestions there too. All removable.
     if (diseaseId) {
-      const protocol = getProtocol(diseaseId);
-      if (protocol?.investigations.length) {
-        const urgencyRank = { stat: 0, urgent: 1, routine: 2 } as const;
-        const { essential } = splitEssentialSecondary(protocol.investigations);
-        const sorted = essential.sort(
-          (a, b) => urgencyRank[a.urgency] - urgencyRank[b.urgency],
-        );
-        const toAdd = filterNewInvestigations(sorted.map(inv => inv.label), orderedInvestigations);
-        if (toAdd.length) setOrderedInvestigations([...toAdd, ...orderedInvestigations]);
-      }
+      const { items } = seedInvestigations({ diseaseId, icdCode: icd10 ?? null, source: 'confirmed' }, planPatient);
+      const toAdd = filterNewInvestigations(items.filter(i => !i.caveat).map(i => i.label), orderedInvestigations);
+      if (toAdd.length) setOrderedInvestigations([...toAdd, ...orderedInvestigations]);
     }
 
     setTopSection('consultation');
@@ -147,7 +150,7 @@ export default function DictionaryTab() {
           <tbody>
             {filtered.map((d, i) => {
               const spec    = getDiseaseSpecialty(d.id);
-              const hasProto = getProtocol(d.id) !== null;
+              const hasProto = planProtocolFor(d.id, null) !== null;
               const isOpen  = expanded === d.id;
 
               return (
@@ -194,7 +197,7 @@ export default function DictionaryTab() {
                     <tr key={`${d.id}-proto`} style={{ background: '#0c1a2e' }}>
                       <td colSpan={6} style={{ padding: '12px 16px' }}>
                         {hasProto
-                          ? <ManagementPanel diseaseId={d.id} icdCode={null} />
+                          ? <ManagementPanel diseaseId={d.id} icdCode={null} patient={hasPatient ? planPatient : null} />
                           : <div style={{ color: '#6b7280', fontSize: 12, padding: '8px 0' }}>
                               No management protocol registered for this disease yet.
                             </div>

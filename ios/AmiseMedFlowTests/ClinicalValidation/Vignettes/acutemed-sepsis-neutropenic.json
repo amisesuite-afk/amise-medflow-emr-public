@@ -1,0 +1,280 @@
+{
+  "schemaVersion": 1,
+  "id": "acutemed-sepsis-neutropenic",
+  "condition": "Neutropenic sepsis (on chemotherapy)",
+  "category": "general-medicine",
+  "permutationOf": "acutemed-sepsis-afebrile-elderly-urinary",
+  "permutationLabel": "Neutropenic, on chemotherapy",
+  "summary": "47-year-old woman on day 9 of her third cycle of adjuvant chemotherapy for breast cancer: T 38.4, HR 106, rigors, neutrophils 0.3. NICE CG151: acute medical emergency, empiric piperacillin-tazobactam immediately.",
+  "tags": [
+    "sepsis",
+    "neutropenia",
+    "immunosuppressed",
+    "oncology"
+  ],
+  "inputs": {
+    "patient": {
+      "ageYears": 47,
+      "sex": "female",
+      "pregnancy": {
+        "status": "not-pregnant"
+      },
+      "heightCm": 166,
+      "weightKg": 70
+    },
+    "encounter": {
+      "setting": "outpatient",
+      "visitType": "followUp",
+      "acuity": "priority"
+    },
+    "chiefComplaint": "Fever and shivering during chemotherapy",
+    "hpi": "Wide local excision and sentinel node biopsy 3 months ago; now day 9 of cycle 3 of adjuvant docetaxel-cyclophosphamide. Since this morning shivering and feverish, 38.4 at home. Sore mouth. No cough, no urinary symptoms, wound healed. Came to the surgical follow-up appointment rather than calling the oncology hotline.",
+    "symptoms": [
+      "fever",
+      "rigors",
+      "sore mouth"
+    ],
+    "negatives": [
+      "cough",
+      "dysuria",
+      "diarrhoea",
+      "wound redness"
+    ],
+    "exam": {
+      "general": "Flushed, shivering.",
+      "cardiovascular": "HR 106, BP 112/70.",
+      "respiratory": "Chest clear.",
+      "skin": "Healed breast and axillary scars; PICC line site clean.",
+      "other": "Mucositis of the buccal mucosa."
+    },
+    "vitals": [
+      {
+        "minutesAgo": 5,
+        "heartRate": 106,
+        "systolicBp": 112,
+        "diastolicBp": 70,
+        "respiratoryRate": 20,
+        "temperatureC": 38.4,
+        "spo2": 97,
+        "avpu": "A",
+        "onSupplementalO2": false
+      }
+    ],
+    "labs": [
+      {
+        "analyte": "wbc",
+        "name": "WBC",
+        "value": 0.9,
+        "unit": "×10⁹/L",
+        "minutesAgo": 30
+      },
+      {
+        "analyte": "neutrophils",
+        "name": "Neutrophils",
+        "value": 0.3,
+        "unit": "×10⁹/L",
+        "minutesAgo": 30
+      },
+      {
+        "analyte": "crp",
+        "name": "CRP",
+        "value": 64,
+        "unit": "mg/L",
+        "minutesAgo": 30
+      }
+    ],
+    "imaging": [],
+    "comorbidities": [
+      "Breast cancer on adjuvant chemotherapy",
+      "PICC line in situ"
+    ],
+    "surgicalHistory": [
+      "Wide local excision and sentinel lymph node biopsy (3 months ago)"
+    ],
+    "medications": [
+      {
+        "drug": "Docetaxel + cyclophosphamide",
+        "dose": "cycle 3",
+        "frequency": "3-weekly",
+        "indication": "Adjuvant chemotherapy"
+      },
+      {
+        "drug": "Ondansetron",
+        "dose": "8 mg",
+        "frequency": "PRN"
+      }
+    ],
+    "allergies": [],
+    "nkda": true,
+    "socialHistory": "Non-smoker.",
+    "confirmedDiagnosis": {
+      "name": "Neutropenic sepsis",
+      "icd10": "D70.1",
+      "assessmentText": "Febrile neutropenia (neutrophils 0.3) on chemotherapy - neutropenic sepsis: empiric piperacillin-tazobactam now, oncology informed."
+    },
+    "platform": {
+      "web": {
+        "ccTemplate": "Other / general surgical",
+        "symptoms": [
+          "fever",
+          "rigors",
+          "mouth ulcers"
+        ],
+        "examFindings": {
+          "cardiovascular": [
+            "Tachycardia"
+          ]
+        },
+        "paneAnswers": {
+          "fever": true,
+          "rigors": true
+        },
+        "durationDays": 0.3,
+        "painScore": 2
+      }
+    }
+  },
+  "expected": {
+    "differential": {
+      "mustNotMiss": [
+        {
+          "id": "mnm-neutropenic-sepsis",
+          "severity": "critical",
+          "match": [
+            "neutropeni",
+            "sepsis",
+            "septic",
+            "icd:D70",
+            "icd:A41"
+          ],
+          "guidelineRefs": [
+            "nice-cg151"
+          ]
+        }
+      ]
+    },
+    "safety": {
+      "emergencyLevel": {
+        "id": "level-emergency",
+        "severity": "critical",
+        "atLeast": "emergency",
+        "guidelineRefs": [
+          "nice-cg151"
+        ]
+      },
+      "mustAlarm": [
+        {
+          "id": "alarm-sepsis",
+          "severity": "critical",
+          "match": [
+            "sepsis",
+            "septic",
+            "icd:A41",
+            "icd:A40",
+            "neutropeni"
+          ],
+          "guidelineRefs": [
+            "nice-cg151"
+          ]
+        }
+      ],
+      "redFlags": [
+        {
+          "id": "rf-chemotherapy",
+          "severity": "quality",
+          "match": [
+            "chemotherapy",
+            "neutropeni",
+            "immunosupp"
+          ],
+          "guidelineRefs": [
+            "nice-cg151"
+          ]
+        }
+      ]
+    },
+    "investigations": {
+      "mustInclude": [
+        {
+          "id": "inv-blood-cultures",
+          "severity": "quality",
+          "match": [
+            "blood culture"
+          ],
+          "guidelineRefs": [
+            "nice-cg151"
+          ],
+          "note": "Peripheral and line cultures."
+        }
+      ]
+    },
+    "management": {
+      "mustInclude": [
+        {
+          "id": "mgmt-antibiotics",
+          "severity": "critical",
+          "match": [
+            "antibiotic",
+            "antimicrobial",
+            "piperacillin",
+            "tazobactam",
+            "co-amoxiclav",
+            "amoxicillin",
+            "ceftriaxone",
+            "cefotaxime",
+            "meropenem",
+            "clarithromycin",
+            "doxycycline",
+            "gentamicin",
+            "cefuroxime",
+            "benzylpenicillin"
+          ],
+          "unless": [
+            "before antibiotic",
+            "before first antibiotic",
+            "at induction",
+            "prophyla"
+          ],
+          "guidelineRefs": [
+            "nice-cg151"
+          ]
+        },
+        {
+          "id": "mgmt-piperacillin",
+          "severity": "quality",
+          "match": [
+            "piperacillin",
+            "tazocin"
+          ],
+          "guidelineRefs": [
+            "nice-cg151"
+          ]
+        }
+      ]
+    }
+  },
+  "guideline": [
+    {
+      "id": "nice-cg151",
+      "verified": false,
+      "name": "NICE CG151 - Neutropenic sepsis: prevention and management in people with cancer",
+      "year": 2012,
+      "section": "1.3: treat suspected neutropenic sepsis as an acute medical emergency and offer empiric antibiotic therapy immediately; piperacillin with tazobactam monotherapy as initial empiric therapy",
+      "citation": "National Institute for Health and Care Excellence. CG151. London: NICE; 2012."
+    },
+    {
+      "id": "ssc-2021",
+      "verified": false,
+      "name": "Surviving Sepsis Campaign: international guidelines for management of sepsis and septic shock 2021",
+      "year": 2021,
+      "section": "Screening: recommend against qSOFA alone compared with SIRS, NEWS or MEWS; antimicrobials within 1 h for possible septic shock or high likelihood of sepsis; blood cultures before antimicrobials; lactate measurement; 30 mL/kg IV crystalloid within 3 h for sepsis-induced hypoperfusion or septic shock; noradrenaline first-line vasopressor, MAP target 65 mmHg",
+      "citation": "Evans L, Rhodes A, Alhazzani W, et al. Crit Care Med. 2021;49:e1063-e1143."
+    }
+  ],
+  "rationale": "Immunosuppressed permutation: febrile neutropenia is an emergency regardless of how well the patient looks; the surgical follow-up setting is where it can be treated as \"a bit of a temperature\".",
+  "authoring": {
+    "author": "Claude (acute medicine cluster)",
+    "date": "2026-09-25",
+    "notes": "Expectations need surgeon sign-off (reviewedBy). Citations written from the guideline texts, not yet checked against the source (verified: false). iOS outcomes are unverified until the next CI run."
+  }
+}

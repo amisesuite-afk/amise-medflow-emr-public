@@ -1,0 +1,362 @@
+{
+  "schemaVersion": 1,
+  "id": "periop-postop-delirium-hypoactive",
+  "condition": "Hypoactive post-operative delirium in an 86-year-old",
+  "category": "general-medicine",
+  "permutationOf": null,
+  "summary": "86-year-old woman, day 2 after laparotomy for adhesional obstruction: drowsy, inattentive, fluctuating (4AT 8), on morphine PCA and cyclizine, no urine since catheter removal, SpO₂ 93%.",
+  "tags": [
+    "periop",
+    "postop",
+    "delirium",
+    "elderly",
+    "frailty"
+  ],
+  "inputs": {
+    "patient": {
+      "ageYears": 86,
+      "sex": "female",
+      "pregnancy": {
+        "status": "not-applicable"
+      },
+      "heightCm": 154,
+      "weightKg": 50
+    },
+    "encounter": {
+      "setting": "inpatient",
+      "visitType": "wardReview",
+      "acuity": "priority",
+      "isPostOp": true,
+      "postOpDays": 2
+    },
+    "chiefComplaint": "Confused and drowsy after operation",
+    "hpi": "Day 2 after laparotomy and adhesiolysis for adhesional small-bowel obstruction. Daughter says she is 'not herself' — sleepy, muddled, not following conversation, worse in the evenings. Pulled out her cannula. Morphine PCA and regular cyclizine. Catheter removed yesterday; not passed urine since. No bowel movement. Previously independent, mild hearing impairment, no known dementia.",
+    "symptoms": [
+      "confusion",
+      "drowsiness"
+    ],
+    "negatives": [
+      "fever",
+      "chest pain",
+      "vomiting"
+    ],
+    "exam": {
+      "general": "Drowsy, rousable, inattentive (4AT 8). HR 96, BP 134/70, RR 16, SpO2 93% on air, T 37.4°C.",
+      "abdomen": "Wound clean. Soft, appropriately tender. Palpable bladder.",
+      "respiratory": "Reduced air entry at the bases.",
+      "neuro": "No focal neurology. Pupils pinpoint-small but reactive."
+    },
+    "vitals": [
+      {
+        "minutesAgo": 5,
+        "heartRate": 96,
+        "systolicBp": 134,
+        "diastolicBp": 70,
+        "respiratoryRate": 16,
+        "temperatureC": 37.4,
+        "spo2": 93,
+        "avpu": "C",
+        "onSupplementalO2": false
+      }
+    ],
+    "labs": [
+      {
+        "analyte": "sodium",
+        "name": "Sodium",
+        "value": 131,
+        "unit": "mmol/L",
+        "minutesAgo": 120
+      },
+      {
+        "analyte": "potassium",
+        "name": "Potassium",
+        "value": 4.0,
+        "unit": "mmol/L",
+        "minutesAgo": 120
+      },
+      {
+        "analyte": "glucose",
+        "name": "Glucose",
+        "value": 6.2,
+        "unit": "mmol/L",
+        "minutesAgo": 120
+      },
+      {
+        "analyte": "crp",
+        "name": "CRP",
+        "value": 88,
+        "unit": "mg/L",
+        "minutesAgo": 120
+      },
+      {
+        "analyte": "wbc",
+        "name": "WBC",
+        "value": 10.1,
+        "unit": "×10⁹/L",
+        "minutesAgo": 120
+      },
+      {
+        "analyte": "creatinine",
+        "name": "Creatinine",
+        "value": 92,
+        "unit": "µmol/L",
+        "minutesAgo": 120
+      }
+    ],
+    "imaging": [],
+    "comorbidities": [
+      "Hypertension",
+      "Hearing impairment",
+      "Osteoarthritis"
+    ],
+    "surgicalHistory": [
+      "Laparotomy and adhesiolysis (day 2)",
+      "Hysterectomy 1985"
+    ],
+    "medications": [
+      {
+        "drug": "Morphine PCA",
+        "dose": "1 mg bolus",
+        "frequency": "PRN",
+        "indication": "Analgesia"
+      },
+      {
+        "drug": "Cyclizine",
+        "dose": "50 mg",
+        "frequency": "TDS",
+        "indication": "Nausea"
+      },
+      {
+        "drug": "Enoxaparin",
+        "dose": "20 mg",
+        "frequency": "OD",
+        "indication": "VTE prophylaxis"
+      },
+      {
+        "drug": "Amlodipine",
+        "dose": "5 mg",
+        "frequency": "OD",
+        "indication": "Hypertension"
+      }
+    ],
+    "allergies": [],
+    "nkda": true,
+    "socialHistory": "Widow, lives alone, independent. Hearing aid at home.",
+    "confirmedDiagnosis": {
+      "name": "Hypoactive post-operative delirium",
+      "icd10": "F05",
+      "assessmentText": "Hypoactive delirium day 2 (4AT 8). Likely contributors: opioid PCA, cyclizine (anticholinergic), urinary retention, constipation, hypoxaemia, hyponatraemia. Treat causes, non-pharmacological measures; avoid benzodiazepines."
+    },
+    "platform": {
+      "web": {
+        "ccTemplate": "Other / general surgical",
+        "symptoms": [
+          "confusion"
+        ],
+        "durationDays": 1,
+        "painScore": 2,
+        "paneAnswers": {
+          "previous_surgery": true
+        }
+      }
+    }
+  },
+  "expected": {
+    "differential": {
+      "mustNotMiss": [
+        {
+          "id": "mnm-precipitants",
+          "severity": "quality",
+          "match": [
+            "urinary retention",
+            "retention",
+            "pneumonia",
+            "sepsis",
+            "leak",
+            "anastomotic",
+            "urinary tract"
+          ],
+          "guidelineRefs": [
+            "nice-cg103"
+          ]
+        }
+      ]
+    },
+    "safety": {
+      "redFlags": [
+        {
+          "id": "flag-delirium",
+          "severity": "critical",
+          "match": [
+            "delirium",
+            "acute confusion",
+            "confusion",
+            "4at"
+          ],
+          "guidelineRefs": [
+            "nice-cg103",
+            "sign-157"
+          ]
+        }
+      ]
+    },
+    "investigations": {
+      "mustInclude": [
+        {
+          "id": "inv-precipitant-screen",
+          "severity": "quality",
+          "match": [
+            "bladder scan",
+            "urinalysis",
+            "glucose",
+            "u&e",
+            "sodium",
+            "blood culture",
+            "cxr",
+            "chest x-ray"
+          ],
+          "guidelineRefs": [
+            "nice-cg103"
+          ]
+        }
+      ]
+    },
+    "management": {
+      "mustInclude": [
+        {
+          "id": "mgmt-medication-review",
+          "severity": "quality",
+          "match": [
+            "medication review",
+            "review opioid",
+            "opioid",
+            "anticholinergic",
+            "cyclizine"
+          ],
+          "guidelineRefs": [
+            "nice-cg103"
+          ],
+          "knownGap": [
+            "ios"
+          ],
+          "knownGapNote": "iOS CI 2026-09-25 (run 36169134350, database mode): no management item matched among 10 (ios.pipeline.decisions, ios.pipeline.actions, ios.radiation.plan, ios.radiation.followUp, ios.soap.plan)"
+        },
+        {
+          "id": "mgmt-non-pharmacological",
+          "severity": "quality",
+          "match": [
+            "reorient",
+            "hearing aid",
+            "family",
+            "sleep",
+            "non-pharmacological",
+            "hydration"
+          ],
+          "guidelineRefs": [
+            "nice-cg103"
+          ],
+          "proposedFix": "See flag-delirium."
+        }
+      ],
+      "mustExclude": [
+        {
+          "id": "mgmt-no-benzodiazepine",
+          "severity": "critical",
+          "match": [
+            "lorazepam",
+            "diazepam",
+            "midazolam",
+            "benzodiazepine",
+            "chlordiazepoxide"
+          ],
+          "unless": [
+            "re:(avoid|do not|not)\\b[^.;\\n]{0,20}(benzodiazepine|lorazepam|diazepam|midazolam)",
+            "alcohol withdrawal"
+          ],
+          "guidelineRefs": [
+            "sign-157"
+          ],
+          "note": "Benzodiazepines worsen delirium; not used except in alcohol/benzodiazepine withdrawal."
+        },
+        {
+          "id": "mgmt-no-routine-antipsychotic",
+          "severity": "quality",
+          "match": [
+            "haloperidol",
+            "olanzapine",
+            "quetiapine",
+            "risperidone"
+          ],
+          "unless": [
+            "if distressed",
+            "only if",
+            "last resort",
+            "short-term",
+            "risk to"
+          ],
+          "guidelineRefs": [
+            "nice-cg103"
+          ],
+          "note": "Hypoactive delirium: no antipsychotic."
+        },
+        {
+          "id": "mgmt-no-emergency-laparotomy",
+          "severity": "critical",
+          "match": [
+            "emergency laparotomy"
+          ],
+          "unless": [
+            "hinchey",
+            "grade c",
+            "if peritonitis",
+            "if generalised peritonitis"
+          ],
+          "note": "No generalised peritonitis or perforation: an emergency-laparotomy consent line is a wrong-procedure suggestion."
+        },
+        {
+          "id": "mgmt-no-appendicectomy",
+          "severity": "critical",
+          "match": [
+            "appendicectomy",
+            "appendectomy"
+          ],
+          "unless": [
+            "not indicated",
+            "no role",
+            "exclude appendicitis"
+          ],
+          "note": "Not an appendix presentation: an appendicectomy operative plan (consent, theatre booking, post-operative orders) is a wrong-procedure suggestion."
+        }
+      ]
+    },
+    "pathway": {
+      "id": "pathway-ward-review",
+      "severity": "quality",
+      "equals": "wardReview"
+    }
+  },
+  "guideline": [
+    {
+      "id": "nice-cg103",
+      "name": "NICE CG103 — Delirium: prevention, diagnosis and management in hospital and long-term care",
+      "year": 2023,
+      "section": "Identify and manage underlying causes (infection, hypoxia, dehydration, pain, urinary retention, constipation, medication including opioids and anticholinergics); non-pharmacological measures first; short-term antipsychotic only if distressed or a risk to self/others; multicomponent prevention for people at risk (age ≥65, cognitive impairment)",
+      "citation": "National Institute for Health and Care Excellence. Delirium (CG103). London: NICE; 2010 (updated 2023).",
+      "verified": false
+    },
+    {
+      "id": "sign-157",
+      "name": "SIGN 157 — Risk reduction and management of delirium",
+      "year": 2019,
+      "section": "Use the 4AT to detect delirium; benzodiazepines should not be used routinely except in alcohol or benzodiazepine withdrawal",
+      "citation": "Scottish Intercollegiate Guidelines Network. Risk reduction and management of delirium (SIGN 157). Edinburgh: SIGN; 2019.",
+      "verified": false
+    }
+  ],
+  "rationale": "Base post-operative delirium (hypoactive, the form most often missed). Tests the delirium flag, precipitant screen (retention, opioids, anticholinergics, hypoxia, sodium), non-pharmacological care and avoiding benzodiazepines.",
+  "authoring": {
+    "author": "Claude (perioperative medicine cluster)",
+    "date": "2026-09-25",
+    "notes": "Expectations and citations need surgeon sign-off (reviewedBy). Citations verified: false. iOS outcomes not yet observed (unverified: ios) — triage after the next CI run."
+  }
+}

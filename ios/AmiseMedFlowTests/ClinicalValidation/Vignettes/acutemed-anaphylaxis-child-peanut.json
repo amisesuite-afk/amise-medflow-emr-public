@@ -1,0 +1,224 @@
+{
+  "schemaVersion": 1,
+  "id": "acutemed-anaphylaxis-child-peanut",
+  "condition": "Anaphylaxis (child, peanut)",
+  "category": "general-medicine",
+  "permutationOf": "acutemed-anaphylaxis-adult-amoxicillin",
+  "permutationLabel": "Child (7 years), food trigger",
+  "summary": "7-year-old girl with known peanut allergy, 15 minutes after a biscuit at a party: stridor, wheeze, facial swelling, urticaria, vomiting; HR 150, RR 36, SpO₂ 92 %, BP 88/50, 24 kg. RCUK 2021: IM adrenaline 300 micrograms (6-12 years).",
+  "tags": [
+    "anaphylaxis",
+    "paediatric",
+    "food-allergy"
+  ],
+  "inputs": {
+    "patient": {
+      "ageYears": 7,
+      "sex": "female",
+      "pregnancy": {
+        "status": "not-applicable"
+      },
+      "heightCm": 122,
+      "weightKg": 24
+    },
+    "encounter": {
+      "setting": "outpatient",
+      "visitType": "urgentReview",
+      "acuity": "emergency"
+    },
+    "chiefComplaint": "Swollen face and noisy breathing after eating",
+    "hpi": "Here with her father for review after an umbilical hernia repair. Ate a biscuit at a party 15 minutes ago; it contained peanut. Known peanut allergy, auto-injector left at home. Now swollen face, rash, vomited twice, noisy breathing.",
+    "symptoms": [
+      "stridor",
+      "wheeze",
+      "facial swelling",
+      "urticaria",
+      "vomiting"
+    ],
+    "negatives": [
+      "fever",
+      "choking episode"
+    ],
+    "exam": {
+      "general": "Frightened, facial angioedema, widespread urticaria.",
+      "respiratory": "Inspiratory stridor, bilateral wheeze, RR 36.",
+      "cardiovascular": "HR 150, BP 88/50, CRT 3 s."
+    },
+    "vitals": [
+      {
+        "minutesAgo": 2,
+        "heartRate": 150,
+        "systolicBp": 88,
+        "diastolicBp": 50,
+        "respiratoryRate": 36,
+        "temperatureC": 37.0,
+        "spo2": 92,
+        "weightKg": 24,
+        "avpu": "A",
+        "onSupplementalO2": false
+      }
+    ],
+    "labs": [],
+    "imaging": [],
+    "comorbidities": [
+      "Peanut allergy",
+      "Asthma (mild)"
+    ],
+    "surgicalHistory": [
+      "Umbilical hernia repair (2 weeks ago)"
+    ],
+    "medications": [
+      {
+        "drug": "Adrenaline auto-injector",
+        "dose": "300 micrograms",
+        "frequency": "PRN (not with her)"
+      },
+      {
+        "drug": "Salbutamol inhaler",
+        "dose": "100 micrograms",
+        "frequency": "PRN"
+      }
+    ],
+    "allergies": [
+      {
+        "name": "Peanut",
+        "severity": "Severe",
+        "reaction": "Anaphylaxis"
+      }
+    ],
+    "socialHistory": "Lives with parents.",
+    "confirmedDiagnosis": {
+      "name": "Anaphylaxis (peanut) in a child",
+      "icd10": "T78.01",
+      "assessmentText": "Food anaphylaxis with stridor, wheeze and hypotension in a 7-year-old: IM adrenaline 300 micrograms now, 999, repeat after 5 minutes if no improvement."
+    },
+    "platform": {
+      "web": {
+        "ccTemplate": "Other / general surgical",
+        "symptoms": [
+          "stridor",
+          "wheeze",
+          "rash",
+          "vomiting",
+          "shortness of breath"
+        ],
+        "symptomDetails": {
+          "rash": [
+            "Face",
+            "Generalised",
+            "Urticarial (wheals)"
+          ],
+          "shortness of breath": [
+            "Sudden",
+            "Wheeze"
+          ]
+        },
+        "examFindings": {
+          "respiratory": [
+            "Wheeze"
+          ],
+          "cardiovascular": [
+            "Tachycardia",
+            "Capillary refill > 2s"
+          ],
+          "general": [
+            "In distress"
+          ]
+        },
+        "durationDays": 0.01,
+        "painScore": 0
+      }
+    }
+  },
+  "expected": {
+    "differential": {
+      "mustNotMiss": [
+        {
+          "id": "mnm-anaphylaxis",
+          "severity": "critical",
+          "match": [
+            "anaphyla",
+            "icd:T78.2",
+            "icd:T88.6",
+            "icd:T78.0"
+          ],
+          "guidelineRefs": [
+            "rcuk-anaphylaxis-2021"
+          ]
+        }
+      ]
+    },
+    "safety": {
+      "emergencyLevel": {
+        "id": "level-emergency",
+        "severity": "critical",
+        "atLeast": "emergency",
+        "guidelineRefs": [
+          "rcuk-anaphylaxis-2021"
+        ]
+      },
+      "mustAlarm": [
+        {
+          "id": "alarm-anaphylaxis",
+          "severity": "critical",
+          "match": [
+            "anaphyla",
+            "icd:T78.2",
+            "icd:T88.6",
+            "icd:T78.0",
+            "adrenaline"
+          ],
+          "guidelineRefs": [
+            "rcuk-anaphylaxis-2021"
+          ]
+        }
+      ]
+    },
+    "management": {
+      "mustInclude": [
+        {
+          "id": "mgmt-adrenaline",
+          "severity": "critical",
+          "match": [
+            "adrenaline",
+            "epinephrine"
+          ],
+          "guidelineRefs": [
+            "rcuk-anaphylaxis-2021"
+          ]
+        },
+        {
+          "id": "mgmt-adrenaline-im-dose-child",
+          "severity": "quality",
+          "match": [
+            "re:300 ?(micrograms|mcg|µg)",
+            "re:0\\.3 ?mg"
+          ],
+          "guidelineRefs": [
+            "rcuk-anaphylaxis-2021"
+          ],
+          "knownGap": [
+            "ios"
+          ],
+          "knownGapNote": "iOS CI 2026-09-25 (run 36169134350, database mode): no management item matched among 18 (ios.pipeline.actions, ios.radiation.plan, ios.radiation.referral, ios.radiation.followUp, ios.soap.plan)"
+        }
+      ]
+    }
+  },
+  "guideline": [
+    {
+      "id": "rcuk-anaphylaxis-2021",
+      "verified": false,
+      "name": "Resuscitation Council UK - Emergency treatment of anaphylaxis: guidelines for healthcare providers",
+      "year": 2021,
+      "section": "IM adrenaline (1 mg/mL) is the first-line treatment: adult and child >12 years 500 micrograms, child 6-12 years 300 micrograms, 6 months-6 years 150 micrograms; repeat after 5 minutes if no improvement; refractory anaphylaxis (no improvement after two IM doses) -> adrenaline infusion with critical care; antihistamines are not first-line and corticosteroids are no longer advised routinely; IV fluid bolus for shock",
+      "citation": "Resuscitation Council UK. Emergency treatment of anaphylaxis: guidelines for healthcare providers. London: RCUK; May 2021."
+    }
+  ],
+  "rationale": "Paediatric permutation: the adrenaline dose is age-banded (RCUK 2021: 300 micrograms at 6-12 years), and adult shock thresholds do not apply.",
+  "authoring": {
+    "author": "Claude (acute medicine cluster)",
+    "date": "2026-09-25",
+    "notes": "Expectations need surgeon sign-off (reviewedBy). Citations written from the guideline texts, not yet checked against the source (verified: false). iOS outcomes are unverified until the next CI run."
+  }
+}

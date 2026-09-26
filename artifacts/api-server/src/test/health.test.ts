@@ -79,6 +79,7 @@ describe('GET /api/healthz/env', () => {
     expect(res.body).toHaveProperty('mode');
     expect(res.body.services).toHaveProperty('supabase');
     expect(res.body.services).toHaveProperty('anthropic');
+    expect(res.body.services.staffMachine).toEqual({ token: false });
   });
 });
 

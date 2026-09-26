@@ -1,0 +1,245 @@
+{
+  "schemaVersion": 1,
+  "id": "hernia-incisional-midline-elective",
+  "condition": "Midline incisional hernia",
+  "category": "hernia",
+  "permutationOf": null,
+  "summary": "63-year-old woman, 2 years after a midline laparotomy for perforated diverticulitis, with a 7 cm-wide reducible midline incisional hernia, BMI 34, smoker, HbA1c 64. EHS 2023: CT for planning, pre-habilitation (smoking, weight, glycaemic control), mesh repair (retromuscular).",
+  "tags": [
+    "elective",
+    "ventral",
+    "incisional"
+  ],
+  "inputs": {
+    "patient": {
+      "ageYears": 63,
+      "sex": "female",
+      "pregnancy": {
+        "status": "not-applicable"
+      },
+      "heightCm": 160,
+      "weightKg": 87
+    },
+    "encounter": {
+      "setting": "outpatient",
+      "visitType": "newConsult",
+      "acuity": "routine"
+    },
+    "chiefComplaint": "Bulge in the scar on my tummy",
+    "hpi": "Midline laparotomy 2 years ago (Hartmann's, later reversed). Bulge along the scar for 18 months, getting bigger, uncomfortable by evening, interferes with gardening. Always goes back when lying down. No vomiting, bowels normal.",
+    "socrates": {
+      "onset": [
+        "Over a year",
+        "Gradual"
+      ],
+      "site": [
+        "Incisional"
+      ],
+      "character": [
+        "Soft",
+        "Non-tender"
+      ],
+      "radiation": [
+        "No radiation"
+      ],
+      "associations": [],
+      "timing": [
+        "Intermittent",
+        "Progressive"
+      ],
+      "exacerbating": [
+        "Standing",
+        "Straining / Valsalva"
+      ],
+      "relieving": [
+        "Lying down"
+      ],
+      "severity": [
+        "Moderate (4–6/10)"
+      ]
+    },
+    "symptoms": [
+      "incisional swelling"
+    ],
+    "negatives": [
+      "vomiting",
+      "irreducibility"
+    ],
+    "exam": {
+      "general": "BMI 34.",
+      "abdomen": "Healed midline scar. Reducible incisional hernia along the upper two-thirds of the scar, defect width about 7 cm, cough impulse, skin healthy."
+    },
+    "vitals": [
+      {
+        "minutesAgo": 15,
+        "heartRate": 80,
+        "systolicBp": 138,
+        "diastolicBp": 84,
+        "respiratoryRate": 15,
+        "temperatureC": 36.6,
+        "spo2": 97,
+        "avpu": "A",
+        "onSupplementalO2": false
+      }
+    ],
+    "labs": [
+      {
+        "analyte": "hba1c",
+        "name": "HbA1c",
+        "value": 64,
+        "unit": "mmol/mol",
+        "minutesAgo": 10080
+      }
+    ],
+    "imaging": [],
+    "comorbidities": [
+      "Type 2 diabetes",
+      "Obesity",
+      "COPD"
+    ],
+    "surgicalHistory": [
+      "Hartmann's procedure (midline laparotomy)",
+      "Reversal of Hartmann's"
+    ],
+    "medications": [
+      {
+        "drug": "Metformin",
+        "dose": "1 g",
+        "frequency": "BD",
+        "indication": "Type 2 diabetes"
+      },
+      {
+        "drug": "Tiotropium",
+        "dose": "18 mcg",
+        "frequency": "OD",
+        "indication": "COPD"
+      }
+    ],
+    "allergies": [],
+    "nkda": true,
+    "socialHistory": "Smoker 15/day.",
+    "confirmedDiagnosis": {
+      "name": "Midline incisional hernia, W2 (7 cm), reducible",
+      "icd10": "K43.2",
+      "paneDiseaseId": "incisional_hernia",
+      "assessmentText": "Midline incisional hernia W2 (7 cm), reducible, symptomatic. CT abdominal wall for planning; pre-habilitation (stop smoking, weight loss, HbA1c optimisation) before elective retromuscular mesh repair."
+    },
+    "platform": {
+      "web": {
+        "ccTemplate": "Incisional / ventral hernia",
+        "symptoms": [
+          "hernia",
+          "incisional swelling"
+        ],
+        "symptomDetails": {
+          "hernia": [
+            "Incisional",
+            "Easily reducible",
+            "Pain"
+          ]
+        },
+        "examFindings": {
+          "abdomen": [
+            "Soft",
+            "Hernia present"
+          ]
+        },
+        "toxicHabits": [
+          "Smoking"
+        ],
+        "durationDays": 540,
+        "painScore": 4
+      }
+    }
+  },
+  "expected": {
+    "differential": {
+      "mustRankTopK": [
+        {
+          "id": "dx-incisional-top3",
+          "severity": "critical",
+          "match": [
+            "incisional",
+            "icd:K43"
+          ],
+          "k": 3,
+          "guidelineRefs": [
+            "ehs-incisional-2023"
+          ]
+        }
+      ]
+    },
+    "safety": {
+      "emergencyLevel": {
+        "id": "level-routine",
+        "severity": "quality",
+        "atMost": "priority",
+        "knownGap": [
+          "web"
+        ],
+        "knownGapNote": "Triage emergency_now (score 49): adaptiveTriage RED_FLAGS regexes have no negation handling (\"No vomiting\" → +15); \"Hartmann's … reversed\" counted as post-operative concern.",
+        "proposedFix": "Add a negation window (\"no\", \"denies\", \"never\", \"non-\") before RED_FLAGS / symptom regex matches in adaptive-triage."
+      }
+    },
+    "investigations": {
+      "mustInclude": [
+        {
+          "id": "inv-ct",
+          "severity": "quality",
+          "match": [
+            "re:\\bct\\b",
+            "computed tomography"
+          ],
+          "guidelineRefs": [
+            "ehs-incisional-2023"
+          ],
+          "note": "CT defines defect width, loss of domain and content for planning."
+        }
+      ]
+    },
+    "management": {
+      "mustInclude": [
+        {
+          "id": "mgmt-prehab",
+          "severity": "quality",
+          "match": [
+            "smok",
+            "re:\\bbmi\\b",
+            "weight",
+            "hba1c",
+            "risk factors"
+          ],
+          "guidelineRefs": [
+            "ehs-incisional-2023"
+          ]
+        },
+        {
+          "id": "mgmt-mesh",
+          "severity": "quality",
+          "match": [
+            "mesh"
+          ],
+          "guidelineRefs": [
+            "ehs-incisional-2023"
+          ]
+        }
+      ]
+    }
+  },
+  "guideline": [
+    {
+      "id": "ehs-incisional-2023",
+      "name": "EHS midline incisional hernia guidelines",
+      "year": 2023,
+      "section": "Pre-operative imaging (CT); pre-habilitation (smoking cessation, weight loss, glycaemic control); mesh reinforcement; retromuscular mesh position",
+      "citation": "Sanders DL, Pawlak MM, Simons MP, et al. Midline incisional hernia guidelines: the European Hernia Society. Br J Surg. 2023;110:1732–1768.",
+      "verified": false
+    }
+  ],
+  "rationale": "Base incisional case with modifiable risk factors. Quality-level guideline concordance only: nothing here is an emergency.",
+  "authoring": {
+    "author": "Claude (hernia / breast / endocrine cluster)",
+    "date": "2026-09-25",
+    "notes": "Expectations need surgeon sign-off (reviewedBy). Citations verified: false."
+  }
+}

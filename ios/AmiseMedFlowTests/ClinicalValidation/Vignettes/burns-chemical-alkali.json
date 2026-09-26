@@ -1,0 +1,306 @@
+{
+  "schemaVersion": 1,
+  "id": "burns-chemical-alkali",
+  "condition": "Chemical (alkali) burn of face, eye and forearms",
+  "category": "trauma-burns",
+  "permutationOf": "burns-adult-flame-27pct",
+  "permutationLabel": "Alkali (sodium hydroxide) with eye involvement",
+  "summary": "38-year-old cleaner splashed with oven cleaner (sodium hydroxide) 20 min ago: burns to both forearms and the right cheek (~5 % TBSA), right eye splashed, painful and red.",
+  "tags": [
+    "burns",
+    "chemical",
+    "alkali",
+    "eye",
+    "special-areas"
+  ],
+  "inputs": {
+    "patient": {
+      "ageYears": 38,
+      "sex": "female",
+      "pregnancy": {
+        "status": "not-pregnant"
+      },
+      "heightCm": 160,
+      "weightKg": 66
+    },
+    "encounter": {
+      "setting": "emergency",
+      "visitType": "urgentReview",
+      "acuity": "urgent"
+    },
+    "chiefComplaint": "Chemical splash to face, eye and arms",
+    "hpi": "Heavy-duty oven cleaner (sodium hydroxide) sprayed back into her face and over both forearms 20 minutes ago at work. Rinsed briefly at a sink. Right eye very painful and watering. Clothing sleeves soaked.",
+    "socrates": {
+      "onset": [
+        "Today",
+        "Sudden"
+      ],
+      "site": [
+        "Face",
+        "Forearm"
+      ],
+      "character": [
+        "Burning"
+      ],
+      "radiation": [
+        "No radiation"
+      ],
+      "associations": [],
+      "timing": [
+        "Constant"
+      ],
+      "exacerbating": [],
+      "relieving": [
+        "Nothing"
+      ],
+      "severity": [
+        "Severe (7–9/10)"
+      ]
+    },
+    "symptoms": [
+      "chemical burn",
+      "eye pain",
+      "skin pain"
+    ],
+    "negatives": [
+      "shortness of breath",
+      "stridor"
+    ],
+    "exam": {
+      "general": "Distressed. HR 100, BP 134/80, RR 18, SpO2 99%.",
+      "skin": "Both forearms and right cheek: soapy, slippery skin with erythema and early blistering, ~5% TBSA, partial thickness. Contaminated sleeves still on.",
+      "other": "Right eye: conjunctival injection, blepharospasm, epiphora; visual acuity not yet tested."
+    },
+    "vitals": [
+      {
+        "minutesAgo": 5,
+        "heartRate": 100,
+        "systolicBp": 134,
+        "diastolicBp": 80,
+        "respiratoryRate": 18,
+        "temperatureC": 36.7,
+        "spo2": 99,
+        "avpu": "A",
+        "onSupplementalO2": false
+      }
+    ],
+    "labs": [],
+    "imaging": [],
+    "comorbidities": [],
+    "surgicalHistory": [],
+    "medications": [],
+    "allergies": [],
+    "nkda": true,
+    "socialHistory": "Commercial cleaner.",
+    "confirmedDiagnosis": {
+      "name": "Alkali chemical burn of face, right eye and forearms",
+      "icd10": "T54.3X1A",
+      "assessmentText": "Alkali (sodium hydroxide) chemical burns to both forearms and right cheek (~5% TBSA) with right ocular exposure. Remove contaminated clothing, copious water irrigation of skin and eye (check pH), no neutralising agents; ophthalmology; burns referral (chemical, face)."
+    },
+    "platform": {
+      "web": {
+        "ccTemplate": "Other / general surgical",
+        "symptoms": [
+          "skin lesion",
+          "wound pain",
+          "facial pain"
+        ],
+        "examFindings": {
+          "skin": [
+            "Lesion present"
+          ]
+        },
+        "paneAnswers": {
+          "burn_wound": true,
+          "erythema_burn": true,
+          "blistering": true
+        },
+        "durationDays": 0,
+        "painScore": 8
+      }
+    }
+  },
+  "expected": {
+    "safety": {
+      "emergencyLevel": {
+        "id": "level-at-least-urgent",
+        "severity": "critical",
+        "atLeast": "urgent",
+        "guidelineRefs": [
+          "atls-10-burns"
+        ]
+      },
+      "redFlags": [
+        {
+          "id": "flag-chemical",
+          "severity": "quality",
+          "match": [
+            "chemical",
+            "alkali",
+            "corrosive"
+          ]
+        }
+      ]
+    },
+    "investigations": {
+      "mustInclude": [
+        {
+          "id": "inv-eye-ph",
+          "severity": "quality",
+          "match": [
+            "re:\\bph\\b",
+            "visual acuity",
+            "ophthalm"
+          ],
+          "guidelineRefs": [
+            "atls-10-burns"
+          ],
+          "proposedFix": "Add a chemical-burn protocol (remove agent and clothing, copious water irrigation ≥20–30 min, no neutralisation, eye irrigation to neutral pH and ophthalmology, burns referral) with T54 and corrosion (T20–T32 corrosion) prefixes.",
+          "knownGap": [
+            "ios"
+          ],
+          "knownGapNote": "iOS CI 2026-09-25 (run 36169134350, database mode): no investigation matched among 5 (ios.pipeline.voi, ios.radiation)"
+        }
+      ]
+    },
+    "management": {
+      "mustInclude": [
+        {
+          "id": "mgmt-copious-irrigation",
+          "severity": "critical",
+          "match": [
+            "irrigat",
+            "running water",
+            "copious water"
+          ],
+          "guidelineRefs": [
+            "atls-10-burns",
+            "bba-first-aid-2018"
+          ]
+        },
+        {
+          "id": "mgmt-remove-clothing",
+          "severity": "quality",
+          "match": [
+            "remove contaminated",
+            "remove clothing",
+            "remove the clothing"
+          ],
+          "guidelineRefs": [
+            "atls-10-burns",
+            "bba-first-aid-2018"
+          ],
+          "knownGap": [
+            "ios"
+          ],
+          "knownGapNote": "iOS CI 2026-09-25 (run 36169134350, database mode): no management item matched among 13 (ios.pipeline.actions, ios.radiation.plan, ios.radiation.followUp, ios.soap.plan)"
+        },
+        {
+          "id": "mgmt-ophthalmology",
+          "severity": "quality",
+          "match": [
+            "ophthalm",
+            "eye irrigation"
+          ],
+          "guidelineRefs": [
+            "atls-10-burns"
+          ]
+        },
+        {
+          "id": "mgmt-burns-referral",
+          "severity": "critical",
+          "match": [
+            "burns unit",
+            "burn unit",
+            "burns centre",
+            "burn centre",
+            "burn center",
+            "burns service",
+            "burn service",
+            "burns specialist",
+            "regional burns",
+            "plastic surg"
+          ],
+          "guidelineRefs": [
+            "aba-referral",
+            "nnbc-2012"
+          ]
+        }
+      ],
+      "mustExclude": [
+        {
+          "id": "mgmt-no-neutralisation",
+          "severity": "quality",
+          "match": [
+            "neutralis",
+            "neutraliz"
+          ],
+          "unless": [
+            "do not",
+            "don't",
+            "never",
+            "avoid",
+            "not "
+          ],
+          "guidelineRefs": [
+            "bba-first-aid-2018",
+            "atls-10-burns"
+          ],
+          "knownGap": [
+            "ios"
+          ],
+          "knownGapNote": "iOS CI 2026-09-25 (run 36169134350, database mode): forbidden management item present in ios.radiation.plan: \"chemical burns: copious irrigation, no neutralisation; eye involvement → ophthalmology\""
+        }
+      ]
+    },
+    "pathway": {
+      "id": "pathway-burns",
+      "severity": "quality",
+      "equals": "burns",
+      "knownGap": [
+        "ios"
+      ],
+      "knownGapNote": "iOS CI 2026-09-25 (run 36169134350, database mode): recommended firstVisit (No previous visits on record); expected burns"
+    }
+  },
+  "guideline": [
+    {
+      "id": "atls-10-burns",
+      "name": "ATLS 10th edition — thermal injuries",
+      "year": 2018,
+      "section": "Chapter 9: stop the burning process; early airway control for inhalation injury (hoarseness, stridor, carbonaceous sputum, singed facial hair, enclosed-space fire); 100% oxygen and carboxyhaemoglobin for suspected CO; TBSA by rule of nines (adults) or Lund–Browder (children); fluid resuscitation titrated to urine output (adult 0.5 mL/kg/h, child ≤30 kg 1 mL/kg/h, high-voltage electrical injury with pigmented urine 1–1.5 mL/kg/h); children also need maintenance glucose-containing fluid; escharotomy for circumferential full-thickness burns; chemical burns — remove agent and irrigate with copious water; electrical — ECG and cardiac monitoring, rhabdomyolysis, compartment syndrome",
+      "citation": "American College of Surgeons Committee on Trauma. ATLS Student Course Manual. 10th ed. Chicago: ACS; 2018. Chapter 9. (Lund–Browder chart: Lund CC, Browder NC. The estimation of areas of burns. Surg Gynecol Obstet. 1944;79:352–8.)",
+      "verified": false
+    },
+    {
+      "id": "bba-first-aid-2018",
+      "name": "British Burn Association — First Aid clinical practice guidelines",
+      "year": 2018,
+      "section": "Cool the burn with cool running water for 20 minutes, effective up to 3 hours after injury; chemical burns: remove contaminated clothing and irrigate with copious running water; do not attempt neutralisation",
+      "citation": "British Burn Association. First Aid Clinical Practice Guidelines. Version 1. 2018.",
+      "verified": false
+    },
+    {
+      "id": "aba-referral",
+      "name": "American Burn Association — burn centre referral criteria",
+      "year": 2006,
+      "section": "Refer: partial-thickness burns >10% TBSA; burns involving face, hands, feet, genitalia, perineum or major joints; full-thickness burns in any age group; electrical burns (including lightning); chemical burns; inhalation injury; burns with pre-existing medical disorders or concomitant trauma; burned children in hospitals without qualified personnel; patients needing special social or rehabilitative support (including suspected abuse). (2022 ABA update to be checked)",
+      "citation": "American Burn Association / American College of Surgeons Committee on Trauma. Guidelines for the operation of burn centers — burn center referral criteria. In: Resources for Optimal Care of the Injured Patient. Chicago: ACS; 2006.",
+      "verified": false
+    },
+    {
+      "id": "nnbc-2012",
+      "name": "National Network for Burn Care (British Burn Association) — National Burn Care Referral Guidance",
+      "year": 2012,
+      "section": "Referral to a specialised burn service by size (children and adults, partial thickness or more), all full-thickness and circumferential burns, special areas (face, hands, feet, genitalia, perineum, major joints), chemical, electrical, friction and cold injuries, inhalation injury, suspected non-accidental injury, and burns not healed in 2 weeks (thresholds to be checked against the source)",
+      "citation": "National Network for Burn Care. National Burn Care Referral Guidance. Version 1. London: NNBC; 2012.",
+      "verified": false
+    }
+  ],
+  "rationale": "Permutation: chemical mechanism with ocular exposure and a special area (face). ATLS/BBA: remove the agent and irrigate with copious water; do not neutralise; chemical burns meet referral criteria. The CC (\"Chemical splash…\") does not contain the iOS burn keywords, so the iOS burns pathway depends on the words used.",
+  "authoring": {
+    "author": "Claude (soft tissue / vascular / trauma / burns cluster)",
+    "date": "2026-09-25",
+    "notes": "Expectations need surgeon sign-off (reviewedBy). Citations verified: false. iOS outcomes are unverified until the first CI run."
+  }
+}

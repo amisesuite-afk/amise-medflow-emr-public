@@ -1,0 +1,415 @@
+{
+  "schemaVersion": 1,
+  "id": "ami-embolic-af",
+  "condition": "Acute mesenteric ischaemia",
+  "category": "vascular",
+  "permutationOf": null,
+  "permutationLabel": "Embolic, AF off anticoagulation, normal lactate (base case)",
+  "summary": "76-year-old woman with AF (warfarin stopped), sudden severe central pain 4 h, vomiting and loose stool, soft abdomen — pain out of proportion; WBC 18.2, lactate 1.6 (normal).",
+  "tags": [
+    "acute-abdomen",
+    "vascular",
+    "do-not-miss",
+    "elderly"
+  ],
+  "inputs": {
+    "patient": {
+      "ageYears": 76,
+      "sex": "female",
+      "pregnancy": {
+        "status": "not-applicable"
+      },
+      "heightCm": 160,
+      "weightKg": 67
+    },
+    "encounter": {
+      "setting": "emergency",
+      "visitType": "urgentReview",
+      "acuity": "urgent"
+    },
+    "chiefComplaint": "Sudden severe central abdominal pain",
+    "hpi": "Sudden severe central abdominal pain 4 hours ago, 10/10, came on at rest. Vomited twice and had an urgent loose bowel motion. Atrial fibrillation; warfarin stopped 3 weeks ago after a fall. She is writhing but says pressing on her tummy is not too bad.",
+    "socrates": {
+      "onset": [
+        "Today",
+        "Sudden"
+      ],
+      "site": [
+        "Periumbilical",
+        "Diffuse"
+      ],
+      "character": [
+        "Sharp",
+        "Cramping"
+      ],
+      "radiation": [
+        "No radiation"
+      ],
+      "associations": [
+        "Nausea",
+        "Vomiting",
+        "Change in bowel habit"
+      ],
+      "timing": [
+        "Constant"
+      ],
+      "exacerbating": [],
+      "relieving": [
+        "Nothing"
+      ],
+      "severity": [
+        "Worst (10/10)"
+      ]
+    },
+    "symptoms": [
+      "abdominal pain",
+      "vomiting",
+      "diarrhoea",
+      "nausea"
+    ],
+    "negatives": [
+      "fever",
+      "rectal bleeding"
+    ],
+    "exam": {
+      "general": "Distressed, writhing. Temperature 36.8°C, pulse 112/min irregularly irregular, BP 148/88, RR 20.",
+      "abdomen": "Soft, mild diffuse tenderness only, no guarding, no rebound — pain out of proportion to examination. Bowel sounds present."
+    },
+    "vitals": [
+      {
+        "minutesAgo": 10,
+        "heartRate": 112,
+        "systolicBp": 148,
+        "diastolicBp": 88,
+        "respiratoryRate": 20,
+        "temperatureC": 36.8,
+        "spo2": 96,
+        "avpu": "A",
+        "onSupplementalO2": false
+      }
+    ],
+    "labs": [
+      {
+        "analyte": "wbc",
+        "name": "WBC",
+        "value": 18.2,
+        "unit": "×10⁹/L",
+        "minutesAgo": 30
+      },
+      {
+        "analyte": "lactate",
+        "name": "Lactate",
+        "value": 1.6,
+        "unit": "mmol/L",
+        "minutesAgo": 30
+      },
+      {
+        "analyte": "amylase",
+        "name": "Amylase",
+        "value": 140,
+        "unit": "U/L",
+        "minutesAgo": 30
+      },
+      {
+        "analyte": "crp",
+        "name": "CRP",
+        "value": 12,
+        "unit": "mg/L",
+        "minutesAgo": 30
+      },
+      {
+        "analyte": "creatinine",
+        "name": "Creatinine",
+        "value": 102,
+        "unit": "µmol/L",
+        "minutesAgo": 30
+      },
+      {
+        "analyte": "inr",
+        "name": "INR",
+        "value": 1.1,
+        "minutesAgo": 30
+      }
+    ],
+    "imaging": [
+      {
+        "name": "12-lead ECG",
+        "modality": "Other",
+        "region": "Heart",
+        "result": "Atrial fibrillation, ventricular rate 110, no acute ST changes.",
+        "minutesAgo": 30
+      },
+      {
+        "name": "Erect chest X-ray",
+        "modality": "XR",
+        "region": "Chest",
+        "result": "No free subdiaphragmatic gas.",
+        "minutesAgo": 40
+      }
+    ],
+    "comorbidities": [
+      "Atrial fibrillation",
+      "Hypertension"
+    ],
+    "surgicalHistory": [],
+    "medications": [
+      {
+        "drug": "Bisoprolol",
+        "dose": "5 mg",
+        "frequency": "OD",
+        "indication": "Atrial fibrillation"
+      },
+      {
+        "drug": "Ramipril",
+        "dose": "5 mg",
+        "frequency": "OD",
+        "indication": "Hypertension"
+      }
+    ],
+    "allergies": [],
+    "nkda": true,
+    "socialHistory": "Lives alone. Fall 3 weeks ago; warfarin stopped by GP.",
+    "confirmedDiagnosis": {
+      "name": "Suspected acute mesenteric ischaemia",
+      "icd10": "K55.0",
+      "assessmentText": "Suspected acute arterial (embolic) mesenteric ischaemia: AF off anticoagulation, sudden pain out of proportion to examination. Normal lactate does not exclude it. Immediate CT angiography, heparin, vascular surgery."
+    },
+    "platform": {
+      "web": {
+        "ccTemplate": "Acute abdominal pain",
+        "socratesAnswers": {
+          "site": "Central (periumbilical), generalised",
+          "onset": "Sudden, 4 hours ago",
+          "character": "Severe, sharp, cramping",
+          "associated": "Vomiting x2, nausea, loose stool; pain out of proportion to tenderness",
+          "timing": "Constant",
+          "relief": "Nothing helps",
+          "severity": "10/10"
+        },
+        "symptoms": [
+          "abdominal pain",
+          "vomiting",
+          "diarrhoea",
+          "nausea",
+          "palpitations"
+        ],
+        "symptomDetails": {
+          "abdominal pain": [
+            "Periumbilical",
+            "Diffuse",
+            "Sudden",
+            "< 6 hours",
+            "Sharp",
+            "Worst ever (10)",
+            "Vomiting",
+            "Nausea",
+            "Diarrhoea",
+            "Continuous",
+            "Nothing helps"
+          ]
+        },
+        "examFindings": {
+          "abdomen": [
+            "Soft",
+            "Diffuse tenderness"
+          ]
+        },
+        "durationDays": 0.2,
+        "painScore": 10
+      }
+    }
+  },
+  "expected": {
+    "differential": {
+      "mustNotMiss": [
+        {
+          "id": "mnm-mesenteric-ischaemia",
+          "severity": "critical",
+          "match": [
+            "mesenteric isch",
+            "mesenteric ischem",
+            "acute mesenteric",
+            "mesenteric infarct",
+            "mesenteric thrombo",
+            "mesenteric vein",
+            "mesenteric venous"
+          ],
+          "guidelineRefs": [
+            "esvs-2017",
+            "wses-ami-2022"
+          ],
+          "note": "Pain out of proportion + AF off anticoagulation: AMI must be on the displayed differential."
+        },
+        {
+          "id": "mnm-mesenteric-ischaemia-symptom-engine",
+          "severity": "quality",
+          "match": [
+            "mesenteric isch",
+            "mesenteric ischem",
+            "acute mesenteric",
+            "mesenteric infarct",
+            "mesenteric thrombo",
+            "mesenteric vein",
+            "mesenteric venous"
+          ],
+          "source": "web.symptomInference",
+          "platforms": [
+            "web"
+          ]
+        }
+      ]
+    },
+    "safety": {
+      "emergencyLevel": {
+        "id": "level-emergency",
+        "severity": "critical",
+        "atLeast": "emergency",
+        "guidelineRefs": [
+          "esvs-2017",
+          "wses-ami-2022"
+        ],
+        "note": "Suspected AMI: immediate CTA and treatment; bowel viability is lost within hours.",
+        "knownGapNote": "iOS: ClinicalPathwayEngine reads only CC/PMH keywords; CC 'Sudden severe central abdominal pain' gives 'routine'."
+      },
+      "mustAlarm": [
+        {
+          "id": "alarm-mesenteric",
+          "severity": "critical",
+          "match": [
+            "mesenteric",
+            "out of proportion",
+            "bowel ischaem",
+            "intestinal ischaem"
+          ],
+          "guidelineRefs": [
+            "esvs-2017",
+            "wses-ami-2022"
+          ]
+        }
+      ]
+    },
+    "investigations": {
+      "mustInclude": [
+        {
+          "id": "inv-cta",
+          "severity": "critical",
+          "match": [
+            "ct angiogra",
+            "re:\\bcta\\b",
+            "ct mesenteric angiogra",
+            "mesenteric angiogra",
+            "re:ct aort",
+            "re:arterial[- ]phase ct",
+            "multiphase ct"
+          ],
+          "guidelineRefs": [
+            "esvs-2017",
+            "wses-ami-2022"
+          ],
+          "note": "Immediate CT angiography (arterial and portal venous phases) — not a routine portal-venous CT."
+        },
+        {
+          "id": "inv-lactate",
+          "severity": "quality",
+          "match": [
+            "lactate"
+          ],
+          "guidelineRefs": [
+            "wses-ami-2022"
+          ],
+          "note": "Supportive only; a normal value must not exclude AMI."
+        }
+      ]
+    },
+    "management": {
+      "mustInclude": [
+        {
+          "id": "mgmt-heparin",
+          "severity": "critical",
+          "match": [
+            "heparin",
+            "anticoagula"
+          ],
+          "unless": [
+            "hold",
+            "stop",
+            "reverse",
+            "reversal",
+            "withhold",
+            "omit",
+            "adjust"
+          ],
+          "guidelineRefs": [
+            "esvs-2017",
+            "wses-ami-2022"
+          ],
+          "note": "Immediate systemic heparin unless contraindicated."
+        },
+        {
+          "id": "mgmt-revascularisation",
+          "severity": "critical",
+          "match": [
+            "revascular",
+            "embolectomy",
+            "vascular surg",
+            "endovascular",
+            "thrombectomy",
+            "bypass"
+          ],
+          "guidelineRefs": [
+            "esvs-2017",
+            "wses-ami-2022"
+          ],
+          "note": "Embolic SMA occlusion: urgent revascularisation (endovascular or open embolectomy) with vascular surgery."
+        },
+        {
+          "id": "mgmt-antibiotics",
+          "severity": "quality",
+          "match": [
+            "antibiotic",
+            "co-amoxiclav",
+            "piperacillin",
+            "tazocin",
+            "cefuroxime",
+            "ceftriaxone",
+            "metronidazole",
+            "meropenem",
+            "pip-tazo"
+          ],
+          "guidelineRefs": [
+            "wses-ami-2022"
+          ]
+        }
+      ]
+    },
+    "pathway": {
+      "id": "pathway-first-visit",
+      "severity": "quality",
+      "equals": "firstVisit"
+    }
+  },
+  "guideline": [
+    {
+      "id": "esvs-2017",
+      "name": "ESVS clinical practice guidelines — diseases of the mesenteric arteries and veins",
+      "year": 2017,
+      "section": "Acute mesenteric ischaemia: suspicion (pain out of proportion, AF), lactate not sensitive/specific enough to exclude, immediate CT angiography, heparin, revascularisation, resection of non-viable bowel; mesenteric venous thrombosis: anticoagulation",
+      "citation": "Björck M, Koelemay M, Acosta S, et al. Management of the diseases of mesenteric arteries and veins: clinical practice guidelines of the European Society of Vascular Surgery (ESVS). Eur J Vasc Endovasc Surg. 2017;53:460–510.",
+      "verified": false
+    },
+    {
+      "id": "wses-ami-2022",
+      "name": "WSES updated guidelines — acute mesenteric ischaemia",
+      "year": 2022,
+      "section": "High index of suspicion; normal lactate does not exclude AMI; CT angiography without delay; systemic anticoagulation; revascularisation; damage control / second look; antibiotics",
+      "citation": "Bala M, Catena F, Kashuk J, et al. Acute mesenteric ischemia: updated guidelines of the World Society of Emergency Surgery. World J Emerg Surg. 2022;17:54.",
+      "verified": false
+    }
+  ],
+  "rationale": "Base case for AMI. The early picture is pain out of proportion with a soft abdomen and a normal lactate; guidelines are explicit that a normal lactate does not exclude AMI. Tests the must-not-miss diagnosis, emergency triage, CTA, heparin and revascularisation.",
+  "authoring": {
+    "author": "Claude (GI surgical emergencies cluster)",
+    "date": "2026-09-25",
+    "notes": "Expectations need surgeon sign-off (reviewedBy). Every citation is verified: false."
+  }
+}

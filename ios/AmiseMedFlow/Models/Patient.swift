@@ -23,6 +23,10 @@ final class Patient {
     var referringDoctor: String?
     var referringPractice: String?
     var appointmentType: String?
+    // Last appointmentType value confirmed with Supabase patients.appointment_type (Migration 97;
+    // SyncService+AppointmentType). A different current value is a change still to push. Cloud
+    // bookkeeping only.
+    var appointmentTypeSyncedValue: String?
     var notes: String?
     var ward: String?
     var bedNumber: String?
@@ -89,9 +93,167 @@ final class Patient {
     var lrinecScore: Int?
     // qSOFA score (0–3); ≥2 with suspected infection = sepsis
     var qsofaScore: Int?
+    // PSI/PORT Class (1–5) for community-acquired pneumonia severity
+    var psiScore: Int?
+    // Caprini VTE Risk Score (0–n); ≥5 = very high risk
+    var capriniScore: Int?
+    // BISAP Score (0–5) for acute pancreatitis severity; ≥3 = severe
+    var bisapScore: Int?
+    // AIMS65 Score (0–5) for upper GI bleed in-hospital mortality
+    var aims65Score: Int?
+    // SOFA Score (0–24); ≥2 with suspected infection = sepsis (Sepsis-3)
+    var sofaScore: Int?
+    // FIB-4 Index (continuous); <1.30=low, 1.30-2.67=indeterminate, >2.67=high fibrosis risk
+    var fib4Score: Double?
+    // CURB-65 Score (0–5) for community-acquired pneumonia; ≥3 = hospital admission
+    var curb65Score: Int?
+    // Padua Prediction Score (0–20) for VTE risk in medical inpatients; ≥4 = high risk
+    var paduaScore: Int?
+    // APACHE II Score (0–71) for ICU/critical illness severity; ≥25 = predicted mortality >55%
+    var apacheIIScore: Int?
+    // P-POSSUM predicted mortality (× 10 for Int storage, e.g. 85 = 8.5%); Portsmouth surgical risk
+    var ppossumMortPct10: Int?
+    // Mannheim Peritonitis Index (0–47); ≥30 = predicted mortality >60%
+    var mpiScore: Int?
+    // CT Severity Index / Balthazar (0–10); ≥7 = severe pancreatitis
+    var ctsiScore: Int?
+    // NRS-2002 nutritional risk screen (0–7); ≥3 = at nutritional risk
+    var nrs2002Score: Int?
+    // Forrest Classification grade (1–6); 1=Ia spurting, 2=Ib oozing, 3=IIa visible vessel, 4=IIb clot, 5=IIc flat spot, 6=III clean
+    var forrestGrade: Int?
+    // HEART Score (0–10); ≤3=low MACE risk, 4–6=moderate, ≥7=high; chest pain triage
+    var heartScore: Int?
+    // Mallampati class (1–4) + additional predictors; stored as composite Int for display
+    var mallampatiScore: Int?
+    // Clinical Frailty Scale (1–9); ≥5=mild frailty increases perioperative risk
+    var cfsScore: Int?
+    // TIMI Risk Score for UA/NSTEMI (0–7); ≥3=intermediate, ≥5=high 14-day MACE risk
+    var timiScore: Int?
+    // Waterlow Pressure Ulcer Risk (0–64); 10–14=at risk, 15–19=high, ≥20=very high
+    var waterlowScore: Int?
+    // Surgical Apgar Score (0–10); ≤2=very high risk, 3–4=high, 5–6=moderate, 7–8=low, 9–10=very low
+    var surgicalApgarScore: Int?
+    // GRACE Score (0–372); <109=low in-hospital mortality, 109-140=moderate, >140=high
+    var graceScore: Int?
+    // DASI (0–58, rounded); <34=poor functional capacity (<4 METs), 34-46=moderate (4-6 METs), >46=good (>6 METs)
+    var dasiScore: Int?
+    // Barthel Index (0–100); 0-20=severe dependency, 21-60=moderate, 61-90=mild, 91-100=independent
+    var barthelScore: Int?
+    // EuroSCORE II predicted operative mortality (×10 as Int, e.g. 3.5% stored as 35)
+    var euroScoreII: Int?
+    // NIHSS (NIH Stroke Scale) total 0–42; 0=no deficit, 1-4=minor, 5-15=moderate, 16-20=moderate-severe, 21-42=severe
+    var nihssScore: Int?
+    // modified Rankin Scale 0–6; 0=no symptoms, 3=moderate disability, 5=severe dependency, 6=dead
+    var mrsScore: Int?
+    // MUST malnutrition risk 0–6; 0=low, 1=medium, ≥2=high
+    var mustScore: Int?
+    // Clavien-Dindo complication grade 0–7 (0=none, 1=I…7=V)
+    var clavienDindoScore: Int?
+    // Modified Aldrete PACU recovery score 0–10; ≥9 = fit for discharge
+    var aldreteScore: Int?
+    // 4T Score (HIT probability) 0–8; 0–3=low, 4–5=intermediate, 6–8=high
+    var fourTScore: Int?
+    // Oakland Score (lower GI bleed) 0–29; ≤8=safe discharge, ≥15=high risk
+    var oaklandScore: Int?
+    // King's College Criteria met (1) or not met (0) for acute liver failure transplant referral
+    var kingsCriteriaScore: Int?
+    // Child-Pugh score 5–15 (class A=5-6, B=7-9, C=10-15); surrogate for hepatic reserve
+    var childPughScore: Int?
+    // MELD score 6–40 (Model for End-stage Liver Disease); also encoded as MELD×10 for precision
+    var meldScore: Int?
+    // ASA Physical Status 1–5
+    var asaScore: Int?
+    // ECOG/WHO Performance Status 0–4
+    var ecogScore: Int?
+    // Revised Trauma Score 0–7.84 (stored ×100 as Int for precision, e.g. 784 = 7.84)
+    var rtsScore: Int?
+    // KDIGO AKI Stage 0–3
+    var kdigoStage: Int?
+    // Baux Score (age + TBSA [+ 17 if inhalation injury])
+    var bauxScore: Int?
+    // ISS — Injury Severity Score 0–75
+    var issScore: Int?
+    // NUTRIC Score 0–9 (without IL-6)
+    var nutricScore: Int?
+    // sPESI — Simplified Pulmonary Embolism Severity Index 0–6
+    var spesiScore: Int?
+    // DECAF Score 0–6 (COPD Exacerbation)
+    var decafScore: Int?
+    // Hinchey Grade 1–4 (Perforated Diverticulitis)
+    var hincheyGrade: Int?
+    // AIR Score 0–12 (Appendicitis Inflammatory Response)
+    var airScore: Int?
+    // PERC violations 0–8 (PE Rule-out Criteria); 0 = PERC met
+    var percViolations: Int?
+    // Shock Index × 100 (e.g., 90 = SI of 0.90)
+    var shockIndex: Int?
+    // Parkland total 24 h volume (mL); computed from weight × TBSA
+    var parklandVolume: Int?
+    // Paediatric Appendicitis Score 0–10
+    var pasScore: Int?
+    // Revised Geneva Score 0–22
+    var revisedGenevaScore: Int?
+    var cciScore: Int?            // Charlson Comorbidity Index (age-adjusted)
+    var mfi5Score: Int?           // Modified Frailty Index-5 (0–5)
+    var hapsScore: Int?           // Harmless Acute Pancreatitis Score (0–3)
+    var glasgowImrieScore: Int?   // Glasgow-Imrie Pancreatitis Score (0–8)
+    var albiScore: Double?        // ALBI Score (continuous; Grade 1 ≤-2.60, Grade 2 -2.60–-1.39, Grade 3 >-1.39)
+    var auditCScore: Int?         // AUDIT-C Alcohol Screening (0–12)
+    var phq9Score: Int?           // PHQ-9 Depression Score (0–27)
+    var sapsIIScore: Int?         // SAPS II ICU Severity Score (0–163)
+    var stoneScore: Int?          // Stone CT features score (local, 0–6; NOT the STONE score — see stoneUretericScore)
+    var losAngelesGrade: Int?     // LA Classification for GERD/oesophagitis (0–4; 0=none, 4=Grade D)
+    var meld3Score: Double?       // MELD 3.0 liver severity score (continuous; ≥15 = transplant threshold)
+    var bradenScore: Int?         // Braden Scale pressure injury risk (6–23; ≤18 = at risk)
+    var centorScore: Int?         // Centor/McIsaac Score (-1 to 5; ≥4 = high GAS probability)
+    var ipssScore: Int?           // IPSS Lower Urinary Tract Symptoms (0–35; ≥20 = severe)
+    var trueloveWittsScore: Int?  // Truelove-Witts UC Severity (1=mild, 2=moderate, 3=severe)
+    var harveyBradshawScore: Int? // Harvey-Bradshaw Index Crohn's Activity (0+; ≥8 = moderate)
+    var maddreyScore: Double?     // Maddrey Discriminant Function (≥32 = severe alcoholic hepatitis)
+    var manningScore: Int?        // Manning Criteria for IBS (0–6; ≥3 = probable IBS)
+    var laceScore: Int?           // LACE 30-day Readmission Risk (0–19; ≥10 = high risk)
+    var findRiscScore: Int?       // FINDRISC Type 2 Diabetes Risk (0–26; ≥12 = screen required)
+    var mirelsScore: Int?         // Mirels Criteria pathological fracture risk (4–12; ≥9 = fixation)
+    var ckdEpiEgfr: Double?       // CKD-EPI eGFR (mL/min/1.73m²; continuous; G1≥90 … G5<15)
+    var ariscatScore: Int?        // ARISCAT postop pulmonary complication risk (0–123; ≥26 = intermediate)
+    var fongCrsScore: Int?        // Fong Clinical Risk Score colorectal liver mets (0–5; ≥3 = poor prognosis)
+    var berlinPFRatio: Double?    // Berlin ARDS PaO₂/FiO₂ ratio (continuous; <100=severe, <200=moderate, <300=mild)
+    var cageScore: Int?           // CAGE alcohol use disorder screen (0–4; ≥2 = probable AUD)
+    var dukeIEScore: Double?      // Duke IE criteria classification score (no fixed max; classification-based)
+    var mmrcGrade: Int?           // mMRC Dyspnoea Scale (0–4; ≥2 = significant functional impairment)
+    var ptsScore: Int?            // Paediatric Trauma Score (−6 to +12; ≤8 = major trauma, triage to trauma centre)
+    var ppossum30dMortality: Double? // P-POSSUM 30-day mortality risk (continuous %; nil until calculated)
+    var ripasaScore: Double?      // RIPASA Appendicitis Score (continuous; ≥7.5 = probable appendicitis)
+    var fgsiScore: Int?           // Fournier Gangrene Severity Index (0+; ≥9 = high mortality)
+    var hincheyStage: Int?        // Hinchey Classification perforated diverticulitis (1–5)
+    var sirsScore: Int?           // SIRS criteria met (0–4; ≥2 = SIRS)
+    var mewsScore: Int?           // Modified Early Warning Score (0–14; ≥5 = urgent review)
+    var independentNews2: Int?    // Standalone NEWS2 from scores screen (0–20; ≥7 = urgent)
+    var gcsScore: Int?            // Glasgow Coma Scale (3–15; ≤8 = severe TBI, intubation threshold)
+    var rcriScore: Int?           // Revised Cardiac Risk Index (0–6; ≥2 = elevated periop cardiac risk)
+    var stopBangScore: Int?       // STOP-BANG OSA Screen (0–8; ≥3 = intermediate/high OSA risk)
+    var cha2ds2vascScore: Int?    // CHA₂DS₂-VASc AF stroke risk (0–9; ≥2 male/≥3 female = anticoag)
+    var hasBledScore: Int?        // HAS-BLED bleeding risk (0–9; ≥3 = high bleeding risk on anticoag)
+    // Decision rules (clinical-content/rules/decision-rules.json `ios.param`): the recorded value falls
+    // in the rule's band, which feeds the Bayesian engine (DecisionRuleEvidence). Optional, local only
+    // (like every stored score): a lightweight SwiftData migration.
+    var stoneUretericScore: Int?  // STONE score, Moore 2014 (0–13; 10+ = uncomplicated ureteric stone likely)
+    var ottawaAnkleScore: Int?    // Ottawa ankle and foot rules: criteria present (0 = no X-ray)
+    var ottawaKneeScore: Int?     // Ottawa knee rule: criteria present (0 = no X-ray)
+    var canadianCTHeadScore: Int? // Canadian CT head rule: 0 none, 1 medium risk only, 2 high risk
+    var nexusScore: Int?          // NEXUS: low-risk criteria not met (0 = no imaging)
+    var canadianCSpineScore: Int? // Canadian C-spine rule: 0 imaging not required, 1 imaging indicated
+    var sfSyncopeScore: Int?      // San Francisco syncope rule: CHESS criteria present (prognostic)
+    var canadianSyncopeScore: Int? // Canadian syncope risk score (-3 to 11; prognostic)
 
     // MARK: - Visit type (structured)
     var visitType: VisitType?
+    // Consultation pathway forms (burns, wellness screening, ward review) — JSON: PathwayData.
+    // Synced via patients.pathway_data_json (SyncService+PathwayData) and peer sync.
+    var pathwayDataJson: String?
+    // Last pathwayDataJson value confirmed with Supabase; differs from pathwayDataJson when
+    // there are local edits still to push.
+    var pathwaySyncedJson: String?
 
     // MARK: - Consultation form fields
     var hpi: String?
@@ -127,6 +289,7 @@ final class Patient {
     var colonoscopyDataJson: String?      // ColonoscopyData
     var surgeryDataJson: String?          // SurgeryNoteData
     var ercpDataJson: String?             // ERCPData
+    var bronchoscopyDataJson: String?     // BronchoscopyData
     var dischargeSummaryDataJson: String? // DischargeSummaryData
     var postOpReviewDataJson: String?     // PostOpReviewData
     var referralLetterDataJson: String?   // ReferralLetterData
@@ -142,6 +305,16 @@ final class Patient {
     var asaClass: Int?                       // ASA physical status 1–5
     var consentSent: Bool = false            // Consent form given to patient
     var preOpInstructionsSent: Bool = false  // Pre-op instructions sent to patient
+
+    // MARK: - NEWS2 SpO₂ scale
+    // RCP NEWS2 (2017): SpO₂ Scale 2 is ONLY for patients with confirmed hypercapnic respiratory
+    // failure, on a clinician's decision. Default false = Scale 1 for everyone, including patients
+    // on supplemental oxygen. Synced by peer sync, full backup and Supabase
+    // patients.news2_spo2_scale2 (SyncService+NEWS2Scale2, Migration 88).
+    var news2UseSpO2Scale2: Bool = false
+    // Last news2UseSpO2Scale2 value confirmed with Supabase (nil = never confirmed). A different
+    // current value is a change still to push. Cloud bookkeeping only; not sent over peer sync.
+    var news2Scale2SyncedValue: Bool?
 
     // MARK: - Structured clinical history (JSON-encoded)
     var pmhEntriesJson: String?    // JSON: [PMHEntry]
@@ -165,7 +338,9 @@ final class Patient {
         self.createdAt = .now
         self.updatedAt = .now
         self.pendingSync = true
-        self.mrn = MRNGenerator.next()
+        // MRN is assigned by the creating flow (MRNGenerator.next(existing:)/next(in:)) so it can
+        // avoid numbers already used on other devices. Records pulled from the cloud or a peer
+        // carry their own MRN; anything left without one is back-filled when the list opens.
     }
 
     // MARK: - Longitudinal context from closed encounters
@@ -233,298 +408,5 @@ final class Patient {
         case 25..<30: return "Overweight"
         default: return "Obese"
         }
-    }
-}
-
-// MARK: - Enums
-
-enum Sex: String, Codable, CaseIterable {
-    case male = "Male"
-    case female = "Female"
-    case unspecified = "Unspecified"
-
-    // Supabase stores lowercase; "unspecified" is not in the CHECK constraint
-    // so we map it to "unknown" (which IS allowed) and back.
-    var supabaseValue: String {
-        self == .unspecified ? "unknown" : rawValue.lowercased()
-    }
-
-    static func fromSupabase(_ value: String?) -> Sex {
-        switch value?.lowercased() {
-        case "male":             return .male
-        case "female":           return .female
-        case "unknown", "other": return .unspecified
-        default:                 return .unspecified
-        }
-    }
-}
-
-enum ClinicalSetting: String, Codable, CaseIterable {
-    case outpatient = "Outpatient"
-    case inpatient  = "Inpatient"
-    case theatre    = "Theatre"
-    case endoscopy  = "Endoscopy"
-    case emergency  = "Emergency"
-
-    var icon: String {
-        switch self {
-        case .outpatient: return "person.crop.circle"
-        case .inpatient:  return "bed.double"
-        case .theatre:    return "scissors"
-        case .endoscopy:  return "circle.dotted"
-        case .emergency:  return "bolt.heart"
-        }
-    }
-
-    var accentHex: String {
-        switch self {
-        case .outpatient: return "#0D9488"
-        case .inpatient:  return "#2563EB"
-        case .theatre:    return "#7C3AED"
-        case .endoscopy:  return "#0891B2"
-        case .emergency:  return "#DC2626"
-        }
-    }
-}
-
-enum ClinicalLocation: String, Codable, CaseIterable {
-    case rodney_bay = "Rodney Bay"
-    case tapion     = "Tapion"
-    case okeu       = "OKEU"
-    case victoria   = "Victoria"
-    case other      = "Other"
-
-    var shortName: String {
-        switch self {
-        case .rodney_bay: return "RB"
-        case .tapion:     return "TAP"
-        case .okeu:       return "OKEU"
-        case .victoria:   return "VIC"
-        case .other:      return "OTH"
-        }
-    }
-}
-
-enum Acuity: Int, Codable, CaseIterable, Comparable {
-    case emergency = 0
-    case urgent    = 1
-    case priority  = 2
-    case routine   = 3
-
-    static func < (lhs: Acuity, rhs: Acuity) -> Bool { lhs.rawValue < rhs.rawValue }
-
-    var label: String {
-        switch self {
-        case .emergency: return "Emergency"
-        case .urgent:    return "Urgent"
-        case .priority:  return "Priority"
-        case .routine:   return "Routine"
-        }
-    }
-
-    var color: String {
-        switch self {
-        case .emergency: return "#DC2626"
-        case .urgent:    return "#F97316"
-        case .priority:  return "#EAB308"
-        case .routine:   return "#22C55E"
-        }
-    }
-}
-
-enum VisitType: String, Codable, CaseIterable {
-    case newConsult    = "New Consult"
-    case followUp      = "Follow-up"
-    case postOp        = "Post-op Review"
-    case dayOfSurgery  = "Day of Surgery"
-    case ercp          = "ERCP"
-    case ogd           = "OGD / Gastroscopy"
-    case colonoscopy   = "Colonoscopy"
-    case urgentReview  = "Urgent Review"
-    case telephone     = "Telephone"
-    case trauma        = "Trauma / Burns"
-    case surgeryElective  = "Elective Surgery"
-    case surgeryEmergency = "Emergency Surgery"
-
-    var icon: String {
-        switch self {
-        case .newConsult:       return "person.fill.questionmark"
-        case .followUp:         return "arrow.clockwise"
-        case .postOp:           return "bandage"
-        case .dayOfSurgery:     return "scissors"
-        case .ercp:             return "circle.dotted"
-        case .ogd:              return "circle.dotted"
-        case .colonoscopy:      return "circle.dotted"
-        case .urgentReview:     return "exclamationmark.circle"
-        case .telephone:        return "phone"
-        case .trauma:           return "cross.case.fill"
-        case .surgeryElective:  return "scissors"
-        case .surgeryEmergency: return "bolt.heart.fill"
-        }
-    }
-
-    var shortLabel: String {
-        switch self {
-        case .newConsult:       return "1st Visit"
-        case .followUp:         return "Follow-up"
-        case .postOp:           return "Post-op"
-        case .dayOfSurgery:     return "Day of Sx"
-        case .ercp:             return "ERCP"
-        case .ogd:              return "OGD"
-        case .colonoscopy:      return "Scope"
-        case .urgentReview:     return "Urgent"
-        case .telephone:        return "Tel"
-        case .trauma:           return "Trauma"
-        case .surgeryElective:  return "Elective Sx"
-        case .surgeryEmergency: return "Emerg Sx"
-        }
-    }
-
-    var accentHex: String {
-        switch self {
-        case .newConsult:       return "#0D9488"
-        case .followUp:         return "#2563EB"
-        case .postOp:           return "#7C3AED"
-        case .dayOfSurgery:     return "#7C3AED"
-        case .ercp:             return "#0891B2"
-        case .ogd:              return "#0891B2"
-        case .colonoscopy:      return "#0891B2"
-        case .urgentReview:     return "#F97316"
-        case .telephone:        return "#6B7280"
-        case .trauma:           return "#DC2626"
-        case .surgeryElective:  return "#7C3AED"
-        case .surgeryEmergency: return "#DC2626"
-        }
-    }
-}
-
-enum ReferralSource: String, Codable, CaseIterable {
-    case selfReferral = "Self"
-    case gp           = "GP"
-    case specialist   = "Specialist"
-    case emergency    = "Emergency"
-    case other        = "Other"
-}
-
-enum EncounterStatus: String, Codable {
-    case notCheckedIn = "not_checked_in"
-    case waiting      = "waiting"
-    case withDoctor   = "with_doctor"
-    case complete     = "complete"
-
-    var label: String {
-        switch self {
-        case .notCheckedIn: return "Not checked in"
-        case .waiting:      return "Waiting"
-        case .withDoctor:   return "With doctor"
-        case .complete:     return "Complete"
-        }
-    }
-}
-
-// MARK: - Clinical handover summary
-
-extension Patient {
-    var handoverText: String {
-        let today = Date.now.formatted(date: .abbreviated, time: .shortened)
-        var lines: [String] = []
-
-        lines.append("CLINICAL HANDOVER — \(today)")
-        lines.append("Generated by Amise MedFlow EMR · Dr Dawit Daniel Kabiye MD DM")
-        lines.append(String(repeating: "─", count: 48))
-        lines.append("")
-
-        // Patient identity
-        var idLine = "\(fullName) · \(sex.rawValue) · \(ageYears > 0 ? "\(ageYears)y" : "age unknown")"
-        if let m = mrn { idLine += " · MRN: \(m)" }
-        lines.append(idLine)
-
-        var locationLine = "\(setting.rawValue) — \(location.rawValue)"
-        if let w = ward { locationLine += " · Ward: \(w)" }
-        if let b = bedNumber { locationLine += " · Bed: \(b)" }
-        lines.append(locationLine)
-        lines.append("Acuity: \(acuity.label.uppercased())")
-        lines.append("")
-
-        // Diagnosis / complaint
-        if let dx = workingDiagnosis {
-            let icd = workingDiagnosisICD.map { " [\($0)]" } ?? ""
-            lines.append("DIAGNOSIS: \(dx)\(icd)")
-        }
-        if let cc = chiefComplaint {
-            lines.append("Chief complaint: \(cc)")
-        }
-        if let hpi = hpi, !hpi.isEmpty {
-            lines.append("HPI: \(hpi.prefix(200))\(hpi.count > 200 ? "…" : "")")
-        }
-        lines.append("")
-
-        // Anthropometrics
-        if let h = heightCm {
-            var anthropLine = String(format: "Height: %.0f cm", h)
-            if let bmi = latestBMI(), let cat = bmiCategory {
-                anthropLine += String(format: "  BMI: %.1f (%@)", bmi, cat)
-            }
-            lines.append(anthropLine)
-        }
-
-        // Vitals
-        if let v = vitalsEntries.sorted(by: { $0.recordedAt > $1.recordedAt }).first, v.hasAnyValue {
-            lines.append("LATEST VITALS (\(v.recordedAt.formatted(date: .omitted, time: .shortened)))")
-            var vParts = ["NEWS2 \(v.news2Score) (\(v.news2Risk))"]
-            if let bp = v.bpString { vParts.append("BP \(bp) mmHg") }
-            if let hr = v.heartRate { vParts.append("HR \(hr) bpm") }
-            if let rr = v.respiratoryRate { vParts.append("RR \(rr)/min") }
-            if let temp = v.temperatureCelsius { vParts.append(String(format: "Temp %.1f°C", temp)) }
-            if let spo = v.spo2 { vParts.append("SpO₂ \(spo)%") }
-            lines.append(vParts.joined(separator: " · "))
-            lines.append("")
-        }
-
-        // Allergies
-        let allergyList = allergies
-        if allergyList.isEmpty {
-            lines.append("ALLERGIES: NKDA")
-        } else {
-            lines.append("ALLERGIES: " + allergyList.map { "\($0.name) (\($0.reaction), \($0.severity))" }.joined(separator: "; "))
-        }
-
-        // Medications
-        if !prescriptions.isEmpty {
-            lines.append("")
-            lines.append("MEDICATIONS:")
-            prescriptions.forEach { lines.append("  • \($0.displayLine)") }
-        }
-
-        // Investigations
-        let pending = investigations.filter { $0.status == .ordered || $0.status == .pending }
-        let resulted = investigations.filter { $0.status == .resulted }
-        if !pending.isEmpty || !resulted.isEmpty {
-            lines.append("")
-            lines.append("INVESTIGATIONS:")
-            pending.forEach { lines.append("  ⏳ \($0.name) (awaiting)") }
-            resulted.forEach { lines.append("  ✓ \($0.name)\($0.result.isEmpty ? "" : ": \($0.result)")") }
-        }
-
-        // Management plan
-        if let plan = managementPlan, !plan.isEmpty {
-            lines.append("")
-            lines.append("MANAGEMENT PLAN:")
-            lines.append(plan)
-        }
-
-        // Admission dates
-        if let admitted = admittedAt {
-            lines.append("")
-            lines.append("Admitted: \(admitted.formatted(date: .abbreviated, time: .omitted))")
-            if let exp = expectedDischarge {
-                lines.append("Expected discharge: \(exp.formatted(date: .abbreviated, time: .omitted))")
-            }
-        }
-
-        lines.append("")
-        lines.append(String(repeating: "─", count: 48))
-        lines.append("This handover is a summary. Verify all details in the full record.")
-        return lines.joined(separator: "\n")
     }
 }

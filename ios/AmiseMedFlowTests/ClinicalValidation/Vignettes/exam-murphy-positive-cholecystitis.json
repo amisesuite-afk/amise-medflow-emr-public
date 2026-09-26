@@ -1,0 +1,146 @@
+{
+  "schemaVersion": 1,
+  "id": "exam-murphy-positive-cholecystitis",
+  "condition": "Acute cholecystitis (Murphy's sign present)",
+  "category": "hpb",
+  "permutationOf": "cholecystitis-tg18-grade1",
+  "permutationLabel": "Murphy's sign recorded present on the Exam step",
+  "summary": "41-year-old woman, 30 hours of constant right upper quadrant pain after a fatty meal, low-grade fever; Murphy's sign present on examination.",
+  "tags": [
+    "evidence-exam",
+    "murphy",
+    "cholecystitis"
+  ],
+  "inputs": {
+    "patient": {
+      "ageYears": 41,
+      "sex": "female",
+      "pregnancy": {
+        "status": "not-pregnant"
+      }
+    },
+    "encounter": {
+      "setting": "emergency",
+      "visitType": "urgentReview",
+      "acuity": "urgent"
+    },
+    "chiefComplaint": "Right upper quadrant pain",
+    "hpi": "Constant right upper quadrant pain for 30 hours, began after a fatty meal, worse on breathing in. Nausea, vomited twice. Feels feverish.",
+    "symptoms": [
+      "right upper quadrant pain",
+      "nausea",
+      "vomiting",
+      "fever"
+    ],
+    "exam": {
+      "general": "Flushed, uncomfortable.",
+      "abdomen": "Tender right upper quadrant."
+    },
+    "vitals": [
+      {
+        "minutesAgo": 10,
+        "heartRate": 104,
+        "systolicBp": 128,
+        "diastolicBp": 78,
+        "respiratoryRate": 18,
+        "temperatureC": 38.2,
+        "spo2": 97,
+        "avpu": "A",
+        "onSupplementalO2": false
+      }
+    ],
+    "labs": [
+      {
+        "analyte": "wbc",
+        "name": "WBC",
+        "value": 14.1,
+        "unit": "x10^9/L",
+        "minutesAgo": 60
+      },
+      {
+        "analyte": "crp",
+        "name": "CRP",
+        "value": 86,
+        "unit": "mg/L",
+        "minutesAgo": 60
+      }
+    ],
+    "imaging": [],
+    "comorbidities": [],
+    "surgicalHistory": [],
+    "medications": [],
+    "allergies": [],
+    "nkda": true,
+    "socialHistory": "",
+    "examSigns": {
+      "murphy": "present",
+      "rebound": "absent"
+    },
+    "platform": {
+      "web": {
+        "ccTemplate": "Acute abdominal pain",
+        "symptoms": [
+          "right upper quadrant pain",
+          "nausea",
+          "vomiting",
+          "fever"
+        ],
+        "durationDays": 1
+      }
+    }
+  },
+  "expected": {
+    "differential": {
+      "mustRankTopK": [
+        {
+          "id": "cholecystitis-top2",
+          "severity": "critical",
+          "match": [
+            "cholecyst"
+          ],
+          "k": 2
+        }
+      ]
+    },
+    "reasoning": {
+      "mustInclude": [
+        {
+          "id": "murphy-lr-shown",
+          "severity": "quality",
+          "match": [
+            "re:Murphy's sign present - LR 2\\.8"
+          ],
+          "sources": [
+            "web.reasoning.evidence"
+          ],
+          "platforms": [
+            "web"
+          ]
+        }
+      ]
+    }
+  },
+  "guideline": [
+    {
+      "id": "trowbridge-2003",
+      "name": "Trowbridge RL et al. Does this patient have acute cholecystitis? (JAMA Rational Clinical Examination)",
+      "year": 2003,
+      "section": "Murphy's sign LR+ 2.8, LR- 0.5",
+      "citation": "JAMA 2003;289:80-6",
+      "verified": false
+    },
+    {
+      "id": "tg18-chole",
+      "name": "Tokyo Guidelines 2018: acute cholecystitis diagnostic criteria",
+      "year": 2018,
+      "section": "Diagnostic criteria (local signs: Murphy's sign)",
+      "verified": false
+    }
+  ],
+  "rationale": "A positive Murphy's sign (LR+ 2.8) in RUQ pain with fever and a raised white count supports acute cholecystitis; the chip must reach the differential and the reasoning panel must show its likelihood ratio.",
+  "authoring": {
+    "author": "Claude (evidence-exam, 2026-09-26)",
+    "date": "2026-09-26",
+    "notes": "Exam-sign / decision-rule permutation. Likelihood ratios fromMemory; awaiting surgeon sign-off."
+  }
+}

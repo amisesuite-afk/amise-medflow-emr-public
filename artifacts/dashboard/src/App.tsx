@@ -11,6 +11,7 @@ import LoginPage from '@/components/LoginPage';
 import IdleLock from '@/components/IdleLock';
 import MobileEncounterPage from '@/pages/MobileEncounterPage';
 import PwaUpdatePrompt from '@/components/PwaUpdatePrompt';
+import { loadApprovedContent } from '@/lib/approved-content';
 
 const IS_MOBILE_PATH = typeof window !== 'undefined' && window.location.pathname.startsWith('/mobile');
 
@@ -62,7 +63,14 @@ class ErrorBoundary extends React.Component<
 }
 
 function AuthGuard() {
-  const { profile, loading, sessionExpired } = useAuth();
+  const { profile, loading, sessionExpired, signedOutForInactivity } = useAuth();
+
+  // Approved-content channel: once per session after sign-in, pick up any verified, signed-off
+  // release of a shared rule file (Migration 98; absent table or any failure → bundled files).
+  const profileId = profile?.id ?? null;
+  React.useEffect(() => {
+    if (profileId) void loadApprovedContent();
+  }, [profileId]);
 
   if (loading) {
     return (
@@ -84,15 +92,16 @@ function AuthGuard() {
     );
   }
 
-  if (!profile) return <LoginPage sessionExpired={sessionExpired} />;
+  if (!profile) return <LoginPage sessionExpired={sessionExpired} signedOutForInactivity={signedOutForInactivity} />;
 
-  if (IS_MOBILE_PATH) return <MobileEncounterPage />;
+  // Idle auto sign-out / lock applies to every signed-in role and view.
+  if (IS_MOBILE_PATH) return <><IdleLock /><MobileEncounterPage /></>;
 
   // Front desk (amisesuite@gmail.com) → booking/scheduling/check-in
-  if (profile.role === 'front_desk') return <ReceptionistView />;
+  if (profile.role === 'front_desk') return <><IdleLock /><ReceptionistView /></>;
 
   // Nurse → pre-visit vitals + symptoms entry
-  if (profile.role === 'nurse') return <NursePreVisitView />;
+  if (profile.role === 'nurse') return <><IdleLock /><NursePreVisitView /></>;
 
   // Doctor / admin (dawitson@yahoo.com) → full clinical EMR
   return (

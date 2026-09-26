@@ -6,6 +6,11 @@ import { downloadAsWord } from './lib/pdfExport';
 import { getApiOrigin } from '@/lib/api-origin';
 import { staffAuthHeaders } from '@/lib/staff-auth';
 import { parseDrugs, classifyMed, ACTION_META, ACTION_ORDER } from '@/lib/periop-meds';
+// Approved patient wording (hazard H-10, no fast from midnight) — the same sentences as the
+// front-desk booking instructions and the api-server prep templates; lint:patient-instructions.
+import {
+  PREP_COLONOSCOPY_DAY_OF, PREP_FASTING_STANDARD, PREP_MEDICATIONS_CALL, PREP_MINOR_GA_SEPARATE, PREP_MINOR_NO_FASTING,
+} from '@/lib/patient-prep-sheet';
 
 /* ── Canvas signature pad ───────────────────────────────────────────────── */
 interface SigPadProps { label: string; value: string; onChange: (v: string) => void; }
@@ -176,9 +181,9 @@ const PROCEDURE_TEMPLATES: ProcedureTemplate[] = [
     specificRisks: ['Bile duct injury', 'Bile leak', 'Retained stone in CBD', 'Port site hernia', 'Bowel injury'],
     visitTypeIds: ['day_of_surgery'],
     prep: {
-      fastingFrom: 'No solid food or milk from midnight. Clear fluids (water, black tea, black coffee) permitted until 2 hours before surgery.',
+      fastingFrom: PREP_FASTING_STANDARD,
       bowelPrep: 'Not required.',
-      medications: 'Continue all regular medications with a sip of water on the morning of surgery unless specifically advised otherwise. Hold anticoagulants as directed.',
+      medications: PREP_MEDICATIONS_CALL,
       morning: ['Shower the evening before and on the morning of surgery.', 'Remove nail polish, jewellery, and piercings.', 'Wear comfortable loose clothing.', 'Arrange a responsible adult to drive you home and stay overnight.'],
       whatToExpect: 'You will be admitted on the day of surgery. The operation takes 45–90 minutes under general anaesthesia. Most patients go home the same day or after one night. You will have 3–4 small cuts (5–10 mm) on your abdomen.',
       recovery: 'Most patients return to light activity within 1–2 weeks and full activity in 2–4 weeks. Avoid driving for 1 week. Return to work (desk job) in 1–2 weeks.',
@@ -199,9 +204,9 @@ const PROCEDURE_TEMPLATES: ProcedureTemplate[] = [
     specificRisks: ['Intra-abdominal collection', 'Stump leak', 'Bowel obstruction'],
     visitTypeIds: ['day_of_surgery'],
     prep: {
-      fastingFrom: 'Emergency surgery: fast from the time of decision. Elective: no food or milk from midnight; clear fluids until 2 hours before.',
+      fastingFrom: `Emergency surgery: fast from the time of decision. Planned surgery: ${PREP_FASTING_STANDARD}`,
       bowelPrep: 'Not required.',
-      medications: 'Continue regular medications unless directed otherwise. IV antibiotics will be given at induction.',
+      medications: `${PREP_MEDICATIONS_CALL} IV antibiotics will be given at induction.`,
       morning: ['You do not need to eat or drink before the operation.', 'Remove jewellery, piercings, and nail polish.', 'Arrange someone to take you home after discharge.'],
       whatToExpect: 'The operation removes your appendix through 3 small cuts under general anaesthetic. It usually takes 30–60 minutes. Most patients stay 1–2 nights. You will receive IV antibiotics during the operation.',
       recovery: 'Return to light activity in 1–2 weeks, full activity in 3–4 weeks. Avoid strenuous exercise and heavy lifting for 4 weeks.',
@@ -222,9 +227,9 @@ const PROCEDURE_TEMPLATES: ProcedureTemplate[] = [
     specificRisks: ['Mesh infection', 'Chronic groin pain', 'Testicular atrophy (inguinal)', 'Recurrence'],
     visitTypeIds: ['day_of_surgery'],
     prep: {
-      fastingFrom: 'No solid food or milk from midnight. Clear fluids until 2 hours before.',
+      fastingFrom: PREP_FASTING_STANDARD,
       bowelPrep: 'Not required.',
-      medications: 'Continue all regular medications. Hold anticoagulants as per anaesthetic team\'s instructions.',
+      medications: PREP_MEDICATIONS_CALL,
       morning: ['Shower on the morning of surgery.', 'Remove jewellery, nail polish, and piercings.', 'Wear comfortable loose clothing — avoid tight underwear.', 'Arrange transport and overnight supervision.'],
       whatToExpect: 'The hernia (bulge in the groin) is repaired through 3 small cuts using a mesh to strengthen the abdominal wall. The operation takes 45–90 minutes under general anaesthetic. Most patients go home the same day.',
       recovery: 'Avoid lifting anything heavier than a kettle for 2 weeks. Return to light work in 1–2 weeks, heavy manual work in 4–6 weeks. Some scrotal swelling and bruising is normal for 1–2 weeks.',
@@ -245,12 +250,12 @@ const PROCEDURE_TEMPLATES: ProcedureTemplate[] = [
     specificRisks: ['Perforation', 'Bleeding post-polypectomy', 'Incomplete examination'],
     visitTypeIds: ['endoscopy_col'],
     prep: {
-      fastingFrom: 'Low-residue diet for 2 days before. Clear fluids only on the day before. No solid food from midnight before the procedure.',
+      fastingFrom: `Low-residue diet for 2 days before. Clear fluids only on the day before. ${PREP_COLONOSCOPY_DAY_OF}`,
       bowelPrep: 'Bowel preparation solution (e.g. Moviprep or Plenvu) as prescribed — split dose: evening before and morning of. Drink 2–3 litres of clear fluid in addition to the prep.',
-      medications: 'Hold iron supplements for 7 days. Hold anticoagulants and antiplatelet agents as instructed. Continue blood pressure and heart medications with a sip of water. Diabetic patients: contact clinic for specific insulin/oral hypoglycaemic adjustment.',
-      morning: ['Complete the morning bowel prep dose (if split prep).', 'Nothing to eat or drink after completing prep (except small sip of water for tablets).', 'Arrange a driver — you cannot drive after sedation.', 'Bring a list of your medications.'],
+      medications: PREP_MEDICATIONS_CALL,
+      morning: ['Complete the morning bowel prep dose (if split prep).', 'Arrange a driver — you cannot drive after sedation.', 'Bring a list of your medications.'],
       whatToExpect: 'A flexible camera is passed through your back passage to examine the entire large bowel (colon). The procedure takes 20–45 minutes. Sedation (not full anaesthetic) is given to keep you comfortable. Any polyps found will be removed at the same time. You will be in the unit for 2–3 hours in total.',
-      recovery: 'You may feel bloated for a few hours after the procedure. You can eat normally once you feel ready. Avoid driving, alcohol, and important decisions for 24 hours after sedation. If polyps were removed, avoid blood-thinning medications for 5–7 days unless directed otherwise.',
+      recovery: 'You may feel bloated for a few hours after the procedure. You can eat normally once you feel ready. Avoid driving, alcohol, and important decisions for 24 hours after sedation. If you take blood thinners and polyps were removed, please call the clinic for instructions.',
       patientLeaflet: 'A colonoscopy is a camera test to examine the inside of your large bowel. A thin flexible tube with a tiny camera on the end is gently passed through your back passage. This allows the doctor to check for polyps (small growths), inflammation, or other changes. If polyps are found, they are removed safely during the procedure. You will be given a sedative to make you comfortable — this is not a general anaesthetic. The test usually takes 20–45 minutes. Good bowel preparation is essential: please follow the prep instructions carefully as a poor preparation may mean the test has to be repeated.',
     },
   },
@@ -268,10 +273,10 @@ const PROCEDURE_TEMPLATES: ProcedureTemplate[] = [
     specificRisks: ['Pancreatitis', 'Cholangitis', 'Perforation', 'Bleeding', 'Incomplete duct clearance'],
     visitTypeIds: ['ercp'],
     prep: {
-      fastingFrom: 'No solid food or milk for 6 hours before. Clear fluids permitted until 2 hours before the procedure.',
+      fastingFrom: PREP_FASTING_STANDARD,
       bowelPrep: 'Not required.',
-      medications: 'Hold anticoagulants and antiplatelet agents as instructed. Continue blood pressure, heart, and thyroid medications with a sip of water. Do not take metformin on the day of the procedure.',
-      morning: ['Nothing to eat or drink from midnight (or as instructed).', 'Arrange a driver — you cannot drive after sedation.', 'Bring a list of your medications and any relevant scan/blood results.', 'Bring your blood group card if known.'],
+      medications: PREP_MEDICATIONS_CALL,
+      morning: ['Arrange a driver — you cannot drive after sedation.', 'Bring a list of your medications and any relevant scan/blood results.', 'Bring your blood group card if known.'],
       whatToExpect: 'A flexible camera is passed through your mouth and into the small bowel to access the bile duct opening. The doctor will inject dye to outline the bile duct (cholangiogram) and remove any stones or place a stent to relieve blockage. The procedure takes 30–90 minutes. You will be in the unit for approximately 4 hours in total and observed for at least 2 hours afterwards for any complications.',
       recovery: 'You may feel some throat soreness and mild abdominal discomfort. Eat a light meal 2–4 hours after the procedure if you feel well. Avoid driving and alcohol for 24 hours after sedation. Pancreatitis (inflammation of the pancreas) is the most common complication — attend the emergency department immediately if you develop severe abdominal pain in the hours after the procedure.',
       patientLeaflet: 'ERCP (Endoscopic Retrograde Cholangiopancreatography) is a procedure that allows the doctor to examine and treat the bile duct — the tube that carries bile from your liver to your small intestine. A thin flexible telescope is passed through your mouth, stomach, and into the opening of the bile duct. Using X-ray guidance, the doctor can remove gallstones lodged in the bile duct, widen a narrowing, or place a small plastic tube (stent) to keep the duct open. The procedure is performed under sedation so you will be drowsy but not unconscious. Pancreatitis (inflammation of the pancreas) occurs in up to 5% of cases — seek immediate medical attention if you develop severe abdominal pain after the procedure.',
@@ -291,10 +296,10 @@ const PROCEDURE_TEMPLATES: ProcedureTemplate[] = [
     specificRisks: ['Perforation', 'Bleeding post-biopsy', 'Aspiration', 'Missed lesion'],
     visitTypeIds: ['endoscopy_ogd'],
     prep: {
-      fastingFrom: 'No solid food or milk for 6 hours. Clear fluids permitted until 2 hours before the procedure.',
+      fastingFrom: PREP_FASTING_STANDARD,
       bowelPrep: 'Not required.',
-      medications: 'Hold iron supplements for 5 days (they darken the stomach lining). Continue all other regular medications with a sip of water. If you take anticoagulants, contact clinic for instructions.',
-      morning: ['Nothing to eat or drink from midnight (or as instructed for afternoon procedures: fast from 7am).', 'Throat spray or sedation will be offered — discuss preference with the nurse.', 'Arrange a driver if having sedation.', 'Remove dentures, contact lenses, and jewellery.'],
+      medications: PREP_MEDICATIONS_CALL,
+      morning: ['Throat spray or sedation will be offered — discuss preference with the nurse.', 'Arrange a driver if having sedation.', 'Remove dentures, contact lenses, and jewellery.'],
       whatToExpect: 'A thin flexible camera is passed through your mouth and into your oesophagus, stomach, and first part of the small bowel. The procedure takes 5–15 minutes. Biopsy samples may be taken — this is painless. If having sedation, you will be drowsy and monitored for 30–60 minutes after.',
       recovery: 'You may feel a mild sore throat for 24 hours. Eat normally once you feel ready (usually 1–2 hours after if no sedation, or when fully awake if sedated). Avoid driving, alcohol, and important decisions for 24 hours if sedated.',
       patientLeaflet: 'An OGD (gastroscopy) is a camera test to look at the inside of your food pipe (oesophagus), stomach, and the first part of your small intestine. A thin flexible tube with a tiny light and camera on the end is gently passed through your mouth. The test takes about 10 minutes. You may have a local anaesthetic throat spray to numb the back of your throat, or you can choose to have sedation to make you more relaxed. Small tissue samples (biopsies) can be taken painlessly. Most patients find the test much more tolerable than they expected.',
@@ -314,9 +319,9 @@ const PROCEDURE_TEMPLATES: ProcedureTemplate[] = [
     specificRisks: ['Recurrent laryngeal nerve injury (hoarseness)', 'Hypocalcaemia (low calcium)', 'Hypothyroidism requiring lifelong thyroxine', 'Haematoma requiring return to theatre'],
     visitTypeIds: ['day_of_surgery'],
     prep: {
-      fastingFrom: 'No solid food or milk from midnight. Clear fluids until 2 hours before.',
+      fastingFrom: PREP_FASTING_STANDARD,
       bowelPrep: 'Not required.',
-      medications: 'Continue anti-thyroid medications (carbimazole/propylthiouracil) until the day of surgery. Continue beta-blockers if prescribed. Contact the clinic about anticoagulants.',
+      medications: PREP_MEDICATIONS_CALL,
       morning: ['Shower the morning of surgery.', 'Do not apply moisturiser or powder to the neck area.', 'Wear a loose-fitting top that opens at the front.', 'Arrange transport and overnight supervision — you will stay at least one night.'],
       whatToExpect: 'The thyroid gland (or part of it) is removed through a small horizontal cut in the lower neck, hidden in a natural skin crease. The operation takes 1.5–3 hours under general anaesthetic. You will stay in hospital for 1–2 nights. Blood calcium levels will be checked after surgery.',
       recovery: 'Avoid heavy lifting and strenuous activity for 2 weeks. The neck scar fades significantly over 3–6 months — silicone gel strips may be recommended. If total thyroidectomy is performed, you will require lifelong thyroxine (thyroid hormone) replacement tablets.',
@@ -337,9 +342,9 @@ const PROCEDURE_TEMPLATES: ProcedureTemplate[] = [
     specificRisks: ['Lymphoedema', 'Seroma (fluid collection)', 'Shoulder stiffness', 'Altered sensation or body image', 'Flap necrosis (if reconstruction)'],
     visitTypeIds: ['breast'],
     prep: {
-      fastingFrom: 'No solid food or milk from midnight. Clear fluids until 2 hours before.',
+      fastingFrom: PREP_FASTING_STANDARD,
       bowelPrep: 'Not required.',
-      medications: 'Continue all regular medications. Discuss anticoagulants with the anaesthetic team. Do not apply deodorant or lotions to the chest or underarm on the morning of surgery.',
+      medications: PREP_MEDICATIONS_CALL,
       morning: ['Shower the evening before and on the morning of surgery (use antibacterial soap if supplied).', 'Do not apply deodorant, talc, or creams to the chest, axilla, or shoulder area.', 'Wear a comfortable front-opening top.', 'Arrange transport and someone to stay with you overnight.'],
       whatToExpect: 'The breast tissue (and sometimes a small amount of lymph nodes from under the arm) is removed under general anaesthetic. The procedure takes 1.5–3 hours. A drain may be placed to prevent fluid build-up. You will typically stay 1–2 nights. A breast care nurse will visit you and support you with reconstruction options if appropriate.',
       recovery: 'Shoulder exercises will begin the day after surgery to prevent stiffness. Avoid heavy lifting for 4–6 weeks. Drain is usually removed after 2–5 days. You will be seen in clinic within 2 weeks for wound review and pathology results.',
@@ -360,9 +365,9 @@ const PROCEDURE_TEMPLATES: ProcedureTemplate[] = [
     specificRisks: ['Incomplete excision requiring re-excision', 'Scar / keloid formation', 'Altered sensation around scar'],
     visitTypeIds: [],
     prep: {
-      fastingFrom: 'Not required for local anaesthesia only. If sedation planned: no food or milk for 6 hours.',
+      fastingFrom: `${PREP_MINOR_NO_FASTING} ${PREP_MINOR_GA_SEPARATE}`,
       bowelPrep: 'Not required.',
-      medications: 'Continue all regular medications. Inform the surgeon if you are on aspirin, warfarin, or other blood thinners.',
+      medications: PREP_MEDICATIONS_CALL,
       morning: ['Eat and drink normally unless sedation is planned.', 'Wear comfortable loose clothing that gives easy access to the area.', 'Remove jewellery near the site.'],
       whatToExpect: 'The skin lesion is removed with a margin of normal tissue under local anaesthetic injection. The procedure takes 15–45 minutes. The wound is closed with stitches. You will go home the same day. Pathology results are usually available within 2 weeks.',
       recovery: 'Keep the wound clean and dry for 48 hours. Avoid strenuous activity for 1–2 weeks. Sutures are removed at 7–14 days depending on the location.',
@@ -383,9 +388,9 @@ const PROCEDURE_TEMPLATES: ProcedureTemplate[] = [
     specificRisks: ['Anastomotic leak (bowel join failure)', 'Temporary protecting stoma', 'Bladder / sexual dysfunction', 'Ileus (bowel not working)', 'Permanent stoma (if leak occurs)'],
     visitTypeIds: ['day_of_surgery'],
     prep: {
-      fastingFrom: 'Enhanced Recovery After Surgery (ERAS) protocol: carbohydrate drink until 2 hours before surgery. No solid food from midnight.',
+      fastingFrom: `${PREP_FASTING_STANDARD} Enhanced Recovery After Surgery (ERAS) protocol: carbohydrate drink until 2 hours before surgery.`,
       bowelPrep: 'Oral bowel preparation as prescribed (check with surgeon). Combined with mechanical prep and oral antibiotic prophylaxis in many centres.',
-      medications: 'Continue all regular medications with a sip of water. Hold anticoagulants as instructed. DVT prophylaxis (injections and compression stockings) will start before or shortly after surgery.',
+      medications: `${PREP_MEDICATIONS_CALL} DVT prophylaxis (injections and compression stockings) will start before or shortly after surgery.`,
       morning: ['Shower with chlorhexidine wash if supplied.', 'Wear comfortable loose clothing.', 'You will be admitted the morning of surgery unless instructed otherwise.', 'Expect to stay in hospital 3–7 days.', 'Have a family member available for discharge planning discussions.'],
       whatToExpect: 'The diseased section of the large bowel (usually sigmoid colon and upper rectum) is removed and the healthy ends joined together (anastomosis). This is performed through keyhole (laparoscopic) incisions. The operation takes 2–4 hours under general anaesthetic. Enhanced recovery protocols (early mobilisation, oral feeding within 24 hours, multimodal analgesia) aim to speed recovery.',
       recovery: 'Expect 3–7 days in hospital. Walking begins the first day after surgery. Diet progresses from clear fluids to normal over 1–3 days. Full recovery takes 4–8 weeks. Bowel habit may be altered for several months (more frequent, looser stools) — this usually improves over 3–6 months. Return to clinic in 2 weeks for wound review and to discuss pathology results.',

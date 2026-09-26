@@ -1,0 +1,246 @@
+{
+  "schemaVersion": 1,
+  "id": "cauda-equina-syndrome-disc",
+  "condition": "Cauda equina syndrome",
+  "category": "other",
+  "permutationOf": null,
+  "permutationLabel": "Incomplete CES (CES-I) from L4/5 disc",
+  "summary": "41-year-old man with known L4/5 disc: 2 days of bilateral sciatica, saddle numbness, urinary hesitancy and reduced anal tone; post-void residual 180 mL.",
+  "tags": [
+    "neuro",
+    "spine",
+    "do-not-miss",
+    "time-critical"
+  ],
+  "inputs": {
+    "patient": {
+      "ageYears": 41,
+      "sex": "male",
+      "pregnancy": {
+        "status": "not-applicable"
+      },
+      "heightCm": 183,
+      "weightKg": 95
+    },
+    "encounter": {
+      "setting": "outpatient",
+      "visitType": "urgentReview",
+      "acuity": "urgent"
+    },
+    "chiefComplaint": "Back pain going down both legs and numbness in the bottom",
+    "hpi": "Known L4/5 disc prolapse with left sciatica for 6 weeks. For 2 days pain down both legs, numbness around the back passage and genitals, difficulty starting to pass urine and reduced feeling when passing urine. Bowels not opened for 2 days.",
+    "symptoms": [
+      "lower back pain",
+      "back pain",
+      "numbness",
+      "hesitancy"
+    ],
+    "negatives": [
+      "fever",
+      "weight loss",
+      "history of cancer",
+      "trauma"
+    ],
+    "exam": {
+      "general": "In pain. Pulse 84/min, BP 138/84, temperature 36.7°C.",
+      "neuro": "Reduced pinprick sensation in the perianal and perineal area (S3–S5), reduced ankle reflexes bilaterally, plantarflexion 4/5 bilaterally. Reduced anal tone on PR.",
+      "abdomen": "Bladder not palpable; post-void bladder scan residual 180 mL."
+    },
+    "vitals": [
+      {
+        "minutesAgo": 10,
+        "heartRate": 84,
+        "systolicBp": 138,
+        "diastolicBp": 84,
+        "respiratoryRate": 14,
+        "temperatureC": 36.7,
+        "spo2": 98,
+        "avpu": "A",
+        "onSupplementalO2": false,
+        "weightKg": 95
+      }
+    ],
+    "labs": [],
+    "imaging": [
+      {
+        "name": "Bladder scan (post-void)",
+        "modality": "US",
+        "result": "Post-void residual 180 mL.",
+        "minutesAgo": 10,
+        "region": "Bladder"
+      }
+    ],
+    "comorbidities": [
+      "L4/5 disc prolapse"
+    ],
+    "surgicalHistory": [],
+    "medications": [
+      {
+        "drug": "Naproxen",
+        "dose": "500 mg",
+        "frequency": "BD",
+        "indication": "Back pain"
+      },
+      {
+        "drug": "Codeine",
+        "dose": "30 mg",
+        "frequency": "QDS",
+        "indication": "Back pain"
+      }
+    ],
+    "allergies": [],
+    "nkda": true,
+    "socialHistory": "Warehouse worker.",
+    "confirmedDiagnosis": {
+      "name": "Cauda equina syndrome — incomplete (CES-I), L4/5 disc",
+      "icd10": "G83.4",
+      "assessmentText": "Suspected incomplete cauda equina syndrome (bilateral sciatica, saddle anaesthesia, urinary hesitancy, reduced anal tone): emergency MRI and immediate spinal surgical referral."
+    },
+    "platform": {
+      "web": {
+        "ccTemplate": "Other / general surgical",
+        "symptoms": [
+          "lower back pain",
+          "back pain",
+          "numbness",
+          "hesitancy"
+        ],
+        "symptomDetails": {
+          "back pain": [
+            "Lumbar (lower back)",
+            "Bilateral legs",
+            "Bladder / bowel dysfunction",
+            "Saddle anaesthesia",
+            "Sharp"
+          ],
+          "lower back pain": [
+            "Bilateral",
+            "Bladder / bowel dysfunction",
+            "Saddle anaesthesia",
+            "Constant"
+          ]
+        },
+        "durationDays": 2,
+        "painScore": 8
+      }
+    }
+  },
+  "expected": {
+    "differential": {
+      "mustNotMiss": [
+        {
+          "id": "mnm-cauda-equina",
+          "severity": "critical",
+          "match": [
+            "cauda equina"
+          ],
+          "guidelineRefs": [
+            "bass-sbns-ces-2018"
+          ]
+        }
+      ]
+    },
+    "safety": {
+      "emergencyLevel": {
+        "id": "level-emergency",
+        "severity": "critical",
+        "atLeast": "emergency",
+        "guidelineRefs": [
+          "bass-sbns-ces-2018"
+        ]
+      },
+      "mustAlarm": [
+        {
+          "id": "alarm-cauda-equina",
+          "severity": "critical",
+          "match": [
+            "cauda equina",
+            "saddle"
+          ],
+          "guidelineRefs": [
+            "bass-sbns-ces-2018"
+          ]
+        }
+      ]
+    },
+    "investigations": {
+      "mustInclude": [
+        {
+          "id": "inv-emergency-mri",
+          "severity": "critical",
+          "match": [
+            "re:\\bmri\\b"
+          ],
+          "guidelineRefs": [
+            "bass-sbns-ces-2018"
+          ]
+        },
+        {
+          "id": "inv-bladder-scan",
+          "severity": "quality",
+          "match": [
+            "bladder scan",
+            "post-void",
+            "residual"
+          ],
+          "guidelineRefs": [
+            "bass-sbns-ces-2018"
+          ],
+          "knownGapNote": "Web: No bladder scan / post-void residual.",
+          "proposedFix": "Add neurological safety prompts to clinical-inference.ts keyed on symptoms/HPI text (FAST → CT head + stroke team; thunderclap → CT head ± LP/CTA + neurosurgery; meningism/purpura → blood cultures + IV ceftriaxone now; saddle anaesthesia/retention → emergency MRI + spinal team; cancer + back pain/weakness → MRI whole spine + dexamethasone + MSCC coordinator)."
+        }
+      ]
+    },
+    "management": {
+      "mustInclude": [
+        {
+          "id": "mgmt-spinal-surgical-referral",
+          "severity": "critical",
+          "match": [
+            "spinal surg",
+            "neurosurg",
+            "spinal team",
+            "orthopaedic spin",
+            "decompression"
+          ],
+          "guidelineRefs": [
+            "bass-sbns-ces-2018"
+          ]
+        }
+      ],
+      "mustExclude": [
+        {
+          "id": "mgmt-no-conservative-only",
+          "severity": "quality",
+          "match": [
+            "physiotherapy",
+            "re:analgesia and (review|rest)"
+          ],
+          "unless": [
+            "after",
+            "post-op"
+          ],
+          "guidelineRefs": [
+            "bass-sbns-ces-2018"
+          ]
+        }
+      ]
+    }
+  },
+  "guideline": [
+    {
+      "id": "bass-sbns-ces-2018",
+      "name": "SBNS/BASS — Standards of care for investigation and management of cauda equina syndrome",
+      "year": 2018,
+      "section": "Suspected CES (bilateral radicular pain, saddle sensory change, bladder/bowel/sexual dysfunction): emergency MRI; immediate discussion with the on-call spinal surgical team; decompression as soon as possible; do not wait for urinary retention (retention indicates CES-R); post-void residual bladder scan as part of assessment",
+      "citation": "Society of British Neurological Surgeons & British Association of Spine Surgeons. Standards of care for investigation and management of cauda equina syndrome. 2018. See also: GIRFT National Suspected Cauda Equina Syndrome Pathway, 2023.",
+      "verified": false
+    }
+  ],
+  "rationale": "SBNS/BASS 2018 and GIRFT 2023: emergency MRI and immediate spinal surgical discussion before retention develops.",
+  "authoring": {
+    "author": "Claude (endocrine / renal / urology / neuro cluster)",
+    "date": "2026-09-25",
+    "notes": "Expectations need surgeon sign-off (reviewedBy). Every citation is verified: false. iOS outcomes not observed (Linux)."
+  }
+}

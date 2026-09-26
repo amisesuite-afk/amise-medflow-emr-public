@@ -1,0 +1,354 @@
+{
+  "schemaVersion": 1,
+  "id": "hernia-obturator-sbo-elderly-woman",
+  "condition": "Obturator hernia with small bowel obstruction",
+  "category": "hernia",
+  "permutationOf": null,
+  "summary": "86-year-old very thin woman (BMI 16) with 3 days of vomiting, distension and colicky pain, no previous abdominal surgery, no groin lump, and pain down the inner left thigh on hip rotation (Howship-Romberg). Must-not-miss: CT shows an obturator hernia; emergency surgery.",
+  "tags": [
+    "emergency",
+    "sbo",
+    "must-not-miss",
+    "elderly",
+    "female"
+  ],
+  "inputs": {
+    "patient": {
+      "ageYears": 86,
+      "sex": "female",
+      "pregnancy": {
+        "status": "not-applicable"
+      },
+      "heightCm": 150,
+      "weightKg": 36
+    },
+    "encounter": {
+      "setting": "emergency",
+      "visitType": "urgentReview",
+      "acuity": "urgent"
+    },
+    "chiefComplaint": "Vomiting and tummy pain for three days",
+    "hpi": "Three days of intermittent colicky abdominal pain, vomiting everything, abdomen bloating. Last bowel motion 3 days ago. Also pain running down the inside of her left thigh to the knee, worse when she turns the leg in. Several similar shorter episodes over the last year that settled. No previous operations on the abdomen.",
+    "socrates": {
+      "onset": [
+        "2–3 days ago",
+        "Gradual"
+      ],
+      "site": [
+        "Periumbilical",
+        "Diffuse"
+      ],
+      "character": [
+        "Colicky"
+      ],
+      "radiation": [
+        "No radiation"
+      ],
+      "associations": [
+        "Vomiting",
+        "Nausea",
+        "Anorexia"
+      ],
+      "timing": [
+        "Intermittent",
+        "Worse over time"
+      ],
+      "exacerbating": [
+        "Eating",
+        "Movement"
+      ],
+      "relieving": [
+        "Vomiting"
+      ],
+      "severity": [
+        "Severe (7–9/10)"
+      ]
+    },
+    "symptoms": [
+      "abdominal pain",
+      "vomiting",
+      "abdominal distension",
+      "constipation",
+      "medial thigh pain"
+    ],
+    "negatives": [
+      "previous abdominal surgery",
+      "groin lump"
+    ],
+    "exam": {
+      "general": "Cachectic, dehydrated. Pulse 108, BP 104/62, temperature 37.4°C.",
+      "abdomen": "Distended, tympanic, high-pitched bowel sounds, mild tenderness, no peritonism. No scars. Hernial orifices (inguinal, femoral, umbilical) clear. Pain reproduced in the left medial thigh on internal rotation of the flexed hip (Howship-Romberg sign). Rectal examination: empty, tender high on the left."
+    },
+    "vitals": [
+      {
+        "minutesAgo": 15,
+        "heartRate": 108,
+        "systolicBp": 104,
+        "diastolicBp": 62,
+        "respiratoryRate": 20,
+        "temperatureC": 37.4,
+        "spo2": 94,
+        "avpu": "A",
+        "onSupplementalO2": false
+      }
+    ],
+    "labs": [
+      {
+        "analyte": "wbc",
+        "name": "WBC",
+        "value": 12.9,
+        "unit": "×10⁹/L",
+        "minutesAgo": 60
+      },
+      {
+        "analyte": "crp",
+        "name": "CRP",
+        "value": 58,
+        "unit": "mg/L",
+        "minutesAgo": 60
+      },
+      {
+        "analyte": "lactate",
+        "name": "Lactate",
+        "value": 2.4,
+        "unit": "mmol/L",
+        "minutesAgo": 60
+      },
+      {
+        "analyte": "creatinine",
+        "name": "Creatinine",
+        "value": 118,
+        "unit": "µmol/L",
+        "minutesAgo": 60
+      },
+      {
+        "analyte": "urea",
+        "name": "Urea",
+        "value": 14.2,
+        "unit": "mmol/L",
+        "minutesAgo": 60
+      },
+      {
+        "analyte": "potassium",
+        "name": "Potassium",
+        "value": 3.1,
+        "unit": "mmol/L",
+        "minutesAgo": 60
+      }
+    ],
+    "imaging": [
+      {
+        "name": "CT abdomen and pelvis with contrast",
+        "modality": "CT",
+        "region": "Abdomen/pelvis",
+        "result": "Dilated small bowel with transition point at a loop of ileum herniating through the left obturator canal between pectineus and obturator externus; bowel wall enhancement preserved. No free gas.",
+        "minutesAgo": 20
+      }
+    ],
+    "comorbidities": [
+      "Chronic kidney disease stage 3a",
+      "Osteoporosis"
+    ],
+    "surgicalHistory": [],
+    "medications": [
+      {
+        "drug": "Alendronic acid",
+        "dose": "70 mg",
+        "frequency": "weekly",
+        "indication": "Osteoporosis"
+      }
+    ],
+    "allergies": [],
+    "nkda": true,
+    "socialHistory": "Lives in residential care, mobile with frame.",
+    "confirmedDiagnosis": {
+      "name": "Left obturator hernia with small bowel obstruction",
+      "icd10": "K45.0",
+      "paneDiseaseId": "obturator_hernia",
+      "assessmentText": "Small bowel obstruction due to left obturator hernia (Howship-Romberg positive, CT confirmed) in a thin 86-year-old with no previous surgery. Resuscitate, NG tube, emergency repair."
+    },
+    "platform": {
+      "web": {
+        "ccTemplate": "Acute abdominal pain",
+        "symptoms": [
+          "abdominal pain",
+          "vomiting",
+          "abdominal distension",
+          "constipation"
+        ],
+        "symptomDetails": {
+          "abdominal pain": [
+            "Periumbilical",
+            "Diffuse",
+            "Colicky",
+            "> 3 days",
+            "Severe (7–9)",
+            "Vomiting",
+            "Distension",
+            "Constipation",
+            "Intermittent / colicky",
+            "Worsening over time"
+          ],
+          "vomiting": [
+            "Bile",
+            "Multiple episodes daily"
+          ]
+        },
+        "examFindings": {
+          "abdomen": [
+            "Distended",
+            "Bowel sounds hyperactive"
+          ],
+          "general": [
+            "Cachectic"
+          ]
+        },
+        "durationDays": 3,
+        "painScore": 7
+      }
+    }
+  },
+  "expected": {
+    "differential": {
+      "mustNotMiss": [
+        {
+          "id": "mnm-obturator-hernia",
+          "severity": "critical",
+          "match": [
+            "obturator",
+            "icd:K45"
+          ],
+          "guidelineRefs": [
+            "wses-asbo-2017"
+          ],
+          "note": "Obstruction in a thin elderly woman with a virgin abdomen and medial thigh pain: obturator hernia must be on the list."
+        },
+        {
+          "id": "mnm-hernia-any",
+          "severity": "quality",
+          "match": [
+            "hernia"
+          ]
+        }
+      ],
+      "mustRankTopK": [
+        {
+          "id": "dx-obstruction-top3",
+          "severity": "quality",
+          "match": [
+            "obstruct",
+            "icd:K56"
+          ],
+          "k": 3
+        }
+      ]
+    },
+    "safety": {
+      "emergencyLevel": {
+        "id": "level-emergency",
+        "severity": "critical",
+        "atLeast": "emergency",
+        "guidelineRefs": [
+          "wses-asbo-2017"
+        ]
+      },
+      "mustAlarm": [
+        {
+          "id": "alarm-obstruction",
+          "severity": "critical",
+          "match": [
+            "obstruct",
+            "emergency now",
+            "strangulat"
+          ],
+          "guidelineRefs": [
+            "wses-asbo-2017"
+          ]
+        }
+      ]
+    },
+    "investigations": {
+      "mustInclude": [
+        {
+          "id": "inv-ct",
+          "severity": "critical",
+          "match": [
+            "re:\\bct\\b[^.;\\n]{0,40}pelvi",
+            "re:\\bct\\b[^.;\\n]{0,80}(obstruct|hernia|transition|closed.loop|swirl)",
+            "computed tomography"
+          ],
+          "guidelineRefs": [
+            "wses-asbo-2017"
+          ],
+          "note": "CT is the only reliable pre-operative diagnosis of obturator hernia; SBO without previous surgery needs cross-sectional imaging."
+        }
+      ]
+    },
+    "management": {
+      "mustInclude": [
+        {
+          "id": "mgmt-emergency-surgery",
+          "severity": "critical",
+          "match": [
+            "re:emergency (theatre|surgery|surgical|repair|operat|laparotomy|exploration)",
+            "prompt surgery",
+            "re:urgent (surgery|surgical repair|operat|exploration)",
+            "return to theatre",
+            "re:emergency repair"
+          ],
+          "guidelineRefs": [
+            "wses-asbo-2017"
+          ]
+        }
+      ],
+      "mustExclude": [
+        {
+          "id": "mgmt-no-gastrografin-trial",
+          "severity": "critical",
+          "match": [
+            "gastrografin",
+            "water-soluble contrast"
+          ],
+          "unless": [
+            "not ",
+            "adhesional only"
+          ],
+          "guidelineRefs": [
+            "wses-asbo-2017"
+          ],
+          "note": "The non-operative ASBO pathway is for adhesional obstruction; this is a hernia."
+        }
+      ]
+    },
+    "dxVariant": {
+      "id": "variant-strangulated-or-obstructed",
+      "severity": "quality",
+      "equals": "hernia_incarcerated",
+      "note": "An obstructed (incarcerated) hernia; ischaemia not shown on CT."
+    }
+  },
+  "guideline": [
+    {
+      "id": "wses-asbo-2017",
+      "name": "Bologna guidelines — adhesive small bowel obstruction (WSES 2017 update)",
+      "year": 2018,
+      "section": "CT in suspected SBO; SBO in a patient without previous abdominal surgery (non-adhesive cause, e.g. hernia) needs a cause-specific diagnosis; signs of strangulation → surgery",
+      "citation": "ten Broek RPG, Krielen P, Di Saverio S, et al. Bologna guidelines for diagnosis and management of adhesive small bowel obstruction (ASBO): 2017 update of the evidence-based guidelines from the World Society of Emergency Surgery ASBO working group. World J Emerg Surg. 2018;13:24.",
+      "verified": false
+    },
+    {
+      "id": "wses-hernia-2017",
+      "name": "WSES guidelines — emergency repair of complicated abdominal wall hernias (2017 update)",
+      "year": 2017,
+      "section": "Diagnosis of strangulation (clinical signs, lactate, CPK, D-dimer, CT); timing of surgery; manual reduction only without strangulation; mesh in clean (CDC I) and clean-contaminated fields",
+      "citation": "Birindelli A, Sartelli M, Di Saverio S, et al. 2017 update of the WSES guidelines for emergency repair of complicated abdominal wall hernias. World J Emerg Surg. 2017;12:37.",
+      "verified": false
+    }
+  ],
+  "rationale": "Must-not-miss case. The CC and chips describe obstruction only (no lump), so the engine has to raise a hernia from demographics, virgin abdomen and CT. Tests the Bologna principle that SBO without previous surgery is not adhesional until proven otherwise.",
+  "authoring": {
+    "author": "Claude (hernia / breast / endocrine cluster)",
+    "date": "2026-09-25",
+    "notes": "Expectations need surgeon sign-off (reviewedBy). Citations verified: false."
+  }
+}

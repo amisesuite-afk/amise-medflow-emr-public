@@ -1,0 +1,176 @@
+{
+  "schemaVersion": 1,
+  "id": "screen-breast-average-risk-42",
+  "condition": "Breast cancer screening — average risk, age 40–49",
+  "category": "breast-endocrine",
+  "permutationOf": "screen-crc-average-risk-46",
+  "permutationLabel": "Woman aged 42, breast screening",
+  "summary": "42-year-old asymptomatic woman at a wellness visit, never had a mammogram, no family history. USPSTF 2024: biennial mammography from 40 to 74.",
+  "tags": [
+    "screening",
+    "wellness",
+    "breast"
+  ],
+  "inputs": {
+    "patient": {
+      "ageYears": 42,
+      "sex": "female",
+      "pregnancy": {
+        "status": "not-pregnant"
+      },
+      "heightCm": 165,
+      "weightKg": 68
+    },
+    "encounter": {
+      "setting": "outpatient",
+      "visitType": "wellness",
+      "acuity": "routine"
+    },
+    "chiefComplaint": "Wellness check — asks when to start mammograms",
+    "hpi": "Asymptomatic 42-year-old woman at a wellness visit. Has never had a mammogram and asks when she should start and how often. No breast lumps, no nipple discharge, no skin change. No family history of breast or ovarian cancer. Last cervical screening test 2 years ago, normal.",
+    "symptoms": [
+      "annual review"
+    ],
+    "negatives": [
+      "breast lump",
+      "nipple discharge"
+    ],
+    "exam": {
+      "general": "Well. BP 118/72.",
+      "other": "Breasts and axillae: normal examination."
+    },
+    "vitals": [
+      {
+        "minutesAgo": 10,
+        "heartRate": 70,
+        "systolicBp": 118,
+        "diastolicBp": 72,
+        "respiratoryRate": 14,
+        "temperatureC": 36.6,
+        "spo2": 99,
+        "avpu": "A",
+        "onSupplementalO2": false
+      }
+    ],
+    "labs": [],
+    "imaging": [],
+    "comorbidities": [],
+    "surgicalHistory": [],
+    "medications": [],
+    "allergies": [],
+    "nkda": true,
+    "socialHistory": "Accountant. Non-smoker. Two children, breastfed.",
+    "confirmedDiagnosis": {
+      "name": "Breast screening — average risk, age 42",
+      "icd10": "Z12.31",
+      "assessmentText": "Asymptomatic, average risk, normal examination. Screening mammography every 2 years from 40."
+    },
+    "platform": {
+      "web": {
+        "ccTemplate": "Other / general surgical",
+        "symptoms": [
+          "annual review"
+        ],
+        "durationDays": 0
+      }
+    }
+  },
+  "expected": {
+    "safety": {
+      "emergencyLevel": {
+        "id": "level-routine",
+        "severity": "quality",
+        "guidelineRefs": [
+          "uspstf-breast-2024"
+        ],
+        "atMost": "priority"
+      },
+      "mustNotAlarm": [
+        {
+          "id": "no-emergency-banner",
+          "severity": "quality",
+          "guidelineRefs": [
+            "uspstf-breast-2024"
+          ],
+          "note": "An asymptomatic screening visit must not raise an \"emergency now\" banner (alarm fatigue; front desk would redirect a well person).",
+          "match": [
+            "emergency now"
+          ]
+        }
+      ]
+    },
+    "management": {
+      "mustInclude": [
+        {
+          "id": "mgmt-mammogram",
+          "severity": "quality",
+          "guidelineRefs": [
+            "uspstf-breast-2024"
+          ],
+          "match": [
+            "mammogra"
+          ],
+          "knownGap": [
+            "ios"
+          ],
+          "knownGapNote": "iOS CI 2026-09-25 (run 36169134350, database mode): no management item matched among 3 (ios.pipeline.actions, ios.soap.plan)"
+        },
+        {
+          "id": "mgmt-biennial-interval",
+          "severity": "quality",
+          "guidelineRefs": [
+            "uspstf-breast-2024"
+          ],
+          "note": "USPSTF 2024: biennial (every 2 years) from 40 to 74.",
+          "match": [
+            "biennial",
+            "re:every (2|two) years",
+            "re:2-yearly",
+            "re:two-yearly"
+          ],
+          "knownGap": [
+            "ios"
+          ],
+          "knownGapNote": "iOS CI 2026-09-25 (run 36169134350, database mode): no management item matched among 3 (ios.pipeline.actions, ios.soap.plan)"
+        }
+      ],
+      "mustExclude": [
+        {
+          "id": "mgmt-no-biopsy-or-urgent-pathway",
+          "severity": "quality",
+          "guidelineRefs": [
+            "uspstf-breast-2024"
+          ],
+          "note": "No symptom: no diagnostic breast pathway.",
+          "match": [
+            "core biopsy",
+            "triple assessment",
+            "2-week",
+            "two-week wait"
+          ]
+        }
+      ]
+    },
+    "pathway": {
+      "id": "pathway-wellness",
+      "severity": "quality",
+      "equals": "wellness"
+    }
+  },
+  "guideline": [
+    {
+      "id": "uspstf-breast-2024",
+      "name": "USPSTF recommendation statement — screening for breast cancer",
+      "year": 2024,
+      "section": "Biennial screening mammography for women aged 40–74 (grade B)",
+      "citation": "US Preventive Services Task Force. Screening for breast cancer: US Preventive Services Task Force recommendation statement. JAMA. 2024;331:1918–1930.",
+      "verified": false
+    }
+  ],
+  "rationale": "USPSTF 2024 moved the start of average-risk breast screening to 40 with a biennial interval. A screening request needs no diagnostic (triple-assessment) pathway.",
+  "authoring": {
+    "author": "Claude (prevention/screening, obstetric-gynaecological mimics and paediatric surgery cluster)",
+    "date": "2026-09-25",
+    "notes": "Expectations need surgeon sign-off (reviewedBy). Every citation is verified: false. iOS outcomes are unverified (not run on Linux); triage after the first CI run."
+  }
+}

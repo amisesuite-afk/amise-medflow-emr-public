@@ -1,0 +1,342 @@
+{
+  "schemaVersion": 1,
+  "id": "gyn-pid-young-woman",
+  "condition": "Pelvic inflammatory disease (appendicitis mimic)",
+  "category": "other",
+  "permutationOf": null,
+  "permutationLabel": "Mild–moderate PID, outpatient-treatable (base case)",
+  "summary": "21-year-old woman, 3 days of bilateral lower abdominal pain, deep dyspareunia and purulent discharge after a new partner, T 38.2, cervical motion and bilateral adnexal tenderness; hCG negative. CDC 2021: NAAT, ceftriaxone + doxycycline + metronidazole, partner management.",
+  "tags": [
+    "mimic",
+    "gynaecology",
+    "sti"
+  ],
+  "inputs": {
+    "patient": {
+      "ageYears": 21,
+      "sex": "female",
+      "pregnancy": {
+        "status": "not-pregnant"
+      },
+      "heightCm": 162,
+      "weightKg": 56
+    },
+    "encounter": {
+      "setting": "emergency",
+      "visitType": "urgentReview",
+      "acuity": "urgent"
+    },
+    "chiefComplaint": "Lower abdominal pain and discharge",
+    "hpi": "Three days of bilateral lower abdominal pain, worse on the right, with deep pain during intercourse and a new yellow vaginal discharge. New male partner 4 weeks ago, condoms not used. Feels feverish. LMP 10 days ago. Urine pregnancy test negative. No vomiting, no urinary symptoms.",
+    "socrates": {
+      "onset": [
+        "2–3 days ago",
+        "Gradual"
+      ],
+      "site": [
+        "Suprapubic",
+        "RLQ",
+        "LLQ"
+      ],
+      "character": [
+        "Aching"
+      ],
+      "radiation": [
+        "No radiation"
+      ],
+      "associations": [
+        "Fever"
+      ],
+      "timing": [
+        "Constant"
+      ],
+      "exacerbating": [
+        "Movement"
+      ],
+      "relieving": [
+        "Analgesics"
+      ],
+      "severity": [
+        "Moderate (4–6/10)"
+      ]
+    },
+    "symptoms": [
+      "pelvic pain",
+      "vaginal discharge",
+      "dyspareunia",
+      "fever"
+    ],
+    "negatives": [
+      "vomiting",
+      "dysuria",
+      "amenorrhoea"
+    ],
+    "exam": {
+      "general": "T 38.2, HR 96, BP 116/72.",
+      "abdomen": "Lower abdominal tenderness bilaterally, no guarding. Speculum: mucopurulent cervical discharge. Bimanual: cervical motion tenderness and bilateral adnexal tenderness, no mass."
+    },
+    "vitals": [
+      {
+        "minutesAgo": 10,
+        "heartRate": 96,
+        "systolicBp": 116,
+        "diastolicBp": 72,
+        "respiratoryRate": 16,
+        "temperatureC": 38.2,
+        "spo2": 99,
+        "avpu": "A",
+        "onSupplementalO2": false
+      }
+    ],
+    "labs": [
+      {
+        "analyte": "bhcg",
+        "name": "Urine hCG",
+        "resultText": "Negative",
+        "minutesAgo": 45
+      },
+      {
+        "analyte": "wbc",
+        "name": "WBC",
+        "value": 13.8,
+        "unit": "×10⁹/L",
+        "minutesAgo": 30
+      },
+      {
+        "analyte": "crp",
+        "name": "CRP",
+        "value": 64,
+        "unit": "mg/L",
+        "minutesAgo": 30
+      },
+      {
+        "analyte": "urinalysis",
+        "name": "Urine dipstick",
+        "resultText": "Leucocytes 1+, nitrite negative",
+        "minutesAgo": 30
+      }
+    ],
+    "imaging": [],
+    "comorbidities": [],
+    "surgicalHistory": [],
+    "medications": [],
+    "allergies": [],
+    "nkda": true,
+    "socialHistory": "Hotel worker. Non-smoker. New partner.",
+    "confirmedDiagnosis": {
+      "name": "Pelvic inflammatory disease",
+      "icd10": "N73.9",
+      "paneDiseaseId": "pelvic_inflammatory_disease",
+      "assessmentText": "Mild–moderate PID: cervical motion and adnexal tenderness, fever, mucopurulent discharge, hCG negative. NAAT gonorrhoea/chlamydia, HIV and syphilis serology; ceftriaxone IM + doxycycline + metronidazole 14 days; partner notification; review 72 h."
+    },
+    "platform": {
+      "web": {
+        "ccTemplate": "Acute abdominal pain",
+        "socratesAnswers": {
+          "site": "Lower abdomen both sides, pelvic",
+          "onset": "3 days, gradual",
+          "character": "Aching",
+          "associated": "Fever, vaginal discharge, pain on intercourse",
+          "timing": "Constant",
+          "triggers": "Movement",
+          "relief": "Paracetamol helps a little",
+          "severity": "5/10"
+        },
+        "symptoms": [
+          "pelvic pain",
+          "vaginal discharge",
+          "dyspareunia",
+          "fever"
+        ],
+        "symptomDetails": {
+          "pelvic pain": [
+            "Constant",
+            "Vaginal discharge",
+            "Fever"
+          ]
+        },
+        "examFindings": {
+          "abdomen": [
+            "Suprapubic tenderness"
+          ]
+        },
+        "paneAnswers": {
+          "adnexal_tenderness": true,
+          "vaginal_discharge": true,
+          "dyspareunia": true,
+          "fever": true
+        },
+        "durationDays": 3,
+        "painScore": 5
+      }
+    }
+  },
+  "expected": {
+    "differential": {
+      "mustRankTopK": [
+        {
+          "id": "dx-pid-top3",
+          "severity": "critical",
+          "guidelineRefs": [
+            "cdc-sti-2021"
+          ],
+          "match": [
+            "pelvic inflam",
+            "re:\\bpid\\b",
+            "salpingitis"
+          ],
+          "k": 3
+        }
+      ]
+    },
+    "investigations": {
+      "mustInclude": [
+        {
+          "id": "inv-naat",
+          "severity": "quality",
+          "guidelineRefs": [
+            "cdc-sti-2021",
+            "bashh-pid-2019"
+          ],
+          "match": [
+            "naat",
+            "chlamydia",
+            "gonorr",
+            "endocervical swab",
+            "vaginal swab"
+          ]
+        },
+        {
+          "id": "inv-pregnancy-test",
+          "severity": "quality",
+          "guidelineRefs": [
+            "cdc-sti-2021"
+          ],
+          "match": [
+            "hcg",
+            "pregnancy test"
+          ]
+        },
+        {
+          "id": "inv-hiv-syphilis",
+          "severity": "quality",
+          "guidelineRefs": [
+            "cdc-sti-2021"
+          ],
+          "match": [
+            "re:\\bhiv\\b",
+            "syphilis"
+          ]
+        }
+      ]
+    },
+    "management": {
+      "mustInclude": [
+        {
+          "id": "mgmt-doxycycline",
+          "severity": "critical",
+          "guidelineRefs": [
+            "cdc-sti-2021",
+            "bashh-pid-2019"
+          ],
+          "note": "Chlamydia cover is the core of every PID regimen.",
+          "match": [
+            "doxycycline"
+          ]
+        },
+        {
+          "id": "mgmt-ceftriaxone",
+          "severity": "quality",
+          "guidelineRefs": [
+            "cdc-sti-2021"
+          ],
+          "match": [
+            "ceftriaxone"
+          ]
+        },
+        {
+          "id": "mgmt-partner",
+          "severity": "quality",
+          "guidelineRefs": [
+            "cdc-sti-2021",
+            "bashh-pid-2019"
+          ],
+          "match": [
+            "partner"
+          ]
+        }
+      ],
+      "mustExclude": [
+        {
+          "id": "mgmt-no-appendicectomy",
+          "severity": "critical",
+          "guidelineRefs": [
+            "cdc-sti-2021"
+          ],
+          "note": "Not an appendix presentation: an appendicectomy operative plan is a wrong-procedure suggestion.",
+          "match": [
+            "appendicectomy",
+            "appendectomy"
+          ],
+          "unless": [
+            "not indicated",
+            "no role",
+            "exclude appendicitis"
+          ]
+        },
+        {
+          "id": "mgmt-no-antithrombotic-plan",
+          "severity": "critical",
+          "guidelineRefs": [
+            "cdc-sti-2021"
+          ],
+          "note": "An ACS, PE or AF antithrombotic/thrombolytic plan must never be attached to this diagnosis. Regression guard for DiagnosisRadiationEngine keyword matching: before 999f838 (word-boundary lookup) \"pe\" (pulmonary embolism) inside \"pelvic\" would have attached the PE plan (DOAC, thrombolysis). With word-boundary matching no radiation entry matches (simulated from the source); to be confirmed on the first iOS CI run.",
+          "match": [
+            "aspirin 300",
+            "ticagrelor",
+            "clopidogrel 300",
+            "fondaparinux",
+            "alteplase",
+            "thrombolysis",
+            "rivaroxaban",
+            "apixaban 10",
+            "apixaban 5 mg bd",
+            "dabigatran",
+            "doacs (preferred)"
+          ],
+          "sources": [
+            "ios.radiation",
+            "ios.soap",
+            "web.plan",
+            "web.protocol",
+            "web.managementPanel"
+          ]
+        }
+      ]
+    }
+  },
+  "guideline": [
+    {
+      "id": "cdc-sti-2021",
+      "name": "CDC sexually transmitted infections treatment guidelines — pelvic inflammatory disease",
+      "year": 2021,
+      "section": "Clinical diagnosis (pelvic/lower abdominal pain with cervical motion, uterine or adnexal tenderness); NAAT for N. gonorrhoeae and C. trachomatis; pregnancy test; HIV and syphilis testing; outpatient regimen ceftriaxone 500 mg IM once + doxycycline 100 mg BD 14 days + metronidazole 500 mg BD 14 days; hospitalise for tubo-ovarian abscess, severe illness or when a surgical emergency (e.g. appendicitis) cannot be excluded; parenteral regimen; partner management; IUD need not be removed",
+      "citation": "Workowski KA, Bachmann LH, Chan PA, et al. Sexually transmitted infections treatment guidelines, 2021. MMWR Recomm Rep. 2021;70(4):1–187.",
+      "verified": false
+    },
+    {
+      "id": "bashh-pid-2019",
+      "name": "BASHH UK national guideline for the management of pelvic inflammatory disease",
+      "year": 2019,
+      "section": "Low threshold for empirical treatment; test for gonorrhoea and chlamydia; exclude ectopic pregnancy; inpatient IV therapy for severe disease or tubo-ovarian abscess; partner notification",
+      "citation": "Ross J, Cole M, Evans C, et al. United Kingdom national guideline for the management of pelvic inflammatory disease (2019 interim update). British Association for Sexual Health and HIV; 2019.",
+      "verified": false
+    }
+  ],
+  "rationale": "PID is a common mimic of appendicitis. Diagnosis is clinical; treatment is empirical antibiotics covering gonorrhoea, chlamydia and anaerobes, with STI testing and partner management.",
+  "authoring": {
+    "author": "Claude (prevention/screening, obstetric-gynaecological mimics and paediatric surgery cluster)",
+    "date": "2026-09-25",
+    "notes": "Expectations need surgeon sign-off (reviewedBy). Every citation is verified: false. iOS outcomes are unverified (not run on Linux); triage after the first CI run."
+  }
+}

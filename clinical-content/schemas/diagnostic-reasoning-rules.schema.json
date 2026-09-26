@@ -1,0 +1,80 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://amise.local/clinical-content/schemas/diagnostic-reasoning-rules.schema.json",
+  "title": "Diagnostic-reasoning rules (diagnostic-reasoning-rules)",
+  "description": "Thresholds of the diagnostic-reasoning core and the rules the platform adapters share: diagnosis families, working-diagnosis label matching, the closure-alert contradiction threshold and the coexisting states. Read by lib/triage-engine/src/diagnostic-reasoning/reasoning-rules.ts (web) and DiagnosticReasoningRules.swift (iOS, DiagnosticReasoningRules.RuleFile; the thresholds are compiled into DiagnosticReasoningCore.swift and pinned to this file by diagnostic-reasoning-parity.test.ts).",
+  "type": "object",
+  "required": ["id", "version", "thresholds", "closure", "workingDiagnosis", "families", "coexisting"],
+  "additionalProperties": false,
+  "properties": {
+    "$schema": { "type": "string" },
+    "$comment": { "type": "string" },
+    "id": { "const": "diagnostic-reasoning-rules" },
+    "version": { "type": "string", "pattern": "^\\d+\\.\\d+\\.\\d+$" },
+    "thresholds": {
+      "type": "object",
+      "required": ["supportLr", "againstLr", "favourLr", "lowEvidenceLr", "strongContradictionLr", "strongFavourLr", "lessLikelyRatio",
+        "lessLikelyMinLeader", "news2RiseMin", "news2AlertMin", "unexplainedTimeOut", "minGain", "maxClosureAlerts"],
+      "additionalProperties": false,
+      "properties": {
+        "supportLr": { "type": "number", "exclusiveMinimum": 1, "description": "A present finding with LR >= this supports the hypothesis." },
+        "againstLr": { "type": "number", "exclusiveMinimum": 0, "exclusiveMaximum": 1, "description": "A present (or documented-absent) finding with LR <= this argues against it." },
+        "favourLr": { "type": "number", "exclusiveMinimum": 1, "description": "A finding favours another hypothesis when its LR there is >= this." },
+        "lowEvidenceLr": { "type": "number", "exclusiveMinimum": 1, "description": "No supporting finding with LR >= this: 'low evidence'." },
+        "strongContradictionLr": { "type": "number", "exclusiveMinimum": 0, "exclusiveMaximum": 1, "description": "Core premature-closure alert: a finding against the working diagnosis with LR <= this." },
+        "strongFavourLr": { "type": "number", "exclusiveMinimum": 1, "description": "The finding that drives the leader has an LR ratio >= this (leader / working)." },
+        "lessLikelyRatio": { "type": "number", "exclusiveMinimum": 1, "description": "The leader is at least this many times more probable than the working diagnosis..." },
+        "lessLikelyMinLeader": { "type": "number", "exclusiveMinimum": 0, "maximum": 1, "description": "...and at least this probable." },
+        "news2RiseMin": { "type": "integer", "minimum": 1, "description": "NEWS2 rise (latest minus the lowest earlier reading) that raises an alert..." },
+        "news2AlertMin": { "type": "integer", "minimum": 1, "description": "...when the latest NEWS2 is at least this (RCP NEWS2: 5 = urgent response)." },
+        "unexplainedTimeOut": { "type": "integer", "minimum": 1, "description": "Diagnostic time-out: this many recorded findings unexplained by the leading diagnoses." },
+        "minGain": { "type": "number", "exclusiveMinimum": 0, "description": "Expected information gain (nats) below which a probe is not offered." },
+        "maxClosureAlerts": { "type": "integer", "minimum": 1, "description": "At most this many premature-closure alerts." }
+      }
+    },
+    "closure": {
+      "type": "object",
+      "required": ["contradictionMaxLr", "contradictionSource"],
+      "additionalProperties": false,
+      "properties": {
+        "contradictionMaxLr": { "type": "number", "exclusiveMinimum": 0, "exclusiveMaximum": 1, "description": "A single contradicting finding raises 'Doesn't fit the working diagnosis' only at LR <= this (the core flags <= strongContradictionLr)." },
+        "contradictionSource": { "type": "string", "minLength": 1 }
+      }
+    },
+    "workingDiagnosis": {
+      "type": "object",
+      "required": ["labelMatchMin", "labelMatchMinAlone", "labelMatchMargin", "neutralWords", "opposites"],
+      "additionalProperties": false,
+      "properties": {
+        "labelMatchMin": { "type": "integer", "minimum": 1, "description": "Label score (words found - words missing) needed when an ICD-10 match exists." },
+        "labelMatchMinAlone": { "type": "integer", "minimum": 1, "description": "Label score needed when the ICD-10 code matches no node." },
+        "labelMatchMargin": { "type": "integer", "minimum": 0, "description": "The label match must beat the ICD-10 match's own label score by this." },
+        "neutralWords": { "type": "array", "items": { "$ref": "#/$defs/word" } },
+        "opposites": { "type": "object", "additionalProperties": { "$ref": "#/$defs/word" }, "description": "Neutral words that contradict each other (acute / chronic)." }
+      }
+    },
+    "families": {
+      "type": "object",
+      "required": ["complicationModifiers", "genericTailWords", "synonyms", "injuryChapter"],
+      "additionalProperties": false,
+      "properties": {
+        "complicationModifiers": { "type": "array", "items": { "$ref": "#/$defs/word" }, "description": "Label words that mark a complication or a grade of a condition." },
+        "genericTailWords": { "type": "array", "items": { "$ref": "#/$defs/word" }, "description": "Trailing label words that are not the head noun." },
+        "synonyms": { "type": "object", "additionalProperties": { "$ref": "#/$defs/word" }, "description": "Spelling / synonym normalisation of label words." },
+        "injuryChapter": { "type": "string", "pattern": "^[A-Z]$", "description": "ICD-10 chapter letter of injuries: two injuries of one block (S2x, S3x) are one family." }
+      }
+    },
+    "coexisting": {
+      "type": "object",
+      "required": ["paneIds", "nameTerms"],
+      "additionalProperties": false,
+      "properties": {
+        "paneIds": { "type": "array", "items": { "type": "string", "pattern": "^[a-z0-9_]+$" }, "description": "PANE disease ids of states that accompany other diagnoses (web)." },
+        "nameTerms": { "type": "array", "items": { "$ref": "#/$defs/word" }, "description": "The same states by name, for engines without PANE ids (iOS: a candidate name containing one)." }
+      }
+    }
+  },
+  "$defs": {
+    "word": { "type": "string", "minLength": 1, "pattern": "^[^A-Z]*$" }
+  }
+}

@@ -1,0 +1,238 @@
+{
+  "schemaVersion": 1,
+  "id": "mscc-prostate-cancer-weakness",
+  "condition": "Metastatic spinal cord compression",
+  "category": "other",
+  "permutationOf": null,
+  "permutationLabel": "Known prostate cancer, established neurological deficit",
+  "summary": "71-year-old man with metastatic prostate cancer: 3 weeks of band-like thoracic back pain worse lying flat, 2 days of leg weakness, sensory level T10, hesitancy.",
+  "tags": [
+    "neuro",
+    "spine",
+    "oncology",
+    "do-not-miss",
+    "time-critical"
+  ],
+  "inputs": {
+    "patient": {
+      "ageYears": 71,
+      "sex": "male",
+      "pregnancy": {
+        "status": "not-applicable"
+      },
+      "heightCm": 176,
+      "weightKg": 79
+    },
+    "encounter": {
+      "setting": "emergency",
+      "visitType": "urgentReview",
+      "acuity": "urgent"
+    },
+    "chiefComplaint": "Back pain and legs going weak",
+    "hpi": "Metastatic prostate cancer with bone metastases on hormone therapy. Three weeks of mid-back pain, band-like around the chest, worse lying flat and at night. For 2 days both legs weak and unsteady, numb below the belly button, hesitant passing urine.",
+    "symptoms": [
+      "back pain",
+      "limb weakness",
+      "numbness",
+      "unsteady gait",
+      "hesitancy"
+    ],
+    "negatives": [
+      "fever",
+      "trauma"
+    ],
+    "exam": {
+      "general": "Pulse 88/min, BP 142/80, temperature 36.8°C.",
+      "neuro": "Power 3/5 hip flexion bilaterally, 4/5 distally; sensory level at T10; brisk knee reflexes, upgoing plantars. Tender T9 spinous process."
+    },
+    "vitals": [
+      {
+        "minutesAgo": 10,
+        "heartRate": 88,
+        "systolicBp": 142,
+        "diastolicBp": 80,
+        "respiratoryRate": 16,
+        "temperatureC": 36.8,
+        "spo2": 97,
+        "avpu": "A",
+        "onSupplementalO2": false,
+        "weightKg": 79
+      }
+    ],
+    "labs": [
+      {
+        "analyte": "calcium",
+        "name": "Adjusted calcium",
+        "value": 2.52,
+        "unit": "mmol/L",
+        "minutesAgo": 30
+      },
+      {
+        "analyte": "psa",
+        "name": "PSA",
+        "value": 48,
+        "unit": "µg/L",
+        "minutesAgo": 30
+      },
+      {
+        "analyte": "creatinine",
+        "name": "Creatinine",
+        "value": 90,
+        "unit": "µmol/L",
+        "minutesAgo": 30
+      }
+    ],
+    "imaging": [],
+    "comorbidities": [
+      "Metastatic prostate cancer (bone metastases)"
+    ],
+    "surgicalHistory": [],
+    "medications": [
+      {
+        "drug": "Degarelix",
+        "dose": "80 mg",
+        "frequency": "monthly",
+        "indication": "Prostate cancer"
+      },
+      {
+        "drug": "Paracetamol",
+        "dose": "1 g",
+        "frequency": "QDS",
+        "indication": "Pain"
+      }
+    ],
+    "allergies": [],
+    "nkda": true,
+    "socialHistory": "Retired teacher.",
+    "confirmedDiagnosis": {
+      "name": "Metastatic spinal cord compression (T10) — prostate cancer",
+      "icd10": "G95.2",
+      "assessmentText": "MSCC at about T10 with progressive paraparesis: dexamethasone, MRI whole spine immediately, MSCC coordinator / oncology and spinal surgery now."
+    },
+    "platform": {
+      "web": {
+        "ccTemplate": "Other / general surgical",
+        "symptoms": [
+          "back pain",
+          "limb weakness",
+          "numbness",
+          "unsteady gait",
+          "hesitancy"
+        ],
+        "symptomDetails": {
+          "back pain": [
+            "Thoracic (upper back)",
+            "Bilateral legs",
+            "Progressive weakness",
+            "Night pain",
+            "Known malignancy",
+            "Constant"
+          ]
+        },
+        "durationDays": 21,
+        "painScore": 7
+      }
+    }
+  },
+  "expected": {
+    "differential": {
+      "mustNotMiss": [
+        {
+          "id": "mnm-mscc",
+          "severity": "critical",
+          "match": [
+            "cord compression",
+            "mscc",
+            "spinal metast",
+            "spinal cord"
+          ],
+          "guidelineRefs": [
+            "nice-ng234"
+          ]
+        }
+      ]
+    },
+    "safety": {
+      "emergencyLevel": {
+        "id": "level-emergency",
+        "severity": "critical",
+        "atLeast": "emergency",
+        "guidelineRefs": [
+          "nice-ng234"
+        ]
+      },
+      "mustAlarm": [
+        {
+          "id": "alarm-mscc",
+          "severity": "critical",
+          "match": [
+            "cord compression",
+            "mscc",
+            "spinal cord"
+          ],
+          "guidelineRefs": [
+            "nice-ng234"
+          ]
+        }
+      ]
+    },
+    "investigations": {
+      "mustInclude": [
+        {
+          "id": "inv-mri-whole-spine",
+          "severity": "critical",
+          "match": [
+            "re:\\bmri\\b"
+          ],
+          "guidelineRefs": [
+            "nice-ng234"
+          ]
+        }
+      ]
+    },
+    "management": {
+      "mustInclude": [
+        {
+          "id": "mgmt-dexamethasone",
+          "severity": "critical",
+          "match": [
+            "dexamethasone",
+            "corticosteroid"
+          ],
+          "guidelineRefs": [
+            "nice-ng234"
+          ]
+        },
+        {
+          "id": "mgmt-mscc-coordinator",
+          "severity": "critical",
+          "match": [
+            "mscc coordinator",
+            "oncolog",
+            "spinal surg",
+            "radiotherapy"
+          ],
+          "guidelineRefs": [
+            "nice-ng234"
+          ]
+        }
+      ]
+    }
+  },
+  "guideline": [
+    {
+      "id": "nice-ng234",
+      "name": "NICE NG234 — Spinal metastases and metastatic spinal cord compression",
+      "year": 2023,
+      "section": "Neurological symptoms or signs suggesting MSCC: MRI whole spine immediately (within 24 h), contact the MSCC coordinator immediately, dexamethasone unless lymphoma suspected; spinal pain suggesting spinal metastases without neurological symptoms: MRI within 1 week; definitive treatment (surgery / radiotherapy) planning",
+      "citation": "National Institute for Health and Care Excellence. Spinal metastases and metastatic spinal cord compression. NICE guideline NG234. London: NICE; 2023.",
+      "verified": false
+    }
+  ],
+  "rationale": "NICE NG234: neurological signs of MSCC → MRI whole spine immediately, dexamethasone, MSCC coordinator.",
+  "authoring": {
+    "author": "Claude (endocrine / renal / urology / neuro cluster)",
+    "date": "2026-09-25",
+    "notes": "Expectations need surgeon sign-off (reviewedBy). Every citation is verified: false. iOS outcomes not observed (Linux)."
+  }
+}

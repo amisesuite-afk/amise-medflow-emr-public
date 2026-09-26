@@ -1,0 +1,403 @@
+{
+  "schemaVersion": 1,
+  "id": "lgib-angiodysplasia-aspirin",
+  "condition": "Colonic angiodysplasia with iron-deficiency anaemia",
+  "category": "colorectal",
+  "permutationOf": "lgib-oakland-low-risk-discharge",
+  "permutationLabel": "Recurrent occult/overt bleeding, aortic stenosis, aspirin",
+  "summary": "76-year-old woman with aortic stenosis, CKD and aspirin for coronary disease; recurrent iron-deficiency anaemia (Hb 8.6, ferritin 8) with intermittent dark red bleeding. Colorectal cancer must be excluded; angiodysplasia is the working diagnosis; aspirin for secondary prevention is continued.",
+  "tags": [
+    "lgib",
+    "iron-deficiency-anaemia",
+    "elderly",
+    "antiplatelet"
+  ],
+  "inputs": {
+    "patient": {
+      "ageYears": 76,
+      "sex": "female",
+      "pregnancy": {
+        "status": "not-applicable"
+      },
+      "heightCm": 158,
+      "weightKg": 63
+    },
+    "encounter": {
+      "setting": "outpatient",
+      "visitType": "newConsult",
+      "acuity": "priority"
+    },
+    "chiefComplaint": "Tiredness and intermittent dark blood in the stool",
+    "hpi": "Six months of tiredness and breathlessness on exertion. Intermittent small amounts of dark red blood mixed with stool. Two blood transfusions this year for anaemia. OGD three months ago: normal. No change in bowel habit, no weight loss. Moderate aortic stenosis, ischaemic heart disease (stent 2019) on aspirin, CKD stage 3.",
+    "socrates": {
+      "onset": [
+        "1–6 months ago"
+      ],
+      "associations": [
+        "Rectal bleeding"
+      ],
+      "timing": [
+        "Intermittent"
+      ],
+      "severity": [
+        "Mild (1–3/10)"
+      ]
+    },
+    "symptoms": [
+      "rectal bleeding",
+      "fatigue",
+      "dyspnoea on exertion"
+    ],
+    "negatives": [
+      "weight loss",
+      "change in bowel habit",
+      "abdominal pain"
+    ],
+    "exam": {
+      "general": "Pale conjunctivae. HR 84 regular, BP 138/64. Ejection systolic murmur radiating to the carotids.",
+      "abdomen": "Soft, non-tender, no masses.",
+      "cardiovascular": "Ejection systolic murmur, aortic area.",
+      "other": "PR: dark blood-streaked stool on the glove, no mass."
+    },
+    "vitals": [
+      {
+        "minutesAgo": 20,
+        "heartRate": 84,
+        "systolicBp": 138,
+        "diastolicBp": 64,
+        "respiratoryRate": 16,
+        "temperatureC": 36.6,
+        "spo2": 97,
+        "avpu": "A",
+        "onSupplementalO2": false
+      }
+    ],
+    "labs": [
+      {
+        "analyte": "haemoglobin",
+        "name": "Haemoglobin",
+        "value": 8.6,
+        "unit": "g/dL",
+        "minutesAgo": 60
+      },
+      {
+        "analyte": "mcv",
+        "name": "MCV",
+        "value": 71,
+        "unit": "fL",
+        "minutesAgo": 60
+      },
+      {
+        "analyte": "ferritin",
+        "name": "Ferritin",
+        "value": 8,
+        "unit": "µg/L",
+        "minutesAgo": 60
+      },
+      {
+        "analyte": "platelets",
+        "name": "Platelets",
+        "value": 310,
+        "unit": "×10⁹/L",
+        "minutesAgo": 60
+      },
+      {
+        "analyte": "urea",
+        "name": "Urea",
+        "value": 8.9,
+        "unit": "mmol/L",
+        "minutesAgo": 60
+      },
+      {
+        "analyte": "creatinine",
+        "name": "Creatinine",
+        "value": 132,
+        "unit": "µmol/L",
+        "minutesAgo": 60
+      },
+      {
+        "analyte": "inr",
+        "name": "INR",
+        "value": 1.0,
+        "minutesAgo": 60
+      }
+    ],
+    "imaging": [
+      {
+        "name": "OGD (3 months ago)",
+        "modality": "Endoscopy",
+        "region": "Upper GI",
+        "result": "Normal oesophagus, stomach and duodenum. Duodenal biopsies normal.",
+        "minutesAgo": 129600
+      }
+    ],
+    "comorbidities": [
+      "Aortic stenosis",
+      "Ischaemic heart disease",
+      "Chronic kidney disease stage 3",
+      "Iron deficiency anaemia"
+    ],
+    "surgicalHistory": [
+      "Coronary stent (2019)"
+    ],
+    "medications": [
+      {
+        "drug": "Aspirin",
+        "dose": "75 mg",
+        "frequency": "OD",
+        "indication": "Secondary prevention (coronary stent)"
+      },
+      {
+        "drug": "Atorvastatin",
+        "dose": "40 mg",
+        "frequency": "ON",
+        "indication": "Secondary prevention"
+      }
+    ],
+    "allergies": [],
+    "nkda": true,
+    "socialHistory": "Retired seamstress. Never smoked.",
+    "confirmedDiagnosis": {
+      "name": "Iron-deficiency anaemia with intermittent lower GI bleeding — suspected colonic angiodysplasia",
+      "icd10": "K55.21",
+      "assessmentText": "Recurrent iron-deficiency anaemia with intermittent lower GI bleeding; suspected colonic angiodysplasia (aortic stenosis). Colorectal cancer to be excluded by colonoscopy."
+    },
+    "platform": {
+      "web": {
+        "ccTemplate": "Rectal bleeding",
+        "symptoms": [
+          "rectal bleeding",
+          "fatigue",
+          "dyspnoea on exertion"
+        ],
+        "symptomDetails": {
+          "rectal bleeding": [
+            "Dark red",
+            "Mixed with stool"
+          ]
+        },
+        "examFindings": {
+          "abdomen": [
+            "Soft",
+            "PR: blood"
+          ],
+          "skin": [
+            "Pallor"
+          ],
+          "cardiovascular": [
+            "Murmur present"
+          ]
+        },
+        "paneAnswers": {
+          "pr_bleeding": true,
+          "fatigue": true,
+          "weight_loss": false
+        },
+        "durationDays": 180,
+        "painScore": 0
+      }
+    }
+  },
+  "expected": {
+    "differential": {
+      "mustNotMiss": [
+        {
+          "id": "mnm-crc",
+          "severity": "critical",
+          "match": [
+            "colorectal cancer",
+            "colorectal carcinoma",
+            "colorectal malignancy",
+            "rectal carcinoma",
+            "rectal cancer",
+            "colon cancer",
+            "colonic carcinoma",
+            "colonic cancer",
+            "caecal carcinoma",
+            "icd:C18",
+            "icd:C20"
+          ],
+          "guidelineRefs": [
+            "bsg-ida-2021",
+            "nice-ng12"
+          ],
+          "note": "Iron-deficiency anaemia at 76 with bleeding: colorectal cancer must be on the differential until colonoscopy."
+        },
+        {
+          "id": "mnm-angiodysplasia",
+          "severity": "quality",
+          "match": [
+            "angiodysplasia",
+            "vascular ectasia",
+            "arteriovenous malformation"
+          ],
+          "guidelineRefs": [
+            "bsg-lgib-2019"
+          ],
+          "knownGap": [
+            "ios"
+          ],
+          "knownGapNote": "iOS CI 2026-09-25 (run 36169134350, database mode): not in top 5 of ios.bayes: 1. Iron Deficiency Anaemia | 2. Acute Kidney Injury | 3. Colorectal Carcinoma | 4. Ischaemic Colitis | 5. Upper GI Bleeding (Peptic Ulcer)"
+        }
+      ]
+    },
+    "investigations": {
+      "mustInclude": [
+        {
+          "id": "inv-colonoscopy",
+          "severity": "critical",
+          "match": [
+            "colonoscop"
+          ],
+          "guidelineRefs": [
+            "bsg-ida-2021",
+            "bsg-lgib-2019"
+          ]
+        },
+        {
+          "id": "inv-iron-studies",
+          "severity": "quality",
+          "match": [
+            "ferritin",
+            "iron studies"
+          ],
+          "guidelineRefs": [
+            "bsg-ida-2021"
+          ]
+        }
+      ]
+    },
+    "management": {
+      "mustInclude": [
+        {
+          "id": "mgmt-iron",
+          "severity": "quality",
+          "match": [
+            "re:\\biv iron\\b",
+            "ferric",
+            "ferrous",
+            "iron replacement",
+            "iron supplement"
+          ],
+          "guidelineRefs": [
+            "bsg-ida-2021"
+          ]
+        },
+        {
+          "id": "mgmt-apc",
+          "severity": "quality",
+          "match": [
+            "argon plasma",
+            "re:\\bapc\\b",
+            "endoscopic therap"
+          ],
+          "guidelineRefs": [
+            "bsg-lgib-2019"
+          ],
+          "knownGap": [
+            "ios"
+          ],
+          "knownGapNote": "iOS CI 2026-09-25 (run 36169134350, database mode): no management item matched among 24 (ios.pipeline.actions, ios.radiation.plan, ios.radiation.referral, ios.radiation.followUp, ios.soap.plan)"
+        }
+      ],
+      "mustExclude": [
+        {
+          "id": "mgmt-no-heparin",
+          "severity": "critical",
+          "match": [
+            "heparin"
+          ],
+          "unless": [
+            "low molecular",
+            "lmwh",
+            "prophyla"
+          ],
+          "sources": [
+            "web.plan",
+            "web.protocol.medications",
+            "web.clinicalPrompts",
+            "ios.radiation",
+            "ios.soap",
+            "ios.pipeline"
+          ],
+          "guidelineRefs": [
+            "bsg-lgib-2019"
+          ],
+          "note": "Therapeutic heparin in an actively bleeding patient is harmful.",
+          "proposedFix": "Exclude K55.2x (angiodysplasia) from the ischaemic_colitis protocol prefixes; add an angiodysplasia/LGIB protocol (colonoscopy + APC, iron, continue secondary-prevention aspirin)."
+        },
+        {
+          "id": "mgmt-no-stop-aspirin",
+          "severity": "critical",
+          "match": [
+            "re:(stop|discontinue|withhold|hold|cease)[^.]{0,30}aspirin"
+          ],
+          "sources": [
+            "web.plan",
+            "web.protocol.medications",
+            "web.clinicalPrompts",
+            "ios.radiation",
+            "ios.soap",
+            "ios.pipeline"
+          ],
+          "guidelineRefs": [
+            "bsg-lgib-2019"
+          ],
+          "note": "BSG 2019: aspirin for secondary cardiovascular prevention should not be stopped routinely in LGIB (coronary stent)."
+        },
+        {
+          "id": "mgmt-no-empirical-antibiotics",
+          "severity": "quality",
+          "match": [
+            "piperacillin",
+            "tazocin",
+            "meropenem"
+          ],
+          "sources": [
+            "web.plan",
+            "web.protocol.medications",
+            "web.clinicalPrompts",
+            "ios.radiation",
+            "ios.soap",
+            "ios.pipeline"
+          ],
+          "guidelineRefs": [
+            "bsg-lgib-2019"
+          ]
+        }
+      ]
+    }
+  },
+  "guideline": [
+    {
+      "id": "bsg-lgib-2019",
+      "name": "BSG guideline — diagnosis and management of acute lower gastrointestinal bleeding",
+      "year": 2019,
+      "section": "Angiodysplasia: endoscopic therapy (argon plasma coagulation); antiplatelets for secondary prevention continued",
+      "citation": "Oakland K, Chadwick G, East JE, et al. Diagnosis and management of acute lower gastrointestinal bleeding: guidelines from the British Society of Gastroenterology. Gut. 2019;68:776–789.",
+      "verified": false
+    },
+    {
+      "id": "bsg-ida-2021",
+      "name": "BSG guideline — management of iron deficiency anaemia in adults",
+      "year": 2021,
+      "section": "IDA in men and post-menopausal women: bidirectional endoscopy (colonoscopy if OGD negative); iron replacement",
+      "citation": "Snook J, Bhala N, Beales ILP, et al. British Society of Gastroenterology guidelines for the management of iron deficiency anaemia in adults. Gut. 2021;70:2030–2051.",
+      "verified": false
+    },
+    {
+      "id": "nice-ng12",
+      "name": "NICE NG12 — suspected cancer: recognition and referral (lower gastrointestinal tract cancers)",
+      "year": 2023,
+      "section": "Lower GI: age ≥ 60 with iron-deficiency anaemia → suspected colorectal cancer pathway",
+      "citation": "National Institute for Health and Care Excellence. Suspected cancer: recognition and referral (NG12). First published 2015; lower GI recommendations updated 2023 to incorporate DG56.",
+      "verified": false
+    }
+  ],
+  "rationale": "Permutation: occult/overt recurrent bleeding with IDA, antiplatelet for a coronary stent. ICD K55.21 (angiodysplasia of colon with haemorrhage, ICD-10-CM) sits under the K55 vascular-disorders block; this checks whether angiodysplasia is routed to the ischaemic-colitis protocol (antibiotics, heparin infusion, colectomy).",
+  "authoring": {
+    "author": "Claude (colorectal/anorectal cluster)",
+    "date": "2026-09-25",
+    "notes": "Expectations need surgeon sign-off (reviewedBy). Citations verified: false until checked against the source."
+  }
+}

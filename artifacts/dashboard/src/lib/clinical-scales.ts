@@ -39,6 +39,8 @@
  *   34. AUDIT (WHO alcohol use disorders identification test)
  */
 
+import { evaluateNews2, type News2Avpu, type News2Evaluation } from '@workspace/triage-engine';
+
 export interface ScaleResult {
   score: number;
   band: string;       // e.g. "HIGH", "Grade II"
@@ -208,32 +210,24 @@ export function abcd2Score(i: Abcd2Inputs): number {
   );
 }
 
+/**
+ * ABCD2 is kept for documentation only. NICE NG128 (2019, updated 2022) advises against using
+ * ABCD2 or other risk scores to decide urgency: every suspected TIA gets aspirin 300 mg (unless
+ * contraindicated) and specialist assessment within 24 hours, whatever the score (G2.15).
+ */
 export function interpretAbcd2(score: number): ScaleResult {
-  const evidence = 'Johnston et al., Lancet 2007; ABCD2 validation';
-  if (score <= 3) return {
-    score, band: 'LOW RISK', color: 'green',
-    description: '~1% 2-day stroke risk.',
-    action: 'Outpatient TIA clinic within 24–48h. Dual antiplatelet. MRI-DWI if available.',
-    evidence,
-  };
-  if (score <= 5) return {
-    score, band: 'MODERATE RISK', color: 'amber',
-    description: '~4% 2-day stroke risk.',
-    action: 'Urgent TIA assessment within 24h. Consider hospital admission for monitoring.',
-    evidence,
-  };
-  return {
-    score, band: 'HIGH RISK', color: 'red',
-    description: '~8% 2-day stroke risk.',
-    action: 'Admit and investigate urgently. MRI-DWI, carotid imaging, cardiac monitoring.',
-    evidence,
-  };
+  const evidence = 'Johnston et al., Lancet 2007 (derivation); NICE NG128 (2019, updated 2022) — do not use to decide urgency';
+  const action = 'NICE NG128: do not use ABCD2 to decide urgency. Every suspected TIA: aspirin 300 mg now unless contraindicated, and specialist stroke assessment within 24 hours of symptom onset. Persisting or recurrent symptoms: treat as acute stroke (911 / emergency department).';
+  if (score <= 3) return { score, band: 'SCORE ≤ 3 — not for triage', color: 'amber', description: 'A low score does not make a TIA low risk (NICE NG128).', action, evidence };
+  if (score <= 5) return { score, band: 'SCORE 4–5 — not for triage', color: 'amber', description: 'Urgency is not set by the score (NICE NG128).', action, evidence };
+  return { score, band: 'SCORE ≥ 6 — not for triage', color: 'red', description: 'Urgency is not set by the score (NICE NG128).', action, evidence };
 }
 
 // ─── 5. TG18 Cholangitis Severity ──────────────────────────────────────────
 
 export interface Tg18CholangitisInputs {
-  fever: boolean;            // temp ≥ 38°C — auto from vitals
+  /** HIGH fever ≥ 39 °C (TG18 Grade II criterion; fever ≥ 38 °C is only a diagnostic A criterion). */
+  fever: boolean;
   wbcAbnormal: boolean;      // < 4k or > 12k
   age: number | null;        // ≥ 75 = moderate criterion
   bilirubinHighGrade2: boolean;   // bilirubin ≥ 85 µmol/L
@@ -258,6 +252,8 @@ export function tg18CholangitisGrade(i: Tg18CholangitisInputs): 'I' | 'II' | 'II
 
   if (organCount >= 1) return 'III';
 
+  // TG18 (Kiriyama 2018) Grade II = any TWO of: WBC > 12 or < 4 ×10⁹/L, fever ≥ 39 °C, age ≥ 75,
+  // total bilirubin ≥ 5 mg/dL (85 µmol/L), albumin < 0.7 × lower limit. One criterion is Grade I.
   const grade2Criteria = [
     i.wbcAbnormal,
     i.fever,
@@ -266,7 +262,7 @@ export function tg18CholangitisGrade(i: Tg18CholangitisInputs): 'I' | 'II' | 'II
     i.albuminLow,
   ].filter(Boolean).length;
 
-  if (grade2Criteria >= 1) return 'II';
+  if (grade2Criteria >= 2) return 'II';
   return 'I';
 }
 
@@ -379,62 +375,62 @@ export function interpretWagner(grade: WagnerGrade): ScaleResult {
 }
 
 // ─── NEWS2 ────────────────────────────────────────────────────────────────────
+// Royal College of Physicians. National Early Warning Score (NEWS) 2, December 2017.
+// Thin adapter over the ONE shared implementation, `evaluateNews2` in
+// `@workspace/triage-engine` (parity with iOS NEWS2Chart.swift). The previous local copy
+// had no SpO₂ Scale 2 and ignored the "any single parameter scoring 3" rule, so a total of
+// 3 made of one red parameter showed "Low Risk" — hazard log H-04.
 
 export interface News2Inputs {
   respiratoryRate: number | null;
   spo2: number | null;
-  supplementalO2: boolean;
+  /** Air/O₂. `null` = not recorded (scored 0 and listed as missing, never assumed "air"). */
+  supplementalO2: boolean | null;
+  /** SpO₂ Scale 2 — explicit clinician opt-in only (confirmed hypercapnic respiratory failure). */
+  useSpO2Scale2?: boolean;
   systolicBp: number | null;
   heartRate: number | null;
   temperatureC: number | null;
-  consciousnessAvpu: 'A' | 'C' | 'V' | 'P' | 'U';
+  /** ACVPU. `null` = not recorded (scored 0 and listed as missing, never assumed "Alert"). */
+  consciousnessAvpu: News2Avpu | null;
+}
+
+export function evaluateNews2Inputs(i: News2Inputs): News2Evaluation {
+  return evaluateNews2({
+    respiratoryRate: i.respiratoryRate,
+    spo2: i.spo2,
+    onOxygen: i.supplementalO2,
+    useSpO2Scale2: i.useSpO2Scale2 === true,
+    systolicBP: i.systolicBp,
+    heartRate: i.heartRate,
+    temperatureCelsius: i.temperatureC,
+    avpu: i.consciousnessAvpu,
+  });
 }
 
 export function news2Score(i: News2Inputs): number {
-  let s = 0;
-  if (i.respiratoryRate !== null) {
-    if (i.respiratoryRate <= 8) s += 3;
-    else if (i.respiratoryRate <= 11) s += 1;
-    else if (i.respiratoryRate <= 20) s += 0;
-    else if (i.respiratoryRate <= 24) s += 2;
-    else s += 3;
-  }
-  if (i.spo2 !== null) {
-    if (i.spo2 <= 91) s += 3;
-    else if (i.spo2 <= 93) s += 2;
-    else if (i.spo2 <= 95) s += 1;
-  }
-  if (i.supplementalO2) s += 2;
-  if (i.systolicBp !== null) {
-    if (i.systolicBp <= 90) s += 3;
-    else if (i.systolicBp <= 100) s += 2;
-    else if (i.systolicBp <= 110) s += 1;
-    else if (i.systolicBp >= 220) s += 3;
-  }
-  if (i.heartRate !== null) {
-    if (i.heartRate <= 40) s += 3;
-    else if (i.heartRate <= 50) s += 1;
-    else if (i.heartRate <= 90) s += 0;
-    else if (i.heartRate <= 110) s += 1;
-    else if (i.heartRate <= 130) s += 2;
-    else s += 3;
-  }
-  if (i.consciousnessAvpu !== 'A') s += 3;
-  if (i.temperatureC !== null) {
-    if (i.temperatureC <= 35.0) s += 3;
-    else if (i.temperatureC <= 36.0) s += 1;
-    else if (i.temperatureC <= 38.0) s += 0;
-    else if (i.temperatureC <= 39.0) s += 1;
-    else s += 2;
-  }
-  return s;
+  return evaluateNews2Inputs(i).total;
 }
 
-export function interpretNews2(score: number): ScaleResult {
-  if (score === 0) return { score, band: 'Score 0 — Low Risk', description: 'All parameters within normal range.', action: 'Routine assessment. Reassess within 12 hours.', evidence: 'Royal College of Physicians. NEWS2 (2017).', color: 'green' };
-  if (score <= 4) return { score, band: `Score ${score} — Low Risk`, description: 'Minor physiological derangement.', action: 'Minimum 4–6 hourly monitoring. Consider increasing frequency if any single parameter scores 3.', evidence: 'Royal College of Physicians. NEWS2 (2017).', color: 'green' };
-  if (score <= 6) return { score, band: `Score ${score} — Medium Risk`, description: 'Urgent clinical review required.', action: 'Urgent nurse/doctor review. Increase monitoring to at least hourly. Escalate to senior clinician.', evidence: 'Royal College of Physicians. NEWS2 (2017).', color: 'amber' };
-  return { score, band: `Score ${score} — HIGH Risk`, description: 'Emergency response required.', action: 'EMERGENCY: Continuous monitoring. Immediate senior clinician review. Activate rapid response team. Consider ICU/HDU.', evidence: 'Royal College of Physicians. NEWS2 (2017).', color: 'red' };
+const NEWS2_EVIDENCE = 'Royal College of Physicians. National Early Warning Score (NEWS) 2 (2017).';
+
+/** RCP NEWS2 Charts 2–3: band, clinical response and minimum monitoring frequency. */
+export function interpretNews2(r: News2Evaluation): ScaleResult {
+  const score = r.total;
+  const incomplete = r.incompleteNote ? ` (${r.incompleteNote})` : '';
+  const monitoring = `${r.monitoringFrequency} observations.`;
+  switch (r.band) {
+    case 'high':
+      return { score, band: `Score ${score} — HIGH (${r.clinicalResponse})${incomplete}`, description: 'Emergency response threshold.', action: `${monitoring} Registered nurse to inform the medical team immediately (at least specialist registrar level); emergency assessment by a team with critical-care competencies; consider transfer to level 2/3 care.`, evidence: NEWS2_EVIDENCE, color: 'red' };
+    case 'medium':
+      return { score, band: `Score ${score} — MEDIUM (${r.clinicalResponse})${incomplete}`, description: 'Key threshold for urgent response.', action: `${monitoring} Registered nurse to inform the medical team immediately; urgent assessment by a clinician with core competencies in acute illness.`, evidence: NEWS2_EVIDENCE, color: 'amber' };
+    case 'low_medium':
+      return { score, band: `Score ${score} — LOW-MEDIUM: single parameter scoring 3 (${r.clinicalResponse})${incomplete}`, description: 'A single parameter scores 3 (red score).', action: `${monitoring} Registered nurse to inform the medical team, who will review and decide whether escalation of care is necessary.`, evidence: NEWS2_EVIDENCE, color: 'amber' };
+    default:
+      return score === 0
+        ? { score, band: `Score 0 — Low (${r.clinicalResponse})${incomplete}`, description: r.isComplete ? 'All recorded parameters within normal range.' : 'Recorded parameters within normal range; the score is incomplete.', action: `${monitoring} Continue routine NEWS monitoring.`, evidence: NEWS2_EVIDENCE, color: 'green' }
+        : { score, band: `Score ${score} — Low (${r.clinicalResponse})${incomplete}`, description: 'Minor physiological derangement.', action: `${monitoring} Registered nurse to assess and decide whether monitoring frequency and/or escalation should increase.`, evidence: NEWS2_EVIDENCE, color: 'green' };
+  }
 }
 
 // ─── CURB-65 ──────────────────────────────────────────────────────────────────

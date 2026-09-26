@@ -3,101 +3,43 @@ import SwiftData
 import EventKit
 
 struct TodayDashboardView: View {
-    @Query private var allPatients: [Patient]
-    @Environment(\.modelContext) private var context
-    @StateObject private var calSvc = CalendarService()
+    @Query private var queriedAllPatients: [Patient]
+    // Deleted/detached records are dropped before any view reads them (SwiftData
+    // crashes when a body touches a deleted model before @Query refreshes).
+    var allPatients: [Patient] { queriedAllPatients.filter(\.isLive) }
+    @Environment(\.modelContext) var context
+    @EnvironmentObject var calSvc: CalendarService
 
-    @State private var selectedPatient: Patient?
-    @State private var showAdd = false
-    @State private var showCalendarImport = false
+    @State var selectedPatient: Patient?
+    @State var showAdd = false
+    @State var showCalendarImport = false
     @State private var searchQuery = ""
     @State private var isRefreshing = false
+    @State var calEventActionTarget: EKEvent? = nil
+    @State var calEventActionPatient: Patient? = nil
+    // Patient whose consultation was started from a calendar appointment
+    // (full screen on iPad, sheet on iPhone; see consultationPresentation).
+    @State private var calEncounterPatient: Patient? = nil
+    @State private var showPreConsultSheet = false
+    @State private var showStorageBlocked = false
+    @State var showCalEventDialog = false
+    /// Accessibility text sizes stack row details vertically (TodayDashboardView+Sections).
+    @Environment(\.dynamicTypeSize) var dynamicTypeSize
 
-    private let cal = Calendar.current
+    let cal = Calendar.current
 
     // MARK: - Patient groups (deduped via PatientDeduplication.swift)
+    // Built once per render in `body` (TodayDashboardBoard.swift) and passed to every section.
 
-    private var wardPatients: [Patient] {
-        allPatients
-            .filter { $0.setting == .inpatient || $0.setting == .emergency }
-            .sorted { $0.acuity < $1.acuity }
-            .deduped()
+    func makeBoard() -> TodayBoard {
+        TodayBoard(patients: allPatients, events: calSvc.events, calendar: cal)
     }
 
-    private var theatreToday: [Patient] {
-        allPatients
-            .filter { $0.setting == .theatre && isToday($0.operationDate) }
-            .sorted { ($0.operationDate ?? .now) < ($1.operationDate ?? .now) }
-            .deduped()
-    }
+    var searchActive: Bool { !searchQuery.trimmingCharacters(in: .whitespaces).isEmpty }
 
-    private var endoscopyToday: [Patient] {
-        allPatients
-            .filter { $0.setting == .endoscopy && isToday($0.operationDate) }
-            .sorted { ($0.operationDate ?? .now) < ($1.operationDate ?? .now) }
-            .deduped()
-    }
-
-    private var clinicToday: [Patient] {
-        allPatients
-            .filter { $0.setting == .outpatient && isToday($0.operationDate) }
-            .sorted { ($0.operationDate ?? .now) < ($1.operationDate ?? .now) }
-            .deduped()
-    }
-
-    private var highAcuityWard: [Patient] {
-        wardPatients.filter { p in
-            guard let v = p.vitalsEntries.sorted(by: { $0.recordedAt > $1.recordedAt }).first
-            else { return p.setting == .emergency }
-            return v.news2Risk == "High" || v.news2HasRedFlag
-        }
-    }
-
-    private var readyForDoctorPatients: [Patient] {
-        allPatients
-            .filter { $0.encounterStatus == .waiting && isToday($0.checkInTime) }
-            .sorted { ($0.checkInTime ?? .distantPast) < ($1.checkInTime ?? .distantPast) }
-            .deduped()
-    }
-
-    // Calendar events from iOS EventKit (syncs with Google Calendar when
-    // the user adds their Google account in iOS Settings → Calendar → Accounts)
-    private var todayCalEvents: [EKEvent] {
-        calSvc.events
-            .filter { isToday($0.startDate) && !$0.isAllDay }
-            .sorted { ($0.startDate ?? .distantFuture) < ($1.startDate ?? .distantFuture) }
-    }
-
-    private var isAnythingOn: Bool {
-        !readyForDoctorPatients.isEmpty || !wardPatients.isEmpty ||
-        !theatreToday.isEmpty || !endoscopyToday.isEmpty || !clinicToday.isEmpty ||
-        !todayCalEvents.isEmpty
-    }
-
-    // Calendar events today that don't yet have a matching patient record
-    private var unimportedCalEventCount: Int {
-        let existingNames = Set(allTodayPatients.map { $0.fullName.lowercased().trimmingCharacters(in: .whitespaces) })
-        return todayCalEvents.filter { event in
-            guard let title = event.title, !title.isEmpty else { return false }
-            let parsed = CalendarEventParser.parse(title: title, calLabel: event.calEntryLabel)
-            return !parsed.name.isEmpty && !existingNames.contains(parsed.name.lowercased().trimmingCharacters(in: .whitespaces))
-        }.count
-    }
-
-    // All today's patients in one flat list for search
-    private var allTodayPatients: [Patient] {
-        (readyForDoctorPatients + highAcuityWard + wardPatients +
-         theatreToday + endoscopyToday + clinicToday)
-            .reduce(into: [Patient]()) { acc, p in
-                if !acc.contains(where: { $0.id == p.id }) { acc.append(p) }
-            }
-    }
-
-    private var searchActive: Bool { !searchQuery.trimmingCharacters(in: .whitespaces).isEmpty }
-
-    private var searchResults: [Patient] {
+    func searchResults(_ board: TodayBoard) -> [Patient] {
         let q = searchQuery.trimmingCharacters(in: .whitespaces).lowercased()
-        return allTodayPatients.filter {
+        return board.allToday.filter {
             $0.fullName.lowercased().contains(q) ||
             ($0.mrn?.lowercased().contains(q) ?? false) ||
             ($0.workingDiagnosis?.lowercased().contains(q) ?? false) ||
@@ -105,20 +47,18 @@ struct TodayDashboardView: View {
         }
     }
 
-    // Total count for the day summary strip
-    private var totalCount: Int { allTodayPatients.count }
-
     // MARK: - Body
 
     var body: some View {
+        let board = makeBoard()
         NavigationStack {
             Group {
-                if isAnythingOn || searchActive {
+                if board.isAnythingOn || searchActive {
                     List {
                         // ── Day summary strip ───────────────────────────
                         if !searchActive {
                             Section {
-                                daySummaryStrip
+                                daySummaryStrip(board)
                             }
                             .listRowInsets(EdgeInsets(top: 0, leading: 0, bottom: 0, trailing: 0))
                             .listRowBackground(Color.clear)
@@ -126,34 +66,45 @@ struct TodayDashboardView: View {
 
                         // ── Search results (when active) ────────────────
                         if searchActive {
-                            if searchResults.isEmpty {
+                            let results = searchResults(board)
+                            if results.isEmpty {
                                 Section {
                                     ContentUnavailableView.search(text: searchQuery)
                                 }
                                 .listRowBackground(Color.clear)
                             } else {
-                                Section("Results for "\(searchQuery.trimmingCharacters(in: .whitespaces))"") {
-                                    ForEach(searchResults) { patient in
+                                Section("Results for \"\(searchQuery.trimmingCharacters(in: .whitespaces))\"") {
+                                    ForEach(results) { patient in
                                         Button { selectedPatient = patient } label: {
                                             TodayPatientRow(patient: patient, style: rowStyle(for: patient))
+                                                .contentShape(Rectangle())   // whole row tappable, not only its text
                                         }
                                         .buttonStyle(.plain)
+                                        .accessibilityIdentifier("today.patientRow")
                                     }
                                 }
                             }
                         } else {
                             // ── Calendar import nudge ───────────────────
-                            if unimportedCalEventCount > 0 {
-                                calendarImportBanner
+                            if board.unimportedCalEventCount > 0 {
+                                calendarImportBanner(count: board.unimportedCalEventCount)
                             }
                             // ── Normal sections ─────────────────────────
-                            if !readyForDoctorPatients.isEmpty { waitingSection }
-                            if !highAcuityWard.isEmpty { alertSection }
-                            if !wardPatients.isEmpty   { wardSection }
-                            if !theatreToday.isEmpty   { theatreSection }
-                            if !endoscopyToday.isEmpty { endoscopySection }
-                            if !clinicToday.isEmpty    { clinicSection }
-                            if !todayCalEvents.isEmpty { calendarSection }
+                            if !board.readyForDoctor.isEmpty { waitingSection(board.readyForDoctor) }
+                            // Walk-ins added today with no appointment date (UX review M9). Near the
+                            // top: the patient just added is the one about to be seen, and on an
+                            // iPhone a group at the end of the list was below the fold.
+                            if !board.addedToday.isEmpty {
+                                clinicSection(board.addedToday, title: "Added today",
+                                              systemImage: "person.crop.circle.badge.plus")
+                            }
+                            if !board.highAcuityWard.isEmpty { alertSection(board) }
+                            if !board.withNewResults.isEmpty { resultsSection(board) }
+                            if !board.ward.isEmpty           { wardSection(board.ward) }
+                            if !board.theatre.isEmpty   { theatreSection(board.theatre) }
+                            if !board.endoscopy.isEmpty { endoscopySection(board.endoscopy) }
+                            if !board.clinic.isEmpty    { clinicSection(board.clinic) }
+                            if !board.calendarEvents.isEmpty { calendarSection(board.calendarEvents) }
                         }
                     }
                     .listStyle(.insetGrouped)
@@ -165,10 +116,11 @@ struct TodayDashboardView: View {
                         isRefreshing = false
                     }
                 } else {
-                    emptyState
+                    emptyState(unimportedCalEventCount: board.unimportedCalEventCount)
                 }
             }
             .navigationTitle("Today")
+            .onAppear { CrashReporting.breadcrumb("Opened Today dashboard") }
             .task { await calSvc.fetch() }
             .toolbar {
                 ToolbarItem(placement: .navigationBarLeading) {
@@ -183,33 +135,84 @@ struct TodayDashboardView: View {
                         } label: {
                             Image(systemName: "calendar.badge.plus")
                         }
+                        .accessibilityLabel("Add patients from calendar")
                         Button { showAdd = true } label: { Image(systemName: "plus") }
+                            .accessibilityLabel("Add patient")
+                            .accessibilityIdentifier("today.addPatient")
                     }
                 }
             }
-            .sheet(item: $selectedPatient) { PatientDetailView(patient: $0) }
+            .patientRecordPresentation(item: $selectedPatient)
             .sheet(isPresented: $showAdd) { AddPatientView() }
+            .storeWriteBlockedAlert(isPresented: $showStorageBlocked)
             .sheet(isPresented: $showCalendarImport) {
                 CalendarImportSheet(events: calSvc.events)
+            }
+            .confirmationDialog(
+                calEventActionTarget?.title ?? "Appointment",
+                isPresented: $showCalEventDialog,
+                titleVisibility: .visible
+            ) {
+                if calEventActionPatient != nil {
+                    Button("Enter Pre-Consult Questionnaire") {
+                        showPreConsultSheet = true
+                        calEventActionTarget = nil
+                    }
+                    Button("Start Encounter") {
+                        calEncounterPatient = calEventActionPatient
+                        calEventActionTarget = nil
+                    }
+                    Button("Open Patient File") {
+                        selectedPatient = calEventActionPatient
+                        calEventActionTarget = nil
+                    }
+                } else {
+                    Button("Enter Pre-Consult Questionnaire") {
+                        // In-memory store: a new patient would be lost on quit (StoreHealth.swift).
+                        guard !StoreHealth.blocksNewClinicalData else {
+                            calEventActionTarget = nil
+                            showStorageBlocked = true
+                            return
+                        }
+                        if let event = calEventActionTarget {
+                            calEventActionPatient = createAndInsertPatient(from: event)
+                        }
+                        showPreConsultSheet = true
+                        calEventActionTarget = nil
+                    }
+                    Button("Import Patient Only") {
+                        showCalendarImport = true
+                        calEventActionTarget = nil
+                    }
+                }
+                Button("Cancel", role: .cancel) { calEventActionTarget = nil; calEventActionPatient = nil }
+            }
+            .consultationPresentation(item: $calEncounterPatient,
+                                      onDismiss: { calEventActionPatient = nil })
+            .sheet(isPresented: $showPreConsultSheet, onDismiss: { calEventActionPatient = nil }) {
+                if let patient = calEventActionPatient {
+                    PreConsultEntrySheet(patient: patient)
+                }
             }
         }
     }
 
     // MARK: - Calendar import banner
 
-    private var calendarImportBanner: some View {
+    func calendarImportBanner(count unimportedCalEventCount: Int) -> some View {
         Section {
             Button {
                 showCalendarImport = true
             } label: {
                 HStack(spacing: 12) {
                     Image(systemName: "calendar.badge.plus")
-                        .font(.system(size: 20))
+                        .scaledFont(size: 20)
                         .foregroundStyle(AMColor.accent)
                         .frame(width: 32)
+                        .accessibilityHidden(true)
                     VStack(alignment: .leading, spacing: 2) {
                         Text("\(unimportedCalEventCount) patient\(unimportedCalEventCount == 1 ? "" : "s") in Google Calendar not yet added")
-                            .font(.system(size: 14, weight: .semibold))
+                            .scaledFont(size: 14, weight: .semibold)
                             .foregroundStyle(.primary)
                         Text("Tap to review and add today's appointments")
                             .font(.caption)
@@ -217,10 +220,13 @@ struct TodayDashboardView: View {
                     }
                     Spacer()
                     Image(systemName: "chevron.right")
-                        .font(.system(size: 12, weight: .semibold))
+                        .scaledFont(size: 12, weight: .semibold)
                         .foregroundStyle(.tertiary)
+                        .accessibilityHidden(true)
                 }
                 .padding(.vertical, 6)
+                .accessibilityElement(children: .combine)
+                .contentShape(Rectangle())   // whole row tappable, not only its text
             }
             .buttonStyle(.plain)
             .listRowBackground(AMColor.accentLt.opacity(0.2))
@@ -229,29 +235,35 @@ struct TodayDashboardView: View {
 
     // MARK: - Day summary strip
 
-    private var daySummaryStrip: some View {
+    func daySummaryStrip(_ board: TodayBoard) -> some View {
         ScrollView(.horizontal, showsIndicators: false) {
             HStack(spacing: 8) {
-                if totalCount > 0 {
-                    summaryTile(count: totalCount, label: "Total", icon: "person.2.fill", color: AMColor.accent)
+                if board.totalCount > 0 {
+                    summaryTile(count: board.totalCount, label: "Total", icon: "person.2.fill", color: AMColor.accent)
                 }
-                if !readyForDoctorPatients.isEmpty {
-                    summaryTile(count: readyForDoctorPatients.count, label: "Waiting", icon: "person.fill.checkmark", color: .orange)
+                if !board.readyForDoctor.isEmpty {
+                    summaryTile(count: board.readyForDoctor.count, label: "Waiting", icon: "person.fill.checkmark", color: .orange)
                 }
-                if !highAcuityWard.isEmpty {
-                    summaryTile(count: highAcuityWard.count, label: "Alerts", icon: "exclamationmark.triangle.fill", color: .red)
+                if !board.addedToday.isEmpty {
+                    summaryTile(count: board.addedToday.count, label: "Added", icon: "person.crop.circle.badge.plus", color: .blue)
                 }
-                if !wardPatients.isEmpty {
-                    summaryTile(count: wardPatients.count, label: "Ward", icon: "bed.double.fill", color: .teal)
+                if !board.highAcuityWard.isEmpty {
+                    summaryTile(count: board.highAcuityWard.count, label: "Alerts", icon: "exclamationmark.triangle.fill", color: .red)
                 }
-                if !theatreToday.isEmpty {
-                    summaryTile(count: theatreToday.count, label: "Theatre", icon: "scalpel", color: .purple)
+                if !board.withNewResults.isEmpty {
+                    summaryTile(count: board.withNewResults.count, label: "Results", icon: "flask.fill", color: .teal)
                 }
-                if !endoscopyToday.isEmpty {
-                    summaryTile(count: endoscopyToday.count, label: "Scope", icon: "eye.circle.fill", color: .cyan)
+                if !board.ward.isEmpty {
+                    summaryTile(count: board.ward.count, label: "Ward", icon: "bed.double.fill", color: .teal)
                 }
-                if !clinicToday.isEmpty {
-                    summaryTile(count: clinicToday.count, label: "Clinic", icon: "stethoscope", color: .indigo)
+                if !board.theatre.isEmpty {
+                    summaryTile(count: board.theatre.count, label: "Theatre", icon: "scalpel", color: .purple)
+                }
+                if !board.endoscopy.isEmpty {
+                    summaryTile(count: board.endoscopy.count, label: "Scope", icon: "eye.circle.fill", color: .cyan)
+                }
+                if !board.clinic.isEmpty {
+                    summaryTile(count: board.clinic.count, label: "Clinic", icon: "stethoscope", color: .indigo)
                 }
             }
             .padding(.horizontal, 16)
@@ -259,24 +271,29 @@ struct TodayDashboardView: View {
         }
     }
 
-    private func summaryTile(count: Int, label: String, icon: String, color: Color) -> some View {
+    func summaryTile(count: Int, label: String, icon: String, color: Color) -> some View {
         VStack(spacing: 4) {
             HStack(spacing: 4) {
                 Image(systemName: icon)
-                    .font(.system(size: 11, weight: .semibold))
+                    .scaledFont(size: 11, weight: .semibold)
                 Text("\(count)")
-                    .font(.system(size: 20, weight: .bold).monospacedDigit())
+                    .scaledFont(size: 20, weight: .bold, monospacedDigit: true)
             }
             .foregroundStyle(color)
             Text(label)
-                .font(.system(size: 10, weight: .medium))
+                .scaledFont(size: 10, weight: .medium)
                 .foregroundStyle(.secondary)
         }
+        // Tiles sit in a horizontal scroll strip, so they can grow; beyond accessibility3 the
+        // count alone would fill the screen.
+        .dynamicTypeSize(...DynamicTypeSize.accessibility3)
         .frame(minWidth: 64)
         .padding(.vertical, 10)
         .padding(.horizontal, 12)
         .background(color.opacity(0.08), in: RoundedRectangle(cornerRadius: 10))
         .overlay(RoundedRectangle(cornerRadius: 10).strokeBorder(color.opacity(0.18), lineWidth: 1))
+        .accessibilityElement(children: .ignore)
+        .accessibilityLabel(Text("\(label): \(count)"))
     }
 
     // MARK: - Row style helper for search results
@@ -290,461 +307,4 @@ struct TodayDashboardView: View {
         }
     }
 
-    // MARK: - Waiting (checked in by front desk) Section
-
-    @ViewBuilder
-    private var waitingSection: some View {
-        Section {
-            ForEach(readyForDoctorPatients) { patient in
-                Button { selectedPatient = patient } label: {
-                    HStack(spacing: 10) {
-                        Circle()
-                            .fill(Color.orange)
-                            .frame(width: 8, height: 8)
-                        VStack(alignment: .leading, spacing: 3) {
-                            Text(patient.fullName)
-                                .font(.system(size: 14, weight: .semibold))
-                                .foregroundStyle(.primary)
-                            HStack(spacing: 6) {
-                                if let cc = patient.chiefComplaint, !cc.isEmpty {
-                                    Text(cc)
-                                        .font(.caption)
-                                        .foregroundStyle(.secondary)
-                                        .lineLimit(1)
-                                }
-                                if let vt = patient.visitType {
-                                    Text(vt.shortLabel)
-                                        .font(.caption2)
-                                        .foregroundStyle(.orange)
-                                        .padding(.horizontal, 5)
-                                        .padding(.vertical, 1)
-                                        .background(Color.orange.opacity(0.12), in: Capsule())
-                                }
-                            }
-                        }
-                        Spacer()
-                        if let ct = patient.checkInTime {
-                            Text(ct.formatted(date: .omitted, time: .shortened))
-                                .font(.caption2.monospacedDigit())
-                                .foregroundStyle(.secondary)
-                        }
-                        Image(systemName: "chevron.right")
-                            .font(.system(size: 11, weight: .semibold))
-                            .foregroundStyle(.tertiary)
-                    }
-                    .padding(.vertical, 2)
-                }
-                .buttonStyle(.plain)
-                .listRowBackground(Color.orange.opacity(0.05))
-            }
-        } header: {
-            HStack {
-                Label("Ready for Doctor", systemImage: "person.fill.checkmark")
-                    .foregroundStyle(.orange)
-                    .font(.system(size: 11, weight: .heavy))
-                    .textCase(nil)
-                Spacer()
-                Text("\(readyForDoctorPatients.count)")
-                    .font(.caption2.monospacedDigit())
-                    .foregroundStyle(.orange)
-                    .padding(.horizontal, 6).padding(.vertical, 2)
-                    .background(Color.orange.opacity(0.15), in: Capsule())
-            }
-        }
-    }
-
-    // MARK: - Alert Section
-
-    @ViewBuilder
-    private var alertSection: some View {
-        Section {
-            ForEach(highAcuityWard) { patient in
-                Button { selectedPatient = patient } label: {
-                    HStack(spacing: 10) {
-                        Image(systemName: "exclamationmark.triangle.fill")
-                            .foregroundStyle(.red)
-                            .font(.system(size: 14))
-                        VStack(alignment: .leading, spacing: 2) {
-                            Text(patient.fullName)
-                                .font(.system(size: 14, weight: .semibold))
-                                .foregroundStyle(.primary)
-                            if let v = patient.vitalsEntries.sorted(by: { $0.recordedAt > $1.recordedAt }).first {
-                                Text("NEWS2 \(v.news2Score) · \(v.news2Risk) risk")
-                                    .font(.caption)
-                                    .foregroundStyle(.red)
-                            } else if patient.setting == .emergency {
-                                Text("Emergency admission")
-                                    .font(.caption)
-                                    .foregroundStyle(.red)
-                            }
-                        }
-                        Spacer()
-                        if let ward = patient.ward, let bed = patient.bedNumber {
-                            Text("\(ward) · \(bed)")
-                                .font(.caption2)
-                                .foregroundStyle(.secondary)
-                        }
-                        Image(systemName: "chevron.right")
-                            .font(.system(size: 11, weight: .semibold))
-                            .foregroundStyle(.tertiary)
-                    }
-                    .padding(.vertical, 2)
-                }
-                .buttonStyle(.plain)
-                .listRowBackground(Color.red.opacity(0.06))
-            }
-        } header: {
-            Label("Alerts — High acuity", systemImage: "exclamationmark.triangle.fill")
-                .foregroundStyle(.red)
-                .font(.system(size: 11, weight: .heavy))
-                .textCase(nil)
-        }
-    }
-
-    // MARK: - Ward Section
-
-    @ViewBuilder
-    private var wardSection: some View {
-        Section {
-            ForEach(wardPatients) { patient in
-                Button { selectedPatient = patient } label: {
-                    TodayPatientRow(patient: patient, style: .ward)
-                }
-                .buttonStyle(.plain)
-            }
-        } header: {
-            HStack {
-                Label("Ward Round", systemImage: "bed.double.fill")
-                    .textCase(nil)
-                    .font(.system(size: 11, weight: .semibold))
-                Spacer()
-                Text("\(wardPatients.count)")
-                    .font(.caption2.monospacedDigit())
-                    .foregroundStyle(.secondary)
-                    .padding(.horizontal, 6).padding(.vertical, 2)
-                    .background(Color.secondary.opacity(0.12), in: Capsule())
-            }
-        }
-    }
-
-    // MARK: - Theatre Section
-
-    @ViewBuilder
-    private var theatreSection: some View {
-        Section {
-            ForEach(theatreToday) { patient in
-                Button { selectedPatient = patient } label: {
-                    TodayPatientRow(patient: patient, style: .theatre)
-                }
-                .buttonStyle(.plain)
-            }
-        } header: {
-            HStack {
-                Label("Theatre", systemImage: "scalpel")
-                    .textCase(nil)
-                    .font(.system(size: 11, weight: .semibold))
-                Spacer()
-                Text("\(theatreToday.count) \(theatreToday.count == 1 ? "case" : "cases")")
-                    .font(.caption2)
-                    .foregroundStyle(.secondary)
-            }
-        }
-    }
-
-    // MARK: - Endoscopy Section
-
-    @ViewBuilder
-    private var endoscopySection: some View {
-        Section {
-            ForEach(endoscopyToday) { patient in
-                Button { selectedPatient = patient } label: {
-                    TodayPatientRow(patient: patient, style: .endoscopy)
-                }
-                .buttonStyle(.plain)
-            }
-        } header: {
-            HStack {
-                Label("Endoscopy", systemImage: "eye.circle")
-                    .textCase(nil)
-                    .font(.system(size: 11, weight: .semibold))
-                Spacer()
-                Text("\(endoscopyToday.count) \(endoscopyToday.count == 1 ? "case" : "cases")")
-                    .font(.caption2)
-                    .foregroundStyle(.secondary)
-            }
-        }
-    }
-
-    // MARK: - Clinic Section
-
-    @ViewBuilder
-    private var clinicSection: some View {
-        Section {
-            ForEach(clinicToday) { patient in
-                Button { selectedPatient = patient } label: {
-                    TodayPatientRow(patient: patient, style: .clinic)
-                }
-                .buttonStyle(.plain)
-            }
-        } header: {
-            HStack {
-                Label("Clinic", systemImage: "stethoscope")
-                    .textCase(nil)
-                    .font(.system(size: 11, weight: .semibold))
-                Spacer()
-                Text("\(clinicToday.count)")
-                    .font(.caption2.monospacedDigit())
-                    .foregroundStyle(.secondary)
-                    .padding(.horizontal, 6).padding(.vertical, 2)
-                    .background(Color.secondary.opacity(0.12), in: Capsule())
-            }
-        }
-    }
-
-    // MARK: - Calendar Section (iOS EventKit / Google Calendar sync)
-
-    @ViewBuilder
-    private var calendarSection: some View {
-        Section {
-            if let err = calSvc.error {
-                HStack(spacing: 8) {
-                    Image(systemName: "exclamationmark.triangle")
-                        .foregroundStyle(.orange)
-                    Text(err)
-                        .font(.caption)
-                        .foregroundStyle(.secondary)
-                }
-                .padding(.vertical, 4)
-            }
-            ForEach(todayCalEvents, id: \.eventIdentifier) { event in
-                HStack(spacing: 10) {
-                    RoundedRectangle(cornerRadius: 2)
-                        .fill(event.calEntryColor)
-                        .frame(width: 3, height: 32)
-                    VStack(alignment: .leading, spacing: 2) {
-                        Text(event.title ?? "Untitled")
-                            .font(.system(size: 14, weight: .semibold))
-                            .foregroundStyle(.primary)
-                            .lineLimit(1)
-                        HStack(spacing: 6) {
-                            if let start = event.startDate {
-                                Text(start.formatted(date: .omitted, time: .shortened))
-                                    .font(.caption2.monospacedDigit())
-                                    .foregroundStyle(.secondary)
-                            }
-                            if let calName = event.calendar?.title {
-                                Text(calName)
-                                    .font(.caption2)
-                                    .foregroundStyle(.secondary)
-                                    .padding(.horizontal, 5).padding(.vertical, 1)
-                                    .background(event.calEntryColor.opacity(0.12), in: Capsule())
-                            }
-                        }
-                    }
-                    Spacer()
-                    Text(event.calEntryLabel)
-                        .font(.caption2.weight(.bold))
-                        .foregroundStyle(event.calEntryColor)
-                        .padding(.horizontal, 6).padding(.vertical, 2)
-                        .background(event.calEntryColor.opacity(0.12), in: Capsule())
-                }
-                .padding(.vertical, 2)
-            }
-        } header: {
-            HStack {
-                Label("Calendar", systemImage: "calendar")
-                    .textCase(nil)
-                    .font(.system(size: 11, weight: .semibold))
-                Spacer()
-                Text("\(todayCalEvents.count)")
-                    .font(.caption2.monospacedDigit())
-                    .foregroundStyle(.secondary)
-                    .padding(.horizontal, 6).padding(.vertical, 2)
-                    .background(Color.secondary.opacity(0.12), in: Capsule())
-            }
-        }
-    }
-
-    // MARK: - Empty state
-
-    private var emptyState: some View {
-        VStack(spacing: 16) {
-            Image(systemName: "calendar.badge.checkmark")
-                .font(.system(size: 56))
-                .foregroundStyle(AMColor.accent)
-            Text("Nothing scheduled today")
-                .font(.headline)
-            Text("Ward patients and today's theatre, endoscopy, and clinic lists will appear here.")
-                .font(.subheadline)
-                .foregroundStyle(.secondary)
-                .multilineTextAlignment(.center)
-                .padding(.horizontal, 40)
-            HStack(spacing: 12) {
-                if unimportedCalEventCount > 0 {
-                    Button {
-                        showCalendarImport = true
-                    } label: {
-                        Label("Add from Calendar (\(unimportedCalEventCount))", systemImage: "calendar.badge.plus")
-                            .font(.subheadline.weight(.semibold))
-                            .padding(.horizontal, 20).padding(.vertical, 10)
-                            .background(AMColor.accent, in: Capsule())
-                            .foregroundStyle(.white)
-                    }
-                    .buttonStyle(.plain)
-                }
-                Button {
-                    showAdd = true
-                } label: {
-                    Label("Add Patient", systemImage: "plus")
-                        .font(.subheadline.weight(.semibold))
-                        .padding(.horizontal, 20).padding(.vertical, 10)
-                        .background(Color(.secondarySystemBackground), in: Capsule())
-                        .foregroundStyle(.primary)
-                }
-                .buttonStyle(.plain)
-            }
-            .padding(.top, 8)
-        }
-        .frame(maxWidth: .infinity, maxHeight: .infinity)
-    }
-
-    // MARK: - Helpers
-
-    private func isToday(_ date: Date?) -> Bool {
-        guard let date else { return false }
-        return cal.isDateInToday(date)
-    }
-}
-
-// MARK: - Today patient row
-
-private enum TodayRowStyle { case ward, theatre, endoscopy, clinic }
-
-private struct TodayPatientRow: View {
-    let patient: Patient
-    let style: TodayRowStyle
-
-    private var latestVitals: VitalsEntry? {
-        patient.vitalsEntries.sorted { $0.recordedAt > $1.recordedAt }.first
-    }
-
-    private var accentColor: Color {
-        switch style {
-        case .ward:      return patient.setting == .emergency ? .red : .teal
-        case .theatre:   return .purple
-        case .endoscopy: return .cyan
-        case .clinic:    return .orange
-        }
-    }
-
-    private var subtitleText: String {
-        switch style {
-        case .ward:
-            var parts: [String] = []
-            if let w = patient.ward { parts.append(w) }
-            if let b = patient.bedNumber { parts.append("Bed \(b)") }
-            if let dx = patient.workingDiagnosis { parts.append(dx) }
-            else if let cc = patient.chiefComplaint { parts.append(cc) }
-            return parts.joined(separator: " · ")
-        case .theatre, .endoscopy:
-            var parts: [String] = []
-            if let t = patient.operationDate {
-                parts.append(t.formatted(.dateTime.hour().minute()))
-            }
-            if let apt = patient.appointmentType { parts.append(apt) }
-            else if let dx = patient.workingDiagnosis { parts.append(dx) }
-            else if let cc = patient.chiefComplaint { parts.append(cc) }
-            if let asa = patient.asaClass {
-                let roman = ["I","II","III","IV","V"]
-                parts.append("ASA \(roman[min(asa-1, 4)])")
-            }
-            return parts.joined(separator: " · ")
-        case .clinic:
-            var parts: [String] = []
-            if let t = patient.operationDate {
-                parts.append(t.formatted(.dateTime.hour().minute()))
-            }
-            if let apt = patient.appointmentType { parts.append(apt) }
-            else if let dx = patient.workingDiagnosis { parts.append(dx) }
-            else if let cc = patient.chiefComplaint { parts.append(cc) }
-            return parts.joined(separator: " · ")
-        }
-    }
-
-    var body: some View {
-        HStack(spacing: 10) {
-            // Accent stripe
-            RoundedRectangle(cornerRadius: 2)
-                .fill(accentColor)
-                .frame(width: 3, height: 36)
-
-            VStack(alignment: .leading, spacing: 3) {
-                HStack(spacing: 6) {
-                    Text(patient.fullName)
-                        .font(.system(size: 14, weight: .semibold))
-                        .foregroundStyle(.primary)
-                    if patient.hasCriticalAllergy {
-                        Image(systemName: "exclamationmark.shield.fill")
-                            .font(.system(size: 10))
-                            .foregroundStyle(.red)
-                    }
-                    if patient.hasPenicillinAllergy {
-                        Image(systemName: "pills.fill")
-                            .font(.system(size: 10))
-                            .foregroundStyle(.orange)
-                    }
-                }
-                Text(subtitleText)
-                    .font(.caption)
-                    .foregroundStyle(.secondary)
-                    .lineLimit(1)
-            }
-
-            Spacer()
-
-            // NEWS2 badge (ward only) or post-op day
-            if style == .ward, let v = latestVitals {
-                NEWS2Badge(score: v.news2Score, risk: v.news2Risk)
-            } else if style == .ward, let days = patient.postOpDays {
-                Text("POD \(days)")
-                    .font(.caption2.monospacedDigit())
-                    .foregroundStyle(.secondary)
-                    .padding(.horizontal, 5).padding(.vertical, 2)
-                    .background(Color.secondary.opacity(0.1), in: Capsule())
-            }
-
-            Image(systemName: "chevron.right")
-                .font(.system(size: 11, weight: .semibold))
-                .foregroundStyle(.tertiary)
-        }
-        .padding(.vertical, 2)
-    }
-}
-
-// MARK: - NEWS2 badge
-
-private struct NEWS2Badge: View {
-    let score: Int
-    let risk: String
-
-    private var color: Color {
-        switch risk {
-        case "High":   return .red
-        case "Medium": return .orange
-        default:       return .green
-        }
-    }
-
-    var body: some View {
-        HStack(spacing: 3) {
-            Circle()
-                .fill(color)
-                .frame(width: 6, height: 6)
-            Text("N2:\(score)")
-                .font(.caption2.monospacedDigit().weight(.semibold))
-                .foregroundStyle(color)
-        }
-        .padding(.horizontal, 6).padding(.vertical, 3)
-        .background(color.opacity(0.10), in: Capsule())
-    }
 }

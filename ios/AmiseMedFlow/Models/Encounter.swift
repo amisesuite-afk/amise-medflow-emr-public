@@ -58,6 +58,15 @@ final class Encounter {
     // MARK: - Clinician free-text summary (optional, for letter / handover)
     var clinicianSummary: String?
 
+    // MARK: - Pathway forms at time of visit (burns, ward round, screening) — readable text
+    var pathwaySummary: String?
+
+    // MARK: - Outcomes loop (coded data only; OutcomeSnapshot.swift)
+    // JSON: OutcomePredictionRecord, frozen when the visit is completed (first completion wins).
+    var predictionSnapshotJson: String?
+    // JSON: [OutcomeFinalDiagnosisRecord] — confirmed later; a correction retracts, never deletes.
+    var finalDiagnosisJson: String?
+
     // MARK: - Back-reference to owning patient
     var patient: Patient?
 
@@ -94,8 +103,29 @@ extension Encounter {
     ) {
         chiefComplaint = patient.chiefComplaint
         hpi = patient.hpi
-        pmhNotes = patient.pmhNotes
-        surgicalHistory = patient.surgicalHistory
+
+        // PMH — prefer structured entries; fall back to free-text notes
+        let pmhList = patient.pmhEntries
+        if !pmhList.isEmpty {
+            pmhNotes = pmhList.map { e in
+                e.yearText.isEmpty ? e.condition : "\(e.condition) (\(e.yearText))"
+            }.joined(separator: "; ")
+        } else {
+            pmhNotes = patient.pmhNotes
+        }
+
+        // PSHx — prefer structured entries; fall back to free-text
+        let pshxList = patient.pshxEntries
+        if !pshxList.isEmpty {
+            surgicalHistory = pshxList.map { e in
+                var s = e.procedure
+                if !e.yearText.isEmpty { s += " (\(e.yearText))" }
+                if !e.anaesthetic.isEmpty { s += " [\(e.anaesthetic)]" }
+                return s
+            }.joined(separator: "; ")
+        } else {
+            surgicalHistory = patient.surgicalHistory
+        }
         examGeneral = patient.examGeneral
         examCVS = patient.examCVS
         examResp = patient.examResp
@@ -113,6 +143,8 @@ extension Encounter {
         acuity = patient.acuity
         setting = patient.setting
         location = patient.location
+
+        pathwaySummary = patient.pathwaySummaryForVisit
 
         // Encode SOCRATES selections: Set<String> → [String]
         let serialisable = socratesSelections.mapValues { Array($0) }

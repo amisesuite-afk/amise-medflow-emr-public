@@ -23,11 +23,14 @@ struct CalendarImportSheet: View {
     @Environment(\.modelContext) private var context
 
     let events: [EKEvent]
-    @Query private var allPatients: [Patient]
-
+    @Query private var queriedAllPatients: [Patient]
+    // Deleted/detached records are dropped before any view reads them (SwiftData
+    // crashes when a body touches a deleted model before @Query refreshes).
+    private var allPatients: [Patient] { queriedAllPatients.filter(\.isLive) }
     @State private var appointments: [CalendarAppointment] = []
     @State private var importing = false
     @State private var done = false
+    @State private var showStorageBlocked = false
 
     private var selectedCount: Int { appointments.filter { $0.selected && !$0.alreadyExists }.count }
 
@@ -73,6 +76,7 @@ struct CalendarImportSheet: View {
                 }
             }
             .onAppear { buildAppointments() }
+            .storeWriteBlockedAlert(isPresented: $showStorageBlocked)
         }
     }
 
@@ -104,7 +108,7 @@ struct CalendarImportSheet: View {
                             Text("NEW")
                                 .font(.system(size: 10, weight: .bold))
                                 .padding(.horizontal, 5).padding(.vertical, 1)
-                                .background(AMColor.accent.opacity(0.15))
+                                .background { AMColor.accent.opacity(0.15) }
                                 .foregroundStyle(AMColor.accent)
                                 .clipShape(RoundedRectangle(cornerRadius: 3))
                         }
@@ -128,6 +132,7 @@ struct CalendarImportSheet: View {
             }
             .padding(.vertical, 4)
             .opacity(a.alreadyExists ? 0.5 : 1)
+            .contentShape(Rectangle())   // whole row tappable, not only its text
         }
         .buttonStyle(.plain)
     }
@@ -188,10 +193,16 @@ struct CalendarImportSheet: View {
 
     private func importSelected() {
         guard selectedCount > 0 else { dismiss(); return }
+        // In-memory store: new patients would be lost on quit (StoreHealth.swift).
+        guard !StoreHealth.blocksNewClinicalData else {
+            showStorageBlocked = true
+            return
+        }
         importing = true
         let toAdd = appointments.filter { $0.selected && !$0.alreadyExists }
         for appt in toAdd {
             let p = Patient(fullName: appt.parsedName, setting: appt.setting)
+            p.mrn = MRNGenerator.next(in: context)
             p.operationDate = appt.startTime
             p.appointmentType = appt.appointmentType
             p.acuity = .routine

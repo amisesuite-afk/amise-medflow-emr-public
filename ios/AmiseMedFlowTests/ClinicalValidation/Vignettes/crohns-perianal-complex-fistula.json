@@ -1,0 +1,340 @@
+{
+  "schemaVersion": 1,
+  "id": "crohns-perianal-complex-fistula",
+  "condition": "Perianal Crohn’s disease — complex fistula with abscess",
+  "category": "anorectal",
+  "permutationOf": "crohns-ileocaecal-abscess",
+  "permutationLabel": "Perianal disease, complex fistula",
+  "summary": "31-year-old woman with Crohn’s colitis, perianal pain and purulent discharge from two external openings with a fluctuant posterior swelling. EUA, drainage and loose seton; MRI pelvis; then anti-TNF. No fistulotomy of a complex Crohn’s fistula and no sphincterotomy.",
+  "tags": [
+    "ibd",
+    "crohns",
+    "perianal",
+    "fistula",
+    "abscess"
+  ],
+  "inputs": {
+    "patient": {
+      "ageYears": 31,
+      "sex": "female",
+      "pregnancy": {
+        "status": "not-pregnant"
+      },
+      "heightCm": 168,
+      "weightKg": 59
+    },
+    "encounter": {
+      "setting": "outpatient",
+      "visitType": "urgentReview",
+      "acuity": "urgent"
+    },
+    "chiefComplaint": "Painful swelling and discharge near the back passage",
+    "hpi": "Crohn’s colitis on mesalazine only (declined biologics last year). Three weeks of perianal discharge from two openings, and for 4 days a painful swelling behind the anus with fevers. Bowels 3 times a day, some mucus.",
+    "socrates": {
+      "onset": [
+        "1–4 weeks ago"
+      ],
+      "site": [
+        "Perianal",
+        "Posterior midline"
+      ],
+      "character": [
+        "Throbbing"
+      ],
+      "associations": [
+        "Mucus discharge"
+      ],
+      "exacerbating": [
+        "Sitting",
+        "Defaecation"
+      ],
+      "timing": [
+        "Constant"
+      ],
+      "severity": [
+        "Severe (7–9/10)"
+      ]
+    },
+    "symptoms": [
+      "perianal pain",
+      "anal discharge",
+      "perianal lump",
+      "fever"
+    ],
+    "negatives": [
+      "rectal bleeding"
+    ],
+    "exam": {
+      "general": "Temperature 37.9°C, HR 98, BP 116/72.",
+      "abdomen": "Soft, non-tender.",
+      "other": "Perianal: two external openings at 5 and 7 o’clock discharging pus; fluctuant, tender swelling in the posterior midline extending to both sides. Skin tags. DRE not tolerated."
+    },
+    "vitals": [
+      {
+        "minutesAgo": 20,
+        "heartRate": 98,
+        "systolicBp": 116,
+        "diastolicBp": 72,
+        "respiratoryRate": 16,
+        "temperatureC": 37.9,
+        "spo2": 99,
+        "avpu": "A",
+        "onSupplementalO2": false
+      }
+    ],
+    "labs": [
+      {
+        "analyte": "haemoglobin",
+        "name": "Haemoglobin",
+        "value": 11.9,
+        "unit": "g/dL",
+        "minutesAgo": 60
+      },
+      {
+        "analyte": "wbc",
+        "name": "WBC",
+        "value": 13.6,
+        "unit": "×10⁹/L",
+        "minutesAgo": 60
+      },
+      {
+        "analyte": "crp",
+        "name": "CRP",
+        "value": 74,
+        "unit": "mg/L",
+        "minutesAgo": 60
+      },
+      {
+        "analyte": "albumin",
+        "name": "Albumin",
+        "value": 34,
+        "unit": "g/L",
+        "minutesAgo": 60
+      },
+      {
+        "analyte": "glucose",
+        "name": "Glucose",
+        "value": 5.4,
+        "unit": "mmol/L",
+        "minutesAgo": 60
+      }
+    ],
+    "comorbidities": [
+      "Crohn’s disease (colonic)"
+    ],
+    "surgicalHistory": [],
+    "medications": [
+      {
+        "drug": "Mesalazine",
+        "dose": "2.4 g",
+        "frequency": "OD",
+        "indication": "Crohn’s colitis"
+      }
+    ],
+    "allergies": [],
+    "nkda": true,
+    "socialHistory": "Nurse. Smoker, 10 a day.",
+    "confirmedDiagnosis": {
+      "name": "Perianal Crohn’s disease — complex fistula with posterior (horseshoe) abscess",
+      "icd10": "K50.1",
+      "paneDiseaseId": "crohns_disease",
+      "assessmentText": "Perianal Crohn’s disease: complex fistula-in-ano with posterior horseshoe abscess. EUA, drainage and loose seton; MRI pelvis; then biologic therapy."
+    },
+    "platform": {
+      "web": {
+        "ccTemplate": "Other / general surgical",
+        "symptoms": [
+          "perianal pain",
+          "anal discharge",
+          "perianal lump",
+          "fever"
+        ],
+        "examFindings": {
+          "perineal": [
+            "Fistula orifice",
+            "Discharge",
+            "Mass / swelling",
+            "Skin tags"
+          ],
+          "anal": [
+            "Fistula",
+            "Perianal abscess"
+          ]
+        },
+        "paneAnswers": {
+          "anal_pain": true,
+          "perianal_swelling": true,
+          "discharge_perianal": true,
+          "fever": true
+        },
+        "durationDays": 21,
+        "painScore": 8
+      }
+    }
+  },
+  "expected": {
+    "differential": {
+      "mustRankTopK": [
+        {
+          "id": "dx-perianal-sepsis-top3",
+          "severity": "quality",
+          "match": [
+            "perianal abscess",
+            "fistula",
+            "crohn"
+          ],
+          "k": 3,
+          "guidelineRefs": [
+            "ascrs-abscess-2022"
+          ]
+        }
+      ]
+    },
+    "safety": {
+      "emergencyLevel": {
+        "id": "level-same-day",
+        "severity": "critical",
+        "atLeast": "urgent",
+        "guidelineRefs": [
+          "ascrs-abscess-2022"
+        ],
+        "note": "An undrained perianal abscess needs same-day drainage."
+      }
+    },
+    "investigations": {
+      "mustInclude": [
+        {
+          "id": "inv-mri-pelvis",
+          "severity": "critical",
+          "match": [
+            "mri pelvis",
+            "pelvic mri",
+            "re:mri[^.;\\n]{0,20}(pelvi|fistula|perian)"
+          ],
+          "guidelineRefs": [
+            "ascrs-abscess-2022",
+            "bsg-ibd-2019"
+          ]
+        }
+      ]
+    },
+    "management": {
+      "mustInclude": [
+        {
+          "id": "mgmt-eua-seton",
+          "severity": "critical",
+          "match": [
+            "seton"
+          ],
+          "guidelineRefs": [
+            "ascrs-abscess-2022",
+            "bsg-ibd-2019"
+          ],
+          "note": "Complex Crohn’s fistula: drain sepsis and place a loose (non-cutting) seton before biologic therapy."
+        },
+        {
+          "id": "mgmt-drainage",
+          "severity": "critical",
+          "match": [
+            "incision and drainage",
+            "re:\\bi&d\\b",
+            "drainage"
+          ],
+          "guidelineRefs": [
+            "ascrs-abscess-2022"
+          ]
+        },
+        {
+          "id": "mgmt-biologic",
+          "severity": "quality",
+          "match": [
+            "infliximab",
+            "adalimumab",
+            "anti-tnf"
+          ],
+          "guidelineRefs": [
+            "bsg-ibd-2019"
+          ]
+        }
+      ],
+      "mustExclude": [
+        {
+          "id": "mgmt-no-fistulotomy",
+          "severity": "critical",
+          "match": [
+            "fistulotomy",
+            "lay-open",
+            "lay open",
+            "laying open"
+          ],
+          "unless": [
+            "simple",
+            "low",
+            "avoid",
+            "not ",
+            "superficial"
+          ],
+          "sources": [
+            "web.plan",
+            "web.protocol.medications",
+            "web.clinicalPrompts",
+            "ios.radiation",
+            "ios.soap",
+            "ios.pipeline"
+          ],
+          "guidelineRefs": [
+            "ascrs-abscess-2022",
+            "bsg-ibd-2019"
+          ],
+          "note": "Fistulotomy of a complex Crohn’s fistula risks incontinence and non-healing."
+        },
+        {
+          "id": "mgmt-no-sphincterotomy",
+          "severity": "critical",
+          "match": [
+            "sphincterotomy"
+          ],
+          "unless": [
+            "avoid",
+            "not "
+          ],
+          "sources": [
+            "web.plan",
+            "web.protocol.medications",
+            "web.clinicalPrompts",
+            "ios.radiation",
+            "ios.soap",
+            "ios.pipeline"
+          ],
+          "guidelineRefs": [
+            "ascrs-abscess-2022"
+          ]
+        }
+      ]
+    }
+  },
+  "guideline": [
+    {
+      "id": "ascrs-abscess-2022",
+      "name": "ASCRS clinical practice guidelines — anorectal abscess, fistula-in-ano and rectovaginal fistula",
+      "year": 2022,
+      "section": "Abscess: prompt drainage. Crohn’s fistula: loose seton for complex disease; MRI or EUS to define anatomy; fistulotomy only for simple, low fistulas",
+      "citation": "Gaertner WB, Burgess PL, Davids JS, et al. The American Society of Colon and Rectal Surgeons clinical practice guidelines for the management of anorectal abscess, fistula-in-ano, and rectovaginal fistula. Dis Colon Rectum. 2022;65:964–985.",
+      "verified": false
+    },
+    {
+      "id": "bsg-ibd-2019",
+      "name": "BSG consensus guidelines — management of inflammatory bowel disease in adults",
+      "year": 2019,
+      "section": "Perianal Crohn’s: MRI pelvis; EUA, drainage and seton; anti-TNF after sepsis control",
+      "citation": "Lamb CA, Kennedy NA, Raine T, et al. British Society of Gastroenterology consensus guidelines on the management of inflammatory bowel disease in adults. Gut. 2019;68(Suppl 3):s1–s106.",
+      "verified": false
+    }
+  ],
+  "rationale": "Permutation: perianal phenotype. Uses the generic \"Other / general surgical\" template because the web has no presentation-level template for perianal pain or swelling (only diagnosis-named ones). Checks that the complex-fistula plan is seton-based and never a lay-open or sphincterotomy.",
+  "authoring": {
+    "author": "Claude (colorectal/anorectal cluster)",
+    "date": "2026-09-25",
+    "notes": "Expectations need surgeon sign-off (reviewedBy). Citations verified: false until checked against the source."
+  }
+}

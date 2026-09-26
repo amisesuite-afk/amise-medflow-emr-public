@@ -1,0 +1,122 @@
+{
+  "schemaVersion": 1,
+  "id": "exam-stone-score-high-renal-colic",
+  "condition": "Ureteric colic with a high STONE score",
+  "category": "urology",
+  "permutationOf": null,
+  "permutationLabel": "STONE score 13 recorded",
+  "summary": "38-year-old man with 3 hours of severe colicky right loin pain radiating to the groin, vomiting and haematuria on dipstick; STONE score 13 recorded.",
+  "tags": [
+    "evidence-exam",
+    "stone-score",
+    "rule",
+    "renal-colic"
+  ],
+  "inputs": {
+    "patient": {
+      "ageYears": 38,
+      "sex": "male"
+    },
+    "encounter": {
+      "setting": "emergency",
+      "visitType": "urgentReview",
+      "acuity": "urgent"
+    },
+    "chiefComplaint": "Right loin pain",
+    "hpi": "Sudden severe colicky right loin pain for 3 hours radiating to the right groin, cannot keep still. Vomited twice. Dipstick: blood +++.",
+    "symptoms": [
+      "loin pain",
+      "vomiting",
+      "haematuria"
+    ],
+    "exam": {
+      "abdomen": "Soft. Right renal angle tenderness."
+    },
+    "vitals": [
+      {
+        "minutesAgo": 10,
+        "heartRate": 96,
+        "systolicBp": 146,
+        "diastolicBp": 88,
+        "respiratoryRate": 18,
+        "temperatureC": 36.9,
+        "spo2": 99,
+        "avpu": "A",
+        "onSupplementalO2": false
+      }
+    ],
+    "labs": [],
+    "imaging": [],
+    "comorbidities": [],
+    "surgicalHistory": [],
+    "medications": [],
+    "allergies": [],
+    "nkda": true,
+    "socialHistory": "",
+    "scoreForms": {
+      "stone": {
+        "total": 13
+      }
+    },
+    "platform": {
+      "web": {
+        "ccTemplate": "Loin pain",
+        "symptoms": [
+          "loin pain",
+          "vomiting",
+          "haematuria"
+        ],
+        "durationDays": 0
+      }
+    }
+  },
+  "expected": {
+    "differential": {
+      "mustRankTopK": [
+        {
+          "id": "renal-colic-top1",
+          "severity": "critical",
+          "match": [
+            "renal colic",
+            "ureteric",
+            "urolithiasis"
+          ],
+          "k": 1
+        }
+      ]
+    },
+    "reasoning": {
+      "mustInclude": [
+        {
+          "id": "stone-lr",
+          "severity": "quality",
+          "match": [
+            "re:STONE score \\(ureteric stone\\) 13.*LR 7\\.8"
+          ],
+          "sources": [
+            "web.reasoning.evidence"
+          ],
+          "platforms": [
+            "web"
+          ]
+        }
+      ]
+    }
+  },
+  "guideline": [
+    {
+      "id": "moore-2014",
+      "name": "Moore CL et al. Derivation and validation of a clinical prediction rule for uncomplicated ureteral stone: the STONE score",
+      "year": 2014,
+      "section": "High score 10-13: stone in about 89 %",
+      "citation": "BMJ 2014;348:g2191",
+      "verified": false
+    }
+  ],
+  "rationale": "A high STONE score makes an uncomplicated ureteric stone very likely; recorded, it must be evidence for renal colic with its likelihood ratio.",
+  "authoring": {
+    "author": "Claude (evidence-exam, 2026-09-26)",
+    "date": "2026-09-26",
+    "notes": "Exam-sign / decision-rule permutation. Likelihood ratios fromMemory; awaiting surgeon sign-off."
+  }
+}

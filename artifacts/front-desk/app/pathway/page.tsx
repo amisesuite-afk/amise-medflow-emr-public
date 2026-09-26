@@ -3,6 +3,7 @@ import Link from 'next/link';
 import '../subpage-mobile.css';
 
 export const metadata: Metadata = {
+  alternates: { canonical: '/pathway' },
   title: 'Patient Care Pathway — Amise Medical Services',
   description:
     'How patients move through Amise Medical Services — from first contact through triage, appointment, procedure, and follow-up. Condition-specific surgical and endoscopy care chains.',
@@ -111,7 +112,7 @@ const CHAINS: CareChain[] = [
     bookHref:   '/book',
     steps: [
       { label: 'Booking',            sub: 'Online or WhatsApp' },
-      { label: 'Fast from midnight', sub: 'Instructions emailed automatically' },
+      { label: 'No food 6 h, no drinks 2 h', sub: 'Instructions emailed automatically' },
       { label: 'Procedure',          sub: 'Tapion Hospital — 15–30 min' },
       { label: 'Results + Plan',     sub: 'H. pylori / biopsy review' },
     ],
@@ -122,9 +123,9 @@ const CHAINS: CareChain[] = [
     urgency:    'urgent',
     bookHref:   '/book',
     steps: [
-      { label: 'ERCP Workup Clinic', sub: 'Imaging review, medication adjustment' },
-      { label: 'Pre-procedure Prep', sub: 'NBM, bloods, anaesthesia consent' },
-      { label: 'ERCP Procedure',     sub: 'Tapion Hospital — 60–90 min' },
+      { label: 'Referral Review',    sub: 'Imaging and blood results reviewed' },
+      { label: 'Pre-procedure Prep', sub: 'No food 6 h, no drinks 2 h; bloods, consent' },
+      { label: 'ERCP Procedure',     sub: 'Tapion Hospital — general anaesthesia, 60–90 min' },
       { label: 'Recovery + Review',  sub: 'Overnight if needed, biliary follow-up' },
     ],
   },

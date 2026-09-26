@@ -1,0 +1,314 @@
+{
+  "schemaVersion": 1,
+  "id": "aortic-dissection-epigastric-back-pain",
+  "condition": "Acute aortic dissection",
+  "category": "upper-gi",
+  "permutationOf": null,
+  "summary": "64-year-old hypertensive man with sudden tearing epigastric pain radiating between the shoulder blades; BP 188/104 right arm vs 152/90 left; amylase normal. Must not be labelled pancreatitis or ulcer: CT angiography; no antiplatelets/anticoagulation.",
+  "tags": [
+    "mimic",
+    "vascular",
+    "must-not-miss",
+    "aortic"
+  ],
+  "inputs": {
+    "patient": {
+      "ageYears": 64,
+      "sex": "male",
+      "pregnancy": {
+        "status": "not-applicable"
+      },
+      "heightCm": 182,
+      "weightKg": 95
+    },
+    "encounter": {
+      "setting": "emergency",
+      "visitType": "urgentReview",
+      "acuity": "urgent"
+    },
+    "chiefComplaint": "Sudden severe upper abdominal and back pain",
+    "hpi": "Sudden severe tearing pain in the upper abdomen going through to between the shoulder blades one hour ago, maximal at onset. Poorly controlled blood pressure. Felt faint. No vomiting, no alcohol excess.",
+    "socrates": {
+      "onset": [
+        "Today",
+        "Sudden"
+      ],
+      "site": [
+        "Epigastric"
+      ],
+      "character": [
+        "Sharp",
+        "Pulling"
+      ],
+      "radiation": [
+        "Back"
+      ],
+      "associations": [
+        "Nausea"
+      ],
+      "timing": [
+        "Constant"
+      ],
+      "exacerbating": [],
+      "relieving": [
+        "Nothing"
+      ],
+      "severity": [
+        "Worst (10/10)"
+      ]
+    },
+    "symptoms": [
+      "sudden epigastric pain",
+      "interscapular back pain",
+      "presyncope"
+    ],
+    "negatives": [
+      "vomiting",
+      "jaundice",
+      "melaena"
+    ],
+    "exam": {
+      "general": "Distressed, sweaty. Pulse 96/min. BP 188/104 right arm, 152/90 left arm (pulse and BP differential).",
+      "cardiovascular": "Early diastolic murmur at the left sternal edge.",
+      "abdomen": "Soft, mild epigastric tenderness, no guarding, no pulsatile mass."
+    },
+    "vitals": [
+      {
+        "minutesAgo": 10,
+        "heartRate": 96,
+        "systolicBp": 188,
+        "diastolicBp": 104,
+        "respiratoryRate": 20,
+        "temperatureC": 36.7,
+        "spo2": 97,
+        "avpu": "A",
+        "onSupplementalO2": false
+      }
+    ],
+    "labs": [
+      {
+        "analyte": "amylase",
+        "name": "Amylase",
+        "value": 62,
+        "unit": "U/L",
+        "minutesAgo": 30
+      },
+      {
+        "analyte": "lipase",
+        "name": "Lipase",
+        "value": 40,
+        "unit": "U/L",
+        "minutesAgo": 30
+      },
+      {
+        "analyte": "haemoglobin",
+        "name": "Haemoglobin",
+        "value": 14.2,
+        "unit": "g/dL",
+        "minutesAgo": 30
+      },
+      {
+        "analyte": "creatinine",
+        "name": "Creatinine",
+        "value": 110,
+        "unit": "µmol/L",
+        "minutesAgo": 30
+      },
+      {
+        "analyte": "troponin",
+        "name": "hs-Troponin I",
+        "value": 8,
+        "unit": "ng/L",
+        "minutesAgo": 30
+      }
+    ],
+    "imaging": [
+      {
+        "name": "ECG",
+        "modality": "Other",
+        "region": "Heart",
+        "result": "Sinus rhythm, left ventricular hypertrophy, no acute ST changes.",
+        "minutesAgo": 20
+      }
+    ],
+    "comorbidities": [
+      "Hypertension (poorly controlled)"
+    ],
+    "surgicalHistory": [],
+    "medications": [
+      {
+        "drug": "Amlodipine",
+        "dose": "10 mg",
+        "frequency": "OD",
+        "indication": "Hypertension"
+      }
+    ],
+    "allergies": [],
+    "nkda": true,
+    "socialHistory": "Smoker 20/day. Taxi owner.",
+    "confirmedDiagnosis": {
+      "name": "Acute aortic dissection",
+      "icd10": "I71.0",
+      "assessmentText": "Sudden tearing epigastric/interscapular pain with inter-arm BP difference and aortic regurgitation murmur — acute aortic dissection until CT angiography excludes it."
+    },
+    "platform": {
+      "web": {
+        "ccTemplate": "Acute abdominal pain",
+        "symptoms": [
+          "epigastric pain",
+          "abdominal pain",
+          "back pain",
+          "pre-syncope"
+        ],
+        "symptomDetails": {
+          "abdominal pain": [
+            "Epigastric",
+            "Sudden",
+            "< 6 hours",
+            "Sharp",
+            "Back",
+            "Worst ever (10)"
+          ]
+        },
+        "examFindings": {},
+        "durationDays": 0.05,
+        "painScore": 10
+      }
+    }
+  },
+  "expected": {
+    "differential": {
+      "mustNotMiss": [
+        {
+          "id": "mnm-dissection",
+          "severity": "critical",
+          "match": [
+            "dissection",
+            "icd:I71.0"
+          ],
+          "note": "An abdominal aortic aneurysm entry does not count: the work-up and the harm (antithrombotics) differ.",
+          "guidelineRefs": [
+            "esc-aortic-2014"
+          ]
+        },
+        {
+          "id": "mnm-dissection-symptom-inference",
+          "severity": "quality",
+          "match": [
+            "dissection"
+          ],
+          "source": "web.symptomInference",
+          "platforms": [
+            "web"
+          ],
+          "guidelineRefs": [
+            "esc-aortic-2014"
+          ],
+          "knownGap": [
+            "web"
+          ],
+          "knownGapNote": "Symptom inference has an \"Aortic dissection\" entry but it needs chest-pain chips (\"Tearing / ripping\"); with abdominal chips it is outside the top 5."
+        }
+      ]
+    },
+    "safety": {
+      "emergencyLevel": {
+        "id": "level-emergency",
+        "severity": "critical",
+        "atLeast": "emergency",
+        "guidelineRefs": [
+          "esc-aortic-2014"
+        ]
+      },
+      "mustAlarm": [
+        {
+          "id": "alarm-dissection",
+          "severity": "critical",
+          "match": [
+            "dissection",
+            "aortic",
+            "tearing",
+            "emergency now"
+          ],
+          "guidelineRefs": [
+            "esc-aortic-2014"
+          ]
+        }
+      ]
+    },
+    "investigations": {
+      "mustInclude": [
+        {
+          "id": "inv-ct-angiography",
+          "severity": "critical",
+          "match": [
+            "ct angio",
+            "re:\\bcta\\b",
+            "aortogra",
+            "ct aorta",
+            "angiograph"
+          ],
+          "guidelineRefs": [
+            "esc-aortic-2014"
+          ]
+        }
+      ]
+    },
+    "management": {
+      "mustInclude": [
+        {
+          "id": "mgmt-bp-heart-rate-control",
+          "severity": "quality",
+          "match": [
+            "labetalol",
+            "beta-blocker",
+            "beta blocker",
+            "esmolol",
+            "blood pressure control",
+            "heart rate control"
+          ],
+          "guidelineRefs": [
+            "esc-aortic-2014"
+          ]
+        }
+      ],
+      "mustExclude": [
+        {
+          "id": "mgmt-no-antithrombotic",
+          "severity": "critical",
+          "match": [
+            "re:aspirin 300",
+            "thrombolysis",
+            "re:(start|commence|give)[^.;\\n]{0,20}(heparin|enoxaparin|fondaparinux|clopidogrel|ticagrelor)"
+          ],
+          "unless": [
+            "avoid",
+            "do not",
+            "withhold",
+            "until dissection"
+          ],
+          "guidelineRefs": [
+            "esc-aortic-2014"
+          ],
+          "note": "Antiplatelet, anticoagulant or thrombolytic treatment in aortic dissection can be fatal."
+        }
+      ]
+    }
+  },
+  "guideline": [
+    {
+      "id": "esc-aortic-2014",
+      "name": "2014 ESC Guidelines on the diagnosis and treatment of aortic diseases",
+      "year": 2014,
+      "section": "Acute aortic syndrome: high-risk features (abrupt tearing pain, pulse/BP differential, aortic regurgitation murmur); CT angiography first-line when stable; heart-rate and blood-pressure control (IV beta-blocker); urgent cardiothoracic/vascular referral",
+      "citation": "Erbel R, Aboyans V, Boileau C, et al. Eur Heart J. 2014;35:2873–2926.",
+      "verified": false
+    }
+  ],
+  "rationale": "Dangerous mimic of an upper GI emergency: epigastric pain to the back suggests pancreatitis or a posterior ulcer, but a normal amylase, abrupt tearing onset, an inter-arm BP difference and an AR murmur point to dissection. The harmful path is an ACS or GI plan with antithrombotics.",
+  "authoring": {
+    "author": "Claude (upper-GI cluster)",
+    "date": "2026-09-25",
+    "notes": "Expectations need surgeon sign-off (reviewedBy). Citations written from the guideline texts, not yet checked against the source (verified: false)."
+  }
+}

@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { getServiceClient } from '@/lib/supabase';
+import { requireStaff } from '@/lib/staff-auth';
 
 export const runtime = 'nodejs';
 
@@ -11,8 +12,18 @@ export interface PatientSearchResult {
   date_of_birth: string | null;
 }
 
+// Characters with meaning inside a PostgREST `.or()` filter string (`,`
+// separates conditions, `()` group them, `"` and `\` quote/escape). Removing
+// them stops a search term from injecting extra filter conditions.
+function sanitiseSearchTerm(raw: string): string {
+  return raw.replace(/[,()"\\]/g, ' ').replace(/\s+/g, ' ').trim().slice(0, 64);
+}
+
 export async function GET(req: NextRequest): Promise<NextResponse> {
-  const q = req.nextUrl.searchParams.get('q')?.trim() ?? '';
+  const auth = await requireStaff(req);
+  if (auth.response) return auth.response;
+
+  const q = sanitiseSearchTerm(req.nextUrl.searchParams.get('q') ?? '');
   if (q.length < 2) {
     return NextResponse.json({ patients: [] });
   }

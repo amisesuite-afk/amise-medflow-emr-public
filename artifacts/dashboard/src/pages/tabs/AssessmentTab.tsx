@@ -1,9 +1,14 @@
 import { useState, useRef, useEffect, useCallback, useMemo } from 'react';
 import { useAppContext, type ActiveDiagnosis, type WorkingDiagnosis } from '@/context/AppContext';
 import { detectPathognomonic } from '@/lib/transcript-dx-mapper';
+import { diagnosisSuggestion, confirmDiagnosisSuggestion, isConfirmedDiagnosis } from '@/lib/diagnosis-suggestion';
+import { managementPanelSource } from '@/lib/management-panel-source';
 import CollapsibleCard from '@/components/CollapsibleCard';
 import PaneDifferential from '@/components/PaneDifferential';
+import DiagnosticReasoningPanel from '@/components/DiagnosticReasoningPanel';
 import { ManagementPanel } from '@/components/ManagementPanel';
+import { usePlanPatientContext } from '@/hooks/usePlanPatientContext';
+import { planProtocolFor } from '@/lib/plan-builder';
 import SmartTextarea from '@/components/SmartTextarea';
 import { ICD_CODES, type IcdCode } from '@/data/icd-db';
 import { getCdsSuggestions } from '@/lib/clinical-cds';
@@ -12,8 +17,6 @@ import ClinicalAlgorithmPanel from '@/components/ClinicalAlgorithmPanel';
 import NarrativeInput from '@/components/NarrativeInput';
 import { getMatrix } from '@/lib/cc-matrices';
 import { computeRankedDifferentials } from '@/lib/symptom-inference';
-import { getProtocol } from '@workspace/pane-engine';
-import { filterNewInvestigations, splitEssentialSecondary } from '@/lib/investigation-merge';
 
 // ── Differential prompts with common signs ────────────────────────────────────
 
@@ -254,7 +257,8 @@ function DiagnosisPicker() {
     if (!icdCodes.length) return null;
     const leader = paneTop[0];
     if (!leader || leader.probability < 0.4) return null;
-    const protocol = getProtocol(leader.disease.id);
+    // Label and ICD prefixes only (no clinical content shown), via the shared resolver.
+    const protocol = planProtocolFor(leader.disease.id, null);
     if (!protocol?.icd10Prefixes.length) return null;
     const currentCode = splitLabel(icdCodes[0]).code.trim();
     const stillMatches = protocol.icd10Prefixes.some(prefix => currentCode.startsWith(prefix));
@@ -587,8 +591,8 @@ export default function AssessmentTab() {
     workingDiagnosis, setWorkingDiagnosis,
     examAbdomen, examGeneral, examCardio, examResp, examExtremities, examWound,
     hpiNotes,
-    orderedInvestigations, setOrderedInvestigations,
   } = useAppContext();
+  const planPatient = usePlanPatientContext();
 
   const ccMatrix = activeCcKey ? getMatrix(activeCcKey) : null;
   const ccContext = ccMatrix ? {
@@ -599,48 +603,22 @@ export default function AssessmentTab() {
     pearl: ccMatrix.pearl,
   } : null;
 
-  // Show ManagementPanel when PANE top disease exceeds 20% posterior probability.
-  // 0.85 convergence threshold was never met with 136 diseases (max prior ~3.6%).
-  // After SOCRATES seeding a clear leader typically rises to 30–60%.
-  const activeDiseaseId = (paneTop[0]?.probability ?? 0) >= 0.20
-    ? paneTop[0]!.disease.id
-    : null;
-  const activeIcdCode = icdCodes[0]?.split(' — ')[0]?.trim() ?? null;
+  // ManagementPanel: the clinician-confirmed diagnosis (locked working diagnosis or recorded
+  // ICD-10 code) when there is one; the PANE leader (posterior ≥ 20%) only when nothing is
+  // confirmed. It used to follow the PANE leader even over a confirmed diagnosis
+  // (lib/management-panel-source.ts). 0.85 convergence was never met with 136 diseases (max
+  // prior ~3.6%); after SOCRATES seeding a clear leader typically rises to 30–60%.
+  const panelSource = managementPanelSource(
+    workingDiagnosis,
+    icdCodes,
+    paneTop[0] ? { diseaseId: paneTop[0].disease.id, probability: paneTop[0].probability } : null,
+  );
+  const activeDiseaseId = panelSource.diseaseId;
+  const activeIcdCode = panelSource.icdCode;
 
-  // Auto-populate ordered investigations from all plausible differentials.
-  // ≥0.85 converged: single locked protocol. ≥0.10: merge top-3 to narrow Dx.
-  // When the same test appears in multiple protocols the highest urgency wins.
-  const invRef = useRef(orderedInvestigations);
-  useEffect(() => { invRef.current = orderedInvestigations; });
-
-  useEffect(() => {
-    // No probability floor — with 136 diseases the normalized priors can be <3%.
-    // Always pull from whatever the top-3 differentials are.
-    const relevant = paneTop.slice(0, 3);
-    if (!relevant.length) return;
-    const urgencyRank: Record<string, number> = { stat: 0, urgent: 1, routine: 2 };
-    const byLabel = new Map<string, { label: string; urgency: 'stat' | 'urgent' | 'routine' }>();
-    for (const { disease } of relevant) {
-      const protocol = getProtocol(disease.id);
-      if (!protocol?.investigations.length) continue;
-      for (const inv of protocol.investigations) {
-        const key = inv.label.toLowerCase().trim();
-        const cur = byLabel.get(key);
-        if (!cur || (urgencyRank[inv.urgency] ?? 2) < (urgencyRank[cur.urgency] ?? 2)) {
-          byLabel.set(key, inv);
-        }
-      }
-    }
-    // Only auto-populate essential (stat/urgent) tests — routine ones are
-    // surfaced as tap-to-add suggestions in InvestigationsTab instead, so the
-    // ordered list doesn't accumulate every tier from every differential in play.
-    const { essential } = splitEssentialSecondary([...byLabel.values()]);
-    essential.sort((a, b) => (urgencyRank[a.urgency] ?? 2) - (urgencyRank[b.urgency] ?? 2));
-    const current = invRef.current;
-    const toAdd = filterNewInvestigations(essential.map(inv => inv.label), current);
-    if (toAdd.length) setOrderedInvestigations([...toAdd, ...current]);
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [paneTop.map(r => `${r.disease.id}:${r.probability.toFixed(2)}`).join(',')]);
+  // Investigations are not ordered from the differential here any more: the leading
+  // differentials' protocol tests are SUGGESTIONS on the Labs / Imaging steps, ordered only
+  // when the clinician ticks them (SuggestedInvestigationsPanel, UX review C3).
 
   const apptType = triageResult.appointmentType;
   const ddxOptions: DiffOption[] = DIFFERENTIAL_PROMPTS[apptType] ?? DIFFERENTIAL_PROMPTS['new_consult'];
@@ -686,35 +664,24 @@ export default function AssessmentTab() {
   }, [assessment, hpiNotes, examAbdomen, examGeneral, examCardio, examResp]);
   const primaryTextMatch = pathognomicMatchesFromText[0] ?? null;
 
-  // Write to the central WorkingDiagnosis signal bus whenever a pathognomonic sign
-  // is found in free text. This propagates to PANE display, CDS filtering, and Plan tab.
-  useEffect(() => {
-    if (!primaryTextMatch) {
-      // Only clear if it was set by pathognomonic detection (not manual ICD)
-      if (workingDiagnosis?.source === 'pathognomonic') setWorkingDiagnosis(null);
-      return;
-    }
-    // Don't downgrade a manual ICD selection
-    if (workingDiagnosis?.source === 'manual_icd') return;
-    setWorkingDiagnosis({
-      diseaseId: primaryTextMatch.diseaseId,
-      icdCode: primaryTextMatch.icd10,
-      confidence: primaryTextMatch.specificity === 'definitive' ? 0.97 : 0.88,
-      source: 'pathognomonic',
-      locked: true,
-      signText: primaryTextMatch.finding,
-      diseaseLabel: primaryTextMatch.diseaseLabel,
-    });
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [primaryTextMatch?.diseaseId, primaryTextMatch?.finding]);
+  // A pathognomonic-sign match is a SUGGESTION only (UX review C4, CLAUDE.md "never
+  // independently diagnose"). workingDiagnosis and the ICD-10 code are set — and locked — only
+  // when the clinician taps Confirm. Dismissed suggestions stay dismissed for this visit to the
+  // step. Encounters saved earlier with an auto-set diagnosis keep it as saved.
+  const [dismissedDxSuggestions, setDismissedDxSuggestions] = useState<Set<string>>(new Set());
+  const dxSuggestion = diagnosisSuggestion(primaryTextMatch, workingDiagnosis, dismissedDxSuggestions);
 
-  // Auto-populate ICD code from pathognomonic match when no code is selected yet
-  useEffect(() => {
-    if (primaryTextMatch?.icd10 && icdCodes.length === 0) {
-      setIcdCodes([`${primaryTextMatch.icd10} — ${primaryTextMatch.diseaseLabel}`]);
-    }
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [primaryTextMatch?.icd10, icdCodes.length]);
+  function confirmDxSuggestion() {
+    if (!dxSuggestion) return;
+    const next = confirmDiagnosisSuggestion(dxSuggestion, icdCodes);
+    setWorkingDiagnosis(next.workingDiagnosis);
+    if (next.icdCodes.length !== icdCodes.length) setIcdCodes(next.icdCodes);
+  }
+
+  function dismissDxSuggestion() {
+    if (!dxSuggestion) return;
+    setDismissedDxSuggestions(prev => new Set([...prev, dxSuggestion.key]));
+  }
 
   // Passive inference: rank diseases from current exam + symptoms (no Q&A required)
   const passiveRanked = useMemo(() => computeRankedDifferentials({
@@ -781,6 +748,56 @@ export default function AssessmentTab() {
 
   return (
     <div className="gap-y">
+
+      {/* ── Suggested working diagnosis (from a sign) — confirm or dismiss ── */}
+      {dxSuggestion && (
+        <div
+          data-testid="dx-suggestion"
+          style={{
+            display: 'flex', alignItems: 'center', gap: 10, flexWrap: 'wrap',
+            padding: '10px 14px', borderRadius: 10,
+            background: '#f0f9ff', border: '1px dashed #0284c7',
+          }}
+        >
+          <div style={{ flex: 1, minWidth: 220 }}>
+            <div style={{ fontSize: 13, fontWeight: 700, color: '#075985' }}>
+              Suggested: {dxSuggestion.diseaseLabel} <span style={{ fontFamily: 'monospace', fontWeight: 600 }}>({dxSuggestion.icd10})</span> — tap to confirm
+            </div>
+            <div style={{ fontSize: 11.5, color: '#475569', marginTop: 2 }}>
+              From <em>{dxSuggestion.signText}</em>. A suggestion only — not recorded as the working diagnosis until you confirm it.
+            </div>
+          </div>
+          <button type="button" onClick={confirmDxSuggestion}
+            style={{ padding: '6px 14px', borderRadius: 6, border: 'none', background: '#0369a1', color: '#fff', fontSize: 12, fontWeight: 700, cursor: 'pointer' }}>
+            Confirm diagnosis
+          </button>
+          <button type="button" onClick={dismissDxSuggestion}
+            style={{ padding: '6px 12px', borderRadius: 6, border: '1px solid #94a3b8', background: 'transparent', color: '#475569', fontSize: 12, fontWeight: 600, cursor: 'pointer' }}>
+            Dismiss
+          </button>
+        </div>
+      )}
+
+      {/* ── Confirmed working diagnosis — the clinician can always remove it ── */}
+      {isConfirmedDiagnosis(workingDiagnosis) && (
+        <div
+          data-testid="dx-confirmed"
+          style={{
+            display: 'flex', alignItems: 'center', gap: 10, flexWrap: 'wrap',
+            padding: '8px 14px', borderRadius: 10,
+            background: 'rgba(13,148,136,0.06)', border: '1px solid rgba(13,148,136,0.35)',
+          }}
+        >
+          <span style={{ fontSize: 12.5, color: '#0f766e', flex: 1, minWidth: 200 }}>
+            🎯 Working diagnosis (confirmed): <strong>{workingDiagnosis.diseaseLabel || workingDiagnosis.icdCode || 'Working diagnosis'}</strong>
+          </span>
+          <button type="button" onClick={() => setWorkingDiagnosis(null)}
+            title="Remove the working diagnosis (ICD-10 codes stay until you remove them below)"
+            style={{ padding: '4px 10px', borderRadius: 6, border: '1px solid #94a3b8', background: 'transparent', color: '#475569', fontSize: 11.5, fontWeight: 600, cursor: 'pointer' }}>
+            Remove
+          </button>
+        </div>
+      )}
 
       {/* ── Active Diagnoses ─────────────────────────────────────────────────── */}
       {confirmedDiagnoses.length > 0 && (
@@ -916,8 +933,12 @@ export default function AssessmentTab() {
         }}
       />
 
+      {/* ── Diagnostic reasoning: for / against / doesn't fit, best next discriminator, premature-closure
+          guard, zebra check, longitudinal patterns (engine-derived; adds nothing without a tap) ── */}
+      <DiagnosticReasoningPanel />
+
       {/* ── Management Panel (auto-populated on convergence or ICD selection) ── */}
-      <ManagementPanel diseaseId={activeDiseaseId} icdCode={activeIcdCode} />
+      <ManagementPanel diseaseId={activeDiseaseId} icdCode={activeIcdCode} patient={planPatient} />
 
       {/* ── Working Diagnosis ── */}
       <CollapsibleCard title="Working diagnosis">

@@ -12,8 +12,11 @@ CREATE TABLE IF NOT EXISTS public.patient_token_blacklist (
 ALTER TABLE public.patient_token_blacklist ENABLE ROW LEVEL SECURITY;
 
 -- Staff can read (for auditing); only service_role can write (via API server)
-CREATE POLICY "staff read" ON public.patient_token_blacklist
-  FOR SELECT TO authenticated USING (true);
+do $guard$ begin
+  CREATE POLICY "staff read" ON public.patient_token_blacklist
+    FOR SELECT TO authenticated USING (true);
+exception when duplicate_object then null;
+end $guard$;
 
 GRANT SELECT ON TABLE public.patient_token_blacklist TO authenticated;
 GRANT SELECT, INSERT, UPDATE, DELETE ON TABLE public.patient_token_blacklist TO service_role;

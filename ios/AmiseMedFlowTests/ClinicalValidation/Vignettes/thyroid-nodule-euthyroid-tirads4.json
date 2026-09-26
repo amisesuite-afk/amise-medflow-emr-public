@@ -1,0 +1,299 @@
+{
+  "schemaVersion": 1,
+  "id": "thyroid-nodule-euthyroid-tirads4",
+  "condition": "Thyroid nodule (euthyroid, TI-RADS TR4)",
+  "category": "breast-endocrine",
+  "permutationOf": null,
+  "summary": "46-year-old woman with a 2.2 cm solid hypoechoic right thyroid nodule (ACR TI-RADS TR4), TSH normal. TSH first; ultrasound risk stratification; TR4 ≥1.5 cm → ultrasound-guided FNA. No radionuclide scan when TSH is normal.",
+  "tags": [
+    "thyroid",
+    "nodule"
+  ],
+  "inputs": {
+    "patient": {
+      "ageYears": 46,
+      "sex": "female",
+      "pregnancy": {
+        "status": "not-pregnant"
+      },
+      "heightCm": 165,
+      "weightKg": 68
+    },
+    "encounter": {
+      "setting": "outpatient",
+      "visitType": "newConsult",
+      "acuity": "routine"
+    },
+    "chiefComplaint": "Lump in the front of the neck",
+    "hpi": "Noticed a painless lump on the right side of the front of her neck 2 months ago. Moves when she swallows. No voice change, no difficulty swallowing or breathing. No palpitations, heat intolerance or weight change. No neck irradiation in childhood. No family history of thyroid cancer.",
+    "socrates": {
+      "onset": [
+        "1–6 months ago",
+        "Gradual"
+      ],
+      "site": [
+        "Thyroid (right lobe)"
+      ],
+      "character": [
+        "Smooth",
+        "Firm",
+        "Non-tender",
+        "Mobile"
+      ],
+      "radiation": [
+        "No radiation"
+      ],
+      "associations": [],
+      "timing": [
+        "Constant"
+      ],
+      "exacerbating": [
+        "None"
+      ],
+      "relieving": [
+        "Nothing"
+      ],
+      "severity": [
+        "Mild (1–3/10)"
+      ]
+    },
+    "symptoms": [
+      "neck lump"
+    ],
+    "negatives": [
+      "hoarseness",
+      "dysphagia",
+      "stridor",
+      "thyrotoxic symptoms"
+    ],
+    "exam": {
+      "general": "Well. Euthyroid clinically. 2 cm firm, smooth nodule in the right thyroid lobe, moves on swallowing, not fixed. No cervical lymphadenopathy. Trachea central."
+    },
+    "vitals": [
+      {
+        "minutesAgo": 15,
+        "heartRate": 72,
+        "systolicBp": 122,
+        "diastolicBp": 76,
+        "respiratoryRate": 14,
+        "temperatureC": 36.6,
+        "spo2": 99,
+        "avpu": "A",
+        "onSupplementalO2": false
+      }
+    ],
+    "labs": [
+      {
+        "analyte": "tsh",
+        "name": "TSH",
+        "value": 1.8,
+        "unit": "mU/L",
+        "minutesAgo": 20160
+      },
+      {
+        "analyte": "ft4",
+        "name": "Free T4",
+        "value": 14.2,
+        "unit": "pmol/L",
+        "minutesAgo": 20160
+      }
+    ],
+    "imaging": [
+      {
+        "name": "USS thyroid",
+        "modality": "US",
+        "region": "Neck",
+        "result": "Right lobe 2.2 cm solid, hypoechoic, wider-than-tall nodule with smooth margins and no echogenic foci — ACR TI-RADS TR4 (4 points). Left lobe normal. No abnormal cervical lymph nodes.",
+        "minutesAgo": 10080
+      }
+    ],
+    "comorbidities": [],
+    "surgicalHistory": [],
+    "medications": [],
+    "allergies": [],
+    "nkda": true,
+    "socialHistory": "Non-smoker.",
+    "platform": {
+      "web": {
+        "ccTemplate": "Neck lump",
+        "symptoms": [
+          "neck swelling"
+        ],
+        "durationDays": 60,
+        "painScore": 0
+      }
+    },
+    "confirmedDiagnosis": {
+      "name": "Right thyroid nodule 2.2 cm, ACR TI-RADS TR4, euthyroid",
+      "icd10": "E04.1",
+      "paneDiseaseId": "thyroid_nodule_benign",
+      "assessmentText": "Right thyroid nodule 2.2 cm, TI-RADS TR4, TSH normal. Meets the FNA size threshold (TR4 ≥1.5 cm): ultrasound-guided FNA. No isotope scan (TSH normal)."
+    }
+  },
+  "expected": {
+    "differential": {
+      "mustRankTopK": [
+        {
+          "id": "dx-thyroid-top3",
+          "severity": "critical",
+          "match": [
+            "thyroid",
+            "icd:E04",
+            "icd:D34",
+            "icd:C73"
+          ],
+          "k": 3,
+          "guidelineRefs": [
+            "bta-2014"
+          ]
+        }
+      ]
+    },
+    "safety": {
+      "emergencyLevel": {
+        "id": "level-not-urgent",
+        "severity": "quality",
+        "atMost": "priority",
+        "proposedFix": "Add a negation window (\"no\", \"denies\", \"never\", \"non-\") before RED_FLAGS / symptom regex matches in adaptive-triage."
+      }
+    },
+    "investigations": {
+      "mustInclude": [
+        {
+          "id": "inv-tsh",
+          "severity": "critical",
+          "match": [
+            "tsh",
+            "thyroid function",
+            "re:\\btfts?\\b"
+          ],
+          "guidelineRefs": [
+            "ata-2015",
+            "bta-2014"
+          ],
+          "note": "TSH first: it decides between FNA and a radionuclide scan."
+        },
+        {
+          "id": "inv-us",
+          "severity": "quality",
+          "match": [
+            "re:(uss|ultrasound)[^.;]{0,20}(neck|thyroid)",
+            "re:(neck|thyroid)[^.;]{0,20}(uss|ultrasound)",
+            "tirads",
+            "ti-rads"
+          ],
+          "guidelineRefs": [
+            "acr-tirads-2017",
+            "bta-2014"
+          ],
+          "note": "As an investigation order. The recommendation itself is checked under management (mgmt-us-fna-recommended)."
+        },
+        {
+          "id": "inv-fna",
+          "severity": "quality",
+          "match": [
+            "fna",
+            "fine needle",
+            "fine-needle"
+          ],
+          "guidelineRefs": [
+            "acr-tirads-2017"
+          ],
+          "note": "As an investigation order. ACR TI-RADS: TR4 nodules ≥1.5 cm meet the FNA threshold."
+        }
+      ],
+      "mustExclude": [
+        {
+          "id": "inv-no-isotope-scan",
+          "severity": "quality",
+          "match": [
+            "radionuclide",
+            "isotope",
+            "technetium",
+            "scintigra",
+            "uptake scan",
+            "tc-99m",
+            "thyroid scan"
+          ],
+          "unless": [
+            "if tsh",
+            "if toxic",
+            "suppressed",
+            "subnormal",
+            "if nodule"
+          ],
+          "guidelineRefs": [
+            "ata-2015"
+          ],
+          "note": "A radionuclide scan is for a subnormal TSH."
+        },
+        {
+          "id": "inv-no-unrelated-seeded-orders",
+          "severity": "quality",
+          "match": [
+            "mrcp",
+            "blood cultures",
+            "erect cxr",
+            "ogd",
+            "group & save"
+          ],
+          "sources": [
+            "web.pane.seeded"
+          ],
+          "platforms": [
+            "web"
+          ],
+          "note": "Orders seeded from the PANE top 3 should belong to the neck presentation, not to abdominal diagnoses."
+        }
+      ]
+    },
+    "management": {
+      "mustInclude": [
+        {
+          "id": "mgmt-us-fna-recommended",
+          "severity": "critical",
+          "match": [
+            "re:fna|fine needle|fnac"
+          ],
+          "guidelineRefs": [
+            "acr-tirads-2017",
+            "bta-2014"
+          ],
+          "note": "The plan or a prompt must recommend ultrasound-guided FNA for a TR4 nodule ≥1.5 cm."
+        }
+      ]
+    }
+  },
+  "guideline": [
+    {
+      "id": "ata-2015",
+      "name": "2015 American Thyroid Association guidelines — thyroid nodules and differentiated thyroid cancer",
+      "year": 2016,
+      "section": "Nodule evaluation (TSH first; radionuclide scan when TSH is subnormal; hyperfunctioning nodules do not need FNA); cytology-directed management; extent of surgery (total thyroidectomy for cN1 disease)",
+      "citation": "Haugen BR, Alexander EK, Bible KC, et al. 2015 American Thyroid Association management guidelines for adult patients with thyroid nodules and differentiated thyroid cancer. Thyroid. 2016;26:1–133.",
+      "verified": false
+    },
+    {
+      "id": "acr-tirads-2017",
+      "name": "ACR TI-RADS — white paper of the ACR TI-RADS committee",
+      "year": 2017,
+      "section": "Point-based categories TR1–TR5 and size thresholds for FNA / follow-up (TR3 FNA ≥2.5 cm; TR4 FNA ≥1.5 cm; TR5 FNA ≥1.0 cm)",
+      "citation": "Tessler FN, Middleton WD, Grant EG, et al. ACR Thyroid Imaging, Reporting and Data System (TI-RADS): white paper of the ACR TI-RADS committee. J Am Coll Radiol. 2017;14:587–595.",
+      "verified": false
+    },
+    {
+      "id": "bta-2014",
+      "name": "British Thyroid Association guidelines — management of thyroid cancer",
+      "year": 2014,
+      "section": "Investigation of thyroid nodules (TFTs, ultrasound, FNAC); urgent referral features (stridor, rapidly enlarging mass, voice change); anaplastic carcinoma and lymphoma",
+      "citation": "Perros P, Boelaert K, Colley S, et al. Guidelines for the management of thyroid cancer. Clin Endocrinol (Oxf). 2014;81(Suppl 1):1–122.",
+      "verified": false
+    }
+  ],
+  "rationale": "Base thyroid-nodule case, also the base of the Bethesda I–VI series. TSH and ultrasound are already on record (as they usually are at referral); the engines must still list the core work-up (TSH, US, FNA).",
+  "authoring": {
+    "author": "Claude (hernia / breast / endocrine cluster)",
+    "date": "2026-09-25",
+    "notes": "Expectations need surgeon sign-off (reviewedBy). Citations verified: false."
+  }
+}

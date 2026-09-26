@@ -14,7 +14,7 @@ CREATE TABLE IF NOT EXISTS clinical_states (
 
   patient_id           uuid        NOT NULL REFERENCES patients(id) ON DELETE CASCADE,
   encounter_id         uuid        REFERENCES encounters(id) ON DELETE SET NULL,
-  problem_id           uuid        REFERENCES patient_problems(id) ON DELETE SET NULL,
+  problem_id           uuid,       -- FK to patient_problems added below when that table exists
 
   -- Classification
   state_type           text        NOT NULL DEFAULT 'diagnosis'
@@ -78,6 +78,25 @@ CREATE TABLE IF NOT EXISTS clinical_states (
   updated_at           timestamptz NOT NULL DEFAULT now(),
   created_by           uuid        REFERENCES auth.users(id) ON DELETE SET NULL
 );
+
+-- patient_problems' creating migrations are excluded from the runner (two
+-- conflicting definitions, see migrations/README.md), so it may not exist on a
+-- fresh database. Production already has this FK from the table's first
+-- creation, so this block is a no-op there.
+DO $guard$ BEGIN
+  IF to_regclass('public.patient_problems') IS NULL THEN
+    RAISE NOTICE 'patient_problems missing: clinical_states.problem_id left without its foreign key';
+  ELSIF NOT EXISTS (
+    SELECT 1 FROM pg_constraint
+    WHERE conrelid = 'public.clinical_states'::regclass
+      AND contype = 'f'
+      AND confrelid = 'public.patient_problems'::regclass
+  ) THEN
+    ALTER TABLE clinical_states
+      ADD CONSTRAINT clinical_states_problem_id_fkey
+      FOREIGN KEY (problem_id) REFERENCES patient_problems(id) ON DELETE SET NULL;
+  END IF;
+END $guard$;
 
 CREATE INDEX IF NOT EXISTS clinical_states_patient_idx   ON clinical_states(patient_id);
 CREATE INDEX IF NOT EXISTS clinical_states_encounter_idx ON clinical_states(encounter_id);

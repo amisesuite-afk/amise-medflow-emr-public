@@ -1,0 +1,290 @@
+{
+  "schemaVersion": 1,
+  "id": "ali-thrombotic-diabetic-claudicant",
+  "condition": "Acute limb ischaemia (thrombotic, acute-on-chronic)",
+  "category": "vascular",
+  "permutationOf": "ali-embolic-af",
+  "permutationLabel": "Diabetic claudicant, thrombosis in situ, Rutherford IIa",
+  "summary": "68-year-old man with diabetes and known right superficial femoral disease: 2 days of new rest pain, cold pale right foot, numb toes, no weakness; pedal pulses absent with weak Doppler signals — Rutherford IIa.",
+  "tags": [
+    "ali",
+    "thrombotic",
+    "diabetes"
+  ],
+  "inputs": {
+    "patient": {
+      "ageYears": 68,
+      "sex": "male",
+      "pregnancy": {
+        "status": "not-applicable"
+      },
+      "heightCm": 175,
+      "weightKg": 80
+    },
+    "encounter": {
+      "setting": "emergency",
+      "visitType": "urgentReview",
+      "acuity": "urgent"
+    },
+    "chiefComplaint": "Right foot cold and painful at rest",
+    "hpi": "Known right calf claudication at 100 m for 2 years. Two days ago the right foot became cold, pale and painful at rest, worse at night; toes feel numb. Can move the foot normally. Type 2 diabetes, smoker.",
+    "socrates": {
+      "onset": [
+        "2–3 days ago"
+      ],
+      "site": [
+        "Foot"
+      ],
+      "character": [
+        "Aching"
+      ],
+      "radiation": [
+        "No radiation"
+      ],
+      "associations": [],
+      "timing": [
+        "Constant",
+        "Nocturnal"
+      ],
+      "exacerbating": [
+        "Lying flat"
+      ],
+      "relieving": [
+        "Nothing"
+      ],
+      "severity": [
+        "Severe (7–9/10)"
+      ]
+    },
+    "symptoms": [
+      "foot pain",
+      "cold foot",
+      "numbness"
+    ],
+    "negatives": [
+      "weakness"
+    ],
+    "exam": {
+      "general": "HR 88 regular, BP 162/90, T 36.6°C.",
+      "msk": "Right foot: pale, cold to the ankle, capillary refill 5 s, femoral pulse present, popliteal and pedal pulses absent, weak monophasic Doppler signal at the posterior tibial artery. Reduced light-touch sensation over the toes only. Full power in the foot. Calf soft."
+    },
+    "vitals": [
+      {
+        "minutesAgo": 10,
+        "heartRate": 88,
+        "systolicBp": 162,
+        "diastolicBp": 90,
+        "respiratoryRate": 16,
+        "temperatureC": 36.6,
+        "spo2": 97,
+        "avpu": "A",
+        "onSupplementalO2": false
+      }
+    ],
+    "labs": [
+      {
+        "analyte": "creatinine",
+        "name": "Creatinine",
+        "value": 102,
+        "unit": "µmol/L",
+        "minutesAgo": 30
+      }
+    ],
+    "imaging": [],
+    "comorbidities": [
+      "Type 2 diabetes mellitus",
+      "Peripheral arterial disease",
+      "Hypertension"
+    ],
+    "surgicalHistory": [],
+    "medications": [
+      {
+        "drug": "Metformin",
+        "dose": "1 g",
+        "frequency": "BD",
+        "indication": "Diabetes"
+      },
+      {
+        "drug": "Clopidogrel",
+        "dose": "75 mg",
+        "frequency": "OD",
+        "indication": "PAD"
+      },
+      {
+        "drug": "Atorvastatin",
+        "dose": "80 mg",
+        "frequency": "OD",
+        "indication": "PAD"
+      }
+    ],
+    "allergies": [],
+    "nkda": true,
+    "socialHistory": "Smoker 30 pack-years.",
+    "confirmedDiagnosis": {
+      "name": "Acute-on-chronic limb ischaemia of right leg",
+      "icd10": "I74.3",
+      "assessmentText": "Acute-on-chronic thrombotic limb ischaemia of the right leg, Rutherford IIa (marginally threatened) on a background of SFA disease. Needs IV heparin and urgent revascularisation planning with CT angiography."
+    },
+    "platform": {
+      "web": {
+        "ccTemplate": "Other / general surgical",
+        "symptoms": [
+          "rest pain",
+          "cold foot",
+          "numbness feet",
+          "claudication"
+        ],
+        "examFindings": {
+          "extremities": [
+            "DP absent",
+            "PT absent",
+            "Femoral reduced"
+          ],
+          "cardiovascular": [
+            "Capillary refill > 2s"
+          ]
+        },
+        "paneAnswers": {
+          "rest_pain": true,
+          "absent_pulses": true,
+          "claudication": true
+        },
+        "durationDays": 2,
+        "painScore": 7
+      }
+    }
+  },
+  "expected": {
+    "differential": {
+      "mustNotMiss": [
+        {
+          "id": "mnm-ali",
+          "severity": "critical",
+          "match": [
+            "limb isch",
+            "limb-threatening isch",
+            "acute isch",
+            "arterial embol",
+            "arterial occlusion",
+            "acute limb"
+          ],
+          "guidelineRefs": [
+            "esvs-ali-2020"
+          ],
+          "note": "A chronic PAD label alone would miss the acute threat."
+        }
+      ]
+    },
+    "safety": {
+      "emergencyLevel": {
+        "id": "level-at-least-urgent",
+        "severity": "critical",
+        "atLeast": "urgent",
+        "guidelineRefs": [
+          "esvs-ali-2020"
+        ],
+        "note": "IIa: urgent revascularisation (hours)."
+      },
+      "redFlags": [
+        {
+          "id": "flag-acute-ischaemia",
+          "severity": "quality",
+          "match": [
+            "limb isch",
+            "limb-threatening isch",
+            "acute isch",
+            "arterial embol",
+            "arterial occlusion",
+            "acute limb",
+            "rest pain",
+            "6 ps"
+          ]
+        }
+      ]
+    },
+    "investigations": {
+      "mustInclude": [
+        {
+          "id": "inv-cta",
+          "severity": "quality",
+          "match": [
+            "ct angiogra",
+            "re:\\bcta\\b",
+            "duplex",
+            "re:\\bangiogra"
+          ],
+          "guidelineRefs": [
+            "esvs-ali-2020"
+          ]
+        }
+      ]
+    },
+    "management": {
+      "mustInclude": [
+        {
+          "id": "mgmt-heparin",
+          "severity": "critical",
+          "match": [
+            "heparin"
+          ],
+          "guidelineRefs": [
+            "esvs-ali-2020"
+          ]
+        },
+        {
+          "id": "mgmt-urgent-vascular",
+          "severity": "critical",
+          "match": [
+            "revascularis",
+            "vascular surg",
+            "thrombolysis",
+            "bypass",
+            "endovascular"
+          ],
+          "guidelineRefs": [
+            "esvs-ali-2020"
+          ]
+        }
+      ],
+      "mustExclude": [
+        {
+          "id": "mgmt-no-routine-claudication-referral",
+          "severity": "quality",
+          "match": [
+            "supervised exercise",
+            "routine referral for claudication"
+          ],
+          "sources": [
+            "web.plan",
+            "ios.radiation.plan",
+            "ios.soap.plan"
+          ]
+        }
+      ]
+    }
+  },
+  "guideline": [
+    {
+      "id": "esvs-ali-2020",
+      "name": "ESVS 2020 clinical practice guidelines — acute limb ischaemia",
+      "year": 2020,
+      "section": "Clinical diagnosis (pain, pallor, pulselessness, paraesthesia, paralysis, poikilothermia); Rutherford/TASC categories I, IIa, IIb, III; immediate IV heparin unless contraindicated; IIb (immediately threatened) needs emergency revascularisation; IIa urgent; imaging (CTA) must not delay revascularisation in IIb",
+      "citation": "Björck M, Earnshaw JJ, Acosta S, et al. European Society for Vascular Surgery (ESVS) 2020 Clinical Practice Guidelines on the Management of Acute Limb Ischaemia. Eur J Vasc Endovasc Surg. 2020;59:173–218.",
+      "verified": false
+    },
+    {
+      "id": "rutherford-1997",
+      "name": "Rutherford — recommended reporting standards for lower-extremity ischaemia (acute ischaemia categories)",
+      "year": 1997,
+      "section": "Acute limb ischaemia categories: I viable; IIa marginally threatened (minimal sensory loss, no weakness); IIb immediately threatened (sensory loss beyond toes, rest pain, mild–moderate weakness); III irreversible",
+      "citation": "Rutherford RB, Baker JD, Ernst C, et al. Recommended standards for reports dealing with lower extremity ischemia: revised version. J Vasc Surg. 1997;26:517–38.",
+      "verified": false
+    }
+  ],
+  "rationale": "Permutation: thrombosis in situ on chronic disease, milder category (IIa), diabetic. Tests that a known claudicant with new rest pain and a cold foot is escalated as ALI rather than filed as chronic PAD.",
+  "authoring": {
+    "author": "Claude (soft tissue / vascular / trauma / burns cluster)",
+    "date": "2026-09-25",
+    "notes": "Expectations need surgeon sign-off (reviewedBy). Citations verified: false. iOS outcomes are unverified until the first CI run."
+  }
+}

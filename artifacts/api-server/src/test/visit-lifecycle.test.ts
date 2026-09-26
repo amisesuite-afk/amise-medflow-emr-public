@@ -18,7 +18,7 @@ function makeQuery(result: QueryResult) {
     then: (resolve: (v: QueryResult) => unknown, reject?: (e: unknown) => unknown) =>
       Promise.resolve(result).then(resolve, reject),
   };
-  for (const m of ['select','update','insert','delete','upsert','eq','neq','in','not','order','limit']) {
+  for (const m of ['select','update','insert','delete','upsert','eq','neq','in','not','is','order','limit']) {
     q[m] = vi.fn().mockReturnValue(q);
   }
   q['maybeSingle'] = vi.fn().mockResolvedValue(result);
@@ -146,6 +146,36 @@ describe('POST /api/visit/complete/:encounterId', () => {
     expect(res.body).toMatchObject({ encounterId: 'enc-1', status: 'closed' });
   });
 
+  it('stores the chief complaint on the closed encounter for the next visit (and only when sent)', async () => {
+    const closeQuery = makeQuery(empty());
+    mockFrom.mockReturnValueOnce(makeQuery(ok({ id: 'enc-1', patient_id: 'pat-1', status: 'open' })));
+    mockFrom.mockReturnValueOnce(makeQuery(empty()));       // plan upsert
+    mockFrom.mockReturnValueOnce(makeQuery(ok([])));        // sign notes
+    mockFrom.mockReturnValueOnce(closeQuery);               // close encounter
+    mockFrom.mockReturnValue(makeQuery(empty()));
+
+    const res = await request(app)
+      .post('/api/visit/complete/enc-1')
+      .set(AUTH)
+      .send({ description: 'Review in 2 weeks', chiefComplaint: '  RUQ pain after fatty food  ' });
+
+    expect(res.status).toBe(200);
+    expect(closeQuery.update).toHaveBeenCalledWith(expect.objectContaining({
+      status: 'closed', chief_complaint: 'RUQ pain after fatty food',
+    }));
+
+    // Without a complaint the stored one is left alone.
+    const closeQuery2 = makeQuery(empty());
+    mockFrom.mockReset();
+    mockFrom.mockReturnValueOnce(makeQuery(ok({ id: 'enc-2', patient_id: 'pat-1', status: 'open' })));
+    mockFrom.mockReturnValueOnce(makeQuery(empty()));
+    mockFrom.mockReturnValueOnce(makeQuery(ok([])));
+    mockFrom.mockReturnValueOnce(closeQuery2);
+    mockFrom.mockReturnValue(makeQuery(empty()));
+    await request(app).post('/api/visit/complete/enc-2').set(AUTH).send({ chiefComplaint: '   ' });
+    expect(closeQuery2.update).toHaveBeenCalledWith(expect.not.objectContaining({ chief_complaint: expect.anything() }));
+  });
+
   it('returns 404 when encounter already closed or not found', async () => {
     mockFrom.mockReturnValueOnce(makeQuery(notFound()));
 
@@ -176,6 +206,90 @@ describe('POST /api/visit/complete/:encounterId', () => {
     // Referral insert was called
     const insertCalls = (mockFrom.mock.calls as string[][]).filter(([t]) => t === 'referrals');
     expect(insertCalls.length).toBeGreaterThanOrEqual(1);
+  });
+});
+
+// ── Outcomes loop: prediction snapshot at completion (Migration 94) ──────────────
+
+describe('POST /api/visit/complete/:encounterId — prediction snapshot', () => {
+  const ENC = '11111111-2222-4333-8444-555555555555';
+  const SNAPSHOT = {
+    platform: 'web', encounterRef: 'web:someone-elses-encounter', completedAt: '2026-09-26T14:00:00.000Z',
+    differentialEngine: 'pane', differentialModelVersion: '1.0.1', modelVersions: { pane: '1.0.1' },
+    topDifferential: [{ rank: 1, diseaseId: 'acute_appendicitis', icd10: 'K35.80 — Acute appendicitis', probability: 0.72 }],
+    triageLevel: 'priority', triageScale: 'web-adaptive', scores: [{ key: 'alvarado', value: 8, source: 'calculator' }],
+    decisionBands: [], features: { rlq_pain: true }, workingDiseaseId: 'acute_appendicitis', workingIcd10: 'K35.80',
+    recordedIcd10: ['K35.80'], outcomeTriggers: ['operation'], hpi: 'free text that must not be stored',
+  };
+
+  function queueUntilClose() {
+    mockFrom.mockReturnValueOnce(makeQuery(ok({ id: ENC, patient_id: 'pat-1', status: 'open' })));
+    mockFrom.mockReturnValueOnce(makeQuery(empty()));   // plan upsert
+    mockFrom.mockReturnValueOnce(makeQuery(ok([])));    // sign notes
+    mockFrom.mockReturnValueOnce(makeQuery(empty()));   // close encounter
+  }
+
+  beforeEach(() => { vi.clearAllMocks(); mockFrom.mockReset(); });
+
+  it('stores only coded values, keyed to this encounter (first completion wins)', async () => {
+    queueUntilClose();
+    const snapQuery = makeQuery(ok([{ id: 'snap-1' }]));
+    mockFrom.mockReturnValueOnce(snapQuery);
+    mockFrom.mockReturnValue(makeQuery(empty()));
+
+    const res = await request(app).post(`/api/visit/complete/${ENC}`).set(AUTH).send({ predictionSnapshot: SNAPSHOT });
+
+    expect(res.status).toBe(200);
+    expect(res.body.predictionSnapshot).toBe('saved');
+    expect(mockFrom).toHaveBeenCalledWith('prediction_snapshots');
+    const [row, opts] = (snapQuery.upsert as ReturnType<typeof vi.fn>).mock.calls[0];
+    expect(opts).toEqual({ onConflict: 'encounter_ref', ignoreDuplicates: true });
+    expect(row).toMatchObject({
+      patient_id: 'pat-1', encounter_id: ENC, encounter_ref: `web:${ENC}`, platform: 'web',
+      top_differential: [{ rank: 1, diseaseId: 'acute_appendicitis', icd10: 'K35.80', probability: 0.72 }],
+      expects_outcome: true, outcome_triggers: ['operation'],
+    });
+    expect(JSON.stringify(row)).not.toContain('free text');
+    expect(JSON.stringify(row)).not.toContain('someone-elses');
+  });
+
+  it('still closes the encounter when the table is missing (Migration 94 not applied)', async () => {
+    queueUntilClose();
+    mockFrom.mockReturnValueOnce(makeQuery({ data: null, error: { message: 'relation does not exist', code: '42P01' } as never }));
+    mockFrom.mockReturnValue(makeQuery(empty()));
+
+    const res = await request(app).post(`/api/visit/complete/${ENC}`).set(AUTH).send({ predictionSnapshot: SNAPSHOT });
+    expect(res.status).toBe(200);
+    expect(res.body).toMatchObject({ status: 'closed', predictionSnapshot: 'unavailable' });
+
+    // PostgREST's own "not in the schema cache" code is treated the same way.
+    queueUntilClose();
+    mockFrom.mockReturnValueOnce(makeQuery({ data: null, error: { message: 'Could not find the table', code: 'PGRST205' } as never }));
+    mockFrom.mockReturnValue(makeQuery(empty()));
+    const res2 = await request(app).post(`/api/visit/complete/${ENC}`).set(AUTH).send({ predictionSnapshot: SNAPSHOT });
+    expect(res2.body).toMatchObject({ status: 'closed', predictionSnapshot: 'unavailable' });
+  });
+
+  it('an existing snapshot is kept; a malformed one is refused; neither blocks the completion', async () => {
+    queueUntilClose();
+    mockFrom.mockReturnValueOnce(makeQuery(ok([])));  // ignoreDuplicates: nothing inserted
+    mockFrom.mockReturnValue(makeQuery(empty()));
+    const res = await request(app).post(`/api/visit/complete/${ENC}`).set(AUTH).send({ predictionSnapshot: SNAPSHOT });
+    expect(res.body.predictionSnapshot).toBe('exists');
+
+    mockFrom.mockReset();
+    queueUntilClose();
+    mockFrom.mockReturnValue(makeQuery(empty()));
+    const bad = await request(app).post(`/api/visit/complete/${ENC}`).set(AUTH)
+      .send({ predictionSnapshot: { ...SNAPSHOT, differentialModelVersion: '' } });
+    expect(bad.status).toBe(200);
+    expect(bad.body.predictionSnapshot).toBe('invalid');
+    expect(mockFrom).not.toHaveBeenCalledWith('prediction_snapshots');
+
+    queueUntilClose();
+    mockFrom.mockReturnValue(makeQuery(empty()));
+    const none = await request(app).post(`/api/visit/complete/${ENC}`).set(AUTH).send({});
+    expect(none.body.predictionSnapshot).toBe('none');
   });
 });
 

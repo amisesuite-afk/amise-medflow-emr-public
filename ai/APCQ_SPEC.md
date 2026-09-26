@@ -225,7 +225,7 @@ Consent records are **append-only** — `ON DELETE RESTRICT` on `questionnaire_s
 | Method | Flow |
 |---|---|
 | **Kiosk** | Front desk starts session → shows QR code on screen → patient scans with phone |
-| **QR Code** | Generated using `api.qrserver.com` from session URL; displayed in `QuestionnaireManagerTab` |
+| **QR Code** | Generated locally in the browser from the session URL (`LocalQrCode.tsx`, `qrcode` package); displayed in `QuestionnaireManagerTab`. Never use a third-party QR service: the URL carries the session token |
 | **SMS** | `POST /api/questionnaire/send-sms` → Twilio (or dry_run) → patient receives link |
 | **Staff-assisted** | Staff navigates to the session URL on a shared device and hands it to patient |
 

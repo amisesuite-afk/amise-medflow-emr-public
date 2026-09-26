@@ -1,0 +1,381 @@
+{
+  "schemaVersion": 1,
+  "id": "variceal-bleed-unrecognised-cirrhosis",
+  "condition": "Acute variceal bleeding in cirrhosis",
+  "category": "upper-gi",
+  "permutationOf": "variceal-bleed-known-cirrhosis",
+  "permutationLabel": "No known liver disease — cirrhosis only on examination and bloods",
+  "summary": "46-year-old woman, heavy drinker, no liver diagnosis: haematemesis, HR 112, SBP 102; spider naevi, splenomegaly, ascites; platelets 82, INR 1.5, albumin 29. Suspected variceal bleed must be treated as such before endoscopy (vasoactive + antibiotics).",
+  "tags": [
+    "gi-bleed",
+    "variceal",
+    "cirrhosis",
+    "unrecognised"
+  ],
+  "inputs": {
+    "patient": {
+      "ageYears": 46,
+      "sex": "female",
+      "pregnancy": {
+        "status": "not-pregnant"
+      },
+      "heightCm": 162,
+      "weightKg": 58
+    },
+    "encounter": {
+      "setting": "emergency",
+      "visitType": "urgentReview",
+      "acuity": "emergency"
+    },
+    "chiefComplaint": "Vomiting blood",
+    "hpi": "Sudden vomit of about a cupful of bright red blood an hour ago, then a second smaller one. Never seen a doctor about her liver. Drinks a bottle of rum most days. Ankles and tummy swollen for a month.",
+    "socrates": {
+      "onset": [
+        "Today",
+        "Sudden"
+      ],
+      "site": [
+        "Diffuse"
+      ],
+      "character": [
+        "Bloating"
+      ],
+      "radiation": [
+        "No radiation"
+      ],
+      "associations": [
+        "Vomiting"
+      ],
+      "timing": [
+        "Constant"
+      ],
+      "exacerbating": [],
+      "relieving": [
+        "Nothing"
+      ],
+      "severity": [
+        "Mild (1–3/10)"
+      ]
+    },
+    "symptoms": [
+      "haematemesis",
+      "abdominal distension",
+      "ankle swelling"
+    ],
+    "negatives": [
+      "known liver disease",
+      "melaena"
+    ],
+    "exam": {
+      "general": "Pale, not jaundiced. Spider naevi on chest, palmar erythema. Pulse 112/min, BP 102/64.",
+      "abdomen": "Distended, shifting dullness. Palpable spleen tip. Non-tender. Caput medusae."
+    },
+    "vitals": [
+      {
+        "minutesAgo": 5,
+        "heartRate": 112,
+        "systolicBp": 102,
+        "diastolicBp": 64,
+        "respiratoryRate": 20,
+        "temperatureC": 36.8,
+        "spo2": 97,
+        "avpu": "A",
+        "onSupplementalO2": false
+      }
+    ],
+    "labs": [
+      {
+        "analyte": "haemoglobin",
+        "name": "Haemoglobin",
+        "value": 9.2,
+        "unit": "g/dL",
+        "minutesAgo": 20
+      },
+      {
+        "analyte": "urea",
+        "name": "Urea",
+        "value": 8.4,
+        "unit": "mmol/L",
+        "minutesAgo": 20
+      },
+      {
+        "analyte": "creatinine",
+        "name": "Creatinine",
+        "value": 70,
+        "unit": "µmol/L",
+        "minutesAgo": 20
+      },
+      {
+        "analyte": "platelets",
+        "name": "Platelets",
+        "value": 82,
+        "unit": "×10⁹/L",
+        "minutesAgo": 20
+      },
+      {
+        "analyte": "inr",
+        "name": "INR",
+        "value": 1.5,
+        "unit": "",
+        "minutesAgo": 20
+      },
+      {
+        "analyte": "bilirubin",
+        "name": "Bilirubin",
+        "value": 38,
+        "unit": "µmol/L",
+        "minutesAgo": 20
+      },
+      {
+        "analyte": "albumin",
+        "name": "Albumin",
+        "value": 29,
+        "unit": "g/L",
+        "minutesAgo": 20
+      }
+    ],
+    "imaging": [],
+    "comorbidities": [],
+    "surgicalHistory": [],
+    "medications": [],
+    "allergies": [],
+    "nkda": true,
+    "socialHistory": "Drinks about 70 units a week of rum. Smoker. Works as a barmaid.",
+    "confirmedDiagnosis": {
+      "name": "Suspected variceal haemorrhage",
+      "icd10": "I85.11",
+      "paneDiseaseId": "upper_gi_bleed",
+      "assessmentText": "Haematemesis with clinical signs of cirrhosis and portal hypertension (ascites, splenomegaly, platelets 82) — suspected variceal bleeding until endoscopy."
+    },
+    "platform": {
+      "web": {
+        "ccTemplate": "Upper GI bleed (haematemesis / melaena)",
+        "symptoms": [
+          "haematemesis",
+          "abdominal distension",
+          "ankle oedema"
+        ],
+        "symptomDetails": {
+          "vomiting": [
+            "Blood"
+          ]
+        },
+        "examFindings": {
+          "abdomen": [
+            "Ascites",
+            "Splenomegaly"
+          ],
+          "general": [
+            "Pale"
+          ]
+        },
+        "toxicHabits": [
+          "alcohol"
+        ],
+        "durationDays": 1,
+        "painScore": 1
+      }
+    }
+  },
+  "expected": {
+    "differential": {
+      "mustRankTopK": [
+        {
+          "id": "dx-ugib-top3",
+          "severity": "critical",
+          "match": [
+            "upper gi",
+            "haemorrhage",
+            "hemorrhage",
+            "icd:K92",
+            "peptic ulcer",
+            "icd:K25",
+            "icd:K26",
+            "icd:K27"
+          ],
+          "k": 3,
+          "guidelineRefs": [
+            "baveno-7"
+          ]
+        }
+      ],
+      "mustNotMiss": [
+        {
+          "id": "mnm-variceal",
+          "severity": "quality",
+          "match": [
+            "varic",
+            "portal hypertens",
+            "cirrho",
+            "liver disease",
+            "icd:I85"
+          ],
+          "guidelineRefs": [
+            "baveno-7"
+          ]
+        }
+      ]
+    },
+    "safety": {
+      "emergencyLevel": {
+        "id": "level-emergency",
+        "severity": "critical",
+        "atLeast": "emergency",
+        "guidelineRefs": [
+          "baveno-7"
+        ]
+      },
+      "redFlags": [
+        {
+          "id": "flag-liver-disease",
+          "severity": "quality",
+          "match": [
+            "cirrho",
+            "liver",
+            "portal hypertens",
+            "varic",
+            "alcohol"
+          ],
+          "guidelineRefs": [
+            "baveno-7"
+          ]
+        }
+      ]
+    },
+    "scores": {
+      "recommended": [
+        {
+          "id": "score-rec-child-pugh",
+          "severity": "quality",
+          "score": "child-pugh",
+          "guidelineRefs": [
+            "baveno-7"
+          ],
+          "knownGap": [
+            "ios"
+          ],
+          "knownGapNote": "iOS CI 2026-09-25 (run 36169134350, database mode): child-pugh not recommended; recommended: glasgow-blatchford, rockall, aims65, ios:forrest"
+        }
+      ]
+    },
+    "investigations": {
+      "mustInclude": [
+        {
+          "id": "inv-inr-lfts",
+          "severity": "quality",
+          "match": [
+            "inr",
+            "lft",
+            "liver function"
+          ],
+          "guidelineRefs": [
+            "baveno-7"
+          ]
+        }
+      ]
+    },
+    "management": {
+      "mustInclude": [
+        {
+          "id": "mgmt-vasoactive",
+          "severity": "critical",
+          "match": [
+            "terlipressin",
+            "octreotide",
+            "somatostatin",
+            "vasoactive"
+          ],
+          "guidelineRefs": [
+            "baveno-7",
+            "nice-cg141"
+          ],
+          "note": "Start as soon as variceal bleeding is suspected, before endoscopy.",
+          "proposedFix": "Add I85 to the upper_gi_bleed protocol icd10Prefixes or add a dedicated variceal protocol (Baveno VII: vasoactive + ceftriaxone + EVL ≤12 h + restrictive Hb 7–8 + pre-emptive TIPS); fix its \"80–100 in varices\" transfusion target at the same time."
+        },
+        {
+          "id": "mgmt-antibiotic-prophylaxis",
+          "severity": "critical",
+          "match": [
+            "ceftriaxone",
+            "antibiotic prophylaxis",
+            "prophylactic antibiotic",
+            "prophylactic iv ceftriaxone"
+          ],
+          "guidelineRefs": [
+            "baveno-7"
+          ],
+          "proposedFix": "Add I85 to the upper_gi_bleed protocol icd10Prefixes or add a dedicated variceal protocol (Baveno VII: vasoactive + ceftriaxone + EVL ≤12 h + restrictive Hb 7–8 + pre-emptive TIPS); fix its \"80–100 in varices\" transfusion target at the same time."
+        },
+        {
+          "id": "mgmt-band-ligation",
+          "severity": "quality",
+          "match": [
+            "band ligation",
+            "variceal ligation",
+            "re:\\bevl\\b",
+            "banding"
+          ],
+          "guidelineRefs": [
+            "baveno-7"
+          ],
+          "proposedFix": "Add I85 to the upper_gi_bleed protocol icd10Prefixes or add a dedicated variceal protocol (Baveno VII: vasoactive + ceftriaxone + EVL ≤12 h + restrictive Hb 7–8 + pre-emptive TIPS); fix its \"80–100 in varices\" transfusion target at the same time."
+        }
+      ],
+      "mustExclude": [
+        {
+          "id": "mgmt-no-liberal-transfusion-varices",
+          "severity": "critical",
+          "match": [
+            "re:80.{0,3}100 in varices",
+            "re:varic[^.;\\n]{0,40}\\b(80.{0,3}100 ?g/l|8.{0,3}10 ?g/dl)"
+          ],
+          "guidelineRefs": [
+            "baveno-7",
+            "villanueva-2013"
+          ]
+        }
+      ]
+    },
+    "dxVariant": {
+      "id": "variant-variceal",
+      "severity": "quality",
+      "equals": "ugib_variceal",
+      "guidelineRefs": [
+        "baveno-7"
+      ],
+      "proposedFix": "dx-variants.ts: order ugib_variceal before ugib_nonvariceal_stable (most specific first) and add an unstable variant; keep lint:dx-phases in step."
+    }
+  },
+  "guideline": [
+    {
+      "id": "baveno-7",
+      "name": "Baveno VII — Renewing consensus in portal hypertension",
+      "year": 2022,
+      "section": "In suspected variceal bleeding, start vasoactive drugs and antibiotic prophylaxis as soon as possible, before endoscopy",
+      "citation": "de Franchis R, Bosch J, Garcia-Tsao G, Reiberger T, Ripoll C; Baveno VII Faculty. J Hepatol. 2022;76:959–974.",
+      "verified": false
+    },
+    {
+      "id": "nice-cg141",
+      "name": "NICE CG141 — Acute upper gastrointestinal bleeding in over 16s: management",
+      "year": 2012,
+      "section": "Offer terlipressin and prophylactic antibiotics at presentation to patients with suspected variceal bleeding",
+      "citation": "National Institute for Health and Care Excellence. Clinical guideline CG141. London: NICE; 2012 (last updated 2016).",
+      "verified": false
+    },
+    {
+      "id": "villanueva-2013",
+      "name": "Restrictive vs liberal transfusion in acute upper GI bleeding (RCT)",
+      "year": 2013,
+      "section": "Restrictive transfusion improved survival in cirrhosis",
+      "citation": "Villanueva C, Colomo A, Bosch A, et al. Transfusion strategies for acute upper gastrointestinal bleeding. N Engl J Med. 2013;368:11–21.",
+      "verified": false
+    }
+  ],
+  "rationale": "Permutation: the cirrhosis is not on the problem list. The engines must infer possible varices from examination, platelets, INR and alcohol, and start vasoactive + antibiotic treatment before endoscopy. Engines that only read a \"cirrhosis\" comorbidity keyword miss this patient.",
+  "authoring": {
+    "author": "Claude (upper-GI cluster)",
+    "date": "2026-09-25",
+    "notes": "Expectations need surgeon sign-off (reviewedBy). Citations written from the guideline texts, not yet checked against the source (verified: false)."
+  }
+}

@@ -16,7 +16,7 @@ const DEMO_ROLE_LABELS: Record<DemoRole, string> = {
   admin: 'Administrator',
 };
 
-export default function LoginPage({ sessionExpired }: { sessionExpired?: boolean } = {}) {
+export default function LoginPage({ sessionExpired, signedOutForInactivity }: { sessionExpired?: boolean; signedOutForInactivity?: boolean } = {}) {
   const { signIn, configured, profileError } = useAuth();
   const [email, setEmail]       = useState('');
   const [password, setPassword] = useState('');
@@ -150,7 +150,12 @@ export default function LoginPage({ sessionExpired }: { sessionExpired?: boolean
         </div>
       </div>
 
-      {sessionExpired && (
+      {signedOutForInactivity && (
+        <div role="status" style={{ width: '100%', maxWidth: 340, marginBottom: 12, background: 'rgba(45,212,191,.08)', border: '1px solid rgba(45,212,191,.3)', borderRadius: 10, padding: '10px 14px', color: '#5eead4', fontSize: 12, fontWeight: 600, textAlign: 'center' }}>
+          You were signed out after a period of inactivity. Patient data was removed from this browser.
+        </div>
+      )}
+      {sessionExpired && !signedOutForInactivity && (
         <div style={{ width: '100%', maxWidth: 340, marginBottom: 12, background: 'rgba(251,191,36,.1)', border: '1px solid rgba(251,191,36,.3)', borderRadius: 10, padding: '10px 14px', color: '#fbbf24', fontSize: 12, fontWeight: 600, textAlign: 'center' }}>
           Your session has expired. Please sign in again.
         </div>

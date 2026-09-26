@@ -21,8 +21,11 @@ DROP POLICY IF EXISTS "anon access" ON public.appointment_requests;
 -- 4. Web intake / patient portal: allow anon INSERT only (submit a new booking request).
 --    SELECT is NOT granted — patients cannot enumerate existing requests.
 --    The patient portal uses a separate patients.auth_user_id FK for reads.
-CREATE POLICY "anon can submit booking request"
-  ON public.appointment_requests
-  FOR INSERT
-  TO anon
-  WITH CHECK (true);
+do $guard$ begin
+  CREATE POLICY "anon can submit booking request"
+    ON public.appointment_requests
+    FOR INSERT
+    TO anon
+    WITH CHECK (true);
+exception when duplicate_object then null;
+end $guard$;

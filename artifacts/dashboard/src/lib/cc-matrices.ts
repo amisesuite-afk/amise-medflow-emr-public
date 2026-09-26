@@ -12,6 +12,7 @@
  */
 
 import type { Section, EncounterType } from '@/context/AppContext';
+import { classifyComplaint } from '@workspace/triage-engine/history-frames';
 
 // ── Type definitions ──────────────────────────────────────────────────────────
 
@@ -1223,12 +1224,25 @@ export function getMatrix(id: string): CCTemplate | undefined {
   return CC_TEMPLATES.find(t => t.id === id);
 }
 
-/** Case-insensitive name match — falls back to 'other_surgical'. */
+/** History frame of each template's own name (a template is a match only for the same kind of complaint). */
+const TEMPLATE_FRAME = new Map(CC_TEMPLATES.map(t => [t.id, classifyComplaint(t.name).frameId]));
+
+/**
+ * Case-insensitive name match — falls back to 'other_surgical'.
+ *
+ * The partial match (the complaint contains the template's first word) now also needs the same
+ * history frame (@workspace/triage-engine/history-frames): "Abdominal pain" used to open the
+ * abdominal-mass template, "Upper abdominal pain" the upper GI bleed one, "Breast pain" the breast
+ * lump one and "Neck pain" the neck lump one (history-by-complaint audit). Such a complaint now
+ * falls back, and the HPI card asks the questions of its own frame (lib/hpi-fields.ts).
+ */
 export function getMatrixByName(name: string): CCTemplate {
   const lower = name.toLowerCase();
+  const exact = CC_TEMPLATES.find(t => t.name.toLowerCase() === lower);
+  if (exact) return exact;
+  const frame = classifyComplaint(name).frameId;
   return (
-    CC_TEMPLATES.find(t => t.name.toLowerCase() === lower) ??
-    CC_TEMPLATES.find(t => lower.includes(t.name.toLowerCase().split(' ')[0]!)) ??
+    CC_TEMPLATES.find(t => lower.includes(t.name.toLowerCase().split(' ')[0]!) && TEMPLATE_FRAME.get(t.id) === frame) ??
     CC_TEMPLATES.find(t => t.id === 'other_surgical')!
   );
 }

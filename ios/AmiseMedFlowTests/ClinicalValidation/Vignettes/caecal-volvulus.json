@@ -1,0 +1,287 @@
+{
+  "schemaVersion": 1,
+  "id": "caecal-volvulus",
+  "condition": "Caecal volvulus",
+  "category": "colorectal",
+  "permutationOf": "sigmoid-volvulus-base",
+  "permutationLabel": "Caecal volvulus (surgery, not endoscopy), woman of reproductive age",
+  "summary": "44-year-old woman, 24 h colicky pain, distension and vomiting; CT: caecum 11 cm in the left upper quadrant with a whirl sign, no ischaemia.",
+  "tags": [
+    "obstruction",
+    "volvulus"
+  ],
+  "inputs": {
+    "patient": {
+      "ageYears": 44,
+      "sex": "female",
+      "pregnancy": {
+        "status": "unknown"
+      },
+      "heightCm": 167,
+      "weightKg": 63
+    },
+    "encounter": {
+      "setting": "emergency",
+      "visitType": "urgentReview",
+      "acuity": "urgent"
+    },
+    "chiefComplaint": "Abdominal pain, distension and vomiting",
+    "hpi": "24 hours of colicky central and right-sided abdominal pain, then rapidly increasing distension and vomiting; no flatus since this morning. LMP 3 weeks ago. No previous episodes.",
+    "socrates": {
+      "onset": [
+        "Yesterday"
+      ],
+      "site": [
+        "Periumbilical",
+        "Right side"
+      ],
+      "character": [
+        "Colicky"
+      ],
+      "radiation": [
+        "No radiation"
+      ],
+      "associations": [
+        "Vomiting",
+        "Nausea"
+      ],
+      "timing": [
+        "Intermittent",
+        "Progressive"
+      ],
+      "exacerbating": [],
+      "relieving": [
+        "Nothing"
+      ],
+      "severity": [
+        "Severe (7–9/10)"
+      ]
+    },
+    "symptoms": [
+      "abdominal pain",
+      "abdominal distension",
+      "vomiting",
+      "absolute constipation"
+    ],
+    "negatives": [
+      "fever",
+      "vaginal bleeding"
+    ],
+    "exam": {
+      "general": "Temperature 37.3°C, pulse 108/min, BP 122/78.",
+      "abdomen": "Asymmetric distension, tympanic mass in the left upper abdomen, mild tenderness, no peritonism."
+    },
+    "vitals": [
+      {
+        "minutesAgo": 15,
+        "heartRate": 108,
+        "systolicBp": 122,
+        "diastolicBp": 78,
+        "respiratoryRate": 20,
+        "temperatureC": 37.3,
+        "spo2": 98,
+        "avpu": "A",
+        "onSupplementalO2": false
+      }
+    ],
+    "labs": [
+      {
+        "analyte": "wbc",
+        "name": "WBC",
+        "value": 12.6,
+        "unit": "×10⁹/L",
+        "minutesAgo": 30
+      },
+      {
+        "analyte": "crp",
+        "name": "CRP",
+        "value": 24,
+        "unit": "mg/L",
+        "minutesAgo": 30
+      },
+      {
+        "analyte": "lactate",
+        "name": "Lactate",
+        "value": 1.9,
+        "unit": "mmol/L",
+        "minutesAgo": 30
+      },
+      {
+        "analyte": "creatinine",
+        "name": "Creatinine",
+        "value": 70,
+        "unit": "µmol/L",
+        "minutesAgo": 30
+      }
+    ],
+    "imaging": [
+      {
+        "name": "CT abdomen/pelvis with IV contrast",
+        "modality": "CT",
+        "region": "Abdomen/pelvis",
+        "result": "Caecal volvulus: caecum 11 cm displaced to the left upper quadrant with a whirl sign of the ileocolic mesentery. Preserved wall enhancement, no pneumatosis, no free gas.",
+        "minutesAgo": 20
+      }
+    ],
+    "comorbidities": [],
+    "surgicalHistory": [],
+    "medications": [],
+    "allergies": [],
+    "nkda": true,
+    "socialHistory": "Shop manager.",
+    "confirmedDiagnosis": {
+      "name": "Caecal volvulus",
+      "icd10": "K56.2",
+      "paneDiseaseId": "bowel_obstruction",
+      "assessmentText": "Caecal volvulus without ischaemia — urgent operation: right hemicolectomy (ileocolic resection) with primary anastomosis. Endoscopic reduction is not appropriate."
+    },
+    "platform": {
+      "web": {
+        "ccTemplate": "Acute abdominal pain",
+        "socratesAnswers": {
+          "site": "Central and right side, now distended",
+          "onset": "Yesterday",
+          "character": "Colicky",
+          "associated": "Vomiting, distension, no flatus (constipation)",
+          "timing": "Intermittent / colicky, worsening",
+          "relief": "Nothing",
+          "severity": "7/10",
+          "lmp": "3 weeks ago"
+        },
+        "symptoms": [
+          "abdominal pain",
+          "abdominal distension",
+          "vomiting",
+          "constipation"
+        ],
+        "symptomDetails": {
+          "abdominal pain": [
+            "Periumbilical",
+            "6–24 hours",
+            "Colicky",
+            "Severe (7–9)",
+            "Vomiting",
+            "Distension",
+            "Constipation",
+            "Intermittent / colicky"
+          ]
+        },
+        "examFindings": {
+          "abdomen": [
+            "Distended",
+            "Mass palpable"
+          ]
+        },
+        "durationDays": 1,
+        "painScore": 7
+      }
+    }
+  },
+  "expected": {
+    "safety": {
+      "emergencyLevel": {
+        "id": "level-at-least-urgent",
+        "severity": "critical",
+        "atLeast": "urgent",
+        "guidelineRefs": [
+          "ascrs-volvulus-2021"
+        ]
+      }
+    },
+    "investigations": {
+      "mustInclude": [
+        {
+          "id": "inv-pregnancy-test",
+          "severity": "critical",
+          "match": [
+            "hcg",
+            "pregnancy test"
+          ],
+          "guidelineRefs": [
+            "nice-ng126"
+          ],
+          "note": "Woman of reproductive age before CT and theatre."
+        }
+      ]
+    },
+    "management": {
+      "mustInclude": [
+        {
+          "id": "mgmt-resection",
+          "severity": "critical",
+          "match": [
+            "right hemicolectomy",
+            "ileocaecal resection",
+            "ileocolic resection",
+            "caecal resection",
+            "re:right colectomy"
+          ],
+          "guidelineRefs": [
+            "ascrs-volvulus-2021"
+          ],
+          "note": "ASCRS 2021: operative management (resection) for caecal volvulus.",
+          "knownGapNote": "Web: No right hemicolectomy/ileocaecal resection in any output; the volvulus variant reuses the generic bowel-obstruction steps.",
+          "proposedFix": "Separate caecal-volvulus variant with right hemicolectomy/ileocaecal resection (ASCRS 2021)."
+        }
+      ],
+      "mustExclude": [
+        {
+          "id": "mgmt-no-endoscopic-reduction-caecal",
+          "severity": "quality",
+          "match": [
+            "endoscopic decompression",
+            "colonoscopic decompression",
+            "colonoscopic detorsion",
+            "endoscopic detorsion"
+          ],
+          "unless": [
+            "sigmoid",
+            "not recommended",
+            "not appropriate",
+            "not for caecal"
+          ],
+          "guidelineRefs": [
+            "ascrs-volvulus-2021"
+          ],
+          "note": "ASCRS 2021: endoscopic reduction of caecal volvulus is not recommended.",
+          "knownGap": [
+            "ios"
+          ],
+          "knownGapNote": "iOS CI 2026-09-25 (run 36169134350, database mode): forbidden management item present in ios.radiation.plan: \"...operative management - right hemicolectomy (ascrs 2021); no endoscopic detorsion\""
+        }
+      ]
+    },
+    "dxVariant": {
+      "id": "variant-lbo-volvulus",
+      "severity": "quality",
+      "equals": "lbo_volvulus",
+      "guidelineRefs": [
+        "ascrs-volvulus-2021"
+      ]
+    }
+  },
+  "guideline": [
+    {
+      "id": "ascrs-volvulus-2021",
+      "name": "ASCRS clinical practice guidelines — colonic volvulus and acute colonic pseudo-obstruction",
+      "year": 2021,
+      "section": "Sigmoid volvulus: endoscopic detorsion without peritonitis/ischaemia, then sigmoid colectomy during the same admission; emergency resection for gangrene/perforation; caecal volvulus: operative management, endoscopic reduction not recommended",
+      "citation": "Alavi K, Poylin V, Davids JS, et al. The American Society of Colon and Rectal Surgeons clinical practice guidelines for the management of colonic volvulus and acute colonic pseudo-obstruction. Dis Colon Rectum. 2021;64:1046–57.",
+      "verified": false
+    },
+    {
+      "id": "nice-ng126",
+      "name": "NICE NG126 — ectopic pregnancy and miscarriage: diagnosis and initial management",
+      "year": 2019,
+      "section": "Pregnancy test in every woman of reproductive age with abdominal pain; transvaginal ultrasound; immediate referral if haemodynamically unstable; surgical management of ruptured ectopic; anti-D",
+      "citation": "National Institute for Health and Care Excellence. Ectopic pregnancy and miscarriage: diagnosis and initial management. NICE guideline NG126, 2019 (updated 2023).",
+      "verified": false
+    }
+  ],
+  "rationale": "Permutation: site. Caecal volvulus is treated by resection (ASCRS 2021), not endoscopic reduction; a pregnancy test is needed before CT and theatre.",
+  "authoring": {
+    "author": "Claude (GI surgical emergencies cluster)",
+    "date": "2026-09-25",
+    "notes": "Expectations need surgeon sign-off (reviewedBy). Every citation is verified: false."
+  }
+}

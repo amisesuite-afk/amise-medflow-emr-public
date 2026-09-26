@@ -1,0 +1,398 @@
+{
+  "schemaVersion": 1,
+  "id": "hhs-elderly-type2",
+  "condition": "Hyperosmolar hyperglycaemic state",
+  "category": "general-medicine",
+  "permutationOf": null,
+  "permutationLabel": "Elderly, type 2 diabetes, sepsis-precipitated HHS",
+  "summary": "81-year-old woman with type 2 diabetes, 5 days of confusion and polyuria; glucose 46.2, sodium 151, osmolality 372, ketones 0.9, AKI and probable UTI.",
+  "tags": [
+    "diabetes",
+    "elderly",
+    "do-not-miss",
+    "metabolic"
+  ],
+  "inputs": {
+    "patient": {
+      "ageYears": 81,
+      "sex": "female",
+      "pregnancy": {
+        "status": "not-applicable"
+      },
+      "heightCm": 158,
+      "weightKg": 64
+    },
+    "encounter": {
+      "setting": "emergency",
+      "visitType": "urgentReview",
+      "acuity": "urgent"
+    },
+    "chiefComplaint": "Increasing confusion and drowsiness",
+    "hpi": "Type 2 diabetes on metformin and gliclazide. Five days of increasing confusion, drinking and passing a lot of urine, then barely eating or drinking for 2 days. Daughter found her drowsy in bed this morning. Urinary frequency last week. No vomiting.",
+    "symptoms": [
+      "confusion",
+      "dehydration",
+      "polyuria",
+      "excessive thirst",
+      "fatigue"
+    ],
+    "negatives": [
+      "vomiting",
+      "abdominal pain",
+      "headache",
+      "fall"
+    ],
+    "exam": {
+      "general": "Drowsy but rousable to voice, disorientated. Very dry mucous membranes, reduced skin turgor, cool peripheries. Pulse 112/min, BP 98/58, RR 22, temperature 37.9°C, SpO2 96% on air. No ketotic breath.",
+      "abdomen": "Soft, non-tender, bladder not palpable.",
+      "neuro": "No focal neurological deficit. GCS 13 (E3 V4 M6).",
+      "skin": "Both heels intact; no foot ulcers."
+    },
+    "vitals": [
+      {
+        "minutesAgo": 10,
+        "heartRate": 112,
+        "systolicBp": 98,
+        "diastolicBp": 58,
+        "respiratoryRate": 22,
+        "temperatureC": 37.9,
+        "spo2": 96,
+        "avpu": "C",
+        "onSupplementalO2": false,
+        "glucoseMmol": 46.2,
+        "weightKg": 64
+      }
+    ],
+    "labs": [
+      {
+        "analyte": "glucose",
+        "name": "Glucose",
+        "value": 46.2,
+        "unit": "mmol/L",
+        "minutesAgo": 30
+      },
+      {
+        "analyte": "sodium",
+        "name": "Sodium",
+        "value": 151,
+        "unit": "mmol/L",
+        "minutesAgo": 30
+      },
+      {
+        "analyte": "potassium",
+        "name": "Potassium",
+        "value": 4.2,
+        "unit": "mmol/L",
+        "minutesAgo": 30
+      },
+      {
+        "analyte": "urea",
+        "name": "Urea",
+        "value": 24.1,
+        "unit": "mmol/L",
+        "minutesAgo": 30
+      },
+      {
+        "analyte": "creatinine",
+        "name": "Creatinine",
+        "value": 186,
+        "unit": "µmol/L",
+        "minutesAgo": 30
+      },
+      {
+        "analyte": "osmolality",
+        "name": "Serum osmolality (measured)",
+        "value": 372,
+        "unit": "mOsm/kg",
+        "minutesAgo": 30
+      },
+      {
+        "analyte": "ketones",
+        "name": "Blood ketones",
+        "value": 0.9,
+        "unit": "mmol/L",
+        "minutesAgo": 30
+      },
+      {
+        "analyte": "ph",
+        "name": "Venous pH",
+        "value": 7.33,
+        "minutesAgo": 30
+      },
+      {
+        "analyte": "bicarbonate",
+        "name": "Bicarbonate",
+        "value": 21,
+        "unit": "mmol/L",
+        "minutesAgo": 30
+      },
+      {
+        "analyte": "wbc",
+        "name": "WBC",
+        "value": 13.6,
+        "unit": "×10⁹/L",
+        "minutesAgo": 30
+      },
+      {
+        "analyte": "crp",
+        "name": "CRP",
+        "value": 64,
+        "unit": "mg/L",
+        "minutesAgo": 30
+      },
+      {
+        "analyte": "urinalysis",
+        "name": "Urine dipstick",
+        "resultText": "Leucocytes 2+, nitrite positive, glucose 4+, ketones trace",
+        "minutesAgo": 30
+      }
+    ],
+    "imaging": [],
+    "comorbidities": [
+      "Type 2 diabetes mellitus",
+      "Hypertension",
+      "Chronic kidney disease stage 3a"
+    ],
+    "surgicalHistory": [
+      "Hysterectomy"
+    ],
+    "medications": [
+      {
+        "drug": "Metformin",
+        "dose": "500 mg",
+        "frequency": "BD",
+        "indication": "Type 2 diabetes"
+      },
+      {
+        "drug": "Gliclazide",
+        "dose": "80 mg",
+        "frequency": "BD",
+        "indication": "Type 2 diabetes"
+      },
+      {
+        "drug": "Amlodipine",
+        "dose": "5 mg",
+        "frequency": "OD",
+        "indication": "Hypertension"
+      }
+    ],
+    "allergies": [],
+    "nkda": true,
+    "socialHistory": "Lives alone, independent with a daily carer visit.",
+    "confirmedDiagnosis": {
+      "name": "Hyperosmolar hyperglycaemic state",
+      "icd10": "E11.00",
+      "assessmentText": "Hyperosmolar hyperglycaemic state (glucose 46.2, osmolality 372, ketones 0.9, pH 7.33) with probable urinary tract infection and AKI."
+    },
+    "platform": {
+      "web": {
+        "ccTemplate": "Other / general surgical",
+        "symptoms": [
+          "confusion",
+          "dehydration",
+          "polyuria",
+          "excessive thirst",
+          "fatigue",
+          "urinary frequency"
+        ],
+        "durationDays": 5
+      }
+    }
+  },
+  "expected": {
+    "differential": {
+      "mustNotMiss": [
+        {
+          "id": "mnm-hhs",
+          "severity": "critical",
+          "match": [
+            "hyperosmolar",
+            "hhs",
+            "hhns",
+            "hyperglyc"
+          ],
+          "guidelineRefs": [
+            "jbds-hhs-2022",
+            "ada-hhc-2024"
+          ]
+        },
+        {
+          "id": "mnm-hhs-symptom-engine",
+          "severity": "quality",
+          "platforms": [
+            "web"
+          ],
+          "match": [
+            "hyperosmolar",
+            "hhs",
+            "hyperglyc"
+          ],
+          "source": "web.symptomInference",
+          "guidelineRefs": [
+            "jbds-hhs-2022",
+            "ada-hhc-2024"
+          ]
+        }
+      ]
+    },
+    "safety": {
+      "emergencyLevel": {
+        "id": "level-emergency",
+        "severity": "critical",
+        "atLeast": "emergency",
+        "guidelineRefs": [
+          "jbds-hhs-2022",
+          "ada-hhc-2024"
+        ]
+      },
+      "mustAlarm": [
+        {
+          "id": "alarm-hyperglycaemia",
+          "severity": "critical",
+          "match": [
+            "hyperosmolar",
+            "hhs",
+            "hyperglyc"
+          ],
+          "guidelineRefs": [
+            "jbds-hhs-2022",
+            "ada-hhc-2024"
+          ]
+        }
+      ]
+    },
+    "investigations": {
+      "mustInclude": [
+        {
+          "id": "inv-osmolality",
+          "severity": "critical",
+          "match": [
+            "osmolality",
+            "osmolarity"
+          ],
+          "guidelineRefs": [
+            "jbds-hhs-2022",
+            "ada-hhc-2024"
+          ],
+          "note": "JBDS HHS: osmolality is measured or calculated repeatedly; the rate of fall guides treatment."
+        }
+      ]
+    },
+    "management": {
+      "mustInclude": [
+        {
+          "id": "mgmt-ketone-check",
+          "severity": "quality",
+          "match": [
+            "ketone"
+          ],
+          "guidelineRefs": [
+            "jbds-hhs-2022",
+            "ada-hhc-2024"
+          ],
+          "note": "Distinguishes HHS from DKA / mixed states. Graded as management because the web prompt adds this test as a plan line, not an investigation order."
+        },
+        {
+          "id": "mgmt-saline-first",
+          "severity": "critical",
+          "match": [
+            "0.9% sodium chloride",
+            "0.9% saline",
+            "0.9% nacl",
+            "sodium chloride 0.9%"
+          ],
+          "guidelineRefs": [
+            "jbds-hhs-2022",
+            "ada-hhc-2024"
+          ],
+          "note": "JBDS HHS: 0.9% sodium chloride is the first-line fluid."
+        },
+        {
+          "id": "mgmt-vte-prophylaxis",
+          "severity": "quality",
+          "match": [
+            "lmwh",
+            "low molecular weight heparin",
+            "thromboprophylaxis",
+            "enoxaparin",
+            "dalteparin",
+            "tinzaparin",
+            "vte prophylaxis"
+          ],
+          "guidelineRefs": [
+            "jbds-hhs-2022",
+            "ada-hhc-2024"
+          ]
+        },
+        {
+          "id": "mgmt-foot-protection",
+          "severity": "quality",
+          "match": [
+            "foot protection",
+            "heel protect",
+            "foot check",
+            "pressure area"
+          ],
+          "guidelineRefs": [
+            "jbds-hhs-2022",
+            "ada-hhc-2024"
+          ]
+        },
+        {
+          "id": "mgmt-hold-metformin",
+          "severity": "quality",
+          "match": [
+            "re:(hold|stop|withhold|omit)[^.;\\n]{0,60}metformin"
+          ],
+          "guidelineRefs": [
+            "jbds-hhs-2022"
+          ]
+        }
+      ],
+      "mustExclude": [
+        {
+          "id": "mgmt-no-early-fixed-rate-0-1",
+          "severity": "critical",
+          "match": [
+            "0.1 units/kg",
+            "re:fixed[- ]rate[^.;\\n]{0,40}0\\.1"
+          ],
+          "unless": [
+            "not in hhs",
+            "only if ketot",
+            "if significant ketonaemia"
+          ],
+          "guidelineRefs": [
+            "jbds-hhs-2022",
+            "ada-hhc-2024"
+          ],
+          "note": "JBDS HHS: fluids first; insulin (0.05 units/kg/h) only when glucose stops falling with fluids alone, unless significantly ketotic. A DKA-dose infusion at presentation risks a rapid osmolality fall."
+        }
+      ]
+    }
+  },
+  "guideline": [
+    {
+      "id": "jbds-hhs-2022",
+      "name": "JBDS-IP — The management of the hyperosmolar hyperglycaemic state (HHS) in adults",
+      "year": 2022,
+      "section": "Diagnosis (hypovolaemia, marked hyperglycaemia, high osmolality, without significant ketonaemia or acidosis); fluid replacement with 0.9% sodium chloride first; insulin (fixed rate 0.05 units/kg/h) only once glucose stops falling with fluids alone, unless significant ketonaemia; monitor osmolality and avoid rapid falls; VTE prophylaxis; foot protection",
+      "citation": "Mustafa OG, Haq M, Dashora U, Castro E, Dhatariya KK; Joint British Diabetes Societies for Inpatient Care. Management of hyperosmolar hyperglycaemic state (HHS) in adults: an updated guideline from the JBDS for Inpatient Care Group. Diabet Med. 2023;40:e15005.",
+      "verified": false
+    },
+    {
+      "id": "ada-hhc-2024",
+      "name": "Hyperglycaemic crises in adults with diabetes — consensus report (ADA/EASD/JBDS/AACE/DTS)",
+      "year": 2024,
+      "section": "DKA diagnosis (glucose or prior diabetes, ketones, pH/bicarbonate) including euglycaemic DKA with SGLT2 inhibitors; HHS diagnosis (marked hyperglycaemia, hyperosmolality, no significant ketoacidosis); IV fluids, insulin, potassium; search for precipitant",
+      "citation": "Umpierrez GE, Davis GM, ElSayed NA, et al. Hyperglycemic crises in adults with diabetes: a consensus report. Diabetes Care. 2024;47:1257–75.",
+      "verified": false
+    }
+  ],
+  "rationale": "HHS differs from DKA: fluids first, cautious insulin, osmolality monitoring, VTE prophylaxis and foot protection (JBDS 2022).",
+  "authoring": {
+    "author": "Claude (endocrine / renal / urology / neuro cluster)",
+    "date": "2026-09-25",
+    "notes": "Expectations need surgeon sign-off (reviewedBy). Every citation is verified: false. iOS outcomes not observed (Linux)."
+  }
+}

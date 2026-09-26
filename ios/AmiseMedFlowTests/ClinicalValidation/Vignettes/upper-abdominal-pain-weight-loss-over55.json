@@ -1,0 +1,292 @@
+{
+  "schemaVersion": 1,
+  "id": "upper-abdominal-pain-weight-loss-over55",
+  "condition": "Gastric carcinoma (weight loss with upper abdominal pain)",
+  "category": "upper-gi",
+  "permutationOf": null,
+  "summary": "61-year-old woman with 2 months of epigastric pain, early satiety and 6 kg unintentional weight loss; no dysphagia. NG12: aged ≥55 with weight loss and upper abdominal pain → urgent OGD within 2 weeks.",
+  "tags": [
+    "cancer-red-flag",
+    "ng12",
+    "weight-loss",
+    "gastric"
+  ],
+  "inputs": {
+    "patient": {
+      "ageYears": 61,
+      "sex": "female",
+      "pregnancy": {
+        "status": "not-applicable"
+      },
+      "heightCm": 160,
+      "weightKg": 58
+    },
+    "encounter": {
+      "setting": "outpatient",
+      "visitType": "newConsult",
+      "acuity": "routine"
+    },
+    "chiefComplaint": "Upper abdominal pain and weight loss",
+    "hpi": "Two months of gnawing upper abdominal pain, feeling full after a few mouthfuls and loss of appetite. Lost 6 kg without trying. Swallowing is normal. Not taking anti-inflammatories. Mother had stomach cancer.",
+    "socrates": {
+      "onset": [
+        "1–6 months ago",
+        "Gradual"
+      ],
+      "site": [
+        "Epigastric"
+      ],
+      "character": [
+        "Aching"
+      ],
+      "radiation": [
+        "No radiation"
+      ],
+      "associations": [
+        "Weight loss",
+        "Anorexia",
+        "Nausea"
+      ],
+      "timing": [
+        "Post-prandial",
+        "Worse over time"
+      ],
+      "exacerbating": [
+        "Eating"
+      ],
+      "relieving": [
+        "Nothing"
+      ],
+      "severity": [
+        "Moderate (4–6/10)"
+      ]
+    },
+    "symptoms": [
+      "epigastric pain",
+      "weight loss",
+      "early satiety",
+      "anorexia"
+    ],
+    "negatives": [
+      "dysphagia",
+      "haematemesis",
+      "melaena",
+      "NSAID use"
+    ],
+    "exam": {
+      "general": "Thin. Mild conjunctival pallor. No supraclavicular lymphadenopathy.",
+      "abdomen": "Mild epigastric tenderness, no palpable mass, no hepatomegaly."
+    },
+    "vitals": [
+      {
+        "minutesAgo": 20,
+        "heartRate": 82,
+        "systolicBp": 128,
+        "diastolicBp": 76,
+        "respiratoryRate": 14,
+        "temperatureC": 36.6,
+        "spo2": 98,
+        "avpu": "A",
+        "onSupplementalO2": false
+      }
+    ],
+    "labs": [
+      {
+        "analyte": "haemoglobin",
+        "name": "Haemoglobin",
+        "value": 11.1,
+        "unit": "g/dL",
+        "minutesAgo": 60
+      },
+      {
+        "analyte": "mcv",
+        "name": "MCV",
+        "value": 78,
+        "unit": "fL",
+        "minutesAgo": 60
+      },
+      {
+        "analyte": "platelets",
+        "name": "Platelets",
+        "value": 452,
+        "unit": "×10⁹/L",
+        "minutesAgo": 60
+      },
+      {
+        "analyte": "albumin",
+        "name": "Albumin",
+        "value": 34,
+        "unit": "g/L",
+        "minutesAgo": 60
+      }
+    ],
+    "imaging": [],
+    "comorbidities": [
+      "Hypertension"
+    ],
+    "surgicalHistory": [],
+    "medications": [
+      {
+        "drug": "Amlodipine",
+        "dose": "5 mg",
+        "frequency": "OD",
+        "indication": "Hypertension"
+      }
+    ],
+    "allergies": [],
+    "nkda": true,
+    "socialHistory": "Retired seamstress. Never smoked. Family history: mother — gastric cancer at 70.",
+    "confirmedDiagnosis": {
+      "name": "Suspected gastric carcinoma",
+      "icd10": "C16.9",
+      "paneDiseaseId": "gastric_carcinoma",
+      "assessmentText": "Epigastric pain, early satiety and 6 kg weight loss aged 61 with microcytic anaemia and raised platelets — suspected gastric carcinoma. Urgent 2-week-wait OGD."
+    },
+    "platform": {
+      "web": {
+        "ccTemplate": "Unexplained weight loss",
+        "symptoms": [
+          "epigastric pain",
+          "weight loss",
+          "early satiety",
+          "anorexia"
+        ],
+        "symptomDetails": {
+          "weight loss": [
+            "5–10 kg",
+            "Unintentional",
+            "1–3 months",
+            "Anorexia"
+          ]
+        },
+        "examFindings": {
+          "abdomen": [
+            "Epigastric tenderness"
+          ]
+        },
+        "durationDays": 60,
+        "painScore": 4
+      }
+    }
+  },
+  "expected": {
+    "differential": {
+      "mustRankTopK": [
+        {
+          "id": "dx-gastric-cancer-top3",
+          "severity": "critical",
+          "match": [
+            "gastric carcinoma",
+            "oesophageal / gastric carcinoma",
+            "icd:C16",
+            "stomach cancer",
+            "gastric cancer"
+          ],
+          "k": 3,
+          "guidelineRefs": [
+            "nice-ng12"
+          ]
+        }
+      ]
+    },
+    "safety": {
+      "emergencyLevel": {
+        "id": "level-at-least-priority",
+        "severity": "critical",
+        "atLeast": "priority",
+        "guidelineRefs": [
+          "nice-ng12"
+        ],
+        "note": "Red flag, not an emergency: urgent (2-week) outpatient endoscopy. CLAUDE.md: red flags warrant expedited outpatient review, not ER redirect."
+      },
+      "redFlags": [
+        {
+          "id": "flag-cancer-weight-loss",
+          "severity": "critical",
+          "match": [
+            "weight loss",
+            "malignan",
+            "cancer",
+            "2-week",
+            "two-week"
+          ],
+          "guidelineRefs": [
+            "nice-ng12"
+          ]
+        }
+      ]
+    },
+    "investigations": {
+      "mustInclude": [
+        {
+          "id": "inv-ogd",
+          "severity": "critical",
+          "match": [
+            "re:\\bogd\\b",
+            "endoscop",
+            "gastroscop",
+            "oesophagogastroduodenoscopy"
+          ],
+          "guidelineRefs": [
+            "nice-ng12"
+          ]
+        },
+        {
+          "id": "inv-fbc",
+          "severity": "quality",
+          "match": [
+            "fbc",
+            "full blood count"
+          ],
+          "guidelineRefs": [
+            "nice-ng12"
+          ]
+        }
+      ]
+    },
+    "management": {
+      "mustInclude": [
+        {
+          "id": "mgmt-urgent-two-week-ogd",
+          "severity": "quality",
+          "match": [
+            "2-week",
+            "two-week",
+            "two week",
+            "2 week",
+            "urgent ogd",
+            "urgent direct access",
+            "urgent upper gi endoscopy"
+          ],
+          "guidelineRefs": [
+            "nice-ng12"
+          ]
+        }
+      ]
+    }
+  },
+  "guideline": [
+    {
+      "id": "nice-ng12",
+      "name": "NICE NG12 — Suspected cancer: recognition and referral (oesophageal and stomach cancer)",
+      "year": 2015,
+      "section": "Offer urgent direct access upper GI endoscopy (within 2 weeks) to assess for oesophageal or stomach cancer in people with dysphagia (any age), or aged ≥55 with weight loss and any of upper abdominal pain, reflux or dyspepsia; consider urgent OGD in people aged ≥55 with upper abdominal pain and low haemoglobin, or raised platelets with upper abdominal pain",
+      "citation": "National Institute for Health and Care Excellence. NICE guideline NG12. London: NICE; 2015 (last updated 2023).",
+      "verified": false
+    },
+    {
+      "id": "nice-cg184",
+      "name": "NICE CG184 — Gastro-oesophageal reflux disease and dyspepsia in adults: investigation and management",
+      "year": 2014,
+      "section": "Alarm features: refer under NG12 rather than empirical treatment",
+      "citation": "National Institute for Health and Care Excellence. Clinical guideline CG184. London: NICE; 2014 (last updated 2019).",
+      "verified": false
+    }
+  ],
+  "rationale": "Red flag without dysphagia: the age-55 weight-loss criterion of NG12, with anaemia and thrombocytosis as supporting features. Tests that engines reach gastric cancer and urgent OGD from epigastric pain plus weight loss.",
+  "authoring": {
+    "author": "Claude (upper-GI cluster)",
+    "date": "2026-09-25",
+    "notes": "Expectations need surgeon sign-off (reviewedBy). Citations written from the guideline texts, not yet checked against the source (verified: false)."
+  }
+}

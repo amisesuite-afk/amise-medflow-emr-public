@@ -1,0 +1,310 @@
+{
+  "schemaVersion": 1,
+  "id": "sbo-malignant-carcinomatosis",
+  "condition": "Small bowel obstruction",
+  "category": "gi-emergency",
+  "permutationOf": "sbo-adhesive-base",
+  "permutationLabel": "Malignant (peritoneal carcinomatosis), palliative goals",
+  "summary": "61-year-old woman with stage IV ovarian cancer and carcinomatosis, 4 days of vomiting and distension; CT: multiple transition points, ascites. Goals: comfort and home.",
+  "tags": [
+    "obstruction",
+    "malignancy",
+    "palliative"
+  ],
+  "inputs": {
+    "patient": {
+      "ageYears": 61,
+      "sex": "female",
+      "pregnancy": {
+        "status": "not-applicable"
+      },
+      "heightCm": 164,
+      "weightKg": 52
+    },
+    "encounter": {
+      "setting": "emergency",
+      "visitType": "urgentReview",
+      "acuity": "urgent"
+    },
+    "chiefComplaint": "Vomiting and abdominal distension",
+    "hpi": "Stage IV ovarian cancer with peritoneal disease, on third-line chemotherapy. 4 days of intermittent colicky pain, vomiting after every meal, increasing distension, small amounts of flatus. Lost 6 kg in 2 months. Her goals: to be comfortable and to go home; she does not want a big operation.",
+    "socrates": {
+      "onset": [
+        "4–7 days ago"
+      ],
+      "site": [
+        "Diffuse"
+      ],
+      "character": [
+        "Colicky",
+        "Bloating"
+      ],
+      "radiation": [
+        "No radiation"
+      ],
+      "associations": [
+        "Nausea",
+        "Vomiting",
+        "Weight loss"
+      ],
+      "timing": [
+        "Intermittent",
+        "Progressive"
+      ],
+      "exacerbating": [
+        "Eating"
+      ],
+      "relieving": [
+        "Vomiting"
+      ],
+      "severity": [
+        "Moderate (4–6/10)"
+      ]
+    },
+    "symptoms": [
+      "abdominal pain",
+      "vomiting",
+      "abdominal distension",
+      "weight loss"
+    ],
+    "negatives": [
+      "fever"
+    ],
+    "exam": {
+      "general": "Cachectic, alert. Temperature 36.8°C, pulse 98/min, BP 118/70.",
+      "abdomen": "Distended with shifting dullness; multiple firm peritoneal nodules; mild diffuse tenderness, no peritonism."
+    },
+    "vitals": [
+      {
+        "minutesAgo": 20,
+        "heartRate": 98,
+        "systolicBp": 118,
+        "diastolicBp": 70,
+        "respiratoryRate": 18,
+        "temperatureC": 36.8,
+        "spo2": 96,
+        "avpu": "A",
+        "onSupplementalO2": false
+      }
+    ],
+    "labs": [
+      {
+        "analyte": "wbc",
+        "name": "WBC",
+        "value": 8.6,
+        "unit": "×10⁹/L",
+        "minutesAgo": 30
+      },
+      {
+        "analyte": "albumin",
+        "name": "Albumin",
+        "value": 24,
+        "unit": "g/L",
+        "minutesAgo": 30
+      },
+      {
+        "analyte": "creatinine",
+        "name": "Creatinine",
+        "value": 72,
+        "unit": "µmol/L",
+        "minutesAgo": 30
+      },
+      {
+        "analyte": "lactate",
+        "name": "Lactate",
+        "value": 1.2,
+        "unit": "mmol/L",
+        "minutesAgo": 30
+      }
+    ],
+    "imaging": [
+      {
+        "name": "CT abdomen/pelvis with IV contrast",
+        "modality": "CT",
+        "region": "Abdomen/pelvis",
+        "result": "Small bowel obstruction with multiple transition points related to peritoneal carcinomatosis; moderate ascites. No perforation, no closed loop.",
+        "minutesAgo": 30
+      }
+    ],
+    "comorbidities": [
+      "Ovarian cancer — stage IV, peritoneal carcinomatosis"
+    ],
+    "surgicalHistory": [
+      "Debulking surgery and hysterectomy (2023)"
+    ],
+    "medications": [
+      {
+        "drug": "Carboplatin/gemcitabine",
+        "frequency": "3-weekly",
+        "indication": "Ovarian cancer"
+      },
+      {
+        "drug": "Morphine sulfate MR",
+        "dose": "20 mg",
+        "frequency": "BD",
+        "indication": "Cancer pain"
+      }
+    ],
+    "allergies": [],
+    "nkda": true,
+    "socialHistory": "Lives with husband. ECOG 2.",
+    "confirmedDiagnosis": {
+      "name": "Malignant small bowel obstruction",
+      "icd10": "K56.69",
+      "paneDiseaseId": "bowel_obstruction",
+      "assessmentText": "Malignant small bowel obstruction from peritoneal carcinomatosis (multiple transition points) — palliative, symptom-focused management with oncology and palliative care."
+    },
+    "platform": {
+      "web": {
+        "ccTemplate": "Acute abdominal pain",
+        "socratesAnswers": {
+          "site": "Generalised",
+          "onset": "4 days ago",
+          "character": "Colicky, bloating",
+          "associated": "Vomiting after meals, distension, weight loss",
+          "timing": "Intermittent / colicky, worsening",
+          "triggers": "Eating",
+          "relief": "Vomiting",
+          "severity": "5/10"
+        },
+        "symptoms": [
+          "abdominal pain",
+          "vomiting",
+          "abdominal distension",
+          "weight loss"
+        ],
+        "symptomDetails": {
+          "abdominal pain": [
+            "Diffuse",
+            "> 3 days",
+            "Colicky",
+            "Moderate (4–6)",
+            "Vomiting",
+            "Distension",
+            "Intermittent / colicky"
+          ]
+        },
+        "examFindings": {
+          "abdomen": [
+            "Distended",
+            "Mass palpable"
+          ]
+        },
+        "durationDays": 4,
+        "painScore": 5
+      }
+    }
+  },
+  "expected": {
+    "differential": {
+      "mustRankTopK": [
+        {
+          "id": "dx-obstruction-top3",
+          "severity": "critical",
+          "match": [
+            "obstruct"
+          ],
+          "k": 3,
+          "guidelineRefs": [
+            "wses-sbo-2018"
+          ]
+        }
+      ]
+    },
+    "safety": {
+      "emergencyLevel": {
+        "id": "level-at-least-urgent",
+        "severity": "critical",
+        "atLeast": "urgent",
+        "guidelineRefs": [
+          "mascc-mbo-2021"
+        ]
+      }
+    },
+    "management": {
+      "mustInclude": [
+        {
+          "id": "mgmt-palliative-mdt",
+          "severity": "quality",
+          "match": [
+            "palliative",
+            "oncology",
+            "mdt",
+            "goals of care",
+            "advance care"
+          ],
+          "guidelineRefs": [
+            "mascc-mbo-2021"
+          ],
+          "note": "Individualised decision with oncology/palliative care and the patient's goals.",
+          "knownGapNote": "Web: No palliative, oncology or goals-of-care step for malignant obstruction; the plan is the generic bowel-obstruction protocol. | iOS CI 2026-09-25 (run 36169134350, database mode): no management item matched among 27 (ios.pipeline.decisions, ios.pipeline.actions, ios.radiation.plan, ios.radiation.referral, ios.radiation.followUp, ios.soap.plan)",
+          "proposedFix": "Add a malignant-SBO variant (carcinomatosis, multiple transition points) with palliative/oncology MDT and MASCC medical management.",
+          "knownGap": [
+            "ios"
+          ]
+        },
+        {
+          "id": "mgmt-medical-mbo",
+          "severity": "quality",
+          "match": [
+            "octreotide",
+            "antisecretory",
+            "hyoscine butylbromide",
+            "venting gastrostomy",
+            "dexamethasone"
+          ],
+          "guidelineRefs": [
+            "mascc-mbo-2021"
+          ],
+          "note": "MASCC 2021: antisecretory, antiemetic and corticosteroid options; venting gastrostomy.",
+          "knownGapNote": "Web: No antisecretory/antiemetic/steroid or venting-gastrostomy option. | iOS CI 2026-09-25 (run 36169134350, database mode): no management item matched among 27 (ios.pipeline.decisions, ios.pipeline.actions, ios.radiation.plan, ios.radiation.referral, ios.radiation.followUp, ios.soap.plan)",
+          "knownGap": [
+            "ios"
+          ]
+        }
+      ],
+      "mustExclude": [
+        {
+          "id": "mgmt-no-routine-laparotomy",
+          "severity": "quality",
+          "match": [
+            "re:emergency (exploratory )?laparotomy"
+          ],
+          "unless": [
+            "selected",
+            "if",
+            "consider"
+          ],
+          "guidelineRefs": [
+            "mascc-mbo-2021"
+          ],
+          "note": "Multiple transition points with carcinomatosis: surgery is rarely beneficial; not a default operative plan."
+        }
+      ]
+    }
+  },
+  "guideline": [
+    {
+      "id": "wses-sbo-2018",
+      "name": "WSES Bologna guidelines — adhesive small bowel obstruction (2017 update)",
+      "year": 2018,
+      "section": "CT with IV contrast for strangulation signs; non-operative management (NGT, fluids) up to 72 h without strangulation; water-soluble contrast challenge (colon within 24 h predicts success); surgery for strangulation, peritonitis or failed NOM; virgin abdomen and hernia causes",
+      "citation": "ten Broek RPG, Krielen P, Di Saverio S, et al. Bologna guidelines for diagnosis and management of adhesive small bowel obstruction (ASBO): 2017 update of the evidence-based guidelines from the WSES ASBO working group. World J Emerg Surg. 2018;13:24.",
+      "verified": false
+    },
+    {
+      "id": "mascc-mbo-2021",
+      "name": "MASCC guidelines — malignant bowel obstruction",
+      "year": 2021,
+      "section": "Individualised, palliative-focused decision-making; medical management (antisecretory, antiemetic); venting gastrostomy; selective surgery",
+      "citation": "Davis M, Hui D, Davies A, et al. Medical management of malignant bowel obstruction in patients with advanced cancer: 2021 MASCC guideline update. Support Care Cancer. 2021;29:8089–96.",
+      "verified": false
+    }
+  ],
+  "rationale": "Permutation: malignant obstruction. Outside the adhesive-SBO algorithm: the plan should be individualised and palliative-focused (MASCC 2021), not a default drip-and-suck or emergency laparotomy template.",
+  "authoring": {
+    "author": "Claude (GI surgical emergencies cluster)",
+    "date": "2026-09-25",
+    "notes": "Expectations need surgeon sign-off (reviewedBy). Every citation is verified: false."
+  }
+}

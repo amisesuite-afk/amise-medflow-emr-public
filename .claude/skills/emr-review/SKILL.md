@@ -76,13 +76,14 @@ When in doubt, read the actual `management[]` array for the protocol before assu
 | Cholecystitis | Tokyo Grade I (mild) | `['immediate','surgical','followup']` | TG18 — early laparoscopic cholecystectomy |
 | Cholecystitis | Tokyo Grade II (moderate) | `['immediate','surgical','followup']` | TG18 — early cholecystectomy if fit, else drainage |
 | Cholecystitis | Tokyo Grade III (severe) | `['immediate','conservative','surgical','followup']` | TG18 — cholecystostomy for source control, delayed cholecystectomy once stable |
-| Cholangitis | Tokyo Grade I | `['immediate','conservative','followup']` | TG18 — antibiotics + early ERCP 48–72h |
+| Cholangitis | Tokyo Grade I | `['immediate','conservative','followup']` | TG18 — antibiotics; biliary drainage if no response within 24 h, then treat the cause |
 | Cholangitis | Tokyo Grade II | `['immediate','surgical','followup']` | TG18 — urgent biliary drainage <24h |
 | Cholangitis | Tokyo Grade III | `['immediate','surgical']` | TG18 — emergent drainage + ICU |
 | Hernia | Reducible | `['surgical','followup']` | WSES/EHS 2018 — elective repair is still operative management |
-| Hernia | Incarcerated | `['immediate','conservative','surgical','followup']` | WSES/EHS 2018 — attempt reduction, urgent if fails |
+| Hernia | Incarcerated | `['immediate','conservative','surgical','followup']` | WSES 2017 — reduction only when strangulation is not suspected; emergency repair if it is or if reduction fails |
 | Hernia | Strangulated | `['immediate','surgical']` | WSES/EHS 2018 — emergency; bowel assessment |
 | Bowel obstruction | Adhesional (simple) | `['immediate','conservative','followup']` | WSES 2017 — conservative 24–72h first |
+| Bowel obstruction | Failed non-operative trial | `['immediate','surgical','followup']` | WSES/Bologna 2017 — no contrast in the colon by 24 h or no resolution by 48–72 h → adhesiolysis |
 | Bowel obstruction | Strangulated | `['immediate','surgical']` | WSES 2017 — emergency |
 | Bowel obstruction | Malignant | `['immediate','surgical','followup']` | WSES 2017 — stenting/Hartmann's are tagged surgical; the protocol's conservative line is adhesive-SBO-specific |
 | Diverticulitis | Uncomplicated | `['conservative','followup']` | WSES 2015 — outpatient AB; the protocol's immediate line is complicated-disease-only |
@@ -92,7 +93,10 @@ When in doubt, read the actual `management[]` array for the protocol before assu
 | Pancreatitis | Moderate | `['immediate','conservative','followup']` | Atlanta 2012 — ICU + organ support; NO early surgery |
 | Pancreatitis | Severe / infected necrosis | `['immediate','surgical','followup']` | Atlanta 2012 — step-up drainage is tagged surgical; the protocol's conservative line is mild/gallstone-specific |
 | Upper GI bleed | Non-variceal | `['immediate','surgical','followup']` | BSG/ESGE 2021 — endoscopic haemostasis is tagged surgical, not conservative |
-| Upper GI bleed | Variceal | `['immediate','surgical','followup']` | BSG/ESGE 2021 — vasoactive drug + OGD <12h ± TIPS |
+| Upper GI bleed | Variceal | `['immediate','surgical','followup']` | Baveno VII 2022 — vasoactive drug + antibiotics + restrictive transfusion, OGD <12h ± pre-emptive TIPS |
+| Breast | Inflammatory breast cancer (T4d) | `['immediate','conservative','followup']` | NCCN 2024 — neoadjuvant systemic therapy first; no breast-conserving surgery or SLNB (the protocol's surgical lines are for operable early cancer) |
+| Thyroid | Bethesda I (non-diagnostic) | `['immediate','conservative','followup']` | ATA 2015; BTA 2014 — repeat FNA; no operative plan on a non-diagnostic result (immediate keeps the airway line) |
+| Thyroid | Bethesda II (benign) | `['conservative','followup']` | ATA 2015 — surveillance; surgery only for compression, growth or preference |
 
 **What to check for each variant in the diff:**
 

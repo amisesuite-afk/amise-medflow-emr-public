@@ -1,0 +1,301 @@
+{
+  "schemaVersion": 1,
+  "id": "periop-endo-ercp-sphincterotomy-apixaban",
+  "condition": "Endoscopy antithrombotic management — apixaban before ERCP with sphincterotomy",
+  "category": "other",
+  "permutationOf": "periop-endo-polypectomy-clopidogrel",
+  "permutationLabel": "Apixaban, ERCP with sphincterotomy",
+  "summary": "76-year-old man on apixaban for AF with CBD stones (ASGE high risk, no cholangitis) booked for ERCP with sphincterotomy (high bleeding-risk procedure).",
+  "tags": [
+    "periop",
+    "endoscopy",
+    "anticoagulated",
+    "doac",
+    "ercp",
+    "bsg-esge"
+  ],
+  "inputs": {
+    "patient": {
+      "ageYears": 76,
+      "sex": "male",
+      "pregnancy": {
+        "status": "not-applicable"
+      },
+      "heightCm": 175,
+      "weightKg": 82
+    },
+    "encounter": {
+      "setting": "endoscopy",
+      "visitType": "ercp",
+      "acuity": "priority"
+    },
+    "chiefComplaint": "Booked for ERCP for bile duct stones — takes apixaban",
+    "hpi": "Admitted last week with biliary colic and mild jaundice, now settled. MRCP: several 6–8 mm stones in an 11 mm CBD. No fever or rigors. Atrial fibrillation on apixaban 5 mg twice daily; no previous stroke. Booked for ERCP with sphincterotomy and stone extraction.",
+    "symptoms": [
+      "jaundice",
+      "right upper quadrant pain"
+    ],
+    "negatives": [
+      "fever",
+      "rigors"
+    ],
+    "exam": {
+      "general": "Mildly icteric. Irregular pulse 78, BP 138/82, RR 14, SpO2 97% on air, T 36.7°C.",
+      "abdomen": "Soft, mild RUQ tenderness, Murphy's sign negative."
+    },
+    "vitals": [
+      {
+        "minutesAgo": 5,
+        "heartRate": 78,
+        "systolicBp": 138,
+        "diastolicBp": 82,
+        "respiratoryRate": 14,
+        "temperatureC": 36.7,
+        "spo2": 97,
+        "avpu": "A",
+        "onSupplementalO2": false
+      }
+    ],
+    "labs": [
+      {
+        "analyte": "bilirubin",
+        "name": "Bilirubin",
+        "value": 48,
+        "unit": "µmol/L",
+        "minutesAgo": 1440
+      },
+      {
+        "analyte": "alp",
+        "name": "ALP",
+        "value": 290,
+        "unit": "U/L",
+        "minutesAgo": 1440
+      },
+      {
+        "analyte": "alt",
+        "name": "ALT",
+        "value": 150,
+        "unit": "U/L",
+        "minutesAgo": 1440
+      },
+      {
+        "analyte": "wbc",
+        "name": "WBC",
+        "value": 8.2,
+        "unit": "×10⁹/L",
+        "minutesAgo": 1440
+      },
+      {
+        "analyte": "crp",
+        "name": "CRP",
+        "value": 12,
+        "unit": "mg/L",
+        "minutesAgo": 1440
+      },
+      {
+        "analyte": "creatinine",
+        "name": "Creatinine",
+        "value": 92,
+        "unit": "µmol/L",
+        "minutesAgo": 1440
+      },
+      {
+        "analyte": "platelets",
+        "name": "Platelets",
+        "value": 210,
+        "unit": "×10⁹/L",
+        "minutesAgo": 1440
+      },
+      {
+        "analyte": "haemoglobin",
+        "name": "Haemoglobin",
+        "value": 13.4,
+        "unit": "g/dL",
+        "minutesAgo": 1440
+      }
+    ],
+    "imaging": [
+      {
+        "name": "MRCP",
+        "modality": "MRI",
+        "region": "Biliary tree",
+        "result": "Several 6–8 mm filling defects in an 11 mm common bile duct. Gallbladder with small stones. Pancreas normal.",
+        "minutesAgo": 4320
+      }
+    ],
+    "comorbidities": [
+      "Atrial fibrillation",
+      "Hypertension"
+    ],
+    "surgicalHistory": [],
+    "medications": [
+      {
+        "drug": "Apixaban",
+        "dose": "5 mg",
+        "frequency": "BD",
+        "indication": "Atrial fibrillation"
+      },
+      {
+        "drug": "Amlodipine",
+        "dose": "5 mg",
+        "frequency": "OD",
+        "indication": "Hypertension"
+      }
+    ],
+    "allergies": [],
+    "nkda": true,
+    "socialHistory": "Ex-smoker. Retired.",
+    "confirmedDiagnosis": {
+      "name": "Choledocholithiasis — ERCP with sphincterotomy; apixaban for AF",
+      "icd10": "K80.50",
+      "paneDiseaseId": "choledocholithiasis",
+      "assessmentText": "Choledocholithiasis, ASGE high risk, no cholangitis. ERCP with sphincterotomy (high bleeding-risk procedure). AF on apixaban — interrupt before ERCP, no bridging."
+    },
+    "platform": {
+      "web": {
+        "ccTemplate": "Obstructive jaundice",
+        "symptoms": [
+          "jaundice",
+          "right upper quadrant pain"
+        ],
+        "durationDays": 7,
+        "painScore": 2,
+        "paneAnswers": {
+          "us_gallstones": true,
+          "fever": false
+        }
+      }
+    }
+  },
+  "expected": {
+    "differential": {
+      "mustRankTopK": [
+        {
+          "id": "dx-cbd-stone-top3",
+          "severity": "quality",
+          "match": [
+            "choledocholithiasis",
+            "cbd stone",
+            "bile duct stone",
+            "common bile duct"
+          ],
+          "k": 3,
+          "guidelineRefs": [
+            "asge-2019"
+          ]
+        }
+      ]
+    },
+    "safety": {
+      "redFlags": [
+        {
+          "id": "flag-anticoagulant",
+          "severity": "critical",
+          "match": [
+            "anticoag",
+            "apixaban",
+            "doac"
+          ],
+          "guidelineRefs": [
+            "bsg-esge-2021-anticoag"
+          ]
+        }
+      ]
+    },
+    "management": {
+      "mustInclude": [
+        {
+          "id": "mgmt-doac-interrupt",
+          "severity": "critical",
+          "match": [
+            "re:(hold|stop|withh|omit|interrupt)\\w*[^.;\\n]{0,40}(apixaban|doac)",
+            "re:(apixaban|doac)[^.;\\n]{0,40}(hold|stop|withh|omit|interrupt)"
+          ],
+          "guidelineRefs": [
+            "bsg-esge-2021-anticoag",
+            "pause-2019"
+          ]
+        },
+        {
+          "id": "mgmt-ercp",
+          "severity": "critical",
+          "match": [
+            "ercp",
+            "endoscopic retrograde"
+          ],
+          "guidelineRefs": [
+            "asge-2019"
+          ]
+        }
+      ],
+      "mustExclude": [
+        {
+          "id": "mgmt-no-bridging",
+          "severity": "quality",
+          "match": [
+            "re:bridg\\w*[^.;\\n]{0,15}\\b(with|using)\\s+(lmwh|heparin|enoxaparin|dalteparin|tinzaparin)",
+            "re:warfarin\\s*[-—–:,]*\\s*bridge",
+            "anticoagulant bridging"
+          ],
+          "unless": [
+            "no bridging",
+            "bridging not",
+            "not routinely bridge",
+            "without bridging",
+            "mechanical valve",
+            "mechanical heart valve"
+          ],
+          "guidelineRefs": [
+            "bsg-esge-2021-anticoag"
+          ]
+        },
+        {
+          "id": "mgmt-no-appendicectomy",
+          "severity": "critical",
+          "match": [
+            "appendicectomy",
+            "appendectomy"
+          ],
+          "unless": [
+            "not indicated",
+            "no role",
+            "exclude appendicitis"
+          ],
+          "note": "Not an appendix presentation: an appendicectomy operative plan (consent, theatre booking, post-operative orders) is a wrong-procedure suggestion."
+        }
+      ]
+    }
+  },
+  "guideline": [
+    {
+      "id": "bsg-esge-2021-anticoag",
+      "name": "BSG/ESGE guideline — endoscopy in patients on antiplatelet or anticoagulant therapy (2021 update)",
+      "year": 2021,
+      "section": "Low-risk procedures (diagnostic ± biopsy): continue P2Y12 inhibitors and warfarin (INR in the week before, within therapeutic range), omit the morning DOAC dose. High-risk procedures (polypectomy, EMR, ERCP with sphincterotomy): P2Y12 inhibitor stopped 7 days before when thrombotic risk is low; high thrombotic risk (coronary stents) — continue aspirin and liaise with the cardiologist about stopping the P2Y12 inhibitor; warfarin stopped 5 days before (INR <1.5), bridging only for high thrombotic risk; DOAC stopped before the procedure (interval by drug and renal function), no bridging",
+      "citation": "Veitch AM, Radaelli F, Alikhan R, et al. Gut. 2021;70:1611–28.",
+      "verified": false
+    },
+    {
+      "id": "pause-2019",
+      "name": "PAUSE study — perioperative DOAC interruption without bridging or coagulation testing",
+      "year": 2019,
+      "section": "Apixaban/rivaroxaban/edoxaban omitted 1 day before low-bleed-risk and 2 days before high-bleed-risk procedures (dabigatran longer when CrCl <50 mL/min), no bridging, no pre-operative coagulation tests",
+      "citation": "Douketis JD, Spyropoulos AC, Duncan J, et al. JAMA Intern Med. 2019;179:1469–78.",
+      "verified": false
+    },
+    {
+      "id": "asge-2019",
+      "name": "ASGE guideline — choledocholithiasis",
+      "year": 2019,
+      "section": "High risk (CBD stone on imaging, cholangitis, or bilirubin >4 mg/dL with dilated CBD) → ERCP",
+      "citation": "Buxbaum JL, Abbas Fehmi SM, Sultan S, et al. Gastrointest Endosc. 2019;89:1075–105.",
+      "verified": false
+    }
+  ],
+  "rationale": "Permutation: DOAC before the high-risk ERCP sphincterotomy. Complements the existing warfarin vignette (choledocholithiasis-elderly-warfarin).",
+  "authoring": {
+    "author": "Claude (perioperative medicine cluster)",
+    "date": "2026-09-25",
+    "notes": "Expectations and citations need surgeon sign-off (reviewedBy). Citations verified: false. iOS outcomes not yet observed (unverified: ios) — triage after the next CI run."
+  }
+}

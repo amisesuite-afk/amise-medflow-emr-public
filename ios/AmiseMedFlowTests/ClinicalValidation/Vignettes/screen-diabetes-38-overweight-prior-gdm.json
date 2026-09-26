@@ -1,0 +1,148 @@
+{
+  "schemaVersion": 1,
+  "id": "screen-diabetes-38-overweight-prior-gdm",
+  "condition": "Type 2 diabetes screening — age 35–39 with risk factors",
+  "category": "general-medicine",
+  "permutationOf": "screen-crc-average-risk-46",
+  "permutationLabel": "Woman aged 38, BMI 31, prior gestational diabetes, mother T2DM",
+  "summary": "38-year-old woman, BMI 31, gestational diabetes in her last pregnancy, mother with type 2 diabetes; never tested since delivery. ADA 2024: screen now (age ≥ 35; overweight with risk factors; prior GDM needs lifelong testing).",
+  "tags": [
+    "screening",
+    "diabetes"
+  ],
+  "inputs": {
+    "patient": {
+      "ageYears": 38,
+      "sex": "female",
+      "pregnancy": {
+        "status": "not-pregnant"
+      },
+      "heightCm": 160,
+      "weightKg": 79
+    },
+    "encounter": {
+      "setting": "outpatient",
+      "visitType": "newConsult",
+      "acuity": "routine"
+    },
+    "chiefComplaint": "Health check",
+    "hpi": "Well 38-year-old woman. Gestational diabetes in her second pregnancy 4 years ago (diet-controlled); no glucose test since. Mother has type 2 diabetes. No thirst, no polyuria. Walks rarely.",
+    "symptoms": [],
+    "negatives": [
+      "polyuria",
+      "polydipsia",
+      "weight loss"
+    ],
+    "exam": {
+      "general": "BMI 30.9, waist 98 cm. BP 128/82."
+    },
+    "vitals": [
+      {
+        "minutesAgo": 10,
+        "heartRate": 78,
+        "systolicBp": 128,
+        "diastolicBp": 82,
+        "respiratoryRate": 14,
+        "temperatureC": 36.6,
+        "spo2": 99,
+        "avpu": "A",
+        "onSupplementalO2": false
+      }
+    ],
+    "labs": [],
+    "imaging": [],
+    "comorbidities": [
+      "Previous gestational diabetes",
+      "Obesity (BMI 31)",
+      "Family history: mother type 2 diabetes"
+    ],
+    "surgicalHistory": [
+      "Caesarean section x2"
+    ],
+    "medications": [],
+    "allergies": [],
+    "nkda": true,
+    "socialHistory": "Receptionist. Non-smoker. Sedentary.",
+    "confirmedDiagnosis": {
+      "name": "Diabetes screening — risk factors (obesity, previous gestational diabetes)",
+      "icd10": "Z13.1",
+      "assessmentText": "Asymptomatic, BMI 31, previous GDM, FDR with T2DM: screen for diabetes (HbA1c or fasting glucose); lifestyle advice."
+    },
+    "platform": {
+      "web": {
+        "ccTemplate": "Other / general surgical",
+        "symptoms": [],
+        "durationDays": 0
+      }
+    }
+  },
+  "expected": {
+    "investigations": {
+      "mustInclude": [
+        {
+          "id": "inv-hba1c-or-fpg",
+          "severity": "quality",
+          "guidelineRefs": [
+            "ada-2024"
+          ],
+          "note": "ADA 2024: screen from 35, and at any age when overweight with risk factors; previous GDM requires testing at least every 3 years.",
+          "match": [
+            "hba1c",
+            "fasting glucose",
+            "fasting blood glucose",
+            "fasting plasma glucose",
+            "ogtt",
+            "glucose tolerance"
+          ],
+          "knownGap": [
+            "ios"
+          ],
+          "knownGapNote": "iOS CI 2026-09-25 (run 36169134350, database mode): no investigation matched among 1 (ios.pipeline.voi)"
+        }
+      ]
+    },
+    "safety": {
+      "emergencyLevel": {
+        "id": "level-routine",
+        "severity": "quality",
+        "guidelineRefs": [
+          "ada-2024"
+        ],
+        "atMost": "priority"
+      }
+    },
+    "management": {
+      "mustExclude": [
+        {
+          "id": "mgmt-no-diabetic-label",
+          "severity": "quality",
+          "guidelineRefs": [
+            "ada-2024"
+          ],
+          "note": "She does not have diabetes (previous GDM and a family history are risk factors): the plan must not treat her as a known diabetic.",
+          "match": [
+            "diabetic nephropathy",
+            "diabetes monitoring",
+            "diabetic foot exam"
+          ]
+        }
+      ]
+    }
+  },
+  "guideline": [
+    {
+      "id": "ada-2024",
+      "name": "ADA Standards of Care in Diabetes — 2024, section 2 (diagnosis and classification)",
+      "year": 2024,
+      "section": "Screen all adults from 35 years; screen at any age adults with overweight/obesity and ≥ 1 risk factor (first-degree relative with diabetes, high-risk ethnicity, hypertension, dyslipidaemia, physical inactivity, PCOS); women with prior gestational diabetes: lifelong testing at least every 3 years; tests: HbA1c, fasting plasma glucose or 2-h OGTT",
+      "citation": "American Diabetes Association Professional Practice Committee. 2. Diagnosis and classification of diabetes: Standards of Care in Diabetes—2024. Diabetes Care. 2024;47(Suppl 1):S20–S42.",
+      "verified": false
+    }
+  ],
+  "rationale": "Screening thresholds based on age alone (e.g. 40) miss high-risk younger adults. ADA 2024 screens from 35 and earlier with overweight plus risk factors; prior GDM is itself an indication.",
+  "authoring": {
+    "author": "Claude (prevention/screening, obstetric-gynaecological mimics and paediatric surgery cluster)",
+    "date": "2026-09-25",
+    "notes": "Expectations need surgeon sign-off (reviewedBy). Every citation is verified: false. iOS outcomes are unverified (not run on Linux); triage after the first CI run."
+  }
+}

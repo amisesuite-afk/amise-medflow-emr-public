@@ -1,0 +1,74 @@
+{
+  "$schema": "../schemas/diagnostic-reasoning-rules.schema.json",
+  "$comment": "Diagnostic-reasoning rules shared by web and iOS (rule set diagnostic-reasoning-rules, clinical-content/registry.json). Web: lib/triage-engine/src/diagnostic-reasoning/reasoning-rules.ts (core thresholds, diagnosis families, working-diagnosis label matching, closure-alert filters, coexisting states). iOS: DiagnosticReasoningRules.swift decodes everything except `thresholds`, which DiagnosticReasoningCore.swift compiles in and scripts/src/diagnostic-reasoning-parity.test.ts pins to this file. Validated by lint:shared-content. UNREVIEWED: needs the surgeon's sign-off (docs/clinical-validation/changes/diagnostic-reasoning.md).",
+  "id": "diagnostic-reasoning-rules",
+  "version": "1.1.0",
+  "thresholds": {
+    "supportLr": 1.5,
+    "againstLr": 0.67,
+    "favourLr": 2,
+    "lowEvidenceLr": 2,
+    "strongContradictionLr": 0.33,
+    "strongFavourLr": 10,
+    "lessLikelyRatio": 5,
+    "lessLikelyMinLeader": 0.5,
+    "news2RiseMin": 2,
+    "news2AlertMin": 5,
+    "unexplainedTimeOut": 3,
+    "minGain": 0.01,
+    "maxClosureAlerts": 4
+  },
+  "closure": {
+    "contradictionMaxLr": 0.2,
+    "contradictionSource": "Jaeschke R, Guyatt GH, Sackett DL. Users' guides to the medical literature III: how to use an article about a diagnostic test. JAMA 1994;271:703-707 (LR 0.1-0.2 moderate, < 0.1 large evidence against)."
+  },
+  "workingDiagnosis": {
+    "labelMatchMin": 1,
+    "labelMatchMinAlone": 2,
+    "labelMatchMargin": 2,
+    "neutralWords": [
+      "acute", "chronic", "disease", "syndrome", "disorder", "and", "or", "of", "the", "with", "in", "on", "a", "an",
+      "incl", "including", "symptomatic", "adult", "child", "primary", "other", "unspecified"
+    ],
+    "opposites": {
+      "acute": "chronic",
+      "chronic": "acute"
+    }
+  },
+  "families": {
+    "complicationModifiers": [
+      "incarcerated", "strangulated", "perforated", "gangrene", "gangrenous", "necrotising", "necrotizing", "infected",
+      "obstructed", "toxic", "major", "minor", "late", "early"
+    ],
+    "genericTailWords": ["disease", "diseases", "syndrome", "disorder", "disorders"],
+    "synonyms": {
+      "hemorrhage": "haemorrhage",
+      "bleed": "haemorrhage",
+      "bleeding": "haemorrhage",
+      "haemorrhagic": "haemorrhage",
+      "hemorrhagic": "haemorrhage",
+      "bleeds": "haemorrhage",
+      "gastrointestinal": "gi",
+      "esophageal": "oesophageal",
+      "tumor": "tumour",
+      "cancer": "carcinoma",
+      "adenocarcinoma": "carcinoma",
+      "malignancy": "carcinoma",
+      "ischemia": "ischaemia",
+      "ischemic": "ischaemic",
+      "edema": "oedema",
+      "fistulae": "fistula",
+      "hernias": "hernia",
+      "stones": "stone",
+      "calculi": "stone",
+      "calculus": "stone",
+      "gallstone": "cholelithiasis",
+      "gallstones": "cholelithiasis"
+    },
+    "injuryChapter": "S"
+  },
+  "coexisting": {
+    "paneIds": ["sepsis", "aki", "hyperkalaemia", "hypercalcaemia", "hyponatraemia", "hypoglycaemia"],
+    "nameTerms": ["sepsis", "septic", "acute kidney injury", "hyponatr", "hyperkal", "hypercalc", "hypoglyc"]
+  }
+}

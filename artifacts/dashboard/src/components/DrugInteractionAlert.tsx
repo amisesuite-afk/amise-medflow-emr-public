@@ -7,20 +7,40 @@ const SEV_CFG = {
   moderate:        { bg: '#fefce8', border: '#fde68a', color: '#713f12', label: 'MODERATE',        dot: '#eab308' },
 };
 
+// Hazard log H-07: the checker is a partial reference list, so an empty result must never
+// read as "no interaction". Display only — alerts never block or edit a prescription.
+const PARTIAL_LIST_NOTE =
+  'Partial reference list (BNF / Stockley’s classes) — absence of an alert does not mean there is no interaction.';
+
 interface Props {
   medications: string[];
   medicationsText: string;
+  /** Recorded herbs / supplements (supplementInteractionEntries): screened like drugs. */
+  supplements?: string[];
 }
 
-export default function DrugInteractionAlert({ medications, medicationsText }: Props) {
+function withClass(entry: string, viaClass?: string) {
+  return viaClass ? `${entry} (${viaClass})` : entry;
+}
+
+const NO_SUPPLEMENTS: string[] = [];
+
+export default function DrugInteractionAlert({ medications, medicationsText, supplements = NO_SUPPLEMENTS }: Props) {
   const allMeds = useMemo(() => {
     const fromText = medicationsText.split(/[\n,;]+/).map(m => m.trim()).filter(Boolean);
-    return [...medications, ...fromText];
-  }, [medications, medicationsText]);
+    return [...medications, ...fromText, ...supplements];
+  }, [medications, medicationsText, supplements]);
 
   const hits = useMemo(() => checkInteractions(allMeds), [allMeds]);
 
-  if (hits.length === 0) return null;
+  if (hits.length === 0) {
+    if (allMeds.length < 2) return null;
+    return (
+      <div style={{ fontSize: 11, color: '#6b7280', fontStyle: 'italic', marginBottom: 12 }}>
+        No interaction found. {PARTIAL_LIST_NOTE}
+      </div>
+    );
+  }
 
   return (
     <div style={{ marginBottom: 12 }}>
@@ -35,14 +55,20 @@ export default function DrugInteractionAlert({ medications, medicationsText }: P
               <span style={{ width: 7, height: 7, borderRadius: '50%', background: cfg.dot, flexShrink: 0, display: 'inline-block' }} />
               <span style={{ fontSize: 10, fontWeight: 800, color: cfg.color, letterSpacing: '0.06em' }}>{cfg.label}</span>
               <span style={{ fontSize: 12, fontWeight: 700, color: cfg.color }}>
-                {hit.matchedA} + {hit.matchedB}
+                {withClass(hit.matchedA, hit.viaClassA)} + {withClass(hit.matchedB, hit.viaClassB)}
               </span>
             </div>
             <div style={{ fontSize: 12, color: cfg.color, marginBottom: 2 }}>{hit.interaction.effect}</div>
             <div style={{ fontSize: 11, color: cfg.color, fontStyle: 'italic' }}>→ {hit.interaction.action}</div>
+            {hit.related.map((r, j) => (
+              <div key={j} style={{ fontSize: 11, color: cfg.color, marginTop: 4, paddingTop: 4, borderTop: `1px dashed ${cfg.border}` }}>
+                <strong>Also ({SEV_CFG[r.severity].label.toLowerCase()}):</strong> {r.effect} — <em>{r.action}</em>
+              </div>
+            ))}
           </div>
         );
       })}
+      <div style={{ fontSize: 10, color: '#6b7280', fontStyle: 'italic' }}>{PARTIAL_LIST_NOTE}</div>
     </div>
   );
 }

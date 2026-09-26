@@ -1,0 +1,306 @@
+{
+  "schemaVersion": 1,
+  "id": "acutemed-acs-pregnancy-scad",
+  "condition": "Acute coronary syndrome in pregnancy (spontaneous coronary artery dissection)",
+  "category": "general-medicine",
+  "permutationOf": "acutemed-acs-typical-chest-pain",
+  "permutationLabel": "Pregnant, 33 weeks (SCAD)",
+  "summary": "36-year-old woman at 33 weeks with sudden central chest pain radiating to the left arm and sweating while climbing stairs. SCAD is the commonest cause of pregnancy-associated MI.",
+  "tags": [
+    "acs",
+    "pregnancy",
+    "scad",
+    "must-not-miss"
+  ],
+  "inputs": {
+    "patient": {
+      "ageYears": 36,
+      "sex": "female",
+      "pregnancy": {
+        "status": "pregnant",
+        "gestationWeeks": 33
+      },
+      "heightCm": 165,
+      "weightKg": 78
+    },
+    "encounter": {
+      "setting": "outpatient",
+      "visitType": "urgentReview",
+      "acuity": "urgent"
+    },
+    "chiefComplaint": "Chest pain in pregnancy",
+    "hpi": "33 weeks pregnant (second pregnancy). One hour ago, climbing the stairs to clinic, sudden central chest tightness radiating to the left arm, with sweating and breathlessness. Still present, 7/10. Referred to surgical clinic for symptomatic gallstones earlier in pregnancy. No leg swelling. No headache or visual symptoms.",
+    "socrates": {
+      "onset": [
+        "Today",
+        "Sudden"
+      ],
+      "site": [
+        "Retrosternal"
+      ],
+      "character": [
+        "Pressure"
+      ],
+      "radiation": [
+        "Left arm"
+      ],
+      "associations": [
+        "Diaphoresis",
+        "Shortness of breath"
+      ],
+      "timing": [
+        "Constant"
+      ],
+      "exacerbating": [
+        "Exertion"
+      ],
+      "relieving": [
+        "Nothing"
+      ],
+      "severity": [
+        "Severe (7–9/10)"
+      ]
+    },
+    "symptoms": [
+      "central chest pain",
+      "left arm radiation",
+      "sweating",
+      "breathlessness"
+    ],
+    "negatives": [
+      "pleuritic pain",
+      "haemoptysis",
+      "leg swelling",
+      "headache",
+      "visual disturbance",
+      "abdominal pain"
+    ],
+    "exam": {
+      "general": "Anxious, sweaty.",
+      "cardiovascular": "Pulse 108 regular, BP 128/82, heart sounds normal.",
+      "respiratory": "Chest clear.",
+      "abdomen": "Gravid uterus consistent with dates, soft, non-tender.",
+      "msk": "Calves soft, no swelling."
+    },
+    "vitals": [
+      {
+        "minutesAgo": 5,
+        "heartRate": 108,
+        "systolicBp": 128,
+        "diastolicBp": 82,
+        "respiratoryRate": 20,
+        "temperatureC": 36.8,
+        "spo2": 97,
+        "avpu": "A",
+        "onSupplementalO2": false
+      }
+    ],
+    "labs": [],
+    "imaging": [],
+    "comorbidities": [
+      "Symptomatic gallstones (diagnosed in this pregnancy)"
+    ],
+    "surgicalHistory": [
+      "Caesarean section 2021"
+    ],
+    "medications": [
+      {
+        "drug": "Folic acid",
+        "dose": "400 micrograms",
+        "frequency": "OD"
+      },
+      {
+        "drug": "Ferrous sulfate",
+        "dose": "200 mg",
+        "frequency": "OD"
+      }
+    ],
+    "allergies": [],
+    "nkda": true,
+    "socialHistory": "Non-smoker. Teacher.",
+    "confirmedDiagnosis": {
+      "name": "Suspected acute coronary syndrome in pregnancy (possible SCAD)",
+      "icd10": "I21.9",
+      "assessmentText": "Sudden chest pain with arm radiation at 33 weeks - pregnancy-associated ACS (SCAD) to exclude; PE and aortic dissection also in differential."
+    },
+    "platform": {
+      "web": {
+        "ccTemplate": "Other / general surgical",
+        "symptoms": [
+          "chest pain",
+          "shortness of breath"
+        ],
+        "symptomDetails": {
+          "chest pain": [
+            "Crushing / pressure",
+            "Left arm",
+            "Sweating",
+            "Shortness of breath"
+          ]
+        },
+        "examFindings": {
+          "general": [
+            "Diaphoretic"
+          ],
+          "cardiovascular": [
+            "Tachycardia"
+          ]
+        },
+        "durationDays": 0.04,
+        "painScore": 7
+      }
+    }
+  },
+  "expected": {
+    "differential": {
+      "mustNotMiss": [
+        {
+          "id": "mnm-acs",
+          "severity": "critical",
+          "match": [
+            "coronary",
+            "myocardial",
+            "re:\\bacs\\b",
+            "stemi",
+            "nstemi",
+            "infarct",
+            "icd:I21",
+            "icd:I20",
+            "icd:I24"
+          ],
+          "guidelineRefs": [
+            "esc-acs-2023",
+            "esc-pregnancy-cvd-2018"
+          ]
+        },
+        {
+          "id": "mnm-pe-or-dissection",
+          "severity": "quality",
+          "match": [
+            "pulmonary embol",
+            "re:\\bpe\\b",
+            "icd:I26",
+            "dissection",
+            "icd:I71"
+          ],
+          "guidelineRefs": [
+            "esc-pregnancy-cvd-2018"
+          ],
+          "note": "Pregnancy chest pain: PE and aortic dissection are the other must-not-miss causes."
+        }
+      ]
+    },
+    "safety": {
+      "emergencyLevel": {
+        "id": "level-emergency",
+        "severity": "critical",
+        "atLeast": "emergency",
+        "guidelineRefs": [
+          "esc-acs-2023",
+          "esc-pregnancy-cvd-2018"
+        ]
+      },
+      "mustAlarm": [
+        {
+          "id": "alarm-cardiac",
+          "severity": "critical",
+          "match": [
+            "cardiac",
+            "coronary",
+            "re:\\bacs\\b",
+            "myocardial",
+            "ecg",
+            "chest pain pathway"
+          ],
+          "guidelineRefs": [
+            "esc-acs-2023"
+          ]
+        }
+      ]
+    },
+    "investigations": {
+      "mustInclude": [
+        {
+          "id": "inv-ecg",
+          "severity": "critical",
+          "match": [
+            "ecg",
+            "electrocardiogram",
+            "re:12.lead",
+            "ekg"
+          ],
+          "guidelineRefs": [
+            "esc-pregnancy-cvd-2018"
+          ]
+        },
+        {
+          "id": "inv-troponin",
+          "severity": "critical",
+          "match": [
+            "troponin"
+          ],
+          "guidelineRefs": [
+            "esc-pregnancy-cvd-2018"
+          ]
+        }
+      ]
+    },
+    "management": {
+      "mustInclude": [
+        {
+          "id": "mgmt-obstetric",
+          "severity": "quality",
+          "match": [
+            "obstetric",
+            "maternity",
+            "midwife",
+            "fetal",
+            "foetal",
+            "ctg"
+          ],
+          "guidelineRefs": [
+            "esc-pregnancy-cvd-2018"
+          ],
+          "note": "Joint cardiology-obstetric management of ACS in pregnancy."
+        }
+      ],
+      "mustExclude": [
+        {
+          "id": "mgmt-no-bhcg-negative",
+          "severity": "critical",
+          "match": [
+            "re:(β|b|beta)-?hcg[^.;]{0,20}negative"
+          ],
+          "guidelineRefs": [
+            "esc-pregnancy-cvd-2018"
+          ],
+          "note": "A plan asserting a negative pregnancy test in a woman at 33 weeks is a wrong-patient-state error."
+        }
+      ]
+    }
+  },
+  "guideline": [
+    {
+      "id": "esc-acs-2023",
+      "verified": false,
+      "name": "2023 ESC Guidelines for the management of acute coronary syndromes",
+      "year": 2023,
+      "section": "Section 3 (triage and diagnosis): 12-lead ECG within 10 minutes of first medical contact; hs-cTn 0 h/1 h (or 0 h/2 h) algorithm; atypical presentations (epigastric pain, dyspnoea, fatigue, nausea) more common in women, older people and people with diabetes; aspirin loading dose for all patients without contraindication; STEMI: immediate reperfusion strategy",
+      "citation": "Byrne RA, Rossello X, Coughlan JJ, et al. 2023 ESC Guidelines for the management of acute coronary syndromes. Eur Heart J. 2023;44:3720-3826."
+    },
+    {
+      "id": "esc-pregnancy-cvd-2018",
+      "verified": false,
+      "name": "2018 ESC Guidelines for the management of cardiovascular diseases during pregnancy",
+      "year": 2018,
+      "section": "Section 8 (coronary artery disease): ECG and troponin for chest pain in pregnancy; spontaneous coronary artery dissection (SCAD) is the commonest cause of pregnancy-associated MI; management in a centre with cardiology and obstetric expertise",
+      "citation": "Regitz-Zagrosek V, Roos-Hesselink JW, Bauersachs J, et al. Eur Heart J. 2018;39:3165-3241."
+    }
+  ],
+  "rationale": "Pregnancy permutation: young, low-risk-looking woman where anchoring on gallstones or anxiety is the failure mode. SCAD is the leading cause of pregnancy-associated MI (ESC 2018).",
+  "authoring": {
+    "author": "Claude (acute medicine cluster)",
+    "date": "2026-09-25",
+    "notes": "Expectations need surgeon sign-off (reviewedBy). Citations written from the guideline texts, not yet checked against the source (verified: false). iOS outcomes are unverified until the next CI run."
+  }
+}

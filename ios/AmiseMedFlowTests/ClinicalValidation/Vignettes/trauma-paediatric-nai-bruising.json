@@ -1,0 +1,264 @@
+{
+  "schemaVersion": 1,
+  "id": "trauma-paediatric-nai-bruising",
+  "condition": "Suspected non-accidental injury (infant bruising)",
+  "category": "trauma-burns",
+  "permutationOf": null,
+  "summary": "11-month-old boy, not yet crawling, brought 2 days after a reported \"roll off the sofa\": bruises on the left ear, cheek and trunk (fingertip pattern), irritable; explanation inconsistent with development.",
+  "tags": [
+    "trauma",
+    "paediatric",
+    "safeguarding",
+    "nai"
+  ],
+  "inputs": {
+    "patient": {
+      "ageYears": 0,
+      "sex": "male",
+      "pregnancy": {
+        "status": "not-applicable"
+      },
+      "heightCm": 74,
+      "weightKg": 9
+    },
+    "encounter": {
+      "setting": "emergency",
+      "visitType": "urgentReview",
+      "acuity": "priority"
+    },
+    "chiefComplaint": "Bruising after fall from sofa",
+    "hpi": "Brought by mother's partner. Said to have rolled off the sofa two days ago onto a carpeted floor. Not yet crawling or pulling to stand. Bruises noticed by nursery today. More irritable than usual, feeding normally.",
+    "socrates": {},
+    "symptoms": [
+      "bruising",
+      "irritability"
+    ],
+    "negatives": [
+      "vomiting",
+      "seizure"
+    ],
+    "exam": {
+      "general": "Irritable but consolable. HR 138, RR 32, T 36.9°C, SpO2 99%. Weight 9 kg (25th centile).",
+      "skin": "Bruises: left pinna, left cheek, and four oval fingertip-pattern bruises over the lower chest and flanks, of differing colours. No petechiae. Frenulum intact.",
+      "neuro": "Anterior fontanelle soft. Alert, moving all limbs."
+    },
+    "vitals": [
+      {
+        "minutesAgo": 10,
+        "heartRate": 138,
+        "respiratoryRate": 32,
+        "temperatureC": 36.9,
+        "spo2": 99,
+        "avpu": "A",
+        "onSupplementalO2": false
+      }
+    ],
+    "labs": [],
+    "imaging": [],
+    "comorbidities": [],
+    "surgicalHistory": [],
+    "medications": [],
+    "allergies": [],
+    "nkda": true,
+    "socialHistory": "Lives with mother and her partner. Health visitor involved.",
+    "confirmedDiagnosis": {
+      "name": "Suspected non-accidental injury (bruising in a non-mobile infant)",
+      "icd10": "T76.12XA",
+      "assessmentText": "Bruising to the ear, cheek and trunk in a non-mobile 11-month-old with an inconsistent history and delayed presentation — suspected physical abuse. Safeguarding referral today; paediatric admission; skeletal survey and CT head; FBC and clotting."
+    },
+    "platform": {
+      "web": {
+        "ccTemplate": "Other / general surgical",
+        "symptoms": [
+          "bruising",
+          "inconsolable crying",
+          "parental concern"
+        ],
+        "examFindings": {
+          "skin": [
+            "Petechiae / purpura"
+          ]
+        },
+        "durationDays": 2,
+        "painScore": 3
+      }
+    }
+  },
+  "expected": {
+    "differential": {
+      "mustNotMiss": [
+        {
+          "id": "mnm-nai",
+          "severity": "quality",
+          "match": [
+            "safeguard",
+            "child protection",
+            "non-accidental",
+            "non accidental",
+            "re:\\bnai\\b",
+            "maltreatment",
+            "social services",
+            "physical abuse",
+            "child abuse"
+          ],
+          "guidelineRefs": [
+            "nice-cg89"
+          ],
+          "knownGap": [
+            "web",
+            "ios"
+          ],
+          "knownGapNote": "No engine has non-accidental injury / child maltreatment as a diagnosis. | iOS CI 2026-09-25 (run 36169134350, database mode): not in top 5 of ios.bayes: 1. Delirium (Acute Confusional State) | 2. Pulmonary Embolism | 3. Atrial Fibrillation | 4. Sepsis | 5. Transient Ischaemic Attack",
+          "proposedFix": "Add suspected physical abuse to the paediatric differential (bruising in a non-mobile infant, TEN-4 sites, inconsistent history, delayed presentation)."
+        }
+      ]
+    },
+    "safety": {
+      "emergencyLevel": {
+        "id": "level-at-least-urgent",
+        "severity": "quality",
+        "atLeast": "urgent",
+        "guidelineRefs": [
+          "nice-cg89"
+        ]
+      },
+      "redFlags": [
+        {
+          "id": "flag-safeguarding",
+          "severity": "critical",
+          "match": [
+            "safeguard",
+            "child protection",
+            "non-accidental",
+            "non accidental",
+            "re:\\bnai\\b",
+            "maltreatment",
+            "social services",
+            "physical abuse",
+            "child abuse"
+          ],
+          "guidelineRefs": [
+            "nice-cg89"
+          ],
+          "note": "Bruising in a non-mobile infant, on the ears and trunk, with an inconsistent explanation: NICE CG89 \"suspect maltreatment\"."
+        }
+      ]
+    },
+    "investigations": {
+      "mustInclude": [
+        {
+          "id": "inv-skeletal-survey",
+          "severity": "quality",
+          "match": [
+            "skeletal survey"
+          ],
+          "guidelineRefs": [
+            "rcr-rcpch-2017"
+          ]
+        },
+        {
+          "id": "inv-ct-head-infant",
+          "severity": "quality",
+          "match": [
+            "re:\\bct\\b[^.;\\n]{0,20}head",
+            "ct brain",
+            "computed tomography of the head"
+          ],
+          "guidelineRefs": [
+            "rcr-rcpch-2017"
+          ]
+        },
+        {
+          "id": "inv-clotting",
+          "severity": "quality",
+          "match": [
+            "clotting",
+            "coagulation"
+          ],
+          "guidelineRefs": [
+            "nice-cg89"
+          ]
+        }
+      ]
+    },
+    "management": {
+      "mustInclude": [
+        {
+          "id": "mgmt-safeguarding-referral",
+          "severity": "critical",
+          "match": [
+            "safeguard",
+            "child protection",
+            "non-accidental",
+            "non accidental",
+            "re:\\bnai\\b",
+            "maltreatment",
+            "social services",
+            "physical abuse",
+            "child abuse"
+          ],
+          "guidelineRefs": [
+            "nice-cg89"
+          ]
+        }
+      ],
+      "mustExclude": [
+        {
+          "id": "mgmt-no-antithrombotic-plan",
+          "severity": "critical",
+          "match": [
+            "aspirin 300",
+            "ticagrelor",
+            "clopidogrel 300",
+            "fondaparinux",
+            "alteplase",
+            "thrombolysis",
+            "rivaroxaban",
+            "apixaban 10",
+            "doacs (preferred)"
+          ],
+          "sources": [
+            "ios.radiation",
+            "ios.soap",
+            "web.plan",
+            "web.protocol",
+            "web.managementPanel"
+          ],
+          "guidelineRefs": [
+            "nice-cg89"
+          ],
+          "note": "A PE or ACS antithrombotic/thrombolytic plan must never be attached to a haemorrhagic or non-thrombotic diagnosis. Reading the iOS source, DiagnosisRadiationEngine.radiate matches keywords by substring and would attach the ACS plan (\"mi\" inside \"abdominal\", \"limb\", \"haemodynamically\") or the PE plan (\"pe\" inside \"suspected\", \"penetrating\", \"superficial\") to this diagnosis — to be confirmed on the first iOS CI run."
+        }
+      ]
+    },
+    "pathway": {
+      "id": "pathway-trauma",
+      "severity": "quality",
+      "equals": "trauma"
+    }
+  },
+  "guideline": [
+    {
+      "id": "nice-cg89",
+      "name": "NICE CG89 — Child maltreatment: when to suspect maltreatment in under 18s",
+      "year": 2009,
+      "section": "Suspect maltreatment: bruising in a child who is not independently mobile; bruises on ears, neck, trunk, buttocks; explanation absent, inconsistent or implausible; delayed presentation; burns/scalds with immersion pattern (glove/stocking, symmetrical, buttocks/perineum/lower limbs, sharp demarcation) → follow local safeguarding procedures",
+      "citation": "National Institute for Health and Care Excellence. Child maltreatment: when to suspect maltreatment in under 18s (CG89). London: NICE; 2009 (updated 2017).",
+      "verified": false
+    },
+    {
+      "id": "rcr-rcpch-2017",
+      "name": "RCR/RCPCH — radiological investigation of suspected physical abuse in children",
+      "year": 2017,
+      "section": "Skeletal survey in children under 2 years with suspected physical abuse; CT head in children under 1 year with suspected physical abuse",
+      "citation": "The Royal College of Radiologists, Royal College of Paediatrics and Child Health. The radiological investigation of suspected physical abuse in children. London: RCR; 2017 (revised 2018).",
+      "verified": false
+    }
+  ],
+  "rationale": "Paediatric safeguarding flag. The findings meet NICE CG89 \"suspect\" criteria (non-mobile infant, ear/trunk bruising, inconsistent explanation, delay). The engines must raise safeguarding and suggest the RCR/RCPCH investigations. The web \"petechiae / purpura\" chip is the nearest skin chip to bruising.",
+  "authoring": {
+    "author": "Claude (soft tissue / vascular / trauma / burns cluster)",
+    "date": "2026-09-25",
+    "notes": "Expectations need surgeon sign-off (reviewedBy). Citations verified: false. iOS outcomes are unverified until the first CI run."
+  }
+}

@@ -1,0 +1,259 @@
+{
+  "schemaVersion": 1,
+  "id": "stroke-anticoagulated-apixaban-elderly",
+  "condition": "Acute ischaemic stroke on a DOAC",
+  "category": "other",
+  "permutationOf": "stroke-acute-fast-positive",
+  "permutationLabel": "Elderly, anticoagulated (apixaban 3 h ago)",
+  "summary": "84-year-old woman on apixaban (last dose 3 h ago) with sudden left hemiparesis, facial droop and neglect 2 h ago; NIHSS 14.",
+  "tags": [
+    "neuro",
+    "stroke",
+    "anticoagulated",
+    "elderly"
+  ],
+  "inputs": {
+    "patient": {
+      "ageYears": 84,
+      "sex": "female",
+      "pregnancy": {
+        "status": "not-applicable"
+      },
+      "heightCm": 156,
+      "weightKg": 58
+    },
+    "encounter": {
+      "setting": "emergency",
+      "visitType": "urgentReview",
+      "acuity": "emergency"
+    },
+    "chiefComplaint": "Sudden left-sided weakness and facial droop",
+    "hpi": "Two hours ago, sudden left arm and leg weakness and left facial droop; she is not aware of the weakness. Atrial fibrillation on apixaban 5 mg twice daily, last dose 3 hours ago. No headache, no fall.",
+    "socrates": {
+      "onset": [
+        "Today",
+        "Sudden"
+      ]
+    },
+    "symptoms": [
+      "limb weakness",
+      "facial weakness",
+      "speech difficulty"
+    ],
+    "negatives": [
+      "headache",
+      "head injury",
+      "seizure"
+    ],
+    "exam": {
+      "general": "Alert. Pulse 88/min irregular, BP 168/90, RR 16, temperature 36.7°C, SpO2 96%.",
+      "neuro": "Left facial droop, left hemiparesis (arm 1/5, leg 3/5), left-sided neglect, dysarthria. NIHSS 14. Capillary glucose 7.2."
+    },
+    "vitals": [
+      {
+        "minutesAgo": 10,
+        "heartRate": 88,
+        "systolicBp": 168,
+        "diastolicBp": 90,
+        "respiratoryRate": 16,
+        "temperatureC": 36.7,
+        "spo2": 96,
+        "avpu": "A",
+        "onSupplementalO2": false,
+        "glucoseMmol": 7.2,
+        "weightKg": 58
+      }
+    ],
+    "labs": [
+      {
+        "analyte": "glucose",
+        "name": "Glucose",
+        "value": 7.2,
+        "unit": "mmol/L",
+        "minutesAgo": 5
+      },
+      {
+        "analyte": "creatinine",
+        "name": "Creatinine",
+        "value": 104,
+        "unit": "µmol/L",
+        "minutesAgo": 30
+      },
+      {
+        "analyte": "platelets",
+        "name": "Platelets",
+        "value": 210,
+        "unit": "×10⁹/L",
+        "minutesAgo": 30
+      }
+    ],
+    "imaging": [],
+    "comorbidities": [
+      "Atrial fibrillation",
+      "Hypertension",
+      "Osteoarthritis"
+    ],
+    "surgicalHistory": [
+      "Right total hip replacement"
+    ],
+    "medications": [
+      {
+        "drug": "Apixaban",
+        "dose": "5 mg",
+        "frequency": "BD",
+        "indication": "Atrial fibrillation (last dose 3 h ago)"
+      },
+      {
+        "drug": "Ramipril",
+        "dose": "5 mg",
+        "frequency": "OD",
+        "indication": "Hypertension"
+      }
+    ],
+    "allergies": [],
+    "nkda": true,
+    "socialHistory": "Lives independently.",
+    "confirmedDiagnosis": {
+      "name": "Acute ischaemic stroke (right MCA) on apixaban",
+      "icd10": "I63.9",
+      "assessmentText": "Acute right MCA stroke at 2 h on apixaban (last dose 3 h ago): CT/CTA now; thrombolysis contraindicated by recent DOAC; thrombectomy if large vessel occlusion."
+    },
+    "platform": {
+      "web": {
+        "ccTemplate": "Other / general surgical",
+        "symptoms": [
+          "limb weakness",
+          "facial weakness",
+          "speech difficulty"
+        ],
+        "durationDays": 0.08
+      }
+    }
+  },
+  "expected": {
+    "safety": {
+      "emergencyLevel": {
+        "id": "level-emergency",
+        "severity": "critical",
+        "atLeast": "emergency",
+        "guidelineRefs": [
+          "nice-ng128",
+          "eso-ivt-2021"
+        ]
+      },
+      "mustAlarm": [
+        {
+          "id": "alarm-stroke",
+          "severity": "critical",
+          "match": [
+            "stroke",
+            "re:\\bfast\\b",
+            "cerebrovascular"
+          ],
+          "guidelineRefs": [
+            "nice-ng128"
+          ]
+        }
+      ]
+    },
+    "investigations": {
+      "mustInclude": [
+        {
+          "id": "inv-ct-head",
+          "severity": "critical",
+          "match": [
+            "ct head",
+            "ct brain",
+            "re:\\bct\\b[^.;\\n]{0,20}(head|brain)",
+            "non-contrast ct",
+            "mri brain",
+            "ct angiogra",
+            "cta"
+          ],
+          "guidelineRefs": [
+            "nice-ng128"
+          ],
+          "note": "NICE NG128: immediate CT for anyone on anticoagulants."
+        },
+        {
+          "id": "inv-coagulation",
+          "severity": "quality",
+          "match": [
+            "coagulation",
+            "clotting",
+            "inr",
+            "anti-xa",
+            "apixaban level",
+            "aptt"
+          ],
+          "guidelineRefs": [
+            "eso-ivt-2021"
+          ]
+        }
+      ]
+    },
+    "management": {
+      "mustInclude": [
+        {
+          "id": "mgmt-thrombectomy-option",
+          "severity": "quality",
+          "match": [
+            "thrombectomy"
+          ],
+          "guidelineRefs": [
+            "nice-ng128",
+            "eso-ivt-2021"
+          ]
+        }
+      ],
+      "mustExclude": [
+        {
+          "id": "mgmt-no-thrombolysis-on-doac",
+          "severity": "critical",
+          "match": [
+            "alteplase",
+            "thrombolys",
+            "tenecteplase"
+          ],
+          "unless": [
+            "contraindicat",
+            "not recommended",
+            "not ",
+            "avoid",
+            "within 48",
+            "doac",
+            "anticoag"
+          ],
+          "guidelineRefs": [
+            "eso-ivt-2021"
+          ],
+          "note": "ESO 2021: no IV thrombolysis within 48 h of a DOAC dose (without specific levels or reversal)."
+        }
+      ]
+    }
+  },
+  "guideline": [
+    {
+      "id": "nice-ng128",
+      "name": "NICE NG128 — Stroke and transient ischaemic attack in over 16s: diagnosis and initial management",
+      "year": 2019,
+      "section": "1.1 Rapid recognition (FAST); exclude hypoglycaemia as the cause of sudden-onset neurological symptoms; suspected TIA: aspirin 300 mg immediately unless contraindicated and specialist assessment within 24 h; do not use scoring systems (ABCD2) to assess TIA risk; 1.2 imaging: non-enhanced CT immediately if thrombolysis/thrombectomy indicated, on anticoagulants or bleeding tendency; thrombolysis with alteplase within 4.5 h; thrombectomy; aspirin 300 mg after haemorrhage excluded; admit to a stroke unit",
+      "citation": "National Institute for Health and Care Excellence. Stroke and transient ischaemic attack in over 16s: diagnosis and initial management. NICE guideline NG128. London: NICE; 2019 (updated 2022).",
+      "verified": false
+    },
+    {
+      "id": "eso-ivt-2021",
+      "name": "European Stroke Organisation guidelines on intravenous thrombolysis for acute ischaemic stroke",
+      "year": 2021,
+      "section": "Patients who took a direct oral anticoagulant within the previous 48 h: IV thrombolysis not recommended (unless specific drug levels/tests normal or dabigatran reversed with idarucizumab); mechanical thrombectomy remains an option for large vessel occlusion",
+      "citation": "Berge E, Whiteley W, Audebert H, et al. European Stroke Organisation (ESO) guidelines on intravenous thrombolysis for acute ischaemic stroke. Eur Stroke J. 2021;6:I–LXII.",
+      "verified": false
+    }
+  ],
+  "rationale": "Anticoagulation changes the plan: immediate CT, no IV thrombolysis after recent DOAC, thrombectomy still possible (NICE NG128, ESO 2021).",
+  "authoring": {
+    "author": "Claude (endocrine / renal / urology / neuro cluster)",
+    "date": "2026-09-25",
+    "notes": "Expectations need surgeon sign-off (reviewedBy). Every citation is verified: false. iOS outcomes not observed (Linux)."
+  }
+}

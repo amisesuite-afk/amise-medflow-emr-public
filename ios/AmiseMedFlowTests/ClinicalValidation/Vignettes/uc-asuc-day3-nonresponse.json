@@ -1,0 +1,325 @@
+{
+  "schemaVersion": 1,
+  "id": "uc-asuc-day3-nonresponse",
+  "condition": "Acute severe ulcerative colitis — steroid-refractory (day 3)",
+  "category": "colorectal",
+  "permutationOf": "uc-acute-severe-truelove-witts",
+  "permutationLabel": "Day 3, Oxford/Travis criteria met",
+  "summary": "Same patient on day 3 of IV hydrocortisone: 10 stools/day, CRP 52 — Travis criteria predict colectomy. Rescue therapy (infliximab or ciclosporin) or colectomy after joint gastroenterology–colorectal review; CMV on biopsies.",
+  "tags": [
+    "ibd",
+    "ulcerative-colitis",
+    "steroid-refractory"
+  ],
+  "inputs": {
+    "patient": {
+      "ageYears": 29,
+      "sex": "female",
+      "pregnancy": {
+        "status": "not-pregnant"
+      },
+      "heightCm": 166,
+      "weightKg": 57
+    },
+    "encounter": {
+      "setting": "inpatient",
+      "visitType": "wardReview",
+      "acuity": "urgent"
+    },
+    "chiefComplaint": "Ongoing bloody diarrhoea on IV steroids",
+    "hpi": "Day 3 of IV hydrocortisone 100 mg four times daily for acute severe ulcerative colitis. Still 10 bloody stools in the last 24 h. Stool culture negative, C. difficile toxin negative. Flexible sigmoidoscopy: severe continuous colitis to 30 cm; biopsies pending (CMV immunohistochemistry requested). On enoxaparin prophylaxis.",
+    "socrates": {
+      "onset": [
+        "4–7 days ago"
+      ],
+      "site": [
+        "Diffuse"
+      ],
+      "character": [
+        "Cramping"
+      ],
+      "associations": [
+        "Rectal bleeding",
+        "Change in bowel habit",
+        "Fever"
+      ],
+      "timing": [
+        "Constant",
+        "Nocturnal"
+      ],
+      "severity": [
+        "Moderate (4–6/10)"
+      ]
+    },
+    "symptoms": [
+      "bloody diarrhoea",
+      "abdominal pain",
+      "fever",
+      "faecal urgency"
+    ],
+    "negatives": [
+      "recent antibiotics",
+      "travel",
+      "vomiting"
+    ],
+    "exam": {
+      "general": "Unwell, pale. Temperature 37.9°C, HR 104, BP 112/70.",
+      "abdomen": "Mildly distended, tender over the left colon, no guarding or peritonism. Bowel sounds present."
+    },
+    "vitals": [
+      {
+        "minutesAgo": 20,
+        "heartRate": 98,
+        "systolicBp": 114,
+        "diastolicBp": 68,
+        "respiratoryRate": 18,
+        "temperatureC": 37.6,
+        "spo2": 98,
+        "avpu": "A",
+        "onSupplementalO2": false
+      }
+    ],
+    "labs": [
+      {
+        "analyte": "haemoglobin",
+        "name": "Haemoglobin",
+        "value": 9.8,
+        "unit": "g/dL",
+        "minutesAgo": 60
+      },
+      {
+        "analyte": "wbc",
+        "name": "WBC",
+        "value": 13.4,
+        "unit": "×10⁹/L",
+        "minutesAgo": 60
+      },
+      {
+        "analyte": "crp",
+        "name": "CRP",
+        "value": 52,
+        "unit": "mg/L",
+        "minutesAgo": 60
+      },
+      {
+        "analyte": "albumin",
+        "name": "Albumin",
+        "value": 26,
+        "unit": "g/L",
+        "minutesAgo": 60
+      },
+      {
+        "analyte": "potassium",
+        "name": "Potassium",
+        "value": 3.4,
+        "unit": "mmol/L",
+        "minutesAgo": 60
+      }
+    ],
+    "imaging": [
+      {
+        "name": "AXR",
+        "modality": "XR",
+        "region": "Abdomen",
+        "result": "No colonic dilatation (transverse colon 4.8 cm). Oedematous left colon. No free gas.",
+        "minutesAgo": 40
+      }
+    ],
+    "comorbidities": [
+      "Ulcerative colitis (left-sided)"
+    ],
+    "surgicalHistory": [],
+    "medications": [
+      {
+        "drug": "Hydrocortisone",
+        "dose": "100 mg",
+        "frequency": "QDS IV",
+        "indication": "Acute severe UC"
+      },
+      {
+        "drug": "Enoxaparin",
+        "dose": "40 mg",
+        "frequency": "OD SC",
+        "indication": "VTE prophylaxis"
+      },
+      {
+        "drug": "Mesalazine",
+        "dose": "2.4 g",
+        "frequency": "OD",
+        "indication": "Ulcerative colitis"
+      }
+    ],
+    "allergies": [],
+    "nkda": true,
+    "socialHistory": "Primary school teacher. Non-smoker.",
+    "confirmedDiagnosis": {
+      "name": "Acute severe ulcerative colitis — steroid-refractory at day 3",
+      "icd10": "K51.5",
+      "paneDiseaseId": "ulcerative_colitis",
+      "assessmentText": "Acute severe UC, day 3 of IV steroids: 10 stools/day, CRP 52 — Oxford (Travis) criteria met, high colectomy risk. Rescue therapy (infliximab or ciclosporin) versus colectomy; joint medical-surgical review."
+    },
+    "platform": {
+      "web": {
+        "ccTemplate": "Change in bowel habit",
+        "symptoms": [
+          "diarrhoea",
+          "rectal bleeding",
+          "abdominal pain",
+          "fever",
+          "faecal urgency"
+        ],
+        "symptomDetails": {
+          "rectal bleeding": [
+            "Fresh red",
+            "Mixed with stool",
+            "Diarrhoea"
+          ],
+          "abdominal pain": [
+            "LLQ",
+            "Diffuse",
+            "> 3 days",
+            "Cramping",
+            "Moderate (4–6)",
+            "Diarrhoea",
+            "Fever",
+            "PR bleeding"
+          ]
+        },
+        "examFindings": {
+          "abdomen": [
+            "Distended",
+            "Tender LLQ"
+          ],
+          "cardiovascular": [
+            "Tachycardia"
+          ]
+        },
+        "paneAnswers": {
+          "pr_bleeding": true,
+          "mucus_pr": true,
+          "tenesmus": true,
+          "fever": true
+        },
+        "durationDays": 5,
+        "painScore": 5
+      }
+    }
+  },
+  "expected": {
+    "safety": {
+      "emergencyLevel": {
+        "id": "level-inpatient",
+        "severity": "critical",
+        "atLeast": "urgent",
+        "guidelineRefs": [
+          "bsg-ibd-2019"
+        ]
+      }
+    },
+    "investigations": {
+      "mustInclude": [
+        {
+          "id": "inv-cmv",
+          "severity": "quality",
+          "match": [
+            "cmv",
+            "cytomegalovirus"
+          ],
+          "guidelineRefs": [
+            "ecco-infections-2021"
+          ],
+          "proposedFix": "Add \"flexible sigmoidoscopy with biopsies incl. CMV (IHC/PCR)\" to the ASUC/steroid-refractory steps (ECCO 2021)."
+        }
+      ]
+    },
+    "management": {
+      "mustInclude": [
+        {
+          "id": "mgmt-rescue-therapy",
+          "severity": "critical",
+          "match": [
+            "infliximab",
+            "ciclosporin",
+            "cyclosporin"
+          ],
+          "guidelineRefs": [
+            "ecco-uc-2022",
+            "bsg-ibd-2019"
+          ]
+        },
+        {
+          "id": "mgmt-colectomy-option",
+          "severity": "critical",
+          "match": [
+            "colectomy"
+          ],
+          "guidelineRefs": [
+            "ecco-uc-surg-2022",
+            "bsg-ibd-2019"
+          ]
+        },
+        {
+          "id": "mgmt-joint-review",
+          "severity": "quality",
+          "match": [
+            "colorectal surg",
+            "surgical review",
+            "joint",
+            "surgeon"
+          ],
+          "guidelineRefs": [
+            "bsg-ibd-2019"
+          ]
+        }
+      ]
+    }
+  },
+  "guideline": [
+    {
+      "id": "travis-1996",
+      "name": "Oxford (Travis) criteria — predicting outcome in severe ulcerative colitis",
+      "year": 1996,
+      "section": "Day-3 predictors of colectomy: > 8 stools, or 3–8 stools with CRP > 45",
+      "citation": "Travis SP, Farrant JM, Ricketts C, et al. Predicting outcome in severe ulcerative colitis. Gut. 1996;38:905–910.",
+      "verified": false
+    },
+    {
+      "id": "ecco-uc-2022",
+      "name": "ECCO guidelines on therapeutics in ulcerative colitis — medical treatment",
+      "year": 2022,
+      "section": "Rescue therapy with infliximab or ciclosporin for steroid-refractory ASUC",
+      "citation": "Raine T, Bonovas S, Burisch J, et al. ECCO guidelines on therapeutics in ulcerative colitis: medical treatment. J Crohns Colitis. 2022;16:2–17.",
+      "verified": false
+    },
+    {
+      "id": "ecco-uc-surg-2022",
+      "name": "ECCO guidelines on therapeutics in ulcerative colitis — surgical treatment",
+      "year": 2022,
+      "section": "Subtotal colectomy with end ileostomy when medical therapy fails; do not delay surgery",
+      "citation": "Spinelli A, Bonovas S, Burisch J, et al. ECCO guidelines on therapeutics in ulcerative colitis: surgical treatment. J Crohns Colitis. 2022;16:179–189.",
+      "verified": false
+    },
+    {
+      "id": "bsg-ibd-2019",
+      "name": "BSG consensus guidelines — management of inflammatory bowel disease in adults",
+      "year": 2019,
+      "section": "Day-3 assessment; joint medical–surgical care",
+      "citation": "Lamb CA, Kennedy NA, Raine T, et al. British Society of Gastroenterology consensus guidelines on the management of inflammatory bowel disease in adults. Gut. 2019;68(Suppl 3):s1–s106.",
+      "verified": false
+    },
+    {
+      "id": "ecco-infections-2021",
+      "name": "ECCO guidelines — prevention, diagnosis and management of infections in IBD",
+      "year": 2021,
+      "section": "Exclude CMV in steroid-refractory colitis",
+      "citation": "Kucharzik T, Ellul P, Greuter T, et al. ECCO guidelines on the prevention, diagnosis, and management of infections in inflammatory bowel disease. J Crohns Colitis. 2021;15:879–913.",
+      "verified": false
+    }
+  ],
+  "rationale": "Permutation: time on steroids. Checks the plan escalates at day 3 (rescue therapy or colectomy) instead of repeating the admission bundle.",
+  "authoring": {
+    "author": "Claude (colorectal/anorectal cluster)",
+    "date": "2026-09-25",
+    "notes": "Expectations need surgeon sign-off (reviewedBy). Citations verified: false until checked against the source."
+  }
+}

@@ -4,9 +4,10 @@
  * Sends HTML emails with full procedure-specific patient instructions.
  */
 import { google } from 'googleapis';
-import { getInstructions, type ProcedureInstructions } from '@/lib/instructions';
+import { getInstructionsForAppointment, type ProcedureInstructions } from '@/lib/instructions';
 import { LOCATION_LABELS } from '@/lib/calendar';
 import type { BookingTrack } from '@/lib/scheduling';
+import { outboundBlocked } from '@/lib/outbound';
 
 const GMAIL_FROM = process.env.GMAIL_USER ?? 'noreply@amisemedicalservices.com';
 const GMAIL_FROM_NAME = 'Amise Medical Services';
@@ -73,7 +74,7 @@ function buildEmailHtml(opts: {
 }): string {
   const { patientName, appointmentType, slot, isConfirmed, track } = opts;
   const firstName = patientName.split(' ')[0];
-  const inst: ProcedureInstructions = getInstructions(appointmentType);
+  const inst: ProcedureInstructions = getInstructionsForAppointment(appointmentType);
   const locLabel = slot ? (LOCATION_LABELS[slot.location] ?? slot.location) : inst.location;
 
   const statusColour = isConfirmed ? '#10b981' : '#f59e0b';
@@ -229,7 +230,9 @@ export async function sendConfirmationEmail(opts: {
   track: BookingTrack;
   isConfirmed: boolean;
 }): Promise<boolean> {
-  if (process.env.MODE === 'dry_run') {
+  // Fail closed: unset / misspelt MODE is dry_run (lib/outbound.ts, G-17).
+  // Previously this sent unless MODE was exactly 'dry_run'.
+  if (outboundBlocked('email')) {
     console.log(`[email dry_run] Would send to ${opts.to} — ${opts.patientName} / ${opts.appointmentType}`);
     return true;
   }
@@ -240,7 +243,7 @@ export async function sendConfirmationEmail(opts: {
     return false;
   }
 
-  const inst = getInstructions(opts.appointmentType);
+  const inst = getInstructionsForAppointment(opts.appointmentType);
   const statusText = opts.isConfirmed ? 'Appointment Confirmed' : 'Appointment Request Received';
   const subject = opts.slot
     ? `${statusText}: ${inst.displayName} — ${opts.slot.display}`

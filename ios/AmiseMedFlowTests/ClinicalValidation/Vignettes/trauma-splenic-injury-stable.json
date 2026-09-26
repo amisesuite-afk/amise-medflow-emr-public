@@ -1,0 +1,304 @@
+{
+  "schemaVersion": 1,
+  "id": "trauma-splenic-injury-stable",
+  "condition": "Splenic laceration (haemodynamically stable)",
+  "category": "trauma-burns",
+  "permutationOf": null,
+  "summary": "22-year-old man kicked in the left upper quadrant playing football: HR 96, BP 124/78, LUQ tenderness, left shoulder-tip pain; CT AAST grade III splenic laceration without contrast blush.",
+  "tags": [
+    "trauma",
+    "spleen",
+    "non-operative-management"
+  ],
+  "inputs": {
+    "patient": {
+      "ageYears": 22,
+      "sex": "male",
+      "pregnancy": {
+        "status": "not-applicable"
+      },
+      "heightCm": 183,
+      "weightKg": 76
+    },
+    "encounter": {
+      "setting": "emergency",
+      "visitType": "trauma",
+      "acuity": "urgent"
+    },
+    "chiefComplaint": "Left upper abdominal pain after football injury",
+    "hpi": "Kicked hard in the left upper abdomen during a football match 3 hours ago. Left upper abdominal pain and pain at the tip of the left shoulder. No loss of consciousness. Felt light-headed briefly.",
+    "socrates": {
+      "onset": [
+        "Today",
+        "Sudden"
+      ],
+      "site": [
+        "LUQ"
+      ],
+      "character": [
+        "Sharp"
+      ],
+      "radiation": [
+        "Left shoulder"
+      ],
+      "associations": [
+        "Nausea"
+      ],
+      "timing": [
+        "Constant"
+      ],
+      "exacerbating": [
+        "Movement",
+        "Deep breathing"
+      ],
+      "relieving": [
+        "Analgesics"
+      ],
+      "severity": [
+        "Moderate (4–6/10)"
+      ]
+    },
+    "symptoms": [
+      "abdominal pain",
+      "shoulder pain"
+    ],
+    "negatives": [
+      "haematuria",
+      "vomiting"
+    ],
+    "exam": {
+      "general": "Alert, GCS 15. HR 96, BP 124/78, RR 18, SpO2 99%. Haemodynamically stable throughout.",
+      "abdomen": "Tender left upper quadrant with localised guarding; no generalised peritonism. Kehr sign positive."
+    },
+    "vitals": [
+      {
+        "minutesAgo": 120,
+        "heartRate": 102,
+        "systolicBp": 120,
+        "diastolicBp": 76,
+        "respiratoryRate": 18,
+        "temperatureC": 36.8,
+        "spo2": 99,
+        "avpu": "A",
+        "onSupplementalO2": false
+      },
+      {
+        "minutesAgo": 10,
+        "heartRate": 96,
+        "systolicBp": 124,
+        "diastolicBp": 78,
+        "respiratoryRate": 18,
+        "temperatureC": 36.8,
+        "spo2": 99,
+        "avpu": "A",
+        "onSupplementalO2": false
+      }
+    ],
+    "labs": [
+      {
+        "analyte": "haemoglobin",
+        "name": "Haemoglobin",
+        "value": 12.9,
+        "unit": "g/dL",
+        "minutesAgo": 90
+      }
+    ],
+    "imaging": [
+      {
+        "name": "FAST scan",
+        "modality": "US",
+        "region": "Abdomen",
+        "result": "Small volume free fluid in the splenorenal recess.",
+        "minutesAgo": 150
+      },
+      {
+        "name": "CT abdomen and pelvis with IV contrast",
+        "modality": "CT",
+        "region": "Abdomen",
+        "result": "AAST grade III splenic laceration (4 cm parenchymal depth) with small perisplenic haematoma and small haemoperitoneum. No contrast blush or pseudoaneurysm. No other solid organ or hollow viscus injury.",
+        "minutesAgo": 60
+      }
+    ],
+    "comorbidities": [],
+    "surgicalHistory": [],
+    "medications": [],
+    "allergies": [],
+    "nkda": true,
+    "socialHistory": "Student.",
+    "confirmedDiagnosis": {
+      "name": "Splenic laceration AAST grade III (haemodynamically stable)",
+      "icd10": "S36.032A",
+      "paneDiseaseId": "splenic_laceration",
+      "assessmentText": "Isolated AAST grade III splenic laceration, haemodynamically stable, no blush. For non-operative management with HDU monitoring, serial examination and haemoglobin, theatre and angiography available."
+    },
+    "platform": {
+      "web": {
+        "ccTemplate": "Acute abdominal pain",
+        "symptoms": [
+          "abdominal pain",
+          "shoulder pain"
+        ],
+        "examFindings": {
+          "abdomen": [
+            "Tender LUQ",
+            "Guarding"
+          ]
+        },
+        "paneAnswers": {
+          "mechanism_blunt": true,
+          "kehr_sign": true,
+          "abdominal_tenderness": true,
+          "guarding": true,
+          "haemodynamic_instability": false
+        },
+        "durationDays": 0,
+        "painScore": 6
+      }
+    }
+  },
+  "expected": {
+    "differential": {
+      "mustRankTopK": [
+        {
+          "id": "dx-splenic-top3",
+          "severity": "quality",
+          "match": [
+            "splen"
+          ],
+          "k": 3,
+          "guidelineRefs": [
+            "wses-spleen-2017"
+          ],
+          "knownGap": [
+            "ios"
+          ],
+          "knownGapNote": "iOS CI 2026-09-25 (run 36169134350, database mode): not in top 3 of ios.bayes: 1. Acute Appendicitis | 2. Perforated Peptic Ulcer | 3. Community-Acquired Pneumonia | 4. Acute Pancreatitis | 5. Testicular Torsion"
+        }
+      ]
+    },
+    "safety": {
+      "emergencyLevel": {
+        "id": "level-at-least-urgent",
+        "severity": "critical",
+        "atLeast": "urgent",
+        "guidelineRefs": [
+          "wses-spleen-2017"
+        ]
+      }
+    },
+    "investigations": {
+      "mustInclude": [
+        {
+          "id": "inv-serial-hb",
+          "severity": "quality",
+          "match": [
+            "serial fbc",
+            "serial hb",
+            "repeat hb",
+            "fbc",
+            "haemoglobin"
+          ],
+          "guidelineRefs": [
+            "wses-spleen-2017"
+          ]
+        }
+      ]
+    },
+    "management": {
+      "mustInclude": [
+        {
+          "id": "mgmt-nom-monitoring",
+          "severity": "critical",
+          "match": [
+            "non-operative",
+            "nom",
+            "serial",
+            "hdu",
+            "close monitoring",
+            "observation"
+          ],
+          "guidelineRefs": [
+            "wses-spleen-2017"
+          ],
+          "note": "Stable patients: non-operative management only with close monitoring and immediate access to theatre."
+        }
+      ],
+      "mustExclude": [
+        {
+          "id": "mgmt-no-routine-splenectomy",
+          "severity": "quality",
+          "match": [
+            "emergency splenectomy",
+            "re:immediate (laparotomy|splenectomy)"
+          ],
+          "unless": [
+            "instab",
+            "unstable",
+            "fail",
+            "grade v",
+            "deteriorat",
+            "if "
+          ],
+          "guidelineRefs": [
+            "wses-spleen-2017"
+          ]
+        },
+        {
+          "id": "mgmt-no-antithrombotic-plan",
+          "severity": "critical",
+          "match": [
+            "aspirin 300",
+            "ticagrelor",
+            "clopidogrel 300",
+            "fondaparinux",
+            "alteplase",
+            "thrombolysis",
+            "rivaroxaban",
+            "apixaban 10",
+            "doacs (preferred)"
+          ],
+          "sources": [
+            "ios.radiation",
+            "ios.soap",
+            "web.plan",
+            "web.protocol",
+            "web.managementPanel"
+          ],
+          "guidelineRefs": [
+            "wses-spleen-2017"
+          ],
+          "note": "A PE or ACS antithrombotic/thrombolytic plan must never be attached to a haemorrhagic or non-thrombotic diagnosis. Reading the iOS source, DiagnosisRadiationEngine.radiate matches keywords by substring and would attach the ACS plan (\"mi\" inside \"abdominal\", \"limb\", \"haemodynamically\") or the PE plan (\"pe\" inside \"suspected\", \"penetrating\", \"superficial\") to this diagnosis — to be confirmed on the first iOS CI run."
+        }
+      ]
+    },
+    "pathway": {
+      "id": "pathway-trauma",
+      "severity": "quality",
+      "equals": "trauma"
+    }
+  },
+  "guideline": [
+    {
+      "id": "wses-spleen-2017",
+      "name": "WSES classification and guidelines — splenic trauma (adult and paediatric)",
+      "year": 2017,
+      "section": "Haemodynamically stable without other indications for laparotomy: non-operative management with close monitoring, serial examination and Hb, in a setting with immediate access to theatre and angiography; angioembolisation for contrast blush/pseudoaneurysm; haemodynamic instability or failed NOM → operative management (splenectomy); post-splenectomy vaccination",
+      "citation": "Coccolini F, Montori G, Catena F, et al. Splenic trauma: WSES classification and guidelines for adult and pediatric patients. World J Emerg Surg. 2017;12:40.",
+      "verified": false
+    },
+    {
+      "id": "atls-10-abdomen",
+      "name": "ATLS 10th edition — abdominal and pelvic trauma",
+      "year": 2018,
+      "section": "Chapter 5: FAST in the unstable patient; haemodynamically abnormal patient with positive FAST → laparotomy; CT only in stable patients; evisceration, peritonitis or haemodynamic instability after penetrating trauma → laparotomy; selective non-operative management of anterior stab wounds in stable patients",
+      "citation": "American College of Surgeons Committee on Trauma. ATLS Student Course Manual. 10th ed. Chicago: ACS; 2018. Chapter 5.",
+      "verified": false
+    }
+  ],
+  "rationale": "Base splenic trauma case: stable, CT-graded, no blush. WSES 2017: non-operative management with monitoring. Tests that the plan is NOM with monitoring rather than splenectomy, and that the CC (\"…football injury\") selects the trauma pathway on iOS.",
+  "authoring": {
+    "author": "Claude (soft tissue / vascular / trauma / burns cluster)",
+    "date": "2026-09-25",
+    "notes": "Expectations need surgeon sign-off (reviewedBy). Citations verified: false. iOS outcomes are unverified until the first CI run."
+  }
+}

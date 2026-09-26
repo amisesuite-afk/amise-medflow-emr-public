@@ -1,0 +1,127 @@
+{
+  "schemaVersion": 1,
+  "id": "exam-hernia-irreducible-incarcerated",
+  "condition": "Incarcerated groin hernia (irreducible on examination)",
+  "category": "hernia",
+  "permutationOf": null,
+  "permutationLabel": "Hernia examined and does not reduce",
+  "summary": "63-year-old man with a known right groin hernia that has been painful and stuck out for 8 hours, with vomiting; on examination it is tense, tender and does not reduce.",
+  "tags": [
+    "evidence-exam",
+    "hernia",
+    "incarcerated"
+  ],
+  "inputs": {
+    "patient": {
+      "ageYears": 63,
+      "sex": "male"
+    },
+    "encounter": {
+      "setting": "emergency",
+      "visitType": "urgentReview",
+      "acuity": "urgent"
+    },
+    "chiefComplaint": "Painful groin lump that will not go back",
+    "hpi": "Known right groin hernia for years. For 8 hours it has been out, painful and will not go back in. Vomited three times. Last passed wind this morning.",
+    "symptoms": [
+      "groin swelling",
+      "groin pain",
+      "vomiting"
+    ],
+    "exam": {
+      "other": "Right groin: tense, tender swelling."
+    },
+    "vitals": [
+      {
+        "minutesAgo": 10,
+        "heartRate": 108,
+        "systolicBp": 138,
+        "diastolicBp": 84,
+        "respiratoryRate": 20,
+        "temperatureC": 37.6,
+        "spo2": 97,
+        "avpu": "A",
+        "onSupplementalO2": false
+      }
+    ],
+    "labs": [
+      {
+        "analyte": "wbc",
+        "name": "WBC",
+        "value": 13.2,
+        "unit": "x10^9/L",
+        "minutesAgo": 60
+      },
+      {
+        "analyte": "lactate",
+        "name": "Lactate",
+        "value": 2.4,
+        "unit": "mmol/L",
+        "minutesAgo": 60
+      }
+    ],
+    "imaging": [],
+    "comorbidities": [],
+    "surgicalHistory": [],
+    "medications": [],
+    "allergies": [],
+    "nkda": true,
+    "socialHistory": "",
+    "examSigns": {
+      "reducible": "absent",
+      "cough_impulse": "absent"
+    },
+    "platform": {
+      "web": {
+        "ccTemplate": "Inguinal / groin hernia",
+        "symptoms": [
+          "groin swelling",
+          "groin pain",
+          "vomiting"
+        ],
+        "durationDays": 1
+      }
+    }
+  },
+  "expected": {
+    "differential": {
+      "mustRankTopK": [
+        {
+          "id": "incarcerated-top2",
+          "severity": "critical",
+          "match": [
+            "incarcerat",
+            "strangulat"
+          ],
+          "k": 2
+        }
+      ]
+    },
+    "safety": {
+      "emergencyLevel": {
+        "id": "emergency-or-urgent",
+        "severity": "critical",
+        "atLeast": "urgent",
+        "platforms": [
+          "web"
+        ]
+      }
+    }
+  },
+  "guideline": [
+    {
+      "id": "wses-2017",
+      "name": "WSES guidelines for emergency repair of complicated abdominal wall hernias",
+      "year": 2017,
+      "section": "Diagnosis of incarceration and strangulation",
+      "citation": "World J Emerg Surg 2017;12:37",
+      "verified": false
+    }
+  ],
+  "rationale": "A tense, tender hernia that does not reduce, with vomiting, is incarcerated until proven otherwise; recording it as irreducible must put incarceration at the top.",
+  "authoring": {
+    "author": "Claude (evidence-exam, 2026-09-26)",
+    "date": "2026-09-26",
+    "notes": "Exam-sign / decision-rule permutation. Likelihood ratios fromMemory; awaiting surgeon sign-off."
+  }
+}

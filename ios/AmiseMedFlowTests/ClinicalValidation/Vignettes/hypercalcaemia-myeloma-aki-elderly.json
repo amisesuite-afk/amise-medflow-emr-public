@@ -1,0 +1,311 @@
+{
+  "schemaVersion": 1,
+  "id": "hypercalcaemia-myeloma-aki-elderly",
+  "condition": "Hypercalcaemia with AKI (suspected myeloma)",
+  "category": "general-medicine",
+  "permutationOf": "hypercalcaemia-malignancy-bone-mets",
+  "permutationLabel": "Elderly, AKI, undiagnosed myeloma presenting as constipation",
+  "summary": "76-year-old man referred with constipation; back and rib pain, weight loss, adjusted calcium 3.21, creatinine 298, Hb 8.9, globulin 58, lytic lesions.",
+  "tags": [
+    "elderly",
+    "aki",
+    "oncology",
+    "mimic",
+    "metabolic"
+  ],
+  "inputs": {
+    "patient": {
+      "ageYears": 76,
+      "sex": "male",
+      "pregnancy": {
+        "status": "not-applicable"
+      },
+      "heightCm": 174,
+      "weightKg": 70
+    },
+    "encounter": {
+      "setting": "outpatient",
+      "visitType": "newConsult",
+      "acuity": "priority"
+    },
+    "chiefComplaint": "Back pain, tiredness and constipation",
+    "hpi": "Referred with constipation and \"possible bowel cancer\". Two months of low back and rib pain, worse at night, increasing tiredness, thirst and constipation. Lost 4 kg. Taking ibuprofen for the back pain. No rectal bleeding.",
+    "symptoms": [
+      "back pain",
+      "fatigue",
+      "constipation",
+      "excessive thirst",
+      "bone pain",
+      "weight loss"
+    ],
+    "negatives": [
+      "rectal bleeding",
+      "leg weakness",
+      "urinary retention"
+    ],
+    "exam": {
+      "general": "Pale, tired. Pulse 90/min, BP 128/74, RR 16, temperature 36.7°C.",
+      "abdomen": "Soft, non-tender, faecally loaded; PR: hard stool, no mass.",
+      "msk": "Tender over the lumbar spine and ribs.",
+      "neuro": "Lower limb power, sensation and reflexes normal."
+    },
+    "vitals": [
+      {
+        "minutesAgo": 10,
+        "heartRate": 90,
+        "systolicBp": 128,
+        "diastolicBp": 74,
+        "respiratoryRate": 16,
+        "temperatureC": 36.7,
+        "spo2": 97,
+        "avpu": "A",
+        "onSupplementalO2": false,
+        "weightKg": 70
+      }
+    ],
+    "labs": [
+      {
+        "analyte": "calcium",
+        "name": "Adjusted calcium",
+        "value": 3.21,
+        "unit": "mmol/L",
+        "minutesAgo": 30
+      },
+      {
+        "analyte": "creatinine",
+        "name": "Creatinine",
+        "value": 298,
+        "unit": "µmol/L",
+        "minutesAgo": 30
+      },
+      {
+        "analyte": "urea",
+        "name": "Urea",
+        "value": 19.8,
+        "unit": "mmol/L",
+        "minutesAgo": 30
+      },
+      {
+        "analyte": "haemoglobin",
+        "name": "Haemoglobin",
+        "value": 8.9,
+        "unit": "g/dL",
+        "minutesAgo": 30
+      },
+      {
+        "analyte": "albumin",
+        "name": "Albumin",
+        "value": 30,
+        "unit": "g/L",
+        "minutesAgo": 30
+      },
+      {
+        "analyte": "globulin",
+        "name": "Globulin",
+        "value": 58,
+        "unit": "g/L",
+        "minutesAgo": 30
+      },
+      {
+        "analyte": "esr",
+        "name": "ESR",
+        "value": 96,
+        "unit": "mm/h",
+        "minutesAgo": 30
+      },
+      {
+        "analyte": "sodium",
+        "name": "Sodium",
+        "value": 135,
+        "unit": "mmol/L",
+        "minutesAgo": 30
+      }
+    ],
+    "imaging": [
+      {
+        "name": "XR lumbar spine",
+        "modality": "XR",
+        "result": "Multiple lytic lesions in lumbar vertebral bodies; no vertebral collapse.",
+        "minutesAgo": 45,
+        "region": "Lumbar spine"
+      }
+    ],
+    "comorbidities": [
+      "Hypertension"
+    ],
+    "surgicalHistory": [],
+    "medications": [
+      {
+        "drug": "Ibuprofen",
+        "dose": "400 mg",
+        "frequency": "TDS",
+        "indication": "Back pain"
+      },
+      {
+        "drug": "Lisinopril",
+        "dose": "10 mg",
+        "frequency": "OD",
+        "indication": "Hypertension"
+      }
+    ],
+    "allergies": [],
+    "nkda": true,
+    "socialHistory": "Retired mechanic.",
+    "confirmedDiagnosis": {
+      "name": "Hypercalcaemia with AKI and lytic lesions — suspected multiple myeloma",
+      "icd10": "E83.52",
+      "assessmentText": "Hypercalcaemia (3.21), AKI (creatinine 298), anaemia, high globulin and lytic lesions: suspected myeloma. Constipation is secondary."
+    },
+    "platform": {
+      "web": {
+        "ccTemplate": "Other / general surgical",
+        "symptoms": [
+          "back pain",
+          "fatigue",
+          "constipation",
+          "excessive thirst",
+          "bone pain",
+          "weight loss"
+        ],
+        "symptomDetails": {
+          "back pain": [
+            "Lumbar (lower back)",
+            "No radiation",
+            "Night pain",
+            "Constant"
+          ]
+        },
+        "durationDays": 60
+      }
+    }
+  },
+  "expected": {
+    "safety": {
+      "emergencyLevel": {
+        "id": "level-urgent",
+        "severity": "critical",
+        "atLeast": "urgent",
+        "guidelineRefs": [
+          "sfe-hypercalc-2016",
+          "nice-ng35",
+          "nice-ng148"
+        ]
+      },
+      "redFlags": [
+        {
+          "id": "flag-hypercalcaemia",
+          "severity": "critical",
+          "match": [
+            "hypercalc",
+            "calcium"
+          ],
+          "guidelineRefs": [
+            "sfe-hypercalc-2016"
+          ]
+        }
+      ]
+    },
+    "investigations": {
+      "mustInclude": [
+        {
+          "id": "inv-myeloma-screen",
+          "severity": "critical",
+          "match": [
+            "electrophoresis",
+            "free light chain",
+            "paraprotein",
+            "bence jones",
+            "serum protein"
+          ],
+          "guidelineRefs": [
+            "nice-ng35"
+          ],
+          "note": "Hypercalcaemia, AKI, anaemia and lytic lesions: missed myeloma is a missed cancer diagnosis."
+        }
+      ]
+    },
+    "management": {
+      "mustInclude": [
+        {
+          "id": "mgmt-iv-saline",
+          "severity": "critical",
+          "match": [
+            "0.9% sodium chloride",
+            "0.9% saline",
+            "0.9% nacl",
+            "sodium chloride 0.9%",
+            "rehydrat"
+          ],
+          "guidelineRefs": [
+            "sfe-hypercalc-2016"
+          ],
+          "note": "SfE 2016: IV 0.9% sodium chloride rehydration; a 500 mL AKI fluid challenge does not count."
+        },
+        {
+          "id": "mgmt-stop-nsaid-acei",
+          "severity": "critical",
+          "match": [
+            "re:(stop|hold|withhold|omit|avoid)[^.;\\n]{0,60}(nsaid|ibuprofen|ace|lisinopril)"
+          ],
+          "guidelineRefs": [
+            "nice-ng148"
+          ]
+        }
+      ],
+      "mustExclude": [
+        {
+          "id": "mgmt-no-nsaid",
+          "severity": "critical",
+          "match": [
+            "re:ibuprofen \\d",
+            "re:diclofenac \\d",
+            "re:naproxen \\d",
+            "re:ketorolac",
+            "re:\\bnsaid\\b[^.;\\n]{0,30}(first|analges)"
+          ],
+          "unless": [
+            "avoid nsaid",
+            "hold nsaid",
+            "stop nsaid",
+            "do not give"
+          ],
+          "guidelineRefs": [
+            "nice-ng148"
+          ]
+        }
+      ]
+    }
+  },
+  "guideline": [
+    {
+      "id": "sfe-hypercalc-2016",
+      "name": "Society for Endocrinology — Emergency management of acute hypercalcaemia in adult patients",
+      "year": 2016,
+      "section": "Symptomatic or severe hypercalcaemia: IV 0.9% sodium chloride rehydration guided by fluid status, then IV bisphosphonate; measure PTH to separate PTH-dependent from PTH-independent (malignancy) causes; stop calcium, vitamin D and thiazides",
+      "citation": "Walsh J, Gittoes N, Selby P; Society for Endocrinology Clinical Committee. Society for Endocrinology endocrine emergency guidance: emergency management of acute hypercalcaemia in adult patients. Endocr Connect. 2016;5:G9–G11.",
+      "verified": false
+    },
+    {
+      "id": "nice-ng35",
+      "name": "NICE NG35 — Myeloma: diagnosis and management",
+      "year": 2016,
+      "section": "Suspected myeloma: serum protein electrophoresis and serum free light chain assay (with urine protein electrophoresis/Bence Jones protein when needed); refer to haematology",
+      "citation": "National Institute for Health and Care Excellence. Myeloma: diagnosis and management. NICE guideline NG35. London: NICE; 2016 (updated 2018).",
+      "verified": false
+    },
+    {
+      "id": "nice-ng148",
+      "name": "NICE NG148 — Acute kidney injury: prevention, detection and management",
+      "year": 2019,
+      "section": "Detection (creatinine against baseline); urinalysis for all with AKI; ultrasound of the urinary tract within 24 h when obstruction is suspected (immediately if pyonephrosis suspected); stop/withhold nephrotoxic drugs (NSAIDs, ACE inhibitors, ARBs, diuretics) and review metformin; refer to urology immediately for pyonephrosis, obstructed solitary kidney, bilateral upper tract obstruction or complications of obstruction; nephrology referral criteria",
+      "citation": "National Institute for Health and Care Excellence. Acute kidney injury: prevention, detection and management. NICE guideline NG148. London: NICE; 2019.",
+      "verified": false
+    }
+  ],
+  "rationale": "A surgical referral for constipation that is really hypercalcaemia from myeloma. NICE NG35: electrophoresis and light chains; NG148: stop NSAIDs and ACE inhibitors.",
+  "authoring": {
+    "author": "Claude (endocrine / renal / urology / neuro cluster)",
+    "date": "2026-09-25",
+    "notes": "Expectations need surgeon sign-off (reviewedBy). Every citation is verified: false. iOS outcomes not observed (Linux)."
+  }
+}

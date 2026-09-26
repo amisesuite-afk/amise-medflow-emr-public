@@ -1,0 +1,139 @@
+{
+  "schemaVersion": 1,
+  "id": "polyp-surveillance-high-risk-3y",
+  "condition": "Post-polypectomy surveillance — high-risk findings",
+  "category": "colorectal",
+  "permutationOf": "crc-lynch-surveillance-overdue",
+  "permutationLabel": "BSG 2020 high-risk findings (advanced adenoma)",
+  "summary": "61-year-old woman two weeks after colonoscopy with complete removal of three adenomas, one 14 mm (advanced). BSG/ACPGBI/PHE 2020: one-off surveillance colonoscopy at 3 years.",
+  "tags": [
+    "surveillance",
+    "polyps"
+  ],
+  "inputs": {
+    "patient": {
+      "ageYears": 61,
+      "sex": "female",
+      "pregnancy": {
+        "status": "not-applicable"
+      },
+      "heightCm": 164,
+      "weightKg": 71
+    },
+    "encounter": {
+      "setting": "outpatient",
+      "visitType": "followUp",
+      "acuity": "routine"
+    },
+    "chiefComplaint": "Colonoscopy results review",
+    "hpi": "Screening colonoscopy two weeks ago (FIT-positive in a private screening check). Complete to caecum, good preparation. Three tubular adenomas removed: 14 mm sigmoid (low-grade dysplasia), 6 mm and 4 mm descending. All retrieved; complete excision. Asymptomatic.",
+    "symptoms": [],
+    "negatives": [
+      "rectal bleeding",
+      "change in bowel habit"
+    ],
+    "exam": {
+      "general": "Well.",
+      "abdomen": "Soft, non-tender."
+    },
+    "vitals": [
+      {
+        "minutesAgo": 20,
+        "heartRate": 72,
+        "systolicBp": 132,
+        "diastolicBp": 80,
+        "respiratoryRate": 14,
+        "temperatureC": 36.5,
+        "spo2": 98,
+        "avpu": "A",
+        "onSupplementalO2": false
+      }
+    ],
+    "imaging": [
+      {
+        "name": "Colonoscopy",
+        "modality": "Endoscopy",
+        "region": "Colon",
+        "result": "Complete to caecum, Boston bowel preparation score 8. Three tubular adenomas removed en bloc: 14 mm sigmoid (LGD), 6 mm and 4 mm descending (LGD). No residual polyp.",
+        "minutesAgo": 20160
+      }
+    ],
+    "comorbidities": [],
+    "surgicalHistory": [
+      "Colonoscopic polypectomy (2 weeks ago)"
+    ],
+    "medications": [],
+    "allergies": [],
+    "nkda": true,
+    "socialHistory": "Hotel manager. Never smoked.",
+    "confirmedDiagnosis": {
+      "name": "Colorectal adenomas — high-risk findings after polypectomy",
+      "icd10": "D12.5",
+      "assessmentText": "Three adenomas, one ≥ 10 mm (advanced). BSG 2020 high-risk findings: surveillance colonoscopy at 3 years."
+    },
+    "platform": {
+      "web": {
+        "ccTemplate": "Colonoscopy (diagnostic / surveillance)",
+        "symptoms": [
+          "results review"
+        ],
+        "durationDays": 0,
+        "painScore": 0
+      }
+    }
+  },
+  "expected": {
+    "management": {
+      "mustInclude": [
+        {
+          "id": "mgmt-3-year-surveillance",
+          "severity": "quality",
+          "match": [
+            "re:(3|three)[- ]?(year|yr)"
+          ],
+          "guidelineRefs": [
+            "bsg-surv-2020"
+          ],
+          "note": "BSG 2020: ≥ 2 premalignant polyps with ≥ 1 advanced (adenoma ≥ 10 mm or HGD), or ≥ 5 premalignant polyps → one-off colonoscopy at 3 years. Low-risk findings → no colonoscopic surveillance (return to screening)."
+        }
+      ],
+      "mustExclude": [
+        {
+          "id": "mgmt-no-annual-colonoscopy",
+          "severity": "quality",
+          "match": [
+            "re:(annual|yearly|every year|1[- ]year)[^.;\\n]{0,30}colonoscop",
+            "re:colonoscop[^.;\\n]{0,30}(annual|yearly|every year|at 1 year)"
+          ],
+          "sources": [
+            "web.plan",
+            "web.protocol.medications",
+            "web.clinicalPrompts",
+            "ios.radiation",
+            "ios.soap",
+            "ios.pipeline"
+          ],
+          "guidelineRefs": [
+            "bsg-surv-2020"
+          ]
+        }
+      ]
+    }
+  },
+  "guideline": [
+    {
+      "id": "bsg-surv-2020",
+      "name": "BSG/ACPGBI/PHE post-polypectomy and post-colorectal cancer resection surveillance guidelines",
+      "year": 2020,
+      "section": "High-risk findings → one-off surveillance colonoscopy at 3 years; low-risk findings → no surveillance, return to screening",
+      "citation": "Rutter MD, East J, Rees CJ, et al. British Society of Gastroenterology/Association of Coloproctology of Great Britain and Ireland/Public Health England post-polypectomy and post-colorectal cancer resection surveillance guidelines. Gut. 2020;69:201–223.",
+      "verified": false
+    }
+  ],
+  "rationale": "Surveillance interval check. No engine has a polyp-surveillance rule; the expectation is quality and documents the gap.",
+  "authoring": {
+    "author": "Claude (colorectal/anorectal cluster)",
+    "date": "2026-09-25",
+    "notes": "Expectations need surgeon sign-off (reviewedBy). Citations verified: false until checked against the source."
+  }
+}

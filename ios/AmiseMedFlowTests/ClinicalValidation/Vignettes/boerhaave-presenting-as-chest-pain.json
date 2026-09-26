@@ -1,0 +1,288 @@
+{
+  "schemaVersion": 1,
+  "id": "boerhaave-presenting-as-chest-pain",
+  "condition": "Spontaneous oesophageal perforation (Boerhaave's syndrome)",
+  "category": "upper-gi",
+  "permutationOf": "boerhaave-classic-mackler",
+  "permutationLabel": "Presents as cardiac chest pain; emphysema subtle, no imaging yet",
+  "summary": "61-year-old diabetic man with central chest pain radiating to the back and sweating after an episode of vomiting; ECG normal, troponin normal, subtle neck crepitus. Looks like ACS; perforation must stay on the list and CT must be requested.",
+  "tags": [
+    "perforation",
+    "boerhaave",
+    "mimic",
+    "chest-pain"
+  ],
+  "inputs": {
+    "patient": {
+      "ageYears": 61,
+      "sex": "male",
+      "pregnancy": {
+        "status": "not-applicable"
+      },
+      "heightCm": 175,
+      "weightKg": 90
+    },
+    "encounter": {
+      "setting": "emergency",
+      "visitType": "urgentReview",
+      "acuity": "emergency"
+    },
+    "chiefComplaint": "Central chest pain and sweating",
+    "hpi": "Sudden central chest pain two hours ago going through to the back, with sweating. It started straight after he vomited after dinner. Pain worse on swallowing and deep breaths. Type 2 diabetes and high blood pressure.",
+    "socrates": {
+      "onset": [
+        "Today",
+        "Sudden"
+      ],
+      "site": [
+        "Retrosternal"
+      ],
+      "character": [
+        "Sharp",
+        "Pressure"
+      ],
+      "radiation": [
+        "Back"
+      ],
+      "associations": [
+        "Diaphoresis",
+        "Vomiting",
+        "Shortness of breath"
+      ],
+      "timing": [],
+      "exacerbating": [
+        "Deep breathing"
+      ],
+      "relieving": [
+        "Nothing"
+      ],
+      "severity": [
+        "Severe (7–9/10)"
+      ]
+    },
+    "symptoms": [
+      "chest pain",
+      "sweating",
+      "vomiting",
+      "odynophagia"
+    ],
+    "negatives": [
+      "haematemesis",
+      "previous heart disease"
+    ],
+    "exam": {
+      "general": "Sweaty. Pulse 112/min, BP 138/84, RR 24, SpO₂ 95%, temperature 37.6°C. Faint crepitus above the left clavicle.",
+      "respiratory": "Clear.",
+      "cardiovascular": "Heart sounds normal, no murmur. Equal radial pulses.",
+      "abdomen": "Mild epigastric tenderness."
+    },
+    "vitals": [
+      {
+        "minutesAgo": 5,
+        "heartRate": 112,
+        "systolicBp": 138,
+        "diastolicBp": 84,
+        "respiratoryRate": 24,
+        "temperatureC": 37.6,
+        "spo2": 95,
+        "avpu": "A",
+        "onSupplementalO2": false
+      }
+    ],
+    "labs": [
+      {
+        "analyte": "troponin",
+        "name": "hs-Troponin I",
+        "value": 5,
+        "unit": "ng/L",
+        "minutesAgo": 20
+      },
+      {
+        "analyte": "wbc",
+        "name": "WBC",
+        "value": 14.2,
+        "unit": "×10⁹/L",
+        "minutesAgo": 20
+      },
+      {
+        "analyte": "crp",
+        "name": "CRP",
+        "value": 38,
+        "unit": "mg/L",
+        "minutesAgo": 20
+      },
+      {
+        "analyte": "haemoglobin",
+        "name": "Haemoglobin",
+        "value": 14.8,
+        "unit": "g/dL",
+        "minutesAgo": 20
+      },
+      {
+        "analyte": "amylase",
+        "name": "Amylase",
+        "value": 90,
+        "unit": "U/L",
+        "minutesAgo": 20
+      }
+    ],
+    "imaging": [
+      {
+        "name": "ECG",
+        "modality": "Other",
+        "region": "Heart",
+        "result": "Sinus tachycardia 112, no ST elevation or depression.",
+        "minutesAgo": 30
+      }
+    ],
+    "comorbidities": [
+      "Type 2 diabetes mellitus",
+      "Hypertension"
+    ],
+    "surgicalHistory": [],
+    "medications": [
+      {
+        "drug": "Metformin",
+        "dose": "1 g",
+        "frequency": "BD",
+        "indication": "Diabetes"
+      },
+      {
+        "drug": "Ramipril",
+        "dose": "5 mg",
+        "frequency": "OD",
+        "indication": "Hypertension"
+      }
+    ],
+    "allergies": [],
+    "nkda": true,
+    "socialHistory": "Drinks socially. Ex-smoker.",
+    "confirmedDiagnosis": {
+      "name": "Boerhaave's syndrome (spontaneous oesophageal perforation)",
+      "icd10": "K22.3",
+      "paneDiseaseId": "oesophageal_perforation",
+      "assessmentText": "Chest pain after vomiting with neck crepitus, normal ECG and troponin — oesophageal perforation suspected; CT with oral contrast."
+    },
+    "platform": {
+      "web": {
+        "ccTemplate": "Other / general surgical",
+        "symptoms": [
+          "chest pain",
+          "vomiting",
+          "odynophagia",
+          "shortness of breath"
+        ],
+        "symptomDetails": {
+          "chest pain": [
+            "Sharp / stabbing",
+            "Back / interscapular",
+            "Sweating",
+            "Nausea"
+          ]
+        },
+        "examFindings": {},
+        "durationDays": 0.1,
+        "painScore": 8
+      }
+    }
+  },
+  "expected": {
+    "differential": {
+      "mustNotMiss": [
+        {
+          "id": "mnm-perforation",
+          "severity": "critical",
+          "match": [
+            "perforation",
+            "boerhaave",
+            "icd:K22.3"
+          ],
+          "guidelineRefs": [
+            "wses-2019"
+          ]
+        }
+      ]
+    },
+    "safety": {
+      "emergencyLevel": {
+        "id": "level-emergency",
+        "severity": "critical",
+        "atLeast": "emergency",
+        "guidelineRefs": [
+          "wses-2019",
+          "esc-acs-2023"
+        ]
+      }
+    },
+    "investigations": {
+      "mustInclude": [
+        {
+          "id": "inv-ecg",
+          "severity": "critical",
+          "match": [
+            "ecg",
+            "electrocardiogram",
+            "re:12.lead",
+            "ekg"
+          ],
+          "guidelineRefs": [
+            "esc-acs-2023"
+          ]
+        },
+        {
+          "id": "inv-ct-oral-contrast",
+          "severity": "critical",
+          "match": [
+            "re:\\bct\\b[^.;\\n]{0,40}(oral|contrast|chest)",
+            "contrast swallow",
+            "water-soluble"
+          ],
+          "guidelineRefs": [
+            "wses-2019"
+          ]
+        }
+      ]
+    },
+    "management": {
+      "mustExclude": [
+        {
+          "id": "mgmt-no-anticoagulation-before-ct",
+          "severity": "quality",
+          "match": [
+            "re:(treatment|therapeutic|start|commence)[^.;\\n]{0,20}(heparin|fondaparinux|enoxaparin)",
+            "thrombolysis"
+          ],
+          "guidelineRefs": [
+            "esc-acs-2023",
+            "wses-2019"
+          ],
+          "note": "ACS anticoagulation before perforation (and dissection) is excluded would be harmful."
+        }
+      ]
+    }
+  },
+  "guideline": [
+    {
+      "id": "wses-2019",
+      "name": "WSES guidelines — esophageal emergencies (perforation, caustic ingestion, foreign bodies)",
+      "year": 2019,
+      "section": "Suspect oesophageal perforation with chest pain after vomiting; CT with oral contrast",
+      "citation": "Chirica M, Kelly MD, Siboni S, et al. World J Emerg Surg. 2019;14:26.",
+      "verified": false
+    },
+    {
+      "id": "esc-acs-2023",
+      "name": "2023 ESC Guidelines for the management of acute coronary syndromes",
+      "year": 2023,
+      "section": "Chest pain: ECG within 10 minutes, hs-troponin; consider alternative diagnoses (aortic dissection, oesophageal rupture) when ECG/troponin do not support ACS",
+      "citation": "Byrne RA, Rossello X, Coughlan JJ, et al. Eur Heart J. 2023;44:3720–3826.",
+      "verified": false
+    }
+  ],
+  "rationale": "MI-mimic permutation: a diabetic man with chest pain and sweating invites an ACS pathway. The history (pain after vomiting, odynophagia), crepitus and a normal ECG/troponin should keep perforation on the list and prompt CT.",
+  "authoring": {
+    "author": "Claude (upper-GI cluster)",
+    "date": "2026-09-25",
+    "notes": "Expectations need surgeon sign-off (reviewedBy). Citations written from the guideline texts, not yet checked against the source (verified: false)."
+  }
+}

@@ -1,0 +1,322 @@
+{
+  "schemaVersion": 1,
+  "id": "diverticulitis-uncomplicated-outpatient",
+  "condition": "Acute diverticulitis",
+  "category": "colorectal",
+  "permutationOf": null,
+  "permutationLabel": "Uncomplicated, immunocompetent, outpatient (base case)",
+  "summary": "54-year-old man, 2 days of LIF pain, T 37.8 °C, tolerating oral intake, WBC 12.4, CRP 88; CT: uncomplicated sigmoid diverticulitis. Colonoscopy 3 years ago.",
+  "tags": [
+    "acute-abdomen",
+    "diverticulitis"
+  ],
+  "inputs": {
+    "patient": {
+      "ageYears": 54,
+      "sex": "male",
+      "pregnancy": {
+        "status": "not-applicable"
+      },
+      "heightCm": 177,
+      "weightKg": 90
+    },
+    "encounter": {
+      "setting": "outpatient",
+      "visitType": "urgentReview",
+      "acuity": "priority"
+    },
+    "chiefComplaint": "Left lower abdominal pain",
+    "hpi": "2 days of constant left lower abdominal pain, mild nausea, eating and drinking. Felt warm last night. Bowels opened normally. Colonoscopy 3 years ago showed sigmoid diverticular disease only. Otherwise fit, no immunosuppression.",
+    "socrates": {
+      "onset": [
+        "2–3 days ago"
+      ],
+      "site": [
+        "LLQ"
+      ],
+      "character": [
+        "Dull",
+        "Aching"
+      ],
+      "radiation": [
+        "No radiation"
+      ],
+      "associations": [
+        "Nausea",
+        "Fever"
+      ],
+      "timing": [
+        "Constant"
+      ],
+      "exacerbating": [
+        "Movement"
+      ],
+      "relieving": [
+        "Analgesics"
+      ],
+      "severity": [
+        "Moderate (4–6/10)"
+      ]
+    },
+    "symptoms": [
+      "abdominal pain",
+      "nausea",
+      "fever"
+    ],
+    "negatives": [
+      "vomiting",
+      "rectal bleeding",
+      "urinary symptoms"
+    ],
+    "exam": {
+      "general": "Well. Temperature 37.8°C, pulse 88/min, BP 132/80.",
+      "abdomen": "Tenderness in the left iliac fossa, no guarding elsewhere, no mass, no peritonism."
+    },
+    "vitals": [
+      {
+        "minutesAgo": 20,
+        "heartRate": 88,
+        "systolicBp": 132,
+        "diastolicBp": 80,
+        "respiratoryRate": 16,
+        "temperatureC": 37.8,
+        "spo2": 98,
+        "avpu": "A",
+        "onSupplementalO2": false
+      }
+    ],
+    "labs": [
+      {
+        "analyte": "wbc",
+        "name": "WBC",
+        "value": 12.4,
+        "unit": "×10⁹/L",
+        "minutesAgo": 30
+      },
+      {
+        "analyte": "crp",
+        "name": "CRP",
+        "value": 88,
+        "unit": "mg/L",
+        "minutesAgo": 30
+      },
+      {
+        "analyte": "creatinine",
+        "name": "Creatinine",
+        "value": 82,
+        "unit": "µmol/L",
+        "minutesAgo": 30
+      }
+    ],
+    "imaging": [
+      {
+        "name": "CT abdomen/pelvis with IV contrast",
+        "modality": "CT",
+        "region": "Abdomen/pelvis",
+        "result": "Sigmoid diverticulitis with pericolic fat stranding. No abscess, no extraluminal gas, no free fluid (uncomplicated).",
+        "minutesAgo": 30
+      }
+    ],
+    "comorbidities": [
+      "Hypertension"
+    ],
+    "surgicalHistory": [],
+    "medications": [
+      {
+        "drug": "Losartan",
+        "dose": "50 mg",
+        "frequency": "OD",
+        "indication": "Hypertension"
+      }
+    ],
+    "allergies": [],
+    "nkda": true,
+    "socialHistory": "Engineer. Non-smoker.",
+    "confirmedDiagnosis": {
+      "name": "Acute uncomplicated diverticulitis",
+      "icd10": "K57.32",
+      "paneDiseaseId": "diverticulitis",
+      "assessmentText": "Uncomplicated acute sigmoid diverticulitis (CT-confirmed), immunocompetent, tolerating oral intake. Outpatient management; antibiotics not routinely required."
+    },
+    "platform": {
+      "web": {
+        "ccTemplate": "Acute abdominal pain",
+        "socratesAnswers": {
+          "site": "Left lower abdomen (LLQ / LIF)",
+          "onset": "2 days ago",
+          "character": "Constant ache",
+          "associated": "Nausea, fever",
+          "timing": "Constant",
+          "triggers": "Movement",
+          "relief": "Paracetamol partly",
+          "severity": "5/10"
+        },
+        "symptoms": [
+          "abdominal pain",
+          "fever",
+          "nausea"
+        ],
+        "symptomDetails": {
+          "abdominal pain": [
+            "LLQ",
+            "1–3 days",
+            "Constant",
+            "Dull",
+            "Moderate (4–6)",
+            "Nausea",
+            "Fever",
+            "Continuous",
+            "Movement"
+          ]
+        },
+        "examFindings": {
+          "abdomen": [
+            "Tender LLQ"
+          ]
+        },
+        "durationDays": 2,
+        "painScore": 5
+      }
+    }
+  },
+  "expected": {
+    "differential": {
+      "mustRankTopK": [
+        {
+          "id": "dx-diverticulitis-top3",
+          "severity": "critical",
+          "match": [
+            "diverticul"
+          ],
+          "k": 3,
+          "guidelineRefs": [
+            "wses-diverticulitis-2020"
+          ]
+        }
+      ]
+    },
+    "safety": {
+      "emergencyLevel": {
+        "id": "level-same-day-not-emergency",
+        "severity": "quality",
+        "atLeast": "priority",
+        "atMost": "urgent",
+        "guidelineRefs": [
+          "wses-diverticulitis-2020",
+          "aga-2021",
+          "ascrs-diverticulitis-2020"
+        ],
+        "note": "Same-day assessment, but an emergency redirect is over-triage for CT-confirmed uncomplicated disease in a well patient.",
+        "knownGapNote": "iOS: ClinicalPathwayEngine reads only CC/PMH keywords; CC 'Left lower abdominal pain' gives 'routine'."
+      }
+    },
+    "investigations": {
+      "mustInclude": [
+        {
+          "id": "inv-ct",
+          "severity": "quality",
+          "match": [
+            "re:\\bct\\b[^.;\\n]{0,40}(abdo|pelvi)",
+            "computed tomography"
+          ],
+          "guidelineRefs": [
+            "wses-diverticulitis-2020"
+          ]
+        }
+      ]
+    },
+    "management": {
+      "mustInclude": [
+        {
+          "id": "mgmt-selective-antibiotics",
+          "severity": "quality",
+          "match": [
+            "without antibiotics",
+            "no antibiotics",
+            "antibiotics not routinely",
+            "antibiotics are not routinely",
+            "selective antibiotic",
+            "antibiotics selectively",
+            "observation without",
+            "antibiotic-free"
+          ],
+          "guidelineRefs": [
+            "wses-diverticulitis-2020",
+            "aga-2021",
+            "ascrs-diverticulitis-2020"
+          ],
+          "note": "WSES 2020 / AGA 2021 / ASCRS 2020: in immunocompetent patients with mild uncomplicated diverticulitis antibiotics can be omitted (selective use); outpatient care.",
+          "proposedFix": "Update the uncomplicated step to WSES 2020 / AGA 2021: antibiotics selectively; observation without antibiotics in immunocompetent patients without systemic features."
+        }
+      ],
+      "mustExclude": [
+        {
+          "id": "mgmt-no-routine-antibiotics",
+          "severity": "quality",
+          "match": [
+            "re:(co-amoxiclav|oral antibiotics?)[^\\n]{0,60}(7|5–7|5-7) days",
+            "re:oral antibiotics × ?7"
+          ],
+          "unless": [
+            "if ",
+            "selected",
+            "immunocomp",
+            "systemic",
+            "not routinely"
+          ],
+          "guidelineRefs": [
+            "wses-diverticulitis-2020",
+            "aga-2021",
+            "ascrs-diverticulitis-2020"
+          ],
+          "knownGapNote": "Web: '[conservative] Uncomplicated: oral co-amoxiclav 625 mg TDS for 5–7 days' in the documented plan."
+        }
+      ]
+    },
+    "pathway": {
+      "id": "pathway-first-visit",
+      "severity": "quality",
+      "equals": "firstVisit"
+    },
+    "dxVariant": {
+      "id": "variant-uncomplicated",
+      "severity": "quality",
+      "equals": "diverticulitis_uncomplicated",
+      "guidelineRefs": [
+        "wses-diverticulitis-2020"
+      ]
+    }
+  },
+  "guideline": [
+    {
+      "id": "wses-diverticulitis-2020",
+      "name": "WSES guidelines — acute colonic diverticulitis in the emergency setting (2020 update)",
+      "year": 2020,
+      "section": "CT staging (WSES CT classification); uncomplicated: antibiotics not always needed in immunocompetent patients, outpatient care; abscess >4–5 cm: percutaneous drainage + antibiotics; generalised peritonitis: emergency surgery (Hartmann's or resection with primary anastomosis ± stoma); immunocompromised: high risk, antibiotics, low threshold for surgery",
+      "citation": "Sartelli M, Weber DG, Kluger Y, et al. 2020 update of the WSES guidelines for the management of acute colonic diverticulitis in the emergency setting. World J Emerg Surg. 2020;15:32.",
+      "verified": false
+    },
+    {
+      "id": "aga-2021",
+      "name": "AGA clinical practice update — medical management of colonic diverticulitis",
+      "year": 2021,
+      "section": "Antibiotics used selectively rather than routinely in immunocompetent patients with mild uncomplicated diverticulitis; CT when diagnosis uncertain; colonoscopy after complicated diverticulitis or if not recently done",
+      "citation": "Peery AF, Shaukat A, Strate LL. AGA clinical practice update on medical management of colonic diverticulitis: expert review. Gastroenterology. 2021;160:906–11.e1.",
+      "verified": false
+    },
+    {
+      "id": "ascrs-diverticulitis-2020",
+      "name": "ASCRS clinical practice guidelines — left-sided colonic diverticulitis",
+      "year": 2020,
+      "section": "Selective antibiotics for uncomplicated disease; percutaneous drainage for large abscess; urgent colectomy for diffuse peritonitis; immunocompromised patients; colonoscopy after complicated disease",
+      "citation": "Hall J, Hardiman K, Lee S, et al. The American Society of Colon and Rectal Surgeons clinical practice guidelines for the treatment of left-sided colonic diverticulitis. Dis Colon Rectum. 2020;63:728–47.",
+      "verified": false
+    }
+  ],
+  "rationale": "Base case. Current guidance (WSES 2020, AGA 2021, ASCRS 2020) allows outpatient management without antibiotics in selected immunocompetent patients with uncomplicated disease.",
+  "authoring": {
+    "author": "Claude (GI surgical emergencies cluster)",
+    "date": "2026-09-25",
+    "notes": "Expectations need surgeon sign-off (reviewedBy). Every citation is verified: false."
+  }
+}

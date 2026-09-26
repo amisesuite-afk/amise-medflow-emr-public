@@ -1,0 +1,140 @@
+{
+  "schemaVersion": 1,
+  "id": "breast-family-history-brca",
+  "condition": "Family history of breast cancer (possible BRCA)",
+  "category": "breast-endocrine",
+  "permutationOf": null,
+  "summary": "35-year-old asymptomatic woman whose mother had breast cancer at 38 and maternal aunt ovarian cancer at 52. NICE CG164: meets referral criteria for specialist/genetics assessment; risk-based surveillance (MRI in high risk); no biopsy or urgent pathway without a symptom.",
+  "tags": [
+    "breast",
+    "family-history",
+    "screening"
+  ],
+  "inputs": {
+    "patient": {
+      "ageYears": 35,
+      "sex": "female",
+      "pregnancy": {
+        "status": "not-pregnant"
+      }
+    },
+    "encounter": {
+      "setting": "outpatient",
+      "visitType": "newConsult",
+      "acuity": "routine"
+    },
+    "chiefComplaint": "Worried about breast cancer because of family history",
+    "hpi": "No breast symptoms. Mother diagnosed with breast cancer at 38 (alive), maternal aunt had ovarian cancer at 52. Wants to know her risk and what screening she should have. Ashkenazi Jewish ancestry on mother's side.",
+    "symptoms": [],
+    "negatives": [
+      "breast lump",
+      "nipple discharge",
+      "breast pain"
+    ],
+    "exam": {
+      "general": "Well.",
+      "other": "Breasts: normal examination, no masses, no axillary nodes."
+    },
+    "vitals": [
+      {
+        "minutesAgo": 15,
+        "heartRate": 68,
+        "systolicBp": 116,
+        "diastolicBp": 70,
+        "respiratoryRate": 12,
+        "temperatureC": 36.5,
+        "spo2": 99,
+        "avpu": "A",
+        "onSupplementalO2": false
+      }
+    ],
+    "labs": [],
+    "imaging": [],
+    "comorbidities": [
+      "Family history of breast cancer (mother at 38)",
+      "Family history of ovarian cancer (maternal aunt at 52)"
+    ],
+    "surgicalHistory": [],
+    "medications": [],
+    "allergies": [],
+    "nkda": true,
+    "socialHistory": "Non-smoker.",
+    "confirmedDiagnosis": {
+      "name": "Family history of breast and ovarian cancer — possible BRCA; asymptomatic, normal examination",
+      "icd10": "Z80.3",
+      "assessmentText": "Asymptomatic, normal breast examination. Significant family history (mother breast cancer at 38, maternal aunt ovarian cancer, Ashkenazi ancestry): refer to genetics / family history clinic for risk assessment and BRCA testing; surveillance per risk category."
+    },
+    "platform": {
+      "web": {
+        "ccTemplate": "Other / general surgical",
+        "symptoms": [],
+        "durationDays": 0,
+        "painScore": 0
+      }
+    }
+  },
+  "expected": {
+    "safety": {
+      "emergencyLevel": {
+        "id": "level-routine",
+        "severity": "quality",
+        "atMost": "priority",
+        "guidelineRefs": [
+          "nice-cg164"
+        ],
+        "note": "Asymptomatic: not an urgent or suspected-cancer referral."
+      }
+    },
+    "management": {
+      "mustInclude": [
+        {
+          "id": "mgmt-genetics-referral",
+          "severity": "quality",
+          "match": [
+            "genetic",
+            "brca",
+            "family history clinic"
+          ],
+          "guidelineRefs": [
+            "nice-cg164"
+          ],
+          "note": "NICE CG164: one first-degree relative with breast cancer <40 (plus ovarian cancer in the family, Jewish ancestry) meets referral criteria.",
+          "knownGap": [
+            "ios"
+          ],
+          "knownGapNote": "iOS CI 2026-09-25 (run 36169134350, database mode): no management item matched among 3 (ios.pipeline.actions, ios.soap.plan)"
+        }
+      ],
+      "mustExclude": [
+        {
+          "id": "mgmt-no-biopsy",
+          "severity": "quality",
+          "match": [
+            "core biopsy",
+            "core needle",
+            "re:\\bcnb\\b",
+            "vacuum-assisted biopsy",
+            "core (needle )?biopsy"
+          ],
+          "note": "No lump: biopsy is not indicated."
+        }
+      ]
+    }
+  },
+  "guideline": [
+    {
+      "id": "nice-cg164",
+      "name": "NICE CG164 — Familial breast cancer",
+      "year": 2013,
+      "section": "Family history assessment in primary/secondary care; referral criteria (e.g. one first-degree relative diagnosed <40); genetic testing; surveillance by risk category",
+      "citation": "National Institute for Health and Care Excellence. Familial breast cancer: classification, care and managing breast cancer and related risks in people with a family history of breast cancer. Clinical guideline CG164. London: NICE; 2013 (updated).",
+      "verified": false
+    }
+  ],
+  "rationale": "Base family-history case. No symptoms, so no chips. The harness passes familyHistory = [] to the prompt engine (it has no vignette field), so any FHx prompt depends on the comorbidity text reaching the engines; see findings.",
+  "authoring": {
+    "author": "Claude (hernia / breast / endocrine cluster)",
+    "date": "2026-09-25",
+    "notes": "Expectations need surgeon sign-off (reviewedBy). Citations verified: false."
+  }
+}

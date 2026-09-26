@@ -1,0 +1,137 @@
+{
+  "schemaVersion": 1,
+  "id": "decision-sepsis-lactate-shock",
+  "condition": "Sepsis with shock — antibiotics within 1 hour",
+  "category": "general-medicine",
+  "permutationOf": null,
+  "summary": "Urinary sepsis with hypotension and lactate 5: IV antibiotics within 1 hour (treat band); lactate result action.",
+  "tags": [
+    "decision-support",
+    "result-action",
+    "shock"
+  ],
+  "inputs": {
+    "patient": {
+      "ageYears": 68,
+      "sex": "female",
+      "pregnancy": {
+        "status": "not-applicable"
+      },
+      "heightCm": 158,
+      "weightKg": 66
+    },
+    "encounter": {
+      "setting": "emergency",
+      "visitType": "urgentReview",
+      "acuity": "emergency"
+    },
+    "chiefComplaint": "Fever and confusion",
+    "hpi": "Two days of dysuria and loin pain, now rigors and new confusion.",
+    "exam": {
+      "general": "Flushed, confused.",
+      "abdomen": "Right loin tenderness."
+    },
+    "vitals": [
+      {
+        "minutesAgo": 10,
+        "heartRate": 124,
+        "systolicBp": 84,
+        "diastolicBp": 48,
+        "respiratoryRate": 26,
+        "temperatureC": 39.2,
+        "spo2": 94,
+        "avpu": "C",
+        "onSupplementalO2": false
+      }
+    ],
+    "labs": [
+      {
+        "analyte": "lactate",
+        "name": "Lactate",
+        "value": 5.0,
+        "unit": "mmol/L",
+        "minutesAgo": 10
+      },
+      {
+        "analyte": "wbc",
+        "name": "WBC",
+        "value": 21.0,
+        "unit": "x10^9/L",
+        "minutesAgo": 60
+      },
+      {
+        "analyte": "egfr",
+        "name": "eGFR",
+        "value": 48,
+        "unit": "mL/min/1.73m2",
+        "minutesAgo": 60
+      }
+    ],
+    "nkda": true,
+    "confirmedDiagnosis": {
+      "name": "Sepsis with a urinary source (septic shock suspected)",
+      "icd10": "A41.9",
+      "paneDiseaseId": "sepsis",
+      "assessmentText": "Urosepsis with hypotension and raised lactate."
+    },
+    "platform": {
+      "web": {
+        "ccTemplate": "Fever",
+        "symptoms": [
+          "Fever",
+          "Confusion"
+        ]
+      }
+    }
+  },
+  "expected": {
+    "management": {
+      "mustInclude": [
+        {
+          "id": "decision-antibiotics-within-1h",
+          "severity": "critical",
+          "match": [
+            "re:rank 1: iv antibiotics within 1 hour - treat"
+          ],
+          "sources": [
+            "web.decisions",
+            "ios.decisions"
+          ],
+          "guidelineRefs": [
+            "ssc-2021"
+          ]
+        },
+        {
+          "id": "decision-lactate-4",
+          "severity": "critical",
+          "match": [
+            "re:result action - lactate 5 mmol/l: lactate >= 4 mmol/l"
+          ],
+          "sources": [
+            "web.decisions",
+            "ios.decisions"
+          ],
+          "guidelineRefs": [
+            "ssc-2021"
+          ]
+        }
+      ]
+    }
+  },
+  "guideline": [
+    {
+      "id": "ssc-2021",
+      "name": "Surviving Sepsis Campaign 2021",
+      "year": 2021,
+      "section": "Antibiotic timing; lactate",
+      "citation": "Evans L et al. Crit Care Med 2021;49:e1063-e1143.",
+      "verified": false
+    }
+  ],
+  "rationale": "SSC 2021: in probable sepsis with shock, give antimicrobials immediately, ideally within 1 hour of recognition; lactate >= 4 marks hypoperfusion.",
+  "authoring": {
+    "author": "Claude (bayes-treatment branch)",
+    "date": "2026-09-25",
+    "notes": "Decision-support vignette (web.decisions / ios.decisions). Expectations test the band and ranking of the decision layer, whose numbers await surgeon sign-off (docs/clinical-validation/changes/bayes-treatment.md)."
+  }
+}

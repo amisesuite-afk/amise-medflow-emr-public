@@ -1,0 +1,219 @@
+{
+  "schemaVersion": 1,
+  "id": "hernia-parastomal-symptomatic",
+  "condition": "Parastomal hernia",
+  "category": "hernia",
+  "permutationOf": null,
+  "summary": "69-year-old man with an end colostomy (abdominoperineal resection 3 years ago) and a growing parastomal bulge causing appliance leaks and intermittent colicky pain. EHS 2018: CT when uncertain, mesh repair rather than suture repair, stoma nurse input; check for recurrence of rectal cancer.",
+  "tags": [
+    "elective",
+    "ventral",
+    "stoma"
+  ],
+  "inputs": {
+    "patient": {
+      "ageYears": 69,
+      "sex": "male",
+      "pregnancy": {
+        "status": "not-applicable"
+      },
+      "heightCm": 178,
+      "weightKg": 90
+    },
+    "encounter": {
+      "setting": "outpatient",
+      "visitType": "followUp",
+      "acuity": "routine"
+    },
+    "chiefComplaint": "Bulge around my stoma and bag leaks",
+    "hpi": "End colostomy after APR for low rectal cancer 3 years ago (clear surveillance CT last year). Bulge around the stoma over the past year, bag leaks twice a week, crampy pain once or twice a month that settles. Stoma working normally. No vomiting.",
+    "socrates": {
+      "onset": [
+        "Over a year",
+        "Gradual"
+      ],
+      "site": [
+        "Left side"
+      ],
+      "character": [
+        "Soft"
+      ],
+      "radiation": [
+        "No radiation"
+      ],
+      "associations": [],
+      "timing": [
+        "Intermittent"
+      ],
+      "exacerbating": [
+        "Straining / Valsalva",
+        "Standing"
+      ],
+      "relieving": [
+        "Lying down"
+      ],
+      "severity": [
+        "Mild (1–3/10)"
+      ]
+    },
+    "symptoms": [
+      "abdominal wall swelling",
+      "stoma appliance leakage"
+    ],
+    "negatives": [
+      "vomiting",
+      "stoma not working"
+    ],
+    "exam": {
+      "general": "Well.",
+      "abdomen": "Left iliac fossa end colostomy, healthy and pink. Reducible parastomal hernia, about 8 cm bulge, cough impulse, non-tender. Perineal wound healed."
+    },
+    "vitals": [
+      {
+        "minutesAgo": 15,
+        "heartRate": 74,
+        "systolicBp": 132,
+        "diastolicBp": 80,
+        "respiratoryRate": 14,
+        "temperatureC": 36.5,
+        "spo2": 98,
+        "avpu": "A",
+        "onSupplementalO2": false
+      }
+    ],
+    "labs": [],
+    "imaging": [],
+    "comorbidities": [
+      "Rectal cancer (treated)"
+    ],
+    "surgicalHistory": [
+      "Abdominoperineal resection with end colostomy"
+    ],
+    "medications": [],
+    "allergies": [],
+    "nkda": true,
+    "socialHistory": "Ex-smoker.",
+    "confirmedDiagnosis": {
+      "name": "Symptomatic parastomal hernia (end colostomy)",
+      "icd10": "K43.5",
+      "paneDiseaseId": "parastomal_hernia",
+      "assessmentText": "Symptomatic reducible parastomal hernia around end colostomy — appliance leaks and intermittent pain. CT abdomen (hernia content, exclude recurrence), stoma nurse review, consider mesh repair."
+    },
+    "platform": {
+      "web": {
+        "ccTemplate": "Incisional / ventral hernia",
+        "symptoms": [
+          "hernia",
+          "lump in abdomen"
+        ],
+        "symptomDetails": {
+          "hernia": [
+            "Easily reducible",
+            "Pain"
+          ]
+        },
+        "examFindings": {
+          "abdomen": [
+            "Soft",
+            "Hernia present"
+          ]
+        },
+        "durationDays": 365,
+        "painScore": 2
+      }
+    }
+  },
+  "expected": {
+    "differential": {
+      "mustRankTopK": [
+        {
+          "id": "dx-parastomal-top3",
+          "severity": "quality",
+          "match": [
+            "parastomal",
+            "icd:K43.5"
+          ],
+          "k": 3,
+          "guidelineRefs": [
+            "ehs-parastomal-2018"
+          ],
+          "knownGap": [
+            "ios"
+          ],
+          "knownGapNote": "iOS CI 2026-09-25 (run 36169134350, database mode): not in top 3 of ios.bayes: 1. Inguinal Hernia | 2. Incisional Hernia | 3. Umbilical / Paraumbilical Hernia | 4. Femoral Hernia | 5. Incarcerated / Strangulated Hernia"
+        }
+      ]
+    },
+    "safety": {
+      "emergencyLevel": {
+        "id": "level-routine",
+        "severity": "quality",
+        "atMost": "priority",
+        "knownGap": [
+          "web"
+        ],
+        "knownGapNote": "Triage emergency_now (score 59): adaptiveTriage RED_FLAGS regexes have no negation handling (\"No vomiting\"); \"rectal cancer\" history → \"Possible malignancy\".",
+        "proposedFix": "Add a negation window (\"no\", \"denies\", \"never\", \"non-\") before RED_FLAGS / symptom regex matches in adaptive-triage."
+      }
+    },
+    "investigations": {
+      "mustInclude": [
+        {
+          "id": "inv-ct",
+          "severity": "quality",
+          "match": [
+            "re:\\bct\\b",
+            "computed tomography"
+          ],
+          "guidelineRefs": [
+            "ehs-parastomal-2018"
+          ]
+        }
+      ]
+    },
+    "management": {
+      "mustInclude": [
+        {
+          "id": "mgmt-mesh-repair",
+          "severity": "quality",
+          "match": [
+            "mesh",
+            "sugarbaker",
+            "keyhole"
+          ],
+          "guidelineRefs": [
+            "ehs-parastomal-2018"
+          ]
+        },
+        {
+          "id": "mgmt-stoma-nurse",
+          "severity": "quality",
+          "match": [
+            "stoma nurse",
+            "stoma care",
+            "support belt"
+          ],
+          "guidelineRefs": [
+            "ehs-parastomal-2018"
+          ]
+        }
+      ]
+    }
+  },
+  "guideline": [
+    {
+      "id": "ehs-parastomal-2018",
+      "name": "EHS guidelines — prevention and treatment of parastomal hernias",
+      "year": 2018,
+      "section": "Diagnosis (clinical ± CT); indication for repair; mesh repair rather than suture repair; stoma relocation",
+      "citation": "Antoniou SA, Agresta F, Garcia Alamino JM, et al. European Hernia Society guidelines on prevention and treatment of parastomal hernias. Hernia. 2018;22:183–198.",
+      "verified": false
+    }
+  ],
+  "rationale": "Base parastomal case. All quality: guideline concordance of the plan (CT, mesh, stoma care).",
+  "authoring": {
+    "author": "Claude (hernia / breast / endocrine cluster)",
+    "date": "2026-09-25",
+    "notes": "Expectations need surgeon sign-off (reviewedBy). Citations verified: false."
+  }
+}

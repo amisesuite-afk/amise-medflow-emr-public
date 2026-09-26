@@ -1,0 +1,161 @@
+{
+  "schemaVersion": 1,
+  "id": "entry-lab-raised-lipase-vague-epigastric",
+  "condition": "Acute pancreatitis presenting as a raised lipase",
+  "category": "hpb",
+  "permutationOf": null,
+  "summary": "52-year-old man sent in by his GP with a lipase of 820 U/L taken for two days of vague epigastric discomfort.",
+  "tags": [
+    "entry:lab",
+    "vademecum-pilot"
+  ],
+  "inputs": {
+    "patient": {
+      "ageYears": 52,
+      "sex": "male",
+      "pregnancy": {
+        "status": "not-applicable"
+      },
+      "heightCm": 170,
+      "weightKg": 72
+    },
+    "encounter": {
+      "setting": "emergency",
+      "acuity": "urgent"
+    },
+    "chiefComplaint": "Raised lipase on a blood test",
+    "hpi": "GP bloods for two days of vague upper abdominal discomfort after a weekend of heavy drinking. Discomfort now constant in the epigastrium, going through to the back, with nausea. No vomiting of blood, no jaundice, no fever. Drinks about 40 units a week.",
+    "socrates": {},
+    "symptoms": [
+      "epigastric pain",
+      "nausea"
+    ],
+    "negatives": [
+      "haematemesis",
+      "jaundice",
+      "fever"
+    ],
+    "exam": {
+      "general": "Uncomfortable. T 37.4, HR 96, BP 134/82.",
+      "abdomen": "Epigastric tenderness, no guarding or peritonism. Bowel sounds present."
+    },
+    "vitals": [
+      {
+        "minutesAgo": 20,
+        "heartRate": 96,
+        "systolicBp": 134,
+        "diastolicBp": 82,
+        "respiratoryRate": 18,
+        "temperatureC": 37.4,
+        "spo2": 97,
+        "avpu": "A",
+        "onSupplementalO2": false
+      }
+    ],
+    "labs": [
+      {
+        "analyte": "lipase",
+        "name": "Lipase",
+        "value": 820,
+        "unit": "U/L",
+        "minutesAgo": 60
+      },
+      {
+        "analyte": "wbc",
+        "name": "WBC",
+        "value": 12.1,
+        "unit": "×10⁹/L",
+        "minutesAgo": 60
+      },
+      {
+        "analyte": "crp",
+        "name": "CRP",
+        "value": 38,
+        "unit": "mg/L",
+        "minutesAgo": 60
+      },
+      {
+        "analyte": "bilirubin",
+        "name": "Bilirubin",
+        "value": 14,
+        "unit": "µmol/L",
+        "minutesAgo": 60
+      },
+      {
+        "analyte": "alt",
+        "name": "ALT",
+        "value": 42,
+        "unit": "U/L",
+        "minutesAgo": 60
+      },
+      {
+        "analyte": "calcium",
+        "name": "Calcium",
+        "value": 2.31,
+        "unit": "mmol/L",
+        "minutesAgo": 60
+      },
+      {
+        "analyte": "creatinine",
+        "name": "Creatinine",
+        "value": 88,
+        "unit": "µmol/L",
+        "minutesAgo": 60
+      }
+    ],
+    "imaging": [],
+    "comorbidities": [],
+    "surgicalHistory": [],
+    "medications": [],
+    "allergies": [],
+    "nkda": true,
+    "socialHistory": "Drinks about 40 units of alcohol a week. Smoker, 20 a day."
+  },
+  "expected": {
+    "differential": {
+      "mustRankTopK": [
+        {
+          "id": "topk-pancreatitis",
+          "severity": "quality",
+          "match": [
+            "pancreatitis"
+          ],
+          "k": 3
+        }
+      ],
+      "mustNotMiss": [
+        {
+          "id": "mnm-perforation-or-aaa",
+          "severity": "quality",
+          "match": [
+            "perforat",
+            "aortic aneurysm",
+            "aneurysm",
+            "mesenteric"
+          ],
+          "note": "A raised lipase also comes with perforated ulcer, mesenteric ischaemia and a leaking aneurysm: at least one should stay on the list until examined or imaged.",
+          "knownGap": [
+            "ios"
+          ],
+          "knownGapNote": "iOS CI (run 36246636651): not in top 5 of ios.bayes: 1. Acute Pancreatitis | 2. Chronic Pancreatitis | 3. Phaeochromocytoma | 4. Necrotising Pancreatitis | 5. Malignant Hypercalcaemia"
+        }
+      ]
+    }
+  },
+  "guideline": [
+    {
+      "id": "atlanta-2012",
+      "name": "Revised Atlanta classification of acute pancreatitis",
+      "year": 2012,
+      "section": "Diagnosis: two of typical pain, lipase or amylase at least three times the upper limit of normal, characteristic imaging",
+      "citation": "Banks PA et al. Gut 2013;62:102-11.",
+      "verified": false
+    }
+  ],
+  "rationale": "Entry point: a laboratory result. The loop starts from the raised lipase (reverse index), goes back to the history (typical pain, alcohol) and the examination, then forward; Atlanta 2 of 3 is met with typical pain and lipase ≥ 3 × ULN.",
+  "authoring": {
+    "author": "Claude (vademecum phase 1, entry-point pilot)",
+    "date": "2026-09-26",
+    "notes": "Starts from a result (laboratory, imaging or pathology), not a complaint. Written for the vademecum shadow (clinval:web --engine vademecum); not verified on iOS; clinical sign-off pending (docs/clinical-validation/changes/vademecum-phase1.md)."
+  }
+}

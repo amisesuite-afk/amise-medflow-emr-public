@@ -8,58 +8,48 @@ import SwiftData
 
 struct PreConsultEntrySheet: View {
     let patient: Patient
-    @Environment(\.modelContext) private var context
+    @Environment(\.modelContext) var context
     @Environment(\.dismiss) private var dismiss
 
     // CC
-    @State private var selectedCC: String = ""
-    @State private var customCC: String = ""
-    @State private var duration: String = ""
-    @State private var severity: Int = 0
+    @State var selectedCC: String = ""
+    @State var customCC: String = ""
+    @State var duration: String = ""
+    @State var severity: Int = 0
 
     // Associated symptoms
-    @State private var selectedAssoc: Set<String> = []
+    @State var selectedAssoc: Set<String> = []
 
     // PMH
-    @State private var selectedPMH: Set<String> = []
-    @State private var customPMH: String = ""
+    @State var selectedPMH: Set<String> = []
+    @State var customPMH: String = ""
 
     // PSHx
-    @State private var selectedPSHx: Set<String> = []
-    @State private var customPSHx: String = ""
+    @State var selectedPSHx: Set<String> = []
+    @State var customPSHx: String = ""
 
     // Medications
-    @State private var medications: [MedRow] = [MedRow()]
+    @State var medications: [MedRow] = [MedRow()]
 
     // Allergies
-    @State private var noKnownAllergies = false
-    @State private var allergyRows: [AllergyRow] = [AllergyRow()]
+    @State var noKnownAllergies = false
+    @State var allergyRows: [AllergyRow] = [AllergyRow()]
 
     // Family history
-    @State private var selectedFHx: Set<String> = []
+    @State var selectedFHx: Set<String> = []
 
     // Social history
-    @State private var smokingStatus: String = ""
-    @State private var alcoholStatus: String = ""
-    @State private var occupation: String = ""
+    @State var smokingStatus: String = ""
+    @State var alcoholStatus: String = ""
+    @State var occupation: String = ""
 
     // Derived CC for assoc chip list
     private var ccForChips: String { selectedCC.isEmpty ? customCC : selectedCC }
 
+    /// Associated-symptom chips of the complaint's history frame (HistoryFrames.swift): a cough
+    /// offers breathlessness, haemoptysis, night sweats …, not the abdominal list.
     private var assocChips: [String] {
-        let lc = ccForChips.lowercased()
-        if lc.contains("neck") || lc.contains("thyroid")       { return SOCRATESChips.assocNeck }
-        if lc.contains("breast")                               { return SOCRATESChips.assocBreast }
-        if lc.contains("chest") || lc.contains("cardiac") ||
-           lc.contains("palpitat")                             { return SOCRATESChips.assocChest }
-        if lc.contains("rectal") || lc.contains("anal") ||
-           lc.contains("haemorrhoid") || lc.contains("bowel")  { return SOCRATESChips.assocAnorectal }
-        if lc.contains("dysphagia") || lc.contains("swallow") ||
-           lc.contains("reflux") || lc.contains("heartburn")   { return SOCRATESChips.assocDysphagia }
-        if lc.contains("urin") || lc.contains("haematuria")    { return SOCRATESChips.assocUrology }
-        if lc.contains("skin") || lc.contains("lesion") ||
-           lc.contains("mole") || lc.contains("melanoma")      { return SOCRATESChips.assocSkin }
-        return SOCRATESChips.assocAbdominal
+        HistoryFrames.associatedChips(forComplaint: ccForChips)
     }
 
     var body: some View {
@@ -94,57 +84,72 @@ struct PreConsultEntrySheet: View {
     // MARK: - Sections
 
     private var ccSection: some View {
-        Section {
-            // Tap-to-select chip list
-            ScrollView(.horizontal, showsIndicators: false) {
-                HStack(spacing: 8) {
-                    ForEach(ccSurgicalChips) { chip in
+        Group {
+            Section {
+                TextField("Or describe in their own words…",
+                          text: $customCC, axis: .vertical)
+                    .font(.callout)
+                    .lineLimit(2...)
+
+                HStack {
+                    Text("Duration").font(.callout).foregroundStyle(.secondary)
+                    Spacer()
+                    TextField("e.g. 3 weeks", text: $duration)
+                        .multilineTextAlignment(.trailing)
+                        .font(.callout)
+                }
+
+                // Severity picker
+                VStack(alignment: .leading, spacing: 6) {
+                    HStack {
+                        Text("Severity").font(.callout).foregroundStyle(.secondary)
+                        Spacer()
+                        Text(severity == 0 ? "Not specified" : "\(severity)/10")
+                            .font(.callout.monospacedDigit())
+                            .foregroundStyle(severityColor(severity))
+                    }
+                    Slider(value: Binding(get: { Double(severity) }, set: { severity = Int($0) }),
+                           in: 0...10, step: 1)
+                        .tint(severityColor(severity))
+                }
+            } header: {
+                Label("Reason for Visit", systemImage: "person.fill.questionmark")
+            }
+
+            // Specialty-grouped complaint picker
+            ForEach(ccSpecialtyGroups) { group in
+                Section {
+                    ForEach(group.chips) { chip in
                         let selected = selectedCC == chip.label
                         Button {
                             selectedCC = selected ? "" : chip.label
                         } label: {
-                            HStack(spacing: 4) {
-                                Image(systemName: chip.icon).font(.system(size: 10))
-                                Text(chip.label).font(.system(size: 12, weight: selected ? .semibold : .regular))
+                            HStack(spacing: 10) {
+                                Image(systemName: chip.icon)
+                                    .font(.system(size: 11))
+                                    .foregroundStyle(selected ? AMColor.accent : .secondary)
+                                    .frame(width: 16)
+                                Text(chip.label)
+                                    .font(.callout.weight(selected ? .semibold : .regular))
+                                    .foregroundStyle(.primary)
+                                Spacer()
+                                if selected {
+                                    Image(systemName: "checkmark")
+                                        .font(.system(size: 11, weight: .semibold))
+                                        .foregroundStyle(AMColor.accent)
+                                }
                             }
-                            .padding(.horizontal, 10).padding(.vertical, 6)
-                            .background(selected ? AMColor.accent : AMColor.accentLt, in: Capsule())
-                            .foregroundStyle(selected ? Color.white : AMColor.accent)
+                            .contentShape(Rectangle())   // whole row tappable, not only its text
                         }
                         .buttonStyle(.plain)
                     }
+                } header: {
+                    Label(group.name, systemImage: group.icon)
+                        .font(.caption.weight(.semibold))
+                        .foregroundStyle(.secondary)
+                        .textCase(nil)
                 }
-                .padding(.vertical, 4)
             }
-
-            TextField("Or describe in their own words…",
-                      text: $customCC, axis: .vertical)
-                .font(.callout)
-                .lineLimit(2...)
-
-            HStack {
-                Text("Duration").font(.callout).foregroundStyle(.secondary)
-                Spacer()
-                TextField("e.g. 3 weeks", text: $duration)
-                    .multilineTextAlignment(.trailing)
-                    .font(.callout)
-            }
-
-            // Severity picker
-            VStack(alignment: .leading, spacing: 6) {
-                HStack {
-                    Text("Severity").font(.callout).foregroundStyle(.secondary)
-                    Spacer()
-                    Text(severity == 0 ? "Not specified" : "\(severity)/10")
-                        .font(.callout.monospacedDigit())
-                        .foregroundStyle(severityColor(severity))
-                }
-                Slider(value: Binding(get: { Double(severity) }, set: { severity = Int($0) }),
-                       in: 0...10, step: 1)
-                    .tint(severityColor(severity))
-            }
-        } header: {
-            Label("Reason for Visit", systemImage: "person.fill.questionmark")
         }
     }
 
@@ -338,153 +343,18 @@ struct PreConsultEntrySheet: View {
         }
     }
 
-    // MARK: - Apply logic
-
-    private func applyAnswers() {
-        let cc = !selectedCC.isEmpty ? selectedCC
-               : (!customCC.trimmingCharacters(in: .whitespaces).isEmpty ? customCC.trimmingCharacters(in: .whitespaces) : nil)
-
-        // CC — only set if currently empty
-        if let cc, (patient.chiefComplaint ?? "").isEmpty {
-            patient.chiefComplaint = cc
-        }
-
-        // Duration — prepend to HPI if HPI is empty
-        if !duration.trimmingCharacters(in: .whitespaces).isEmpty,
-           (patient.hpi ?? "").isEmpty {
-            patient.hpi = "Duration: \(duration.trimmingCharacters(in: .whitespaces))."
-        }
-
-        // Associated symptoms — merge with existing
-        if !selectedAssoc.isEmpty {
-            var existing = Set(
-                (patient.associatedSymptoms ?? "")
-                    .components(separatedBy: ",")
-                    .map { $0.trimmingCharacters(in: .whitespaces) }
-                    .filter { !$0.isEmpty }
-            )
-            existing.formUnion(selectedAssoc)
-            patient.associatedSymptoms = existing.sorted().joined(separator: ", ")
-        }
-
-        // PMH — append unique entries
-        var pmh = patient.pmhEntries
-        let existingPMH = Set(pmh.map { $0.condition.lowercased() })
-        for cond in selectedPMH.sorted() where !existingPMH.contains(cond.lowercased()) {
-            pmh.append(PMHEntry(condition: cond))
-        }
-        for cond in customPMH
-            .components(separatedBy: ",")
-            .map({ $0.trimmingCharacters(in: .whitespaces) })
-            .filter({ !$0.isEmpty }) {
-            if !existingPMH.contains(cond.lowercased()) {
-                pmh.append(PMHEntry(condition: cond))
-            }
-        }
-        patient.pmhEntries = pmh
-
-        // PSHx — append unique entries
-        var pshx = patient.pshxEntries
-        let existingPSHx = Set(pshx.map { $0.procedure.lowercased() })
-        for proc in selectedPSHx.sorted() where !existingPSHx.contains(proc.lowercased()) {
-            pshx.append(PSHxEntry(procedure: proc))
-        }
-        for proc in customPSHx
-            .components(separatedBy: ",")
-            .map({ $0.trimmingCharacters(in: .whitespaces) })
-            .filter({ !$0.isEmpty }) {
-            if !existingPSHx.contains(proc.lowercased()) {
-                pshx.append(PSHxEntry(procedure: proc))
-            }
-        }
-        patient.pshxEntries = pshx
-
-        // Medications — append as Prescription objects
-        for med in medications {
-            let drug = med.drug.trimmingCharacters(in: .whitespaces)
-            guard !drug.isEmpty else { continue }
-            let rx = Prescription(
-                drug: drug,
-                dose: med.dose.trimmingCharacters(in: .whitespaces),
-                frequency: med.freq.trimmingCharacters(in: .whitespaces)
-            )
-            rx.patient = patient
-            context.insert(rx)
-        }
-
-        // Allergies
-        if noKnownAllergies {
-            // Patient declared NKDA — don't overwrite an existing list, but record intent in pmhNotes
-            if patient.allergies.isEmpty {
-                // already NKDA by empty list — nothing to set
-            }
-        } else {
-            var existing = patient.allergies
-            let existingNames = Set(existing.map { $0.name.lowercased() })
-            for row in allergyRows {
-                let name = row.name.trimmingCharacters(in: .whitespaces)
-                guard !name.isEmpty else { continue }
-                if !existingNames.contains(name.lowercased()) {
-                    existing.append(AllergyEntry(name: name, severity: row.severity, reaction: row.reaction))
-                }
-            }
-            patient.allergies = existing
-        }
-
-        // Family history — append to existing notes
-        if !selectedFHx.isEmpty {
-            let fhText = selectedFHx.sorted().joined(separator: ", ")
-            if let existing = patient.familyHistoryNotes, !existing.isEmpty {
-                patient.familyHistoryNotes = existing + "; " + fhText
-            } else {
-                patient.familyHistoryNotes = fhText
-            }
-        }
-
-        // Social history — set only if empty
-        if (patient.socialHistory ?? "").isEmpty {
-            var parts: [String] = []
-            if !smokingStatus.isEmpty  { parts.append("Smoking: \(smokingStatus)") }
-            if !alcoholStatus.isEmpty  { parts.append("Alcohol: \(alcoholStatus)") }
-            if !occupation.trimmingCharacters(in: .whitespaces).isEmpty {
-                parts.append("Occupation: \(occupation.trimmingCharacters(in: .whitespaces))")
-            }
-            if !parts.isEmpty {
-                patient.socialHistory = parts.joined(separator: " · ")
-            }
-        }
-
-        patient.updatedAt = .now
-        patient.pendingSync = true
-        try? context.save()
-    }
-
-    // MARK: - Helpers
-
-    private func toggle(_ set: inout Set<String>, _ value: String) {
-        if set.contains(value) { set.remove(value) } else { set.insert(value) }
-    }
-
-    private func severityColor(_ v: Int) -> Color {
-        switch v {
-        case 0:    return .secondary
-        case 1...3: return .green
-        case 4...6: return .orange
-        default:   return .red
-        }
-    }
 }
 
 // MARK: - Local row models
 
-private struct MedRow: Identifiable {
+struct MedRow: Identifiable {
     var id = UUID()
     var drug = ""
     var dose = ""
     var freq = ""
 }
 
-private struct AllergyRow: Identifiable {
+struct AllergyRow: Identifiable {
     var id = UUID()
     var name = ""
     var reaction = ""

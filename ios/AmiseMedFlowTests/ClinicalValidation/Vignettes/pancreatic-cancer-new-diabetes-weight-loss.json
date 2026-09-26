@@ -1,0 +1,314 @@
+{
+  "schemaVersion": 1,
+  "id": "pancreatic-cancer-new-diabetes-weight-loss",
+  "condition": "Pancreatic body carcinoma (early, non-jaundiced)",
+  "category": "hpb",
+  "permutationOf": "painless-jaundice-pancreatic-head",
+  "permutationLabel": "Non-jaundiced — age ≥60 with weight loss, back pain and new-onset diabetes (NICE NG12 urgent CT)",
+  "summary": "66-year-old woman with 7 kg weight loss over four months, a dull epigastric ache radiating to the back and diabetes diagnosed two months ago; normal LFTs, no jaundice.",
+  "tags": [
+    "malignancy",
+    "pancreas",
+    "suspected-cancer",
+    "diabetes"
+  ],
+  "inputs": {
+    "patient": {
+      "ageYears": 66,
+      "sex": "female",
+      "pregnancy": {
+        "status": "not-applicable"
+      },
+      "heightCm": 161,
+      "weightKg": 58
+    },
+    "encounter": {
+      "setting": "outpatient",
+      "visitType": "newConsult",
+      "acuity": "routine"
+    },
+    "chiefComplaint": "Weight loss and upper abdominal ache",
+    "hpi": "Lost 7 kg over four months without trying. Dull epigastric ache boring into the back, worse at night and lying flat. Diabetes diagnosed two months ago (HbA1c 8.1%), no family history of diabetes. Stools normal. No jaundice.",
+    "socrates": {
+      "onset": [
+        "1–6 months ago"
+      ],
+      "site": [
+        "Epigastric"
+      ],
+      "character": [
+        "Dull"
+      ],
+      "radiation": [
+        "Back"
+      ],
+      "associations": [
+        "Weight loss",
+        "Anorexia"
+      ],
+      "timing": [
+        "Constant",
+        "Nocturnal"
+      ],
+      "exacerbating": [
+        "Lying flat"
+      ],
+      "relieving": [
+        "Sitting forward"
+      ],
+      "severity": [
+        "Moderate (4–6/10)"
+      ]
+    },
+    "symptoms": [
+      "weight loss",
+      "epigastric pain",
+      "back pain",
+      "loss of appetite"
+    ],
+    "negatives": [
+      "jaundice",
+      "vomiting",
+      "change in bowel habit"
+    ],
+    "exam": {
+      "general": "Thin, not jaundiced.",
+      "abdomen": "Mild epigastric tenderness; no mass; no hepatomegaly."
+    },
+    "vitals": [
+      {
+        "minutesAgo": 20,
+        "heartRate": 76,
+        "systolicBp": 128,
+        "diastolicBp": 76,
+        "respiratoryRate": 14,
+        "temperatureC": 36.6,
+        "spo2": 98,
+        "avpu": "A",
+        "onSupplementalO2": false
+      }
+    ],
+    "labs": [
+      {
+        "analyte": "hba1c",
+        "name": "A1c (glycated)",
+        "value": 8.1,
+        "unit": "%",
+        "minutesAgo": 40
+      },
+      {
+        "analyte": "glucose",
+        "name": "Glucose",
+        "value": 10.4,
+        "unit": "mmol/L",
+        "minutesAgo": 40
+      },
+      {
+        "analyte": "bilirubin",
+        "name": "Bilirubin",
+        "value": 12,
+        "unit": "µmol/L",
+        "minutesAgo": 40
+      },
+      {
+        "analyte": "alp",
+        "name": "ALP",
+        "value": 110,
+        "unit": "U/L",
+        "minutesAgo": 40
+      },
+      {
+        "analyte": "alt",
+        "name": "ALT",
+        "value": 26,
+        "unit": "U/L",
+        "minutesAgo": 40
+      },
+      {
+        "analyte": "haemoglobin",
+        "name": "Haemoglobin",
+        "value": 11.8,
+        "unit": "g/dL",
+        "minutesAgo": 40
+      },
+      {
+        "analyte": "crp",
+        "name": "CRP",
+        "value": 8,
+        "unit": "mg/L",
+        "minutesAgo": 40
+      }
+    ],
+    "comorbidities": [
+      "Type 2 diabetes mellitus (new onset)"
+    ],
+    "medications": [
+      {
+        "drug": "Metformin",
+        "dose": "500 mg",
+        "frequency": "BD",
+        "indication": "Type 2 diabetes"
+      }
+    ],
+    "allergies": [],
+    "nkda": true,
+    "socialHistory": "Retired nurse. Never smoker.",
+    "confirmedDiagnosis": {
+      "name": "Suspected pancreatic cancer",
+      "icd10": "C25.1",
+      "paneDiseaseId": "pancreatic_carcinoma",
+      "assessmentText": "Suspected pancreatic cancer (body/tail): age ≥60 with weight loss, back pain and new-onset diabetes — NICE NG12 urgent direct-access CT within 2 weeks."
+    },
+    "platform": {
+      "web": {
+        "ccTemplate": "Unexplained weight loss",
+        "symptoms": [
+          "weight loss",
+          "epigastric pain",
+          "back pain",
+          "loss of appetite"
+        ],
+        "symptomDetails": {
+          "weight loss": [
+            "5–10 kg",
+            "3–6 months",
+            "Unintentional",
+            "Anorexia"
+          ],
+          "abdominal pain": [
+            "Epigastric",
+            "Gradual",
+            "> 3 days",
+            "Dull",
+            "Moderate (4–6)",
+            "Back",
+            "Nocturnal",
+            "Lying flat",
+            "Leaning forward"
+          ]
+        },
+        "examFindings": {
+          "abdomen": [
+            "Epigastric tenderness"
+          ]
+        },
+        "paneAnswers": {
+          "weight_loss": true,
+          "anorexia": true,
+          "jaundice": false
+        },
+        "durationDays": 120,
+        "painScore": 4
+      }
+    }
+  },
+  "expected": {
+    "differential": {
+      "mustNotMiss": [
+        {
+          "id": "mnm-pancreatic-cancer",
+          "severity": "critical",
+          "match": [
+            "pancreatic carcinoma",
+            "pancreatic cancer",
+            "pancreatic adenocarcinoma",
+            "periampullary",
+            "re:pancrea\\w*[^,]{0,20}(carcinoma|cancer|malignan|neoplas|tumou?r|adenocarcinoma)"
+          ],
+          "guidelineRefs": [
+            "nice-ng12"
+          ],
+          "note": "NICE NG12 names exactly this combination (≥60, weight loss, back/abdominal pain, new-onset diabetes)."
+        }
+      ]
+    },
+    "safety": {
+      "emergencyLevel": {
+        "id": "level-at-least-priority",
+        "severity": "critical",
+        "atLeast": "priority",
+        "guidelineRefs": [
+          "nice-ng12"
+        ],
+        "note": "Urgent (2-week) CT; must not be booked routinely. iOS (predicted, not observed): priority — \"weight loss\" in the CC."
+      },
+      "redFlags": [
+        {
+          "id": "flag-malignancy",
+          "severity": "critical",
+          "match": [
+            "malignan",
+            "cancer",
+            "carcinoma",
+            "courvoisier",
+            "neoplas",
+            "weight loss",
+            "new-onset diabetes",
+            "new onset diabetes"
+          ],
+          "guidelineRefs": [
+            "nice-ng12"
+          ]
+        }
+      ]
+    },
+    "investigations": {
+      "mustInclude": [
+        {
+          "id": "inv-ct",
+          "severity": "critical",
+          "match": [
+            "re:\\bct\\b",
+            "computed tomograph"
+          ],
+          "guidelineRefs": [
+            "nice-ng12"
+          ],
+          "note": "NICE NG12: urgent direct-access CT (within 2 weeks), or urgent ultrasound if CT unavailable."
+        }
+      ]
+    },
+    "management": {
+      "mustExclude": [
+        {
+          "id": "mgmt-no-appendicectomy",
+          "severity": "critical",
+          "match": [
+            "appendicectomy",
+            "appendectomy"
+          ],
+          "unless": [
+            "not indicated",
+            "no role",
+            "exclude appendicitis"
+          ],
+          "note": "Not an appendix presentation: an appendicectomy operative plan (consent, theatre booking, post-operative orders) is a wrong-procedure suggestion."
+        }
+      ]
+    }
+  },
+  "guideline": [
+    {
+      "id": "nice-ng12",
+      "name": "NICE NG12 — Suspected cancer: recognition and referral (pancreatic cancer)",
+      "year": 2015,
+      "section": "Suspected cancer pathway referral for pancreatic cancer at age ≥40 with jaundice; urgent direct-access CT (within 2 weeks) at age ≥60 with weight loss and any of diarrhoea, back pain, abdominal pain, nausea, vomiting, constipation or new-onset diabetes",
+      "citation": "National Institute for Health and Care Excellence. NICE guideline NG12, June 2015 (updated).",
+      "verified": false
+    },
+    {
+      "id": "nice-ng85",
+      "name": "NICE NG85 — Pancreatic cancer in adults: diagnosis and management",
+      "year": 2018,
+      "section": "Pancreatic-protocol CT for obstructive jaundice with suspected pancreatic cancer; EUS with tissue sampling if unclear; specialist pancreatic MDT; pre-operative biliary drainage only when surgery is delayed, for cholangitis, or before neoadjuvant therapy; SEMS for palliative biliary drainage",
+      "citation": "National Institute for Health and Care Excellence. NICE guideline NG85, February 2018.",
+      "verified": false
+    }
+  ],
+  "rationale": "Permutation: the early, non-jaundiced presentation that is most often missed. NICE NG12 gives an explicit trigger (age ≥60, weight loss plus back pain or new-onset diabetes) for urgent CT.",
+  "authoring": {
+    "author": "Claude (HPB cluster)",
+    "date": "2026-09-25",
+    "notes": "Expectations and citations need surgeon sign-off (reviewedBy). iOS outcomes not yet observed (unverified: ios) — triage after the first CI run."
+  }
+}

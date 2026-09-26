@@ -1,0 +1,466 @@
+{
+  "schemaVersion": 1,
+  "id": "pancreatitis-drug-induced-immunosuppressed",
+  "condition": "Acute pancreatitis (drug-induced)",
+  "category": "hpb",
+  "permutationOf": "pancreatitis-gallstone-mild",
+  "permutationLabel": "Immunosuppressed — azathioprine-induced pancreatitis in Crohn’s disease on prednisolone",
+  "summary": "33-year-old woman with Crohn’s disease, azathioprine started 4 weeks ago and prednisolone 20 mg: epigastric pain to the back, vomiting; lipase 1100; no gallstones, normal TG and calcium, minimal alcohol.",
+  "tags": [
+    "pancreatitis",
+    "drug-induced",
+    "immunosuppressed",
+    "ibd"
+  ],
+  "inputs": {
+    "patient": {
+      "ageYears": 33,
+      "sex": "female",
+      "pregnancy": {
+        "status": "not-pregnant"
+      },
+      "heightCm": 167,
+      "weightKg": 58
+    },
+    "encounter": {
+      "setting": "emergency",
+      "visitType": "urgentReview",
+      "acuity": "urgent"
+    },
+    "chiefComplaint": "Upper abdominal pain radiating to the back with vomiting",
+    "hpi": "Crohn’s disease: azathioprine 100 mg started 4 weeks ago, prednisolone tapering (now 20 mg). Two days of epigastric pain radiating to the back with vomiting. Alcohol rarely. No gallstones known. No diarrhoea change. LMP 2 weeks ago.",
+    "socrates": {
+      "onset": [
+        "2–3 days ago"
+      ],
+      "site": [
+        "Epigastric"
+      ],
+      "character": [
+        "Aching"
+      ],
+      "radiation": [
+        "Back"
+      ],
+      "associations": [
+        "Nausea",
+        "Vomiting"
+      ],
+      "timing": [
+        "Constant"
+      ],
+      "exacerbating": [
+        "Eating"
+      ],
+      "relieving": [
+        "Sitting forward"
+      ],
+      "severity": [
+        "Severe (7–9/10)"
+      ]
+    },
+    "symptoms": [
+      "epigastric pain",
+      "back pain",
+      "vomiting"
+    ],
+    "negatives": [
+      "jaundice",
+      "fever",
+      "bloody diarrhoea"
+    ],
+    "exam": {
+      "general": "Thin. Temperature 37.3°C, pulse 94/min, BP 118/74.",
+      "abdomen": "Epigastric tenderness; no right iliac fossa mass."
+    },
+    "vitals": [
+      {
+        "minutesAgo": 20,
+        "heartRate": 94,
+        "systolicBp": 118,
+        "diastolicBp": 74,
+        "respiratoryRate": 16,
+        "temperatureC": 37.3,
+        "spo2": 99,
+        "avpu": "A",
+        "onSupplementalO2": false
+      }
+    ],
+    "labs": [
+      {
+        "analyte": "lipase",
+        "name": "Lipase",
+        "value": 1100,
+        "unit": "U/L",
+        "minutesAgo": 40
+      },
+      {
+        "analyte": "wbc",
+        "name": "WBC",
+        "value": 10.9,
+        "unit": "×10⁹/L",
+        "minutesAgo": 40
+      },
+      {
+        "analyte": "crp",
+        "name": "CRP",
+        "value": 42,
+        "unit": "mg/L",
+        "minutesAgo": 40
+      },
+      {
+        "analyte": "alt",
+        "name": "ALT",
+        "value": 30,
+        "unit": "U/L",
+        "minutesAgo": 40
+      },
+      {
+        "analyte": "bilirubin",
+        "name": "Bilirubin",
+        "value": 9,
+        "unit": "µmol/L",
+        "minutesAgo": 40
+      },
+      {
+        "analyte": "triglycerides",
+        "name": "Triglycerides",
+        "value": 1.4,
+        "unit": "mmol/L",
+        "minutesAgo": 40
+      },
+      {
+        "analyte": "calcium",
+        "name": "Calcium",
+        "value": 2.31,
+        "unit": "mmol/L",
+        "minutesAgo": 40
+      },
+      {
+        "analyte": "urea",
+        "name": "Urea",
+        "value": 4.2,
+        "unit": "mmol/L",
+        "minutesAgo": 40
+      },
+      {
+        "analyte": "creatinine",
+        "name": "Creatinine",
+        "value": 60,
+        "unit": "µmol/L",
+        "minutesAgo": 40
+      },
+      {
+        "analyte": "bhcg",
+        "name": "Urine pregnancy test",
+        "resultText": "Negative",
+        "minutesAgo": 40
+      }
+    ],
+    "imaging": [
+      {
+        "name": "USS abdomen",
+        "modality": "US",
+        "region": "Abdomen",
+        "minutesAgo": 60,
+        "result": "Gallbladder normal with no stones or sludge. CBD 3 mm. Pancreas bulky. Thick-walled terminal ileum."
+      }
+    ],
+    "comorbidities": [
+      "Crohn's disease"
+    ],
+    "medications": [
+      {
+        "drug": "Azathioprine",
+        "dose": "100 mg",
+        "frequency": "OD",
+        "indication": "Crohn's disease (started 4 weeks ago)"
+      },
+      {
+        "drug": "Prednisolone",
+        "dose": "20 mg",
+        "frequency": "OD",
+        "indication": "Crohn's disease (tapering)"
+      }
+    ],
+    "allergies": [],
+    "nkda": true,
+    "socialHistory": "Graphic designer. Alcohol rarely. Non-smoker.",
+    "confirmedDiagnosis": {
+      "name": "Drug-induced acute pancreatitis (azathioprine)",
+      "icd10": "K85.30",
+      "paneDiseaseId": "pancreatitis",
+      "assessmentText": "Mild acute pancreatitis (revised Atlanta 2012), drug-induced (azathioprine started 4 weeks ago). No gallstones, normal TG and calcium."
+    },
+    "platform": {
+      "web": {
+        "ccTemplate": "Acute abdominal pain",
+        "symptoms": [
+          "abdominal pain",
+          "epigastric pain",
+          "back pain",
+          "vomiting"
+        ],
+        "symptomDetails": {
+          "abdominal pain": [
+            "Epigastric",
+            "Sudden",
+            "6–24 hours",
+            "Constant",
+            "Severe (7–9)",
+            "Back",
+            "Nausea",
+            "Vomiting",
+            "Continuous",
+            "Leaning forward",
+            "1–3 days"
+          ]
+        },
+        "examFindings": {
+          "abdomen": [
+            "Epigastric tenderness"
+          ]
+        },
+        "paneAnswers": {
+          "elevated_amylase": true,
+          "us_gallstones": false
+        },
+        "durationDays": 2,
+        "painScore": 7
+      }
+    }
+  },
+  "expected": {
+    "differential": {
+      "mustRankTopK": [
+        {
+          "id": "dx-pancreatitis-top3",
+          "severity": "critical",
+          "match": [
+            "pancreatitis"
+          ],
+          "unless": [
+            "chronic"
+          ],
+          "k": 3,
+          "guidelineRefs": [
+            "atlanta-2012"
+          ]
+        }
+      ]
+    },
+    "safety": {
+      "emergencyLevel": {
+        "id": "level-at-least-urgent",
+        "severity": "critical",
+        "atLeast": "urgent",
+        "guidelineRefs": [
+          "acg-2024"
+        ]
+      },
+      "redFlags": [
+        {
+          "id": "flag-immunosuppression",
+          "severity": "quality",
+          "match": [
+            "azathioprine",
+            "immunosupp",
+            "steroid",
+            "prednisolone",
+            "drug-induced"
+          ]
+        }
+      ]
+    },
+    "management": {
+      "mustInclude": [
+        {
+          "id": "mgmt-stop-azathioprine",
+          "severity": "critical",
+          "match": [
+            "re:(stop|withhold|withdraw|discontinue|cease)[^.;\\n]{0,40}(azathioprine|thiopurine|causative drug|offending drug|culprit)",
+            "re:(azathioprine|thiopurine)[^.;\\n]{0,40}(stop|withh|withdraw|discontinu|cease)"
+          ],
+          "guidelineRefs": [
+            "acg-2024"
+          ],
+          "note": "Continuing the causative drug causes recurrence (thiopurine pancreatitis recurs on rechallenge). Stop azathioprine and discuss an alternative with the IBD team."
+        },
+        {
+          "id": "mgmt-steroid-cover",
+          "severity": "quality",
+          "match": [
+            "steroid cover",
+            "hydrocortisone",
+            "stress dose",
+            "continue prednisolone",
+            "do not stop prednisolone"
+          ],
+          "guidelineRefs": [
+            "steroid-periop-2020"
+          ],
+          "note": "On prednisolone 20 mg: do not stop abruptly; IV hydrocortisone if vomiting prevents oral steroid."
+        }
+      ],
+      "mustExclude": [
+        {
+          "id": "mgmt-no-aggressive-fluids",
+          "severity": "critical",
+          "match": [
+            "aggressive",
+            "re:250\\s*-\\s*500\\s*ml"
+          ],
+          "unless": [
+            "avoid aggressive",
+            "not aggressive",
+            "rather than aggressive",
+            "no aggressive"
+          ],
+          "guidelineRefs": [
+            "waterfall-2022",
+            "acg-2024"
+          ],
+          "note": "WATERFALL (NEJM 2022) was stopped for harm: aggressive resuscitation (20 mL/kg bolus then 3 mL/kg/h) caused more fluid overload (20.5% vs 6.3%) without benefit. ACG 2024 recommends moderate, goal-directed fluids. A plan that says \"aggressive\" or 250–500 mL/h is a fluid-overload hazard.",
+          "proposedFix": "lib/pane-engine management protocol \"pancreatitis\" (step 1 and the Hartmann's 500 ml Q2H medication), dx-variants.ts pancreatitis_moderate urgencyNote / pancreatitis_severe planPrefix, and clinical-inference.ts pancreatitis prompts: replace \"aggressive … 250–500 ml/h\" with moderate goal-directed lactated Ringer's (10 mL/kg bolus only if hypovolaemic, then 1.5 mL/kg/h; reassess at 12, 24, 48, 72 h; extra caution in heart failure/CKD/elderly) citing WATERFALL and ACG 2024. Same change in iOS DiagnosisRadiationEngine \"acute pancreatitis\" planTemplate."
+        },
+        {
+          "id": "mgmt-no-prophylactic-antibiotics",
+          "severity": "critical",
+          "match": [
+            "antibiotic",
+            "antimicrobial",
+            "co-amoxiclav",
+            "amoxicillin-clavulanate",
+            "piperacillin",
+            "tazocin",
+            "cefuroxime",
+            "ceftriaxone",
+            "meropenem",
+            "imipenem",
+            "carbapenem",
+            "metronidazole"
+          ],
+          "unless": [
+            "re:(avoid|no|not)[^.;\\n]{0,25}(antibiotic|antimicrobial|prophyla)",
+            "re:(antibiotic|antimicrobial|carbapenem|meropenem)s?[^.;\\n]{0,40}(only if|unless|not (routinely|recommended|indicated|required))",
+            "if infected",
+            "infected necrosis",
+            "cholangitis",
+            "if suspected infect",
+            "at induction",
+            "complicated cholecystitis only"
+          ],
+          "guidelineRefs": [
+            "acg-2024",
+            "iap-apa-2013",
+            "nice-ng104",
+            "aga-2018"
+          ],
+          "note": "Prophylactic antibiotics are not recommended in acute pancreatitis, including predicted severe disease and sterile necrosis; they are reserved for infected necrosis or a concurrent infection such as cholangitis."
+        },
+        {
+          "id": "mgmt-no-cholecystectomy",
+          "severity": "quality",
+          "match": [
+            "laparoscopic cholecystectomy",
+            "lap chole",
+            "re:lap(\\.|aroscopic)? cholecystectomy",
+            "cholecystectomy"
+          ],
+          "unless": [
+            "gallstone",
+            "biliary",
+            "if "
+          ],
+          "note": "No gallstones."
+        },
+        {
+          "id": "mgmt-no-appendicectomy",
+          "severity": "critical",
+          "match": [
+            "appendicectomy",
+            "appendectomy"
+          ],
+          "unless": [
+            "not indicated",
+            "no role",
+            "exclude appendicitis"
+          ],
+          "note": "Not an appendix presentation: an appendicectomy operative plan (consent, theatre booking, post-operative orders) is a wrong-procedure suggestion."
+        }
+      ]
+    },
+    "dxVariant": {
+      "id": "variant-mild",
+      "severity": "quality",
+      "equals": "pancreatitis_mild",
+      "guidelineRefs": [
+        "atlanta-2012"
+      ]
+    }
+  },
+  "guideline": [
+    {
+      "id": "atlanta-2012",
+      "name": "Revised Atlanta classification of acute pancreatitis (2012)",
+      "year": 2012,
+      "section": "Diagnosis (2 of 3: typical pain, lipase/amylase ≥3 × ULN, imaging); severity: mild (no organ failure, no local/systemic complications), moderately severe (transient organ failure <48 h and/or local complications), severe (persistent organ failure >48 h); modified Marshall score",
+      "citation": "Banks PA, Bollen TL, Dervenis C, et al. Gut. 2013;62:102–111.",
+      "verified": false
+    },
+    {
+      "id": "acg-2024",
+      "name": "ACG Guideline — management of acute pancreatitis (2024)",
+      "year": 2024,
+      "section": "Moderately aggressive (goal-directed) fluids with lactated Ringer’s; no prophylactic antibiotics (including predicted severe and sterile necrosis); early oral feeding when tolerated; enteral rather than parenteral nutrition; ERCP within 24 h only with concurrent cholangitis; cholecystectomy during the index admission for mild biliary AP; transabdominal US in every patient; triglycerides if no gallstones/alcohol; CT not needed at presentation unless the diagnosis is unclear",
+      "citation": "Tenner S, Vege SS, Sheth SG, et al. Am J Gastroenterol. 2024;119:419–437.",
+      "verified": false
+    },
+    {
+      "id": "waterfall-2022",
+      "name": "WATERFALL trial — aggressive vs moderate fluid resuscitation in acute pancreatitis (NEJM 2022)",
+      "year": 2022,
+      "section": "Moderate (10 mL/kg bolus only if hypovolaemic, then 1.5 mL/kg/h lactated Ringer’s) vs aggressive (20 mL/kg bolus then 3 mL/kg/h): stopped for harm — fluid overload 20.5% vs 6.3% with no improvement in moderately severe/severe AP. Patients with heart failure (NYHA II–IV) were excluded",
+      "citation": "de-Madaria E, Buxbaum JL, Maisonneuve P, et al. N Engl J Med. 2022;387:989–1000.",
+      "verified": false
+    },
+    {
+      "id": "iap-apa-2013",
+      "name": "IAP/APA evidence-based guidelines for the management of acute pancreatitis",
+      "year": 2013,
+      "section": "No antibiotic prophylaxis; enteral nutrition in severe AP; same-admission cholecystectomy for mild biliary AP; delay cholecystectomy with peripancreatic collections until they resolve or beyond 6 weeks; intervention for infected necrosis delayed to ≥4 weeks (walled-off)",
+      "citation": "Working Group IAP/APA Acute Pancreatitis Guidelines. Pancreatology. 2013;13(4 Suppl 2):e1–15.",
+      "verified": false
+    },
+    {
+      "id": "nice-ng104",
+      "name": "NICE NG104 — Pancreatitis",
+      "year": 2018,
+      "section": "Acute pancreatitis: do not offer prophylactic antimicrobials; enteral nutrition for moderately severe/severe AP started within 72 h; parenteral nutrition only if enteral nutrition fails or is contraindicated",
+      "citation": "National Institute for Health and Care Excellence. NICE guideline NG104, September 2018.",
+      "verified": false
+    },
+    {
+      "id": "steroid-periop-2020",
+      "name": "AAGBI/RCP/Society for Endocrinology guideline — peri-operative glucocorticoids in adrenal insufficiency (including long-term steroid users)",
+      "year": 2020,
+      "section": "Patients on ≥5 mg prednisolone for >4 weeks need peri-operative hydrocortisone cover",
+      "citation": "Woodcock T, Barker P, Daniel S, et al. Anaesthesia. 2020;75:654–663.",
+      "verified": false
+    },
+    {
+      "id": "aga-2018",
+      "name": "AGA Institute guideline on initial management of acute pancreatitis",
+      "year": 2018,
+      "section": "Goal-directed fluids; against prophylactic antibiotics; against urgent ERCP in biliary AP without cholangitis; early oral feeding (within 24 h); enteral over parenteral; same-admission cholecystectomy for biliary AP; alcohol brief intervention",
+      "citation": "Crockett SD, Wani S, Gardner TB, Falck-Ytter Y, Barkun AN. Gastroenterology. 2018;154:1096–1101.",
+      "verified": false
+    }
+  ],
+  "rationale": "Permutation: immunosuppressed patient with a drug cause. The added guideline action is to identify and stop the causative drug; steroid dependence also has to be managed through the admission.",
+  "authoring": {
+    "author": "Claude (HPB cluster)",
+    "date": "2026-09-25",
+    "notes": "Expectations and citations need surgeon sign-off (reviewedBy). iOS outcomes not yet observed (unverified: ios) — triage after the first CI run."
+  }
+}

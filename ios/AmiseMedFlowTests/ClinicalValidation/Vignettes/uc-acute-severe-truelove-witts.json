@@ -1,0 +1,512 @@
+{
+  "schemaVersion": 1,
+  "id": "uc-acute-severe-truelove-witts",
+  "condition": "Acute severe ulcerative colitis",
+  "category": "colorectal",
+  "permutationOf": null,
+  "summary": "29-year-old woman with known left-sided UC: 9 bloody stools/day, HR 104, T 37.9 °C, Hb 10.1, ESR 42, CRP 68 — Truelove and Witts acute severe colitis. Admit, IV corticosteroids, stool culture and C. difficile, flexible sigmoidoscopy with biopsies (CMV), VTE prophylaxis, avoid antimotility drugs/opioids/NSAIDs, day-3 assessment.",
+  "tags": [
+    "ibd",
+    "ulcerative-colitis",
+    "acute-severe"
+  ],
+  "inputs": {
+    "patient": {
+      "ageYears": 29,
+      "sex": "female",
+      "pregnancy": {
+        "status": "not-pregnant"
+      },
+      "heightCm": 166,
+      "weightKg": 57
+    },
+    "encounter": {
+      "setting": "emergency",
+      "visitType": "urgentReview",
+      "acuity": "urgent"
+    },
+    "chiefComplaint": "Bloody diarrhoea",
+    "hpi": "Known left-sided ulcerative colitis for 4 years on mesalazine. Five days of 9 bloody stools a day, including at night, with urgency and cramping lower abdominal pain. Feels feverish. No recent antibiotics, no travel, no sick contacts. Not on steroids. No NSAIDs.",
+    "socrates": {
+      "onset": [
+        "4–7 days ago"
+      ],
+      "site": [
+        "Diffuse"
+      ],
+      "character": [
+        "Cramping"
+      ],
+      "associations": [
+        "Rectal bleeding",
+        "Change in bowel habit",
+        "Fever"
+      ],
+      "timing": [
+        "Constant",
+        "Nocturnal"
+      ],
+      "severity": [
+        "Moderate (4–6/10)"
+      ]
+    },
+    "symptoms": [
+      "bloody diarrhoea",
+      "abdominal pain",
+      "fever",
+      "faecal urgency"
+    ],
+    "negatives": [
+      "recent antibiotics",
+      "travel",
+      "vomiting"
+    ],
+    "exam": {
+      "general": "Unwell, pale. Temperature 37.9°C, HR 104, BP 112/70.",
+      "abdomen": "Mildly distended, tender over the left colon, no guarding or peritonism. Bowel sounds present."
+    },
+    "vitals": [
+      {
+        "minutesAgo": 20,
+        "heartRate": 104,
+        "systolicBp": 112,
+        "diastolicBp": 70,
+        "respiratoryRate": 18,
+        "temperatureC": 37.9,
+        "spo2": 98,
+        "avpu": "A",
+        "onSupplementalO2": false
+      }
+    ],
+    "labs": [
+      {
+        "analyte": "haemoglobin",
+        "name": "Haemoglobin",
+        "value": 10.1,
+        "unit": "g/dL",
+        "minutesAgo": 60
+      },
+      {
+        "analyte": "wbc",
+        "name": "WBC",
+        "value": 12.8,
+        "unit": "×10⁹/L",
+        "minutesAgo": 60
+      },
+      {
+        "analyte": "platelets",
+        "name": "Platelets",
+        "value": 498,
+        "unit": "×10⁹/L",
+        "minutesAgo": 60
+      },
+      {
+        "analyte": "crp",
+        "name": "CRP",
+        "value": 68,
+        "unit": "mg/L",
+        "minutesAgo": 60
+      },
+      {
+        "analyte": "esr",
+        "name": "ESR",
+        "value": 42,
+        "unit": "mm/h",
+        "minutesAgo": 60
+      },
+      {
+        "analyte": "albumin",
+        "name": "Albumin",
+        "value": 29,
+        "unit": "g/L",
+        "minutesAgo": 60
+      },
+      {
+        "analyte": "potassium",
+        "name": "Potassium",
+        "value": 3.3,
+        "unit": "mmol/L",
+        "minutesAgo": 60
+      },
+      {
+        "analyte": "creatinine",
+        "name": "Creatinine",
+        "value": 62,
+        "unit": "µmol/L",
+        "minutesAgo": 60
+      }
+    ],
+    "imaging": [
+      {
+        "name": "AXR",
+        "modality": "XR",
+        "region": "Abdomen",
+        "result": "No colonic dilatation (transverse colon 4.8 cm). Oedematous left colon. No free gas.",
+        "minutesAgo": 40
+      }
+    ],
+    "comorbidities": [
+      "Ulcerative colitis (left-sided)"
+    ],
+    "surgicalHistory": [],
+    "medications": [
+      {
+        "drug": "Mesalazine",
+        "dose": "2.4 g",
+        "frequency": "OD",
+        "indication": "Ulcerative colitis"
+      }
+    ],
+    "allergies": [],
+    "nkda": true,
+    "socialHistory": "Primary school teacher. Non-smoker.",
+    "confirmedDiagnosis": {
+      "name": "Acute severe ulcerative colitis",
+      "icd10": "K51.5",
+      "paneDiseaseId": "ulcerative_colitis",
+      "assessmentText": "Acute severe ulcerative colitis (Truelove and Witts: 9 bloody stools/day, HR 104, T 37.9, Hb 10.1, ESR 42). Admit for IV corticosteroids."
+    },
+    "platform": {
+      "web": {
+        "ccTemplate": "Change in bowel habit",
+        "symptoms": [
+          "diarrhoea",
+          "rectal bleeding",
+          "abdominal pain",
+          "fever",
+          "faecal urgency"
+        ],
+        "symptomDetails": {
+          "rectal bleeding": [
+            "Fresh red",
+            "Mixed with stool",
+            "Diarrhoea"
+          ],
+          "abdominal pain": [
+            "LLQ",
+            "Diffuse",
+            "> 3 days",
+            "Cramping",
+            "Moderate (4–6)",
+            "Diarrhoea",
+            "Fever",
+            "PR bleeding"
+          ]
+        },
+        "examFindings": {
+          "abdomen": [
+            "Distended",
+            "Tender LLQ"
+          ],
+          "cardiovascular": [
+            "Tachycardia"
+          ]
+        },
+        "paneAnswers": {
+          "pr_bleeding": true,
+          "mucus_pr": true,
+          "tenesmus": true,
+          "fever": true
+        },
+        "durationDays": 5,
+        "painScore": 5
+      }
+    }
+  },
+  "expected": {
+    "differential": {
+      "mustRankTopK": [
+        {
+          "id": "dx-uc-top3",
+          "severity": "quality",
+          "match": [
+            "ulcerative colitis",
+            "icd:K51"
+          ],
+          "k": 3,
+          "guidelineRefs": [
+            "ecco-uc-2022"
+          ]
+        }
+      ],
+      "mustNotMiss": [
+        {
+          "id": "mnm-infective",
+          "severity": "quality",
+          "match": [
+            "difficile",
+            "c. diff",
+            "c diff",
+            "cdiff",
+            "cdi",
+            "infective colitis",
+            "infectious colitis",
+            "gastroenteritis"
+          ],
+          "guidelineRefs": [
+            "bsg-ibd-2019"
+          ],
+          "note": "Infection (C. difficile, enteric pathogens) is excluded in every flare."
+        }
+      ]
+    },
+    "safety": {
+      "emergencyLevel": {
+        "id": "level-admit",
+        "severity": "critical",
+        "atLeast": "urgent",
+        "guidelineRefs": [
+          "bsg-ibd-2019"
+        ],
+        "note": "Acute severe UC is a medical emergency needing admission."
+      }
+    },
+    "scores": {
+      "recommended": [
+        {
+          "id": "score-rec-truelove-witts",
+          "severity": "quality",
+          "score": "truelove-witts",
+          "guidelineRefs": [
+            "bsg-ibd-2019"
+          ],
+          "knownGap": [
+            "web",
+            "ios"
+          ],
+          "knownGapNote": "No Truelove-Witts (or Oxford day-3) calculator or CDS rule on web; CDS suggests Alvarado, TG18 cholangitis and Ranson. | iOS CI 2026-09-25 (run 36169134350, database mode): truelove-witts not recommended; recommended: ios:trueloveWitts",
+          "proposedFix": "Add Truelove and Witts (≥ 6 bloody stools + HR > 90, T > 37.8, Hb < 10.5 g/dL, ESR > 30) and the Oxford day-3 rule (> 8 stools, or 3–8 with CRP > 45) to clinical-scales with a CDS trigger on UC."
+        }
+      ]
+    },
+    "investigations": {
+      "mustInclude": [
+        {
+          "id": "inv-cdiff",
+          "severity": "critical",
+          "match": [
+            "difficile",
+            "c. diff",
+            "c diff",
+            "cdiff",
+            "cdi"
+          ],
+          "guidelineRefs": [
+            "bsg-ibd-2019",
+            "ecco-infections-2021"
+          ]
+        },
+        {
+          "id": "inv-stool-culture",
+          "severity": "quality",
+          "match": [
+            "stool c&s",
+            "stool culture",
+            "stool mc&s",
+            "stool microscopy"
+          ],
+          "guidelineRefs": [
+            "bsg-ibd-2019"
+          ]
+        },
+        {
+          "id": "inv-flexi-biopsy",
+          "severity": "quality",
+          "match": [
+            "flexible sigmoidoscop"
+          ],
+          "guidelineRefs": [
+            "bsg-ibd-2019",
+            "ecco-infections-2021"
+          ],
+          "note": "Unprepared flexible sigmoidoscopy with biopsies (including for CMV) within 72 h."
+        },
+        {
+          "id": "inv-axr",
+          "severity": "quality",
+          "match": [
+            "axr",
+            "abdominal x-ray",
+            "abdominal radiograph",
+            "plain abdominal film"
+          ],
+          "guidelineRefs": [
+            "bsg-ibd-2019"
+          ]
+        }
+      ]
+    },
+    "management": {
+      "mustInclude": [
+        {
+          "id": "mgmt-iv-steroids",
+          "severity": "critical",
+          "match": [
+            "re:hydrocortisone[^.;\\n]{0,30}\\biv\\b",
+            "re:\\biv\\b[^.;\\n]{0,20}hydrocortisone",
+            "methylprednisolone",
+            "iv steroid",
+            "intravenous steroid",
+            "intravenous corticosteroid"
+          ],
+          "guidelineRefs": [
+            "ecco-uc-2022",
+            "bsg-ibd-2019"
+          ]
+        },
+        {
+          "id": "mgmt-vte-prophylaxis",
+          "severity": "critical",
+          "match": [
+            "vte prophylaxis",
+            "lmwh",
+            "enoxaparin",
+            "low molecular weight heparin",
+            "thromboprophylaxis",
+            "dalteparin",
+            "tinzaparin"
+          ],
+          "guidelineRefs": [
+            "bsg-ibd-2019"
+          ],
+          "note": "BSG 2019: pharmacological VTE prophylaxis for all inpatients with ASUC, despite rectal bleeding."
+        },
+        {
+          "id": "mgmt-day3-assessment",
+          "severity": "quality",
+          "match": [
+            "day 3",
+            "day-3",
+            "72 h",
+            "3 days",
+            "third day",
+            "oxford",
+            "travis"
+          ],
+          "guidelineRefs": [
+            "travis-1996",
+            "bsg-ibd-2019"
+          ]
+        }
+      ],
+      "mustExclude": [
+        {
+          "id": "mgmt-no-appendicectomy",
+          "severity": "critical",
+          "match": [
+            "appendicectomy",
+            "appendectomy"
+          ],
+          "sources": [
+            "web.plan",
+            "web.clinicalPrompts",
+            "ios.radiation",
+            "ios.soap",
+            "ios.pipeline"
+          ],
+          "guidelineRefs": [
+            "bsg-ibd-2019"
+          ],
+          "note": "ASUC without peritonism: an emergency appendicectomy plan is a contraindicated operation. The exam text records \"no guarding or peritonism\".",
+          "proposedFix": "Gate the appendicectomy operative-plan prompt on the confirmed working diagnosis (appendicitis) or imaging, not on the words \"guarding\"/\"rebound\"; add negation handling (no/without/absent) to exam() matching."
+        },
+        {
+          "id": "mgmt-no-antimotility",
+          "severity": "critical",
+          "match": [
+            "loperamide",
+            "codeine",
+            "diphenoxylate",
+            "lomotil",
+            "ibuprofen",
+            "diclofenac",
+            "naproxen",
+            "nsaid",
+            "hyoscine",
+            "buscopan"
+          ],
+          "unless": [
+            "avoid",
+            "contraindicat",
+            "do not",
+            "stop",
+            "caution",
+            "hold",
+            "withhold"
+          ],
+          "sources": [
+            "web.plan",
+            "web.protocol.medications",
+            "web.clinicalPrompts",
+            "ios.radiation",
+            "ios.soap",
+            "ios.pipeline"
+          ],
+          "guidelineRefs": [
+            "bsg-ibd-2019"
+          ],
+          "note": "Antimotility agents, opioids, anticholinergics and NSAIDs can precipitate toxic megacolon in ASUC."
+        },
+        {
+          "id": "mgmt-truelove-criteria-correct",
+          "severity": "quality",
+          "match": [
+            "wbc >10.5",
+            "wbc > 10.5",
+            "wcc >10.5"
+          ],
+          "sources": [
+            "web.managementPanel.keyPoints",
+            "web.protocol",
+            "web.plan"
+          ],
+          "guidelineRefs": [
+            "bsg-ibd-2019"
+          ],
+          "note": "Truelove and Witts: ≥ 6 bloody stools/day plus HR > 90, T > 37.8 °C, Hb < 10.5 g/dL or ESR > 30 mm/h. WBC is not a criterion; a key point that says \"WBC > 10.5\" misstates the Hb criterion.",
+          "proposedFix": "Correct the key point in lib/pane-engine management protocols (colorectalHerniaBreast.ts, ulcerative_colitis): \"≥ 6 bloody stools/day plus HR > 90, T > 37.8 °C, Hb < 10.5 g/dL or ESR > 30 mm/h\"."
+        }
+      ]
+    }
+  },
+  "guideline": [
+    {
+      "id": "bsg-ibd-2019",
+      "name": "BSG consensus guidelines — management of inflammatory bowel disease in adults",
+      "year": 2019,
+      "section": "ASUC defined by the Truelove and Witts criteria (Truelove SC, Witts LJ. Br Med J 1955;2:1041–8): ≥ 6 bloody stools daily plus any of fever > 37.8 °C, pulse > 90, Hb < 10.5 g/dL, ESR > 30 mm/h. ASUC: admission, stool culture and C. difficile, flexible sigmoidoscopy with biopsies, IV corticosteroids, VTE prophylaxis, avoid antimotility/opioids/NSAIDs, day-3 assessment",
+      "citation": "Lamb CA, Kennedy NA, Raine T, et al. British Society of Gastroenterology consensus guidelines on the management of inflammatory bowel disease in adults. Gut. 2019;68(Suppl 3):s1–s106.",
+      "verified": false
+    },
+    {
+      "id": "ecco-uc-2022",
+      "name": "ECCO guidelines on therapeutics in ulcerative colitis — medical treatment",
+      "year": 2022,
+      "section": "Intravenous corticosteroids first-line for acute severe UC",
+      "citation": "Raine T, Bonovas S, Burisch J, et al. ECCO guidelines on therapeutics in ulcerative colitis: medical treatment. J Crohns Colitis. 2022;16:2–17.",
+      "verified": false
+    },
+    {
+      "id": "travis-1996",
+      "name": "Oxford (Travis) criteria — predicting outcome in severe ulcerative colitis",
+      "year": 1996,
+      "section": "Day 3: > 8 stools/day, or 3–8 stools/day with CRP > 45 mg/L, predicts colectomy",
+      "citation": "Travis SP, Farrant JM, Ricketts C, et al. Predicting outcome in severe ulcerative colitis. Gut. 1996;38:905–910.",
+      "verified": false
+    },
+    {
+      "id": "ecco-infections-2021",
+      "name": "ECCO guidelines — prevention, diagnosis and management of infections in IBD",
+      "year": 2021,
+      "section": "Exclude C. difficile in every flare; CMV in steroid-refractory colitis",
+      "citation": "Kucharzik T, Ellul P, Greuter T, et al. ECCO guidelines on the prevention, diagnosis, and management of infections in inflammatory bowel disease. J Crohns Colitis. 2021;15:879–913.",
+      "verified": false
+    }
+  ],
+  "rationale": "Base IBD case: a typical ASUC admission. Tests the admission level, IV steroids, infection exclusion, VTE prophylaxis (often omitted because of bleeding) and the absence of antimotility drugs. Also checks the protocol’s Truelove-Witts key point.",
+  "authoring": {
+    "author": "Claude (colorectal/anorectal cluster)",
+    "date": "2026-09-25",
+    "notes": "Expectations need surgeon sign-off (reviewedBy). Citations verified: false until checked against the source."
+  }
+}

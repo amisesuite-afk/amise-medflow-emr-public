@@ -1,0 +1,342 @@
+{
+  "schemaVersion": 1,
+  "id": "infective-colitis-bloody-diarrhoea",
+  "condition": "Infective colitis with bloody diarrhoea (possible STEC)",
+  "category": "colorectal",
+  "permutationOf": null,
+  "summary": "24-year-old man with three days of fever, cramps and bloody diarrhoea after a barbecue. IDSA 2017: stool culture including STEC/Shiga toxin; avoid antimotility agents and empirical antibiotics until STEC is excluded (HUS risk); first presentation of IBD is the differential.",
+  "tags": [
+    "mimic",
+    "infective",
+    "young"
+  ],
+  "inputs": {
+    "patient": {
+      "ageYears": 24,
+      "sex": "male",
+      "pregnancy": {
+        "status": "not-applicable"
+      },
+      "heightCm": 183,
+      "weightKg": 77
+    },
+    "encounter": {
+      "setting": "emergency",
+      "visitType": "urgentReview",
+      "acuity": "priority"
+    },
+    "chiefComplaint": "Bloody diarrhoea and stomach cramps",
+    "hpi": "Three days of watery then bloody diarrhoea 8 times a day with cramping lower abdominal pain and fever. Ate undercooked burgers at a barbecue 4 days before; a friend is also unwell. No previous bowel problems. No antibiotics recently. Took loperamide from the pharmacy.",
+    "socrates": {
+      "onset": [
+        "2–3 days ago"
+      ],
+      "site": [
+        "Diffuse"
+      ],
+      "character": [
+        "Cramping"
+      ],
+      "associations": [
+        "Fever",
+        "Rectal bleeding",
+        "Nausea"
+      ],
+      "timing": [
+        "Intermittent"
+      ],
+      "severity": [
+        "Moderate (4–6/10)"
+      ]
+    },
+    "symptoms": [
+      "bloody diarrhoea",
+      "abdominal pain",
+      "fever",
+      "nausea"
+    ],
+    "negatives": [
+      "recent antibiotics",
+      "weight loss"
+    ],
+    "exam": {
+      "general": "Dry mucous membranes. T 38.4°C, HR 102, BP 118/70.",
+      "abdomen": "Soft, diffusely tender in the lower abdomen, no guarding."
+    },
+    "vitals": [
+      {
+        "minutesAgo": 20,
+        "heartRate": 102,
+        "systolicBp": 118,
+        "diastolicBp": 70,
+        "respiratoryRate": 18,
+        "temperatureC": 38.4,
+        "spo2": 99,
+        "avpu": "A",
+        "onSupplementalO2": false
+      }
+    ],
+    "labs": [
+      {
+        "analyte": "haemoglobin",
+        "name": "Haemoglobin",
+        "value": 15.1,
+        "unit": "g/dL",
+        "minutesAgo": 60
+      },
+      {
+        "analyte": "wbc",
+        "name": "WBC",
+        "value": 14.2,
+        "unit": "×10⁹/L",
+        "minutesAgo": 60
+      },
+      {
+        "analyte": "platelets",
+        "name": "Platelets",
+        "value": 210,
+        "unit": "×10⁹/L",
+        "minutesAgo": 60
+      },
+      {
+        "analyte": "crp",
+        "name": "CRP",
+        "value": 96,
+        "unit": "mg/L",
+        "minutesAgo": 60
+      },
+      {
+        "analyte": "creatinine",
+        "name": "Creatinine",
+        "value": 104,
+        "unit": "µmol/L",
+        "minutesAgo": 60
+      },
+      {
+        "analyte": "urea",
+        "name": "Urea",
+        "value": 8.8,
+        "unit": "mmol/L",
+        "minutesAgo": 60
+      }
+    ],
+    "comorbidities": [],
+    "surgicalHistory": [],
+    "medications": [
+      {
+        "drug": "Loperamide",
+        "dose": "2 mg",
+        "frequency": "PRN (self-started)",
+        "indication": "Diarrhoea"
+      }
+    ],
+    "allergies": [],
+    "nkda": true,
+    "socialHistory": "Chef. Non-smoker.",
+    "confirmedDiagnosis": {
+      "name": "Acute infective colitis (bloody diarrhoea), STEC not excluded",
+      "icd10": "A09",
+      "assessmentText": "Acute bloody diarrhoea with fever after undercooked beef: infective colitis, STEC/E. coli O157 not excluded. Stool culture and Shiga toxin testing; stop loperamide; no empirical antibiotics until STEC excluded; monitor renal function and platelets."
+    },
+    "platform": {
+      "web": {
+        "ccTemplate": "Change in bowel habit",
+        "symptoms": [
+          "diarrhoea",
+          "rectal bleeding",
+          "abdominal pain",
+          "fever",
+          "nausea"
+        ],
+        "symptomDetails": {
+          "abdominal pain": [
+            "Diffuse",
+            "1–3 days",
+            "Cramping",
+            "Moderate (4–6)",
+            "Diarrhoea",
+            "Fever",
+            "PR bleeding"
+          ],
+          "rectal bleeding": [
+            "Mixed with stool",
+            "Diarrhoea"
+          ]
+        },
+        "examFindings": {
+          "abdomen": [
+            "Soft",
+            "Diffuse tenderness"
+          ]
+        },
+        "paneAnswers": {
+          "pr_bleeding": true,
+          "fever": true
+        },
+        "durationDays": 3,
+        "painScore": 5
+      }
+    }
+  },
+  "expected": {
+    "differential": {
+      "mustRankTopK": [
+        {
+          "id": "dx-infective-top3",
+          "severity": "quality",
+          "match": [
+            "infective colitis",
+            "infectious colitis",
+            "gastroenteritis",
+            "dysentery",
+            "e. coli",
+            "shigell",
+            "campylobacter"
+          ],
+          "k": 3,
+          "guidelineRefs": [
+            "idsa-diarrhoea-2017"
+          ]
+        }
+      ],
+      "mustNotMiss": [
+        {
+          "id": "mnm-ibd",
+          "severity": "quality",
+          "match": [
+            "ulcerative colitis",
+            "crohn",
+            "inflammatory bowel"
+          ],
+          "guidelineRefs": [
+            "idsa-diarrhoea-2017"
+          ],
+          "knownGap": [
+            "web"
+          ],
+          "knownGapNote": "IBD is not in the PANE top 3 (the \"Change in bowel habit\" template has no CC hint)."
+        }
+      ]
+    },
+    "investigations": {
+      "mustInclude": [
+        {
+          "id": "inv-stool-culture",
+          "severity": "critical",
+          "match": [
+            "stool culture",
+            "stool c&s",
+            "stool mc&s",
+            "stool pcr",
+            "shiga",
+            "stec",
+            "o157"
+          ],
+          "guidelineRefs": [
+            "idsa-diarrhoea-2017"
+          ],
+          "note": "IDSA 2017: bloody diarrhoea with fever → stool testing including STEC; results change antibiotic decisions."
+        }
+      ]
+    },
+    "management": {
+      "mustExclude": [
+        {
+          "id": "mgmt-no-appendicectomy",
+          "severity": "critical",
+          "match": [
+            "appendicectomy",
+            "appendectomy"
+          ],
+          "sources": [
+            "web.plan",
+            "web.clinicalPrompts",
+            "ios.radiation",
+            "ios.soap",
+            "ios.pipeline"
+          ],
+          "guidelineRefs": [
+            "idsa-diarrhoea-2017"
+          ],
+          "note": "Infective colitis is not a surgical abdomen: an emergency appendicectomy plan is a contraindicated operation. The exam text records \"no guarding\".",
+          "proposedFix": "Gate the appendicectomy operative-plan prompt on the confirmed working diagnosis (appendicitis) or imaging, not on the words \"guarding\"/\"rebound\"; add negation handling (no/without/absent) to exam() matching."
+        },
+        {
+          "id": "mgmt-no-antimotility",
+          "severity": "critical",
+          "match": [
+            "loperamide",
+            "codeine",
+            "diphenoxylate",
+            "lomotil"
+          ],
+          "unless": [
+            "avoid",
+            "contraindicat",
+            "do not",
+            "stop",
+            "caution",
+            "hold",
+            "withhold"
+          ],
+          "sources": [
+            "web.plan",
+            "web.protocol.medications",
+            "web.clinicalPrompts",
+            "ios.radiation",
+            "ios.soap",
+            "ios.pipeline"
+          ],
+          "guidelineRefs": [
+            "idsa-diarrhoea-2017"
+          ],
+          "note": "Antimotility agents are avoided in bloody/inflammatory diarrhoea (toxic megacolon; HUS with STEC)."
+        },
+        {
+          "id": "mgmt-no-empirical-antibiotics-stec",
+          "severity": "quality",
+          "match": [
+            "ciprofloxacin",
+            "azithromycin",
+            "co-amoxiclav",
+            "metronidazole"
+          ],
+          "unless": [
+            "if ",
+            "after",
+            "unless",
+            "avoid"
+          ],
+          "sources": [
+            "web.plan",
+            "web.protocol.medications",
+            "web.clinicalPrompts",
+            "ios.radiation",
+            "ios.soap",
+            "ios.pipeline"
+          ],
+          "guidelineRefs": [
+            "idsa-diarrhoea-2017"
+          ],
+          "note": "IDSA 2017: avoid antibiotics when STEC is possible (increased HUS risk)."
+        }
+      ]
+    }
+  },
+  "guideline": [
+    {
+      "id": "idsa-diarrhoea-2017",
+      "name": "IDSA clinical practice guidelines — diagnosis and management of infectious diarrhoea",
+      "year": 2017,
+      "section": "Bloody diarrhoea/fever: stool culture and STEC testing; avoid antimotility agents in inflammatory diarrhoea; avoid antibiotics in STEC O157/Shiga toxin 2 infection",
+      "citation": "Shane AL, Mody RK, Crump JA, et al. 2017 Infectious Diseases Society of America clinical practice guidelines for the diagnosis and management of infectious diarrhea. Clin Infect Dis. 2017;65:e45–e80.",
+      "verified": false
+    }
+  ],
+  "rationale": "Base infective mimic of IBD and ischaemic colitis. The patient has self-started loperamide; the plan should stop it.",
+  "authoring": {
+    "author": "Claude (colorectal/anorectal cluster)",
+    "date": "2026-09-25",
+    "notes": "Expectations need surgeon sign-off (reviewedBy). Citations verified: false until checked against the source."
+  }
+}

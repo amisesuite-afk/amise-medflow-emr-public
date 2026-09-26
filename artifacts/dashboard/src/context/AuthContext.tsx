@@ -1,7 +1,21 @@
 // @refresh reset
-import React, { createContext, useContext, useEffect, useState } from 'react';
+import React, { createContext, useContext, useEffect, useRef, useState } from 'react';
 import type { Session } from '@supabase/supabase-js';
 import { supabase, supabaseConfigured, configIssues, UserProfile, UserRole, SiteCode, serializeError } from '@/lib/supabase';
+import { flush, pendingCount, pendingEntityTypes, clearOutbox, whenEnqueuesSettled } from '@/lib/sync-outbox';
+import { bindPhiStorageToUser, clearPhiWebStorage } from '@/lib/phi-storage';
+import { runSecureSignOut, type SignOutDeps, type UnsyncedSummary, type SignOutReason, type SignOutOutcome } from '@/lib/secure-sign-out';
+import UnsyncedSignOutDialog, { SigningOutOverlay } from '@/components/UnsyncedSignOutDialog';
+
+const SIGN_OUT_DEPS: SignOutDeps = {
+  flushOutbox: () => flush(undefined, { ignoreBackoff: true }),
+  pendingOutbox: pendingCount,
+  pendingOutboxTypes: pendingEntityTypes,
+  whenEnqueuesSettled,
+  clearOutbox,
+};
+
+export type { SignOutReason, SignOutOutcome } from '@/lib/secure-sign-out';
 
 export const DEMO_MODE = false;
 export const DEMO_PROFILE: UserProfile = {
@@ -19,8 +33,15 @@ interface AuthCtx {
   profileError: string | null;
   configured: boolean;
   sessionExpired: boolean;
+  /** Set when the last sign-out was the idle timeout (LoginPage shows why). */
+  signedOutForInactivity: boolean;
   signIn(email: string, password: string): Promise<{ error: string | null; detail?: string }>;
-  signOut(): Promise<void>;
+  /**
+   * Sign out safely: flush pending saves and the offline outbox first; if
+   * anything would still be lost, ask the user (manual) or refuse (idle).
+   * Clears PHI-bearing browser storage once signed out.
+   */
+  signOut(opts?: { reason?: SignOutReason }): Promise<SignOutOutcome>;
 }
 
 // Persist the context object on window so HMR module re-evaluations reuse
@@ -52,6 +73,10 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [loading, setLoading]           = useState(!DEMO_MODE);
   const [profileError, setProfileError] = useState<string | null>(null);
   const [sessionExpired, setSessionExpired] = useState(false);
+  const [signedOutForInactivity, setSignedOutForInactivity] = useState(false);
+  const [signingOut, setSigningOut] = useState(false);
+  const [confirm, setConfirm] = useState<{ summary: UnsyncedSummary; resolve: (discard: boolean) => void } | null>(null);
+  const signOutInFlight = useRef<Promise<SignOutOutcome> | null>(null);
 
   useEffect(() => {
     if (DEMO_MODE) return;
@@ -86,6 +111,10 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   async function fetchProfile(userId: string, email: string | null) {
     if (!supabase) return;
     setProfileError(null);
+    // Before any profile is set (and so before AppProvider mounts and restores
+    // the cached encounter): drop PHI caches written under a different user.
+    const stale = bindPhiStorageToUser(userId);
+    if (stale.length) console.info('[auth] cleared PHI cached under a previous user:', stale);
 
     try {
       const { data, error } = await supabase
@@ -152,6 +181,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     }
     try {
       setSessionExpired(false);
+      setSignedOutForInactivity(false);
       const { data, error } = await supabase.auth.signInWithPassword({ email, password });
       if (error) {
         const detail = `name="${error.name}" status=${error.status} msg="${error.message}"`;
@@ -167,15 +197,65 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     }
   }
 
-  async function signOut() {
-    if (DEMO_MODE) return;
+  async function endSession(reason: SignOutReason): Promise<void> {
     if (!supabase) return;
-    await supabase.auth.signOut();
+    if (reason === 'idle') {
+      // Idle: end only this browser's session — never revoke the user's
+      // sessions on other devices (e.g. the iOS app) because this tab idled.
+      await supabase.auth.signOut({ scope: 'local' });
+    } else {
+      const { error } = await supabase.auth.signOut();
+      // If the server-side revoke failed (offline), still end the session here.
+      if (error) await supabase.auth.signOut({ scope: 'local' });
+    }
+  }
+
+  async function runSignOut(reason: SignOutReason): Promise<SignOutOutcome> {
+    if (DEMO_MODE || !supabase) return { status: 'signed_out' };
+    const outcome = await runSecureSignOut({
+      reason,
+      deps: SIGN_OUT_DEPS,
+      // The idle lock screen shows its own progress; only a manual sign-out needs this overlay.
+      onPrepareStart: () => { if (reason === 'manual') setSigningOut(true); },
+      onPrepareEnd: () => setSigningOut(false),
+      confirmDiscard: summary => new Promise<boolean>(resolve => {
+        setConfirm({ summary, resolve: discard => { setConfirm(null); resolve(discard); } });
+      }),
+      endSession: async () => {
+        setSignedOutForInactivity(reason === 'idle');
+        await endSession(reason);
+      },
+    });
+    if (outcome.status === 'signed_out') {
+      // Second pass once the app tree has unmounted: a debounced autosave timer
+      // that fired between the first pass and unmount must not leave PHI behind.
+      setTimeout(() => {
+        void supabase?.auth.getSession().then(({ data }) => { if (!data.session) clearPhiWebStorage(); });
+      }, 1_500);
+    }
+    return outcome;
+  }
+
+  function signOut(opts: { reason?: SignOutReason } = {}): Promise<SignOutOutcome> {
+    // One sign-out at a time (a double-click, or idle firing during a manual one).
+    if (!signOutInFlight.current) {
+      signOutInFlight.current = runSignOut(opts.reason ?? 'manual')
+        .finally(() => { signOutInFlight.current = null; });
+    }
+    return signOutInFlight.current;
   }
 
   return (
-    <Ctx.Provider value={{ session, profile, loading, profileError, configured: DEMO_MODE ? true : supabaseConfigured, sessionExpired, signIn, signOut }}>
+    <Ctx.Provider value={{ session, profile, loading, profileError, configured: DEMO_MODE ? true : supabaseConfigured, sessionExpired, signedOutForInactivity, signIn, signOut }}>
       {children}
+      {signingOut && <SigningOutOverlay />}
+      {confirm && (
+        <UnsyncedSignOutDialog
+          summary={confirm.summary}
+          onStay={() => confirm.resolve(false)}
+          onDiscard={() => confirm.resolve(true)}
+        />
+      )}
     </Ctx.Provider>
   );
 }

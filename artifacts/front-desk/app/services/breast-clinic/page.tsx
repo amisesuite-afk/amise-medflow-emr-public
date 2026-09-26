@@ -3,6 +3,7 @@ import Link from 'next/link';
 import { WA_TAPION, WA_RODNEY, PHONE_TAPION, PHONE_RODNEY, WaSvg } from '@/app/components/shared';
 
 export const metadata: Metadata = {
+  alternates: { canonical: '/services/breast-clinic' },
   title: 'Breast Clinic — Early Detection, Assessment & Surgical Care',
   description: 'Breast clinic in Saint Lucia — lump assessment, biopsy, mammogram review, and surgical planning by Dr Dawit Daniel Kabiye, MD, DM. Early detection saves lives.',
 };

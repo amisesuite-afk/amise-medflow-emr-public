@@ -1,0 +1,282 @@
+{
+  "schemaVersion": 1,
+  "id": "hyponatraemia-elderly-thiazide-ssri",
+  "condition": "Hyponatraemia (thiazide + SSRI, elderly)",
+  "category": "general-medicine",
+  "permutationOf": "hyponatraemia-severe-postop-seizure",
+  "permutationLabel": "Elderly, chronic, thiazide + SSRI, moderately severe symptoms",
+  "summary": "82-year-old woman on bendroflumethiazide and newly started sertraline with nausea, confusion and a fall; sodium 119, potassium 3.1, euvolaemic.",
+  "tags": [
+    "elderly",
+    "drug-induced",
+    "metabolic"
+  ],
+  "inputs": {
+    "patient": {
+      "ageYears": 82,
+      "sex": "female",
+      "pregnancy": {
+        "status": "not-applicable"
+      },
+      "heightCm": 155,
+      "weightKg": 52
+    },
+    "encounter": {
+      "setting": "emergency",
+      "visitType": "urgentReview",
+      "acuity": "urgent"
+    },
+    "chiefComplaint": "Nausea, confusion and a fall",
+    "hpi": "Bendroflumethiazide for years; sertraline started 3 weeks ago for low mood. Four days of nausea, poor appetite, unsteadiness and new confusion; fell at home today without head injury. Drinking normally.",
+    "symptoms": [
+      "nausea",
+      "confusion",
+      "unsteady gait",
+      "anorexia"
+    ],
+    "negatives": [
+      "vomiting",
+      "seizure",
+      "head injury",
+      "diarrhoea"
+    ],
+    "exam": {
+      "general": "Mildly confused (AMT 6/10). Clinically euvolaemic: moist mucous membranes, no postural drop, no oedema. Pulse 84/min, BP 134/72, RR 16, temperature 36.6°C.",
+      "neuro": "No focal deficit."
+    },
+    "vitals": [
+      {
+        "minutesAgo": 10,
+        "heartRate": 84,
+        "systolicBp": 134,
+        "diastolicBp": 72,
+        "respiratoryRate": 16,
+        "temperatureC": 36.6,
+        "spo2": 96,
+        "avpu": "C",
+        "onSupplementalO2": false,
+        "weightKg": 52
+      }
+    ],
+    "labs": [
+      {
+        "analyte": "sodium",
+        "name": "Sodium",
+        "value": 119,
+        "unit": "mmol/L",
+        "minutesAgo": 30
+      },
+      {
+        "analyte": "potassium",
+        "name": "Potassium",
+        "value": 3.1,
+        "unit": "mmol/L",
+        "minutesAgo": 30
+      },
+      {
+        "analyte": "osmolality",
+        "name": "Serum osmolality",
+        "value": 252,
+        "unit": "mOsm/kg",
+        "minutesAgo": 30
+      },
+      {
+        "analyte": "osmolality",
+        "name": "Urine osmolality",
+        "value": 390,
+        "unit": "mOsm/kg",
+        "minutesAgo": 30
+      },
+      {
+        "analyte": "sodium",
+        "name": "Urine sodium",
+        "value": 42,
+        "unit": "mmol/L",
+        "minutesAgo": 30
+      },
+      {
+        "analyte": "creatinine",
+        "name": "Creatinine",
+        "value": 71,
+        "unit": "µmol/L",
+        "minutesAgo": 30
+      },
+      {
+        "analyte": "glucose",
+        "name": "Glucose",
+        "value": 5.6,
+        "unit": "mmol/L",
+        "minutesAgo": 30
+      }
+    ],
+    "imaging": [],
+    "comorbidities": [
+      "Hypertension",
+      "Depression"
+    ],
+    "surgicalHistory": [],
+    "medications": [
+      {
+        "drug": "Bendroflumethiazide",
+        "dose": "2.5 mg",
+        "frequency": "OD",
+        "indication": "Hypertension"
+      },
+      {
+        "drug": "Sertraline",
+        "dose": "50 mg",
+        "frequency": "OD",
+        "indication": "Depression (started 3 weeks ago)"
+      }
+    ],
+    "allergies": [],
+    "nkda": true,
+    "socialHistory": "Widow, lives alone.",
+    "confirmedDiagnosis": {
+      "name": "Chronic hyponatraemia with moderately severe symptoms (thiazide and SSRI)",
+      "icd10": "E87.1",
+      "assessmentText": "Chronic euvolaemic hyponatraemia (Na 119) with moderately severe symptoms from thiazide and sertraline; hypokalaemia 3.1; high osmotic demyelination risk with rapid correction."
+    },
+    "platform": {
+      "web": {
+        "ccTemplate": "Nausea / vomiting",
+        "symptoms": [
+          "nausea",
+          "confusion",
+          "unsteady gait",
+          "anorexia"
+        ],
+        "symptomDetails": {
+          "nausea": [
+            "Moderate",
+            "Dizziness",
+            "Related to medications"
+          ]
+        },
+        "durationDays": 4
+      }
+    }
+  },
+  "expected": {
+    "safety": {
+      "emergencyLevel": {
+        "id": "level-urgent",
+        "severity": "critical",
+        "atLeast": "urgent",
+        "guidelineRefs": [
+          "eur-hypona-2014"
+        ]
+      },
+      "mustAlarm": [
+        {
+          "id": "alarm-hyponatraemia",
+          "severity": "critical",
+          "match": [
+            "hyponat",
+            "sodium"
+          ],
+          "guidelineRefs": [
+            "eur-hypona-2014"
+          ]
+        }
+      ],
+      "redFlags": [
+        {
+          "id": "flag-hypokalaemia",
+          "severity": "quality",
+          "match": [
+            "hypokal",
+            "potassium 3.1",
+            "low potassium"
+          ],
+          "guidelineRefs": [
+            "eur-hypona-2014"
+          ],
+          "note": "Potassium replacement raises sodium too: part of the overcorrection risk.",
+          "proposedFix": "Add a hypokalaemia prompt, and warn that correcting potassium raises sodium."
+        }
+      ]
+    },
+    "management": {
+      "mustInclude": [
+        {
+          "id": "mgmt-osmolality-urine-sodium",
+          "severity": "quality",
+          "match": [
+            "osmolality",
+            "urine sodium",
+            "urine na"
+          ],
+          "guidelineRefs": [
+            "eur-hypona-2014"
+          ],
+          "note": "Graded as management because the web prompt adds this test as a plan line, not an investigation order."
+        },
+        {
+          "id": "mgmt-stop-thiazide",
+          "severity": "critical",
+          "match": [
+            "re:(stop|hold|withhold|discontinu|omit)[^.;\\n]{0,40}(thiazide|bendroflumethiazide|diuretic)"
+          ],
+          "guidelineRefs": [
+            "eur-hypona-2014"
+          ]
+        },
+        {
+          "id": "mgmt-stop-ssri",
+          "severity": "quality",
+          "match": [
+            "re:(stop|hold|withhold|discontinu|omit|review)[^.;\\n]{0,40}(ssri|sertraline)",
+            "ssri"
+          ],
+          "guidelineRefs": [
+            "eur-hypona-2014"
+          ]
+        },
+        {
+          "id": "mgmt-correction-limit",
+          "severity": "critical",
+          "match": [
+            "re:10 mmol/l[^;\\n]{0,40}24",
+            "re:max(imum)? 10 mmol",
+            "overcorrect",
+            "osmotic demyelination"
+          ],
+          "guidelineRefs": [
+            "eur-hypona-2014"
+          ],
+          "note": "Elderly, chronic, hypokalaemic, thiazide: high risk of osmotic demyelination with rapid correction."
+        },
+        {
+          "id": "mgmt-single-hypertonic-150",
+          "severity": "quality",
+          "match": [
+            "re:150 ?ml",
+            "hypertonic",
+            "3% saline"
+          ],
+          "guidelineRefs": [
+            "eur-hypona-2014"
+          ],
+          "note": "Moderately severe symptoms: a single 150 mL 3% infusion (European 2014)."
+        }
+      ]
+    }
+  },
+  "guideline": [
+    {
+      "id": "eur-hypona-2014",
+      "name": "European clinical practice guideline on diagnosis and treatment of hyponatraemia (ESE/ESICM/ERBP)",
+      "year": 2014,
+      "section": "Severe symptoms (seizure, vomiting, reduced consciousness): 150 mL 3% hypertonic saline over 20 min, repeated (up to twice) checking sodium, target +5 mmol/L; moderately severe symptoms: single 150 mL 3% infusion; limit the rise to 10 mmol/L in the first 24 h and 8 mmol/L in each subsequent 24 h; hypovolaemic hyponatraemia: restore volume with 0.9% saline or balanced crystalloid; SIADH: fluid restriction first line; stop contributing drugs",
+      "citation": "Spasovski G, Vanholder R, Allolio B, et al. Clinical practice guideline on diagnosis and treatment of hyponatraemia. Eur J Endocrinol. 2014;170:G1–47.",
+      "verified": false
+    }
+  ],
+  "rationale": "Chronic hyponatraemia in an older woman: stop the causative drugs and correct slowly (limit 10 mmol/L in 24 h).",
+  "authoring": {
+    "author": "Claude (endocrine / renal / urology / neuro cluster)",
+    "date": "2026-09-25",
+    "notes": "Expectations need surgeon sign-off (reviewedBy). Every citation is verified: false. iOS outcomes not observed (Linux)."
+  }
+}

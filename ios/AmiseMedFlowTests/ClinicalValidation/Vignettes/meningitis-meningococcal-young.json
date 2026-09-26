@@ -1,0 +1,287 @@
+{
+  "schemaVersion": 1,
+  "id": "meningitis-meningococcal-young",
+  "condition": "Bacterial meningitis / meningococcal disease",
+  "category": "other",
+  "permutationOf": null,
+  "permutationLabel": "Young adult, non-blanching rash, shock",
+  "summary": "19-year-old student with 12 h of fever, headache, vomiting, neck stiffness, photophobia and a non-blanching purpuric rash; HR 128, BP 96/58.",
+  "tags": [
+    "neuro",
+    "infection",
+    "sepsis",
+    "do-not-miss",
+    "time-critical"
+  ],
+  "inputs": {
+    "patient": {
+      "ageYears": 19,
+      "sex": "male",
+      "pregnancy": {
+        "status": "not-applicable"
+      },
+      "heightCm": 181,
+      "weightKg": 72
+    },
+    "encounter": {
+      "setting": "emergency",
+      "visitType": "urgentReview",
+      "acuity": "emergency"
+    },
+    "chiefComplaint": "Fever, headache and a rash",
+    "hpi": "University student living in halls. Twelve hours of fever, severe headache, vomiting and aching legs; now drowsy with a spreading rash on the legs that does not fade under a glass. Neck stiff, light hurts.",
+    "socrates": {
+      "onset": [
+        "Today"
+      ]
+    },
+    "symptoms": [
+      "fever",
+      "headache",
+      "neck stiffness",
+      "photophobia",
+      "non-blanching rash",
+      "vomiting",
+      "confusion"
+    ],
+    "negatives": [
+      "head injury",
+      "recent travel"
+    ],
+    "exam": {
+      "general": "Drowsy, cold hands and feet, capillary refill 4 s. Pulse 128/min, BP 96/58, RR 24, temperature 39.4°C, SpO2 96%.",
+      "neuro": "GCS 13, neck stiffness, Kernig sign positive, no focal deficit.",
+      "skin": "Non-blanching petechial and purpuric rash on both legs and trunk."
+    },
+    "vitals": [
+      {
+        "minutesAgo": 10,
+        "heartRate": 128,
+        "systolicBp": 96,
+        "diastolicBp": 58,
+        "respiratoryRate": 24,
+        "temperatureC": 39.4,
+        "spo2": 96,
+        "avpu": "V",
+        "onSupplementalO2": false,
+        "weightKg": 72
+      }
+    ],
+    "labs": [
+      {
+        "analyte": "wbc",
+        "name": "WBC",
+        "value": 22.4,
+        "unit": "×10⁹/L",
+        "minutesAgo": 30
+      },
+      {
+        "analyte": "crp",
+        "name": "CRP",
+        "value": 180,
+        "unit": "mg/L",
+        "minutesAgo": 30
+      },
+      {
+        "analyte": "lactate",
+        "name": "Lactate",
+        "value": 3.4,
+        "unit": "mmol/L",
+        "minutesAgo": 30
+      },
+      {
+        "analyte": "platelets",
+        "name": "Platelets",
+        "value": 88,
+        "unit": "×10⁹/L",
+        "minutesAgo": 30
+      }
+    ],
+    "imaging": [],
+    "comorbidities": [],
+    "surgicalHistory": [],
+    "medications": [],
+    "allergies": [],
+    "nkda": true,
+    "socialHistory": "Student in shared halls.",
+    "confirmedDiagnosis": {
+      "name": "Meningococcal meningitis with septicaemia (suspected)",
+      "icd10": "A39.0",
+      "assessmentText": "Suspected meningococcal disease (non-blanching rash, meningism, shock): IV ceftriaxone now, blood cultures, do not delay for LP."
+    },
+    "platform": {
+      "web": {
+        "ccTemplate": "Other / general surgical",
+        "symptoms": [
+          "fever",
+          "headache",
+          "neck stiffness",
+          "photophobia",
+          "non-blanching rash",
+          "vomiting",
+          "confusion",
+          "rash"
+        ],
+        "symptomDetails": {
+          "headache": [
+            "Generalised",
+            "Throbbing / pulsating",
+            "Neck stiffness",
+            "Photophobia",
+            "Fever",
+            "Nausea / vomiting"
+          ],
+          "rash": [
+            "Limbs",
+            "Purpuric (non-blanching)",
+            "Fever"
+          ]
+        },
+        "durationDays": 0.5
+      }
+    }
+  },
+  "expected": {
+    "differential": {
+      "mustNotMiss": [
+        {
+          "id": "mnm-meningitis",
+          "severity": "critical",
+          "match": [
+            "mening"
+          ],
+          "guidelineRefs": [
+            "nice-ng240",
+            "nice-ng51"
+          ]
+        },
+        {
+          "id": "mnm-meningitis-symptom-engine",
+          "severity": "quality",
+          "platforms": [
+            "web"
+          ],
+          "match": [
+            "mening"
+          ],
+          "source": "web.symptomInference",
+          "guidelineRefs": [
+            "nice-ng240",
+            "nice-ng51"
+          ]
+        }
+      ]
+    },
+    "safety": {
+      "emergencyLevel": {
+        "id": "level-emergency",
+        "severity": "critical",
+        "atLeast": "emergency",
+        "guidelineRefs": [
+          "nice-ng240",
+          "nice-ng51"
+        ]
+      },
+      "mustAlarm": [
+        {
+          "id": "alarm-meningitis",
+          "severity": "critical",
+          "match": [
+            "mening"
+          ],
+          "guidelineRefs": [
+            "nice-ng240"
+          ]
+        },
+        {
+          "id": "alarm-sepsis",
+          "severity": "quality",
+          "match": [
+            "sepsis",
+            "septic"
+          ],
+          "guidelineRefs": [
+            "nice-ng51"
+          ]
+        }
+      ]
+    },
+    "management": {
+      "mustInclude": [
+        {
+          "id": "mgmt-blood-cultures",
+          "severity": "critical",
+          "match": [
+            "blood culture"
+          ],
+          "guidelineRefs": [
+            "nice-ng240",
+            "nice-ng51"
+          ],
+          "note": "Graded as management because the web sepsis prompt adds blood cultures as a plan line; the seeded investigation lists come from unrelated PANE protocols."
+        },
+        {
+          "id": "mgmt-ceftriaxone-now",
+          "severity": "critical",
+          "match": [
+            "ceftriaxone",
+            "cefotaxime",
+            "benzylpenicillin"
+          ],
+          "guidelineRefs": [
+            "nice-ng240"
+          ]
+        },
+        {
+          "id": "mgmt-dexamethasone",
+          "severity": "quality",
+          "match": [
+            "dexamethasone"
+          ],
+          "guidelineRefs": [
+            "nice-ng240"
+          ],
+          "knownGapNote": "Web: No dexamethasone.",
+          "proposedFix": "Add neurological safety prompts to clinical-inference.ts keyed on symptoms/HPI text (FAST → CT head + stroke team; thunderclap → CT head ± LP/CTA + neurosurgery; meningism/purpura → blood cultures + IV ceftriaxone now; saddle anaesthesia/retention → emergency MRI + spinal team; cancer + back pain/weakness → MRI whole spine + dexamethasone + MSCC coordinator)."
+        },
+        {
+          "id": "mgmt-public-health",
+          "severity": "quality",
+          "match": [
+            "public health",
+            "notif"
+          ],
+          "guidelineRefs": [
+            "nice-ng240"
+          ],
+          "knownGapNote": "Web: No public-health notification.",
+          "proposedFix": "Add neurological safety prompts to clinical-inference.ts keyed on symptoms/HPI text (FAST → CT head + stroke team; thunderclap → CT head ± LP/CTA + neurosurgery; meningism/purpura → blood cultures + IV ceftriaxone now; saddle anaesthesia/retention → emergency MRI + spinal team; cancer + back pain/weakness → MRI whole spine + dexamethasone + MSCC coordinator)."
+        }
+      ]
+    }
+  },
+  "guideline": [
+    {
+      "id": "nice-ng240",
+      "name": "NICE NG240 — Meningitis (bacterial) and meningococcal disease: recognition, diagnosis and management",
+      "year": 2024,
+      "section": "Suspected bacterial meningitis or meningococcal disease: IV ceftriaxone without delay (do not delay for lumbar puncture or imaging); blood cultures; dexamethasone for suspected bacterial meningitis; senior/critical care review; public health notification",
+      "citation": "National Institute for Health and Care Excellence. Meningitis (bacterial) and meningococcal disease: recognition, diagnosis and management. NICE guideline NG240. London: NICE; 2024.",
+      "verified": false
+    },
+    {
+      "id": "nice-ng51",
+      "name": "NICE NG51 — Suspected sepsis: recognition, diagnosis and early management",
+      "year": 2024,
+      "section": "High-risk criteria (new confusion, SBP ≤90, HR >130, RR ≥25, lactate); blood cultures and broad-spectrum IV antibiotics within 1 hour for high risk; IV fluid bolus; lactate; senior review; source control",
+      "citation": "National Institute for Health and Care Excellence. Suspected sepsis in people aged 16 or over: recognition, assessment and early management. NICE guideline NG51 (updated 2024). London: NICE.",
+      "verified": false
+    }
+  ],
+  "rationale": "NICE NG240: IV ceftriaxone immediately without waiting for LP/imaging, blood cultures, dexamethasone, public health notification.",
+  "authoring": {
+    "author": "Claude (endocrine / renal / urology / neuro cluster)",
+    "date": "2026-09-25",
+    "notes": "Expectations need surgeon sign-off (reviewedBy). Every citation is verified: false. iOS outcomes not observed (Linux)."
+  }
+}

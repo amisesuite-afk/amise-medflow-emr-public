@@ -117,7 +117,7 @@ struct DiagnosisCatalogueSheet: View {
                 .font(.system(size: 12, weight: .medium))
                 .padding(.horizontal, 10)
                 .padding(.vertical, 5)
-                .background(isSelected ? AMColor.accent.opacity(0.15) : Color(.secondarySystemBackground))
+                .background { isSelected ? AMColor.accent.opacity(0.15) : Color(.secondarySystemBackground) }
                 .foregroundStyle(isSelected ? AMColor.accent : .secondary)
                 .clipShape(Capsule())
                 .overlay(Capsule().strokeBorder(isSelected ? AMColor.accent.opacity(0.4) : Color.clear, lineWidth: 1))
@@ -181,7 +181,7 @@ struct DiagnosisCatalogueSheet: View {
             Image(systemName: "magnifyingglass.circle")
                 .font(.system(size: 44))
                 .foregroundStyle(.tertiary)
-            Text("No matches for "\(query)"")
+            Text("No matches for \"\(query)\"")
                 .font(.subheadline)
                 .foregroundStyle(.secondary)
             Button("Add Custom Diagnosis") {

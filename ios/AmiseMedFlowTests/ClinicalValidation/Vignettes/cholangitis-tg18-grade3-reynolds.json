@@ -1,0 +1,610 @@
+{
+  "schemaVersion": 1,
+  "id": "cholangitis-tg18-grade3-reynolds",
+  "condition": "Acute cholangitis",
+  "category": "hpb",
+  "permutationOf": "cholangitis-tg18-charcot-sepsis",
+  "permutationLabel": "TG18 Grade III (severe) — Reynolds' pentad, septic shock, on apixaban",
+  "summary": "82-year-old woman found confused: fever 39.6 °C, jaundice, BP 78/44 needing noradrenaline, oliguria, creatinine 212, INR 1.8, platelets 74, lactate 5.2; CBD 14 mm with stones. On apixaban for AF.",
+  "tags": [
+    "biliary",
+    "sepsis",
+    "ercp",
+    "anticoagulated",
+    "elderly"
+  ],
+  "inputs": {
+    "patient": {
+      "ageYears": 82,
+      "sex": "female",
+      "pregnancy": {
+        "status": "not-applicable"
+      },
+      "heightCm": 155,
+      "weightKg": 58
+    },
+    "encounter": {
+      "setting": "emergency",
+      "visitType": "urgentReview",
+      "acuity": "emergency"
+    },
+    "chiefComplaint": "Jaundice, fever and confusion",
+    "hpi": "Found confused at home by her son. Two days of fever, rigors and abdominal pain; yellow eyes noticed yesterday. Not passing much urine. Known atrial fibrillation on apixaban and type 2 diabetes.",
+    "socrates": {
+      "onset": [
+        "2–3 days ago"
+      ],
+      "site": [
+        "RUQ"
+      ],
+      "character": [
+        "Aching"
+      ],
+      "radiation": [
+        "No radiation"
+      ],
+      "associations": [
+        "Fever",
+        "Rigors",
+        "Jaundice"
+      ],
+      "timing": [
+        "Constant"
+      ],
+      "exacerbating": [],
+      "relieving": [
+        "Nothing"
+      ],
+      "severity": [
+        "Severe (7–9/10)"
+      ]
+    },
+    "symptoms": [
+      "right upper quadrant pain",
+      "fever",
+      "rigors",
+      "jaundice",
+      "confusion",
+      "oliguria"
+    ],
+    "negatives": [],
+    "exam": {
+      "general": "Jaundiced, drowsy with new confusion (GCS 12). Temperature 39.6°C with rigors. Tachycardia 128/min. Haemodynamically unstable: hypotension 78/44 despite 30 mL/kg crystalloid, noradrenaline started. Cool, mottled peripheries. Reynolds' pentad.",
+      "abdomen": "Tender right upper quadrant with guarding. No generalised peritonism."
+    },
+    "vitals": [
+      {
+        "minutesAgo": 10,
+        "heartRate": 128,
+        "systolicBp": 78,
+        "diastolicBp": 44,
+        "respiratoryRate": 28,
+        "temperatureC": 39.6,
+        "spo2": 91,
+        "avpu": "V",
+        "onSupplementalO2": false
+      }
+    ],
+    "labs": [
+      {
+        "analyte": "wbc",
+        "name": "WBC",
+        "value": 24.8,
+        "unit": "×10⁹/L",
+        "minutesAgo": 25
+      },
+      {
+        "analyte": "crp",
+        "name": "CRP",
+        "value": 280,
+        "unit": "mg/L",
+        "minutesAgo": 25
+      },
+      {
+        "analyte": "bilirubin",
+        "name": "Bilirubin",
+        "value": 142,
+        "unit": "µmol/L",
+        "minutesAgo": 25
+      },
+      {
+        "analyte": "alp",
+        "name": "ALP",
+        "value": 520,
+        "unit": "U/L",
+        "minutesAgo": 25
+      },
+      {
+        "analyte": "alt",
+        "name": "ALT",
+        "value": 260,
+        "unit": "U/L",
+        "minutesAgo": 25
+      },
+      {
+        "analyte": "albumin",
+        "name": "Albumin",
+        "value": 24,
+        "unit": "g/L",
+        "minutesAgo": 25
+      },
+      {
+        "analyte": "creatinine",
+        "name": "Creatinine",
+        "value": 212,
+        "unit": "µmol/L",
+        "minutesAgo": 25
+      },
+      {
+        "analyte": "urea",
+        "name": "Urea",
+        "value": 16.4,
+        "unit": "mmol/L",
+        "minutesAgo": 25
+      },
+      {
+        "analyte": "platelets",
+        "name": "Platelets",
+        "value": 74,
+        "unit": "×10⁹/L",
+        "minutesAgo": 25
+      },
+      {
+        "analyte": "inr",
+        "name": "INR",
+        "value": 1.8,
+        "unit": "",
+        "minutesAgo": 25
+      },
+      {
+        "analyte": "lactate",
+        "name": "Lactate",
+        "value": 5.2,
+        "unit": "mmol/L",
+        "minutesAgo": 25
+      },
+      {
+        "analyte": "glucose",
+        "name": "Glucose",
+        "value": 14.6,
+        "unit": "mmol/L",
+        "minutesAgo": 25
+      }
+    ],
+    "imaging": [
+      {
+        "name": "USS abdomen",
+        "modality": "US",
+        "region": "Abdomen",
+        "result": "Common bile duct dilated to 14 mm with multiple distal duct stones; intrahepatic duct dilatation. Gallstones in the gallbladder.",
+        "minutesAgo": 15
+      }
+    ],
+    "comorbidities": [
+      "Atrial fibrillation",
+      "Type 2 diabetes mellitus"
+    ],
+    "surgicalHistory": [],
+    "medications": [
+      {
+        "drug": "Apixaban",
+        "dose": "2.5 mg",
+        "frequency": "BD",
+        "indication": "Atrial fibrillation"
+      },
+      {
+        "drug": "Bisoprolol",
+        "dose": "2.5 mg",
+        "frequency": "OD",
+        "indication": "Atrial fibrillation"
+      },
+      {
+        "drug": "Metformin",
+        "dose": "500 mg",
+        "frequency": "BD",
+        "indication": "Type 2 diabetes"
+      }
+    ],
+    "allergies": [],
+    "nkda": true,
+    "socialHistory": "Lives with son. Independent before this illness.",
+    "scoreForms": {
+      "tg18-cholangitis": {
+        "systemicInflammation": true,
+        "cholestasis": true,
+        "imaging": true,
+        "wbcAbnormal": true,
+        "feverAtLeast39": true,
+        "ageAtLeast75": true,
+        "bilirubinAtLeast5mgdl": true,
+        "albuminBelow07LLN": true,
+        "organDysfunction": [
+          "cardiovascular",
+          "neurological",
+          "renal",
+          "hepatic",
+          "haematological"
+        ]
+      },
+      "qsofa": {
+        "alteredMentation": true,
+        "rrAtLeast22": true,
+        "sbpAtMost100": true,
+        "suspectedInfection": true
+      }
+    },
+    "confirmedDiagnosis": {
+      "name": "Acute cholangitis",
+      "icd10": "K83.09",
+      "paneDiseaseId": "cholangitis",
+      "assessmentText": "Severe acute cholangitis — TG18 Grade III with septic shock, encephalopathy, AKI, coagulopathy and thrombocytopenia, secondary to choledocholithiasis."
+    },
+    "platform": {
+      "web": {
+        "ccTemplate": "Obstructive jaundice",
+        "symptoms": [
+          "jaundice",
+          "right upper quadrant pain",
+          "fever",
+          "rigors",
+          "confusion"
+        ],
+        "symptomDetails": {
+          "jaundice": [
+            "Fever",
+            "Rigors",
+            "Abdominal pain",
+            "Known gallstones"
+          ]
+        },
+        "examFindings": {
+          "abdomen": [
+            "Tender RUQ",
+            "Guarding"
+          ],
+          "general": [
+            "Jaundiced"
+          ]
+        },
+        "durationDays": 2,
+        "painScore": 7
+      }
+    }
+  },
+  "expected": {
+    "differential": {
+      "mustRankTopK": [
+        {
+          "id": "dx-cholangitis-top3",
+          "severity": "critical",
+          "match": [
+            "cholangitis"
+          ],
+          "unless": [
+            "sclerosing"
+          ],
+          "k": 3,
+          "guidelineRefs": [
+            "tg18-dx-cholangitis"
+          ]
+        }
+      ],
+      "mustNotMiss": [
+        {
+          "id": "mnm-septic-shock",
+          "severity": "quality",
+          "match": [
+            "sepsis",
+            "septic"
+          ],
+          "knownGapNote": "PANE has no sepsis node; symptom inference ranks sepsis #2. iOS: fallback mode: the built-in jaundice list (5 candidates) does not contain this diagnosis."
+        }
+      ]
+    },
+    "safety": {
+      "emergencyLevel": {
+        "id": "level-emergency",
+        "severity": "critical",
+        "atLeast": "emergency",
+        "guidelineRefs": [
+          "tg18-mgmt-cholangitis",
+          "ssc-2021"
+        ],
+        "note": "Grade III cholangitis in septic shock: resuscitation, critical care and urgent drainage.",
+        "knownGapNote": "iOS ClinicalPathwayEngine: 'jaundice' gives urgent; no emergency keyword in CC/PMH."
+      },
+      "mustAlarm": [
+        {
+          "id": "alarm-sepsis",
+          "severity": "critical",
+          "match": [
+            "sepsis",
+            "septic"
+          ],
+          "guidelineRefs": [
+            "ssc-2021"
+          ]
+        },
+        {
+          "id": "alarm-haemodynamic",
+          "severity": "critical",
+          "match": [
+            "haemodynamic",
+            "hemodynamic",
+            "hypotension",
+            "shock"
+          ],
+          "guidelineRefs": [
+            "ssc-2021"
+          ]
+        }
+      ],
+      "redFlags": [
+        {
+          "id": "flag-anticoagulant",
+          "severity": "quality",
+          "match": [
+            "anticoag",
+            "apixaban"
+          ],
+          "note": "DOAC plus INR 1.8 and platelets 74 before ERCP/sphincterotomy."
+        },
+        {
+          "id": "flag-reynolds",
+          "severity": "quality",
+          "match": [
+            "reynolds",
+            "septic shock",
+            "organ"
+          ]
+        }
+      ]
+    },
+    "scores": {
+      "recommended": [
+        {
+          "id": "score-rec-tg18-cholangitis",
+          "severity": "quality",
+          "score": "tg18-cholangitis",
+          "guidelineRefs": [
+            "tg18-dx-cholangitis"
+          ]
+        }
+      ],
+      "values": [
+        {
+          "id": "score-tg18-calculator",
+          "severity": "critical",
+          "score": "tg18-cholangitis",
+          "mode": "calculator",
+          "equals": 3,
+          "guidelineRefs": [
+            "tg18-dx-cholangitis"
+          ]
+        },
+        {
+          "id": "score-tg18-autofill",
+          "severity": "critical",
+          "score": "tg18-cholangitis",
+          "mode": "autofill",
+          "equals": 3,
+          "guidelineRefs": [
+            "tg18-dx-cholangitis"
+          ],
+          "note": "The record holds SBP 78 on noradrenaline, AVPU 'V', creatinine 212, INR 1.8 and platelets 74; auto-fill below Grade III under-grades septic shock."
+        },
+        {
+          "id": "score-qsofa-autofill",
+          "severity": "quality",
+          "score": "qsofa",
+          "mode": "autofill",
+          "equals": 3,
+          "platforms": [
+            "ios"
+          ],
+          "guidelineRefs": [
+            "sepsis-3"
+          ]
+        }
+      ]
+    },
+    "investigations": {
+      "mustInclude": [
+        {
+          "id": "inv-blood-cultures",
+          "severity": "critical",
+          "match": [
+            "blood culture"
+          ],
+          "guidelineRefs": [
+            "ssc-2021",
+            "tg18-antimicrobial"
+          ]
+        },
+        {
+          "id": "inv-lactate",
+          "severity": "quality",
+          "match": [
+            "lactate"
+          ],
+          "guidelineRefs": [
+            "ssc-2021"
+          ]
+        },
+        {
+          "id": "inv-coagulation",
+          "severity": "quality",
+          "match": [
+            "inr",
+            "coagulation",
+            "clotting"
+          ]
+        }
+      ],
+      "mustExclude": []
+    },
+    "management": {
+      "mustInclude": [
+        {
+          "id": "mgmt-urgent-biliary-drainage",
+          "severity": "critical",
+          "match": [
+            "ercp",
+            "biliary drainage",
+            "biliary decompression",
+            "percutaneous transhepatic",
+            "re:\\bptc\\b"
+          ],
+          "guidelineRefs": [
+            "tg18-mgmt-cholangitis",
+            "tg18-drainage"
+          ],
+          "note": "TG18 Grade III: urgent biliary drainage as soon as the patient is resuscitated."
+        },
+        {
+          "id": "mgmt-organ-support",
+          "severity": "critical",
+          "match": [
+            "icu",
+            "intensive care",
+            "hdu",
+            "critical care",
+            "organ support"
+          ],
+          "guidelineRefs": [
+            "tg18-mgmt-cholangitis",
+            "ssc-2021"
+          ]
+        },
+        {
+          "id": "mgmt-broad-spectrum-antibiotics",
+          "severity": "critical",
+          "match": [
+            "antibiotic",
+            "piperacillin",
+            "tazocin",
+            "meropenem"
+          ],
+          "guidelineRefs": [
+            "tg18-antimicrobial",
+            "ssc-2021"
+          ]
+        },
+        {
+          "id": "mgmt-vasopressor-fluids",
+          "severity": "quality",
+          "match": [
+            "noradrenaline",
+            "norepinephrine",
+            "vasopressor",
+            "fluid resuscitation",
+            "crystalloid"
+          ],
+          "guidelineRefs": [
+            "ssc-2021"
+          ]
+        },
+        {
+          "id": "mgmt-anticoagulant-plan",
+          "severity": "quality",
+          "match": [
+            "apixaban",
+            "anticoag",
+            "doac",
+            "reversal"
+          ],
+          "note": "Hold the DOAC; plan drainage (stent without sphincterotomy, or percutaneous) around the coagulopathy."
+        }
+      ],
+      "mustExclude": [
+        {
+          "id": "mgmt-no-surgery-first",
+          "severity": "quality",
+          "match": [
+            "re:(emergency|urgent) (open )?(cbd|bile duct) exploration",
+            "re:emergency (laparotomy|cholecystectomy)"
+          ],
+          "unless": [
+            "if ercp fails",
+            "if ercp unavailable",
+            "ercp fails",
+            "unavailable"
+          ],
+          "guidelineRefs": [
+            "tg18-drainage"
+          ],
+          "note": "Operative drainage is reserved for failed or unavailable endoscopic/percutaneous drainage."
+        }
+      ]
+    },
+    "pathway": {
+      "id": "pathway-first-visit",
+      "severity": "quality",
+      "equals": "firstVisit"
+    },
+    "dxVariant": {
+      "id": "variant-grade3",
+      "severity": "quality",
+      "equals": "cholangitis_grade3",
+      "guidelineRefs": [
+        "tg18-mgmt-cholangitis"
+      ]
+    }
+  },
+  "guideline": [
+    {
+      "id": "tg18-dx-cholangitis",
+      "name": "Tokyo Guidelines 2018 — diagnostic criteria and severity grading of acute cholangitis",
+      "year": 2018,
+      "section": "Grade III: cardiovascular (dopamine ≥5 µg/kg/min or any noradrenaline), neurological (disturbance of consciousness), respiratory (PaO₂/FiO₂ <300), renal (oliguria, creatinine >2.0 mg/dL), hepatic (PT-INR >1.5), haematological (platelets <100,000/mm³)",
+      "citation": "Kiriyama S, Kozaka K, Takada T, et al. J Hepatobiliary Pancreat Sci. 2018;25:17–30.",
+      "verified": false
+    },
+    {
+      "id": "tg18-mgmt-cholangitis",
+      "name": "Tokyo Guidelines 2018 — flowchart for acute cholangitis",
+      "year": 2018,
+      "section": "Grade III: appropriate organ support and antibiotics, then urgent biliary drainage",
+      "citation": "Miura F, Okamoto K, Takada T, et al. J Hepatobiliary Pancreat Sci. 2018;25:31–40.",
+      "verified": false
+    },
+    {
+      "id": "tg18-drainage",
+      "name": "Tokyo Guidelines 2018 — biliary drainage for acute cholangitis",
+      "year": 2018,
+      "section": "Endoscopic transpapillary drainage first line; percutaneous when not possible; surgery only when both fail",
+      "citation": "Mukai S, Itoi T, Baron TH, et al. Indications and techniques of biliary drainage for acute cholangitis in updated Tokyo Guidelines 2018. J Hepatobiliary Pancreat Sci.",
+      "verified": false
+    },
+    {
+      "id": "tg18-antimicrobial",
+      "name": "Tokyo Guidelines 2018 — antimicrobial therapy",
+      "year": 2018,
+      "section": "Grade III regimens; blood cultures",
+      "citation": "Gomi H, Solomkin JS, Schlossberg D, et al. J Hepatobiliary Pancreat Sci. 2018;25:3–16.",
+      "verified": false
+    },
+    {
+      "id": "ssc-2021",
+      "name": "Surviving Sepsis Campaign guidelines 2021",
+      "year": 2021,
+      "section": "Septic shock: antimicrobials within 1 h, blood cultures first, fluids, noradrenaline first-line vasopressor, source control",
+      "citation": "Evans L, Rhodes A, Alhazzani W, et al. Crit Care Med. 2021;49:e1063–e1143.",
+      "verified": false
+    },
+    {
+      "id": "sepsis-3",
+      "name": "Sepsis-3 consensus definitions",
+      "year": 2016,
+      "section": "qSOFA and septic shock definitions",
+      "citation": "Singer M, Deutschman CS, Seymour CW, et al. JAMA. 2016;315:801–10.",
+      "verified": false
+    }
+  ],
+  "rationale": "Permutation: the sickest end of the spectrum. Every engine must escalate to emergency, alarm for sepsis/shock, grade Grade III (calculator and auto-fill from the record), and recommend organ support plus urgent drainage. The DOAC and coagulopathy test the anticoagulation flags.",
+  "authoring": {
+    "author": "Claude (phase 0 seed)",
+    "date": "2026-09-25",
+    "notes": "Expectations need surgeon sign-off (reviewedBy)."
+  }
+}

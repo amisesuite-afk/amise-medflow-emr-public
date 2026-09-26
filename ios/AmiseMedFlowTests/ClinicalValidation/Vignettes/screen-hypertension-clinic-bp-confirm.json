@@ -1,0 +1,190 @@
+{
+  "schemaVersion": 1,
+  "id": "screen-hypertension-clinic-bp-confirm",
+  "condition": "Raised clinic blood pressure — confirm before diagnosing hypertension",
+  "category": "general-medicine",
+  "permutationOf": "screen-crc-average-risk-46",
+  "permutationLabel": "Man aged 49, clinic BP 152/94 at a wellness visit",
+  "summary": "49-year-old man at a wellness visit with clinic BP 152/94 and 148/92 on repeat, no symptoms, no known hypertension. NICE NG136: confirm with ABPM (or HBPM), assess cardiovascular risk and target-organ damage.",
+  "tags": [
+    "screening",
+    "hypertension",
+    "wellness"
+  ],
+  "inputs": {
+    "patient": {
+      "ageYears": 49,
+      "sex": "male",
+      "heightCm": 174,
+      "weightKg": 88
+    },
+    "encounter": {
+      "setting": "outpatient",
+      "visitType": "wellness",
+      "acuity": "routine"
+    },
+    "chiefComplaint": "Wellness check",
+    "hpi": "Asymptomatic 49-year-old man at a wellness visit. Clinic BP 152/94, repeated after 5 minutes 148/92. No headache, no chest pain, no visual disturbance. Never told his BP was high. Father had a stroke at 70.",
+    "symptoms": [
+      "annual review"
+    ],
+    "negatives": [
+      "headache",
+      "chest pain",
+      "visual disturbance"
+    ],
+    "exam": {
+      "general": "Well. BMI 29. BP 152/94 then 148/92 (right arm), 150/92 (left arm). Pulse 76 regular.",
+      "cardiovascular": "Heart sounds normal, no carotid bruits."
+    },
+    "vitals": [
+      {
+        "minutesAgo": 10,
+        "heartRate": 76,
+        "systolicBp": 148,
+        "diastolicBp": 92,
+        "respiratoryRate": 14,
+        "temperatureC": 36.6,
+        "spo2": 98,
+        "avpu": "A",
+        "onSupplementalO2": false
+      }
+    ],
+    "labs": [],
+    "imaging": [],
+    "comorbidities": [],
+    "surgicalHistory": [],
+    "medications": [],
+    "allergies": [],
+    "nkda": true,
+    "socialHistory": "Office manager. Non-smoker. Alcohol 10 units/week. Sedentary.",
+    "confirmedDiagnosis": {
+      "name": "Raised clinic blood pressure — suspected hypertension (unconfirmed)",
+      "icd10": "R03.0",
+      "assessmentText": "Clinic BP 148–152/92–94 on two readings, asymptomatic. Suspected stage 1 hypertension: confirm with ambulatory (or home) BP monitoring; cardiovascular risk and target-organ assessment (urine ACR, U&E, HbA1c, lipids, ECG, fundi)."
+    },
+    "platform": {
+      "web": {
+        "ccTemplate": "Other / general surgical",
+        "symptoms": [
+          "annual review"
+        ],
+        "durationDays": 0
+      }
+    }
+  },
+  "expected": {
+    "management": {
+      "mustInclude": [
+        {
+          "id": "mgmt-abpm-hbpm",
+          "severity": "quality",
+          "guidelineRefs": [
+            "nice-ng136",
+            "acc-aha-2017"
+          ],
+          "note": "NICE NG136: offer ABPM (HBPM if unsuitable) to confirm a clinic BP of 140/90–180/120. Graded as management because the engine emits these arranged tests as plan lines.",
+          "match": [
+            "ambulatory",
+            "abpm",
+            "home blood pressure",
+            "hbpm",
+            "home bp",
+            "out-of-office"
+          ],
+          "knownGap": [
+            "ios"
+          ],
+          "knownGapNote": "iOS CI 2026-09-25 (run 36169134350, database mode): no management item matched among 16 (ios.pipeline.actions, ios.radiation.plan, ios.radiation.followUp, ios.soap.plan)"
+        },
+        {
+          "id": "mgmt-urine-acr",
+          "severity": "quality",
+          "guidelineRefs": [
+            "nice-ng136"
+          ],
+          "match": [
+            "urine acr",
+            "albumin:creatinine",
+            "albumin-creatinine",
+            "albumin creatinine",
+            "microalbumin"
+          ]
+        },
+        {
+          "id": "mgmt-cv-risk",
+          "severity": "quality",
+          "guidelineRefs": [
+            "nice-ng136"
+          ],
+          "note": "A formal 10-year risk estimate (QRISK/PCE), not only \"document BP and BMI\".",
+          "match": [
+            "qrisk",
+            "ascvd",
+            "pooled cohort",
+            "10-year",
+            "re:cardiovascular risk (score|calculat|estimat|assessment)",
+            "framingham"
+          ],
+          "knownGap": [
+            "ios"
+          ],
+          "knownGapNote": "iOS CI 2026-09-25 (run 36169134350, database mode): no management item matched among 16 (ios.pipeline.actions, ios.radiation.plan, ios.radiation.followUp, ios.soap.plan)"
+        }
+      ]
+    },
+    "safety": {
+      "emergencyLevel": {
+        "id": "level-routine",
+        "severity": "quality",
+        "guidelineRefs": [
+          "nice-ng136"
+        ],
+        "note": "Stage 1 range without symptoms: routine confirmation, not same-day.",
+        "atMost": "priority"
+      },
+      "mustNotAlarm": [
+        {
+          "id": "no-emergency-banner",
+          "severity": "quality",
+          "guidelineRefs": [
+            "nice-ng136"
+          ],
+          "note": "An asymptomatic screening visit must not raise an \"emergency now\" banner (alarm fatigue; front desk would redirect a well person).",
+          "match": [
+            "emergency now"
+          ]
+        }
+      ]
+    },
+    "pathway": {
+      "id": "pathway-wellness",
+      "severity": "quality",
+      "equals": "wellness"
+    }
+  },
+  "guideline": [
+    {
+      "id": "nice-ng136",
+      "name": "NICE NG136 — hypertension in adults: diagnosis and management",
+      "year": 2019,
+      "section": "Clinic BP 140/90–180/120: offer ambulatory (or home) BP monitoring to confirm the diagnosis; assess cardiovascular risk and target organ damage (urine albumin:creatinine ratio, haematuria, HbA1c, U&E/eGFR, lipids, fundoscopy, ECG); ≥ 180/120 with retinal haemorrhage or papilloedema (accelerated hypertension) or life-threatening symptoms: same-day specialist referral",
+      "citation": "National Institute for Health and Care Excellence. Hypertension in adults: diagnosis and management. NICE guideline NG136, 2019 (updated 2023).",
+      "verified": false
+    },
+    {
+      "id": "acc-aha-2017",
+      "name": "2017 ACC/AHA guideline — prevention, detection, evaluation and management of high blood pressure in adults",
+      "year": 2017,
+      "section": "Out-of-office BP measurement (ABPM/HBPM) to confirm the diagnosis; hypertensive emergency: admission to an intensive care unit, controlled reduction of BP",
+      "citation": "Whelton PK, Carey RM, Aronow WS, et al. 2017 ACC/AHA/AAPA/ABC/ACPM/AGS/APhA/ASH/ASPC/NMA/PCNA guideline for the prevention, detection, evaluation, and management of high blood pressure in adults. Hypertension. 2018;71:e13–e115.",
+      "verified": false
+    }
+  ],
+  "rationale": "A raised clinic reading needs out-of-office confirmation before a lifelong diagnosis, with cardiovascular risk and target-organ assessment. Negated symptoms (\"no chest pain, no headache\") must not escalate the visit.",
+  "authoring": {
+    "author": "Claude (prevention/screening, obstetric-gynaecological mimics and paediatric surgery cluster)",
+    "date": "2026-09-25",
+    "notes": "Expectations need surgeon sign-off (reviewedBy). Every citation is verified: false. iOS outcomes are unverified (not run on Linux); triage after the first CI run."
+  }
+}

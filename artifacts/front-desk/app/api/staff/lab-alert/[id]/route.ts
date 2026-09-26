@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { getServiceClient } from '@/lib/supabase';
+import { requireStaff } from '@/lib/staff-auth';
 
 export const runtime = 'nodejs';
 
@@ -7,9 +8,12 @@ export const runtime = 'nodejs';
 // Staff marks a lab booking's result as ready for notification.
 // Sets result_alert_pending = true; the API server cron picks it up and sends the email.
 export async function POST(
-  _req: NextRequest,
+  req: NextRequest,
   { params }: { params: { id: string } },
 ): Promise<NextResponse> {
+  const auth = await requireStaff(req);
+  if (auth.response) return auth.response;
+
   const { id } = params;
   if (!id) return NextResponse.json({ error: 'Missing id' }, { status: 400 });
 

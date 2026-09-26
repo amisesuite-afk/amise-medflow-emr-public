@@ -2,6 +2,7 @@ import { Router } from 'express';
 import { getSupabaseAdmin, audit, requireStaffAuth, getStaffUserId } from '../lib/supabase.js';
 import { logger, errStr } from '../lib/logger.js';
 import { logAudit } from '../lib/audit.js';
+import { storePredictionSnapshot } from '../lib/prediction-snapshots.js';
 
 const router = Router();
 
@@ -139,7 +140,7 @@ router.post('/api/visit/check-in/:appointmentId', async (req, res) => {
 router.post('/api/visit/complete/:encounterId', async (req, res) => {
   if (!(await requireStaffAuth(req, res))) return;
   const { encounterId } = req.params;
-  const { planType, description, followUpDate, followUpNotes, referralTo, referralSpecialty, referralReason, referralUrgency } = req.body ?? {};
+  const { planType, description, followUpDate, followUpNotes, referralTo, referralSpecialty, referralReason, referralUrgency, chiefComplaint } = req.body ?? {};
 
   try {
     const supa = getSupabaseAdmin();
@@ -191,22 +192,38 @@ router.post('/api/visit/complete/:encounterId', async (req, res) => {
       .from('clinical_notes')
       .update({ status: 'signed', updated_at: new Date().toISOString() })
       .eq('encounter_id', encounterId)
-      .eq('status', 'draft');
+      .eq('status', 'draft')
+      .is('deleted_at', null);
     if (signNotesErr) logger.warn({ err: signNotesErr, encounterId }, '[visit/complete] clinical_notes sign failed');
 
-    // Close encounter
+    // Close encounter. The clinician's chief complaint for this visit is stored with it, so the
+    // next visit can tell a follow-up of this problem from a new complaint (dashboard
+    // VisitContinuityPanel, iOS VisitContinuity).
+    const cc = typeof chiefComplaint === 'string' ? chiefComplaint.trim().slice(0, 500) : '';
     const { error: closeErr } = await supa
       .from('encounters')
-      .update({ status: 'closed', closed_at: new Date().toISOString(), updated_at: new Date().toISOString() })
+      .update({
+        status: 'closed', closed_at: new Date().toISOString(), updated_at: new Date().toISOString(),
+        ...(cc ? { chief_complaint: cc } : {}),
+      })
       .eq('id', encounterId);
 
     if (closeErr) throw closeErr;
+
+    // Outcomes loop (Migration 94): what the engines predicted at completion, coded data only.
+    // Never fails the completion: a missing table or a bad snapshot is reported as a status.
+    const snapshot = await storePredictionSnapshot(supa, {
+      body: (req.body ?? {}).predictionSnapshot,
+      encounterId,
+      patientId: encounter.patient_id,
+      createdBy: (req as { staffUser?: { userId?: string } }).staffUser?.userId ?? null,
+    });
 
     await audit({
       action: 'book',
       entityType: 'encounter',
       entityId: encounterId,
-      payload: { status: 'closed', plan_type: resolvedPlanType, has_follow_up: !!followUpDate, has_referral: !!referralTo },
+      payload: { status: 'closed', plan_type: resolvedPlanType, has_follow_up: !!followUpDate, has_referral: !!referralTo, prediction_snapshot: snapshot },
     });
     void logAudit(req, 'update', 'appointment', encounterId, encounter.patient_id ?? undefined, {
       action: 'complete',
@@ -216,7 +233,7 @@ router.post('/api/visit/complete/:encounterId', async (req, res) => {
     });
 
     logger.info({ encounterId, planType: resolvedPlanType, followUpDate }, '[visit/complete] encounter closed');
-    res.json({ encounterId, status: 'closed', planType: resolvedPlanType });
+    res.json({ encounterId, status: 'closed', planType: resolvedPlanType, predictionSnapshot: snapshot });
   } catch (err) {
     logger.error({ err }, '[visit/complete] error');
     res.status(502).json({ error: errStr(err) });
@@ -431,6 +448,7 @@ router.post('/api/visit/sign-notes/:encounterId', async (req, res) => {
       })
       .eq('encounter_id', encounterId)
       .eq('status', 'draft')
+      .is('deleted_at', null)
       .select('id');
 
     if (signErr) throw signErr;
@@ -466,6 +484,7 @@ router.post('/api/visit/sign-note/:noteId', async (req, res) => {
       .from('clinical_notes')
       .select('id, patient_id, status')
       .eq('id', noteId)
+      .is('deleted_at', null)
       .maybeSingle();
 
     if (fetchErr || !note) { res.status(404).json({ error: 'Note not found' }); return; }
@@ -514,6 +533,7 @@ router.post('/api/visit/amend-note/:noteId', async (req, res) => {
       .from('clinical_notes')
       .select('id, patient_id, encounter_id, note_type, status, version')
       .eq('id', noteId)
+      .is('deleted_at', null)
       .maybeSingle();
 
     if (fetchErr || !original) {

@@ -1,0 +1,104 @@
+{
+  "schemaVersion": 1,
+  "id": "missing-woman-30-ct-planned",
+  "condition": "Right iliac fossa pain, CT planned",
+  "category": "gi-emergency",
+  "permutationOf": null,
+  "permutationLabel": "What's missing — top item",
+  "summary": "30-year-old woman with right iliac fossa pain; CT abdomen and pelvis with contrast planned; pregnancy status not recorded.",
+  "tags": [
+    "whats-missing"
+  ],
+  "inputs": {
+    "patient": {
+      "ageYears": 30,
+      "sex": "female",
+      "pregnancy": {
+        "status": "unknown"
+      }
+    },
+    "encounter": {
+      "setting": "emergency",
+      "visitType": "urgentReview",
+      "acuity": "urgent"
+    },
+    "chiefComplaint": "Right iliac fossa pain",
+    "hpi": "Two days of right iliac fossa pain, worse on walking. Nausea. Last period about five weeks ago.",
+    "exam": {
+      "abdomen": "Tender in the right iliac fossa, no peritonism."
+    },
+    "vitals": [
+      {
+        "minutesAgo": 15,
+        "heartRate": 84,
+        "systolicBp": 128,
+        "diastolicBp": 78,
+        "respiratoryRate": 16,
+        "temperatureC": 36.9,
+        "spo2": 98,
+        "avpu": "A",
+        "onSupplementalO2": false
+      }
+    ],
+    "labs": [
+      {
+        "analyte": "creatinine",
+        "name": "Creatinine",
+        "value": 62,
+        "unit": "µmol/L",
+        "minutesAgo": 30
+      }
+    ],
+    "imaging": [],
+    "comorbidities": [],
+    "surgicalHistory": [],
+    "medications": [],
+    "allergies": [],
+    "nkda": true,
+    "orders": {
+      "investigations": [
+        "CT abdomen and pelvis with contrast"
+      ]
+    },
+    "platform": {
+      "web": {
+        "ccTemplate": "Acute abdominal pain",
+        "symptoms": [
+          "abdominal pain",
+          "nausea"
+        ]
+      }
+    }
+  },
+  "expected": {
+    "missing": {
+      "top": {
+        "id": "missing-top-pregnancy",
+        "severity": "quality",
+        "match": [
+          "pregnancy status not recorded"
+        ],
+        "guidelineRefs": [
+          "rcr-pregnancy-ionising"
+        ],
+        "note": "Female 12–55 before ionising imaging: pregnancy status first; the one-tap action adds a urine β-hCG as a suggested test."
+      }
+    }
+  },
+  "guideline": [
+    {
+      "id": "rcr-pregnancy-ionising",
+      "name": "RCR / SCoR / BIR — Protection of pregnant patients during diagnostic medical exposures to ionising radiation",
+      "year": 2019,
+      "section": "Ask about pregnancy (12–55 years) before an examination that irradiates the abdomen or pelvis",
+      "citation": "Royal College of Radiologists, Society and College of Radiographers, British Institute of Radiology. 2019.",
+      "verified": false
+    }
+  ],
+  "rationale": "Owner's example: a woman of 30 with a CT planned — pregnancy status first.",
+  "authoring": {
+    "author": "Claude (whats-missing)",
+    "date": "2026-09-26",
+    "notes": "What's missing strip vignette. Expectations need surgeon sign-off (reviewedBy)."
+  }
+}

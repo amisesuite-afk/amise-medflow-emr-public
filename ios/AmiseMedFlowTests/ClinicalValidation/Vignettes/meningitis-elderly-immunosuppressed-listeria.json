@@ -1,0 +1,275 @@
+{
+  "schemaVersion": 1,
+  "id": "meningitis-elderly-immunosuppressed-listeria",
+  "condition": "Bacterial meningitis (older, immunosuppressed)",
+  "category": "other",
+  "permutationOf": "meningitis-meningococcal-young",
+  "permutationLabel": "Elderly and immunosuppressed: Listeria cover",
+  "summary": "71-year-old woman on methotrexate and prednisolone with 2 days of fever, headache and confusion, mild neck stiffness, no rash.",
+  "tags": [
+    "neuro",
+    "infection",
+    "elderly",
+    "immunosuppressed",
+    "do-not-miss"
+  ],
+  "inputs": {
+    "patient": {
+      "ageYears": 71,
+      "sex": "female",
+      "pregnancy": {
+        "status": "not-applicable"
+      },
+      "heightCm": 160,
+      "weightKg": 62
+    },
+    "encounter": {
+      "setting": "emergency",
+      "visitType": "urgentReview",
+      "acuity": "emergency"
+    },
+    "chiefComplaint": "Fever, headache and confusion",
+    "hpi": "Rheumatoid arthritis on methotrexate and prednisolone 10 mg daily. Two days of fever, headache and increasing confusion. No rash. Ate soft cheese from a market last week.",
+    "socrates": {
+      "onset": [
+        "2–3 days ago"
+      ]
+    },
+    "symptoms": [
+      "fever",
+      "headache",
+      "confusion",
+      "neck stiffness"
+    ],
+    "negatives": [
+      "rash",
+      "cough",
+      "dysuria",
+      "head injury"
+    ],
+    "exam": {
+      "general": "Confused. Pulse 112/min, BP 128/70, RR 22, temperature 38.6°C, SpO2 95%.",
+      "neuro": "GCS 13 (E3 V4 M6), mild neck stiffness, no focal deficit, no papilloedema.",
+      "skin": "No rash."
+    },
+    "vitals": [
+      {
+        "minutesAgo": 10,
+        "heartRate": 112,
+        "systolicBp": 128,
+        "diastolicBp": 70,
+        "respiratoryRate": 22,
+        "temperatureC": 38.6,
+        "spo2": 95,
+        "avpu": "C",
+        "onSupplementalO2": false,
+        "weightKg": 62
+      }
+    ],
+    "labs": [
+      {
+        "analyte": "wbc",
+        "name": "WBC",
+        "value": 16.8,
+        "unit": "×10⁹/L",
+        "minutesAgo": 30
+      },
+      {
+        "analyte": "crp",
+        "name": "CRP",
+        "value": 142,
+        "unit": "mg/L",
+        "minutesAgo": 30
+      },
+      {
+        "analyte": "sodium",
+        "name": "Sodium",
+        "value": 131,
+        "unit": "mmol/L",
+        "minutesAgo": 30
+      },
+      {
+        "analyte": "glucose",
+        "name": "Glucose",
+        "value": 8.4,
+        "unit": "mmol/L",
+        "minutesAgo": 30
+      }
+    ],
+    "imaging": [],
+    "comorbidities": [
+      "Rheumatoid arthritis (immunosuppressed)"
+    ],
+    "surgicalHistory": [],
+    "medications": [
+      {
+        "drug": "Methotrexate",
+        "dose": "20 mg",
+        "frequency": "weekly",
+        "indication": "Rheumatoid arthritis"
+      },
+      {
+        "drug": "Prednisolone",
+        "dose": "10 mg",
+        "frequency": "OD",
+        "indication": "Rheumatoid arthritis"
+      }
+    ],
+    "allergies": [],
+    "nkda": true,
+    "socialHistory": "Lives with husband.",
+    "confirmedDiagnosis": {
+      "name": "Suspected bacterial meningitis in an immunosuppressed older adult (Listeria risk)",
+      "icd10": "G00.9",
+      "assessmentText": "Suspected bacterial meningitis, age 71 on methotrexate and prednisolone: IV ceftriaxone plus amoxicillin (Listeria), blood cultures, steroid cover."
+    },
+    "platform": {
+      "web": {
+        "ccTemplate": "Other / general surgical",
+        "symptoms": [
+          "fever",
+          "headache",
+          "confusion",
+          "neck stiffness"
+        ],
+        "symptomDetails": {
+          "headache": [
+            "Generalised",
+            "Dull ache",
+            "Neck stiffness",
+            "Fever",
+            "Progressive worsening"
+          ]
+        },
+        "durationDays": 2
+      }
+    }
+  },
+  "expected": {
+    "differential": {
+      "mustNotMiss": [
+        {
+          "id": "mnm-meningitis",
+          "severity": "critical",
+          "match": [
+            "mening"
+          ],
+          "guidelineRefs": [
+            "nice-ng240",
+            "uk-meningitis-2016"
+          ]
+        }
+      ]
+    },
+    "safety": {
+      "emergencyLevel": {
+        "id": "level-emergency",
+        "severity": "critical",
+        "atLeast": "emergency",
+        "guidelineRefs": [
+          "nice-ng240",
+          "uk-meningitis-2016"
+        ]
+      },
+      "mustAlarm": [
+        {
+          "id": "alarm-meningitis",
+          "severity": "critical",
+          "match": [
+            "mening"
+          ],
+          "guidelineRefs": [
+            "nice-ng240",
+            "uk-meningitis-2016"
+          ]
+        }
+      ]
+    },
+    "management": {
+      "mustInclude": [
+        {
+          "id": "mgmt-blood-cultures",
+          "severity": "critical",
+          "match": [
+            "blood culture"
+          ],
+          "guidelineRefs": [
+            "nice-ng240",
+            "uk-meningitis-2016"
+          ],
+          "note": "Graded as management because the web sepsis prompt adds blood cultures as a plan line; the seeded investigation lists come from unrelated PANE protocols."
+        },
+        {
+          "id": "mgmt-ceftriaxone",
+          "severity": "critical",
+          "match": [
+            "ceftriaxone",
+            "cefotaxime"
+          ],
+          "guidelineRefs": [
+            "nice-ng240",
+            "uk-meningitis-2016"
+          ]
+        },
+        {
+          "id": "mgmt-listeria-amoxicillin",
+          "severity": "critical",
+          "match": [
+            "amoxicillin",
+            "ampicillin"
+          ],
+          "guidelineRefs": [
+            "uk-meningitis-2016"
+          ],
+          "note": "Age >60 and immunosuppression: add amoxicillin for Listeria."
+        },
+        {
+          "id": "mgmt-steroid-cover",
+          "severity": "quality",
+          "match": [
+            "stress dose",
+            "steroid cover",
+            "hydrocortisone",
+            "sick day",
+            "dexamethasone"
+          ],
+          "guidelineRefs": [
+            "sfe-steroid-2020"
+          ]
+        }
+      ]
+    }
+  },
+  "guideline": [
+    {
+      "id": "nice-ng240",
+      "name": "NICE NG240 — Meningitis (bacterial) and meningococcal disease: recognition, diagnosis and management",
+      "year": 2024,
+      "section": "Suspected bacterial meningitis or meningococcal disease: IV ceftriaxone without delay (do not delay for lumbar puncture or imaging); blood cultures; dexamethasone for suspected bacterial meningitis; senior/critical care review; public health notification",
+      "citation": "National Institute for Health and Care Excellence. Meningitis (bacterial) and meningococcal disease: recognition, diagnosis and management. NICE guideline NG240. London: NICE; 2024.",
+      "verified": false
+    },
+    {
+      "id": "uk-meningitis-2016",
+      "name": "UK joint specialist societies guideline on the diagnosis and management of acute meningitis and meningococcal sepsis in immunocompetent adults",
+      "year": 2016,
+      "section": "Empirical ceftriaxone (or cefotaxime) plus amoxicillin for Listeria cover in patients aged over 60 (and in immunocompromise, per section on special groups); antibiotics within 1 hour; CT before LP only with specific indications",
+      "citation": "McGill F, Heyderman RS, Michael BD, et al. The UK joint specialist societies guideline on the diagnosis and management of acute meningitis and meningococcal sepsis in immunocompetent adults. J Infect. 2016;72:405–438.",
+      "verified": false
+    },
+    {
+      "id": "sfe-steroid-2020",
+      "name": "Guidance for the prevention and emergency management of adult patients with adrenal insufficiency (Society for Endocrinology / AAGBI / RCP)",
+      "year": 2020,
+      "section": "Patients on long-term glucocorticoids (e.g. prednisolone ≥5 mg daily for ≥4 weeks) are at risk of adrenal crisis; during acute illness or sepsis give parenteral hydrocortisone / increased steroid cover",
+      "citation": "Simpson H, Tomlinson J, Wass J, Dean J, Arlt W. Guidance for the prevention and emergency management of adult patients with adrenal insufficiency. Clin Med (Lond). 2020;20:371–378.",
+      "verified": false
+    }
+  ],
+  "rationale": "Older and immunosuppressed adults need Listeria cover with amoxicillin (UK joint societies 2016) in addition to ceftriaxone (NICE NG240).",
+  "authoring": {
+    "author": "Claude (endocrine / renal / urology / neuro cluster)",
+    "date": "2026-09-25",
+    "notes": "Expectations need surgeon sign-off (reviewedBy). Every citation is verified: false. iOS outcomes not observed (Linux)."
+  }
+}

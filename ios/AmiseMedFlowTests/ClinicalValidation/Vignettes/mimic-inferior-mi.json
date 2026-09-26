@@ -1,0 +1,285 @@
+{
+  "schemaVersion": 1,
+  "id": "mimic-inferior-mi",
+  "condition": "Inferior myocardial infarction (GI emergency mimic)",
+  "category": "general-medicine",
+  "permutationOf": null,
+  "permutationLabel": "Epigastric 'indigestion', no ECG yet (base case)",
+  "summary": "63-year-old diabetic smoker, 2 h epigastric 'indigestion' with sweating and vomiting, HR 52, BP 98/60, soft non-tender abdomen; no ECG recorded yet.",
+  "tags": [
+    "mimic",
+    "cardiac",
+    "diabetes",
+    "do-not-miss"
+  ],
+  "inputs": {
+    "patient": {
+      "ageYears": 63,
+      "sex": "male",
+      "pregnancy": {
+        "status": "not-applicable"
+      },
+      "heightCm": 171,
+      "weightKg": 92
+    },
+    "encounter": {
+      "setting": "outpatient",
+      "visitType": "urgentReview",
+      "acuity": "priority"
+    },
+    "chiefComplaint": "Epigastric pain and sweating",
+    "hpi": "2 hours of heavy epigastric pain he calls 'indigestion', with nausea, one vomit and sweating. Antacid did not help. Type 2 diabetes, hypertension, smoker. No chest pain described.",
+    "socrates": {
+      "onset": [
+        "Today"
+      ],
+      "site": [
+        "Epigastric"
+      ],
+      "character": [
+        "Pressure",
+        "Dull"
+      ],
+      "radiation": [
+        "No radiation"
+      ],
+      "associations": [
+        "Nausea",
+        "Vomiting"
+      ],
+      "timing": [
+        "Constant"
+      ],
+      "exacerbating": [],
+      "relieving": [
+        "Nothing"
+      ],
+      "severity": [
+        "Moderate (4–6/10)"
+      ]
+    },
+    "symptoms": [
+      "epigastric pain",
+      "nausea",
+      "vomiting",
+      "sweating"
+    ],
+    "negatives": [
+      "chest pain",
+      "fever",
+      "jaundice"
+    ],
+    "exam": {
+      "general": "Grey, clammy, sweaty. Temperature 36.6°C, pulse 52/min, BP 98/60, RR 20, SpO2 95%.",
+      "abdomen": "Soft, non-tender, no guarding. Bowel sounds normal.",
+      "cardiovascular": "Heart sounds normal, no murmur. JVP not raised."
+    },
+    "vitals": [
+      {
+        "minutesAgo": 5,
+        "heartRate": 52,
+        "systolicBp": 98,
+        "diastolicBp": 60,
+        "respiratoryRate": 20,
+        "temperatureC": 36.6,
+        "spo2": 95,
+        "avpu": "A",
+        "onSupplementalO2": false
+      }
+    ],
+    "labs": [],
+    "imaging": [],
+    "comorbidities": [
+      "Type 2 diabetes mellitus",
+      "Hypertension",
+      "Hypercholesterolaemia"
+    ],
+    "surgicalHistory": [],
+    "medications": [
+      {
+        "drug": "Metformin",
+        "dose": "1 g",
+        "frequency": "BD",
+        "indication": "Diabetes"
+      },
+      {
+        "drug": "Gliclazide",
+        "dose": "80 mg",
+        "frequency": "BD",
+        "indication": "Diabetes"
+      },
+      {
+        "drug": "Lisinopril",
+        "dose": "10 mg",
+        "frequency": "OD",
+        "indication": "Hypertension"
+      }
+    ],
+    "allergies": [],
+    "nkda": true,
+    "socialHistory": "Smoker 30 pack-years.",
+    "confirmedDiagnosis": {
+      "name": "Suspected acute coronary syndrome (inferior myocardial infarction)",
+      "icd10": "I21.19",
+      "assessmentText": "Epigastric pain with diaphoresis, bradycardia and borderline hypotension in a diabetic smoker: acute coronary syndrome (inferior MI) until proven otherwise. 12-lead ECG now, troponin, emergency services."
+    },
+    "platform": {
+      "web": {
+        "ccTemplate": "Acute abdominal pain",
+        "socratesAnswers": {
+          "site": "Epigastric (upper abdomen)",
+          "onset": "2 hours ago",
+          "character": "Heavy, pressure",
+          "associated": "Nausea, vomited once, sweating",
+          "timing": "Constant",
+          "relief": "Antacid did not help",
+          "severity": "6/10"
+        },
+        "symptoms": [
+          "epigastric pain",
+          "nausea",
+          "vomiting",
+          "drenching sweats"
+        ],
+        "symptomDetails": {
+          "abdominal pain": [
+            "Epigastric",
+            "< 6 hours",
+            "Constant",
+            "Moderate (4–6)",
+            "Nausea",
+            "Vomiting",
+            "Continuous"
+          ]
+        },
+        "examFindings": {
+          "abdomen": [
+            "Soft"
+          ]
+        },
+        "durationDays": 0.1,
+        "painScore": 6
+      }
+    }
+  },
+  "expected": {
+    "differential": {
+      "mustNotMiss": [
+        {
+          "id": "mnm-acs",
+          "severity": "critical",
+          "match": [
+            "myocardial infarction",
+            "stemi",
+            "acute coronary",
+            "re:\\bacs\\b",
+            "re:\\bmi\\b",
+            "coronary"
+          ],
+          "guidelineRefs": [
+            "esc-acs-2023"
+          ],
+          "note": "Epigastric pain + diaphoresis + bradycardia/hypotension in a diabetic smoker: inferior MI must be on the displayed differential."
+        },
+        {
+          "id": "mnm-acs-symptom-engine",
+          "severity": "quality",
+          "match": [
+            "myocardial infarction",
+            "stemi",
+            "acute coronary",
+            "re:\\bacs\\b",
+            "re:\\bmi\\b",
+            "coronary"
+          ],
+          "source": "web.symptomInference",
+          "platforms": [
+            "web"
+          ],
+          "knownGap": [
+            "web"
+          ],
+          "knownGapNote": "Web: Symptom inference top 5 has no ACS/STEMI (pancreatitis ×2, perforated ulcer, gastroenteritis, gastric carcinoma): epigastric pain, sweating and vomiting do not weight the cardiac entries."
+        }
+      ]
+    },
+    "safety": {
+      "emergencyLevel": {
+        "id": "level-emergency",
+        "severity": "critical",
+        "atLeast": "emergency",
+        "guidelineRefs": [
+          "esc-acs-2023"
+        ],
+        "note": "Web passed on 2026-09-25 only because the negative 'No chest pain described' matches the cardiac red-flag regex (no negation handling); the pass is fragile — see findings/gi-emergencies.md.",
+        "knownGapNote": "iOS: ClinicalPathwayEngine reads only CC/PMH keywords; CC 'Epigastric pain and sweating' gives 'routine'."
+      }
+    },
+    "investigations": {
+      "mustInclude": [
+        {
+          "id": "inv-ecg",
+          "severity": "critical",
+          "match": [
+            "ecg",
+            "electrocardiogram"
+          ],
+          "guidelineRefs": [
+            "esc-acs-2023"
+          ],
+          "note": "ESC 2023: 12-lead ECG within 10 minutes of first contact."
+        },
+        {
+          "id": "inv-troponin",
+          "severity": "critical",
+          "match": [
+            "troponin"
+          ],
+          "guidelineRefs": [
+            "esc-acs-2023"
+          ]
+        }
+      ]
+    },
+    "management": {
+      "mustInclude": [
+        {
+          "id": "mgmt-cardiology-or-ems",
+          "severity": "quality",
+          "match": [
+            "re:\\bpci\\b",
+            "reperfusion",
+            "emergency services",
+            "911",
+            "aspirin 300",
+            "cath lab"
+          ],
+          "guidelineRefs": [
+            "esc-acs-2023"
+          ]
+        }
+      ]
+    },
+    "pathway": {
+      "id": "pathway-first-visit",
+      "severity": "quality",
+      "equals": "firstVisit"
+    }
+  },
+  "guideline": [
+    {
+      "id": "esc-acs-2023",
+      "name": "ESC guidelines — acute coronary syndromes (2023)",
+      "year": 2023,
+      "section": "12-lead ECG within 10 minutes of first medical contact; hs-troponin; inferior STEMI (right-sided leads); primary PCI",
+      "citation": "Byrne RA, Rossello X, Coughlan JJ, et al. 2023 ESC guidelines for the management of acute coronary syndromes. Eur Heart J. 2023;44:3720–826.",
+      "verified": false
+    }
+  ],
+  "rationale": "Dangerous mimic of upper-GI pain. A soft, non-tender abdomen with diaphoresis, bradycardia and hypotension points away from the abdomen; the engines must ask for an ECG and troponin before any GI work-up.",
+  "authoring": {
+    "author": "Claude (GI surgical emergencies cluster)",
+    "date": "2026-09-25",
+    "notes": "Expectations need surgeon sign-off (reviewedBy). Every citation is verified: false."
+  }
+}

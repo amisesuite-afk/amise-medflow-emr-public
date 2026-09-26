@@ -1,0 +1,237 @@
+{
+  "schemaVersion": 1,
+  "id": "periop-vte-caprini-high-cancer-surgery",
+  "condition": "VTE risk and thromboprophylaxis — major pelvic cancer surgery (Caprini 11)",
+  "category": "other",
+  "permutationOf": null,
+  "summary": "68-year-old woman, BMI 33, previous provoked DVT, varicose veins, for laparoscopic anterior resection of rectal cancer — Caprini 11 (high risk).",
+  "tags": [
+    "periop",
+    "vte",
+    "caprini",
+    "nice-ng89",
+    "cancer"
+  ],
+  "inputs": {
+    "patient": {
+      "ageYears": 68,
+      "sex": "female",
+      "pregnancy": {
+        "status": "not-applicable"
+      },
+      "heightCm": 160,
+      "weightKg": 85
+    },
+    "encounter": {
+      "setting": "outpatient",
+      "visitType": "surgeryElective",
+      "acuity": "priority"
+    },
+    "chiefComplaint": "Pre-operative planning for rectal cancer operation",
+    "hpi": "Upper rectal adenocarcinoma (cT3N0M0) after MDT discussion; listed for laparoscopic anterior resection in 2 weeks. Left leg DVT in 2015 after a knee arthroscopy, treated for 3 months. Varicose veins. No bleeding disorder. Mobile and independent.",
+    "symptoms": [
+      "rectal bleeding",
+      "change in bowel habit"
+    ],
+    "negatives": [
+      "weight loss",
+      "abdominal pain"
+    ],
+    "exam": {
+      "general": "Well. HR 74, BP 138/82, RR 14, SpO2 98% on air, T 36.6°C. BMI 33.",
+      "abdomen": "Soft, non-tender.",
+      "msk": "Bilateral varicose veins. Calves soft."
+    },
+    "vitals": [
+      {
+        "minutesAgo": 5,
+        "heartRate": 74,
+        "systolicBp": 138,
+        "diastolicBp": 82,
+        "respiratoryRate": 14,
+        "temperatureC": 36.6,
+        "spo2": 98,
+        "avpu": "A",
+        "onSupplementalO2": false
+      }
+    ],
+    "labs": [
+      {
+        "analyte": "haemoglobin",
+        "name": "Haemoglobin",
+        "value": 12.6,
+        "unit": "g/dL",
+        "minutesAgo": 2880
+      },
+      {
+        "analyte": "platelets",
+        "name": "Platelets",
+        "value": 290,
+        "unit": "×10⁹/L",
+        "minutesAgo": 2880
+      },
+      {
+        "analyte": "creatinine",
+        "name": "Creatinine",
+        "value": 70,
+        "unit": "µmol/L",
+        "minutesAgo": 2880
+      }
+    ],
+    "imaging": [
+      {
+        "name": "MRI pelvis",
+        "modality": "MRI",
+        "region": "Pelvis",
+        "result": "Upper rectal tumour at 12 cm, T3b, N0, CRM clear, EMVI negative.",
+        "minutesAgo": 20160
+      },
+      {
+        "name": "CT chest/abdomen/pelvis",
+        "modality": "CT",
+        "region": "Chest/abdomen/pelvis",
+        "result": "No distant metastases.",
+        "minutesAgo": 20160
+      }
+    ],
+    "comorbidities": [
+      "Rectal adenocarcinoma",
+      "Previous DVT (provoked, 2015)",
+      "Obesity (BMI 33)",
+      "Varicose veins",
+      "Hypertension"
+    ],
+    "surgicalHistory": [
+      "Knee arthroscopy 2015"
+    ],
+    "medications": [
+      {
+        "drug": "Amlodipine",
+        "dose": "5 mg",
+        "frequency": "OD",
+        "indication": "Hypertension"
+      }
+    ],
+    "allergies": [],
+    "nkda": true,
+    "socialHistory": "Non-smoker. Retired.",
+    "confirmedDiagnosis": {
+      "name": "Rectal adenocarcinoma — laparoscopic anterior resection; high VTE risk (Caprini 11)",
+      "icd10": "C20",
+      "paneDiseaseId": "rectal_carcinoma",
+      "assessmentText": "Upper rectal cancer cT3N0 for laparoscopic anterior resection. VTE risk high (Caprini 11: age, major surgery, malignancy, previous DVT, BMI, varicose veins); bleeding risk low."
+    },
+    "platform": {
+      "web": {
+        "ccTemplate": "Colorectal malignancy",
+        "symptoms": [
+          "rectal bleeding",
+          "change in bowel habit"
+        ],
+        "durationDays": 60,
+        "painScore": 0
+      }
+    }
+  },
+  "expected": {
+    "scores": {
+      "recommended": [
+        {
+          "id": "score-rec-caprini",
+          "severity": "quality",
+          "score": "caprini",
+          "guidelineRefs": [
+            "accp-2012-gould",
+            "nice-ng89"
+          ]
+        }
+      ]
+    },
+    "management": {
+      "mustInclude": [
+        {
+          "id": "mgmt-pharmacological-prophylaxis",
+          "severity": "critical",
+          "match": [
+            "lmwh",
+            "enoxaparin",
+            "dalteparin",
+            "tinzaparin",
+            "low molecular weight heparin",
+            "fondaparinux",
+            "heparin"
+          ],
+          "unless": [
+            "bridg",
+            "if dvt",
+            "treatment dose"
+          ],
+          "guidelineRefs": [
+            "nice-ng89",
+            "accp-2012-gould"
+          ],
+          "note": "High VTE risk, low bleeding risk: LMWH prophylaxis."
+        },
+        {
+          "id": "mgmt-extended-prophylaxis",
+          "severity": "quality",
+          "match": [
+            "28 days",
+            "4 weeks",
+            "four weeks",
+            "extended prophylaxis",
+            "extended thromboprophylaxis",
+            "extended-duration"
+          ],
+          "guidelineRefs": [
+            "nice-ng89",
+            "accp-2012-gould"
+          ],
+          "note": "NICE NG89: extend pharmacological prophylaxis to 28 days after major abdominal/pelvic cancer surgery."
+        },
+        {
+          "id": "mgmt-mechanical-prophylaxis",
+          "severity": "quality",
+          "match": [
+            "intermittent pneumatic",
+            "ipc",
+            "anti-embolism",
+            "ted stocking",
+            "ted stockings",
+            "compression stocking",
+            "mechanical prophylaxis",
+            "mechanical thromboprophylaxis"
+          ],
+          "guidelineRefs": [
+            "nice-ng89",
+            "accp-2012-gould"
+          ]
+        }
+      ]
+    }
+  },
+  "guideline": [
+    {
+      "id": "nice-ng89",
+      "name": "NICE NG89 — Venous thromboembolism in over 16s: reducing the risk of hospital-acquired DVT or PE",
+      "year": 2018,
+      "section": "Assess VTE and bleeding risk; abdominal surgery with VTE risk above bleeding risk: pharmacological prophylaxis (LMWH) for at least 7 days; extended to 28 days after major cancer surgery in the abdomen/pelvis; mechanical prophylaxis (anti-embolism stockings or IPC) when pharmacological prophylaxis is contraindicated by bleeding risk; reassess within 24 h and when the clinical situation changes",
+      "citation": "National Institute for Health and Care Excellence. VTE in over 16s (NG89). London: NICE; 2018 (updated 2019).",
+      "verified": false
+    },
+    {
+      "id": "accp-2012-gould",
+      "name": "ACCP 9th edition — prevention of VTE in non-orthopaedic surgical patients (Caprini)",
+      "year": 2012,
+      "section": "General and abdominal-pelvic surgery: Caprini ≥5 high risk → LMWH/LDUH plus mechanical prophylaxis; extended-duration (4 weeks) LMWH after abdominal/pelvic cancer surgery; high bleeding risk → mechanical prophylaxis until bleeding risk diminishes",
+      "citation": "Gould MK, Garcia DA, Wren SM, et al. Chest. 2012;141(2 Suppl):e227S–77S.",
+      "verified": false
+    }
+  ],
+  "rationale": "Base VTE case: very high VTE risk, low bleeding risk. Tests Caprini suggestion, pharmacological prophylaxis, extended 28-day prophylaxis and mechanical prophylaxis.",
+  "authoring": {
+    "author": "Claude (perioperative medicine cluster)",
+    "date": "2026-09-25",
+    "notes": "Expectations and citations need surgeon sign-off (reviewedBy). Citations verified: false. iOS outcomes not yet observed (unverified: ios) — triage after the next CI run."
+  }
+}

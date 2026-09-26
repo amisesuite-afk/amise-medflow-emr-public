@@ -1,6 +1,9 @@
 import { useState, useEffect, useRef, useMemo } from 'react';
+import SuggestedInvestigationsPanel from '@/components/SuggestedInvestigationsPanel';
 import { useAppContext } from '@/context/AppContext';
-import { getProtocol, getProtocolByIcd } from '@workspace/pane-engine';
+import { confirmedPlanSource } from '@/lib/diagnosis-suggestion';
+import { investigationsWithCaveats, patientProtocol } from '@/lib/plan-builder';
+import { usePlanPatientContext } from '@/hooks/usePlanPatientContext';
 import CollapsibleCard from '@/components/CollapsibleCard';
 import { getActivePathways } from '@/lib/clinical-pathways';
 import { getApiOrigin } from '@/lib/api-origin';
@@ -11,6 +14,12 @@ import { useToast } from '@/components/ToastProvider';
 import DocumentCapture from '@/components/DocumentCapture';
 import { isImagingInvestigation, parseImagingToRequest, imagingAlreadyRequested } from '@/lib/imaging-utils';
 import { splitEssentialSecondary, isAlreadyOrdered } from '@/lib/investigation-merge';
+import ReportImportPanel from '@/components/report-import/ReportImportPanel';
+import ImportedReportsList from '@/components/report-import/ImportedReportsList';
+import type { ImportedLabResultRow } from '@/lib/db';
+import { sessionFromStoredAnalytes } from '@/lib/lab-feed-session';
+import { canSaveReportResults } from '@/lib/report-import-save';
+import { useAuth } from '@/context/AuthContext';
 
 function filterBySex(lab: string, sex: string): boolean {
   if (lab.includes('(M)') && sex === 'female') return false;
@@ -286,24 +295,37 @@ export default function InvestigationsTab() {
     radiologyRequests, setRadiologyRequests,
     symptoms, symptomDetails, sex,
     patientName, age, dob, hpiNotes, mrNumber,
-    workingDiagnosis, icdCodes, paneTop, paneConverged,
+    workingDiagnosis, icdCodes, patientId,
   } = useAppContext();
+  const [importedRefresh, setImportedRefresh] = useState(0);
 
-  // Derive protocol from working diagnosis or ICD code (mirrors PlanTab logic)
-  const activeDiseaseId = (paneConverged && paneTop[0]?.probability >= 0.85)
-    ? paneTop[0].disease.id
-    : null;
-  const activeIcdCode = icdCodes[0]?.split(' — ')[0]?.trim() ?? workingDiagnosis?.icdCode ?? null;
+  // The protocol for the CONFIRMED diagnosis (locked working diagnosis or recorded ICD-10 code —
+  // confirmedPlanSource, as PlanTab), resolved with resolveProtocol and adapted to the patient on
+  // record (plan-builder.ts patientProtocol): conditional branches resolved, pregnancy / child /
+  // contrast caveats on imaging, "pregnancy test — result required" before a procedure.
+  const { diseaseId: activeDiseaseId, icdCode: activeIcdCode } = confirmedPlanSource(workingDiagnosis, icdCodes);
+  const planPatient = usePlanPatientContext();
   const protocol = useMemo(
-    () => activeDiseaseId
-      ? getProtocol(activeDiseaseId)
-      : activeIcdCode
-        ? getProtocolByIcd(activeIcdCode)
-        : null,
-    [activeDiseaseId, activeIcdCode],
+    () => patientProtocol(activeDiseaseId, activeIcdCode, planPatient),
+    [activeDiseaseId, activeIcdCode, planPatient],
   );
-  const protocolInvestigations = protocol?.investigations ?? [];
+  // Orderable label (the protocol's wording) and the patient-specific caveat kept apart.
+  const protocolInvestigations = useMemo(() => (protocol ? investigationsWithCaveats(protocol) : []), [protocol]);
   const { showToast } = useToast();
+  const { extractedLabs, setExtractedLabs, encounterStatus } = useAppContext();
+  const { profile } = useAuth();
+
+  /** A lab-feed result on file → this consultation's results and score inputs (clinician tap). */
+  function addStoredResultToConsultation(row: ImportedLabResultRow) {
+    if (!canSaveReportResults(profile?.role)) { showToast('Only a nurse, doctor or admin can add results to the consultation', 'error'); return; }
+    if (encounterStatus === 'closed') { showToast('This encounter is closed: reopen it to add results', 'error'); return; }
+    const s = sessionFromStoredAnalytes(row.analytes, Date.parse(row.collected_at ?? row.created_at) || 0);
+    const names = Object.keys(s.sessionResults);
+    if (names.length > 0) setInvestigationResults({ ...investigationResults, ...s.sessionResults });
+    if (Object.keys(s.scoreInputs).length > 0) setExtractedLabs({ ...extractedLabs, ...s.scoreInputs });
+    const kept = s.keptOut.length > 0 ? ` ${s.keptOut.map(k => `“${k.name}”`).join(', ')} kept out (read as another test).` : '';
+    showToast(`${names.length} result${names.length === 1 ? '' : 's'} added to this consultation.${kept}`, 'success');
+  }
 
   // One-time migration: move any imaging items that ended up in orderedInvestigations
   // (from old sessions saved before the imaging-routing split) to radiologyRequests.
@@ -480,6 +502,8 @@ export default function InvestigationsTab() {
 
   return (
     <div className="gap-y">
+      {/* Suggested (not ordered) tests for the chief complaint / differential — tick to order. */}
+      <SuggestedInvestigationsPanel kind="lab" />
       {/* Protocol-specific suggested investigations — shown when working diagnosis is set */}
       {protocol && protocolInvestigations.length > 0 && (
         <div style={{
@@ -572,6 +596,9 @@ export default function InvestigationsTab() {
                               {inv.conditional}
                             </span>
                           )}
+                          {!alreadyDone && inv.caveat && (
+                            <span style={{ fontSize: 10, color: '#fcd34d', paddingLeft: 10 }}>⚠ {inv.caveat}</span>
+                          )}
                         </div>
                       );
                     })}
@@ -621,6 +648,9 @@ export default function InvestigationsTab() {
                     {alreadyDone ? '✓ ' : isImg ? '→ ' : '+ '}{inv.label}
                     {!alreadyDone && (
                       <span style={{ fontSize: 10, opacity: 0.7, marginLeft: 4 }}>({inv.urgency})</span>
+                    )}
+                    {!alreadyDone && inv.caveat && (
+                      <span style={{ fontSize: 10, color: '#fcd34d', marginLeft: 4 }}>⚠ {inv.caveat}</span>
                     )}
                   </button>
                 );
@@ -829,6 +859,15 @@ export default function InvestigationsTab() {
           </div>
         </CollapsibleCard>
       )}
+
+      {/* Deterministic lab / imaging report import — read in the browser, no AI; clinician
+          reviews every value and the patient identity before anything is saved. */}
+      <CollapsibleCard title="Import lab or imaging report" defaultOpen={true}>
+        <ReportImportPanel onSaved={() => setImportedRefresh(n => n + 1)} />
+      </CollapsibleCard>
+      <CollapsibleCard title="Lab and imaging reports on file" defaultOpen={false}>
+        <ImportedReportsList patientId={patientId} refreshKey={importedRefresh} onUseInConsultation={addStoredResultToConsultation} />
+      </CollapsibleCard>
 
       {/* AI result scan — staff upload, AI extraction, human confirm */}
       <CollapsibleCard
@@ -1046,6 +1085,7 @@ export default function InvestigationsTab() {
                   }}
                 >
                   + {inv.label}
+                  {inv.caveat && <span style={{ fontSize: 10.5, color: '#b45309', marginLeft: 4 }}>⚠ {inv.caveat}</span>}
                 </button>
               ))}
             </div>

@@ -1,7 +1,9 @@
 // ─── HpiTab — Adaptive HPI Builder ───────────────────────────────────────────
+import { allergyStatus } from '@/lib/allergy-status';
 //
-// Merges SYMPTOM_BRANCHES triage questions with CC-matrix SOCRATES prompts into
-// a tap-to-fill interview. HPI prose regenerates in real-time as chips are
+// Merges SYMPTOM_BRANCHES triage questions with the complaint's questions (a CC template's
+// prompts, or the history frame: SOCRATES for pain, cough / lump / bleeding … otherwise;
+// lib/hpi-fields.ts) into a tap-to-fill interview. HPI prose regenerates in real-time as chips are
 // selected — same pattern as the Quick Exam tab. No button needed.
 
 import { useMemo, useEffect, useRef, useState } from 'react';
@@ -11,26 +13,23 @@ import SmartTextarea from '@/components/SmartTextarea';
 import ChiefComplaintStrip from '@/components/ChiefComplaintStrip';
 import { computeRankedDifferentials } from '@/lib/symptom-inference';
 import { getSuggestedPhrases } from '@/data/dot-phrases';
-import { getMatrixByName } from '@/lib/cc-matrices';
-import { SYMPTOM_BRANCHES, type SymptomBranch } from '@/lib/symptom-branches';
+import { hpiFieldSet, type HpiField } from '@/lib/hpi-fields';
+import {
+  resolveFrame, switchableFrames, toggleWebAnswer, webKeyFor,
+} from '@workspace/triage-engine/history-frames';
 import type { EncounterSummary } from '@/lib/db';
 import {
   DISEASES, FEATURES, applyModifiers, initPaneState, updatePosterior,
-  topDiagnoses, getProtocol, nextBestQuestion,
+  nextBestQuestion,
 } from '@workspace/pane-engine';
 import type { Feature } from '@workspace/pane-engine';
-import { extractFeaturesFromSocrates } from '@/lib/socrates-to-features';
-import { isImagingInvestigation, parseImagingToRequest, imagingAlreadyRequested } from '@/lib/imaging-utils';
-import { filterNewInvestigations, splitEssentialSecondary } from '@/lib/investigation-merge';
+import { extractFeaturesFromSocrates, paneContextFromConsultation } from '@/lib/socrates-to-features';
 
-interface CCEntry { complaint: string; answers: Record<string, string> }
+/** `frame`: the clinician's history-frame choice (history-frames id); absent = from the complaint. */
+interface CCEntry { complaint: string; answers: Record<string, string>; frame?: string }
 
 // ── Chip utilities ────────────────────────────────────────────────────────────
 
-function parseChips(hint: string): string[] {
-  if (!hint) return [];
-  return hint.split(/\s*[·→]\s*/).map(s => s.trim()).filter(s => s.length > 0 && s.length < 60);
-}
 function strip(opt: string): string { return opt.replace(/\s*\([^)]*\)/g, '').trim(); }
 function toggleChip(current: string, label: string, multi: boolean): string {
   if (multi) {
@@ -43,106 +42,23 @@ function isActive(current: string, opt: string): boolean {
   return current.split(',').map(s => s.trim()).includes(strip(opt));
 }
 
-// ── SYMPTOM_BRANCHES → SOCRATES key map ──────────────────────────────────────
-
-const BRANCH_KEY: Record<string, string> = {
-  'Location': 'site',       'Site': 'site',           'Site / radiation': 'site',
-  'Character': 'character', 'Type': 'character',      'Colour': 'character',
-  'Associated': 'assoc',    'Associated features': 'assoc', 'Associated symptoms': 'assoc',
-  'Onset': 'onset',         'Onset / duration': 'onset',
-  'Radiation': 'radiation', 'Spread': 'radiation',
-  'Severity': 'severity',   'Amount': 'severity',
-  'Timing': 'timing',       'Pattern': 'timing',      'Frequency': 'timing',
-  'Triggers': 'triggers',   'Exacerbating factors': 'triggers',
-  'Relief': 'relief',
-  'Timeframe': 'duration',  'Duration': 'duration',
-};
-const MULTI_KEYS = new Set([
-  'assoc', 'associated', 'symptoms', 'sympt', 'systemic', 'risk', 'alarm',
-  'aggravating', 'aggravating_factors', 'relieving', 'relieving_factors',
-  'triggers', 'relief', 'timing', 'radiation', 'spread',
-  // Checklist-style fields where multiple simultaneous findings are the clinical
-  // norm, not the exception (verified against each field's own hint text in
-  // cc-matrices.ts, which lists discrete co-occurring items). Previously missing
-  // from this set, so selecting a second chip silently erased the first
-  // (e.g. "Fever" replacing "Tachycardia" instead of both being recorded) --
-  // a real clinical-documentation data-loss bug, not just a UX nitpick.
-  'sepsis', 'signs', 'infection', 'alvarado', 'blatchford', 'ranson',
-  'reynolds', 'chronic', 'staging', 'compressive', 'gi', 'haemodynamic',
-]);
-
-// ── Field type ────────────────────────────────────────────────────────────────
-
-interface HpiField { key: string; label: string; chips: string[]; multi: boolean; triage: boolean }
-
-// Prefixes that qualify a complaint name but don't identify the symptom branch
-const LEADING_ADJ = /^(acute|chronic|upper|lower|left|right|bilateral|recurrent|unexplained|suspected|possible|mild|moderate|severe|strangulated|irreducible|obstructive|perforated|anastomotic)\s+/;
-
-function findBranches(complaint: string): SymptomBranch[] {
-  // Strip parenthetical qualifiers e.g. "(haematemesis / melaena)"
-  const clean = complaint.toLowerCase().replace(/\s*\([^)]*\)/g, '').trim();
-
-  if (SYMPTOM_BRANCHES[clean]) return SYMPTOM_BRANCHES[clean];
-
-  // Try each slash-separated segment with and without a leading adjective
-  // e.g. 'Nausea / vomiting' → 'nausea' (miss) → 'vomiting' (hit)
-  for (const seg of clean.split(/\s*\/\s*/)) {
-    const s = seg.trim();
-    if (!s) continue;
-    if (SYMPTOM_BRANCHES[s]) return SYMPTOM_BRANCHES[s];
-    const st = s.replace(LEADING_ADJ, '');
-    if (st !== s && SYMPTOM_BRANCHES[st]) return SYMPTOM_BRANCHES[st];
-  }
-
-  // Strip leading adjective from the full name
-  // e.g. 'Acute abdominal pain' → 'abdominal pain'; 'Obstructive jaundice' → 'jaundice'
-  const stripped = clean.replace(LEADING_ADJ, '');
-  if (stripped !== clean && SYMPTOM_BRANCHES[stripped]) return SYMPTOM_BRANCHES[stripped];
-
-  // Trailing n-gram (n = 3 → 1): 'inguinal / groin hernia' → 'hernia'
-  const words = clean.replace(/[^a-z\s]/g, '').trim().split(/\s+/).filter(Boolean);
-  for (let n = Math.min(words.length - 1, 3); n >= 1; n--) {
-    const phrase = words.slice(-n).join(' ');
-    if (SYMPTOM_BRANCHES[phrase]) return SYMPTOM_BRANCHES[phrase];
-  }
-
-  return [];
-}
-
-function buildFields(complaint: string): HpiField[] {
-  const branches = findBranches(complaint);
-  const matrix = getMatrixByName(complaint);
-
-  const seen = new Set<string>();
-  const fields: HpiField[] = [];
-
-  for (const b of branches) {
-    const key = BRANCH_KEY[b.question] ?? b.question.toLowerCase().replace(/\W+/g, '_');
-    if (seen.has(key)) continue;
-    seen.add(key);
-    fields.push({ key, label: b.question, chips: b.options, multi: MULTI_KEYS.has(key), triage: true });
-  }
-
-  for (const p of matrix.prompts) {
-    if (seen.has(p.key)) continue;
-    seen.add(p.key);
-    const chips = parseChips(p.hint);
-    fields.push({ key: p.key, label: p.label, chips, multi: MULTI_KEYS.has(p.key), triage: false });
-  }
-
-  return fields;
-}
-
 // ── HpiBuilderCard — sequential one-question-at-a-time SOCRATES interview ─────
 
-function HpiBuilderCard({ entry, onAnswerChange, onReset, paneNextQuestion }: {
+function HpiBuilderCard({ entry, onAnswerChange, onReset, onFrameChange, paneNextQuestion }: {
   entry: CCEntry;
   onAnswerChange: (key: string, value: string) => void;
   onReset: () => void;
+  onFrameChange: (frame: string | undefined) => void;
   paneNextQuestion?: Feature | null;
 }) {
-  const rawFields = useMemo(() => buildFields(entry.complaint), [entry.complaint]);
-  const matrix    = getMatrixByName(entry.complaint);
+  const fieldSet  = useMemo(() => hpiFieldSet(entry.complaint, entry.frame), [entry.complaint, entry.frame]);
+  const rawFields = fieldSet.fields;
+  const icon      = fieldSet.template?.icon ?? '📋';
+  const frame     = fieldSet.frame;
+  // Answers the current questions do not show (another frame, an earlier template): still read by
+  // the differential, so they stay visible and removable.
+  const otherAnswers = Object.entries(entry.answers)
+    .filter(([k, v]) => v?.trim() && !rawFields.some(f => f.key === k));
   const { age, sex } = useAppContext();
   const ageNum = parseInt(age, 10) || null;
   // Filter out fields that don't apply to this patient's sex or age.
@@ -160,12 +76,12 @@ function HpiBuilderCard({ entry, onAnswerChange, onReset, paneNextQuestion }: {
     return first >= 0 ? first : fields.length;
   });
 
-  // Reset to first unanswered when complaint changes
+  // Reset to first unanswered when the complaint or the frame changes
   useEffect(() => {
     const first = fields.findIndex(f => !entry.answers[f.key]?.trim());
     setOpenIdx(first >= 0 ? first : fields.length);
   // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [entry.complaint]);
+  }, [entry.complaint, entry.frame]);
 
   // Return to field 0 after ↺ Clear (all answers wiped)
   useEffect(() => {
@@ -177,7 +93,9 @@ function HpiBuilderCard({ entry, onAnswerChange, onReset, paneNextQuestion }: {
   }
 
   function handleChip(idx: number, field: HpiField, chip: string) {
-    const val = toggleChip(entry.answers[field.key] ?? '', strip(chip), field.multi);
+    const current = entry.answers[field.key] ?? '';
+    // A history-frame question honours its exclusive chips ("Nothing" clears the others).
+    const val = field.dim ? toggleWebAnswer(current, field.dim, strip(chip)) : toggleChip(current, strip(chip), field.multi);
     onAnswerChange(field.key, val);
     // Auto-advance after single-select chip selection
     if (!field.multi && val.trim()) {
@@ -193,8 +111,23 @@ function HpiBuilderCard({ entry, onAnswerChange, onReset, paneNextQuestion }: {
         display: 'flex', alignItems: 'center', gap: 8,
         padding: '9px 14px', borderBottom: '1px solid #1e293b', background: '#070d1a',
       }}>
-        <span style={{ fontSize: 12 }}>{matrix.icon ?? '📋'}</span>
+        <span style={{ fontSize: 12 }}>{icon}</span>
         <span style={{ fontSize: 13, fontWeight: 700, color: '#f1f5f9' }}>{entry.complaint}</span>
+        <label style={{ display: 'inline-flex', alignItems: 'center', gap: 4, fontSize: 10, color: '#64748b' }}>
+          <span>{fieldSet.template && !entry.frame ? 'Template' : frame.frame.title}</span>
+          <select
+            data-testid="hpi-frame-select"
+            aria-label="History frame"
+            value={entry.frame ?? ''}
+            onChange={e => onFrameChange(e.target.value || undefined)}
+            style={{ fontSize: 10, background: '#0a0f1e', color: '#94a3b8', border: '1px solid #334155', borderRadius: 4, padding: '1px 4px' }}
+          >
+            <option value="">{fieldSet.template ? `Template: ${fieldSet.template.name}` : `Automatic: ${frame.frame.label}`}</option>
+            {switchableFrames().map(f => (
+              <option key={f.id} value={f.id}>{f.label}</option>
+            ))}
+          </select>
+        </label>
         {filled > 0 && (
           <span style={{ fontSize: 10, fontWeight: 700, padding: '2px 7px', borderRadius: 10, background: '#064e3b', color: '#34d399' }}>
             {filled}/{fields.length} answered
@@ -350,6 +283,22 @@ function HpiBuilderCard({ entry, onAnswerChange, onReset, paneNextQuestion }: {
             No structured questions available — document in the HPI narrative below.
           </div>
         )}
+
+        {otherAnswers.length > 0 && (
+          <div data-testid="hpi-other-answers" style={{ marginTop: 6, padding: '6px 10px', borderRadius: 8, border: '1px dashed #334155' }}>
+            <div style={{ fontSize: 9, fontWeight: 800, color: '#475569', textTransform: 'uppercase', letterSpacing: '0.06em', marginBottom: 4 }}>
+              Also recorded (still read by the differential)
+            </div>
+            {otherAnswers.map(([k, v]) => (
+              <div key={k} style={{ display: 'flex', alignItems: 'center', gap: 8, fontSize: 12 }}>
+                <span style={{ color: '#64748b', minWidth: 70 }}>{k.replace(/_/g, ' ')}</span>
+                <span style={{ color: '#cbd5e1', flex: 1 }}>{v}</span>
+                <button type="button" aria-label={`Remove ${k}`} onClick={() => onAnswerChange(k, '')}
+                  style={{ fontSize: 11, border: 'none', background: 'transparent', color: '#64748b', cursor: 'pointer' }}>×</button>
+              </div>
+            ))}
+          </div>
+        )}
       </div>
     </div>
   );
@@ -395,6 +344,12 @@ function durPhrase(durationDays: string): string {
   const w = Math.round(d / 7);
   return w === 1 ? 'a 1-week' : `a ${w}-week`;
 }
+
+/** Answer keys the narrative's SOCRATES sentences already read. */
+const NARRATIVE_KEYS = new Set(['duration', 'onset', 'presentation', 'site', 'character', 'radiation', 'direction',
+  'timing', 'assoc', 'symptoms', 'sympt', 'systemic', 'severity', 'qol', 'triggers', 'exac', 'response', 'relief',
+  'prev', 'prevep', 'previous', 'history', 'fever', 'vomiting', 'bleeding', 'bleed', 'weight', 'weightloss', 'jaundice',
+  'meds', 'therapy']);
 
 function get(ans: Record<string, string>, ...keys: string[]): string {
   return keys.map(k => ans[k]?.trim()).find(v => v && v.length > 0) ?? '';
@@ -490,6 +445,16 @@ function composeHpiNarrative(
     if (prev) histParts.push(cap(lc(prev)));
     if (meds) histParts.push(cap(lc(meds)));
     if (histParts.length) paragraphs.push(histParts.join('. ') + '.');
+
+    // History-frame questions (cough, lump, bleeding …): "Sputum: purulent green or yellow sputum."
+    const frameParts: string[] = [];
+    for (const d of resolveFrame(entry.complaint, undefined, entry.frame).dimensions) {
+      const key = webKeyFor(d);
+      if (NARRATIVE_KEYS.has(key)) continue;
+      const v = ans[key]?.trim();
+      if (v) frameParts.push(`${d.title}: ${lcList(v)}.`);
+    }
+    if (frameParts.length) paragraphs.push(frameParts.join(' '));
   });
 
   if (freeText.trim()) {
@@ -531,7 +496,7 @@ function MedicalBackgroundStrip({ comorbidities, allergies, medications, surgica
   const hasAny = comorbidities.length || allergyItems.length || medications.length || surgicalHistory.length;
   if (!hasAny) return null;
 
-  const nkda = allergyItems.length === 1 && /nkda|no known/i.test(allergyItems[0]);
+  const nkda = allergyStatus(allergies).kind === 'nkda';
 
   return (
     <div style={{
@@ -849,6 +814,7 @@ function ContinuityBanner({
 // ── Main component ────────────────────────────────────────────────────────────
 
 export default function HpiTab() {
+  const app = useAppContext();
   const {
     hpiNotes, setHpiNotes,
     freeText, setFreeText,
@@ -864,9 +830,7 @@ export default function HpiTab() {
     recentEncounters,
     comorbidities, allergies, medications, surgicalHistory,
     paneState, setPaneState,
-    orderedInvestigations, setOrderedInvestigations,
-    radiologyRequests, setRadiologyRequests,
-  } = useAppContext();
+  } = app;
 
   const entries = useMemo(
     () => (procedureData['cc'] as CCEntry[] | undefined) ?? [],
@@ -953,12 +917,15 @@ export default function HpiTab() {
 
   // Re-seed PANE from scratch using all current CC entries' SOCRATES answers.
   // Called on every chip tap so the differential updates in real-time.
+  // Pane model 1.0.0: the rest of the record (chips, vitals, history, results, free text) is read
+  // too, and "pregnancy possible" adjusts the pregnancy-only diagnoses.
   function reseedPane(updatedEntries: CCEntry[]) {
     const parsedAge = parseInt(age, 10) || null;
-    const diseases  = applyModifiers(DISEASES, parsedAge, sex);
+    const diseases  = applyModifiers(DISEASES, parsedAge, sex, undefined, { pregnancyPossible });
     let   state     = initPaneState(diseases);
+    const paneCtx   = paneContextFromConsultation(app);
     for (const entry of updatedEntries) {
-      const features = extractFeaturesFromSocrates(entry.complaint, entry.answers);
+      const features = extractFeaturesFromSocrates(entry.complaint, entry.answers, paneCtx);
       for (const [featureId, present] of Object.entries(features)) {
         if (FEATURES.some(f => f.id === featureId)) {
           state = updatePosterior(state, diseases, featureId, present as boolean);
@@ -969,57 +936,9 @@ export default function HpiTab() {
     return state;
   }
 
-  // Seed ordered investigations from top-3 PANE differentials.
-  // Only called when an HpiBuilderCard entry has all fields answered.
-  function seedInvestigationsFromPane(state: ReturnType<typeof initPaneState>) {
-    const parsedAge = parseInt(age, 10) || null;
-    const diseases  = applyModifiers(DISEASES, parsedAge, sex);
-    const top = topDiagnoses(state, diseases, 3);
-    if (!top.length) return;
-    const urgencyRank: Record<string, number> = { stat: 0, urgent: 1, routine: 2 };
-    const byLabel = new Map<string, { label: string; urgency: 'stat' | 'urgent' | 'routine' }>();
-    for (const { disease } of top) {
-      const protocol = getProtocol(disease.id);
-      if (!protocol?.investigations.length) continue;
-      for (const inv of protocol.investigations) {
-        const k = inv.label.toLowerCase().trim();
-        const cur = byLabel.get(k);
-        if (!cur || (urgencyRank[inv.urgency] ?? 2) < (urgencyRank[cur.urgency] ?? 2)) {
-          byLabel.set(k, inv);
-        }
-      }
-    }
-    // Only auto-populate essential (stat/urgent) tests — routine ones would
-    // otherwise pile up as the differential shifts across an HPI build.
-    const { essential } = splitEssentialSecondary([...byLabel.values()]);
-    const sorted = essential.sort(
-      (a, b) => (urgencyRank[a.urgency] ?? 2) - (urgencyRank[b.urgency] ?? 2),
-    );
-
-    // Route: lab items → orderedInvestigations, imaging items → radiologyRequests
-    const labItems     = sorted.filter(inv => !isImagingInvestigation(inv.label));
-    const imagingItems = sorted.filter(inv => isImagingInvestigation(inv.label));
-
-    const toAdd = filterNewInvestigations(labItems.map(inv => inv.label), orderedInvestigations);
-    if (toAdd.length) setOrderedInvestigations([...toAdd, ...orderedInvestigations]);
-
-    const newImaging = imagingItems
-      .map(inv => parseImagingToRequest(inv.label, inv.urgency))
-      .filter(req => !imagingAlreadyRequested(
-        (radiologyRequests as { modality: string; anatomicalRegion: string; clinicalQuestion?: string }[]),
-        req,
-      ));
-    if (newImaging.length) setRadiologyRequests([...newImaging, ...radiologyRequests]);
-  }
-
-  // Returns SOCRATES fields for an entry filtered by patient sex/age — same as HpiBuilderCard.
-  function entryFields(entry: CCEntry): HpiField[] {
-    const parsedAge = parseInt(age, 10) || null;
-    return buildFields(entry.complaint).filter(f => {
-      if (f.key === 'lmp') return sex === 'female' && (parsedAge === null || parsedAge >= 10);
-      return true;
-    });
-  }
+  // Investigations are no longer seeded from the differential here: the leading differentials'
+  // protocol tests are SUGGESTIONS on the Labs / Imaging steps, ordered only when the clinician
+  // ticks them (SuggestedInvestigationsPanel, UX review C3).
 
   function updateAnswer(entryIdx: number, key: string, value: string) {
     const updated = entries.map((e, i) =>
@@ -1028,13 +947,7 @@ export default function HpiTab() {
     setProcedureData({ ...procedureData, cc: updated });
 
     // Real-time PANE re-seed: updates differential posteriors as chips are tapped
-    const newState = reseedPane(updated);
-
-    // Seed investigation list once the updated entry has all its sex/age-filtered fields filled
-    const updatedEntry = updated[entryIdx]!;
-    const fields = entryFields(updatedEntry);
-    const allFilled = fields.length > 0 && fields.every(f => updatedEntry.answers[f.key]?.trim());
-    if (allFilled) seedInvestigationsFromPane(newState);
+    reseedPane(updated);
   }
 
   // On mount — re-seed PANE and populate investigations from pre-existing SOCRATES answers.
@@ -1046,15 +959,19 @@ export default function HpiTab() {
     if (entries.length === 0) return;
     const hasAnswers = entries.some(e => Object.values(e.answers).some(v => v?.trim()));
     if (!hasAnswers) return;
-    const state = reseedPane(entries);
-    for (const entry of entries) {
-      const fields = entryFields(entry);
-      if (fields.length > 0 && fields.every(f => entry.answers[f.key]?.trim())) {
-        seedInvestigationsFromPane(state);
-      }
-    }
+    reseedPane(entries);
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
+
+  function updateFrame(entryIdx: number, frame: string | undefined) {
+    const updated = entries.map((e, i) => {
+      if (i !== entryIdx) return e;
+      const { frame: _old, ...rest } = e;
+      void _old;
+      return frame ? { ...rest, frame } : rest;
+    });
+    setProcedureData({ ...procedureData, cc: updated });
+  }
 
   function resetEntry(entryIdx: number) {
     const updated = entries.map((e, i) => i === entryIdx ? { ...e, answers: {} } : e);
@@ -1082,9 +999,9 @@ export default function HpiTab() {
   const paneNextQuestion = useMemo<Feature | null>(() => {
     if (!paneState) return null;
     const parsedAge = parseInt(age, 10) || null;
-    const diseases = applyModifiers(DISEASES, parsedAge, sex);
+    const diseases = applyModifiers(DISEASES, parsedAge, sex, undefined, { pregnancyPossible });
     return nextBestQuestion(paneState, diseases, FEATURES);
-  }, [paneState, age, sex]);
+  }, [paneState, age, sex, pregnancyPossible]);
 
   const hasSourceData = entries.length > 0 || symptoms.length > 0 || freeText.trim().length > 0;
   const narrativeEdited = hpiNotes !== liveProse && hpiNotes.trim().length > 0;
@@ -1104,7 +1021,8 @@ export default function HpiTab() {
       />
 
       {/* ── CC strip — add / edit complaints ── */}
-      <ChiefComplaintStrip />
+      {/* The questions are asked once, in the Adaptive HPI card below (UX review M12). */}
+      <ChiefComplaintStrip questionsInline={false} />
 
       {/* ── Phase 2: Continuity banner (returning patient within 6 months) ── */}
       {showContinuityBanner && mostRecent && (
@@ -1208,8 +1126,8 @@ export default function HpiTab() {
           <div style={{ fontSize: 22, marginBottom: 6 }}>📋</div>
           <div style={{ fontWeight: 700, marginBottom: 4, color: '#94a3b8' }}>No chief complaint selected</div>
           <div style={{ fontSize: 12, lineHeight: 1.5 }}>
-            Add a complaint in the CC strip above — triage questions and SOCRATES prompts
-            will appear here and auto-generate the HPI prose below.
+            Add a complaint in the CC strip above — triage questions and the history questions
+            for that complaint (SOCRATES for pain) will appear here and auto-generate the HPI prose below.
           </div>
         </div>
       ) : (
@@ -1227,6 +1145,7 @@ export default function HpiTab() {
               entry={entry}
               onAnswerChange={(key, value) => updateAnswer(idx, key, value)}
               onReset={() => resetEntry(idx)}
+              onFrameChange={frame => updateFrame(idx, frame)}
               paneNextQuestion={paneNextQuestion}
             />
           ))}

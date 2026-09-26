@@ -2,6 +2,7 @@ import type { Metadata } from 'next';
 import ReferralForm from './ReferralForm';
 
 export const metadata: Metadata = {
+  alternates: { canonical: '/refer' },
   title: 'Refer a Patient — Amise Medical Services',
   description:
     'Secure GP and specialist referral portal for Amise Medical Services, Saint Lucia. Routine, priority, and urgent referral tracks with HL7 FHIR R4 support.',

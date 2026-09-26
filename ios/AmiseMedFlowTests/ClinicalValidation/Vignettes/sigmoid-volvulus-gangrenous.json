@@ -1,0 +1,373 @@
+{
+  "schemaVersion": 1,
+  "id": "sigmoid-volvulus-gangrenous",
+  "condition": "Sigmoid volvulus",
+  "category": "colorectal",
+  "permutationOf": "sigmoid-volvulus-base",
+  "permutationLabel": "Gangrene and peritonitis, septic shock",
+  "summary": "76-year-old man with recurrent sigmoid volvulus, now peritonism, T 38.6 °C, HR 124, BP 88/54, drowsy, lactate 5.2; CT: non-enhancing sigmoid wall, pneumatosis, free gas.",
+  "tags": [
+    "obstruction",
+    "volvulus",
+    "sepsis",
+    "elderly"
+  ],
+  "inputs": {
+    "patient": {
+      "ageYears": 76,
+      "sex": "male",
+      "pregnancy": {
+        "status": "not-applicable"
+      },
+      "heightCm": 172,
+      "weightKg": 68
+    },
+    "encounter": {
+      "setting": "emergency",
+      "visitType": "urgentReview",
+      "acuity": "emergency"
+    },
+    "chiefComplaint": "Abdominal distension, pain and fever",
+    "hpi": "3 days of distension and no flatus; since last night constant severe lower abdominal pain, fever and rigors, now drowsy. Previous sigmoid volvulus decompressed endoscopically 8 months ago; declined elective surgery.",
+    "socrates": {
+      "onset": [
+        "2–3 days ago"
+      ],
+      "site": [
+        "Diffuse",
+        "LLQ"
+      ],
+      "character": [
+        "Sharp",
+        "Bloating"
+      ],
+      "radiation": [
+        "No radiation"
+      ],
+      "associations": [
+        "Fever",
+        "Rigors",
+        "Vomiting"
+      ],
+      "timing": [
+        "Constant",
+        "Progressive"
+      ],
+      "exacerbating": [
+        "Movement"
+      ],
+      "relieving": [
+        "Nothing"
+      ],
+      "severity": [
+        "Severe (7–9/10)"
+      ]
+    },
+    "symptoms": [
+      "abdominal distension",
+      "absolute constipation",
+      "abdominal pain",
+      "fever",
+      "rigors"
+    ],
+    "negatives": [],
+    "exam": {
+      "general": "Drowsy, peripherally cool. Temperature 38.6°C, pulse 124/min, BP 88/54, RR 26.",
+      "abdomen": "Tense distension with peritonism, guarding and rebound in the left iliac fossa and lower abdomen. Bowel sounds absent."
+    },
+    "vitals": [
+      {
+        "minutesAgo": 10,
+        "heartRate": 124,
+        "systolicBp": 88,
+        "diastolicBp": 54,
+        "respiratoryRate": 26,
+        "temperatureC": 38.6,
+        "spo2": 93,
+        "avpu": "V",
+        "onSupplementalO2": false
+      }
+    ],
+    "labs": [
+      {
+        "analyte": "wbc",
+        "name": "WBC",
+        "value": 22.4,
+        "unit": "×10⁹/L",
+        "minutesAgo": 30
+      },
+      {
+        "analyte": "crp",
+        "name": "CRP",
+        "value": 260,
+        "unit": "mg/L",
+        "minutesAgo": 30
+      },
+      {
+        "analyte": "lactate",
+        "name": "Lactate",
+        "value": 5.2,
+        "unit": "mmol/L",
+        "minutesAgo": 30
+      },
+      {
+        "analyte": "creatinine",
+        "name": "Creatinine",
+        "value": 188,
+        "unit": "µmol/L",
+        "minutesAgo": 30
+      }
+    ],
+    "imaging": [
+      {
+        "name": "CT abdomen/pelvis with IV contrast",
+        "modality": "CT",
+        "region": "Abdomen/pelvis",
+        "result": "Sigmoid volvulus with absent enhancement of the sigmoid wall, pneumatosis and free fluid — gangrene. Small volume free gas.",
+        "minutesAgo": 10
+      }
+    ],
+    "comorbidities": [
+      "Chronic constipation"
+    ],
+    "surgicalHistory": [
+      "Endoscopic decompression of sigmoid volvulus (8 months ago)"
+    ],
+    "medications": [
+      {
+        "drug": "Lactulose",
+        "dose": "15 mL",
+        "frequency": "BD",
+        "indication": "Constipation"
+      }
+    ],
+    "allergies": [],
+    "nkda": true,
+    "socialHistory": "Lives with wife.",
+    "confirmedDiagnosis": {
+      "name": "Gangrenous sigmoid volvulus with peritonitis",
+      "icd10": "K56.2",
+      "paneDiseaseId": "bowel_obstruction",
+      "assessmentText": "Sigmoid volvulus with gangrene, perforation and peritonitis, septic shock. Emergency laparotomy — Hartmann's procedure. No endoscopic detorsion."
+    },
+    "platform": {
+      "web": {
+        "ccTemplate": "Acute abdominal pain",
+        "socratesAnswers": {
+          "site": "Lower abdomen, generalised",
+          "onset": "3 days; severe since last night",
+          "character": "Sharp, constant",
+          "associated": "Distension, no flatus (constipation), fever, rigors",
+          "timing": "Constant, worsening",
+          "triggers": "Movement",
+          "relief": "Nothing helps",
+          "severity": "9/10"
+        },
+        "symptoms": [
+          "abdominal distension",
+          "constipation",
+          "abdominal pain",
+          "fever",
+          "rigors",
+          "confusion"
+        ],
+        "symptomDetails": {
+          "abdominal pain": [
+            "Diffuse",
+            "LLQ",
+            "1–3 days",
+            "Constant",
+            "Severe (7–9)",
+            "Distension",
+            "Constipation",
+            "Fever",
+            "Rigors",
+            "Worsening over time"
+          ]
+        },
+        "examFindings": {
+          "abdomen": [
+            "Distended",
+            "Guarding",
+            "Rigidity",
+            "Rebound tenderness",
+            "Bowel sounds absent"
+          ]
+        },
+        "durationDays": 3,
+        "painScore": 9
+      }
+    }
+  },
+  "expected": {
+    "safety": {
+      "emergencyLevel": {
+        "id": "level-emergency",
+        "severity": "critical",
+        "atLeast": "emergency",
+        "guidelineRefs": [
+          "wses-volvulus-2023",
+          "ssc-2021"
+        ],
+        "knownGapNote": "iOS: ClinicalPathwayEngine reads only CC/PMH keywords; CC 'Abdominal distension, pain and fever' gives 'urgent'."
+      },
+      "mustAlarm": [
+        {
+          "id": "alarm-sepsis",
+          "severity": "critical",
+          "match": [
+            "sepsis",
+            "septic"
+          ],
+          "guidelineRefs": [
+            "ssc-2021"
+          ]
+        },
+        {
+          "id": "alarm-shock",
+          "severity": "critical",
+          "match": [
+            "haemodynamic",
+            "hemodynamic",
+            "hypotension",
+            "shock"
+          ],
+          "guidelineRefs": [
+            "ssc-2021"
+          ]
+        }
+      ]
+    },
+    "investigations": {
+      "mustInclude": [
+        {
+          "id": "inv-blood-cultures",
+          "severity": "quality",
+          "match": [
+            "blood culture"
+          ],
+          "guidelineRefs": [
+            "ssc-2021"
+          ]
+        }
+      ]
+    },
+    "management": {
+      "mustInclude": [
+        {
+          "id": "mgmt-emergency-resection",
+          "severity": "critical",
+          "match": [
+            "re:hartmann'?s?'? (procedure|operation)",
+            "emergency hartmann",
+            "sigmoid colectomy",
+            "sigmoid resection",
+            "re:emergency[^\\n]{0,30}(laparotomy|resection)"
+          ],
+          "guidelineRefs": [
+            "ascrs-volvulus-2021",
+            "wses-volvulus-2023"
+          ]
+        },
+        {
+          "id": "mgmt-antibiotics",
+          "severity": "critical",
+          "match": [
+            "antibiotic",
+            "co-amoxiclav",
+            "piperacillin",
+            "tazocin",
+            "cefuroxime",
+            "ceftriaxone",
+            "metronidazole",
+            "meropenem",
+            "pip-tazo"
+          ],
+          "guidelineRefs": [
+            "ssc-2021"
+          ]
+        },
+        {
+          "id": "mgmt-icu",
+          "severity": "quality",
+          "match": [
+            "re:\\bicu\\b",
+            "intensive care",
+            "re:\\bhdu\\b",
+            "critical care"
+          ],
+          "guidelineRefs": [
+            "ssc-2021"
+          ]
+        }
+      ],
+      "mustExclude": [
+        {
+          "id": "mgmt-no-endoscopic-detorsion-with-gangrene",
+          "severity": "critical",
+          "match": [
+            "endoscopic decompression",
+            "endoscopic detorsion",
+            "flexible sigmoidoscopy",
+            "flatus tube",
+            "colonoscopic decompression"
+          ],
+          "unless": [
+            "contraindicat",
+            "no endoscopic",
+            "not if",
+            "avoid",
+            "only if no",
+            "without peritonitis",
+            "if viable"
+          ],
+          "guidelineRefs": [
+            "ascrs-volvulus-2021",
+            "wses-volvulus-2023"
+          ],
+          "note": "Endoscopic detorsion is contraindicated with peritonitis, gangrene or perforation."
+        }
+      ]
+    },
+    "dxVariant": {
+      "id": "variant-lbo-volvulus",
+      "severity": "quality",
+      "equals": "lbo_volvulus",
+      "guidelineRefs": [
+        "ascrs-volvulus-2021"
+      ]
+    }
+  },
+  "guideline": [
+    {
+      "id": "ascrs-volvulus-2021",
+      "name": "ASCRS clinical practice guidelines — colonic volvulus and acute colonic pseudo-obstruction",
+      "year": 2021,
+      "section": "Sigmoid volvulus: endoscopic detorsion without peritonitis/ischaemia, then sigmoid colectomy during the same admission; emergency resection for gangrene/perforation; caecal volvulus: operative management, endoscopic reduction not recommended",
+      "citation": "Alavi K, Poylin V, Davids JS, et al. The American Society of Colon and Rectal Surgeons clinical practice guidelines for the management of colonic volvulus and acute colonic pseudo-obstruction. Dis Colon Rectum. 2021;64:1046–57.",
+      "verified": false
+    },
+    {
+      "id": "wses-volvulus-2023",
+      "name": "WSES consensus guidelines — sigmoid volvulus management",
+      "year": 2023,
+      "section": "Endoscopic decompression when no peritonitis/ischaemia; emergency surgery (Hartmann's) for gangrene, perforation or failed decompression; elective sigmoidectomy after decompression",
+      "citation": "Tian BWCA, Vigutto G, Tan E, et al. WSES consensus guidelines on sigmoid volvulus management. World J Emerg Surg. 2023;18:34.",
+      "verified": false
+    },
+    {
+      "id": "ssc-2021",
+      "name": "Surviving Sepsis Campaign — international guidelines for sepsis and septic shock 2021",
+      "year": 2021,
+      "section": "Screening (do not use qSOFA alone), antibiotics within 1 h of shock, blood cultures, lactate, 30 mL/kg crystalloid for hypoperfusion, vasopressors, source control",
+      "citation": "Evans L, Rhodes A, Alhazzani W, et al. Surviving Sepsis Campaign: international guidelines for management of sepsis and septic shock 2021. Crit Care Med. 2021;49:e1063–e1143.",
+      "verified": false
+    }
+  ],
+  "rationale": "Permutation: severity. Gangrenous volvulus with septic shock needs resuscitation and emergency Hartmann's; endoscopic detorsion is contraindicated.",
+  "authoring": {
+    "author": "Claude (GI surgical emergencies cluster)",
+    "date": "2026-09-25",
+    "notes": "Expectations need surgeon sign-off (reviewedBy). Every citation is verified: false."
+  }
+}

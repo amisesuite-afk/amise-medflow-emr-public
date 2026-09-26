@@ -1,0 +1,308 @@
+{
+  "schemaVersion": 1,
+  "id": "paed-malrotation-volvulus-bilious-neonate",
+  "condition": "Malrotation with midgut volvulus",
+  "category": "gi-emergency",
+  "permutationOf": null,
+  "permutationLabel": "12-day-old with sudden bilious vomiting (base case)",
+  "summary": "12-day-old term girl (3.4 kg), previously feeding well, four bright-green vomits since this morning, mildly distended, HR 172, CRT 3 s; AXR paucity of distal gas. Bilious vomiting in a neonate is midgut volvulus until proven otherwise: emergency upper GI contrast and paediatric surgery.",
+  "tags": [
+    "paediatric",
+    "neonatal",
+    "bilious-vomiting",
+    "do-not-miss"
+  ],
+  "inputs": {
+    "patient": {
+      "ageYears": 0,
+      "sex": "female",
+      "heightCm": 51,
+      "weightKg": 3.4
+    },
+    "encounter": {
+      "setting": "emergency",
+      "visitType": "urgentReview",
+      "acuity": "emergency"
+    },
+    "chiefComplaint": "Newborn vomiting green",
+    "hpi": "12-day-old term girl, uneventful pregnancy and birth, breastfeeding well until this morning. Since 6 am four vomits of bright green fluid, now reluctant to feed and unsettled. Passed one normal stool yesterday. No fever.",
+    "symptoms": [
+      "bilious vomiting",
+      "poor feeding",
+      "inconsolable crying"
+    ],
+    "negatives": [
+      "fever",
+      "diarrhoea"
+    ],
+    "exam": {
+      "general": "Unsettled, mottled peripheries. T 36.9, HR 172, RR 50, CRT 3 s.",
+      "abdomen": "Mildly distended, soft, not obviously tender; no hernias; normal anus."
+    },
+    "vitals": [
+      {
+        "minutesAgo": 10,
+        "heartRate": 172,
+        "systolicBp": 70,
+        "diastolicBp": 40,
+        "respiratoryRate": 50,
+        "temperatureC": 36.9,
+        "spo2": 98,
+        "avpu": "A",
+        "onSupplementalO2": false,
+        "weightKg": 3.4
+      }
+    ],
+    "labs": [
+      {
+        "analyte": "glucose",
+        "name": "Glucose",
+        "value": 3.9,
+        "unit": "mmol/L",
+        "minutesAgo": 30
+      },
+      {
+        "analyte": "lactate",
+        "name": "Lactate",
+        "value": 2.4,
+        "unit": "mmol/L",
+        "minutesAgo": 30
+      }
+    ],
+    "imaging": [
+      {
+        "name": "AXR (supine)",
+        "modality": "XR",
+        "region": "Abdomen",
+        "result": "Distended stomach and proximal duodenum with paucity of distal bowel gas. No pneumatosis or free air.",
+        "minutesAgo": 20
+      }
+    ],
+    "comorbidities": [],
+    "surgicalHistory": [],
+    "medications": [],
+    "allergies": [],
+    "nkda": true,
+    "socialHistory": "First child, breastfed.",
+    "confirmedDiagnosis": {
+      "name": "Suspected malrotation with midgut volvulus",
+      "icd10": "Q43.3",
+      "assessmentText": "Bilious vomiting in a 12-day-old with a gasless distal abdomen: midgut volvulus until proven otherwise. Nil by mouth, nasogastric decompression, IV fluids (mL/kg), emergency upper GI contrast study, immediate paediatric surgical referral (Ladd procedure)."
+    },
+    "platform": {
+      "web": {
+        "ccTemplate": "Nausea / vomiting",
+        "socratesAnswers": {
+          "onset": "This morning, sudden",
+          "associated": "Green vomits, not feeding, unsettled"
+        },
+        "symptoms": [
+          "bilious vomiting",
+          "poor feeding",
+          "inconsolable crying",
+          "vomiting"
+        ],
+        "symptomDetails": {
+          "vomiting": [
+            "Bile",
+            "Multiple episodes daily"
+          ]
+        },
+        "examFindings": {
+          "abdomen": [
+            "Distension"
+          ]
+        },
+        "durationDays": 0
+      }
+    }
+  },
+  "expected": {
+    "differential": {
+      "mustNotMiss": [
+        {
+          "id": "mnm-malrotation",
+          "severity": "critical",
+          "guidelineRefs": [
+            "langer-malrotation-2017"
+          ],
+          "match": [
+            "malrotation",
+            "volvulus"
+          ]
+        }
+      ],
+      "mustRankTopK": [
+        {
+          "id": "dx-malrotation-symptom-engine",
+          "severity": "quality",
+          "platforms": [
+            "web"
+          ],
+          "match": [
+            "malrotation",
+            "volvulus"
+          ],
+          "k": 3,
+          "source": "web.symptomInference"
+        }
+      ]
+    },
+    "safety": {
+      "emergencyLevel": {
+        "id": "level-emergency",
+        "severity": "critical",
+        "guidelineRefs": [
+          "langer-malrotation-2017",
+          "acr-vomiting-infants-2020"
+        ],
+        "atLeast": "emergency"
+      }
+    },
+    "investigations": {
+      "mustInclude": [
+        {
+          "id": "inv-upper-gi-contrast",
+          "severity": "critical",
+          "guidelineRefs": [
+            "acr-vomiting-infants-2020",
+            "langer-malrotation-2017"
+          ],
+          "match": [
+            "upper gi contrast",
+            "contrast study",
+            "upper gastrointestinal contrast",
+            "re:\\bugi\\b",
+            "contrast meal",
+            "upper gi series"
+          ]
+        }
+      ]
+    },
+    "management": {
+      "mustInclude": [
+        {
+          "id": "mgmt-paediatric-surgery-now",
+          "severity": "critical",
+          "guidelineRefs": [
+            "langer-malrotation-2017"
+          ],
+          "match": [
+            "re:paediatric surg",
+            "re:pediatric surg",
+            "paediatric surgeon",
+            "pediatric surgeon"
+          ]
+        },
+        {
+          "id": "mgmt-ng-decompression",
+          "severity": "quality",
+          "guidelineRefs": [
+            "langer-malrotation-2017"
+          ],
+          "match": [
+            "nasogastric",
+            "ng tube",
+            "re:\\bng\\b",
+            "orogastric"
+          ]
+        }
+      ],
+      "mustExclude": [
+        {
+          "id": "mgmt-no-adult-fixed-doses",
+          "severity": "critical",
+          "note": "Weight 3.4 kg. Paracetamol 1 g, ibuprofen 400 mg, piperacillin-tazobactam 4.5 g, co-amoxiclav 1.2 g, meropenem 1 g, morphine 2.5–5 mg, ondansetron 4 mg and fixed 1 L, 1–2 L or 500 mL fluid volumes are adult fixed doses; a child needs weight-based (mg/kg, mL/kg) dosing. Prescribing accuracy is a patient-safety issue, so critical.",
+          "match": [
+            "re:paracetamol 1 ?g",
+            "re:ibuprofen 400 ?mg",
+            "re:4\\.5 ?g",
+            "re:co-amoxiclav[^\\n]{0,20}1\\.2 ?g",
+            "re:amoxiclav 1\\.2 ?g",
+            "re:meropenem 1 ?g",
+            "re:morphine (sulfate )?(2\\.5|5) ?mg",
+            "re:hartmann'?s (1 ?l|1[–-]2 ?l|500 ?ml)",
+            "re:fluid challenge 500 ?ml",
+            "re:ondansetron 4 ?mg"
+          ],
+          "unless": [
+            "mg/kg",
+            "ml/kg",
+            "adult",
+            ">50 kg",
+            "over 50 kg",
+            "age ≥ 12",
+            "microgram/kg"
+          ]
+        },
+        {
+          "id": "mgmt-no-reflux-treatment",
+          "severity": "quality",
+          "guidelineRefs": [
+            "langer-malrotation-2017"
+          ],
+          "note": "Bilious vomiting is never reflux.",
+          "match": [
+            "gaviscon",
+            "re:\\bppi\\b",
+            "omeprazole",
+            "thickened feed",
+            "antacid"
+          ]
+        },
+        {
+          "id": "mgmt-no-antithrombotic-plan",
+          "severity": "critical",
+          "guidelineRefs": [
+            "langer-malrotation-2017"
+          ],
+          "note": "An ACS, PE or AF antithrombotic/thrombolytic plan must never be attached to this diagnosis. Regression guard: before 999f838 (word-boundary lookup) \"mi\" inside \"midgut\" would have attached the ACS plan (aspirin 300 mg, ticagrelor, fondaparinux) to a neonate. With word-boundary matching the diagnosis now matches the adult small-bowel-obstruction entry (\"volvulus\"), which has no antithrombotic content (simulated from the source); to be confirmed on the first iOS CI run.",
+          "match": [
+            "aspirin 300",
+            "ticagrelor",
+            "clopidogrel 300",
+            "fondaparinux",
+            "alteplase",
+            "thrombolysis",
+            "rivaroxaban",
+            "apixaban 10",
+            "apixaban 5 mg bd",
+            "dabigatran",
+            "doacs (preferred)"
+          ],
+          "sources": [
+            "ios.radiation",
+            "ios.soap",
+            "web.plan",
+            "web.protocol",
+            "web.managementPanel"
+          ]
+        }
+      ]
+    }
+  },
+  "guideline": [
+    {
+      "id": "langer-malrotation-2017",
+      "name": "Intestinal rotation abnormalities and midgut volvulus",
+      "year": 2017,
+      "section": "Bilious vomiting in a neonate/infant is malrotation with midgut volvulus until proven otherwise: emergency upper GI contrast study and immediate paediatric surgical assessment (Ladd procedure); delay risks loss of the midgut",
+      "citation": "Langer JC. Intestinal rotation abnormalities and midgut volvulus. Surg Clin North Am. 2017;97:147–159.",
+      "verified": false
+    },
+    {
+      "id": "acr-vomiting-infants-2020",
+      "name": "ACR Appropriateness Criteria — vomiting in infants",
+      "year": 2020,
+      "section": "Non-bilious projectile vomiting (suspected hypertrophic pyloric stenosis): ultrasound of the pylorus; bilious vomiting in an infant: upper GI contrast series (malrotation/midgut volvulus) as a surgical emergency",
+      "citation": "Expert Panel on Pediatric Imaging; Alazraki AL, Rigsby CK, Iyer RS, et al. ACR Appropriateness Criteria® Vomiting in Infants. J Am Coll Radiol. 2020;17:S505–S515.",
+      "verified": false
+    }
+  ],
+  "rationale": "Midgut volvulus can infarct the whole small bowel within hours. Any bilious vomiting in a neonate needs an emergency contrast study and immediate paediatric surgical assessment.",
+  "authoring": {
+    "author": "Claude (prevention/screening, obstetric-gynaecological mimics and paediatric surgery cluster)",
+    "date": "2026-09-25",
+    "notes": "Expectations need surgeon sign-off (reviewedBy). Every citation is verified: false. iOS outcomes are unverified (not run on Linux); triage after the first CI run."
+  }
+}

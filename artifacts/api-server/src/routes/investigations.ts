@@ -1,5 +1,6 @@
 import { Router } from 'express';
-import Anthropic from '@anthropic-ai/sdk';
+import type Anthropic from '@anthropic-ai/sdk';
+import { createAnthropicClient, rejectIfAiDisabled, isAiEnabled } from '../lib/ai-gate.js';
 import { z } from 'zod';
 import { getSupabaseAdmin, requireStaffAuth, requireCronSecret, audit, getStaffUserId } from '../lib/supabase.js';
 import { extractDocumentInsights } from './portal.js';
@@ -10,7 +11,7 @@ import { createWorkflowTask, resolveWorkflowTask } from '../lib/workflow-tasks.j
 
 const router = Router();
 
-const client = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY! });
+const client = createAnthropicClient();
 const MODEL = process.env.CLAUDE_MODEL || 'claude-opus-4-5';
 
 const SUPPORTED_MIME_TYPES = new Set([
@@ -51,6 +52,7 @@ Respond with ONLY a JSON object, no markdown fences, matching this schema:
 // ---------------------------------------------------------------------------
 router.post('/api/investigations/extract-results', async (req, res) => {
   if (!(await requireStaffAuth(req, res))) return;
+  if (rejectIfAiDisabled(res)) return;
 
   const { dataBase64, mimeType, fileName } = (req.body ?? {}) as {
     dataBase64?: string; mimeType?: string; fileName?: string;
@@ -799,6 +801,7 @@ extracted_labs: Numeric values ONLY for lab results that are EXPLICITLY STATED w
 
 router.post('/api/investigations/scan-referral', async (req, res) => {
   if (!(await requireStaffAuth(req, res))) return;
+  if (rejectIfAiDisabled(res)) return;
 
   const { content, contentType, mimeType } = (req.body ?? {}) as {
     content?: string;
@@ -948,6 +951,9 @@ router.get('/api/documents/:id/signed-url', async (req, res) => {
 router.post('/api/documents/:id/extract', async (req, res) => {
   if (!requireCronSecret(req, res)) return;
   const { id } = req.params as { id: string };
+  // DISABLE_AI=true: the upload itself already succeeded — don't make the
+  // folder watcher retry; extraction is simply skipped (staff file manually).
+  if (!isAiEnabled()) { res.json({ ok: true, skipped: 'ai_disabled' }); return; }
   try {
     await extractDocumentInsights(id);
     res.json({ ok: true });

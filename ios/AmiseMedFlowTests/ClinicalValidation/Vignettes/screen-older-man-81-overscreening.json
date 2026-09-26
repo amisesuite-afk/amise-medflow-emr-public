@@ -1,0 +1,217 @@
+{
+  "schemaVersion": 1,
+  "id": "screen-older-man-81-overscreening",
+  "condition": "Screening in an 81-year-old man — avoid over-screening",
+  "category": "other",
+  "permutationOf": "screen-crc-average-risk-46",
+  "permutationLabel": "Age 81, fit, normal colonoscopy at 71; asks for PSA and bowel test",
+  "summary": "81-year-old fit man, normal colonoscopy at 71, asks for a \"full check-up with the prostate test and a bowel test\". USPSTF: recommend against PSA screening ≥ 70 (D); CRC screening 76–85 is selective (C), guided by health and prior screening; no AAA screening after 75.",
+  "tags": [
+    "screening",
+    "elderly",
+    "over-screening",
+    "prostate",
+    "colorectal"
+  ],
+  "inputs": {
+    "patient": {
+      "ageYears": 81,
+      "sex": "male",
+      "heightCm": 172,
+      "weightKg": 74
+    },
+    "encounter": {
+      "setting": "outpatient",
+      "visitType": "wellness",
+      "acuity": "routine"
+    },
+    "chiefComplaint": "Wants a full check-up including the prostate test and a bowel test",
+    "hpi": "Fit 81-year-old retired farmer, walks 3 miles daily. Asks for \"the prostate blood test\" and \"a bowel test\" because a friend was diagnosed. No urinary symptoms, no bowel symptoms, no weight loss. Colonoscopy at 71 was normal. Never smoked.",
+    "symptoms": [
+      "annual review"
+    ],
+    "negatives": [
+      "lower urinary tract symptoms",
+      "rectal bleeding",
+      "weight loss"
+    ],
+    "exam": {
+      "general": "Well. BP 134/78.",
+      "abdomen": "Soft, no masses; no palpable aorta."
+    },
+    "vitals": [
+      {
+        "minutesAgo": 10,
+        "heartRate": 68,
+        "systolicBp": 134,
+        "diastolicBp": 78,
+        "respiratoryRate": 14,
+        "temperatureC": 36.5,
+        "spo2": 97,
+        "avpu": "A",
+        "onSupplementalO2": false
+      }
+    ],
+    "labs": [],
+    "imaging": [],
+    "comorbidities": [
+      "Osteoarthritis knees"
+    ],
+    "surgicalHistory": [
+      "Colonoscopy age 71 — normal"
+    ],
+    "medications": [
+      {
+        "drug": "Paracetamol",
+        "dose": "1 g",
+        "frequency": "PRN",
+        "indication": "Knee pain"
+      }
+    ],
+    "allergies": [],
+    "nkda": true,
+    "socialHistory": "Retired farmer, never smoked, lives with wife.",
+    "confirmedDiagnosis": {
+      "name": "Health check, age 81 — screening review",
+      "icd10": "Z00.00",
+      "assessmentText": "Asymptomatic 81-year-old. PSA screening not recommended at this age (discussed). Colorectal screening at 76–85 is an individual decision; normal colonoscopy at 71, good health — discussed options."
+    },
+    "platform": {
+      "web": {
+        "ccTemplate": "Other / general surgical",
+        "symptoms": [
+          "annual review"
+        ],
+        "durationDays": 0
+      }
+    }
+  },
+  "expected": {
+    "safety": {
+      "emergencyLevel": {
+        "id": "level-routine",
+        "severity": "quality",
+        "guidelineRefs": [
+          "uspstf-prostate-2018"
+        ],
+        "atMost": "priority"
+      }
+    },
+    "investigations": {
+      "mustExclude": [
+        {
+          "id": "inv-no-psa-over-70",
+          "severity": "quality",
+          "guidelineRefs": [
+            "uspstf-prostate-2018"
+          ],
+          "note": "USPSTF 2018 grade D: recommend against PSA-based screening in men ≥ 70.",
+          "match": [
+            "re:\\bpsa\\b"
+          ],
+          "unless": [
+            "not recommended",
+            "recommend against",
+            "not indicated"
+          ]
+        }
+      ]
+    },
+    "management": {
+      "mustInclude": [
+        {
+          "id": "mgmt-individualised-crc",
+          "severity": "quality",
+          "guidelineRefs": [
+            "uspstf-crc-2021"
+          ],
+          "note": "At 76–85 CRC screening is selective (grade C): the plan should mention individual health, life expectancy and prior screening.",
+          "match": [
+            "life expectancy",
+            "selective",
+            "individualis",
+            "individualiz",
+            "prior screening",
+            "overall health"
+          ],
+          "knownGap": [
+            "ios"
+          ],
+          "knownGapNote": "iOS CI 2026-09-25 (run 36169134350, database mode): no management item matched among 3 (ios.pipeline.actions, ios.soap.plan)"
+        }
+      ],
+      "mustExclude": [
+        {
+          "id": "mgmt-no-psa-discussion-over-70",
+          "severity": "quality",
+          "guidelineRefs": [
+            "uspstf-prostate-2018"
+          ],
+          "note": "A PSA screening discussion \"for men ≥ 50\" at 81 contradicts USPSTF grade D.",
+          "match": [
+            "re:psa[^\\n]{0,40}(discussion|consent|screening)"
+          ],
+          "unless": [
+            "not recommended",
+            "recommend against"
+          ]
+        },
+        {
+          "id": "mgmt-no-routine-10-yearly-colonoscopy",
+          "severity": "quality",
+          "guidelineRefs": [
+            "uspstf-crc-2021"
+          ],
+          "note": "Routine 10-yearly colonoscopy is not the default above 75.",
+          "match": [
+            "re:colonoscopy[^\\n]{0,30}every 10",
+            "re:crc screening, age ≥ ?50",
+            "re:colonoscopy every 10 years"
+          ],
+          "unless": [
+            "individual",
+            "selective",
+            "life expectancy"
+          ]
+        }
+      ]
+    },
+    "pathway": {
+      "id": "pathway-wellness",
+      "severity": "quality",
+      "equals": "wellness"
+    }
+  },
+  "guideline": [
+    {
+      "id": "uspstf-prostate-2018",
+      "name": "USPSTF recommendation statement — screening for prostate cancer",
+      "year": 2018,
+      "section": "55–69: individual decision about PSA-based screening after discussion of potential benefits and harms (grade C); ≥ 70: recommend against PSA-based screening (grade D); Black men and men with a family history may benefit from the discussion",
+      "citation": "US Preventive Services Task Force. Screening for prostate cancer: US Preventive Services Task Force recommendation statement. JAMA. 2018;319:1901–1913.",
+      "verified": false
+    },
+    {
+      "id": "uspstf-crc-2021",
+      "name": "USPSTF recommendation statement — screening for colorectal cancer",
+      "year": 2021,
+      "section": "Screen adults 45–49 (grade B) and 50–75 (grade A); 76–85 selectively, considering overall health and prior screening (grade C); stool-based (e.g. annual FIT) or direct visualisation (e.g. colonoscopy every 10 years) strategies",
+      "citation": "US Preventive Services Task Force. Screening for colorectal cancer: US Preventive Services Task Force recommendation statement. JAMA. 2021;325:1965–1977.",
+      "verified": false
+    },
+    {
+      "id": "uspstf-aaa-2019",
+      "name": "USPSTF recommendation statement — screening for abdominal aortic aneurysm",
+      "year": 2019,
+      "section": "Men 65–75 who have ever smoked: one-time ultrasound screening for AAA (grade B)",
+      "citation": "US Preventive Services Task Force. Screening for abdominal aortic aneurysm: US Preventive Services Task Force recommendation statement. JAMA. 2019;322:2211–2218.",
+      "verified": false
+    }
+  ],
+  "rationale": "Screening beyond the evidence-based age range causes harm (overdiagnosis, colonoscopy complications). USPSTF: no PSA screening at ≥ 70; CRC screening 76–85 only selectively; AAA screening is for men 65–75 who have ever smoked.",
+  "authoring": {
+    "author": "Claude (prevention/screening, obstetric-gynaecological mimics and paediatric surgery cluster)",
+    "date": "2026-09-25",
+    "notes": "Expectations need surgeon sign-off (reviewedBy). Every citation is verified: false. iOS outcomes are unverified (not run on Linux); triage after the first CI run."
+  }
+}

@@ -1,0 +1,495 @@
+{
+  "schemaVersion": 1,
+  "id": "periop-nela-frail-emergency-laparotomy",
+  "condition": "Emergency laparotomy in a frail older patient (NELA high risk) — perforated diverticulitis on apixaban",
+  "category": "gi-emergency",
+  "permutationOf": null,
+  "summary": "84-year-old frail woman (CFS 6) on apixaban with faecal peritonitis from perforated sigmoid diverticulitis, hypotensive with lactate 4.1 — emergency laparotomy.",
+  "tags": [
+    "periop",
+    "emergency-laparotomy",
+    "nela",
+    "frailty",
+    "elderly",
+    "anticoagulated",
+    "sepsis"
+  ],
+  "inputs": {
+    "patient": {
+      "ageYears": 84,
+      "sex": "female",
+      "pregnancy": {
+        "status": "not-applicable"
+      },
+      "heightCm": 155,
+      "weightKg": 52
+    },
+    "encounter": {
+      "setting": "emergency",
+      "visitType": "surgeryEmergency",
+      "acuity": "emergency"
+    },
+    "chiefComplaint": "Severe abdominal pain and vomiting",
+    "hpi": "24 hours of generalised abdominal pain after 3 days of left-sided pain; vomiting, not passed urine since morning. Lives alone with twice-daily carers; needs help with bathing and shopping (CFS 6). Mild cognitive impairment. Atrial fibrillation on apixaban, last dose this morning.",
+    "socrates": {
+      "onset": [
+        "Yesterday",
+        "Sudden"
+      ],
+      "site": [
+        "Diffuse",
+        "LLQ"
+      ],
+      "character": [
+        "Sharp"
+      ],
+      "radiation": [
+        "No radiation"
+      ],
+      "associations": [
+        "Vomiting",
+        "Fever",
+        "Anorexia"
+      ],
+      "timing": [
+        "Constant"
+      ],
+      "exacerbating": [
+        "Movement",
+        "Coughing"
+      ],
+      "relieving": [
+        "Nothing"
+      ],
+      "severity": [
+        "Severe (7–9/10)"
+      ]
+    },
+    "symptoms": [
+      "abdominal pain",
+      "vomiting",
+      "fever"
+    ],
+    "negatives": [
+      "rectal bleeding",
+      "haematemesis"
+    ],
+    "exam": {
+      "general": "Drowsy but orientated, dry. HR 118 irregular, BP 94/58, RR 24, SpO2 94% on air, T 38.4°C.",
+      "abdomen": "Distended, rigid, generalised guarding and rebound. Absent bowel sounds."
+    },
+    "vitals": [
+      {
+        "minutesAgo": 5,
+        "heartRate": 118,
+        "systolicBp": 94,
+        "diastolicBp": 58,
+        "respiratoryRate": 24,
+        "temperatureC": 38.4,
+        "spo2": 94,
+        "avpu": "A",
+        "onSupplementalO2": false
+      }
+    ],
+    "labs": [
+      {
+        "analyte": "wbc",
+        "name": "WBC",
+        "value": 21.4,
+        "unit": "×10⁹/L",
+        "minutesAgo": 30
+      },
+      {
+        "analyte": "crp",
+        "name": "CRP",
+        "value": 310,
+        "unit": "mg/L",
+        "minutesAgo": 30
+      },
+      {
+        "analyte": "lactate",
+        "name": "Lactate",
+        "value": 4.1,
+        "unit": "mmol/L",
+        "minutesAgo": 30
+      },
+      {
+        "analyte": "creatinine",
+        "name": "Creatinine",
+        "value": 162,
+        "unit": "µmol/L",
+        "minutesAgo": 30
+      },
+      {
+        "analyte": "urea",
+        "name": "Urea",
+        "value": 14.2,
+        "unit": "mmol/L",
+        "minutesAgo": 30
+      },
+      {
+        "analyte": "haemoglobin",
+        "name": "Haemoglobin",
+        "value": 11.6,
+        "unit": "g/dL",
+        "minutesAgo": 30
+      },
+      {
+        "analyte": "platelets",
+        "name": "Platelets",
+        "value": 180,
+        "unit": "×10⁹/L",
+        "minutesAgo": 30
+      },
+      {
+        "analyte": "albumin",
+        "name": "Albumin",
+        "value": 28,
+        "unit": "g/L",
+        "minutesAgo": 30
+      }
+    ],
+    "imaging": [
+      {
+        "name": "CT abdomen/pelvis",
+        "modality": "CT",
+        "region": "Abdomen/pelvis",
+        "result": "Perforated sigmoid diverticulitis with free gas and generalised free fluid in keeping with faecal peritonitis.",
+        "minutesAgo": 30
+      }
+    ],
+    "comorbidities": [
+      "Atrial fibrillation",
+      "Hypertension",
+      "Mild cognitive impairment",
+      "Frailty (CFS 6)",
+      "Osteoarthritis"
+    ],
+    "surgicalHistory": [],
+    "medications": [
+      {
+        "drug": "Apixaban",
+        "dose": "2.5 mg",
+        "frequency": "BD",
+        "indication": "Atrial fibrillation"
+      },
+      {
+        "drug": "Bisoprolol",
+        "dose": "2.5 mg",
+        "frequency": "OD",
+        "indication": "Rate control"
+      },
+      {
+        "drug": "Amlodipine",
+        "dose": "5 mg",
+        "frequency": "OD",
+        "indication": "Hypertension"
+      }
+    ],
+    "allergies": [],
+    "nkda": true,
+    "socialHistory": "Widowed, lives alone with carers twice daily. Non-smoker.",
+    "confirmedDiagnosis": {
+      "name": "Perforated sigmoid diverticulitis with faecal peritonitis — emergency laparotomy (frail, on apixaban)",
+      "icd10": "K57.20",
+      "paneDiseaseId": "diverticulitis",
+      "assessmentText": "Perforated sigmoid diverticulitis, faecal peritonitis (Hinchey IV), sepsis with hypotension and lactate 4.1. Frail (CFS 6), 84, on apixaban. Emergency laparotomy (Hartmann's) after risk assessment and shared decision."
+    },
+    "platform": {
+      "web": {
+        "ccTemplate": "Acute abdominal pain",
+        "symptoms": [
+          "abdominal pain",
+          "vomiting",
+          "fever"
+        ],
+        "durationDays": 1,
+        "painScore": 9,
+        "paneAnswers": {
+          "rebound_tenderness": true,
+          "guarding": true,
+          "elevated_wbc": true,
+          "lif_pain": true,
+          "fever": true
+        }
+      }
+    }
+  },
+  "expected": {
+    "differential": {
+      "mustRankTopK": [
+        {
+          "id": "dx-perforation-top3",
+          "severity": "critical",
+          "match": [
+            "diverticul",
+            "perforat",
+            "peritonitis"
+          ],
+          "k": 3,
+          "guidelineRefs": [
+            "wses-iai-2017"
+          ]
+        }
+      ]
+    },
+    "safety": {
+      "emergencyLevel": {
+        "id": "level-emergency",
+        "severity": "critical",
+        "atLeast": "emergency",
+        "guidelineRefs": [
+          "ssc-2021"
+        ]
+      },
+      "mustAlarm": [
+        {
+          "id": "alarm-sepsis",
+          "severity": "critical",
+          "match": [
+            "sepsis",
+            "septic",
+            "shock",
+            "hypotens"
+          ],
+          "guidelineRefs": [
+            "ssc-2021"
+          ]
+        }
+      ]
+    },
+    "scores": {
+      "recommended": [
+        {
+          "id": "score-rec-cfs",
+          "severity": "quality",
+          "score": "cfs",
+          "guidelineRefs": [
+            "cpoc-bgs-frailty-2021",
+            "nela-standards"
+          ],
+          "knownGap": [
+            "ios"
+          ],
+          "knownGapNote": "iOS CI 2026-09-25 (run 36169134350, database mode): cfs not recommended; recommended: hinchey, qsofa, sofa, ios:mpi, sirs, news2, mews"
+        },
+        {
+          "id": "score-rec-p-possum",
+          "severity": "quality",
+          "score": "p-possum",
+          "guidelineRefs": [
+            "rcs-highrisk-2011",
+            "nela-standards"
+          ],
+          "note": "The web P-POSSUM CDS rule needs procedureData.preop or an endoscopy record, which the harness does not set.",
+          "knownGap": [
+            "web",
+            "ios"
+          ],
+          "knownGapNote": "P-POSSUM is not suggested: the CDS rule needs procedureData.preop or an endoscopy record (not set by the harness). No NELA risk score exists in the CDS list. | iOS CI 2026-09-25 (run 36169134350, database mode): p-possum not recommended; recommended: hinchey, qsofa, sofa, ios:mpi, sirs, news2, mews",
+          "proposedFix": "Suggest P-POSSUM/NELA risk on a locked emergency-surgery diagnosis (perforation, peritonitis, obstruction) and on the emergency-surgery visit type."
+        }
+      ]
+    },
+    "management": {
+      "mustInclude": [
+        {
+          "id": "mgmt-antibiotics",
+          "severity": "critical",
+          "match": [
+            "antibiotic",
+            "piperacillin",
+            "pip-tazo",
+            "meropenem",
+            "co-amoxiclav",
+            "amoxiclav",
+            "ceftriaxone",
+            "cefuroxime",
+            "metronidazole",
+            "gentamicin",
+            "tazocin"
+          ],
+          "guidelineRefs": [
+            "ssc-2021"
+          ]
+        },
+        {
+          "id": "mgmt-source-control",
+          "severity": "critical",
+          "match": [
+            "laparotomy",
+            "hartmann's procedure",
+            "hartmann procedure",
+            "source control",
+            "theatre"
+          ],
+          "guidelineRefs": [
+            "wses-iai-2017",
+            "nela-standards"
+          ]
+        },
+        {
+          "id": "mgmt-critical-care",
+          "severity": "critical",
+          "match": [
+            "critical care",
+            "re:\\b(icu|itu|hdu)\\b",
+            "intensive care",
+            "high dependency"
+          ],
+          "guidelineRefs": [
+            "rcs-highrisk-2011",
+            "nela-standards"
+          ],
+          "note": "Predicted mortality well above 5%: post-operative critical care."
+        },
+        {
+          "id": "mgmt-mortality-risk",
+          "severity": "quality",
+          "match": [
+            "p-possum",
+            "nela",
+            "mortality risk",
+            "risk of death",
+            "predicted mortality"
+          ],
+          "guidelineRefs": [
+            "rcs-highrisk-2011",
+            "nela-standards"
+          ],
+          "proposedFix": "See score-rec-p-possum; add a NELA pathway prompt (risk, consultant presence, critical care, timing)."
+        },
+        {
+          "id": "mgmt-geriatric-input",
+          "severity": "quality",
+          "match": [
+            "geriatric",
+            "elderly medicine",
+            "care of the elderly",
+            "cga"
+          ],
+          "guidelineRefs": [
+            "cpoc-bgs-frailty-2021",
+            "nela-standards"
+          ],
+          "proposedFix": "Age ≥65 + emergency laparotomy → elderly medicine review prompt; CFS ≥5 → frailty pathway (CPOC/BGS 2021)."
+        },
+        {
+          "id": "mgmt-shared-decision",
+          "severity": "quality",
+          "match": [
+            "goals of care",
+            "treatment escalation",
+            "shared decision",
+            "dnacpr",
+            "resuscitation status",
+            "ceiling of care",
+            "escalation plan"
+          ],
+          "guidelineRefs": [
+            "cpoc-bgs-frailty-2021"
+          ],
+          "proposedFix": "Add a shared decision-making / treatment escalation plan prompt for high-risk and frail emergency surgery."
+        },
+        {
+          "id": "mgmt-doac-plan",
+          "severity": "quality",
+          "match": [
+            "re:(apixaban|doac|anti-xa)[^.;\\n]{0,60}(last dose|anti-xa|revers|andexanet|pcc|prothrombin complex)",
+            "re:(revers|andexanet|prothrombin complex)[^.;\\n]{0,40}(apixaban|doac|anti-xa)"
+          ],
+          "guidelineRefs": [
+            "esc-ncs-2022"
+          ],
+          "note": "Apixaban taken this morning: document timing and the haemostatic plan for emergency surgery.",
+          "proposedFix": "Emergency surgery on a DOAC: document last dose and renal function, consider drug level where available and a haemostatic plan with haematology (ESC 2022)."
+        }
+      ],
+      "mustExclude": [
+        {
+          "id": "mgmt-no-appendicectomy",
+          "severity": "critical",
+          "match": [
+            "appendicectomy",
+            "appendectomy"
+          ],
+          "unless": [
+            "not indicated",
+            "no role",
+            "exclude appendicitis"
+          ],
+          "note": "Not an appendix presentation: an appendicectomy operative plan (consent, theatre booking, post-operative orders) is a wrong-procedure suggestion."
+        }
+      ]
+    },
+    "dxVariant": {
+      "id": "variant-peritonitis",
+      "severity": "critical",
+      "platforms": [
+        "web"
+      ],
+      "equals": "diverticulitis_peritonitis",
+      "guidelineRefs": [
+        "wses-iai-2017"
+      ],
+      "note": "Faecal peritonitis (Hinchey IV): the Plan tab must keep the surgical phase (Hartmann's).",
+      "proposedFix": "Match Hinchey keywords on word boundaries (\\bhinchey (i|1)\\b) and check the peritonitis variant first (dx-variants.ts diverticulitis group); add a vector to lint:dx-phases."
+    }
+  },
+  "guideline": [
+    {
+      "id": "wses-iai-2017",
+      "name": "WSES guidelines — management of intra-abdominal infections",
+      "year": 2017,
+      "section": "Early source control; CT for diagnosis; percutaneous drainage for accessible collections; relaparotomy for diffuse peritonitis; empirical antibiotics by severity and local resistance",
+      "citation": "Sartelli M, Chichom-Mefire A, Labricciosa FM, et al. World J Emerg Surg. 2017;12:29.",
+      "verified": false
+    },
+    {
+      "id": "ssc-2021",
+      "name": "Surviving Sepsis Campaign — international guidelines 2021",
+      "year": 2021,
+      "section": "Antimicrobials within 1 h for possible septic shock or high likelihood of sepsis; source control as soon as practical; measure lactate; admit to ICU when needed",
+      "citation": "Evans L, Rhodes A, Alhazzani W, et al. Crit Care Med. 2021;49:e1063–143.",
+      "verified": false
+    },
+    {
+      "id": "rcs-highrisk-2011",
+      "name": "RCS England / DH — The higher risk general surgical patient",
+      "year": 2011,
+      "section": "Estimate and document mortality risk before emergency surgery (e.g. P-POSSUM); predicted mortality ≥5%: consultant surgeon and anaesthetist present, post-operative critical care; ≥10%: consultant-delivered care",
+      "citation": "Royal College of Surgeons of England, Department of Health. The higher risk general surgical patient: towards improved care for a forgotten group. London: RCS; 2011 (revised 2018).",
+      "verified": false
+    },
+    {
+      "id": "nela-standards",
+      "name": "National Emergency Laparotomy Audit (NELA) — standards of care",
+      "year": 2023,
+      "section": "Documented preoperative risk assessment (NELA/P-POSSUM), timely antibiotics and theatre, consultant surgeon and anaesthetist present for high-risk cases, post-operative critical care when predicted mortality ≥5%, frailty assessment and elderly medicine review for patients aged ≥65",
+      "citation": "NELA Project Team. Ninth Patient Report of the National Emergency Laparotomy Audit. London: RCoA; 2023.",
+      "verified": false
+    },
+    {
+      "id": "cpoc-bgs-frailty-2021",
+      "name": "CPOC/BGS guideline — perioperative care for people living with frailty undergoing elective and emergency surgery",
+      "year": 2021,
+      "section": "Frailty screening (Clinical Frailty Scale) for people aged ≥65; comprehensive geriatric assessment; cognitive and delirium risk assessment; shared decision-making including treatment escalation; post-operative delirium prevention",
+      "citation": "Centre for Perioperative Care, British Geriatrics Society. London: CPOC; 2021.",
+      "verified": false
+    },
+    {
+      "id": "esc-ncs-2022",
+      "name": "2022 ESC guidelines — cardiovascular assessment and management of patients undergoing non-cardiac surgery (with ESAIC)",
+      "year": 2022,
+      "section": "Clinical risk (RCRI), functional capacity (e.g. climbing two flights of stairs); ECG and NT-proBNP/BNP and troponin in patients with risk factors before intermediate/high-risk surgery; echocardiography in poor functional capacity, raised NT-proBNP or known HF; delay elective surgery until 6 months after elective PCI and 12 months after ACS; continue aspirin after PCI if bleeding risk allows; interrupt P2Y12 inhibitors only in agreement with the cardiologist; bridging not recommended for antiplatelet interruption",
+      "citation": "Halvorsen S, Mehilli J, Cassese S, et al. 2022 ESC Guidelines on cardiovascular assessment and management of patients undergoing non-cardiac surgery. Eur Heart J. 2022;43:3826–924.",
+      "verified": false
+    }
+  ],
+  "rationale": "Base emergency-laparotomy case: frail, elderly, anticoagulated and septic. Tests emergency level, sepsis alarm, antibiotics, source control, critical care, risk scoring, frailty assessment, geriatric input, shared decision-making and the DOAC plan.",
+  "authoring": {
+    "author": "Claude (perioperative medicine cluster)",
+    "date": "2026-09-25",
+    "notes": "Expectations and citations need surgeon sign-off (reviewedBy). Citations verified: false. iOS outcomes not yet observed (unverified: ios) — triage after the next CI run."
+  }
+}

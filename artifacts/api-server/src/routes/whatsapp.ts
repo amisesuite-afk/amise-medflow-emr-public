@@ -25,7 +25,10 @@ import { createHmac, timingSafeEqual } from 'node:crypto';
 import { getSupabaseAdmin, audit, requireStaffAuth } from '../lib/supabase.js';
 import { logger } from '../lib/logger.js';
 import { sendSms, smsBodyStaffNewBooking, toE164 } from '../lib/sms.js';
-import Anthropic from '@anthropic-ai/sdk';
+import { sendMetaWhatsApp, sendTelnyxWhatsApp } from '../lib/whatsapp-send.js';
+import { outboundBlocked } from '../lib/outbound.js';
+import { patientSiteBaseUrl } from '../lib/site-urls.js';
+import { createAnthropicClient, isAiEnabled } from '../lib/ai-gate.js';
 
 const router = Router();
 
@@ -210,9 +213,11 @@ async function generateDraft(
   portalUrl:       string,
 ): Promise<string | null> {
   const apiKey = process.env.ANTHROPIC_API_KEY;
-  if (!apiKey) return null;
+  // No draft (null) when unconfigured or DISABLE_AI=true — the inbound message
+  // is still stored and staff reply manually, same as a failed draft.
+  if (!apiKey || !isAiEnabled()) return null;
   try {
-    const client = new Anthropic({ apiKey });
+    const client = createAnthropicClient({ apiKey });
     const resp = await client.messages.create({
       model:      process.env.CLAUDE_MODEL ?? 'claude-haiku-4-5-20251001',
       max_tokens: 220,
@@ -236,56 +241,16 @@ Draft a reply: acknowledge receipt, guide them to the intake form if it's a book
   }
 }
 
-// ── Meta Graph API outbound reply ────────────────────────────────────────────
-
-async function sendMetaWhatsApp(to: string, text: string, phoneNumberId?: string): Promise<void> {
-  const token  = process.env.WHATSAPP_ACCESS_TOKEN;
-  const numId  = phoneNumberId ?? process.env.WHATSAPP_PHONE_NUMBER_ID;
-  if (!token || !numId) {
-    logger.warn('[whatsapp/reply] WHATSAPP_ACCESS_TOKEN or WHATSAPP_PHONE_NUMBER_ID not set');
-    return;
-  }
-  try {
-    const r = await fetch(`https://graph.facebook.com/v19.0/${numId}/messages`, {
-      method: 'POST',
-      headers: { Authorization: `Bearer ${token}`, 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        messaging_product: 'whatsapp',
-        to: to.replace(/^\+/, ''),
-        type: 'text',
-        text: { body: text },
-      }),
-    });
-    if (!r.ok) {
-      const err = await r.text().catch(() => '');
-      logger.warn({ status: r.status, err }, '[whatsapp/reply] Meta send failed');
-    }
-  } catch (err) {
-    logger.warn({ err }, '[whatsapp/reply] Meta send network error');
-  }
-}
-
-// ── Telnyx outbound reply ─────────────────────────────────────────────────────
-
-async function sendTelnyxWhatsApp(to: string, text: string): Promise<void> {
-  const apiKey = process.env.TELNYX_API_KEY;
-  const from   = process.env.TWILIO_FROM_NUMBER; // same env var, same number
-  if (!apiKey || !from) return;
-  try {
-    const r = await fetch('https://api.telnyx.com/v2/messages', {
-      method: 'POST',
-      headers: { Authorization: `Bearer ${apiKey}`, 'Content-Type': 'application/json' },
-      body: JSON.stringify({ from: `whatsapp:${from}`, to: `whatsapp:${to}`, text }),
-    });
-    if (!r.ok) logger.warn({ status: r.status }, '[whatsapp] Telnyx send failed');
-  } catch (err) {
-    logger.warn({ err }, '[whatsapp] Telnyx send network error');
-  }
-}
+// Meta / Telnyx senders live in lib/whatsapp-send.ts and are MODE-gated there.
 
 // ── TwiML helpers (Twilio) ────────────────────────────────────────────────────
 
 function twimlMsg(text: string): string {
+  // A TwiML <Message> is an outbound message to the patient, so it obeys the
+  // MODE gate too: under dry_run Twilio gets an empty <Response/> (no reply).
+  if (outboundBlocked('whatsapp_twilio')) {
+    return `<?xml version="1.0" encoding="UTF-8"?>\n<Response></Response>`;
+  }
   const escaped = text.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
   return `<?xml version="1.0" encoding="UTF-8"?>\n<Response><Message>${escaped}</Message></Response>`;
 }
@@ -349,7 +314,7 @@ router.post('/api/whatsapp/inbound', async (req: Request, res: Response) => {
 
   const { from, body, profileName, messageId } = msg;
   const fromE164 = toE164(from);
-  const portalUrl = process.env.PORTAL_URL ?? process.env.FRONTEND_URL ?? 'https://amise-medflow-front-desk.vercel.app';
+  const portalUrl = patientSiteBaseUrl();
   const supa = getSupabaseAdmin();
 
   // General enquiry → portal link, no booking record
@@ -357,7 +322,7 @@ router.post('/api/whatsapp/inbound', async (req: Request, res: Response) => {
     const reply = `Thanks for reaching out to Amise Medical Services — a specialist general and endoscopic surgery practice led by Dr Dawit Daniel Kabiye MD DM in Saint Lucia.\n\nTo request an appointment or get started, please complete our short intake form: ${portalUrl}/patient/request\n\nYou're also welcome to call: ${tapionLabel} ${tapionNum} · ${rodneyBayLabel} ${rodneyBayNum} — Amise Medical`;
     await audit({ action: 'send', entityType: 'whatsapp_message', entityId: fromE164, payload: { reason: 'general_enquiry', body: body.slice(0, 500) } });
     logger.info({ from: fromE164 }, '[whatsapp/inbound] general enquiry');
-    if (provider === 'meta')    { void sendMetaWhatsApp(fromE164, reply, msg.metaPhoneNumberId); return; }
+    if (provider === 'meta')    { void sendMetaWhatsApp(fromE164, reply, { phoneNumberId: msg.metaPhoneNumberId }); return; }
     if (provider === 'twilio')  { res.set('Content-Type', 'text/xml').send(twimlMsg(reply)); return; }
     if (provider === 'telnyx')  { void sendTelnyxWhatsApp(fromE164, reply); res.sendStatus(200); return; }
     return;
@@ -432,7 +397,7 @@ router.post('/api/whatsapp/inbound', async (req: Request, res: Response) => {
 
   // Acknowledge immediately — Claude draft runs async after response is sent
   // Meta already got its 200 above; Twilio needs TwiML; Telnyx needs plain 200
-  if (provider === 'meta')   { void sendMetaWhatsApp(fromE164, bookingId ? STATIC_ACK : STATIC_ERR, msg.metaPhoneNumberId); }
+  if (provider === 'meta')   { void sendMetaWhatsApp(fromE164, bookingId ? STATIC_ACK : STATIC_ERR, { phoneNumberId: msg.metaPhoneNumberId }); }
   else if (provider === 'twilio') res.set('Content-Type', 'text/xml').send(twimlMsg(bookingId ? STATIC_ACK : STATIC_ERR));
   else res.sendStatus(200);
 
@@ -478,19 +443,25 @@ router.patch('/api/whatsapp/:id/reply', async (req: Request, res: Response) => {
 
   const to = (log as { caller_number: string }).caller_number;
 
-  // Send via Meta Graph API → Telnyx → Twilio SMS (in priority order)
+  // Send via Meta Graph API → Telnyx → Twilio SMS (in priority order).
+  // Every path is MODE-gated (dry_run → 'skipped').
+  let action: 'sent' | 'skipped' | 'failed';
   if (process.env.WHATSAPP_ACCESS_TOKEN) {
-    await sendMetaWhatsApp(to, reply_text.trim());
+    action = await sendMetaWhatsApp(to, reply_text.trim());
   } else if (process.env.TELNYX_API_KEY) {
-    await sendTelnyxWhatsApp(to, reply_text.trim());
+    action = await sendTelnyxWhatsApp(to, reply_text.trim());
   } else {
     try {
-      await sendSms({ to, body: reply_text.trim(), forceChannel: 'whatsapp' });
+      action = (await sendSms({ to, body: reply_text.trim(), forceChannel: 'whatsapp' })).action;
     } catch (err) {
       logger.warn({ err }, '[whatsapp/reply] send failed');
-      res.status(502).json({ error: 'Failed to send reply' });
-      return;
+      action = 'failed';
     }
+  }
+  if (action === 'failed') {
+    // Don't mark the log resolved: staff must not believe a reply went out when it didn't.
+    res.status(502).json({ error: 'Failed to send reply' });
+    return;
   }
 
   const { error: resolveErr } = await supa
@@ -503,8 +474,8 @@ router.patch('/api/whatsapp/:id/reply', async (req: Request, res: Response) => {
     .eq('id', id);
   if (resolveErr) logger.warn({ err: resolveErr, id }, '[whatsapp/reply] call_log resolve update failed');
 
-  logger.info({ id, to }, '[whatsapp/reply] reply sent and log resolved');
-  res.json({ ok: true });
+  logger.info({ id, to, action }, '[whatsapp/reply] reply processed and log resolved');
+  res.json({ ok: true, action });
 });
 
 // ─── Meta WhatsApp Cloud API ──────────────────────────────────────────────────
@@ -535,29 +506,7 @@ const META_ERROR_MSG =
   'Thank you for reaching Amise Medical Services. We have noted your message; however, we were unable to register your request automatically. Please call the clinic directly so we can assist you. – Amise Medical';
 
 async function sendMetaReply(phoneNumberId: string, to: string, text: string): Promise<void> {
-  const token = process.env.WHATSAPP_ACCESS_TOKEN;
-  if (!token) {
-    logger.warn('[whatsapp/meta] WHATSAPP_ACCESS_TOKEN not set — cannot send reply');
-    return;
-  }
-  try {
-    const resp = await fetch(`https://graph.facebook.com/v20.0/${phoneNumberId}/messages`, {
-      method: 'POST',
-      headers: { Authorization: `Bearer ${token}`, 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        messaging_product: 'whatsapp',
-        to: to.replace(/^\+/, ''),
-        type: 'text',
-        text: { body: text },
-      }),
-    });
-    if (!resp.ok) {
-      const detail = await resp.text();
-      logger.warn({ status: resp.status, detail }, '[whatsapp/meta] send reply failed');
-    }
-  } catch (err) {
-    logger.error({ err }, '[whatsapp/meta] sendMetaReply error');
-  }
+  await sendMetaWhatsApp(to, text, { phoneNumberId, apiVersion: 'v20.0' });
 }
 
 // GET /api/whatsapp/meta — Meta webhook verification challenge
@@ -627,7 +576,7 @@ router.post('/api/whatsapp/meta', async (req, res) => {
         const profileName = contacts?.find(c => c.wa_id === msg.from)?.profile?.name ?? '';
 
         if (isGeneralEnquiry(body)) {
-          const baseUrl = process.env.PORTAL_URL || 'https://amise-medflow-front-desk.vercel.app';
+          const baseUrl = patientSiteBaseUrl();
           const replyText =
             `Thanks for reaching out to Amise Medical Services — a general & endoscopic surgery practice led by Dr Dawit Daniel Kabiye, MD, DM, in Saint Lucia.\n\n` +
             `To help us prepare for your visit, please complete our short triage form: ${baseUrl}/patient/request\n\n` +

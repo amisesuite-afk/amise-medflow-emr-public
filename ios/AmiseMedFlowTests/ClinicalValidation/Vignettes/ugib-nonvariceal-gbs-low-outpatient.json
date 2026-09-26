@@ -1,0 +1,328 @@
+{
+  "schemaVersion": 1,
+  "id": "ugib-nonvariceal-gbs-low-outpatient",
+  "condition": "Acute upper GI bleeding (non-variceal)",
+  "category": "upper-gi",
+  "permutationOf": "ugib-nonvariceal-gbs-high",
+  "permutationLabel": "Very low risk — Glasgow-Blatchford 0, outpatient management",
+  "summary": "26-year-old man, one small coffee-ground vomit after three days of dyspepsia; normal pulse and BP, Hb 14.6, urea 4.8, no melaena. Glasgow-Blatchford 0: outpatient endoscopy, not admission.",
+  "tags": [
+    "gi-bleed",
+    "glasgow-blatchford",
+    "low-risk",
+    "over-triage"
+  ],
+  "inputs": {
+    "patient": {
+      "ageYears": 26,
+      "sex": "male",
+      "pregnancy": {
+        "status": "not-applicable"
+      },
+      "heightCm": 180,
+      "weightKg": 75
+    },
+    "encounter": {
+      "setting": "outpatient",
+      "visitType": "urgentReview",
+      "acuity": "priority"
+    },
+    "chiefComplaint": "Vomited a small amount of dark material",
+    "hpi": "Three days of epigastric burning after a weekend of spicy food and alcohol. This morning vomited once and noticed a small amount of dark coffee-ground material mixed in. Stools normal brown. Feels well, not dizzy. No NSAIDs or blood thinners. No liver disease, no heart disease.",
+    "socrates": {
+      "onset": [
+        "2–3 days ago"
+      ],
+      "site": [
+        "Epigastric"
+      ],
+      "character": [
+        "Burning"
+      ],
+      "radiation": [
+        "No radiation"
+      ],
+      "associations": [
+        "Vomiting",
+        "Nausea"
+      ],
+      "timing": [
+        "Intermittent"
+      ],
+      "exacerbating": [
+        "Alcohol"
+      ],
+      "relieving": [
+        "Antacids"
+      ],
+      "severity": [
+        "Mild (1–3/10)"
+      ]
+    },
+    "symptoms": [
+      "coffee-ground vomiting",
+      "epigastric pain"
+    ],
+    "negatives": [
+      "melaena",
+      "syncope",
+      "dizziness",
+      "NSAID use",
+      "liver disease"
+    ],
+    "exam": {
+      "general": "Well, pink. Pulse 78/min, BP 128/76, no postural drop.",
+      "abdomen": "Soft, mild epigastric tenderness. PR: brown stool, no melaena."
+    },
+    "vitals": [
+      {
+        "minutesAgo": 10,
+        "heartRate": 78,
+        "systolicBp": 128,
+        "diastolicBp": 76,
+        "respiratoryRate": 14,
+        "temperatureC": 36.8,
+        "spo2": 99,
+        "avpu": "A",
+        "onSupplementalO2": false
+      }
+    ],
+    "labs": [
+      {
+        "analyte": "haemoglobin",
+        "name": "Haemoglobin",
+        "value": 14.6,
+        "unit": "g/dL",
+        "minutesAgo": 30
+      },
+      {
+        "analyte": "urea",
+        "name": "Urea",
+        "value": 4.8,
+        "unit": "mmol/L",
+        "minutesAgo": 30
+      },
+      {
+        "analyte": "creatinine",
+        "name": "Creatinine",
+        "value": 80,
+        "unit": "µmol/L",
+        "minutesAgo": 30
+      },
+      {
+        "analyte": "platelets",
+        "name": "Platelets",
+        "value": 260,
+        "unit": "×10⁹/L",
+        "minutesAgo": 30
+      },
+      {
+        "analyte": "inr",
+        "name": "INR",
+        "value": 1,
+        "unit": "",
+        "minutesAgo": 30
+      }
+    ],
+    "imaging": [],
+    "comorbidities": [],
+    "surgicalHistory": [],
+    "medications": [],
+    "allergies": [],
+    "nkda": true,
+    "socialHistory": "Student. Binge alcohol at weekends. Non-smoker.",
+    "confirmedDiagnosis": {
+      "name": "Minor upper GI bleed",
+      "icd10": "K92.0",
+      "paneDiseaseId": "upper_gi_bleed",
+      "assessmentText": "Minor upper GI bleed — single coffee-ground vomit, Glasgow-Blatchford 0. Very low risk: outpatient OGD."
+    },
+    "platform": {
+      "web": {
+        "ccTemplate": "Upper GI bleed (haematemesis / melaena)",
+        "symptoms": [
+          "coffee-ground vomiting",
+          "epigastric pain"
+        ],
+        "symptomDetails": {
+          "vomiting": [
+            "Coffee grounds"
+          ]
+        },
+        "examFindings": {
+          "abdomen": [
+            "Epigastric tenderness"
+          ]
+        },
+        "durationDays": 3,
+        "painScore": 2
+      }
+    }
+  },
+  "expected": {
+    "differential": {
+      "mustRankTopK": [
+        {
+          "id": "dx-ugib-top3",
+          "severity": "critical",
+          "match": [
+            "upper gi",
+            "haemorrhage",
+            "hemorrhage",
+            "icd:K92",
+            "peptic ulcer",
+            "icd:K25",
+            "icd:K26",
+            "icd:K27"
+          ],
+          "k": 3,
+          "guidelineRefs": [
+            "esge-2021"
+          ]
+        }
+      ]
+    },
+    "safety": {
+      "emergencyLevel": {
+        "id": "level-not-emergency",
+        "severity": "quality",
+        "atMost": "urgent",
+        "guidelineRefs": [
+          "esge-2021",
+          "acg-2021"
+        ],
+        "note": "GBS 0–1: very low risk; ESGE and ACG support outpatient management without early endoscopy. \"Emergency now\" is over-triage."
+      }
+    },
+    "scores": {
+      "recommended": [
+        {
+          "id": "score-rec-gbs",
+          "severity": "quality",
+          "score": "glasgow-blatchford",
+          "guidelineRefs": [
+            "esge-2021",
+            "blatchford-2000"
+          ]
+        }
+      ]
+    },
+    "investigations": {
+      "mustInclude": [
+        {
+          "id": "inv-ogd",
+          "severity": "quality",
+          "match": [
+            "re:\\bogd\\b",
+            "endoscop",
+            "gastroscop",
+            "oesophagogastroduodenoscopy"
+          ],
+          "guidelineRefs": [
+            "esge-2021"
+          ],
+          "note": "Outpatient (not urgent inpatient) endoscopy."
+        }
+      ]
+    },
+    "management": {
+      "mustInclude": [
+        {
+          "id": "mgmt-outpatient",
+          "severity": "quality",
+          "match": [
+            "outpatient endoscopy",
+            "outpatient ogd",
+            "outpatient management",
+            "re:(blatchford|gbs)[^.;\\n]{0,25}(≤ ?1|0.1\\b|0 or 1)",
+            "discharge with",
+            "without admission",
+            "no admission"
+          ],
+          "guidelineRefs": [
+            "esge-2021",
+            "acg-2021",
+            "bsg-2020"
+          ],
+          "note": "The plan should say the patient can be managed as an outpatient (GBS ≤1). Generic words such as \"post-discharge\" do not count.",
+          "proposedFix": "upper_gi_bleed protocol / gi_bleed_panel prompt: add \"GBS ≤1 — outpatient endoscopy, no admission (ESGE 2021, ACG 2021)\" keyed on the calculated GBS."
+        }
+      ],
+      "mustExclude": [
+        {
+          "id": "mgmt-no-tranexamic-acid",
+          "severity": "critical",
+          "match": [
+            "tranexamic",
+            "re:\\btxa\\b"
+          ],
+          "guidelineRefs": [
+            "esge-2021",
+            "halt-it-2020"
+          ],
+          "proposedFix": "Remove tranexamic acid from the upper_gi_bleed protocol medications (ESGE 2021 recommends against it; HALT-IT). Surgeon sign-off needed."
+        },
+        {
+          "id": "mgmt-no-transfusion",
+          "severity": "quality",
+          "match": [
+            "re:crossmatch 2 units",
+            "re:transfus[^.;\\n]{0,30}2 units"
+          ],
+          "guidelineRefs": [
+            "esge-2021"
+          ],
+          "note": "Hb 14.6: no transfusion indication."
+        }
+      ]
+    }
+  },
+  "guideline": [
+    {
+      "id": "esge-2021",
+      "name": "ESGE Guideline — endoscopic diagnosis and management of nonvariceal upper gastrointestinal haemorrhage (NVUGIH), update 2021",
+      "year": 2021,
+      "section": "GBS ≤1: very low risk of rebleeding, intervention or death — no early endoscopy or hospital admission needed; outpatient management",
+      "citation": "Gralnek IM, Stanley AJ, Morris AJ, et al. Endoscopy. 2021;53:300–332.",
+      "verified": false
+    },
+    {
+      "id": "acg-2021",
+      "name": "ACG Clinical Guideline — upper gastrointestinal and ulcer bleeding",
+      "year": 2021,
+      "section": "Patients with GBS 0–1 may be discharged with outpatient follow-up",
+      "citation": "Laine L, Barkun AN, Saltzman JR, Martel M, Leontiadis GI. Am J Gastroenterol. 2021;116:899–917.",
+      "verified": false
+    },
+    {
+      "id": "bsg-2020",
+      "name": "BSG-led multisociety consensus care bundle — early clinical management of acute upper gastrointestinal bleeding",
+      "year": 2020,
+      "section": "Care bundle: GBS 0–1 — consider discharge with outpatient endoscopy",
+      "citation": "Siau K, Hearnshaw S, Stanley AJ, et al. Frontline Gastroenterol. 2020;11:311–323.",
+      "verified": false
+    },
+    {
+      "id": "blatchford-2000",
+      "name": "Glasgow-Blatchford score — derivation",
+      "year": 2000,
+      "section": "Score components; score 0 identifies patients not needing intervention",
+      "citation": "Blatchford O, Murray WR, Blatchford M. A risk score to predict need for treatment for upper-gastrointestinal haemorrhage. Lancet. 2000;356:1318–1321.",
+      "verified": false
+    },
+    {
+      "id": "halt-it-2020",
+      "name": "HALT-IT randomised trial — tranexamic acid in gastrointestinal bleeding",
+      "year": 2020,
+      "section": "Tranexamic acid: no benefit, more venous thromboembolism",
+      "citation": "HALT-IT Trial Collaborators. Effects of a high-dose 24-h infusion of tranexamic acid on death and thromboembolic events in patients with acute gastrointestinal bleeding (HALT-IT). Lancet. 2020;395:1927–1936.",
+      "verified": false
+    }
+  ],
+  "rationale": "Permutation at the low end: every GBS component is zero. The guideline action is outpatient management. This tests over-triage: a word-level \"bleed = emergency\" rule sends every trace of blood to the emergency pathway, which fills beds and theatre lists without benefit.",
+  "authoring": {
+    "author": "Claude (upper-GI cluster)",
+    "date": "2026-09-25",
+    "notes": "Expectations need surgeon sign-off (reviewedBy). Citations written from the guideline texts, not yet checked against the source (verified: false)."
+  }
+}

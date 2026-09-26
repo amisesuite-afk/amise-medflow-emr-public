@@ -1,0 +1,258 @@
+{
+  "schemaVersion": 1,
+  "id": "hernia-femoral-elderly-woman",
+  "condition": "Femoral hernia",
+  "category": "hernia",
+  "permutationOf": null,
+  "summary": "79-year-old thin woman with a small, firm, non-tender right groin lump below and lateral to the pubic tubercle for 6 weeks, not reducible, no obstructive symptoms. Femoral hernias carry the highest strangulation risk: early (urgent elective) repair, not watchful waiting or a truss.",
+  "tags": [
+    "groin",
+    "femoral",
+    "elderly",
+    "female"
+  ],
+  "inputs": {
+    "patient": {
+      "ageYears": 79,
+      "sex": "female",
+      "pregnancy": {
+        "status": "not-applicable"
+      },
+      "heightCm": 156,
+      "weightKg": 48
+    },
+    "encounter": {
+      "setting": "outpatient",
+      "visitType": "newConsult",
+      "acuity": "priority"
+    },
+    "chiefComplaint": "Small lump at the top of the right thigh",
+    "hpi": "Noticed a small lump at the top of her right thigh six weeks ago. Occasionally aches when walking to the shops. Has not been able to push it back. Eating and drinking normally, bowels regular. No vomiting.",
+    "socrates": {
+      "onset": [
+        "1–4 weeks ago",
+        "Gradual"
+      ],
+      "site": [
+        "Right femoral"
+      ],
+      "character": [
+        "Firm",
+        "Non-tender",
+        "Smooth"
+      ],
+      "radiation": [
+        "No radiation"
+      ],
+      "associations": [],
+      "timing": [
+        "Constant"
+      ],
+      "exacerbating": [
+        "Standing"
+      ],
+      "relieving": [
+        "Nothing"
+      ],
+      "severity": [
+        "Mild (1–3/10)"
+      ]
+    },
+    "symptoms": [
+      "groin swelling"
+    ],
+    "negatives": [
+      "vomiting",
+      "abdominal distension",
+      "constipation"
+    ],
+    "exam": {
+      "general": "Thin, frail but independent. BMI 19.7.",
+      "abdomen": "Soft, non-tender, not distended. 2 cm firm, non-tender swelling below the inguinal ligament, lateral and inferior to the right pubic tubercle, irreducible, no cough impulse, no skin change. Not pulsatile. No lymphadenopathy elsewhere."
+    },
+    "vitals": [
+      {
+        "minutesAgo": 15,
+        "heartRate": 78,
+        "systolicBp": 148,
+        "diastolicBp": 80,
+        "respiratoryRate": 16,
+        "temperatureC": 36.5,
+        "spo2": 96,
+        "avpu": "A",
+        "onSupplementalO2": false
+      }
+    ],
+    "labs": [],
+    "imaging": [],
+    "comorbidities": [
+      "Osteoporosis",
+      "Hypertension"
+    ],
+    "surgicalHistory": [],
+    "medications": [
+      {
+        "drug": "Alendronic acid",
+        "dose": "70 mg",
+        "frequency": "weekly",
+        "indication": "Osteoporosis"
+      },
+      {
+        "drug": "Indapamide",
+        "dose": "2.5 mg",
+        "frequency": "OD",
+        "indication": "Hypertension"
+      }
+    ],
+    "allergies": [],
+    "nkda": true,
+    "socialHistory": "Widowed, lives alone, independent.",
+    "confirmedDiagnosis": {
+      "name": "Right femoral hernia (irreducible, non-tender)",
+      "icd10": "K41.90",
+      "paneDiseaseId": "femoral_hernia",
+      "assessmentText": "Right femoral hernia in a 79-year-old woman — irreducible but non-tender, no obstruction. High strangulation risk: book urgent repair (laparoscopic or open preperitoneal/low approach)."
+    },
+    "platform": {
+      "web": {
+        "ccTemplate": "Inguinal / groin hernia",
+        "symptoms": [
+          "hernia",
+          "groin swelling"
+        ],
+        "symptomDetails": {
+          "hernia": [
+            "Femoral",
+            "Irreducible"
+          ]
+        },
+        "examFindings": {
+          "abdomen": [
+            "Soft",
+            "Hernia present"
+          ]
+        },
+        "paneAnswers": {
+          "hernia_irreducible": true,
+          "cough_impulse": false
+        },
+        "durationDays": 42,
+        "painScore": 2
+      }
+    }
+  },
+  "expected": {
+    "differential": {
+      "mustRankTopK": [
+        {
+          "id": "dx-femoral-top3",
+          "severity": "critical",
+          "match": [
+            "femoral",
+            "icd:K41"
+          ],
+          "k": 3,
+          "guidelineRefs": [
+            "herniasurge-2018"
+          ],
+          "note": "Lump below and lateral to the pubic tubercle in an elderly woman."
+        }
+      ]
+    },
+    "safety": {
+      "emergencyLevel": {
+        "id": "level-at-least-priority",
+        "severity": "quality",
+        "atLeast": "priority",
+        "guidelineRefs": [
+          "herniasurge-2018"
+        ],
+        "note": "Not an emergency today, but must not sit on a routine list."
+      },
+      "redFlags": [
+        {
+          "id": "flag-strangulation-risk",
+          "severity": "quality",
+          "match": [
+            "strangulation risk",
+            "highest strangulation",
+            "higher strangulation",
+            "irreducib"
+          ],
+          "guidelineRefs": [
+            "herniasurge-2018"
+          ]
+        }
+      ]
+    },
+    "management": {
+      "mustInclude": [
+        {
+          "id": "mgmt-early-repair",
+          "severity": "critical",
+          "match": [
+            "re:(urgent|early|prompt)[^.]{0,30}repair",
+            "repair recommended regardless",
+            "re:elective:[^.]{0,40}(repair|tep)",
+            "lockwood",
+            "mcevedy",
+            "laparoscopic tep"
+          ],
+          "guidelineRefs": [
+            "herniasurge-2018"
+          ],
+          "note": "HerniaSurge: femoral hernias should be repaired urgently/early; laparoscopic repair suggested where expertise exists."
+        }
+      ],
+      "mustExclude": [
+        {
+          "id": "mgmt-no-watchful-waiting",
+          "severity": "critical",
+          "match": [
+            "watchful waiting",
+            "re:\\btruss\\b",
+            "active observation"
+          ],
+          "unless": [
+            "unfit",
+            "declin"
+          ],
+          "guidelineRefs": [
+            "herniasurge-2018"
+          ],
+          "note": "Watchful waiting or a truss is inappropriate for a femoral hernia."
+        }
+      ]
+    },
+    "dxVariant": {
+      "id": "variant-incarcerated",
+      "severity": "quality",
+      "equals": "hernia_incarcerated",
+      "note": "Irreducible but non-tender: the incarcerated variant (urgent, not emergency) fits best."
+    }
+  },
+  "guideline": [
+    {
+      "id": "herniasurge-2018",
+      "name": "HerniaSurge — International guidelines for groin hernia management",
+      "year": 2018,
+      "section": "Diagnosis (clinical examination, ultrasound for uncertain swellings); watchful waiting in minimally symptomatic men; mesh repair (Lichtenstein, TEP/TAPP); groin hernia in women; femoral hernia; emergency repair",
+      "citation": "HerniaSurge Group. International guidelines for groin hernia management. Hernia. 2018;22:1–165.",
+      "verified": false
+    },
+    {
+      "id": "wses-hernia-2017",
+      "name": "WSES guidelines — emergency repair of complicated abdominal wall hernias (2017 update)",
+      "year": 2017,
+      "section": "Diagnosis of strangulation (clinical signs, lactate, CPK, D-dimer, CT); timing of surgery; manual reduction only without strangulation; mesh in clean (CDC I) and clean-contaminated fields",
+      "citation": "Birindelli A, Sartelli M, Di Saverio S, et al. 2017 update of the WSES guidelines for emergency repair of complicated abdominal wall hernias. World J Emerg Surg. 2017;12:37.",
+      "verified": false
+    }
+  ],
+  "rationale": "Base femoral case. Elderly thin woman; lump below the inguinal ligament; irreducible but not tender. Tests femoral recognition and early repair. The CC is presentation-based (\"lump at the top of the thigh\").",
+  "authoring": {
+    "author": "Claude (hernia / breast / endocrine cluster)",
+    "date": "2026-09-25",
+    "notes": "Expectations need surgeon sign-off (reviewedBy). Citations verified: false."
+  }
+}

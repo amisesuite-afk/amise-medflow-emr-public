@@ -5,7 +5,7 @@ import SwiftData
 
 struct PatientInstructionsData: Codable {
     var dischargeDate: Date = .now
-    var surgeonName: String = "Dr Dawit Daniel Kabiye, MD, DM"
+    var surgeonName: String = PracticeProfile.current.clinicianNameWithCredentials
     var procedurePerformed: String = ""
     var procedureExplanation: String = ""
 
@@ -30,8 +30,8 @@ struct PatientInstructionsData: Codable {
     var additionalWarnings: String = ""
 
     // Contact
-    var contactPhone: String = "+1 (758) 284-0557"
-    var contactAddress: String = "Amise Medical Services, Saint Lucia"
+    var contactPhone: String = PracticeProfile.current.primaryPhone
+    var contactAddress: String = PracticeProfile.current.practiceNameWithCountry
 
     // Additional notes
     var additionalNotes: String = ""
@@ -160,6 +160,7 @@ struct PatientInstructionsView: View {
         Form {
             headerSection
             if isEndoscopy { endoscopyNotesSection }
+            pendingResultsSection
             woundSection
             dietSection
             activitySection
@@ -196,6 +197,35 @@ struct PatientInstructionsView: View {
 
     private var isEndoscopy: Bool {
         patient.visitType == .ogd || patient.visitType == .colonoscopy || patient.visitType == .ercp
+    }
+
+    // MARK: - Pending results notice (read-only)
+
+    @ViewBuilder
+    private var pendingResultsSection: some View {
+        let pending = patient.investigations.filter { $0.status == .ordered || $0.status == .pending }
+        if !pending.isEmpty {
+            Section {
+                ForEach(Array(pending.prefix(6))) { inv in
+                    HStack(spacing: 8) {
+                        Image(systemName: "clock")
+                            .font(.system(size: 12))
+                            .foregroundStyle(.orange)
+                        Text(inv.name)
+                            .font(.subheadline)
+                        Spacer()
+                        Text("Pending")
+                            .font(.caption)
+                            .foregroundStyle(.orange)
+                    }
+                }
+            } header: {
+                Text("Pending Results")
+            } footer: {
+                Text("These results are outstanding. Consider including a notification in the follow-up instructions.")
+                    .font(.caption2)
+            }
+        }
     }
 
     // MARK: - Sections

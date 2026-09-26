@@ -1,0 +1,160 @@
+{
+  "schemaVersion": 1,
+  "id": "screen-polyp-low-risk-no-surveillance",
+  "condition": "Low-risk adenomas after polypectomy — no early surveillance",
+  "category": "colorectal",
+  "permutationOf": "polyp-surveillance-high-risk-3y",
+  "permutationLabel": "Two small tubular adenomas (low risk)",
+  "summary": "58-year-old man after a complete, good-quality screening colonoscopy with removal of two tubular adenomas (5 and 7 mm, low-grade dysplasia). BSG 2020: no colonoscopic surveillance (return to screening); US MSTF 2020: repeat in 7–10 years.",
+  "tags": [
+    "screening",
+    "surveillance",
+    "polyp",
+    "colorectal"
+  ],
+  "inputs": {
+    "patient": {
+      "ageYears": 58,
+      "sex": "male",
+      "heightCm": 176,
+      "weightKg": 82
+    },
+    "encounter": {
+      "setting": "outpatient",
+      "visitType": "followUp",
+      "acuity": "routine"
+    },
+    "chiefComplaint": "Results of screening colonoscopy",
+    "hpi": "Screening colonoscopy 3 weeks ago: complete to caecum, Boston bowel preparation score 8. Two polyps removed en bloc by cold snare: 5 mm and 7 mm, both tubular adenomas with low-grade dysplasia, completely excised. Asymptomatic. No family history.",
+    "symptoms": [
+      "results review"
+    ],
+    "negatives": [
+      "rectal bleeding",
+      "change in bowel habit"
+    ],
+    "exam": {
+      "general": "Well.",
+      "abdomen": "Soft, non-tender."
+    },
+    "vitals": [
+      {
+        "minutesAgo": 10,
+        "heartRate": 70,
+        "systolicBp": 128,
+        "diastolicBp": 80,
+        "respiratoryRate": 14,
+        "temperatureC": 36.6,
+        "spo2": 98,
+        "avpu": "A",
+        "onSupplementalO2": false
+      }
+    ],
+    "labs": [],
+    "imaging": [
+      {
+        "name": "Colonoscopy",
+        "modality": "Endoscopy",
+        "region": "Colon",
+        "result": "Complete to caecum, good preparation. Two sessile polyps (5 mm sigmoid, 7 mm transverse) removed with cold snare, retrieved. Histology: tubular adenomas, low-grade dysplasia, completely excised.",
+        "minutesAgo": 30240
+      }
+    ],
+    "comorbidities": [],
+    "surgicalHistory": [
+      "Screening colonoscopy with polypectomy (3 weeks ago)"
+    ],
+    "medications": [],
+    "allergies": [],
+    "nkda": true,
+    "socialHistory": "Engineer. Non-smoker.",
+    "confirmedDiagnosis": {
+      "name": "Two small tubular adenomas completely removed — low-risk findings",
+      "icd10": "D12.6",
+      "assessmentText": "Two tubular adenomas < 10 mm, low-grade dysplasia, completely removed at a complete good-quality colonoscopy: low-risk findings. No early surveillance colonoscopy."
+    },
+    "platform": {
+      "web": {
+        "ccTemplate": "Colonoscopy (diagnostic / surveillance)",
+        "symptoms": [
+          "results review"
+        ],
+        "durationDays": 21
+      }
+    }
+  },
+  "expected": {
+    "management": {
+      "mustInclude": [
+        {
+          "id": "mgmt-low-risk-interval",
+          "severity": "quality",
+          "guidelineRefs": [
+            "bsg-polyp-2020",
+            "mstf-polyp-2020"
+          ],
+          "note": "BSG 2020: low risk → no colonoscopic surveillance; MSTF 2020: 7–10 years.",
+          "match": [
+            "re:7[–-]10 ?years?",
+            "re:no (colonoscopic )?surveillance",
+            "return to screening",
+            "routine screening",
+            "re:10 ?years"
+          ],
+          "knownGap": [
+            "ios"
+          ],
+          "knownGapNote": "iOS CI 2026-09-25 (run 36169134350, database mode): no management item matched among 9 (ios.pipeline.actions, ios.radiation.plan, ios.radiation.followUp, ios.soap.plan)"
+        }
+      ],
+      "mustExclude": [
+        {
+          "id": "mgmt-no-short-interval",
+          "severity": "quality",
+          "guidelineRefs": [
+            "bsg-polyp-2020",
+            "mstf-polyp-2020"
+          ],
+          "note": "A 1- or 3-year colonoscopy after low-risk adenomas is over-surveillance.",
+          "match": [
+            "re:(colonoscopy|surveillance)[^\\n]{0,40}\\b(1|one|3|three)[ -]?(year|yr)",
+            "annual colonoscopy",
+            "re:colonoscopy at 1 year",
+            "re:3-yearly"
+          ],
+          "unless": [
+            "high-risk",
+            "high risk",
+            "resection",
+            "post-op",
+            "after surgery"
+          ]
+        }
+      ]
+    }
+  },
+  "guideline": [
+    {
+      "id": "bsg-polyp-2020",
+      "name": "BSG/ACPGBI/PHE post-polypectomy and post-colorectal cancer resection surveillance guidelines",
+      "year": 2020,
+      "section": "Low-risk findings (no high-risk criteria): no colonoscopic surveillance — return to population screening when invited; high-risk findings: one-off surveillance at 3 years; large non-pedunculated polyp (≥ 20 mm) removed piecemeal: site-check colonoscopy at 2–6 months",
+      "citation": "Rutter MD, East J, Rees CJ, et al. British Society of Gastroenterology/Association of Coloproctology of Great Britain and Ireland/Public Health England post-polypectomy and post-colorectal cancer resection surveillance guidelines. Gut. 2020;69:201–223.",
+      "verified": false
+    },
+    {
+      "id": "mstf-polyp-2020",
+      "name": "US Multi-Society Task Force — recommendations for follow-up after colonoscopy and polypectomy",
+      "year": 2020,
+      "section": "1–2 tubular adenomas < 10 mm completely removed: repeat colonoscopy in 7–10 years; adenoma ≥ 20 mm removed piecemeal: repeat colonoscopy (site check) at 6 months",
+      "citation": "Gupta S, Lieberman D, Anderson JC, et al. Recommendations for follow-up after colonoscopy and polypectomy: a consensus update by the US Multi-Society Task Force on Colorectal Cancer. Gastroenterology. 2020;158:1131–1153.",
+      "verified": false
+    }
+  ],
+  "rationale": "Both guidelines de-escalated surveillance after 1–2 small tubular adenomas. Short-interval colonoscopy wastes endoscopy capacity and exposes the patient to procedural risk.",
+  "authoring": {
+    "author": "Claude (prevention/screening, obstetric-gynaecological mimics and paediatric surgery cluster)",
+    "date": "2026-09-25",
+    "notes": "Expectations need surgeon sign-off (reviewedBy). Every citation is verified: false. iOS outcomes are unverified (not run on Linux); triage after the first CI run."
+  }
+}

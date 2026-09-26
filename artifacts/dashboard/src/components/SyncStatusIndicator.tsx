@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { pendingCount, type SyncStatus } from '@/lib/sync-outbox';
+import { describeRefusal, onOutboxRefusal, pendingCount, type SyncStatus } from '@/lib/sync-outbox';
 
 interface SyncStatusIndicatorProps {
   /** Additional explicit save status from the parent autosave loop */
@@ -20,6 +20,9 @@ const DOT: Record<SyncStatus | 'saving' | 'idle' | 'saved', { color: string; lab
 export default function SyncStatusIndicator({ saveStatus }: SyncStatusIndicatorProps) {
   const [pending, setPending] = useState(0);
   const [syncStatus, setSyncStatus] = useState<SyncStatus>('synced');
+  // A save the server refused for this role (42501) — dropped, not retried: say so once.
+  const [refusal, setRefusal] = useState<string | null>(null);
+  useEffect(() => onOutboxRefusal(r => setRefusal(describeRefusal(r))), []);
 
   useEffect(() => {
     let mounted = true;
@@ -42,12 +45,26 @@ export default function SyncStatusIndicator({ saveStatus }: SyncStatusIndicatorP
 
   const { color, label } = DOT[effectiveStatus] ?? DOT.idle;
 
+  const refusalNotice = refusal && (
+    <span role="status" data-testid="outbox-refusal-notice"
+      style={{
+        display: 'inline-flex', alignItems: 'center', gap: 6, fontSize: 10, fontWeight: 600, color: '#92400e',
+        padding: '2px 6px', borderRadius: 20, background: '#fffbeb', border: '1px solid #fcd34d',
+        maxWidth: 360, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', flexShrink: 1,
+      }}
+      title={refusal}>
+      {refusal}
+      <button type="button" onClick={() => setRefusal(null)} aria-label="Dismiss"
+        style={{ border: 'none', background: 'none', color: '#92400e', cursor: 'pointer', fontSize: 11, padding: 0 }}>✕</button>
+    </span>
+  );
+
   if ((effectiveStatus as string) === 'idle' || (effectiveStatus as string) === 'synced' || (effectiveStatus as string) === 'saved') {
-    // Show nothing when everything is clean (no noise)
-    return null;
+    // Show nothing when everything is clean (no noise) — except a refusal notice.
+    return refusalNotice || null;
   }
 
-  return (
+  return (<>{refusalNotice}
     <span
       title={pending > 0 ? `${pending} change${pending !== 1 ? 's' : ''} pending sync — ${label}` : label}
       style={{
@@ -68,6 +85,6 @@ export default function SyncStatusIndicator({ saveStatus }: SyncStatusIndicatorP
       {effectiveStatus === 'error' ? `Sync error${pending > 0 ? ` (${pending})` : ''}` :
        effectiveStatus === 'saving' ? 'Saving…' :
        pending > 0 ? `${pending} pending` : label}
-    </span>
+    </span></>
   );
 }

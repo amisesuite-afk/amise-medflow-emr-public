@@ -50,28 +50,40 @@ VALUES (
 ON CONFLICT (id) DO NOTHING;
 
 -- Allow authenticated staff to upload/update photos
-CREATE POLICY "staff_upload_patient_photos"
-  ON storage.objects FOR INSERT
-  TO authenticated
-  WITH CHECK (bucket_id = 'patient-photos');
+do $guard$ begin
+  CREATE POLICY "staff_upload_patient_photos"
+    ON storage.objects FOR INSERT
+    TO authenticated
+    WITH CHECK (bucket_id = 'patient-photos');
+exception when duplicate_object then null;
+end $guard$;
 
-CREATE POLICY "staff_update_patient_photos"
-  ON storage.objects FOR UPDATE
-  TO authenticated
-  USING (bucket_id = 'patient-photos');
+do $guard$ begin
+  CREATE POLICY "staff_update_patient_photos"
+    ON storage.objects FOR UPDATE
+    TO authenticated
+    USING (bucket_id = 'patient-photos');
+exception when duplicate_object then null;
+end $guard$;
 
 -- Allow authenticated users to read photos
-CREATE POLICY "staff_read_patient_photos"
-  ON storage.objects FOR SELECT
-  TO authenticated
-  USING (bucket_id = 'patient-photos');
+do $guard$ begin
+  CREATE POLICY "staff_read_patient_photos"
+    ON storage.objects FOR SELECT
+    TO authenticated
+    USING (bucket_id = 'patient-photos');
+exception when duplicate_object then null;
+end $guard$;
 
 -- Allow service_role (api-server) full access
-CREATE POLICY "service_role_patient_photos"
-  ON storage.objects FOR ALL
-  TO service_role
-  USING (bucket_id = 'patient-photos')
-  WITH CHECK (bucket_id = 'patient-photos');
+do $guard$ begin
+  CREATE POLICY "service_role_patient_photos"
+    ON storage.objects FOR ALL
+    TO service_role
+    USING (bucket_id = 'patient-photos')
+    WITH CHECK (bucket_id = 'patient-photos');
+exception when duplicate_object then null;
+end $guard$;
 
 -- ── 4. PATIENT-DOCUMENTS STORAGE BUCKET ─────────────────────────────────
 
@@ -86,21 +98,30 @@ VALUES (
 )
 ON CONFLICT (id) DO NOTHING;
 
-CREATE POLICY "staff_upload_patient_documents"
-  ON storage.objects FOR INSERT
-  TO authenticated
-  WITH CHECK (bucket_id = 'patient-documents');
+do $guard$ begin
+  CREATE POLICY "staff_upload_patient_documents"
+    ON storage.objects FOR INSERT
+    TO authenticated
+    WITH CHECK (bucket_id = 'patient-documents');
+exception when duplicate_object then null;
+end $guard$;
 
-CREATE POLICY "staff_read_patient_documents"
-  ON storage.objects FOR SELECT
-  TO authenticated
-  USING (bucket_id = 'patient-documents');
+do $guard$ begin
+  CREATE POLICY "staff_read_patient_documents"
+    ON storage.objects FOR SELECT
+    TO authenticated
+    USING (bucket_id = 'patient-documents');
+exception when duplicate_object then null;
+end $guard$;
 
-CREATE POLICY "service_role_patient_documents"
-  ON storage.objects FOR ALL
-  TO service_role
-  USING (bucket_id = 'patient-documents')
-  WITH CHECK (bucket_id = 'patient-documents');
+do $guard$ begin
+  CREATE POLICY "service_role_patient_documents"
+    ON storage.objects FOR ALL
+    TO service_role
+    USING (bucket_id = 'patient-documents')
+    WITH CHECK (bucket_id = 'patient-documents');
+exception when duplicate_object then null;
+end $guard$;
 
 -- ── 5. VERIFICATION ──────────────────────────────────────────────────────
 

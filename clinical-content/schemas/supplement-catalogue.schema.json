@@ -1,0 +1,70 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://amise.local/clinical-content/schemas/supplement-catalogue.schema.json",
+  "title": "Herbs, teas, bush remedies and supplements (supplement-catalogue)",
+  "description": "Catalogue items, shared wording, clinician prompt texts and negation-aware trigger words. Read by artifacts/dashboard/src/lib/supplement-catalogue.ts (web) and SupplementCatalogue.swift (iOS, SupplementCatalogue.Content). Decision support only: stop times are clinician-facing; the only patient text is the surgeon-approved text.herbalPreOpPatientText.",
+  "type": "object",
+  "required": ["id", "version", "items", "text", "prompts", "triggerTerms"],
+  "additionalProperties": false,
+  "properties": {
+    "$schema": { "type": "string" },
+    "$comment": { "type": "string" },
+    "id": { "const": "supplement-catalogue" },
+    "version": { "type": "string", "pattern": "^\\d+\\.\\d+\\.\\d+$" },
+    "items": { "type": "array", "minItems": 1, "items": { "$ref": "#/$defs/item" } },
+    "text": { "$ref": "#/$defs/text" },
+    "prompts": { "type": "array", "minItems": 1, "items": { "$ref": "#/$defs/prompt" } },
+    "triggerTerms": {
+      "type": "object",
+      "description": "Trigger words per prompt condition (lowercase; matched negation-aware in the clinical text).",
+      "required": ["liver", "lead", "anaemia", "abdominalPain", "neuropathy", "aristolochic", "dehydration", "lineInfection", "fever", "liverDisease", "thyroidDisease"],
+      "additionalProperties": false,
+      "patternProperties": {
+        "^[a-zA-Z]+$": { "type": "array", "minItems": 1, "items": { "type": "string", "minLength": 1, "pattern": "^[^A-Z]*$" } }
+      }
+    }
+  },
+  "$defs": {
+    "item": {
+      "type": "object",
+      "required": ["id", "label", "term", "names", "concern", "stopTime", "harms", "evidence", "source"],
+      "additionalProperties": false,
+      "properties": {
+        "id": { "type": "string", "pattern": "^[a-z0-9]+(_[a-z0-9]+)*$", "description": "Stable id stored with a recorded entry." },
+        "label": { "type": "string", "minLength": 1 },
+        "term": { "type": "string", "description": "drug-classes term used by the interaction screen ('' = no interaction rules)." },
+        "names": { "type": "string", "description": "'name|synonym' list for items without a term ('' when term is set)." },
+        "concern": { "type": "string", "minLength": 1 },
+        "stopTime": { "type": "string", "description": "Commonly cited stop time before elective surgery (clinician-facing; '' when none is cited)." },
+        "harms": { "type": "string" },
+        "evidence": { "type": "string" },
+        "source": { "type": "string", "minLength": 1 }
+      },
+      "oneOf": [
+        { "properties": { "term": { "type": "string", "minLength": 1 }, "names": { "const": "" } } },
+        { "properties": { "term": { "const": "" }, "names": { "type": "string", "minLength": 1 } } }
+      ]
+    },
+    "text": {
+      "type": "object",
+      "required": ["sectionTitle", "patientQuestion", "disclosureRationale", "herbalPreOpPatientText"],
+      "additionalProperties": false,
+      "properties": {
+        "sectionTitle": { "type": "string", "minLength": 1 },
+        "patientQuestion": { "type": "string", "minLength": 1, "description": "Asks; never instructs (lint:patient-instructions)." },
+        "disclosureRationale": { "type": "string", "minLength": 1 },
+        "herbalPreOpPatientText": { "type": "string", "minLength": 1, "description": "Surgeon-approved patient paragraph (2026-09-25); verbatim in front-desk instructions.ts and api-server sms.ts (lint:patient-instructions)." }
+      }
+    },
+    "prompt": {
+      "type": "object",
+      "required": ["id", "title", "detail"],
+      "additionalProperties": false,
+      "properties": {
+        "id": { "type": "string", "pattern": "^[a-z0-9]+(_[a-z0-9]+)*$" },
+        "title": { "type": "string", "minLength": 1 },
+        "detail": { "type": "string", "minLength": 1 }
+      }
+    }
+  }
+}

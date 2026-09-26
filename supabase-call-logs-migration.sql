@@ -41,22 +41,28 @@ create index if not exists idx_call_logs_unresolved on call_logs(created_at desc
 create index if not exists idx_call_logs_number    on call_logs(caller_number);
 
 -- Updated-at trigger (reuse the function already defined for other tables)
-create trigger call_logs_updated_at
-  before update on call_logs
-  for each row execute function set_updated_at();
+do $guard$ begin
+  create trigger call_logs_updated_at
+    before update on call_logs
+    for each row execute function set_updated_at();
+exception when duplicate_object then null;
+end $guard$;
 
 -- RLS
 alter table call_logs enable row level security;
 
-create policy "Staff can manage call_logs"
-  on call_logs for all
-  using (
-    exists (
-      select 1 from user_profiles
-      where id = auth.uid()
-        and role in ('admin', 'doctor', 'nurse', 'front_desk')
-    )
-  );
+do $guard$ begin
+  create policy "Staff can manage call_logs"
+    on call_logs for all
+    using (
+      exists (
+        select 1 from user_profiles
+        where id = auth.uid()
+          and role in ('admin', 'doctor', 'nurse', 'front_desk')
+      )
+    );
+exception when duplicate_object then null;
+end $guard$;
 
 -- service_role full access (API server bypasses RLS but still needs GRANT)
 grant select, insert, update, delete on public.call_logs to service_role;

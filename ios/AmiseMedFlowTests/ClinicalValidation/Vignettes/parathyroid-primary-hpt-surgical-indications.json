@@ -1,0 +1,279 @@
+{
+  "schemaVersion": 1,
+  "id": "parathyroid-primary-hpt-surgical-indications",
+  "condition": "Primary hyperparathyroidism meeting surgical criteria",
+  "category": "breast-endocrine",
+  "permutationOf": null,
+  "summary": "58-year-old woman: adjusted calcium 2.86 mmol/L with inappropriately high PTH, kidney stone, radius T-score −2.7, eGFR 55, on bendroflumethiazide. Fifth International Workshop 2022: several surgical indications → parathyroidectomy (localisation once surgery is decided); exclude FHH; review the thiazide.",
+  "tags": [
+    "parathyroid",
+    "metabolic"
+  ],
+  "inputs": {
+    "patient": {
+      "ageYears": 58,
+      "sex": "female",
+      "pregnancy": {
+        "status": "not-applicable"
+      },
+      "heightCm": 162,
+      "weightKg": 66
+    },
+    "encounter": {
+      "setting": "outpatient",
+      "visitType": "newConsult",
+      "acuity": "routine"
+    },
+    "chiefComplaint": "Raised calcium on blood tests and tiredness",
+    "hpi": "Referred with raised calcium found when checked for tiredness and low mood. Passed a kidney stone last year. Fractured wrist after a trip 2 years ago. Thirsty, passing more urine. On bendroflumethiazide for blood pressure. No family history of high calcium.",
+    "symptoms": [
+      "fatigue",
+      "polyuria",
+      "excessive thirst",
+      "low mood"
+    ],
+    "negatives": [
+      "confusion",
+      "vomiting",
+      "neck lump"
+    ],
+    "exam": {
+      "general": "Well. No neck mass. BP 142/86."
+    },
+    "vitals": [
+      {
+        "minutesAgo": 15,
+        "heartRate": 72,
+        "systolicBp": 142,
+        "diastolicBp": 86,
+        "respiratoryRate": 14,
+        "temperatureC": 36.5,
+        "spo2": 98,
+        "avpu": "A",
+        "onSupplementalO2": false
+      }
+    ],
+    "labs": [
+      {
+        "analyte": "calcium",
+        "name": "Calcium (adjusted)",
+        "value": 2.86,
+        "unit": "mmol/L",
+        "minutesAgo": 10080
+      },
+      {
+        "analyte": "pth",
+        "name": "PTH",
+        "value": 11.8,
+        "unit": "pmol/L",
+        "minutesAgo": 10080
+      },
+      {
+        "analyte": "phosphate",
+        "name": "Phosphate",
+        "value": 0.71,
+        "unit": "mmol/L",
+        "minutesAgo": 10080
+      },
+      {
+        "analyte": "creatinine",
+        "name": "Creatinine",
+        "value": 98,
+        "unit": "µmol/L",
+        "minutesAgo": 10080
+      },
+      {
+        "analyte": "egfr",
+        "name": "eGFR",
+        "value": 55,
+        "unit": "mL/min/1.73m²",
+        "minutesAgo": 10080
+      },
+      {
+        "analyte": "vitd",
+        "name": "Vitamin D (25-OH)",
+        "value": 48,
+        "unit": "nmol/L",
+        "minutesAgo": 10080
+      }
+    ],
+    "imaging": [
+      {
+        "name": "USS kidneys",
+        "modality": "US",
+        "region": "Renal",
+        "result": "Two non-obstructing calculi in the left kidney. No hydronephrosis.",
+        "minutesAgo": 20160
+      },
+      {
+        "name": "DEXA",
+        "modality": "XR",
+        "region": "Skeleton",
+        "result": "T-scores: lumbar spine −1.9, total hip −2.1, distal third radius −2.7 (osteoporosis).",
+        "minutesAgo": 20160
+      }
+    ],
+    "comorbidities": [
+      "Hypertension",
+      "Nephrolithiasis",
+      "Osteoporosis"
+    ],
+    "surgicalHistory": [],
+    "medications": [
+      {
+        "drug": "Bendroflumethiazide",
+        "dose": "2.5 mg",
+        "frequency": "OD",
+        "indication": "Hypertension"
+      }
+    ],
+    "allergies": [],
+    "nkda": true,
+    "socialHistory": "Non-smoker.",
+    "confirmedDiagnosis": {
+      "name": "Primary hyperparathyroidism with surgical indications (osteoporosis, nephrolithiasis, eGFR <60)",
+      "icd10": "E21.0",
+      "paneDiseaseId": "primary_hyperparathyroidism",
+      "assessmentText": "Primary hyperparathyroidism (adjusted Ca 2.86, PTH 11.8) meeting several surgical criteria: nephrolithiasis, distal radius T-score −2.7, eGFR 55. Stop the thiazide (switch antihypertensive), check urine calcium:creatinine clearance ratio to exclude FHH, then localisation (US + sestamibi) for parathyroidectomy."
+    },
+    "platform": {
+      "web": {
+        "ccTemplate": "Other / general surgical",
+        "symptoms": [
+          "fatigue",
+          "polyuria",
+          "excessive thirst",
+          "low mood"
+        ],
+        "durationDays": 90,
+        "painScore": 0
+      }
+    }
+  },
+  "expected": {
+    "differential": {
+      "mustRankTopK": [
+        {
+          "id": "dx-hyperparathyroid-top3",
+          "severity": "quality",
+          "match": [
+            "hyperparathyroid",
+            "parathyroid",
+            "icd:E21"
+          ],
+          "k": 3,
+          "knownGap": [
+            "ios"
+          ],
+          "knownGapNote": "iOS CI 2026-09-25 (run 36169134350, database mode): not in top 3 of ios.bayes: 1. Hypercalcaemia | 2. Obstructive Sleep Apnoea | 3. Iron Deficiency Anaemia | 4. Acute Kidney Injury | 5. Malignant Hypercalcaemia; also in ios.pipeline#1"
+        }
+      ]
+    },
+    "safety": {
+      "emergencyLevel": {
+        "id": "level-not-emergency",
+        "severity": "quality",
+        "atMost": "priority"
+      }
+    },
+    "investigations": {
+      "mustInclude": [
+        {
+          "id": "inv-fhh-exclusion",
+          "severity": "quality",
+          "match": [
+            "urinary calcium",
+            "urine calcium",
+            "calcium:creatinine",
+            "fhh"
+          ],
+          "guidelineRefs": [
+            "phpt-workshop-2022"
+          ]
+        },
+        {
+          "id": "inv-localisation",
+          "severity": "quality",
+          "match": [
+            "sestamibi",
+            "4d-ct",
+            "re:(uss|ultrasound)[^.;]{0,20}neck"
+          ],
+          "guidelineRefs": [
+            "phpt-workshop-2022"
+          ]
+        }
+      ]
+    },
+    "management": {
+      "mustExclude": [
+        {
+          "id": "mgmt-no-thyroidectomy-template",
+          "severity": "critical",
+          "match": [
+            "re:^total thyroidectomy$",
+            "levothyroxine replacement (lifelong)",
+            "re:^hemithyroidectomy$"
+          ],
+          "sources": [
+            "web.plan"
+          ],
+          "note": "A parathyroid patient's documented plan must not contain a thyroidectomy operation or lifelong levothyroxine (wrong operation in the record).",
+          "unverified": [
+            "ios"
+          ],
+          "proposedFix": "Add a Parathyroid dx-variant group (E21, primary_hyperparathyroidism, parathyroid_adenoma) ahead of Thyroid, and match baseDiagnosis/keywords on word boundaries."
+        }
+      ],
+      "mustInclude": [
+        {
+          "id": "mgmt-parathyroidectomy",
+          "severity": "quality",
+          "match": [
+            "parathyroidectomy"
+          ],
+          "guidelineRefs": [
+            "phpt-workshop-2022"
+          ],
+          "note": "Fifth Workshop 2022: parathyroidectomy is indicated when any criterion is met; this patient meets three."
+        },
+        {
+          "id": "mgmt-stop-thiazide",
+          "severity": "critical",
+          "match": [
+            "re:(avoid|stop|discontinu|withdraw|switch)[^.]{0,40}thiazide"
+          ],
+          "guidelineRefs": [
+            "phpt-workshop-2022",
+            "sfe-hypercalcaemia-2016"
+          ],
+          "note": "Thiazides raise serum calcium; the patient takes one. The plan must address it."
+        }
+      ]
+    }
+  },
+  "guideline": [
+    {
+      "id": "phpt-workshop-2022",
+      "name": "Fifth International Workshop — evaluation and management of primary hyperparathyroidism",
+      "year": 2022,
+      "section": "Diagnosis (PTH, exclude FHH, vitamin D); surgical indications (serum calcium >0.25 mmol/L above ULN, osteoporosis T-score ≤−2.5 or vertebral fracture, eGFR <60 mL/min, nephrolithiasis/nephrocalcinosis, hypercalciuria, age <50); localisation only once surgery is decided",
+      "citation": "Bilezikian JP, Khan AA, Silverberg SJ, et al. Evaluation and management of primary hyperparathyroidism: summary statement and guidelines from the Fifth International Workshop. J Bone Miner Res. 2022;37:2293–2314.",
+      "verified": false
+    },
+    {
+      "id": "sfe-hypercalcaemia-2016",
+      "name": "Society for Endocrinology emergency guidance — acute hypercalcaemia in adults",
+      "year": 2016,
+      "section": "Severe or symptomatic hypercalcaemia: IV 0.9% saline rehydration, IV bisphosphonate after rehydration, stop contributing drugs, monitor renal function",
+      "citation": "Walsh J, Gittoes N, Selby P; Society for Endocrinology Clinical Committee. Society for Endocrinology Endocrine Emergency Guidance: Emergency management of acute hypercalcaemia in adult patients. Endocr Connect. 2016;5:G9–G11.",
+      "verified": false
+    }
+  ],
+  "rationale": "Base parathyroid case. Symptoms are non-specific (fatigue, thirst); the diagnosis comes from labs. The one critical expectation is drug safety (thiazide in hypercalcaemia).",
+  "authoring": {
+    "author": "Claude (hernia / breast / endocrine cluster)",
+    "date": "2026-09-25",
+    "notes": "Expectations need surgeon sign-off (reviewedBy). Citations verified: false."
+  }
+}

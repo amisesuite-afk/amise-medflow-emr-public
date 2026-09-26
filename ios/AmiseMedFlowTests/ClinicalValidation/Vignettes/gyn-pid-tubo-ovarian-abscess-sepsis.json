@@ -1,0 +1,361 @@
+{
+  "schemaVersion": 1,
+  "id": "gyn-pid-tubo-ovarian-abscess-sepsis",
+  "condition": "Tubo-ovarian abscess with sepsis",
+  "category": "other",
+  "permutationOf": "gyn-pid-young-woman",
+  "permutationLabel": "Tubo-ovarian abscess, sepsis, copper IUD in situ",
+  "summary": "34-year-old woman with a copper IUD, 5 days of lower abdominal pain, T 39.1, HR 118, BP 100/62, RR 22, lower peritonism, WBC 19, CRP 210, lactate 2.6; US: 6 cm complex left adnexal mass. Admit, IV antibiotics, drainage.",
+  "tags": [
+    "gynaecology",
+    "sepsis",
+    "abscess"
+  ],
+  "inputs": {
+    "patient": {
+      "ageYears": 34,
+      "sex": "female",
+      "pregnancy": {
+        "status": "not-pregnant"
+      },
+      "heightCm": 160,
+      "weightKg": 64
+    },
+    "encounter": {
+      "setting": "emergency",
+      "visitType": "urgentReview",
+      "acuity": "emergency"
+    },
+    "chiefComplaint": "Lower abdominal pain and fever",
+    "hpi": "Five days of worsening lower abdominal pain, left more than right, fevers and rigors, offensive vaginal discharge. Copper IUD inserted 3 years ago. Serum hCG negative. Vomited twice today.",
+    "socrates": {
+      "onset": [
+        "4–7 days ago",
+        "Gradual"
+      ],
+      "site": [
+        "Suprapubic",
+        "LLQ"
+      ],
+      "character": [
+        "Sharp"
+      ],
+      "radiation": [
+        "No radiation"
+      ],
+      "associations": [
+        "Fever",
+        "Rigors",
+        "Vomiting"
+      ],
+      "timing": [
+        "Constant",
+        "Progressive"
+      ],
+      "exacerbating": [
+        "Movement"
+      ],
+      "relieving": [
+        "Nothing"
+      ],
+      "severity": [
+        "Severe (7–9/10)"
+      ]
+    },
+    "symptoms": [
+      "pelvic pain",
+      "fever",
+      "rigors",
+      "vaginal discharge",
+      "vomiting"
+    ],
+    "negatives": [
+      "vaginal bleeding"
+    ],
+    "exam": {
+      "general": "Flushed, unwell. T 39.1, HR 118, BP 100/62, RR 22, SpO2 97%.",
+      "abdomen": "Lower abdominal tenderness with guarding and rebound, left worse. Bimanual: exquisite cervical motion tenderness, tender left adnexal mass."
+    },
+    "vitals": [
+      {
+        "minutesAgo": 10,
+        "heartRate": 118,
+        "systolicBp": 100,
+        "diastolicBp": 62,
+        "respiratoryRate": 22,
+        "temperatureC": 39.1,
+        "spo2": 97,
+        "avpu": "A",
+        "onSupplementalO2": false
+      }
+    ],
+    "labs": [
+      {
+        "analyte": "bhcg",
+        "name": "Serum hCG",
+        "resultText": "< 5 IU/L (negative)",
+        "minutesAgo": 60
+      },
+      {
+        "analyte": "wbc",
+        "name": "WBC",
+        "value": 19.2,
+        "unit": "×10⁹/L",
+        "minutesAgo": 30
+      },
+      {
+        "analyte": "crp",
+        "name": "CRP",
+        "value": 210,
+        "unit": "mg/L",
+        "minutesAgo": 30
+      },
+      {
+        "analyte": "lactate",
+        "name": "Lactate",
+        "value": 2.6,
+        "unit": "mmol/L",
+        "minutesAgo": 30
+      },
+      {
+        "analyte": "creatinine",
+        "name": "Creatinine",
+        "value": 96,
+        "unit": "µmol/L",
+        "minutesAgo": 30
+      }
+    ],
+    "imaging": [
+      {
+        "name": "USS pelvis (transvaginal)",
+        "modality": "US",
+        "region": "Pelvis",
+        "result": "6.1 cm complex thick-walled multiloculated left adnexal mass with internal debris, consistent with tubo-ovarian abscess; moderate free fluid. IUD correctly sited.",
+        "minutesAgo": 30
+      }
+    ],
+    "comorbidities": [],
+    "surgicalHistory": [],
+    "medications": [],
+    "allergies": [],
+    "nkda": true,
+    "socialHistory": "Market vendor. Copper IUD.",
+    "confirmedDiagnosis": {
+      "name": "Left tubo-ovarian abscess with sepsis (complicated PID)",
+      "icd10": "N70.03",
+      "paneDiseaseId": "pelvic_inflammatory_disease",
+      "assessmentText": "Tubo-ovarian abscess (6 cm) with sepsis: admit, sepsis bundle with blood cultures, IV ceftriaxone + doxycycline + metronidazole, gynaecology; image-guided or laparoscopic drainage."
+    },
+    "platform": {
+      "web": {
+        "ccTemplate": "Acute abdominal pain",
+        "socratesAnswers": {
+          "site": "Lower abdomen and pelvic, left worse",
+          "onset": "5 days",
+          "character": "Sharp",
+          "associated": "Fever, rigors, vomiting, vaginal discharge",
+          "timing": "Constant, worsening",
+          "triggers": "Movement",
+          "relief": "Nothing",
+          "severity": "8/10"
+        },
+        "symptoms": [
+          "pelvic pain",
+          "fever",
+          "rigors",
+          "vaginal discharge",
+          "vomiting"
+        ],
+        "symptomDetails": {
+          "pelvic pain": [
+            "Constant",
+            "Vaginal discharge",
+            "Fever"
+          ]
+        },
+        "examFindings": {
+          "abdomen": [
+            "Guarding",
+            "Rebound tenderness"
+          ]
+        },
+        "paneAnswers": {
+          "adnexal_tenderness": true,
+          "vaginal_discharge": true,
+          "fever": true,
+          "elevated_wbc": true
+        },
+        "durationDays": 5,
+        "painScore": 8
+      }
+    }
+  },
+  "expected": {
+    "differential": {
+      "mustRankTopK": [
+        {
+          "id": "dx-pid-top3",
+          "severity": "critical",
+          "guidelineRefs": [
+            "cdc-sti-2021"
+          ],
+          "match": [
+            "pelvic inflam",
+            "re:\\bpid\\b",
+            "tubo-ovarian"
+          ],
+          "k": 3
+        }
+      ]
+    },
+    "safety": {
+      "emergencyLevel": {
+        "id": "level-emergency",
+        "severity": "critical",
+        "guidelineRefs": [
+          "cdc-sti-2021"
+        ],
+        "atLeast": "emergency"
+      },
+      "mustAlarm": [
+        {
+          "id": "alarm-sepsis",
+          "severity": "critical",
+          "guidelineRefs": [
+            "cdc-sti-2021"
+          ],
+          "match": [
+            "sepsis",
+            "septic"
+          ]
+        }
+      ]
+    },
+    "investigations": {
+      "mustInclude": [
+        {
+          "id": "inv-blood-cultures",
+          "severity": "quality",
+          "guidelineRefs": [
+            "cdc-sti-2021"
+          ],
+          "match": [
+            "blood culture"
+          ]
+        }
+      ]
+    },
+    "management": {
+      "mustInclude": [
+        {
+          "id": "mgmt-iv-antibiotics",
+          "severity": "critical",
+          "guidelineRefs": [
+            "cdc-sti-2021",
+            "bashh-pid-2019"
+          ],
+          "match": [
+            "re:\\biv\\b[^\\n]{0,40}(cef|doxy|antibiot|metronid|clinda|gent|piperacillin|meropenem)",
+            "parenteral",
+            "cefoxitin",
+            "cefotetan"
+          ]
+        },
+        {
+          "id": "mgmt-drainage",
+          "severity": "quality",
+          "guidelineRefs": [
+            "cdc-sti-2021"
+          ],
+          "note": "TOA not responding, or large: image-guided or laparoscopic drainage.",
+          "match": [
+            "drain"
+          ]
+        },
+        {
+          "id": "mgmt-admit",
+          "severity": "quality",
+          "guidelineRefs": [
+            "cdc-sti-2021"
+          ],
+          "match": [
+            "admi",
+            "hospitalis",
+            "inpatient"
+          ]
+        }
+      ],
+      "mustExclude": [
+        {
+          "id": "mgmt-no-appendicectomy",
+          "severity": "critical",
+          "guidelineRefs": [
+            "cdc-sti-2021"
+          ],
+          "note": "Not an appendix presentation: an appendicectomy operative plan is a wrong-procedure suggestion.",
+          "match": [
+            "appendicectomy",
+            "appendectomy"
+          ],
+          "unless": [
+            "not indicated",
+            "no role",
+            "exclude appendicitis"
+          ]
+        },
+        {
+          "id": "mgmt-no-antithrombotic-plan",
+          "severity": "critical",
+          "guidelineRefs": [
+            "cdc-sti-2021"
+          ],
+          "note": "An ACS, PE or AF antithrombotic/thrombolytic plan must never be attached to this diagnosis. Regression guard: this diagnosis text contains none of the substring triggers found in DiagnosisRadiationEngine (\"pe\", \"mi\", \"af\", …), unlike the base PID vignette (\"pelvic\"), so iOS is expected to pass; to be confirmed on the first iOS CI run.",
+          "match": [
+            "aspirin 300",
+            "ticagrelor",
+            "clopidogrel 300",
+            "fondaparinux",
+            "alteplase",
+            "thrombolysis",
+            "rivaroxaban",
+            "apixaban 10",
+            "apixaban 5 mg bd",
+            "dabigatran",
+            "doacs (preferred)"
+          ],
+          "sources": [
+            "ios.radiation",
+            "ios.soap",
+            "web.plan",
+            "web.protocol",
+            "web.managementPanel"
+          ]
+        }
+      ]
+    }
+  },
+  "guideline": [
+    {
+      "id": "cdc-sti-2021",
+      "name": "CDC sexually transmitted infections treatment guidelines — pelvic inflammatory disease",
+      "year": 2021,
+      "section": "Clinical diagnosis (pelvic/lower abdominal pain with cervical motion, uterine or adnexal tenderness); NAAT for N. gonorrhoeae and C. trachomatis; pregnancy test; HIV and syphilis testing; outpatient regimen ceftriaxone 500 mg IM once + doxycycline 100 mg BD 14 days + metronidazole 500 mg BD 14 days; hospitalise for tubo-ovarian abscess, severe illness or when a surgical emergency (e.g. appendicitis) cannot be excluded; parenteral regimen; partner management; IUD need not be removed",
+      "citation": "Workowski KA, Bachmann LH, Chan PA, et al. Sexually transmitted infections treatment guidelines, 2021. MMWR Recomm Rep. 2021;70(4):1–187.",
+      "verified": false
+    },
+    {
+      "id": "bashh-pid-2019",
+      "name": "BASHH UK national guideline for the management of pelvic inflammatory disease",
+      "year": 2019,
+      "section": "Low threshold for empirical treatment; test for gonorrhoea and chlamydia; exclude ectopic pregnancy; inpatient IV therapy for severe disease or tubo-ovarian abscess; partner notification",
+      "citation": "Ross J, Cole M, Evans C, et al. United Kingdom national guideline for the management of pelvic inflammatory disease (2019 interim update). British Association for Sexual Health and HIV; 2019.",
+      "verified": false
+    }
+  ],
+  "rationale": "Tubo-ovarian abscess is an indication for admission and parenteral antibiotics; sepsis needs the sepsis bundle; drainage for large or non-responding abscesses.",
+  "authoring": {
+    "author": "Claude (prevention/screening, obstetric-gynaecological mimics and paediatric surgery cluster)",
+    "date": "2026-09-25",
+    "notes": "Expectations need surgeon sign-off (reviewedBy). Every citation is verified: false. iOS outcomes are unverified (not run on Linux); triage after the first CI run."
+  }
+}

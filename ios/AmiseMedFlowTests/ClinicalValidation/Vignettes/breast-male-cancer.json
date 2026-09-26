@@ -1,0 +1,248 @@
+{
+  "schemaVersion": 1,
+  "id": "breast-male-cancer",
+  "condition": "Male breast cancer",
+  "category": "breast-endocrine",
+  "permutationOf": "breast-male-gynaecomastia",
+  "permutationLabel": "Unilateral hard eccentric mass",
+  "summary": "68-year-old man with a hard, painless, eccentric left subareolar lump with nipple retraction for 2 months; sister had breast cancer. NICE NG12: men ≥50 with a unilateral firm subareolar mass → suspected cancer pathway; mammography/ultrasound and core biopsy.",
+  "tags": [
+    "breast",
+    "male",
+    "malignancy",
+    "must-not-miss"
+  ],
+  "inputs": {
+    "patient": {
+      "ageYears": 68,
+      "sex": "male",
+      "pregnancy": {
+        "status": "not-applicable"
+      }
+    },
+    "encounter": {
+      "setting": "outpatient",
+      "visitType": "newConsult",
+      "acuity": "priority"
+    },
+    "chiefComplaint": "Hard lump behind the left nipple",
+    "hpi": "Painless hard lump behind the left nipple for 2 months; the nipple has started to turn in. Sister had breast cancer at 55. No medications. No weight loss.",
+    "socrates": {
+      "onset": [
+        "1–6 months ago"
+      ],
+      "site": [
+        "Central / areola"
+      ],
+      "character": [
+        "Firm",
+        "Irregular",
+        "Fixed to skin",
+        "Non-tender"
+      ],
+      "radiation": [
+        "No radiation"
+      ],
+      "associations": [
+        "Nipple inversion"
+      ],
+      "timing": [
+        "Progressive"
+      ],
+      "exacerbating": [
+        "None"
+      ],
+      "relieving": [
+        "Nothing"
+      ],
+      "severity": [
+        "Mild (1–3/10)"
+      ]
+    },
+    "symptoms": [
+      "breast lump",
+      "nipple inversion"
+    ],
+    "negatives": [
+      "breast pain",
+      "weight loss"
+    ],
+    "exam": {
+      "general": "Well.",
+      "other": "Left breast: 2 cm hard, irregular, eccentric (upper outer to the nipple) mass tethered to the areola with nipple retraction; firm left axillary node. Right breast normal. Testes normal."
+    },
+    "vitals": [
+      {
+        "minutesAgo": 15,
+        "heartRate": 74,
+        "systolicBp": 138,
+        "diastolicBp": 82,
+        "respiratoryRate": 14,
+        "temperatureC": 36.6,
+        "spo2": 97,
+        "avpu": "A",
+        "onSupplementalO2": false
+      }
+    ],
+    "labs": [],
+    "imaging": [],
+    "comorbidities": [
+      "Family history of breast cancer (sister, 55)"
+    ],
+    "surgicalHistory": [],
+    "medications": [],
+    "allergies": [],
+    "nkda": true,
+    "socialHistory": "Ex-smoker.",
+    "confirmedDiagnosis": {
+      "name": "Suspicious left male breast mass — exclude carcinoma",
+      "icd10": "N63.0",
+      "assessmentText": "Suspicious breast mass (left) in a 68-year-old man: hard, eccentric, nipple retraction, axillary node, family history. Suspected cancer pathway: mammography and ultrasound, core biopsy; consider BRCA2 testing."
+    },
+    "platform": {
+      "web": {
+        "ccTemplate": "Breast lump",
+        "symptoms": [
+          "breast lump",
+          "nipple inversion",
+          "axillary lump"
+        ],
+        "symptomDetails": {
+          "breast lump": [
+            "Left",
+            "Hard",
+            "Fixed",
+            "Non-tender",
+            "Months",
+            "Nipple inversion",
+            "Axillary lump",
+            "Family history"
+          ]
+        },
+        "paneAnswers": {
+          "skin_dimpling": true,
+          "axillary_nodes": true
+        },
+        "durationDays": 60,
+        "painScore": 0
+      }
+    }
+  },
+  "expected": {
+    "differential": {
+      "mustNotMiss": [
+        {
+          "id": "mnm-carcinoma",
+          "severity": "critical",
+          "match": [
+            "carcinoma",
+            "cancer",
+            "icd:C50"
+          ],
+          "guidelineRefs": [
+            "nice-ng12"
+          ],
+          "note": "Unilateral hard eccentric subareolar mass with nipple retraction in a man ≥50."
+        }
+      ]
+    },
+    "safety": {
+      "redFlags": [
+        {
+          "id": "flag-2ww",
+          "severity": "critical",
+          "match": [
+            "cancer screening triggered (breast)",
+            "re:(2-week|two-week|two week|2ww|suspected cancer)[^\\n]{0,60}breast",
+            "re:breast[^\\n]{0,60}(2-week|two-week|two week|2ww|suspected cancer)"
+          ],
+          "guidelineRefs": [
+            "nice-ng12"
+          ],
+          "proposedFix": "Parenthesise the colorectal condition (c.met && (… || … )) in screenForCancer, and assign cancerType per met rule; add a vitest vector for a breast-lump-only screen."
+        }
+      ]
+    },
+    "investigations": {
+      "mustInclude": [
+        {
+          "id": "inv-imaging",
+          "severity": "critical",
+          "match": [
+            "mammogra",
+            "re:(uss|ultrasound|\\bus\\b)[^.;\\n]{0,30}(breast|subareolar|retroareolar|axilla)",
+            "re:(breast|subareolar|retroareolar)[^.;\\n]{0,30}(uss|ultrasound)",
+            "mammography + uss",
+            "mammogram/uss"
+          ],
+          "guidelineRefs": [
+            "nice-ng12",
+            "abs-best-practice-2010"
+          ]
+        },
+        {
+          "id": "inv-core-biopsy",
+          "severity": "critical",
+          "match": [
+            "core biopsy",
+            "core needle",
+            "re:\\bcnb\\b",
+            "vacuum-assisted biopsy",
+            "core (needle )?biopsy"
+          ],
+          "guidelineRefs": [
+            "abs-best-practice-2010"
+          ]
+        }
+      ]
+    },
+    "management": {
+      "mustInclude": [
+        {
+          "id": "mgmt-genetics",
+          "severity": "quality",
+          "match": [
+            "brca",
+            "genetic"
+          ],
+          "note": "Male breast cancer with a family history: BRCA2 testing."
+        }
+      ],
+      "mustExclude": [
+        {
+          "id": "mgmt-no-gynaecomastia-treatment",
+          "severity": "critical",
+          "match": [
+            "tamoxifen 20 mg od × 3–6 months",
+            "subcutaneous mastectomy (pull-through"
+          ],
+          "note": "Gynaecomastia treatment for a suspicious male breast mass would delay a cancer diagnosis."
+        }
+      ]
+    }
+  },
+  "guideline": [
+    {
+      "id": "nice-ng12",
+      "name": "NICE NG12 — Suspected cancer: recognition and referral",
+      "year": 2015,
+      "section": "Site-specific recommendations: breast cancer (age ≥30 unexplained lump; ≥50 unilateral nipple discharge/retraction; skin changes; men ≥50 subareolar mass), haematological cancers (unexplained lymphadenopathy), head and neck (unexplained thyroid lump)",
+      "citation": "National Institute for Health and Care Excellence. Suspected cancer: recognition and referral. NICE guideline NG12. London: NICE; 2015 (updated).",
+      "verified": false
+    },
+    {
+      "id": "abs-best-practice-2010",
+      "name": "Best practice diagnostic guidelines for patients presenting with breast symptoms (ABS / RCR, Department of Health)",
+      "year": 2010,
+      "section": "Triple assessment (clinical examination, age-appropriate imaging, needle biopsy); imaging by age; nipple discharge; breast infection; breast pain",
+      "citation": "Willett AM, Michell MJ, Lee MJR (eds). Best practice diagnostic guidelines for patients presenting with breast symptoms. London: Department of Health / Association of Breast Surgery; 2010.",
+      "verified": false
+    }
+  ],
+  "rationale": "Permutation: sex and features. Same demographic (older man) as the gynaecomastia base but unilateral, hard, eccentric, retracted nipple. Tests that the male-breast pathway does not default to gynaecomastia.",
+  "authoring": {
+    "author": "Claude (hernia / breast / endocrine cluster)",
+    "date": "2026-09-25",
+    "notes": "Expectations need surgeon sign-off (reviewedBy). Citations verified: false."
+  }
+}

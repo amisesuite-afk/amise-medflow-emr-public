@@ -1,6 +1,5 @@
 import { useState, useMemo, useEffect, useRef } from 'react';
 import { useAppContext } from '@/context/AppContext';
-import { getProtocol, getProtocolByIcd } from '@workspace/pane-engine';
 import { detectDxVariants } from '@/lib/dx-variants';
 import CollapsibleCard from '@/components/CollapsibleCard';
 import { errMsg } from '@/lib/err';
@@ -8,11 +7,14 @@ import CptPicker from '@/components/CptPicker';
 import { getApiOrigin } from '@/lib/api-origin';
 import NarrativeInput from '@/components/NarrativeInput';
 import { getMatrix } from '@/lib/cc-matrices';
-import { filterNewInvestigations, splitEssentialSecondary } from '@/lib/investigation-merge';
-import type { ManagementProtocol } from '@workspace/pane-engine';
+import { confirmedPlanSource, insertSuggestedPlan } from '@/lib/diagnosis-suggestion';
+import { buildPlanText, planProtocolFor } from '@/lib/plan-builder';
+import { usePlanPatientContext } from '@/hooks/usePlanPatientContext';
+import LifestylePracticesPanel from '@/components/LifestylePracticesPanel';
+import DecisionSupportPanel from '@/components/DecisionSupportPanel';
 
 const BMI_NOTES: Record<string, string> = {
-  'Obese class I':  'BMI 30–34.9 (Obese I): Increased DVT risk — prescribe LMWH (e.g. enoxaparin 40mg SC od) + TED stockings. Laparoscopic access may be technically difficult. Monitor wound site closely post-op.',
+  'Obese class I':  'BMI 30–34.9 (Obese I): Increased VTE risk — pharmacological prophylaxis per NICE NG89 (LMWH, weight- and renal-adjusted) + mechanical prophylaxis unless contraindicated. Laparoscopic access may be technically difficult. Monitor wound site closely post-op.',
   'Obese class II': 'BMI 35–39.9 (Obese II): High anaesthetic risk — senior anaesthetist review. Difficult airway management. Bariatric positioning required. Post-op HDU consideration.',
   'Obese class III':'BMI ≥ 40 (Obese III): Extreme surgical risk. Mandatory pre-op anaesthetic review, echocardiogram, and pulmonary function test. Bariatric hospital bed and equipment. ICU/HDU post-op plan.',
   'Overweight':     'BMI 25–29.9 (Overweight): Prescribe VTE prophylaxis if surgical duration > 60 min. Monitor wound site.',
@@ -39,13 +41,6 @@ const QUICK_TEMPLATES: Record<string, string> = {
   diabetic_foot: `1. Wound swab for MCS\n2. X-ray foot (osteomyelitis)\n3. FBC, CRP, HbA1c, glucose, renal function\n4. IV antibiotics if systemically unwell\n5. Vascular assessment (ABI, Doppler)\n6. Surgical debridement if Wagner 3+\n7. Podiatry and diabetic foot team referral\n8. Tight glycaemic control`,
 };
 
-const PHASE_LABELS: Record<string, string> = {
-  immediate:    'IMMEDIATE',
-  conservative: 'CONSERVATIVE MANAGEMENT',
-  surgical:     'SURGICAL MANAGEMENT',
-  followup:     'FOLLOW-UP',
-};
-
 // ── Review / follow-up scheduling ───────────────────────────────────────────
 
 const REVIEW_OPTIONS: { value: string; label: string; days: number | null }[] = [
@@ -69,67 +64,12 @@ function addDaysISO(isoDate: string, days: number): string {
   return dt.toISOString().split('T')[0];
 }
 
-function buildPlanText(
-  protocol: NonNullable<ReturnType<typeof getProtocol>>,
-  isInpatient: boolean,
-  surgeon: string,
-  allowedPhases?: string[],
-  planPrefix?: string,
-): string {
-  const lines: string[] = [];
-
-  if (planPrefix) {
-    lines.push(planPrefix, '');
-  }
-
-  if (isInpatient) {
-    lines.push(
-      'Admission orders',
-      `- Admit under ${surgeon} — General / Endoscopic Surgery`,
-      '- Monitoring: VS q4h, I&O charting, daily weights',
-      '- DVT prophylaxis: LMWH (if not contraindicated)',
-      '- VTE risk assessment documented',
-      '',
-    );
-  }
-
-  // Group management steps by phase, filtered by allowedPhases when set
-  const byPhase = new Map<string, string[]>();
-  for (const step of protocol.management) {
-    if (allowedPhases && !allowedPhases.includes(step.phase)) continue;
-    if (!byPhase.has(step.phase)) byPhase.set(step.phase, []);
-    byPhase.get(step.phase)!.push(step.step);
-  }
-
-  for (const [phase, steps] of byPhase) {
-    lines.push(`${protocol.label} — ${PHASE_LABELS[phase] ?? phase.toUpperCase()}`);
-    steps.forEach((s, i) => lines.push(`${i + 1}. ${s}`));
-    lines.push('');
-  }
-
-  if (protocol.investigations.length > 0) {
-    lines.push('Investigations');
-    for (const inv of protocol.investigations) {
-      lines.push(`- ${inv.label} (${inv.urgency})`);
-    }
-    lines.push('');
-  }
-
-  if (protocol.referral) {
-    lines.push('Referral');
-    lines.push(protocol.referral);
-    lines.push('');
-  }
-
-  return lines.join('\n').trimEnd();
-}
-
 function buildNursingOrders(isPreOp: boolean, isPostOp: boolean): string {
   const lines: string[] = ['Nursing Directives'];
 
   if (isPreOp) {
     lines.push(
-      '- NPO from midnight',
+      '- Fasting: food up to 6 h and clear fluids up to 2 h before anaesthesia unless the anaesthetist advises otherwise (AAGBI 2010; ESA 2011)',
       '- Obtain and file signed consent form',
       '- IV access (minimum 18G), pre-op bloods drawn',
       '- Surgical site marking by operating surgeon',
@@ -172,7 +112,6 @@ export default function PlanTab() {
     activeCcKey,
     admittingSurgeon,
     assessment,
-    orderedInvestigations, setOrderedInvestigations,
   } = useAppContext();
 
   const ccMatrix = activeCcKey ? getMatrix(activeCcKey) : null;
@@ -279,27 +218,33 @@ export default function PlanTab() {
     }
   }
 
-  const activeDiseaseId = (paneConverged && paneTop[0]?.probability >= 0.85)
-    ? paneTop[0].disease.id
-    : null;
-  // WorkingDiagnosis provides ICD and diseaseId fallback when PANE hasn't converged
-  // and no code has been manually selected — auto-activates the protocol.
-  const activeIcdCode = icdCodes[0]?.split(' — ')[0]?.trim() ?? workingDiagnosis?.icdCode ?? null;
+  // Plan suggestions radiate only from a CONFIRMED diagnosis (a locked working diagnosis or an
+  // ICD-10 code the clinician recorded) — never from an unconfirmed PANE convergence or a sign
+  // match (UX review C4, CLAUDE.md → Central diagnosis radiation).
+  const { diseaseId: activeDiseaseId, icdCode: activeIcdCode } = confirmedPlanSource(workingDiagnosis, icdCodes);
 
-  const protocol = activeDiseaseId
-    ? getProtocol(activeDiseaseId)
-    : activeIcdCode
-      ? getProtocolByIcd(activeIcdCode)
-      : null;
+  // The recorded ICD code wins over the working diagnosis's protocol when it names a more
+  // specific protocol (e.g. upper GI bleed + I85.11 → variceal bleed) — pane-engine resolveProtocol.
+  const protocol = planProtocolFor(activeDiseaseId, activeIcdCode);
+  // The patient on record (allergies, pregnancy, age, medicines, history) — the plan is adapted to
+  // it: allergy/pregnancy/paediatric filters and the peri-operative safety lines (plan-builder.ts).
+  const planPatient = usePlanPatientContext();
+  const confirmedDxLabel = workingDiagnosis?.locked
+    ? (workingDiagnosis.diseaseLabel || protocol?.label || workingDiagnosis.icdCode || '')
+    : (icdCodes[0]?.split(' — ')[1]?.trim() || protocol?.label || '');
+  // Unconfirmed leading differential — shown as a hint only, never used to build a plan.
+  const unconfirmedLeader = !protocol && paneConverged && (paneTop[0]?.probability ?? 0) >= 0.85
+    ? paneTop[0]!.disease.label
+    : null;
 
   // Detect sub-diagnosis variants from assessment text
   const variantMatch = useMemo(
     () => detectDxVariants(
       assessment,
       activeIcdCode ?? undefined,
-      activeDiseaseId ?? workingDiagnosis?.diseaseId ?? undefined,
+      activeDiseaseId ?? undefined,
     ),
-    [assessment, activeIcdCode, activeDiseaseId, workingDiagnosis?.diseaseId],
+    [assessment, activeIcdCode, activeDiseaseId],
   );
   // Auto-select detected variant; reset when diagnosis group changes
   useEffect(() => {
@@ -314,56 +259,27 @@ export default function PlanTab() {
 
   const isInpatient = encounterMode === 'inpatient';
 
-  // Investigations radiate from whichever protocol the plan is built from —
-  // kept in a ref so the auto-lock effect below always sees the latest list
-  // without needing orderedInvestigations in its dependency array (which
-  // would re-fire the plan-text generation on every investigation change).
-  const invRef = useRef(orderedInvestigations);
-  useEffect(() => { invRef.current = orderedInvestigations; });
+  // Generating a plan no longer orders the protocol's tests: they stay SUGGESTIONS on the
+  // Labs / Imaging steps (protocol panel + SuggestedInvestigationsPanel), ordered only when the
+  // clinician ticks them (UX review C3).
 
-  function seedInvestigationsFromProtocol(proto: ManagementProtocol) {
-    if (!proto.investigations.length) return;
-    // Essential (stat/urgent) only — routine tests are tap-to-add suggestions
-    // in InvestigationsTab, kept out of the auto-populated list everywhere.
-    const { essential } = splitEssentialSecondary(proto.investigations);
-    const current = invRef.current;
-    const toAdd = filterNewInvestigations(essential.map(i => i.label), current);
-    if (toAdd.length) setOrderedInvestigations([...toAdd, ...current]);
-  }
-
-  // Auto-populate plan when working diagnosis locks and plan is empty (or matches the
-  // previously-generated text, indicating the clinician hasn't edited it yet).
-  // Re-fires when the sub-diagnosis variant changes so the plan stays in sync.
-  useEffect(() => {
-    if (!protocol || !workingDiagnosis?.locked) return;
-    if (plan.trim() !== '' && plan !== autoGeneratedPlanRef.current) return;
-    const generated = buildPlanText(
-      protocol,
-      isInpatient,
-      admittingSurgeon,
-      selectedVariant?.allowedPhases,
-      selectedVariant?.planPrefix,
-    );
-    if (generated !== autoGeneratedPlanRef.current) {
-      autoGeneratedPlanRef.current = generated;
-      setPlan(generated);
-    }
-    seedInvestigationsFromProtocol(protocol);
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [workingDiagnosis?.locked, workingDiagnosis?.diseaseId, protocol?.label, selectedVariantId, isInpatient, admittingSurgeon]);
+  // The plan is never written by itself: even for a confirmed diagnosis the protocol plan is a
+  // SUGGESTION the clinician inserts with "Insert suggested plan" (UX review C4). This effect
+  // used to fill the plan as soon as a diagnosis locked (including one locked by a single sign).
   const isPreOp  = symptoms.some(s => s === 'Pre-operative visit');
   const isPostOp = symptoms.some(s => s === 'Post-operative review');
 
   function handleGeneratePlan() {
     if (!protocol) return;
-    setPlan(buildPlanText(
-      protocol,
+    const generated = buildPlanText(protocol, planPatient, {
       isInpatient,
-      admittingSurgeon,
-      selectedVariant?.allowedPhases,
-      selectedVariant?.planPrefix,
-    ));
-    seedInvestigationsFromProtocol(protocol);
+      surgeon: admittingSurgeon,
+      allowedPhases: selectedVariant?.allowedPhases,
+      planPrefix: selectedVariant?.planPrefix,
+    });
+    const next = insertSuggestedPlan(plan, generated, autoGeneratedPlanRef.current);
+    autoGeneratedPlanRef.current = generated;
+    setPlan(next);
   }
 
   // Picking a severity grade (e.g. Tokyo Grade III) is itself an explicit
@@ -376,11 +292,14 @@ export default function PlanTab() {
   function selectVariant(v: NonNullable<typeof selectedVariant>) {
     setSelectedVariantId(v.id);
     if (!protocol) return;
-    if (plan.trim() !== '' && plan !== autoGeneratedPlanRef.current) return;
-    const generated = buildPlanText(protocol, isInpatient, admittingSurgeon, v.allowedPhases, v.planPrefix);
+    // Only refresh a suggested plan the clinician already inserted and has not edited; an
+    // empty plan stays empty until "Insert suggested plan" is tapped.
+    if (!plan.trim() || plan !== autoGeneratedPlanRef.current) return;
+    const generated = buildPlanText(protocol, planPatient, {
+      isInpatient, surgeon: admittingSurgeon, allowedPhases: v.allowedPhases, planPrefix: v.planPrefix,
+    });
     autoGeneratedPlanRef.current = generated;
     setPlan(generated);
-    seedInvestigationsFromProtocol(protocol);
   }
 
   function handleGenerateNursing() {
@@ -423,16 +342,23 @@ export default function PlanTab() {
           }}>
             {/* Header row */}
             <div style={{ display: 'flex', alignItems: 'center', gap: 10, flexWrap: 'wrap' }}>
+              <span
+                data-testid="plan-suggested-for"
+                style={{ fontSize: 11, fontWeight: 700, color: '#0f766e', background: '#ccfbf1', border: '1px solid #99f6e4', borderRadius: 999, padding: '1px 8px' }}
+              >
+                Suggested for {confirmedDxLabel || protocol.label}
+              </span>
               <span style={{ fontSize: 12, color: '#5eead4', fontWeight: 600 }}>
-                Protocol matched: {protocol.label}
+                Protocol: {protocol.label}
               </span>
               <button
                 type="button"
                 className="chip"
                 onClick={handleGeneratePlan}
+                title="Insert the protocol plan into the plan box (kept below anything you have written). Review before signing."
                 style={{ background: '#0d9488', color: '#fff', borderColor: '#0d9488' }}
               >
-                Generate plan{selectedVariant ? ` — ${selectedVariant.label}` : ` from ${protocol.label}`}
+                Insert suggested plan{selectedVariant ? ` — ${selectedVariant.label}` : ''}
               </button>
               {isInpatient && (
                 <button
@@ -529,11 +455,20 @@ export default function PlanTab() {
           </div>
         )}
 
+        {unconfirmedLeader && (
+          <div data-testid="plan-unconfirmed-leader" style={{ marginBottom: 10, padding: '8px 12px', background: '#f8fafc', border: '1px dashed #94a3b8', borderRadius: 6, fontSize: 12, color: '#475569' }}>
+            Leading differential: <strong>{unconfirmedLeader}</strong> (not confirmed). Confirm a working diagnosis in Assessment to see a suggested plan.
+          </div>
+        )}
+
         {!protocol && workingDiagnosis?.locked && (
           <div style={{ marginBottom: 10, padding: '8px 12px', background: '#1e293b', border: '1px solid #475569', borderRadius: 6, fontSize: 12, color: '#94a3b8' }}>
             No protocol matched for this diagnosis — complete the plan manually.
           </div>
         )}
+
+        {/* Fasting / sleep safety prompts and evidence-graded non-drug options (tap to add). */}
+        <LifestylePracticesPanel />
 
         <div className="fld">
           <label>Plan</label>
@@ -560,6 +495,16 @@ export default function PlanTab() {
               </button>
             ))}
           </div>
+        </div>
+      </CollapsibleCard>
+
+      {/* Scores, results and treatment options for the leading diagnoses — suggestions only,
+          each added by the clinician's tap (lib/pane-engine/src/decision). */}
+      <CollapsibleCard title="Decision support — clinician decides">
+        <DecisionSupportPanel />
+        <div style={{ fontSize: 11, color: '#64748b', marginTop: 6 }}>
+          Nothing here is shown until a score is recorded ("Use in decision support" on the Scales step), a result crosses a
+          guideline threshold, or a leading diagnosis has decision content.
         </div>
       </CollapsibleCard>
 

@@ -1,0 +1,341 @@
+{
+  "schemaVersion": 1,
+  "id": "acutemed-gastroenteritis-elderly-aki",
+  "condition": "Acute gastroenteritis with dehydration and AKI (elderly, on ACE inhibitor/diuretic/metformin)",
+  "category": "general-medicine",
+  "permutationOf": null,
+  "summary": "84-year-old woman with 3 days of diarrhoea and vomiting on ramipril, furosemide and metformin: postural hypotension (102/60 → 84/50), HR 108, creatinine 212 (baseline 88), K 5.6. NICE NG148: AKI stage 2, IV fluids, hold nephrotoxic drugs.",
+  "tags": [
+    "gastroenteritis",
+    "aki",
+    "elderly",
+    "dehydration",
+    "sick-day-rules"
+  ],
+  "inputs": {
+    "patient": {
+      "ageYears": 84,
+      "sex": "female",
+      "pregnancy": {
+        "status": "not-applicable"
+      },
+      "heightCm": 150,
+      "weightKg": 52
+    },
+    "encounter": {
+      "setting": "outpatient",
+      "visitType": "followUp",
+      "acuity": "routine"
+    },
+    "chiefComplaint": "Diarrhoea and vomiting",
+    "hpi": "Attending for review of a haemorrhoid banding. Three days of watery diarrhoea about six times a day and vomiting; cannot keep fluids down. Dizzy on standing, passing little urine. Several residents at her church lunch were ill. No blood in the stool. Still taking all her tablets.",
+    "socrates": {
+      "onset": [
+        "2–3 days ago"
+      ],
+      "site": [
+        "Diffuse"
+      ],
+      "character": [
+        "Cramping"
+      ],
+      "radiation": [
+        "No radiation"
+      ],
+      "associations": [
+        "Nausea",
+        "Vomiting",
+        "Change in bowel habit"
+      ],
+      "timing": [
+        "Intermittent"
+      ],
+      "exacerbating": [
+        "Eating"
+      ],
+      "relieving": [
+        "Nothing"
+      ],
+      "severity": [
+        "Mild (1–3/10)"
+      ]
+    },
+    "symptoms": [
+      "watery diarrhoea",
+      "vomiting",
+      "postural dizziness",
+      "reduced urine output"
+    ],
+    "negatives": [
+      "blood in stool",
+      "fever",
+      "severe abdominal pain",
+      "recent antibiotics"
+    ],
+    "exam": {
+      "general": "Dry mucous membranes, reduced skin turgor, tired.",
+      "cardiovascular": "HR 108, BP 102/60 lying, 84/50 standing.",
+      "abdomen": "Soft, mild diffuse tenderness, active bowel sounds."
+    },
+    "vitals": [
+      {
+        "minutesAgo": 10,
+        "heartRate": 108,
+        "systolicBp": 102,
+        "diastolicBp": 60,
+        "respiratoryRate": 18,
+        "temperatureC": 37.4,
+        "spo2": 97,
+        "avpu": "A",
+        "onSupplementalO2": false
+      },
+      {
+        "minutesAgo": 5,
+        "heartRate": 118,
+        "systolicBp": 84,
+        "diastolicBp": 50,
+        "respiratoryRate": 18,
+        "temperatureC": 37.4,
+        "spo2": 97,
+        "avpu": "A",
+        "onSupplementalO2": false
+      }
+    ],
+    "labs": [
+      {
+        "analyte": "creatinine",
+        "name": "Creatinine",
+        "value": 212,
+        "unit": "µmol/L",
+        "minutesAgo": 30
+      },
+      {
+        "analyte": "urea",
+        "name": "Urea",
+        "value": 18.4,
+        "unit": "mmol/L",
+        "minutesAgo": 30
+      },
+      {
+        "analyte": "potassium",
+        "name": "Potassium",
+        "value": 5.6,
+        "unit": "mmol/L",
+        "minutesAgo": 30
+      },
+      {
+        "analyte": "sodium",
+        "name": "Sodium",
+        "value": 131,
+        "unit": "mmol/L",
+        "minutesAgo": 30
+      }
+    ],
+    "imaging": [],
+    "comorbidities": [
+      "Type 2 diabetes mellitus",
+      "Heart failure (mild, stable)",
+      "Hypertension",
+      "Chronic kidney disease stage 2 (baseline creatinine 88)"
+    ],
+    "surgicalHistory": [
+      "Haemorrhoid banding (4 weeks ago)"
+    ],
+    "medications": [
+      {
+        "drug": "Ramipril",
+        "dose": "5 mg",
+        "frequency": "OD"
+      },
+      {
+        "drug": "Furosemide",
+        "dose": "40 mg",
+        "frequency": "OD"
+      },
+      {
+        "drug": "Metformin",
+        "dose": "500 mg",
+        "frequency": "BD"
+      },
+      {
+        "drug": "Bisoprolol",
+        "dose": "2.5 mg",
+        "frequency": "OD"
+      }
+    ],
+    "allergies": [],
+    "nkda": true,
+    "socialHistory": "Lives alone, independent.",
+    "confirmedDiagnosis": {
+      "name": "Acute gastroenteritis with hypovolaemia and acute kidney injury",
+      "icd10": "N17.9",
+      "assessmentText": "Viral gastroenteritis with hypovolaemia and AKI stage 2 (creatinine 212 from 88), hyperkalaemia 5.6: admit, IV fluids, hold ramipril, furosemide and metformin, repeat U&E."
+    },
+    "platform": {
+      "web": {
+        "ccTemplate": "Nausea / vomiting",
+        "symptoms": [
+          "diarrhoea",
+          "vomiting",
+          "dizziness",
+          "dehydration"
+        ],
+        "symptomDetails": {
+          "vomiting": [
+            "Food",
+            "Multiple episodes daily"
+          ],
+          "dizziness": [
+            "Presyncope on standing",
+            "On standing"
+          ]
+        },
+        "paneAnswers": {
+          "nausea_vomiting": true,
+          "change_bowel_habit": true
+        },
+        "durationDays": 3,
+        "painScore": 2
+      }
+    }
+  },
+  "expected": {
+    "differential": {
+      "mustNotMiss": [
+        {
+          "id": "mnm-gastroenteritis",
+          "severity": "quality",
+          "match": [
+            "gastroenteritis",
+            "infective diarrhoea",
+            "infectious diarrhoea",
+            "icd:A08",
+            "icd:A09",
+            "icd:A0"
+          ],
+          "guidelineRefs": [
+            "nice-ng148"
+          ]
+        }
+      ]
+    },
+    "safety": {
+      "emergencyLevel": {
+        "id": "level-at-least-urgent",
+        "severity": "critical",
+        "atLeast": "urgent",
+        "guidelineRefs": [
+          "nice-ng148"
+        ],
+        "note": "AKI with postural hypotension and hyperkalaemia in an 84-year-old: same-day hospital assessment."
+      },
+      "redFlags": [
+        {
+          "id": "rf-aki",
+          "severity": "critical",
+          "match": [
+            "acute kidney injury",
+            "re:\\baki\\b",
+            "icd:N17",
+            "renal impairment",
+            "creatinine"
+          ],
+          "guidelineRefs": [
+            "nice-ng148"
+          ]
+        }
+      ]
+    },
+    "investigations": {
+      "mustInclude": [
+        {
+          "id": "inv-ue",
+          "severity": "quality",
+          "match": [
+            "u&e",
+            "urea & electrolytes",
+            "urea and electrolytes",
+            "renal function",
+            "creatinine",
+            "electrolytes"
+          ],
+          "guidelineRefs": [
+            "nice-ng148"
+          ]
+        }
+      ]
+    },
+    "management": {
+      "mustInclude": [
+        {
+          "id": "mgmt-iv-fluids",
+          "severity": "critical",
+          "match": [
+            "iv fluid",
+            "intravenous fluid",
+            "hartmann",
+            "crystalloid",
+            "sodium chloride 0.9",
+            "0.9% saline",
+            "fluid resuscitation",
+            "fluid challenge"
+          ],
+          "guidelineRefs": [
+            "nice-ng148"
+          ],
+          "note": "Hypovolaemic AKI: IV fluids."
+        },
+        {
+          "id": "mgmt-hold-nephrotoxic",
+          "severity": "quality",
+          "match": [
+            "re:(hold|withhold|stop|suspend|omit)[^.;]{0,40}(ramipril|ace|arb|diuretic|furosemide|metformin|nephrotoxic)"
+          ],
+          "guidelineRefs": [
+            "nice-ng148"
+          ]
+        }
+      ],
+      "mustExclude": [
+        {
+          "id": "mgmt-no-nsaid",
+          "severity": "critical",
+          "match": [
+            "ibuprofen",
+            "diclofenac",
+            "naproxen",
+            "ketorolac"
+          ],
+          "unless": [
+            "avoid",
+            "hold",
+            "stop",
+            "withhold",
+            "no nsaid",
+            "if egfr normal"
+          ],
+          "guidelineRefs": [
+            "nice-ng148"
+          ],
+          "note": "NSAIDs in AKI are contraindicated (NICE NG148)."
+        }
+      ]
+    }
+  },
+  "guideline": [
+    {
+      "id": "nice-ng148",
+      "verified": false,
+      "name": "NICE NG148 - Acute kidney injury: prevention, detection and management",
+      "year": 2019,
+      "section": "Detect AKI with KDIGO criteria (creatinine rise >=26 micromol/L in 48 h or >=50% in 7 days, or urine output <0.5 mL/kg/h for >6 h); assess volume status and give IV fluids for hypovolaemia; stop or withhold nephrotoxic and AKI-risk medicines (NSAIDs, ACE inhibitors/ARBs, diuretics; review metformin)",
+      "citation": "National Institute for Health and Care Excellence. NG148. London: NICE; 2019 (updated 2023)."
+    }
+  ],
+  "rationale": "Base GI-infection case: the danger in the elderly is not the diarrhoea but the AKI from hypovolaemia on ACE inhibitor/diuretic/metformin. Creatinine rise 88 -> 212 (2.4x) = KDIGO stage 2.",
+  "authoring": {
+    "author": "Claude (acute medicine cluster)",
+    "date": "2026-09-25",
+    "notes": "Expectations need surgeon sign-off (reviewedBy). Citations written from the guideline texts, not yet checked against the source (verified: false). iOS outcomes are unverified until the next CI run."
+  }
+}

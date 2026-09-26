@@ -1,0 +1,410 @@
+{
+  "schemaVersion": 1,
+  "id": "choledocholithiasis-asge-high-risk",
+  "condition": "Choledocholithiasis",
+  "category": "hpb",
+  "permutationOf": null,
+  "permutationLabel": "Base case — ASGE 2019 high risk (CBD stone on ultrasound; bilirubin >4 mg/dL with dilated CBD), no cholangitis",
+  "summary": "48-year-old woman with 2 days of RUQ pain then jaundice, dark urine and pale stools; afebrile; bilirubin 92 µmol/L (5.4 mg/dL), ALP 410; ultrasound shows a 10 mm CBD with a distal 8 mm stone.",
+  "tags": [
+    "biliary",
+    "ercp",
+    "jaundice"
+  ],
+  "inputs": {
+    "patient": {
+      "ageYears": 48,
+      "sex": "female",
+      "pregnancy": {
+        "status": "not-pregnant"
+      },
+      "heightCm": 162,
+      "weightKg": 77
+    },
+    "encounter": {
+      "setting": "emergency",
+      "visitType": "urgentReview",
+      "acuity": "priority"
+    },
+    "chiefComplaint": "Right upper abdominal pain followed by jaundice",
+    "hpi": "Two days of right upper quadrant pain, then yellow eyes since yesterday with dark urine and pale stools. Itchy. No fever or rigors. Previous episodes of post-prandial pain over the last year. LMP 10 days ago.",
+    "socrates": {
+      "onset": [
+        "2–3 days ago"
+      ],
+      "site": [
+        "RUQ",
+        "Epigastric"
+      ],
+      "character": [
+        "Colicky"
+      ],
+      "radiation": [
+        "Back"
+      ],
+      "associations": [
+        "Jaundice",
+        "Nausea"
+      ],
+      "timing": [
+        "Intermittent"
+      ],
+      "exacerbating": [
+        "Eating"
+      ],
+      "relieving": [
+        "Analgesics"
+      ],
+      "severity": [
+        "Moderate (4–6/10)"
+      ]
+    },
+    "symptoms": [
+      "right upper quadrant pain",
+      "jaundice",
+      "dark urine",
+      "pale stool",
+      "pruritus"
+    ],
+    "negatives": [
+      "fever",
+      "rigors"
+    ],
+    "exam": {
+      "general": "Jaundiced. Afebrile (37.1°C), pulse 84/min, BP 128/80.",
+      "abdomen": "Mild right upper quadrant tenderness, no guarding, no palpable gallbladder."
+    },
+    "vitals": [
+      {
+        "minutesAgo": 20,
+        "heartRate": 84,
+        "systolicBp": 128,
+        "diastolicBp": 80,
+        "respiratoryRate": 16,
+        "temperatureC": 37.1,
+        "spo2": 98,
+        "avpu": "A",
+        "onSupplementalO2": false
+      }
+    ],
+    "labs": [
+      {
+        "analyte": "bilirubin",
+        "name": "Bilirubin",
+        "value": 92,
+        "unit": "µmol/L",
+        "minutesAgo": 40
+      },
+      {
+        "analyte": "alp",
+        "name": "ALP",
+        "value": 410,
+        "unit": "U/L",
+        "minutesAgo": 40
+      },
+      {
+        "analyte": "ggt",
+        "name": "GGT",
+        "value": 520,
+        "unit": "U/L",
+        "minutesAgo": 40
+      },
+      {
+        "analyte": "alt",
+        "name": "ALT",
+        "value": 310,
+        "unit": "U/L",
+        "minutesAgo": 40
+      },
+      {
+        "analyte": "wbc",
+        "name": "WBC",
+        "value": 9.8,
+        "unit": "×10⁹/L",
+        "minutesAgo": 40
+      },
+      {
+        "analyte": "crp",
+        "name": "CRP",
+        "value": 22,
+        "unit": "mg/L",
+        "minutesAgo": 40
+      },
+      {
+        "analyte": "lipase",
+        "name": "Lipase",
+        "value": 70,
+        "unit": "U/L",
+        "minutesAgo": 40
+      },
+      {
+        "analyte": "inr",
+        "name": "INR",
+        "value": 1.1,
+        "unit": "",
+        "minutesAgo": 40
+      },
+      {
+        "analyte": "creatinine",
+        "name": "Creatinine",
+        "value": 64,
+        "unit": "µmol/L",
+        "minutesAgo": 40
+      },
+      {
+        "analyte": "bhcg",
+        "name": "Urine pregnancy test",
+        "resultText": "Negative",
+        "minutesAgo": 40
+      }
+    ],
+    "imaging": [
+      {
+        "name": "USS abdomen",
+        "modality": "US",
+        "region": "Abdomen",
+        "minutesAgo": 25,
+        "result": "Multiple gallstones; gallbladder wall normal. Common bile duct dilated to 10 mm with an 8 mm echogenic shadowing stone in the distal duct. Mild intrahepatic duct dilatation. Pancreas normal."
+      }
+    ],
+    "comorbidities": [],
+    "medications": [],
+    "allergies": [],
+    "nkda": true,
+    "socialHistory": "Hairdresser. Non-smoker. Occasional alcohol.",
+    "confirmedDiagnosis": {
+      "name": "Choledocholithiasis",
+      "icd10": "K80.50",
+      "paneDiseaseId": "choledocholithiasis",
+      "assessmentText": "Choledocholithiasis — ASGE 2019 high risk (CBD stone on ultrasound; bilirubin 92 µmol/L with a dilated CBD). No cholangitis."
+    },
+    "platform": {
+      "web": {
+        "ccTemplate": "Obstructive jaundice",
+        "symptoms": [
+          "jaundice",
+          "right upper quadrant pain",
+          "dark urine",
+          "pale stool",
+          "pruritus"
+        ],
+        "symptomDetails": {
+          "jaundice": [
+            "Dark urine",
+            "Pale stool",
+            "Pruritus",
+            "Abdominal pain"
+          ]
+        },
+        "examFindings": {
+          "general": [
+            "Jaundiced"
+          ],
+          "abdomen": [
+            "Tender RUQ"
+          ]
+        },
+        "paneAnswers": {
+          "us_gallstones": true,
+          "fever": false
+        },
+        "durationDays": 2,
+        "painScore": 4
+      }
+    }
+  },
+  "expected": {
+    "differential": {
+      "mustRankTopK": [
+        {
+          "id": "dx-cbd-stone-top3",
+          "severity": "critical",
+          "match": [
+            "choledocholithiasis",
+            "cbd stone",
+            "bile duct stone",
+            "common bile duct"
+          ],
+          "k": 3,
+          "guidelineRefs": [
+            "asge-2019"
+          ]
+        }
+      ],
+      "mustNotMiss": [
+        {
+          "id": "mnm-malignant-obstruction",
+          "severity": "quality",
+          "match": [
+            "pancreatic carcinoma",
+            "pancreatic cancer",
+            "pancreatic adenocarcinoma",
+            "periampullary",
+            "re:pancrea\\w*[^,]{0,20}(carcinoma|cancer|malignan|neoplas|tumou?r|adenocarcinoma)",
+            "cholangiocarcinoma",
+            "malignan"
+          ],
+          "note": "Malignant obstruction is the alternative cause of a dilated duct.",
+          "knownGap": [
+            "web",
+            "ios"
+          ],
+          "knownGapNote": "PANE top 3: cholecystitis, choledocholithiasis, pancreatitis (symptom inference #4 has cholangiocarcinoma). | iOS CI 2026-09-25 (run 36169134350, database mode): not in top 5 of ios.bayes: 1. Choledocholithiasis | 2. Biliary Colic | 3. Acute Cholecystitis | 4. Ascending Cholangitis | 5. Acute Pancreatitis",
+          "proposedFix": "PANE: keep one malignant obstruction node in the displayed list when jaundice is present (or display top 5)."
+        }
+      ]
+    },
+    "safety": {
+      "emergencyLevel": {
+        "id": "level-at-least-priority",
+        "severity": "critical",
+        "atLeast": "priority",
+        "guidelineRefs": [
+          "asge-2019"
+        ],
+        "note": "Obstructive jaundice from a CBD stone needs admission-level care (cholangitis risk); must not be routine. iOS (predicted, not observed): urgent — \"jaundice\" in the CC is an urgent keyword."
+      }
+    },
+    "scores": {
+      "recommended": [
+        {
+          "id": "score-rec-asge-cbd",
+          "severity": "quality",
+          "score": "asge-cbd",
+          "guidelineRefs": [
+            "asge-2019"
+          ],
+          "knownGap": [
+            "ios"
+          ],
+          "knownGapNote": "iOS CI 2026-09-25 (run 36169134350, database mode): asge-cbd not recommended; recommended: tg18-cholangitis, tg18-cholecystitis, qsofa, sofa, news2, mews"
+        }
+      ]
+    },
+    "investigations": {
+      "mustInclude": [
+        {
+          "id": "inv-coagulation",
+          "severity": "quality",
+          "match": [
+            "inr",
+            "coagulation",
+            "clotting",
+            "prothrombin"
+          ],
+          "guidelineRefs": [
+            "asge-2019"
+          ],
+          "note": "Before ERCP/sphincterotomy."
+        }
+      ],
+      "mustExclude": [
+        {
+          "id": "inv-no-mrcp-before-ercp",
+          "severity": "quality",
+          "match": [
+            "mrcp",
+            "endoscopic ultrasound",
+            "re:\\beus\\b"
+          ],
+          "unless": [
+            "if ",
+            "equivocal",
+            "uncertain",
+            "unavailable",
+            "fail"
+          ],
+          "guidelineRefs": [
+            "asge-2019"
+          ],
+          "note": "ASGE high risk: proceed directly to ERCP; confirmatory MRCP/EUS delays therapy. Quality (over-investigation, not harm).",
+          "proposedFix": "Choledocholithiasis protocol: make MRCP/EUS conditional on ASGE intermediate risk; high risk → ERCP directly.",
+          "knownGap": [
+            "ios"
+          ],
+          "knownGapNote": "iOS CI 2026-09-25 (run 36169134350, database mode): forbidden investigation present in ios.radiation: \"mrcp - gold standard non-invasive cbd stone detection\""
+        }
+      ]
+    },
+    "management": {
+      "mustInclude": [
+        {
+          "id": "mgmt-ercp",
+          "severity": "critical",
+          "match": [
+            "ercp",
+            "endoscopic retrograde"
+          ],
+          "guidelineRefs": [
+            "asge-2019",
+            "esge-2019-cbds"
+          ],
+          "note": "ASGE high risk → ERCP with sphincterotomy and stone extraction."
+        },
+        {
+          "id": "mgmt-cholecystectomy-after-ercp",
+          "severity": "quality",
+          "match": [
+            "laparoscopic cholecystectomy",
+            "lap chole",
+            "re:lap(\\.|aroscopic)? cholecystectomy",
+            "cholecystectomy"
+          ],
+          "guidelineRefs": [
+            "bsg-2017-cbds"
+          ],
+          "note": "Cholecystectomy after duct clearance (same admission or within 2 weeks)."
+        }
+      ],
+      "mustExclude": [
+        {
+          "id": "mgmt-no-appendicectomy",
+          "severity": "critical",
+          "match": [
+            "appendicectomy",
+            "appendectomy"
+          ],
+          "unless": [
+            "not indicated",
+            "no role",
+            "exclude appendicitis"
+          ],
+          "note": "Not an appendix presentation: an appendicectomy operative plan (consent, theatre booking, post-operative orders) is a wrong-procedure suggestion.",
+          "proposedFix": "clinical-inference.ts SURGICAL PATHWAY CASCADE: gate hasAppendicitisIndication/hasGallstoneIndication on the working diagnosis or assessment (as the Alvarado block already does with assessmentHasAppend) and on positive, non-negated findings — not on any \"guarding\", \"gallbladder wall\" or \"gallstone\" substring."
+        }
+      ]
+    }
+  },
+  "guideline": [
+    {
+      "id": "asge-2019",
+      "name": "ASGE guideline on the role of endoscopy in the evaluation and management of choledocholithiasis",
+      "year": 2019,
+      "section": "Risk strata. High: CBD stone on US/cross-sectional imaging, or total bilirubin >4 mg/dL with dilated CBD, or ascending cholangitis → ERCP. Intermediate: abnormal liver tests, age >55, or dilated CBD → EUS/MRCP or intra-operative cholangiography/laparoscopic US. Low: none → cholecystectomy without further CBD evaluation",
+      "citation": "Buxbaum JL, Abbas Fehmi SM, Sultan S, et al. Gastrointest Endosc. 2019;89:1075–1105.e15.",
+      "verified": false
+    },
+    {
+      "id": "esge-2019-cbds",
+      "name": "ESGE guideline — endoscopic management of common bile duct stones",
+      "year": 2019,
+      "section": "ERCP for CBD stones; EUS/MRCP for intermediate probability; peri-procedural considerations including pregnancy",
+      "citation": "Manes G, Paspatis G, Aabakken L, et al. Endoscopy. 2019;51:472–491.",
+      "verified": false
+    },
+    {
+      "id": "bsg-2017-cbds",
+      "name": "BSG updated guideline on the management of common bile duct stones",
+      "year": 2017,
+      "section": "MRCP/EUS when CBDS suspected but not confirmed; cholecystectomy after ERCP clearance (within 2 weeks) unless unfit",
+      "citation": "Williams E, Beckingham I, El Sayed G, et al. Gut. 2017;66:765–782.",
+      "verified": false
+    }
+  ],
+  "rationale": "Base case for choledocholithiasis at the ASGE high-risk stratum: a stone is seen on ultrasound and bilirubin >4 mg/dL with a dilated duct. Guideline-concordant management is ERCP first, then cholecystectomy; MRCP is unnecessary.",
+  "authoring": {
+    "author": "Claude (HPB cluster)",
+    "date": "2026-09-25",
+    "notes": "Expectations and citations need surgeon sign-off (reviewedBy). iOS outcomes not yet observed (unverified: ios) — triage after the first CI run."
+  }
+}

@@ -1,0 +1,311 @@
+{
+  "schemaVersion": 1,
+  "id": "hernia-umbilical-cirrhosis-ascites",
+  "condition": "Umbilical hernia in cirrhosis with ascites",
+  "category": "hernia",
+  "permutationOf": "hernia-umbilical-adult-elective",
+  "permutationLabel": "Cirrhosis with tense ascites",
+  "summary": "57-year-old man with alcohol-related cirrhosis (Child-Pugh B), tense ascites and a large umbilical hernia with thin, shiny skin. Risk of rupture (Flood syndrome) and high peri-operative risk: ascites control and hepatology input before (or with) repair; Child-Pugh/MELD.",
+  "tags": [
+    "ventral",
+    "cirrhosis",
+    "high-risk"
+  ],
+  "inputs": {
+    "patient": {
+      "ageYears": 57,
+      "sex": "male",
+      "pregnancy": {
+        "status": "not-applicable"
+      },
+      "heightCm": 175,
+      "weightKg": 81
+    },
+    "encounter": {
+      "setting": "outpatient",
+      "visitType": "newConsult",
+      "acuity": "priority"
+    },
+    "chiefComplaint": "Swollen tummy and a large lump at the belly button",
+    "hpi": "Known alcohol-related cirrhosis, abstinent 8 months. Tummy swelling increasing over 6 weeks despite tablets. Belly-button lump has grown and the skin over it is thin and shiny; no leakage of fluid. Not confused. No fever.",
+    "socrates": {
+      "onset": [
+        "1–6 months ago",
+        "Gradual"
+      ],
+      "site": [
+        "Umbilical"
+      ],
+      "character": [
+        "Soft",
+        "Non-tender"
+      ],
+      "radiation": [
+        "No radiation"
+      ],
+      "associations": [],
+      "timing": [
+        "Progressive"
+      ],
+      "exacerbating": [
+        "Standing"
+      ],
+      "relieving": [
+        "Lying down"
+      ],
+      "severity": [
+        "Mild (1–3/10)"
+      ]
+    },
+    "symptoms": [
+      "umbilical swelling",
+      "abdominal distension"
+    ],
+    "negatives": [
+      "fluid leak",
+      "confusion",
+      "fever",
+      "haematemesis"
+    ],
+    "exam": {
+      "general": "Mild jaundice, spider naevi, palmar erythema. No asterixis.",
+      "abdomen": "Tense ascites with shifting dullness. 5 cm umbilical hernia, reducible with difficulty, overlying skin thin, shiny and stretched, no ulceration or leak. Splenomegaly."
+    },
+    "vitals": [
+      {
+        "minutesAgo": 15,
+        "heartRate": 88,
+        "systolicBp": 112,
+        "diastolicBp": 68,
+        "respiratoryRate": 16,
+        "temperatureC": 36.8,
+        "spo2": 97,
+        "avpu": "A",
+        "onSupplementalO2": false
+      }
+    ],
+    "labs": [
+      {
+        "analyte": "bilirubin",
+        "name": "Bilirubin",
+        "value": 42,
+        "unit": "µmol/L",
+        "minutesAgo": 60
+      },
+      {
+        "analyte": "albumin",
+        "name": "Albumin",
+        "value": 29,
+        "unit": "g/L",
+        "minutesAgo": 60
+      },
+      {
+        "analyte": "inr",
+        "name": "INR",
+        "value": 1.5,
+        "minutesAgo": 60
+      },
+      {
+        "analyte": "sodium",
+        "name": "Sodium",
+        "value": 131,
+        "unit": "mmol/L",
+        "minutesAgo": 60
+      },
+      {
+        "analyte": "creatinine",
+        "name": "Creatinine",
+        "value": 98,
+        "unit": "µmol/L",
+        "minutesAgo": 60
+      },
+      {
+        "analyte": "platelets",
+        "name": "Platelets",
+        "value": 88,
+        "unit": "×10⁹/L",
+        "minutesAgo": 60
+      }
+    ],
+    "imaging": [
+      {
+        "name": "USS abdomen",
+        "modality": "US",
+        "region": "Abdomen",
+        "result": "Cirrhotic liver, splenomegaly, large-volume ascites. Umbilical defect 3 cm containing fluid and omentum.",
+        "minutesAgo": 2880
+      }
+    ],
+    "comorbidities": [
+      "Alcohol-related liver cirrhosis",
+      "Ascites",
+      "Portal hypertension"
+    ],
+    "surgicalHistory": [],
+    "medications": [
+      {
+        "drug": "Spironolactone",
+        "dose": "200 mg",
+        "frequency": "OD",
+        "indication": "Ascites"
+      },
+      {
+        "drug": "Furosemide",
+        "dose": "80 mg",
+        "frequency": "OD",
+        "indication": "Ascites"
+      },
+      {
+        "drug": "Propranolol",
+        "dose": "40 mg",
+        "frequency": "BD",
+        "indication": "Varices prophylaxis"
+      }
+    ],
+    "allergies": [],
+    "nkda": true,
+    "socialHistory": "Ex-heavy drinker, abstinent 8 months.",
+    "confirmedDiagnosis": {
+      "name": "Umbilical hernia with tense refractory ascites in Child-Pugh B cirrhosis; skin thinning (risk of rupture)",
+      "icd10": "K42.9",
+      "paneDiseaseId": "umbilical_hernia",
+      "assessmentText": "Umbilical hernia in decompensated cirrhosis (Child-Pugh B) with tense diuretic-refractory ascites; thin shiny skin — risk of rupture. Hepatology review for ascites control (paracentesis/TIPS) and optimisation before repair; urgent surgery if leak, ulceration or incarceration."
+    },
+    "platform": {
+      "web": {
+        "ccTemplate": "Umbilical / paraumbilical hernia",
+        "symptoms": [
+          "hernia",
+          "umbilical swelling",
+          "abdominal distension"
+        ],
+        "symptomDetails": {
+          "hernia": [
+            "Umbilical",
+            "Reducible with effort"
+          ]
+        },
+        "examFindings": {
+          "abdomen": [
+            "Distended",
+            "Hernia present",
+            "Splenomegaly"
+          ],
+          "general": [
+            "Jaundiced"
+          ]
+        },
+        "durationDays": 42,
+        "painScore": 2
+      }
+    }
+  },
+  "expected": {
+    "safety": {
+      "emergencyLevel": {
+        "id": "level-at-least-priority",
+        "severity": "quality",
+        "atLeast": "priority"
+      },
+      "redFlags": [
+        {
+          "id": "flag-rupture-risk",
+          "severity": "critical",
+          "match": [
+            "ruptur",
+            "ulcerat",
+            "skin changes",
+            "leak",
+            "flood"
+          ],
+          "guidelineRefs": [
+            "easl-cirrhosis-2018",
+            "ehs-ahs-umbilical-2020"
+          ],
+          "note": "Thin shiny skin over an umbilical hernia with tense ascites: rupture risk must be surfaced."
+        },
+        {
+          "id": "flag-liver-disease",
+          "severity": "critical",
+          "match": [
+            "cirrho",
+            "child-pugh",
+            "liver disease",
+            "meld"
+          ],
+          "note": "Peri-operative mortality depends on liver function; the risk must be visible."
+        }
+      ]
+    },
+    "scores": {
+      "recommended": [
+        {
+          "id": "score-rec-child-pugh",
+          "severity": "quality",
+          "score": "child-pugh"
+        },
+        {
+          "id": "score-rec-meld",
+          "severity": "quality",
+          "score": "meld"
+        }
+      ]
+    },
+    "management": {
+      "mustInclude": [
+        {
+          "id": "mgmt-ascites-control",
+          "severity": "critical",
+          "match": [
+            "ascites control",
+            "control of ascites",
+            "paracentesis",
+            "tips",
+            "hepatolog",
+            "control ascites"
+          ],
+          "guidelineRefs": [
+            "easl-cirrhosis-2018",
+            "ehs-ahs-umbilical-2020"
+          ],
+          "note": "Repair without controlling ascites risks leak, recurrence and peritonitis; hepatology co-management is standard."
+        }
+      ],
+      "mustExclude": [
+        {
+          "id": "mgmt-no-standard-day-case-plan",
+          "severity": "quality",
+          "match": [
+            "day-case",
+            "day case"
+          ],
+          "note": "Day-case repair is inappropriate in decompensated cirrhosis."
+        }
+      ]
+    }
+  },
+  "guideline": [
+    {
+      "id": "ehs-ahs-umbilical-2020",
+      "name": "EHS/AHS guidelines — treatment of umbilical and epigastric hernias",
+      "year": 2020,
+      "section": "Indication for repair; mesh vs suture by defect size; open preperitoneal flat mesh; patients with liver cirrhosis and ascites",
+      "citation": "Henriksen NA, Montgomery A, Kaufmann R, et al. Guidelines for treatment of umbilical and epigastric hernias from the European Hernia Society and Americas Hernia Society. Br J Surg. 2020;107:171–190.",
+      "verified": false
+    },
+    {
+      "id": "easl-cirrhosis-2018",
+      "name": "EASL Clinical Practice Guidelines — decompensated cirrhosis",
+      "year": 2018,
+      "section": "Ascites management (diuretics, large-volume paracentesis); umbilical hernia in patients with ascites (ascites control before repair; risk of rupture)",
+      "citation": "European Association for the Study of the Liver. EASL Clinical Practice Guidelines for the management of patients with decompensated cirrhosis. J Hepatol. 2018;69:406–460.",
+      "verified": false
+    }
+  ],
+  "rationale": "Permutation: comorbidity that changes management. Same hernia type; the plan must be driven by the liver disease and ascites (rupture risk, Child-Pugh/MELD, hepatology, ascites control).",
+  "authoring": {
+    "author": "Claude (hernia / breast / endocrine cluster)",
+    "date": "2026-09-25",
+    "notes": "Expectations need surgeon sign-off (reviewedBy). Citations verified: false."
+  }
+}

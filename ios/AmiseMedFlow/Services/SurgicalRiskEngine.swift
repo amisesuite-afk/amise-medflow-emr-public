@@ -69,6 +69,7 @@ struct SurgicalRiskInputs {
     let ageYears: Int
     let bmiKgM2: Double?
     let socialChips: Set<String>
+    var labs: LabPanel? = nil       // objective lab values from resulted investigations
 
     // MARK: PMH helpers
     var hasDM:              Bool { pmh.contains("T2DM") || pmh.contains("T1DM") }
@@ -172,288 +173,195 @@ enum SurgicalRiskEngine {
         periopRules(inputs, &alerts)
         anticoagRules(inputs, &alerts)
         anaestheticRules(inputs, &alerts)
+        labRules(inputs, &alerts)
         // Highest band first, then alphabetical domain
         return alerts.sorted { $0.band == $1.band ? $0.domain.rawValue < $1.domain.rawValue : $0.band > $1.band }
     }
 
-    // MARK: Infection
+    // MARK: Lab-derived risk rules
 
-    private static func infectRules(_ i: SurgicalRiskInputs, _ out: inout [SurgicalRiskAlert]) {
-        // Critical: DM + steroids + malnutrition — all three axes impaired
-        if i.hasDM && i.hasSteroids && i.bmiCategory.isMalnourished {
-            out.append(SurgicalRiskAlert(
-                domain: .infection, band: .critical,
-                title: "Critical infection risk",
-                detail: "DM, corticosteroids, and malnutrition converge to abolish neutrophil function, cellular immunity, and barrier integrity.",
-                action: "Optimise glucose periop (<10 mmol/L). Nutritional prehabilitation ≥7 days. Extended prophylaxis. Daily wound surveillance."))
-            return
-        }
-        // High: DM + (steroids or immunocompromised)
-        if i.hasDM && (i.hasSteroids || i.hasImmunocompromised) {
-            out.append(SurgicalRiskAlert(
-                domain: .infection, band: .high,
-                title: "High infection risk — DM + immunosuppression",
-                detail: "Hyperglycaemia impairs phagocytosis; combined with immunosuppression this markedly raises SSI risk.",
-                action: "Periop glucose 6–10 mmol/L (VRIII if NBM >1 meal). Extended antibiotic prophylaxis per local protocol. Daily wound review."))
-            return
-        }
-        // High: any immunocompromised state
-        if i.hasImmunocompromised {
-            out.append(SurgicalRiskAlert(
-                domain: .infection, band: .high,
-                title: "Immunocompromised — elevated infection risk",
-                detail: "Malignancy, biologic therapy, or IBD immunosuppression significantly impairs surgical site infection response.",
-                action: "Extended prophylaxis. If on biologics, MDT review re: optimal hold period pre-op. PCP prophylaxis if lymphopenic."))
-            return
-        }
-        // Moderate: DM alone or RA (DMARD-dependent)
-        if i.hasDM || i.hasRA {
-            out.append(SurgicalRiskAlert(
-                domain: .infection, band: .moderate,
-                title: "Moderate infection risk",
-                detail: i.hasDM
-                    ? "Hyperglycaemia impairs neutrophil chemotaxis and oxidative burst, increasing SSI risk."
-                    : "DMARDs and systemic inflammation in RA increase susceptibility to postoperative infection.",
-                action: "Standard prophylaxis. Periop glucose monitoring. Wound inspection at 48 h and day 7."))
-        }
-    }
+    private static func labRules(_ i: SurgicalRiskInputs, _ out: inout [SurgicalRiskAlert]) {
+        guard let labs = i.labs else { return }
 
-    // MARK: Healing
-
-    private static func healingRules(_ i: SurgicalRiskInputs, _ out: inout [SurgicalRiskAlert]) {
-        var factors: [String] = []
-        if i.hasDM              { factors.append("DM") }
-        if i.hasSteroids        { factors.append("corticosteroids") }
-        if i.bmiCategory.isMalnourished { factors.append("malnutrition") }
-        if i.isSmoker           { factors.append("smoking") }
-        if i.hasCKD             { factors.append("CKD") }
-        if i.hasAnaemia         { factors.append("anaemia") }
-        if i.hasRA              { factors.append("RA / DMARDs") }
-        guard !factors.isEmpty else { return }
-
-        let listStr = factors.joined(separator: ", ")
-        let n = factors.count
-        let isDMAndSteroids    = i.hasDM && i.hasSteroids
-        let isDMAndMalnutrition = i.hasDM && i.bmiCategory.isMalnourished
-
-        if n >= 3 || isDMAndSteroids || isDMAndMalnutrition {
-            out.append(SurgicalRiskAlert(
-                domain: .healing, band: .high,
-                title: "High wound healing risk (\(n) factors)",
-                detail: "Multiple factors impair collagen synthesis, angiogenesis, and epithelialisation: \(listStr).",
-                action: "Nutritional optimisation pre-op. Strict glucose control. Smoking cessation ≥4 weeks. Consider delayed primary closure or vacuum-assisted closure for high-risk wounds."))
-        } else if n == 2 {
-            out.append(SurgicalRiskAlert(
-                domain: .healing, band: .moderate,
-                title: "Moderate healing risk (\(n) factors)",
-                detail: "Impaired wound healing factors: \(listStr).",
-                action: "Pre-op optimisation of modifiable factors. Smoking cessation strongly recommended."))
-        } else {
-            out.append(SurgicalRiskAlert(
-                domain: .healing, band: .advisory,
-                title: "Healing risk — advisory",
-                detail: "Factor present: \(listStr).",
-                action: i.isSmoker
-                    ? "Smoking cessation ≥4 weeks pre-op reduces SSI risk ~50%."
-                    : "Monitor wound closely post-operatively."))
-        }
-    }
-
-    // MARK: Frailty
-
-    private static func frailtyRules(_ i: SurgicalRiskInputs, _ out: inout [SurgicalRiskAlert]) {
-        let age     = i.ageYears
-        let chronic = i.chronicConditionCount
-        let isolated = i.livesAlone || i.isCareHome
-        let sedentary = i.isSedentary || isolated
-
-        if age >= 80 || (age >= 75 && chronic >= 4) || (age >= 70 && chronic >= 5 && isolated) {
-            out.append(SurgicalRiskAlert(
-                domain: .frailty, band: .high,
-                title: "High frailty risk",
-                detail: "Age \(age), \(chronic) chronic conditions\(isolated ? ", social isolation" : ""). Clinical Frailty Scale (CFS) assessment required before elective surgery.",
-                action: "Comprehensive Geriatric Assessment. SORT score calculation. Discuss operative vs conservative options with patient and family. Shared decision-making documentation."))
-        } else if age >= 70 && (chronic >= 3 || isolated) {
-            out.append(SurgicalRiskAlert(
-                domain: .frailty, band: .moderate,
-                title: "Moderate frailty risk",
-                detail: "Age \(age) with \(chronic) chronic conditions\(isolated ? " and social isolation" : ""). Pre-operative functional assessment warranted.",
-                action: "Timed Up and Go test. Grip strength or 4-metre walk if available. Nutritional screen (MUST). Anaesthetic pre-assessment."))
-        } else if age >= 65 && (chronic >= 3 || sedentary) {
-            out.append(SurgicalRiskAlert(
-                domain: .frailty, band: .advisory,
-                title: "Frailty — advisory",
-                detail: "Age \(age) with \(chronic) comorbidities\(sedentary ? " and sedentary lifestyle" : ""). Baseline functional status should be documented.",
-                action: "Document ADLs and exercise tolerance. Note any recent unintentional weight loss or falls in history."))
-        }
-    }
-
-    // MARK: Nutrition / BMI
-
-    private static func nutritionRules(_ i: SurgicalRiskInputs, _ out: inout [SurgicalRiskAlert]) {
-        switch i.bmiCategory {
-        case .severelyUnderweight:
-            out.append(SurgicalRiskAlert(
-                domain: .nutrition, band: .critical,
-                title: "Severe malnutrition (BMI <16)",
-                detail: "Severe protein-energy malnutrition substantially increases postoperative mortality, anastomotic leak, and wound breakdown.",
-                action: "Urgent dietitian referral. Minimum 7–14 days nutritional prehabilitation before elective surgery. Albumin + prealbumin. Consider NG/NJ feeding if oral intake insufficient."))
-        case .underweight:
-            out.append(SurgicalRiskAlert(
-                domain: .nutrition, band: .high,
-                title: "Underweight — malnutrition risk (BMI <18.5)",
-                detail: "Reduced immune function, impaired wound tensile strength, and increased length of stay.",
-                action: "MUST screening score. Dietary supplements or NG if MUST ≥2. Delay elective surgery if nutritional optimisation is feasible."))
-        case .morbidlyObese:
-            out.append(SurgicalRiskAlert(
-                domain: .nutrition, band: .high,
-                title: "Morbid obesity (BMI ≥40)",
-                detail: "Increases operative difficulty, DVT/PE risk, respiratory compromise, wound complications, and anaesthetic complexity.",
-                action: "Mandatory anaesthetic pre-assessment. Weight-adjusted LMWH for VTE prophylaxis. Consider bariatric pre-op pathway for elective surgery. Surgical instruments and retractors."))
-        case .obeseII:
-            out.append(SurgicalRiskAlert(
-                domain: .nutrition, band: .moderate,
-                title: "Obese class II (BMI 35–40)",
-                detail: "Elevated SSI, VTE, and pulmonary complication risk. Altered tissue planes.",
-                action: "Weight-adjusted DVT prophylaxis. Lung recruitment protocol post-op. Document BMI in operative note."))
-        case .obeseI:
-            out.append(SurgicalRiskAlert(
-                domain: .nutrition, band: .advisory,
-                title: "Obese class I (BMI 30–35)",
-                detail: "Modest increase in SSI and VTE risk.",
-                action: "Standard VTE prophylaxis. Document in operative note."))
-        default:
-            break
-        }
-    }
-
-    // MARK: Perioperative / metabolic
-
-    private static func periopRules(_ i: SurgicalRiskInputs, _ out: inout [SurgicalRiskAlert]) {
-        // Steroid stress-dose — HPA axis suppression
-        if i.hasSteroids {
-            out.append(SurgicalRiskAlert(
-                domain: .periop, band: .high,
-                title: "Steroid-dependent — adrenal stress-dose required",
-                detail: "Chronic corticosteroids suppress the HPA axis. Surgery without cortisol cover risks Addisonian crisis (refractory hypotension, cardiovascular collapse).",
-                action: "Hydrocortisone IV at induction: 25 mg (minor), 50 mg (moderate), 100 mg (major surgery) + 6-hourly for 24–48 h. Do not omit morning oral steroid dose."))
+        // Anaemia — increases cardiac demand, impairs wound healing
+        if let hb = labs.haemoglobin?.value {
+            if hb < 8.0 {
+                out.append(SurgicalRiskAlert(
+                    domain: .healing, band: .critical,
+                    title: "Severe anaemia — Hb \(String(format: "%.1f", hb)) g/dL",
+                    detail: "Hb <8 g/dL significantly increases cardiac stress, impairs tissue oxygenation, and raises transfusion requirement perioperatively.",
+                    action: "Transfuse to Hb ≥8 g/dL pre-op (or ≥10 g/dL for cardiac cases). Investigate cause. Consider IV iron if elective case. Delay non-urgent surgery."))
+            } else if hb < 10.0 {
+                out.append(SurgicalRiskAlert(
+                    domain: .healing, band: .high,
+                    title: "Anaemia — Hb \(String(format: "%.1f", hb)) g/dL",
+                    detail: "Hb <10 g/dL elevates transfusion risk and slows wound healing.",
+                    action: "IV iron if ferritin <30 µg/L and elective case ≥4 weeks away. Group & save. Anaesthetic review."))
+            }
         }
 
-        // Diabetic perioperative glucose management
-        if i.hasDM {
-            out.append(SurgicalRiskAlert(
-                domain: .periop, band: .moderate,
-                title: "Diabetic perioperative glucose protocol",
-                detail: "Perioperative hyperglycaemia (>10 mmol/L) independently increases SSI, anastomotic dehiscence, and 30-day mortality.",
-                action: "VRIII if NBM >1 meal or T1DM. Hold metformin 24–48 h pre-op if major surgery or contrast. Target glucose 6–10 mmol/L intraoperatively. Endocrine review for T1DM."))
+        // Thrombocytopenia — bleeding risk
+        if let plt = labs.platelets?.value {
+            if plt < 50 {
+                out.append(SurgicalRiskAlert(
+                    domain: .periop, band: .critical,
+                    title: "Severe thrombocytopenia — platelets \(Int(plt))×10⁹/L",
+                    detail: "Platelet count <50 ×10⁹/L is associated with major surgical haemorrhage risk.",
+                    action: "Haematology review before surgery. Platelet transfusion target ≥50 (≥100 for neurosurgery/eye). Investigate cause."))
+            } else if plt < 100 {
+                out.append(SurgicalRiskAlert(
+                    domain: .periop, band: .high,
+                    title: "Thrombocytopenia — platelets \(Int(plt))×10⁹/L",
+                    detail: "Platelet count <100 ×10⁹/L increases intraoperative bleeding risk.",
+                    action: "Haematology opinion. Aim platelets ≥80 before major surgery. Avoid NSAIDs."))
+            }
         }
 
-        // Liver disease — Child-Pugh / MELD
-        if i.hasLiver {
-            out.append(SurgicalRiskAlert(
-                domain: .periop, band: .high,
-                title: "Liver disease — high operative risk",
-                detail: "Cirrhosis impairs coagulation (clotting factors, platelet function), drug metabolism, wound healing, and immune defence.",
-                action: "LFTs, INR, albumin, bilirubin, platelet count. Child-Pugh and MELD-Na scores. Hepatology review for major cases. Avoid hepatotoxic drugs and nephrotoxic analgesics."))
+        // AKI / renal impairment
+        if let cr = labs.creatinine?.value {
+            if cr > 300 {
+                out.append(SurgicalRiskAlert(
+                    domain: .periop, band: .critical,
+                    title: "Severe renal impairment — creatinine \(Int(cr)) µmol/L",
+                    detail: "Creatinine >300 µmol/L — volume management, nephrotoxin avoidance, and HDU/nephrology input are essential.",
+                    action: "Nephrology review. Avoid nephrotoxins (NSAIDs, aminoglycosides, contrast). Adjust drug dosing. Post-op hourly UO monitoring. HDU level care."))
+            } else if cr > 150 {
+                out.append(SurgicalRiskAlert(
+                    domain: .periop, band: .moderate,
+                    title: "Renal impairment — creatinine \(Int(cr)) µmol/L",
+                    detail: "Elevated creatinine requires careful fluid management and avoidance of nephrotoxins perioperatively.",
+                    action: "Avoid NSAIDs and nephrotoxic antibiotics. IV fluids with hourly UO monitoring. Consider nephrology input."))
+            }
         }
 
-        // CKD
-        if i.hasCKD {
-            out.append(SurgicalRiskAlert(
-                domain: .periop, band: .moderate,
-                title: "CKD — drug dosing and contrast caution",
-                detail: "Reduced renal clearance alters pharmacokinetics of antibiotics, analgesics, and contrast agents. Hyperkalaemia and fluid overload risk.",
-                action: "eGFR-adjusted drug dosing. Avoid NSAIDs. IV hydration pre- and post-contrast. U&E morning of surgery. Nephrology input if eGFR <30."))
+        // Hypoalbuminaemia — nutritional risk and wound healing
+        if let alb = labs.albumin?.value {
+            if alb < 25 {
+                out.append(SurgicalRiskAlert(
+                    domain: .nutrition, band: .high,
+                    title: "Hypoalbuminaemia — albumin \(String(format: "%.0f", alb)) g/L",
+                    detail: "Albumin <25 g/L is a strong independent predictor of surgical complications, anastomotic leak, and poor wound healing.",
+                    action: "Dietitian referral urgently. Nutritional support ≥7–14 days pre-op for elective cases. Consider NG/NJ feeding if oral intake insufficient. Repeat albumin after optimisation."))
+            } else if alb < 35 {
+                out.append(SurgicalRiskAlert(
+                    domain: .nutrition, band: .moderate,
+                    title: "Low albumin — \(String(format: "%.0f", alb)) g/L",
+                    detail: "Albumin 25–35 g/L suggests nutritional compromise and raises risk of poor healing.",
+                    action: "Dietitian referral. High-protein supplementation. Nutritional prehabilitation if elective case."))
+            }
         }
 
-        // Epilepsy — antiepileptic interactions
-        if i.hasEpilepsy {
+        // Coagulopathy
+        if let inr = labs.inr?.value, inr > 1.5 {
             out.append(SurgicalRiskAlert(
-                domain: .periop, band: .advisory,
-                title: "Epilepsy — antiepileptic continuity",
-                detail: "Missed antiepileptic doses perioperatively risk breakthrough seizures. Many antiepileptics interact with anaesthetic agents.",
-                action: "Administer antiepileptics on the morning of surgery with a sip of water. IV equivalents available for those who cannot swallow. Inform anaesthetist."))
+                domain: .periop, band: inr > 2.5 ? .critical : .high,
+                title: "Coagulopathy — INR \(String(format: "%.1f", inr))",
+                detail: "INR \(inr > 2.5 ? ">" : "1.5–2.5") — increased surgical haemorrhage risk.",
+                action: inr > 2.5 ?
+                    "Vitamin K IV + FFP if urgent. Delay elective surgery until INR <1.5. Haematology review. Identify cause." :
+                    "Review anticoagulation. Vitamin K if not therapeutically anticoagulated. Haematology input if unexplained."))
+        }
+
+        // Bilirubin — hepatic synthetic failure, jaundice-related surgical risk
+        if let bil = labs.bilirubin?.value {
+            if bil > 200 {
+                out.append(SurgicalRiskAlert(
+                    domain: .periop, band: .critical,
+                    title: "Severe jaundice — bilirubin \(Int(bil)) µmol/L",
+                    detail: "Bilirubin >200 µmol/L indicates severe hepatic dysfunction or biliary obstruction. Major operative mortality is substantially increased.",
+                    action: "Hepatobiliary/HPB surgeon review. Child-Pugh/MELD-Na score. Correct coagulopathy. Biliary drainage (ERCP/PTC) before elective surgery if obstructive. Nephrology input — hepatorenal syndrome risk."))
+            } else if bil > 50 {
+                out.append(SurgicalRiskAlert(
+                    domain: .periop, band: .moderate,
+                    title: "Jaundice — bilirubin \(Int(bil)) µmol/L",
+                    detail: "Bilirubin 50–200 µmol/L raises operative risk: impaired drug metabolism, coagulopathy risk, and wound healing compromise.",
+                    action: "Identify cause (obstructive vs hepatocellular). LFTs, coag, albumin. Consider biliary decompression if obstructive. Anaesthetic review for major cases."))
+            }
+        }
+
+        // Troponin — perioperative cardiac risk
+        if let trop = labs.troponin?.value, trop > 14 {
+            out.append(SurgicalRiskAlert(
+                domain: .periop, band: trop > 52 ? .critical : .high,
+                title: "Troponin \(String(format: "%.0f", trop)) ng/L — Cardiac Risk",
+                detail: trop > 52 ?
+                    "Troponin >52 ng/L (MI threshold) — active myocardial injury. Elective surgery must be deferred. Emergency surgery requires intensive cardiac monitoring." :
+                    "Troponin 14–52 ng/L (elevated but below MI threshold) — may indicate myocardial stress or NSTEMI. Risk-stratify before surgery.",
+                action: trop > 52 ?
+                    "Defer elective surgery. Cardiology review urgently. Serial ECG + troponin. Aspirin 300 mg if ACS confirmed. HDU post-op if surgery unavoidable." :
+                    "Cardiology review. Serial ECG. Repeat troponin at 3 h. Risk-stratify with HEART or GRACE score before proceeding."))
+        }
+
+        // HbA1c — glycaemic control and surgical infection risk
+        if let hba = labs.hba1c?.value, hba > 7.5 {
+            out.append(SurgicalRiskAlert(
+                domain: .infection, band: hba > 10.0 ? .high : .moderate,
+                title: "HbA1c \(String(format: "%.1f", hba))% — Poor Glycaemic Control",
+                detail: hba > 10.0 ?
+                    "HbA1c >10%: very poor long-term control significantly increases SSI, anastomotic leak, and impaired wound healing risk." :
+                    "HbA1c 7.5–10%: suboptimal control raises infection and healing risk perioperatively.",
+                action: hba > 10.0 ?
+                    "Delay elective surgery. Optimise glucose with endocrine review (VRIII, GLP-1 agonist, or insulin adjustment). Recheck HbA1c in 6–8 weeks. Target <8.5% before major elective surgery." :
+                    "Extended antibiotic prophylaxis. Periop glucose monitoring. VRIII if NBM >1 meal. Endocrine review if T1DM or poorly controlled T2DM."))
+        }
+
+        // Sodium — electrolyte risk for anaesthesia
+        if let na = labs.sodium?.value {
+            if na < 125 || na > 155 {
+                out.append(SurgicalRiskAlert(
+                    domain: .anaesthetic, band: .critical,
+                    title: "Sodium \(Int(na)) mmol/L — Critical Electrolyte Imbalance",
+                    detail: na < 125 ?
+                        "Severe hyponatraemia (<125 mmol/L) — cerebral oedema risk, seizures, and haemodynamic instability under general anaesthesia." :
+                        "Severe hypernatraemia (>155 mmol/L) — CNS risk, increased mortality under GA.",
+                    action: "Correct sodium at ≤8–10 mmol/L per 24 h (hyponatraemia) to avoid central pontine myelinolysis. Defer elective surgery. Anaesthetic review mandatory."))
+            } else if na < 130 || na > 150 {
+                out.append(SurgicalRiskAlert(
+                    domain: .anaesthetic, band: .moderate,
+                    title: "Sodium \(Int(na)) mmol/L — Electrolyte Abnormality",
+                    detail: "Sodium outside 130–150 mmol/L range requires correction before elective surgery to reduce anaesthetic risk.",
+                    action: "Identify and treat cause. Correct cautiously. Anaesthetic review if urgent surgery required."))
+            }
+        }
+
+        // Potassium — arrhythmia risk under anaesthesia
+        if let k = labs.potassium?.value {
+            if k < 2.8 || k > 6.0 {
+                out.append(SurgicalRiskAlert(
+                    domain: .anaesthetic, band: .critical,
+                    title: "Potassium \(String(format: "%.1f", k)) mmol/L — Critical",
+                    detail: k < 2.8 ?
+                        "Severe hypokalaemia (<2.8 mmol/L) — life-threatening arrhythmias under GA; prolonged QT, ventricular fibrillation risk." :
+                        "Severe hyperkalaemia (>6.0 mmol/L) — cardiac arrest risk under anaesthesia.",
+                    action: k < 2.8 ?
+                        "IV potassium replacement (max 10 mmol/h peripheral, 20 mmol/h central). Continuous ECG. Defer elective surgery until K+ >3.0 mmol/L." :
+                        // UKKA 2023 bands (web-last-gaps parity): nebulised salbutamol is an adjunct from 6.5 mmol/L only.
+                        "Calcium gluconate IV if ECG changes (cardiac membrane stabilisation). Insulin/dextrose.\(k >= 6.5 ? " Salbutamol (adjunct, UKKA 2023)." : "") Urgent nephrology/medical review. Defer elective surgery."))
+            } else if k < 3.2 || k > 5.5 {
+                out.append(SurgicalRiskAlert(
+                    domain: .anaesthetic, band: .moderate,
+                    title: "Potassium \(String(format: "%.1f", k)) mmol/L — Electrolyte Abnormality",
+                    detail: "Potassium outside 3.2–5.5 mmol/L range raises arrhythmia risk perioperatively.",
+                    action: "Correct before elective surgery. Anaesthetic review. ECG monitoring."))
+            }
+        }
+
+        // Glucose — perioperative glycaemic risk (objective value, not just DM history)
+        if let glu = labs.glucose?.value {
+            if glu > 14.0 {
+                out.append(SurgicalRiskAlert(
+                    domain: .infection, band: .high,
+                    title: "Glucose \(String(format: "%.1f", glu)) mmol/L — Perioperative Hyperglycaemia",
+                    detail: "Random glucose >14 mmol/L at assessment — significantly impairs neutrophil function and increases SSI, anastomotic leak, and healing complications.",
+                    action: "VRIII insulin infusion if NBM or glucose persistently >12 mmol/L. Target 6–10 mmol/L. Endocrine/diabetes team input. Delay non-urgent surgery."))
+            } else if glu > 10.0 {
+                out.append(SurgicalRiskAlert(
+                    domain: .infection, band: .moderate,
+                    title: "Glucose \(String(format: "%.1f", glu)) mmol/L — Elevated",
+                    detail: "Glucose 10–14 mmol/L — moderate hyperglycaemia increases infection risk perioperatively.",
+                    action: "Optimise glucose perioperatively. Sliding scale if NBM. Target 6–10 mmol/L."))
+            }
         }
     }
 
-    // MARK: Anticoagulation
-
-    private static func anticoagRules(_ i: SurgicalRiskInputs, _ out: inout [SurgicalRiskAlert]) {
-        if i.hasAnticoag {
-            let detail = "Patient is on therapeutic anticoagulation. Interruption carries thrombotic risk; continuation carries bleeding risk. Requires formal perioperative anticoagulation plan."
-            out.append(SurgicalRiskAlert(
-                domain: .anticoag, band: .high,
-                title: "Anticoagulation — bridging assessment required",
-                detail: detail,
-                action: "CHA₂DS₂-VASc for AF. Warfarin: target INR <1.5 for surgery; LMWH bridging per haematology. DOAC: apixaban/rivaroxaban hold 24–48 h; dabigatran by CrCl (48–96 h). Check thrombotic risk before deciding to bridge."))
-        } else if i.hasDVTPE || i.hasAF || i.hasStroke {
-            out.append(SurgicalRiskAlert(
-                domain: .anticoag, band: .moderate,
-                title: "Thromboembolic history — perioperative plan needed",
-                detail: "History of DVT/PE, AF, or stroke increases thrombotic risk if anticoagulation is withheld or if prophylaxis is inadequate.",
-                action: "Document current anticoagulation status. Confirm prophylactic LMWH dose and timing. Extended VTE prophylaxis post-op (28 days for major abdominal/pelvic cancer surgery)."))
-        }
-        if i.hasAntiplatelet && i.hasAnticoag {
-            out.append(SurgicalRiskAlert(
-                domain: .anticoag, band: .high,
-                title: "Dual antiplatelet + anticoagulation",
-                detail: "Concurrent antiplatelet and anticoagulant therapy carries very high bleeding risk perioperatively.",
-                action: "Haematology / cardiology input mandatory. Do not stop antiplatelet within 12 months of coronary stent without cardiology review."))
-        }
-    }
-
-    // MARK: Anaesthetic
-
-    private static func anaestheticRules(_ i: SurgicalRiskInputs, _ out: inout [SurgicalRiskAlert]) {
-        // OSA + obesity — highest airway/respiratory risk combination
-        if i.hasOSA && i.bmiCategory.isHighObese {
-            out.append(SurgicalRiskAlert(
-                domain: .anaesthetic, band: .high,
-                title: "OSA + significant obesity — high anaesthetic risk",
-                detail: "This combination markedly increases difficult airway, peri-extubation desaturation, and CPAP dependency risk.",
-                action: "Mandatory anaesthetic pre-assessment. CPAP availability in recovery room. Awake fibreoptic intubation if Mallampati 3–4. Opioid-sparing technique. HDU post-op if major surgery."))
-        } else if i.hasOSA {
-            out.append(SurgicalRiskAlert(
-                domain: .anaesthetic, band: .moderate,
-                title: "OSA — anaesthetic alert",
-                detail: "OSA increases peri-extubation desaturation, respiratory depression with opioids, and CPAP dependency in recovery.",
-                action: "Confirm CPAP adherence and bring machine to hospital. CPAP in recovery. Opioid-sparing anaesthetic (regional where possible)."))
-        }
-
-        // Cardiac
-        if i.hasCardiac {
-            out.append(SurgicalRiskAlert(
-                domain: .anaesthetic, band: .moderate,
-                title: "Cardiac disease — anaesthetic complexity",
-                detail: "IHD or heart failure increases perioperative MI, arrhythmia, and haemodynamic instability risk.",
-                action: "ECG and echo if not performed in past 12 months. Cardiology clearance for intermediate-high risk surgery. Goal-directed fluid therapy. Avoid hypotension."))
-        }
-
-        // COPD / Asthma
-        if i.hasCOPD || (i.hasAsthma && i.isHeavySmoker) {
-            out.append(SurgicalRiskAlert(
-                domain: .anaesthetic, band: .moderate,
-                title: "Obstructive airway disease — respiratory risk",
-                detail: "COPD or poorly controlled asthma increases postoperative pulmonary complications, prolonged ventilation, and ICU admission.",
-                action: "Optimise bronchodilators. Peak flow or spirometry. Chest physiotherapy pre-op if FEV1 <50%. Avoid airway irritation at intubation (use bronchodilator premedication)."))
-        }
-
-        // Heavy smoking
-        if i.isHeavySmoker {
-            out.append(SurgicalRiskAlert(
-                domain: .anaesthetic, band: .advisory,
-                title: "Heavy smoker — respiratory risk",
-                detail: "Heavy smoking increases airway reactivity, secretions, laryngospasm, and postoperative pulmonary complications.",
-                action: "Smoking cessation ≥4 weeks pre-op (reduces pulmonary complications ~50%). Chest physio referral if COPD. Incentive spirometry post-op."))
-        }
-
-        // Heavy alcohol
-        if i.isHeavyDrinker {
-            out.append(SurgicalRiskAlert(
-                domain: .anaesthetic, band: .moderate,
-                title: "Heavy alcohol use — perioperative risk",
-                detail: "Increased anaesthetic drug tolerance, hepatic dysfunction, coagulopathy, and alcohol withdrawal risk (onset 6–72 h post-admission).",
-                action: "AUDIT-C score. LFTs + clotting screen. Thiamine 100 mg IV pre-op prophylaxis. Withdrawal protocol if inpatient (CIWA-Ar scale). Inform anaesthetist."))
-        }
-    }
 }

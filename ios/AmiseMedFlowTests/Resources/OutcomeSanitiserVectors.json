@@ -1,0 +1,1614 @@
+{
+  "note": "Shared vectors for the outcomes-loop sanitisers: lib/triage-engine/src/outcomes/codes.ts (web, artifacts/dashboard/src/lib/__tests__/outcomes-sanitiser-vectors.test.ts) and ios/AmiseMedFlow/Services/OutcomeSanitiser.swift (OutcomeSyncTests.swift). Inputs are iOS records as JSONEncoder writes them (OutcomePredictionRecord / OutcomeFinalDiagnosisRecord, with the local sync bookkeeping). expected = the sanitised value, error = the refusal message. Change both platforms together.",
+  "snapshots": [
+    {
+      "name": "a complete iOS record is accepted as it is (sync bookkeeping dropped)",
+      "input": {
+        "snapshotVersion": 1,
+        "platform": "ios",
+        "encounterRef": "ios:11111111-2222-4333-8444-555555555555",
+        "completedAt": "2026-09-21T14:13:20Z",
+        "differentialEngine": "ios-bayes",
+        "differentialModelVersion": "2.2.0",
+        "modelVersions": {
+          "diagnosticDatabase": "2.2.0",
+          "differentialSource": "database",
+          "acuity": "1.2.0"
+        },
+        "topDifferential": [
+          {
+            "rank": 1,
+            "icd10": "K35.80",
+            "probability": 0.72
+          },
+          {
+            "rank": 2,
+            "icd10": "K81.0",
+            "probability": 0.11
+          }
+        ],
+        "triageLevel": "urgent",
+        "triageScale": "ios-acuity",
+        "scores": [
+          {
+            "key": "news2",
+            "value": 5,
+            "source": "record"
+          }
+        ],
+        "decisionBands": [],
+        "features": {},
+        "workingIcd10": "K35.80",
+        "recordedIcd10": [
+          "K35.80"
+        ],
+        "expectsOutcome": true,
+        "outcomeTriggers": [
+          "operation"
+        ],
+        "sync": {
+          "clientRef": "ios:AAAAAAAA-0000-4000-8000-000000000001",
+          "pendingSync": true,
+          "updatedAt": "2026-09-21T14:13:20Z"
+        }
+      },
+      "expected": {
+        "snapshotVersion": 1,
+        "platform": "ios",
+        "encounterRef": "ios:11111111-2222-4333-8444-555555555555",
+        "completedAt": "2026-09-21T14:13:20.000Z",
+        "differentialEngine": "ios-bayes",
+        "differentialModelVersion": "2.2.0",
+        "modelVersions": {
+          "diagnosticDatabase": "2.2.0",
+          "differentialSource": "database",
+          "acuity": "1.2.0"
+        },
+        "topDifferential": [
+          {
+            "rank": 1,
+            "diseaseId": null,
+            "icd10": "K35.80",
+            "probability": 0.72
+          },
+          {
+            "rank": 2,
+            "diseaseId": null,
+            "icd10": "K81.0",
+            "probability": 0.11
+          }
+        ],
+        "triageLevel": "urgent",
+        "triageScale": "ios-acuity",
+        "scores": [
+          {
+            "key": "news2",
+            "value": 5,
+            "source": "record"
+          }
+        ],
+        "decisionBands": [],
+        "features": {},
+        "workingDiseaseId": null,
+        "workingIcd10": "K35.80",
+        "recordedIcd10": [
+          "K35.80"
+        ],
+        "expectsOutcome": true,
+        "outcomeTriggers": [
+          "operation"
+        ]
+      }
+    },
+    {
+      "name": "labels, lower case and out-of-range probabilities are normalised; unreadable entries dropped",
+      "input": {
+        "snapshotVersion": 1,
+        "platform": "ios",
+        "encounterRef": "ios:11111111-2222-4333-8444-555555555555",
+        "completedAt": "2026-09-21T14:13:20Z",
+        "differentialEngine": "ios-bayes",
+        "differentialModelVersion": "2.2.0",
+        "modelVersions": {
+          "diagnosticDatabase": "2.2.0",
+          "differentialSource": "database",
+          "acuity": "1.2.0"
+        },
+        "topDifferential": [
+          {
+            "rank": 1,
+            "icd10": "K35.80 — Acute appendicitis",
+            "probability": 1.7
+          },
+          {
+            "rank": 2,
+            "icd10": "Appendicitis",
+            "probability": 0.5
+          },
+          {
+            "rank": 3,
+            "icd10": "k810",
+            "probability": -0.2
+          },
+          {
+            "rank": 4,
+            "diseaseId": "Bad-ID",
+            "icd10": "N20.1",
+            "probability": 0.123456
+          },
+          {
+            "rank": 5,
+            "diseaseId": "renal_colic",
+            "probability": 0.05
+          },
+          {
+            "rank": 6,
+            "icd10": "K56.6"
+          }
+        ],
+        "triageLevel": "urgent",
+        "triageScale": "ios-acuity",
+        "scores": [
+          {
+            "key": "news2",
+            "value": 5,
+            "source": "record"
+          }
+        ],
+        "decisionBands": [],
+        "features": {},
+        "workingIcd10": "k810",
+        "recordedIcd10": [
+          "K35.80",
+          "k3580",
+          "K35.80 — typed label",
+          "Appendicitis",
+          "N20.1, left"
+        ],
+        "expectsOutcome": true,
+        "outcomeTriggers": [
+          "operation",
+          "operation",
+          "biopsy",
+          "pathology"
+        ],
+        "sync": {
+          "clientRef": "ios:AAAAAAAA-0000-4000-8000-000000000001",
+          "pendingSync": true,
+          "updatedAt": "2026-09-21T14:13:20Z"
+        }
+      },
+      "expected": {
+        "snapshotVersion": 1,
+        "platform": "ios",
+        "encounterRef": "ios:11111111-2222-4333-8444-555555555555",
+        "completedAt": "2026-09-21T14:13:20.000Z",
+        "differentialEngine": "ios-bayes",
+        "differentialModelVersion": "2.2.0",
+        "modelVersions": {
+          "diagnosticDatabase": "2.2.0",
+          "differentialSource": "database",
+          "acuity": "1.2.0"
+        },
+        "topDifferential": [
+          {
+            "rank": 1,
+            "diseaseId": null,
+            "icd10": "K35.80",
+            "probability": 1
+          },
+          {
+            "rank": 2,
+            "diseaseId": null,
+            "icd10": "K81.0",
+            "probability": 0
+          },
+          {
+            "rank": 3,
+            "diseaseId": null,
+            "icd10": "N20.1",
+            "probability": 0.1235
+          },
+          {
+            "rank": 4,
+            "diseaseId": "renal_colic",
+            "icd10": null,
+            "probability": 0.05
+          },
+          {
+            "rank": 5,
+            "diseaseId": null,
+            "icd10": "K56.6",
+            "probability": null
+          }
+        ],
+        "triageLevel": "urgent",
+        "triageScale": "ios-acuity",
+        "scores": [
+          {
+            "key": "news2",
+            "value": 5,
+            "source": "record"
+          }
+        ],
+        "decisionBands": [],
+        "features": {},
+        "workingDiseaseId": null,
+        "workingIcd10": "K81.0",
+        "recordedIcd10": [
+          "K35.80",
+          "N20.1"
+        ],
+        "expectsOutcome": true,
+        "outcomeTriggers": [
+          "operation",
+          "pathology"
+        ]
+      }
+    },
+    {
+      "name": "at most ten differential entries are kept",
+      "input": {
+        "snapshotVersion": 1,
+        "platform": "ios",
+        "encounterRef": "ios:11111111-2222-4333-8444-555555555555",
+        "completedAt": "2026-09-21T14:13:20Z",
+        "differentialEngine": "ios-bayes",
+        "differentialModelVersion": "2.2.0",
+        "modelVersions": {
+          "diagnosticDatabase": "2.2.0",
+          "differentialSource": "database",
+          "acuity": "1.2.0"
+        },
+        "topDifferential": [
+          {
+            "rank": 1,
+            "icd10": "K50",
+            "probability": 0.05
+          },
+          {
+            "rank": 2,
+            "icd10": "K51",
+            "probability": 0.05
+          },
+          {
+            "rank": 3,
+            "icd10": "K52",
+            "probability": 0.05
+          },
+          {
+            "rank": 4,
+            "icd10": "K53",
+            "probability": 0.05
+          },
+          {
+            "rank": 5,
+            "icd10": "K54",
+            "probability": 0.05
+          },
+          {
+            "rank": 6,
+            "icd10": "K55",
+            "probability": 0.05
+          },
+          {
+            "rank": 7,
+            "icd10": "K56",
+            "probability": 0.05
+          },
+          {
+            "rank": 8,
+            "icd10": "K57",
+            "probability": 0.05
+          },
+          {
+            "rank": 9,
+            "icd10": "K58",
+            "probability": 0.05
+          },
+          {
+            "rank": 10,
+            "icd10": "K59",
+            "probability": 0.05
+          },
+          {
+            "rank": 11,
+            "icd10": "K60",
+            "probability": 0.05
+          },
+          {
+            "rank": 12,
+            "icd10": "K61",
+            "probability": 0.05
+          }
+        ],
+        "triageLevel": "urgent",
+        "triageScale": "ios-acuity",
+        "scores": [
+          {
+            "key": "news2",
+            "value": 5,
+            "source": "record"
+          }
+        ],
+        "decisionBands": [],
+        "features": {},
+        "workingIcd10": "K35.80",
+        "recordedIcd10": [
+          "K35.80"
+        ],
+        "expectsOutcome": true,
+        "outcomeTriggers": [
+          "operation"
+        ],
+        "sync": {
+          "clientRef": "ios:AAAAAAAA-0000-4000-8000-000000000001",
+          "pendingSync": true,
+          "updatedAt": "2026-09-21T14:13:20Z"
+        }
+      },
+      "expected": {
+        "snapshotVersion": 1,
+        "platform": "ios",
+        "encounterRef": "ios:11111111-2222-4333-8444-555555555555",
+        "completedAt": "2026-09-21T14:13:20.000Z",
+        "differentialEngine": "ios-bayes",
+        "differentialModelVersion": "2.2.0",
+        "modelVersions": {
+          "diagnosticDatabase": "2.2.0",
+          "differentialSource": "database",
+          "acuity": "1.2.0"
+        },
+        "topDifferential": [
+          {
+            "rank": 1,
+            "diseaseId": null,
+            "icd10": "K50",
+            "probability": 0.05
+          },
+          {
+            "rank": 2,
+            "diseaseId": null,
+            "icd10": "K51",
+            "probability": 0.05
+          },
+          {
+            "rank": 3,
+            "diseaseId": null,
+            "icd10": "K52",
+            "probability": 0.05
+          },
+          {
+            "rank": 4,
+            "diseaseId": null,
+            "icd10": "K53",
+            "probability": 0.05
+          },
+          {
+            "rank": 5,
+            "diseaseId": null,
+            "icd10": "K54",
+            "probability": 0.05
+          },
+          {
+            "rank": 6,
+            "diseaseId": null,
+            "icd10": "K55",
+            "probability": 0.05
+          },
+          {
+            "rank": 7,
+            "diseaseId": null,
+            "icd10": "K56",
+            "probability": 0.05
+          },
+          {
+            "rank": 8,
+            "diseaseId": null,
+            "icd10": "K57",
+            "probability": 0.05
+          },
+          {
+            "rank": 9,
+            "diseaseId": null,
+            "icd10": "K58",
+            "probability": 0.05
+          },
+          {
+            "rank": 10,
+            "diseaseId": null,
+            "icd10": "K59",
+            "probability": 0.05
+          }
+        ],
+        "triageLevel": "urgent",
+        "triageScale": "ios-acuity",
+        "scores": [
+          {
+            "key": "news2",
+            "value": 5,
+            "source": "record"
+          }
+        ],
+        "decisionBands": [],
+        "features": {},
+        "workingDiseaseId": null,
+        "workingIcd10": "K35.80",
+        "recordedIcd10": [
+          "K35.80"
+        ],
+        "expectsOutcome": true,
+        "outcomeTriggers": [
+          "operation"
+        ]
+      }
+    },
+    {
+      "name": "scores, decision bands and features keep coded values only",
+      "input": {
+        "snapshotVersion": 1,
+        "platform": "ios",
+        "encounterRef": "ios:11111111-2222-4333-8444-555555555555",
+        "completedAt": "2026-09-21T14:13:20Z",
+        "differentialEngine": "ios-bayes",
+        "differentialModelVersion": "2.2.0",
+        "modelVersions": {
+          "diagnosticDatabase": "2.2.0",
+          "differentialSource": "database",
+          "acuity": "1.2.0"
+        },
+        "topDifferential": [
+          {
+            "rank": 1,
+            "icd10": "K35.80",
+            "probability": 0.72
+          },
+          {
+            "rank": 2,
+            "icd10": "K81.0",
+            "probability": 0.11
+          }
+        ],
+        "triageLevel": "urgent",
+        "triageScale": "ios-acuity",
+        "scores": [
+          {
+            "key": "news2",
+            "value": 5,
+            "source": "record"
+          },
+          {
+            "key": "news2",
+            "value": 7,
+            "source": "record"
+          },
+          {
+            "key": "news 2",
+            "value": 3,
+            "source": "record"
+          },
+          {
+            "key": "alvarado",
+            "value": 8,
+            "source": "typed"
+          },
+          {
+            "key": "air",
+            "value": 10.5,
+            "source": "calculator"
+          }
+        ],
+        "decisionBands": [
+          {
+            "decisionId": "appendicitis",
+            "optionId": "surgery",
+            "kind": "treat",
+            "band": "treat",
+            "probability": 0.81234
+          },
+          {
+            "decisionId": "appendicitis",
+            "optionId": "antibiotics",
+            "kind": "bad kind",
+            "band": "maybe"
+          },
+          {
+            "decisionId": "bad id!",
+            "optionId": "x",
+            "kind": "test",
+            "band": "test",
+            "probability": 0.5
+          }
+        ],
+        "features": {
+          "rlq_pain": true,
+          "bad key": true,
+          "fever": false
+        },
+        "workingIcd10": "K35.80",
+        "recordedIcd10": [
+          "K35.80"
+        ],
+        "expectsOutcome": true,
+        "outcomeTriggers": [
+          "operation"
+        ],
+        "sync": {
+          "clientRef": "ios:AAAAAAAA-0000-4000-8000-000000000001",
+          "pendingSync": true,
+          "updatedAt": "2026-09-21T14:13:20Z"
+        }
+      },
+      "expected": {
+        "snapshotVersion": 1,
+        "platform": "ios",
+        "encounterRef": "ios:11111111-2222-4333-8444-555555555555",
+        "completedAt": "2026-09-21T14:13:20.000Z",
+        "differentialEngine": "ios-bayes",
+        "differentialModelVersion": "2.2.0",
+        "modelVersions": {
+          "diagnosticDatabase": "2.2.0",
+          "differentialSource": "database",
+          "acuity": "1.2.0"
+        },
+        "topDifferential": [
+          {
+            "rank": 1,
+            "diseaseId": null,
+            "icd10": "K35.80",
+            "probability": 0.72
+          },
+          {
+            "rank": 2,
+            "diseaseId": null,
+            "icd10": "K81.0",
+            "probability": 0.11
+          }
+        ],
+        "triageLevel": "urgent",
+        "triageScale": "ios-acuity",
+        "scores": [
+          {
+            "key": "news2",
+            "value": 5,
+            "source": "record"
+          },
+          {
+            "key": "alvarado",
+            "value": 8,
+            "source": "record"
+          },
+          {
+            "key": "air",
+            "value": 10.5,
+            "source": "calculator"
+          }
+        ],
+        "decisionBands": [
+          {
+            "decisionId": "appendicitis",
+            "optionId": "surgery",
+            "kind": "treat",
+            "band": "treat",
+            "probability": 0.8123
+          },
+          {
+            "decisionId": "appendicitis",
+            "optionId": "antibiotics",
+            "kind": "unknown",
+            "band": "unknown",
+            "probability": null
+          }
+        ],
+        "features": {
+          "rlq_pain": true,
+          "fever": false
+        },
+        "workingDiseaseId": null,
+        "workingIcd10": "K35.80",
+        "recordedIcd10": [
+          "K35.80"
+        ],
+        "expectsOutcome": true,
+        "outcomeTriggers": [
+          "operation"
+        ]
+      }
+    },
+    {
+      "name": "model versions that are not version stamps are dropped",
+      "input": {
+        "snapshotVersion": 1,
+        "platform": "ios",
+        "encounterRef": "ios:11111111-2222-4333-8444-555555555555",
+        "completedAt": "2026-09-21T14:13:20Z",
+        "differentialEngine": "ios-bayes",
+        "differentialModelVersion": "2.2.0",
+        "modelVersions": {
+          "diagnosticDatabase": "2.2.0",
+          "bad key!": "1.0.0",
+          "note": "not a version!"
+        },
+        "topDifferential": [
+          {
+            "rank": 1,
+            "icd10": "K35.80",
+            "probability": 0.72
+          },
+          {
+            "rank": 2,
+            "icd10": "K81.0",
+            "probability": 0.11
+          }
+        ],
+        "triageLevel": "urgent",
+        "triageScale": "ios-acuity",
+        "scores": [
+          {
+            "key": "news2",
+            "value": 5,
+            "source": "record"
+          }
+        ],
+        "decisionBands": [],
+        "features": {},
+        "workingIcd10": "K35.80",
+        "recordedIcd10": [
+          "K35.80"
+        ],
+        "expectsOutcome": true,
+        "outcomeTriggers": [
+          "operation"
+        ],
+        "sync": {
+          "clientRef": "ios:AAAAAAAA-0000-4000-8000-000000000001",
+          "pendingSync": true,
+          "updatedAt": "2026-09-21T14:13:20Z"
+        }
+      },
+      "expected": {
+        "snapshotVersion": 1,
+        "platform": "ios",
+        "encounterRef": "ios:11111111-2222-4333-8444-555555555555",
+        "completedAt": "2026-09-21T14:13:20.000Z",
+        "differentialEngine": "ios-bayes",
+        "differentialModelVersion": "2.2.0",
+        "modelVersions": {
+          "diagnosticDatabase": "2.2.0"
+        },
+        "topDifferential": [
+          {
+            "rank": 1,
+            "diseaseId": null,
+            "icd10": "K35.80",
+            "probability": 0.72
+          },
+          {
+            "rank": 2,
+            "diseaseId": null,
+            "icd10": "K81.0",
+            "probability": 0.11
+          }
+        ],
+        "triageLevel": "urgent",
+        "triageScale": "ios-acuity",
+        "scores": [
+          {
+            "key": "news2",
+            "value": 5,
+            "source": "record"
+          }
+        ],
+        "decisionBands": [],
+        "features": {},
+        "workingDiseaseId": null,
+        "workingIcd10": "K35.80",
+        "recordedIcd10": [
+          "K35.80"
+        ],
+        "expectsOutcome": true,
+        "outcomeTriggers": [
+          "operation"
+        ]
+      }
+    },
+    {
+      "name": "a level that is not on its scale is not kept",
+      "input": {
+        "snapshotVersion": 1,
+        "platform": "ios",
+        "encounterRef": "ios:11111111-2222-4333-8444-555555555555",
+        "completedAt": "2026-09-21T14:13:20Z",
+        "differentialEngine": "ios-bayes",
+        "differentialModelVersion": "2.2.0",
+        "modelVersions": {
+          "diagnosticDatabase": "2.2.0",
+          "differentialSource": "database",
+          "acuity": "1.2.0"
+        },
+        "topDifferential": [
+          {
+            "rank": 1,
+            "icd10": "K35.80",
+            "probability": 0.72
+          },
+          {
+            "rank": 2,
+            "icd10": "K81.0",
+            "probability": 0.11
+          }
+        ],
+        "triageLevel": "review",
+        "triageScale": "ios-acuity",
+        "scores": [
+          {
+            "key": "news2",
+            "value": 5,
+            "source": "record"
+          }
+        ],
+        "decisionBands": [],
+        "features": {},
+        "workingIcd10": "K35.80",
+        "recordedIcd10": [
+          "K35.80"
+        ],
+        "expectsOutcome": true,
+        "outcomeTriggers": [
+          "operation"
+        ],
+        "sync": {
+          "clientRef": "ios:AAAAAAAA-0000-4000-8000-000000000001",
+          "pendingSync": true,
+          "updatedAt": "2026-09-21T14:13:20Z"
+        }
+      },
+      "expected": {
+        "snapshotVersion": 1,
+        "platform": "ios",
+        "encounterRef": "ios:11111111-2222-4333-8444-555555555555",
+        "completedAt": "2026-09-21T14:13:20.000Z",
+        "differentialEngine": "ios-bayes",
+        "differentialModelVersion": "2.2.0",
+        "modelVersions": {
+          "diagnosticDatabase": "2.2.0",
+          "differentialSource": "database",
+          "acuity": "1.2.0"
+        },
+        "topDifferential": [
+          {
+            "rank": 1,
+            "diseaseId": null,
+            "icd10": "K35.80",
+            "probability": 0.72
+          },
+          {
+            "rank": 2,
+            "diseaseId": null,
+            "icd10": "K81.0",
+            "probability": 0.11
+          }
+        ],
+        "triageLevel": null,
+        "triageScale": null,
+        "scores": [
+          {
+            "key": "news2",
+            "value": 5,
+            "source": "record"
+          }
+        ],
+        "decisionBands": [],
+        "features": {},
+        "workingDiseaseId": null,
+        "workingIcd10": "K35.80",
+        "recordedIcd10": [
+          "K35.80"
+        ],
+        "expectsOutcome": true,
+        "outcomeTriggers": [
+          "operation"
+        ]
+      }
+    },
+    {
+      "name": "a triage level without its scale is not kept",
+      "input": {
+        "snapshotVersion": 1,
+        "platform": "ios",
+        "encounterRef": "ios:11111111-2222-4333-8444-555555555555",
+        "completedAt": "2026-09-21T14:13:20Z",
+        "differentialEngine": "ios-bayes",
+        "differentialModelVersion": "2.2.0",
+        "modelVersions": {
+          "diagnosticDatabase": "2.2.0",
+          "differentialSource": "database",
+          "acuity": "1.2.0"
+        },
+        "topDifferential": [
+          {
+            "rank": 1,
+            "icd10": "K35.80",
+            "probability": 0.72
+          },
+          {
+            "rank": 2,
+            "icd10": "K81.0",
+            "probability": 0.11
+          }
+        ],
+        "triageLevel": "urgent",
+        "scores": [
+          {
+            "key": "news2",
+            "value": 5,
+            "source": "record"
+          }
+        ],
+        "decisionBands": [],
+        "features": {},
+        "workingIcd10": "K35.80",
+        "recordedIcd10": [
+          "K35.80"
+        ],
+        "expectsOutcome": true,
+        "outcomeTriggers": [
+          "operation"
+        ],
+        "sync": {
+          "clientRef": "ios:AAAAAAAA-0000-4000-8000-000000000001",
+          "pendingSync": true,
+          "updatedAt": "2026-09-21T14:13:20Z"
+        }
+      },
+      "expected": {
+        "snapshotVersion": 1,
+        "platform": "ios",
+        "encounterRef": "ios:11111111-2222-4333-8444-555555555555",
+        "completedAt": "2026-09-21T14:13:20.000Z",
+        "differentialEngine": "ios-bayes",
+        "differentialModelVersion": "2.2.0",
+        "modelVersions": {
+          "diagnosticDatabase": "2.2.0",
+          "differentialSource": "database",
+          "acuity": "1.2.0"
+        },
+        "topDifferential": [
+          {
+            "rank": 1,
+            "diseaseId": null,
+            "icd10": "K35.80",
+            "probability": 0.72
+          },
+          {
+            "rank": 2,
+            "diseaseId": null,
+            "icd10": "K81.0",
+            "probability": 0.11
+          }
+        ],
+        "triageLevel": null,
+        "triageScale": null,
+        "scores": [
+          {
+            "key": "news2",
+            "value": 5,
+            "source": "record"
+          }
+        ],
+        "decisionBands": [],
+        "features": {},
+        "workingDiseaseId": null,
+        "workingIcd10": "K35.80",
+        "recordedIcd10": [
+          "K35.80"
+        ],
+        "expectsOutcome": true,
+        "outcomeTriggers": [
+          "operation"
+        ]
+      }
+    },
+    {
+      "name": "an offset timestamp becomes UTC with milliseconds",
+      "input": {
+        "snapshotVersion": 1,
+        "platform": "ios",
+        "encounterRef": "ios:11111111-2222-4333-8444-555555555555",
+        "completedAt": "2026-09-21T10:13:20.500-04:00",
+        "differentialEngine": "ios-bayes",
+        "differentialModelVersion": "2.2.0",
+        "modelVersions": {
+          "diagnosticDatabase": "2.2.0",
+          "differentialSource": "database",
+          "acuity": "1.2.0"
+        },
+        "topDifferential": [
+          {
+            "rank": 1,
+            "icd10": "K35.80",
+            "probability": 0.72
+          },
+          {
+            "rank": 2,
+            "icd10": "K81.0",
+            "probability": 0.11
+          }
+        ],
+        "triageLevel": "urgent",
+        "triageScale": "ios-acuity",
+        "scores": [
+          {
+            "key": "news2",
+            "value": 5,
+            "source": "record"
+          }
+        ],
+        "decisionBands": [],
+        "features": {},
+        "workingIcd10": "K35.80",
+        "recordedIcd10": [
+          "K35.80"
+        ],
+        "expectsOutcome": true,
+        "outcomeTriggers": [
+          "operation"
+        ],
+        "sync": {
+          "clientRef": "ios:AAAAAAAA-0000-4000-8000-000000000001",
+          "pendingSync": true,
+          "updatedAt": "2026-09-21T14:13:20Z"
+        }
+      },
+      "expected": {
+        "snapshotVersion": 1,
+        "platform": "ios",
+        "encounterRef": "ios:11111111-2222-4333-8444-555555555555",
+        "completedAt": "2026-09-21T14:13:20.500Z",
+        "differentialEngine": "ios-bayes",
+        "differentialModelVersion": "2.2.0",
+        "modelVersions": {
+          "diagnosticDatabase": "2.2.0",
+          "differentialSource": "database",
+          "acuity": "1.2.0"
+        },
+        "topDifferential": [
+          {
+            "rank": 1,
+            "diseaseId": null,
+            "icd10": "K35.80",
+            "probability": 0.72
+          },
+          {
+            "rank": 2,
+            "diseaseId": null,
+            "icd10": "K81.0",
+            "probability": 0.11
+          }
+        ],
+        "triageLevel": "urgent",
+        "triageScale": "ios-acuity",
+        "scores": [
+          {
+            "key": "news2",
+            "value": 5,
+            "source": "record"
+          }
+        ],
+        "decisionBands": [],
+        "features": {},
+        "workingDiseaseId": null,
+        "workingIcd10": "K35.80",
+        "recordedIcd10": [
+          "K35.80"
+        ],
+        "expectsOutcome": true,
+        "outcomeTriggers": [
+          "operation"
+        ]
+      }
+    },
+    {
+      "name": "no triggers: no outcome expected",
+      "input": {
+        "snapshotVersion": 1,
+        "platform": "ios",
+        "encounterRef": "ios:11111111-2222-4333-8444-555555555555",
+        "completedAt": "2026-09-21T14:13:20Z",
+        "differentialEngine": "ios-bayes",
+        "differentialModelVersion": "2.2.0",
+        "modelVersions": {
+          "diagnosticDatabase": "2.2.0",
+          "differentialSource": "database",
+          "acuity": "1.2.0"
+        },
+        "topDifferential": [
+          {
+            "rank": 1,
+            "icd10": "K35.80",
+            "probability": 0.72
+          },
+          {
+            "rank": 2,
+            "icd10": "K81.0",
+            "probability": 0.11
+          }
+        ],
+        "triageLevel": "urgent",
+        "triageScale": "ios-acuity",
+        "scores": [
+          {
+            "key": "news2",
+            "value": 5,
+            "source": "record"
+          }
+        ],
+        "decisionBands": [],
+        "features": {},
+        "workingIcd10": "K35.80",
+        "recordedIcd10": [
+          "K35.80"
+        ],
+        "expectsOutcome": false,
+        "outcomeTriggers": [],
+        "sync": {
+          "clientRef": "ios:AAAAAAAA-0000-4000-8000-000000000001",
+          "pendingSync": true,
+          "updatedAt": "2026-09-21T14:13:20Z"
+        }
+      },
+      "expected": {
+        "snapshotVersion": 1,
+        "platform": "ios",
+        "encounterRef": "ios:11111111-2222-4333-8444-555555555555",
+        "completedAt": "2026-09-21T14:13:20.000Z",
+        "differentialEngine": "ios-bayes",
+        "differentialModelVersion": "2.2.0",
+        "modelVersions": {
+          "diagnosticDatabase": "2.2.0",
+          "differentialSource": "database",
+          "acuity": "1.2.0"
+        },
+        "topDifferential": [
+          {
+            "rank": 1,
+            "diseaseId": null,
+            "icd10": "K35.80",
+            "probability": 0.72
+          },
+          {
+            "rank": 2,
+            "diseaseId": null,
+            "icd10": "K81.0",
+            "probability": 0.11
+          }
+        ],
+        "triageLevel": "urgent",
+        "triageScale": "ios-acuity",
+        "scores": [
+          {
+            "key": "news2",
+            "value": 5,
+            "source": "record"
+          }
+        ],
+        "decisionBands": [],
+        "features": {},
+        "workingDiseaseId": null,
+        "workingIcd10": "K35.80",
+        "recordedIcd10": [
+          "K35.80"
+        ],
+        "expectsOutcome": false,
+        "outcomeTriggers": []
+      }
+    },
+    {
+      "name": "an encounter reference with a space is refused",
+      "input": {
+        "snapshotVersion": 1,
+        "platform": "ios",
+        "encounterRef": "ios:not ok",
+        "completedAt": "2026-09-21T14:13:20Z",
+        "differentialEngine": "ios-bayes",
+        "differentialModelVersion": "2.2.0",
+        "modelVersions": {
+          "diagnosticDatabase": "2.2.0",
+          "differentialSource": "database",
+          "acuity": "1.2.0"
+        },
+        "topDifferential": [
+          {
+            "rank": 1,
+            "icd10": "K35.80",
+            "probability": 0.72
+          },
+          {
+            "rank": 2,
+            "icd10": "K81.0",
+            "probability": 0.11
+          }
+        ],
+        "triageLevel": "urgent",
+        "triageScale": "ios-acuity",
+        "scores": [
+          {
+            "key": "news2",
+            "value": 5,
+            "source": "record"
+          }
+        ],
+        "decisionBands": [],
+        "features": {},
+        "workingIcd10": "K35.80",
+        "recordedIcd10": [
+          "K35.80"
+        ],
+        "expectsOutcome": true,
+        "outcomeTriggers": [
+          "operation"
+        ],
+        "sync": {
+          "clientRef": "ios:AAAAAAAA-0000-4000-8000-000000000001",
+          "pendingSync": true,
+          "updatedAt": "2026-09-21T14:13:20Z"
+        }
+      },
+      "error": "invalid encounterRef"
+    },
+    {
+      "name": "a reference of the other platform is refused",
+      "input": {
+        "snapshotVersion": 1,
+        "platform": "ios",
+        "encounterRef": "web:11111111-2222-4333-8444-555555555555",
+        "completedAt": "2026-09-21T14:13:20Z",
+        "differentialEngine": "ios-bayes",
+        "differentialModelVersion": "2.2.0",
+        "modelVersions": {
+          "diagnosticDatabase": "2.2.0",
+          "differentialSource": "database",
+          "acuity": "1.2.0"
+        },
+        "topDifferential": [
+          {
+            "rank": 1,
+            "icd10": "K35.80",
+            "probability": 0.72
+          },
+          {
+            "rank": 2,
+            "icd10": "K81.0",
+            "probability": 0.11
+          }
+        ],
+        "triageLevel": "urgent",
+        "triageScale": "ios-acuity",
+        "scores": [
+          {
+            "key": "news2",
+            "value": 5,
+            "source": "record"
+          }
+        ],
+        "decisionBands": [],
+        "features": {},
+        "workingIcd10": "K35.80",
+        "recordedIcd10": [
+          "K35.80"
+        ],
+        "expectsOutcome": true,
+        "outcomeTriggers": [
+          "operation"
+        ],
+        "sync": {
+          "clientRef": "ios:AAAAAAAA-0000-4000-8000-000000000001",
+          "pendingSync": true,
+          "updatedAt": "2026-09-21T14:13:20Z"
+        }
+      },
+      "error": "invalid encounterRef"
+    },
+    {
+      "name": "an unreadable completion time is refused",
+      "input": {
+        "snapshotVersion": 1,
+        "platform": "ios",
+        "encounterRef": "ios:11111111-2222-4333-8444-555555555555",
+        "completedAt": "yesterday",
+        "differentialEngine": "ios-bayes",
+        "differentialModelVersion": "2.2.0",
+        "modelVersions": {
+          "diagnosticDatabase": "2.2.0",
+          "differentialSource": "database",
+          "acuity": "1.2.0"
+        },
+        "topDifferential": [
+          {
+            "rank": 1,
+            "icd10": "K35.80",
+            "probability": 0.72
+          },
+          {
+            "rank": 2,
+            "icd10": "K81.0",
+            "probability": 0.11
+          }
+        ],
+        "triageLevel": "urgent",
+        "triageScale": "ios-acuity",
+        "scores": [
+          {
+            "key": "news2",
+            "value": 5,
+            "source": "record"
+          }
+        ],
+        "decisionBands": [],
+        "features": {},
+        "workingIcd10": "K35.80",
+        "recordedIcd10": [
+          "K35.80"
+        ],
+        "expectsOutcome": true,
+        "outcomeTriggers": [
+          "operation"
+        ],
+        "sync": {
+          "clientRef": "ios:AAAAAAAA-0000-4000-8000-000000000001",
+          "pendingSync": true,
+          "updatedAt": "2026-09-21T14:13:20Z"
+        }
+      },
+      "error": "invalid completedAt"
+    },
+    {
+      "name": "an unknown engine is refused",
+      "input": {
+        "snapshotVersion": 1,
+        "platform": "ios",
+        "encounterRef": "ios:11111111-2222-4333-8444-555555555555",
+        "completedAt": "2026-09-21T14:13:20Z",
+        "differentialEngine": "other",
+        "differentialModelVersion": "2.2.0",
+        "modelVersions": {
+          "diagnosticDatabase": "2.2.0",
+          "differentialSource": "database",
+          "acuity": "1.2.0"
+        },
+        "topDifferential": [
+          {
+            "rank": 1,
+            "icd10": "K35.80",
+            "probability": 0.72
+          },
+          {
+            "rank": 2,
+            "icd10": "K81.0",
+            "probability": 0.11
+          }
+        ],
+        "triageLevel": "urgent",
+        "triageScale": "ios-acuity",
+        "scores": [
+          {
+            "key": "news2",
+            "value": 5,
+            "source": "record"
+          }
+        ],
+        "decisionBands": [],
+        "features": {},
+        "workingIcd10": "K35.80",
+        "recordedIcd10": [
+          "K35.80"
+        ],
+        "expectsOutcome": true,
+        "outcomeTriggers": [
+          "operation"
+        ],
+        "sync": {
+          "clientRef": "ios:AAAAAAAA-0000-4000-8000-000000000001",
+          "pendingSync": true,
+          "updatedAt": "2026-09-21T14:13:20Z"
+        }
+      },
+      "error": "invalid differentialEngine"
+    },
+    {
+      "name": "a model version with spaces is refused",
+      "input": {
+        "snapshotVersion": 1,
+        "platform": "ios",
+        "encounterRef": "ios:11111111-2222-4333-8444-555555555555",
+        "completedAt": "2026-09-21T14:13:20Z",
+        "differentialEngine": "ios-bayes",
+        "differentialModelVersion": "Not in this build",
+        "modelVersions": {
+          "diagnosticDatabase": "2.2.0",
+          "differentialSource": "database",
+          "acuity": "1.2.0"
+        },
+        "topDifferential": [
+          {
+            "rank": 1,
+            "icd10": "K35.80",
+            "probability": 0.72
+          },
+          {
+            "rank": 2,
+            "icd10": "K81.0",
+            "probability": 0.11
+          }
+        ],
+        "triageLevel": "urgent",
+        "triageScale": "ios-acuity",
+        "scores": [
+          {
+            "key": "news2",
+            "value": 5,
+            "source": "record"
+          }
+        ],
+        "decisionBands": [],
+        "features": {},
+        "workingIcd10": "K35.80",
+        "recordedIcd10": [
+          "K35.80"
+        ],
+        "expectsOutcome": true,
+        "outcomeTriggers": [
+          "operation"
+        ],
+        "sync": {
+          "clientRef": "ios:AAAAAAAA-0000-4000-8000-000000000001",
+          "pendingSync": true,
+          "updatedAt": "2026-09-21T14:13:20Z"
+        }
+      },
+      "error": "invalid differentialModelVersion"
+    }
+  ],
+  "finalDiagnoses": [
+    {
+      "name": "a complete iOS final diagnosis is accepted",
+      "input": {
+        "encounterRef": "ios:11111111-2222-4333-8444-555555555555",
+        "finalIcd10": "K35.2",
+        "sourceType": "operative_findings",
+        "sourceDate": "2026-09-22",
+        "actionsTaken": [],
+        "retrospectiveAcuity": "urgent",
+        "status": "confirmed",
+        "confirmedAt": "2026-09-22T10:00:00Z",
+        "sync": {
+          "clientRef": "ios:BBBBBBBB-0000-4000-8000-000000000002",
+          "pendingSync": true,
+          "updatedAt": "2026-09-22T10:00:00Z"
+        }
+      },
+      "expected": {
+        "encounterRef": "ios:11111111-2222-4333-8444-555555555555",
+        "finalIcd10": "K35.2",
+        "finalDiseaseId": null,
+        "sourceType": "operative_findings",
+        "sourceDate": "2026-09-22",
+        "actionsTaken": [],
+        "retrospectiveAcuity": "urgent",
+        "status": "confirmed",
+        "confirmedAt": "2026-09-22T10:00:00.000Z"
+      }
+    },
+    {
+      "name": "a labelled code, an unknown acuity and duplicate actions are cleaned",
+      "input": {
+        "encounterRef": "ios:11111111-2222-4333-8444-555555555555",
+        "finalIcd10": "k35.2 — perforated appendicitis",
+        "sourceType": "operative_findings",
+        "sourceDate": "2026-09-22",
+        "actionsTaken": [
+          {
+            "optionId": "surgery",
+            "done": true
+          },
+          {
+            "optionId": "surgery",
+            "done": false
+          },
+          {
+            "optionId": "bad id!",
+            "done": true
+          },
+          {
+            "optionId": "antibiotics",
+            "done": false
+          }
+        ],
+        "retrospectiveAcuity": "whenever",
+        "status": "confirmed",
+        "confirmedAt": "2026-09-22T10:00:00Z",
+        "sync": {
+          "clientRef": "ios:BBBBBBBB-0000-4000-8000-000000000002",
+          "pendingSync": true,
+          "updatedAt": "2026-09-22T10:00:00Z"
+        },
+        "finalDiseaseId": "acute_appendicitis"
+      },
+      "expected": {
+        "encounterRef": "ios:11111111-2222-4333-8444-555555555555",
+        "finalIcd10": "K35.2",
+        "finalDiseaseId": "acute_appendicitis",
+        "sourceType": "operative_findings",
+        "sourceDate": "2026-09-22",
+        "actionsTaken": [
+          {
+            "optionId": "surgery",
+            "done": true
+          },
+          {
+            "optionId": "antibiotics",
+            "done": false
+          }
+        ],
+        "retrospectiveAcuity": null,
+        "status": "confirmed",
+        "confirmedAt": "2026-09-22T10:00:00.000Z"
+      }
+    },
+    {
+      "name": "a retracted record keeps its status; a bad PANE id is dropped",
+      "input": {
+        "encounterRef": "ios:11111111-2222-4333-8444-555555555555",
+        "finalIcd10": "K35.2",
+        "sourceType": "operative_findings",
+        "sourceDate": "2026-09-22",
+        "actionsTaken": [],
+        "retrospectiveAcuity": "urgent",
+        "status": "retracted",
+        "confirmedAt": "2026-09-22T10:00:00.250Z",
+        "sync": {
+          "clientRef": "ios:BBBBBBBB-0000-4000-8000-000000000002",
+          "pendingSync": true,
+          "updatedAt": "2026-09-22T10:00:00Z"
+        },
+        "retractedAt": "2026-09-23T08:00:00Z",
+        "finalDiseaseId": "Acute"
+      },
+      "expected": {
+        "encounterRef": "ios:11111111-2222-4333-8444-555555555555",
+        "finalIcd10": "K35.2",
+        "finalDiseaseId": null,
+        "sourceType": "operative_findings",
+        "sourceDate": "2026-09-22",
+        "actionsTaken": [],
+        "retrospectiveAcuity": "urgent",
+        "status": "retracted",
+        "confirmedAt": "2026-09-22T10:00:00.250Z"
+      }
+    },
+    {
+      "name": "an unknown status is read as confirmed; an empty confirmation time is null",
+      "input": {
+        "encounterRef": "ios:11111111-2222-4333-8444-555555555555",
+        "finalIcd10": "K35.2",
+        "sourceType": "operative_findings",
+        "sourceDate": "2026-09-22",
+        "actionsTaken": [],
+        "retrospectiveAcuity": "urgent",
+        "status": "pending",
+        "confirmedAt": "",
+        "sync": {
+          "clientRef": "ios:BBBBBBBB-0000-4000-8000-000000000002",
+          "pendingSync": true,
+          "updatedAt": "2026-09-22T10:00:00Z"
+        }
+      },
+      "expected": {
+        "encounterRef": "ios:11111111-2222-4333-8444-555555555555",
+        "finalIcd10": "K35.2",
+        "finalDiseaseId": null,
+        "sourceType": "operative_findings",
+        "sourceDate": "2026-09-22",
+        "actionsTaken": [],
+        "retrospectiveAcuity": "urgent",
+        "status": "confirmed",
+        "confirmedAt": null
+      }
+    },
+    {
+      "name": "an impossible date is refused",
+      "input": {
+        "encounterRef": "ios:11111111-2222-4333-8444-555555555555",
+        "finalIcd10": "K35.2",
+        "sourceType": "operative_findings",
+        "sourceDate": "2026-02-30",
+        "actionsTaken": [],
+        "retrospectiveAcuity": "urgent",
+        "status": "confirmed",
+        "confirmedAt": "2026-09-22T10:00:00Z",
+        "sync": {
+          "clientRef": "ios:BBBBBBBB-0000-4000-8000-000000000002",
+          "pendingSync": true,
+          "updatedAt": "2026-09-22T10:00:00Z"
+        }
+      },
+      "error": "invalid source date"
+    },
+    {
+      "name": "a date before 2000 is refused",
+      "input": {
+        "encounterRef": "ios:11111111-2222-4333-8444-555555555555",
+        "finalIcd10": "K35.2",
+        "sourceType": "operative_findings",
+        "sourceDate": "1999-12-31",
+        "actionsTaken": [],
+        "retrospectiveAcuity": "urgent",
+        "status": "confirmed",
+        "confirmedAt": "2026-09-22T10:00:00Z",
+        "sync": {
+          "clientRef": "ios:BBBBBBBB-0000-4000-8000-000000000002",
+          "pendingSync": true,
+          "updatedAt": "2026-09-22T10:00:00Z"
+        }
+      },
+      "error": "invalid source date"
+    },
+    {
+      "name": "an unknown source is refused",
+      "input": {
+        "encounterRef": "ios:11111111-2222-4333-8444-555555555555",
+        "finalIcd10": "K35.2",
+        "sourceType": "biopsy",
+        "sourceDate": "2026-09-22",
+        "actionsTaken": [],
+        "retrospectiveAcuity": "urgent",
+        "status": "confirmed",
+        "confirmedAt": "2026-09-22T10:00:00Z",
+        "sync": {
+          "clientRef": "ios:BBBBBBBB-0000-4000-8000-000000000002",
+          "pendingSync": true,
+          "updatedAt": "2026-09-22T10:00:00Z"
+        }
+      },
+      "error": "invalid source type"
+    },
+    {
+      "name": "text that is not an ICD-10 code is refused",
+      "input": {
+        "encounterRef": "ios:11111111-2222-4333-8444-555555555555",
+        "finalIcd10": "Appendicitis",
+        "sourceType": "operative_findings",
+        "sourceDate": "2026-09-22",
+        "actionsTaken": [],
+        "retrospectiveAcuity": "urgent",
+        "status": "confirmed",
+        "confirmedAt": "2026-09-22T10:00:00Z",
+        "sync": {
+          "clientRef": "ios:BBBBBBBB-0000-4000-8000-000000000002",
+          "pendingSync": true,
+          "updatedAt": "2026-09-22T10:00:00Z"
+        }
+      },
+      "error": "a valid ICD-10 code is required"
+    },
+    {
+      "name": "an empty encounter reference is refused",
+      "input": {
+        "encounterRef": "ios:",
+        "finalIcd10": "K35.2",
+        "sourceType": "operative_findings",
+        "sourceDate": "2026-09-22",
+        "actionsTaken": [],
+        "retrospectiveAcuity": "urgent",
+        "status": "confirmed",
+        "confirmedAt": "2026-09-22T10:00:00Z",
+        "sync": {
+          "clientRef": "ios:BBBBBBBB-0000-4000-8000-000000000002",
+          "pendingSync": true,
+          "updatedAt": "2026-09-22T10:00:00Z"
+        }
+      },
+      "error": "invalid encounterRef"
+    }
+  ]
+}

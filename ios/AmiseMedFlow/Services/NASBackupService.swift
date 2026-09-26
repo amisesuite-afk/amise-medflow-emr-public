@@ -4,7 +4,7 @@ import SwiftData
 
 // MARK: - Keychain helpers (private to this file)
 
-private enum KCHelper {
+enum KCHelper {
     private static let service = "com.amisesuite.medflow.nas"
 
     static func save(_ value: String, forKey key: String) {
@@ -123,9 +123,13 @@ final class NASBackupService: ObservableObject {
         }
     }
     @Published private(set) var lastBackupCount: Int     = 0
-    @Published private(set) var backupError: String?     = nil
-    @Published private(set) var connectionStatus: NASConnectionStatus = .unconfigured
+    @Published var backupError: String?     = nil
+    @Published var connectionStatus: NASConnectionStatus = .unconfigured
     @Published private(set) var recentEvents: [NASBackupEvent] = []
+    /// Document upload progress while a backup runs; nil otherwise (NASBackupService+Documents).
+    @Published var documentProgress: NASDocumentProgress? = nil
+    /// Documents part of the last backup run (counts and sizes only; kept in UserDefaults).
+    @Published var lastDocumentsSummary: NASDocumentsSummary? = NASDocumentsSummary.loadSaved()
 
     var isConfigured: Bool {
         !serverURL.trimmingCharacters(in: .whitespaces).isEmpty
@@ -144,11 +148,22 @@ final class NASBackupService: ObservableObject {
 
     // MARK: - URLSession
 
-    private lazy var session: URLSession = {
+    lazy var session: URLSession = {
         let cfg = URLSessionConfiguration.default
         cfg.requestCachePolicy    = .reloadIgnoringLocalCacheData
         cfg.timeoutIntervalForRequest  = 30
         cfg.timeoutIntervalForResource = 120
+        return URLSession(configuration: cfg)
+    }()
+
+    /// For document files: a large PDF or photo over Tailscale can take longer than the
+    /// 120-second limit of `session`.
+    lazy var documentSession: URLSession = {
+        let cfg = URLSessionConfiguration.default
+        cfg.requestCachePolicy    = .reloadIgnoringLocalCacheData
+        cfg.urlCache              = nil
+        cfg.timeoutIntervalForRequest  = 60
+        cfg.timeoutIntervalForResource = 1_800
         return URLSession(configuration: cfg)
     }()
 
@@ -190,7 +205,9 @@ final class NASBackupService: ObservableObject {
 
     // MARK: - Backup
 
-    /// Exports all SwiftData records to the NAS as timestamped JSON bundles.
+    /// Exports all SwiftData records to the NAS as timestamped JSON bundles, then every patient
+    /// document's file (documents/ + documents.json). A document upload that fails part-way leaves
+    /// the backup marked incomplete (backupError, documents.json `complete: false`).
     /// Safe to call from a `Task {}` in a SwiftUI view; all state updates run on MainActor.
     func backup(context: ModelContext) async {
         guard isConfigured else { return }
@@ -202,7 +219,7 @@ final class NASBackupService: ObservableObject {
             let timestamp = ISO8601DateFormatter().string(from: .now)
                 .replacingOccurrences(of: ":", with: "")
                 .replacingOccurrences(of: ".", with: "")
-            let base    = "medflow-backups"
+            let base    = NASDocumentBackup.backupsBase
             let dirPath = "\(base)/\(timestamp)"
 
             try await ensureDirectory(path: base)
@@ -240,12 +257,39 @@ final class NASBackupService: ObservableObject {
             )
             try await upload("manifest.json", try encoder.encode(manifest))
 
+            // Complete chart records (peer-sync formats) for real restores, then read them back
+            // to prove the backup is usable — a backup that can't be read is not a backup.
+            let full = try await uploadFullRecords(context: context, dirPath: dirPath, upload: upload)
+            let readBack = try await downloadFullBundle(dirPath: dirPath)
+            guard readBack.patients.count == full.patients.count,
+                  readBack.notes.count == full.notes.count else {
+                throw NASBackupError.httpError(0, "Backup verification failed: read-back counts differ")
+            }
+            UserDefaults.standard.set(Date.now, forKey: Self.lastVerifiedKey)
+            AuditLog.record("export", "document", details: ["kind": "nas_backup",
+                                                            "patients": "\(full.patients.count)"])
+
+            // Patient documents and photos, one file at a time. Never throws: a failure part-way
+            // is recorded in documents.json and the summary as incomplete.
+            let docs = await backupDocuments(context: context, dirPath: dirPath)
+            totalBytes += docs.uploadedBytes
+
             let total = patients.count + notes.count + prescriptions.count + vitals.count
-            lastBackupAt    = .now
-            lastBackupCount = total
             connectionStatus = .ok
 
-            let event = NASBackupEvent(at: .now, recordCount: total, sizeBytes: totalBytes, success: true, errorMessage: nil)
+            let event: NASBackupEvent
+            if docs.complete {
+                lastBackupAt    = .now
+                lastBackupCount = total
+                event = NASBackupEvent(at: .now, recordCount: total, sizeBytes: totalBytes, success: true, errorMessage: nil)
+            } else {
+                // Records are on the NAS; documents are not all there. Not counted as a
+                // successful backup, and Verify reports it as incomplete.
+                let message = "Backup incomplete: records saved, but only \(docs.documentCount) of "
+                    + "\(docs.expectedCount) documents (\(docs.failureMessage ?? "unknown error")). Tap Backup Now to retry."
+                backupError = message
+                event = NASBackupEvent(at: .now, recordCount: total, sizeBytes: totalBytes, success: false, errorMessage: message)
+            }
             recentEvents.insert(event, at: 0)
             if recentEvents.count > 10 { recentEvents = Array(recentEvents.prefix(10)) }
 
@@ -257,205 +301,4 @@ final class NASBackupService: ObservableObject {
         }
     }
 
-    // MARK: - WebDAV primitives
-
-    private func ensureDirectory(path: String) async throws {
-        var req = URLRequest(url: try urlFor(path: path))
-        req.httpMethod = "MKCOL"
-        addAuth(&req)
-        let (_, resp) = try await session.data(for: req)
-        let code = (resp as? HTTPURLResponse)?.statusCode ?? 0
-        // 201 Created  · 405 Already exists  · 301/302 redirect — all fine
-        guard [200, 201, 204, 301, 302, 405, 207].contains(code) else {
-            throw NASBackupError.httpError(code, "MKCOL \(path)")
-        }
-    }
-
-    private func put(path: String, data: Data) async throws -> Int {
-        var req = URLRequest(url: try urlFor(path: path))
-        req.httpMethod = "PUT"
-        req.httpBody   = data
-        req.setValue("application/json",    forHTTPHeaderField: "Content-Type")
-        req.setValue("\(data.count)",        forHTTPHeaderField: "Content-Length")
-        addAuth(&req)
-        let (_, resp) = try await session.data(for: req)
-        let code = (resp as? HTTPURLResponse)?.statusCode ?? 0
-        guard (200...299).contains(code) || code == 201 else {
-            throw NASBackupError.httpError(code, "PUT \(path)")
-        }
-        return data.count
-    }
-
-    // MARK: - URL helpers
-
-    private func baseURL() throws -> URL {
-        let raw = serverURL.trimmingCharacters(in: .whitespaces)
-        guard let url = URL(string: raw) else { throw NASBackupError.invalidURL(raw) }
-        return url
-    }
-
-    private func urlFor(path: String) throws -> URL {
-        try baseURL().appendingPathComponent(path)
-    }
-
-    private func addAuth(_ request: inout URLRequest) {
-        guard !username.isEmpty else { return }
-        let token = Data("\(username):\(password)".utf8).base64EncodedString()
-        request.setValue("Basic \(token)", forHTTPHeaderField: "Authorization")
-    }
-
-    // MARK: - Clear credentials
-
-    func clearCredentials() {
-        serverURL = ""
-        username  = ""
-        password  = ""
-        KCHelper.delete(key: "nas_username")
-        KCHelper.delete(key: "nas_password")
-        UserDefaults.standard.removeObject(forKey: "nas_webdav_url")
-        connectionStatus = .unconfigured
-        backupError = nil
-    }
-}
-
-// MARK: - Backup manifest
-
-private struct BackupManifest: Codable {
-    let createdAt: Date
-    let appVersion: String
-    let recordCounts: [String: Int]
-}
-
-// MARK: - Backup DTOs
-// Codable snapshots of SwiftData models. Fields chosen for disaster recovery.
-// Never embed the @Model classes themselves — SwiftData objects are not Codable.
-
-struct PatientBackup: Codable {
-    let id:               UUID
-    let syncCode:         String
-    let fullName:         String
-    let dateOfBirth:      Date?
-    let sex:              String
-    let mrn:              String?
-    let setting:          String
-    let location:         String
-    let acuity:           String
-    let chiefComplaint:   String?
-    let workingDiagnosis: String?
-    let managementPlan:   String?
-    let hpi:              String?
-    let assessmentText:   String?
-    let pmhNotes:         String?
-    let ward:             String?
-    let bedNumber:        String?
-    let admittedAt:       Date?
-    let createdAt:        Date
-    let updatedAt:        Date
-
-    init(_ p: Patient) {
-        id               = p.id
-        syncCode         = p.syncCode
-        fullName         = p.fullName
-        dateOfBirth      = p.dateOfBirth
-        sex              = p.sex.rawValue
-        mrn              = p.mrn
-        setting          = p.setting.rawValue
-        location         = p.location.rawValue
-        acuity           = p.acuity.rawValue
-        chiefComplaint   = p.chiefComplaint
-        workingDiagnosis = p.workingDiagnosis
-        managementPlan   = p.managementPlan
-        hpi              = p.hpi
-        assessmentText   = p.assessmentText
-        pmhNotes         = p.pmhNotes
-        ward             = p.ward
-        bedNumber        = p.bedNumber
-        admittedAt       = p.admittedAt
-        createdAt        = p.createdAt
-        updatedAt        = p.updatedAt
-    }
-}
-
-struct ClinicalNoteBackup: Codable {
-    let id:              UUID
-    let syncCode:        String
-    let patientSyncCode: String
-    let noteType:        String
-    let status:          String
-    let subjective:      String?
-    let objective:       String?
-    let assessment:      String?
-    let plan:            String?
-    let freeText:        String?
-    let updatedAt:       Date
-
-    init(_ n: ClinicalNote) {
-        id              = n.id
-        syncCode        = n.syncCode
-        patientSyncCode = n.patient?.syncCode ?? ""
-        noteType        = n.noteType.rawValue
-        status          = n.status.rawValue
-        subjective      = n.subjective
-        objective       = n.objective
-        assessment      = n.assessment
-        plan            = n.plan
-        freeText        = n.freeText
-        updatedAt       = n.updatedAt
-    }
-}
-
-struct PrescriptionBackup: Codable {
-    let id:              UUID
-    let syncCode:        String
-    let patientSyncCode: String
-    let drug:            String
-    let dose:            String
-    let route:           String
-    let frequency:       String
-    let duration:        String
-    let indication:      String
-    let prescribedAt:    Date
-
-    init(_ rx: Prescription) {
-        id              = rx.id
-        syncCode        = rx.syncCode
-        patientSyncCode = rx.patient?.syncCode ?? ""
-        drug            = rx.drug
-        dose            = rx.dose
-        route           = rx.route
-        frequency       = rx.frequency
-        duration        = rx.duration
-        indication      = rx.indication
-        prescribedAt    = rx.prescribedAt
-    }
-}
-
-struct VitalsBackup: Codable {
-    let id:                 UUID
-    let syncCode:           String
-    let patientSyncCode:    String
-    let recordedAt:         Date
-    let heartRate:          Int?
-    let bpSystolic:         Int?
-    let bpDiastolic:        Int?
-    let respiratoryRate:    Int?
-    let temperatureCelsius: Double?
-    let spo2:               Int?
-    let weightKg:           Double?
-    let glucoseMmol:        Double?
-
-    init(_ v: VitalsEntry) {
-        id                 = v.id
-        syncCode           = v.syncCode
-        patientSyncCode    = v.patient?.syncCode ?? ""
-        recordedAt         = v.recordedAt
-        heartRate          = v.heartRate
-        bpSystolic         = v.bpSystolic
-        bpDiastolic        = v.bpDiastolic
-        respiratoryRate    = v.respiratoryRate
-        temperatureCelsius = v.temperatureCelsius
-        spo2               = v.spo2
-        weightKg           = v.weightKg
-        glucoseMmol        = v.glucoseMmol
-    }
 }

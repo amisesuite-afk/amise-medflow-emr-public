@@ -1,6 +1,7 @@
 import type { Metadata } from 'next';
 
 export const metadata: Metadata = {
+  alternates: { canonical: '/patient/request' },
   title: 'New Patient Request — Amise Medical Services',
   description:
     'Tell us what you need and our team will guide you to the right care. Surgical consultations, endoscopy, and specialist appointments in Saint Lucia.',

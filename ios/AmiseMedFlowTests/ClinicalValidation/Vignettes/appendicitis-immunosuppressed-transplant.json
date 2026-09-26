@@ -1,0 +1,326 @@
+{
+  "schemaVersion": 1,
+  "id": "appendicitis-immunosuppressed-transplant",
+  "condition": "Acute appendicitis",
+  "category": "gi-emergency",
+  "permutationOf": "appendicitis-adult-typical",
+  "permutationLabel": "Immunosuppressed (renal transplant, steroids), diabetic",
+  "summary": "52-year-old renal transplant recipient on tacrolimus, mycophenolate and prednisolone, 2 days of mild RIF/flank ache, T 37.4 °C, WBC 10.2, CRP 96; CT shows perforated retrocaecal appendicitis with a 2 cm collection.",
+  "tags": [
+    "acute-abdomen",
+    "immunosuppressed",
+    "diabetes"
+  ],
+  "inputs": {
+    "patient": {
+      "ageYears": 52,
+      "sex": "male",
+      "pregnancy": {
+        "status": "not-applicable"
+      },
+      "heightCm": 172,
+      "weightKg": 70
+    },
+    "encounter": {
+      "setting": "emergency",
+      "visitType": "urgentReview",
+      "acuity": "urgent"
+    },
+    "chiefComplaint": "Mild right-sided abdominal pain for 2 days",
+    "hpi": "Renal transplant 6 years ago. 2 days of mild right lower abdominal and right flank ache, reduced appetite. Feels 'not right' but no rigors. No vomiting. Graft function stable at last clinic.",
+    "socrates": {
+      "onset": [
+        "2–3 days ago"
+      ],
+      "site": [
+        "RLQ",
+        "Right side"
+      ],
+      "character": [
+        "Dull",
+        "Aching"
+      ],
+      "radiation": [
+        "No radiation"
+      ],
+      "associations": [
+        "Anorexia"
+      ],
+      "timing": [
+        "Constant"
+      ],
+      "exacerbating": [
+        "Movement"
+      ],
+      "relieving": [
+        "Nothing"
+      ],
+      "severity": [
+        "Mild (1–3/10)"
+      ]
+    },
+    "symptoms": [
+      "abdominal pain",
+      "anorexia"
+    ],
+    "negatives": [
+      "vomiting",
+      "rigors",
+      "dysuria"
+    ],
+    "exam": {
+      "general": "Looks well. Temperature 37.4°C, pulse 96/min, BP 142/86.",
+      "abdomen": "Mild tenderness in the right iliac fossa and right flank. No guarding. Transplant kidney in the left iliac fossa non-tender."
+    },
+    "vitals": [
+      {
+        "minutesAgo": 20,
+        "heartRate": 96,
+        "systolicBp": 142,
+        "diastolicBp": 86,
+        "respiratoryRate": 18,
+        "temperatureC": 37.4,
+        "spo2": 97,
+        "avpu": "A",
+        "onSupplementalO2": false
+      }
+    ],
+    "labs": [
+      {
+        "analyte": "wbc",
+        "name": "WBC",
+        "value": 10.2,
+        "unit": "×10⁹/L",
+        "minutesAgo": 30
+      },
+      {
+        "analyte": "crp",
+        "name": "CRP",
+        "value": 96,
+        "unit": "mg/L",
+        "minutesAgo": 30
+      },
+      {
+        "analyte": "creatinine",
+        "name": "Creatinine",
+        "value": 142,
+        "unit": "µmol/L",
+        "minutesAgo": 30
+      },
+      {
+        "analyte": "glucose",
+        "name": "Glucose",
+        "value": 14.2,
+        "unit": "mmol/L",
+        "minutesAgo": 30
+      }
+    ],
+    "imaging": [
+      {
+        "name": "CT abdomen/pelvis with IV contrast",
+        "modality": "CT",
+        "region": "Abdomen/pelvis",
+        "result": "Perforated retrocaecal appendicitis with a 2 cm periappendiceal collection and localised extraluminal gas. No generalised free fluid.",
+        "minutesAgo": 20
+      }
+    ],
+    "comorbidities": [
+      "Renal transplant (immunosuppressed)",
+      "Type 2 diabetes mellitus"
+    ],
+    "surgicalHistory": [
+      "Renal transplant (left iliac fossa)"
+    ],
+    "medications": [
+      {
+        "drug": "Tacrolimus",
+        "dose": "3 mg",
+        "frequency": "BD",
+        "indication": "Transplant immunosuppression"
+      },
+      {
+        "drug": "Mycophenolate mofetil",
+        "dose": "500 mg",
+        "frequency": "BD",
+        "indication": "Transplant immunosuppression"
+      },
+      {
+        "drug": "Prednisolone",
+        "dose": "5 mg",
+        "frequency": "OD",
+        "indication": "Transplant immunosuppression"
+      },
+      {
+        "drug": "Metformin",
+        "dose": "500 mg",
+        "frequency": "BD",
+        "indication": "Diabetes"
+      }
+    ],
+    "allergies": [],
+    "nkda": true,
+    "socialHistory": "Office worker. Non-smoker.",
+    "confirmedDiagnosis": {
+      "name": "Complicated appendicitis in an immunosuppressed patient",
+      "icd10": "K35.32",
+      "paneDiseaseId": "appendicitis",
+      "assessmentText": "Perforated retrocaecal appendicitis with a small collection in an immunosuppressed renal transplant recipient; signs blunted by immunosuppression."
+    },
+    "platform": {
+      "web": {
+        "ccTemplate": "Acute abdominal pain",
+        "socratesAnswers": {
+          "site": "Right lower abdomen and right flank",
+          "onset": "2 days ago",
+          "character": "Dull ache",
+          "associated": "Poor appetite",
+          "timing": "Constant",
+          "triggers": "Movement",
+          "relief": "Nothing",
+          "severity": "3/10"
+        },
+        "symptoms": [
+          "abdominal pain",
+          "anorexia"
+        ],
+        "symptomDetails": {
+          "abdominal pain": [
+            "RLQ",
+            "1–3 days",
+            "Dull",
+            "Mild (1–3)",
+            "Anorexia",
+            "Continuous",
+            "Movement"
+          ]
+        },
+        "examFindings": {
+          "abdomen": [
+            "Tender RLQ"
+          ]
+        },
+        "durationDays": 2,
+        "painScore": 3
+      }
+    }
+  },
+  "expected": {
+    "differential": {
+      "mustRankTopK": [
+        {
+          "id": "dx-appendicitis-top3",
+          "severity": "critical",
+          "match": [
+            "appendic"
+          ],
+          "k": 3,
+          "guidelineRefs": [
+            "wses-2020"
+          ]
+        }
+      ]
+    },
+    "safety": {
+      "emergencyLevel": {
+        "id": "level-at-least-urgent",
+        "severity": "critical",
+        "atLeast": "urgent",
+        "guidelineRefs": [
+          "wses-2020"
+        ],
+        "note": "Immunosuppression blunts the signs; perforated appendicitis needs same-day surgical care.",
+        "knownGapNote": "iOS: ClinicalPathwayEngine reads only CC/PMH keywords; CC 'Mild right-sided abdominal pain for 2 days' gives 'routine'. Web, since the engine-matching fixes (2026-09): this passed only because triage read negated phrases in the free text as positive findings (lost reasons: Systemic red flag symptom, Vomiting or possible dehydration). With negation-aware matching web triage gives acuity=routine, action=routine_booking, score=12: no triage rule covers this presentation."
+      },
+      "redFlags": [
+        {
+          "id": "flag-immunosuppression",
+          "severity": "quality",
+          "match": [
+            "immunosupp",
+            "transplant",
+            "steroid",
+            "tacrolimus"
+          ],
+          "note": "Immunosuppression should be surfaced as a risk factor (masked signs, higher complication rate)."
+        }
+      ]
+    },
+    "investigations": {
+      "mustInclude": [
+        {
+          "id": "inv-ct",
+          "severity": "critical",
+          "match": [
+            "re:\\bct\\b[^.;\\n]{0,40}(abdo|pelvi)",
+            "computed tomography"
+          ],
+          "guidelineRefs": [
+            "wses-2020"
+          ],
+          "note": "Low threshold for CT when immunosuppression masks the clinical picture."
+        }
+      ]
+    },
+    "management": {
+      "mustInclude": [
+        {
+          "id": "mgmt-antibiotics",
+          "severity": "critical",
+          "match": [
+            "antibiotic",
+            "co-amoxiclav",
+            "piperacillin",
+            "tazocin",
+            "cefuroxime",
+            "ceftriaxone",
+            "metronidazole",
+            "meropenem",
+            "pip-tazo"
+          ],
+          "guidelineRefs": [
+            "wses-2020"
+          ]
+        },
+        {
+          "id": "mgmt-surgery",
+          "severity": "quality",
+          "match": [
+            "re:laparoscopic append(ic)?ectomy",
+            "re:lap(\\.|aroscopic)? append",
+            "appendicectomy"
+          ],
+          "guidelineRefs": [
+            "wses-2020"
+          ]
+        },
+        {
+          "id": "mgmt-steroid-cover",
+          "severity": "quality",
+          "match": [
+            "hydrocortisone",
+            "stress dose",
+            "steroid cover",
+            "peri-operative steroid"
+          ],
+          "note": "Patient on long-term prednisolone: peri-operative steroid cover. Quality: no single appendicitis-guideline statement."
+        }
+      ]
+    }
+  },
+  "guideline": [
+    {
+      "id": "wses-2020",
+      "name": "WSES Jerusalem guidelines — diagnosis and treatment of acute appendicitis (2020 update)",
+      "year": 2020,
+      "section": "Clinical scores (AIR/AAS over Alvarado), imaging by age/sex/pregnancy, antibiotic-first option, complicated appendicitis (abscess), antibiotic duration",
+      "citation": "Di Saverio S, Podda M, De Simone B, et al. Diagnosis and treatment of acute appendicitis: 2020 update of the WSES Jerusalem guidelines. World J Emerg Surg. 2020;15:27.",
+      "verified": false
+    }
+  ],
+  "rationale": "Permutation: immunosuppression and diabetes. Signs and WBC are blunted; the engines must still keep appendicitis on the list, triage urgently, recommend CT and antibiotics and surface the immunosuppression.",
+  "authoring": {
+    "author": "Claude (GI surgical emergencies cluster)",
+    "date": "2026-09-25",
+    "notes": "Expectations need surgeon sign-off (reviewedBy). Every citation is verified: false."
+  }
+}

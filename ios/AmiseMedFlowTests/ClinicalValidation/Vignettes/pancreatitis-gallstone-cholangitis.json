@@ -1,0 +1,540 @@
+{
+  "schemaVersion": 1,
+  "id": "pancreatitis-gallstone-cholangitis",
+  "condition": "Acute pancreatitis (gallstone) with acute cholangitis",
+  "category": "hpb",
+  "permutationOf": "pancreatitis-gallstone-mild",
+  "permutationLabel": "Gallstone pancreatitis with concurrent cholangitis (TG18 Grade II) → ERCP within 24 h",
+  "summary": "71-year-old man with epigastric pain, fever 39.2 °C with rigors and jaundice; lipase 3100, bilirubin 105, WBC 16.8; ultrasound: CBD 11 mm with a distal stone.",
+  "tags": [
+    "pancreatitis",
+    "cholangitis",
+    "ercp",
+    "sepsis"
+  ],
+  "inputs": {
+    "patient": {
+      "ageYears": 71,
+      "sex": "male",
+      "pregnancy": {
+        "status": "not-applicable"
+      },
+      "heightCm": 170,
+      "weightKg": 76
+    },
+    "encounter": {
+      "setting": "emergency",
+      "visitType": "urgentReview",
+      "acuity": "emergency"
+    },
+    "chiefComplaint": "Upper abdominal pain, fever with shivering and yellow eyes",
+    "hpi": "One day of severe epigastric and right upper quadrant pain radiating to the back with vomiting, then fever with rigors and yellow eyes this morning. Dark urine. Known gallstones, declined surgery two years ago.",
+    "socrates": {
+      "onset": [
+        "Yesterday"
+      ],
+      "site": [
+        "Epigastric",
+        "RUQ"
+      ],
+      "character": [
+        "Sharp"
+      ],
+      "radiation": [
+        "Back"
+      ],
+      "associations": [
+        "Fever",
+        "Rigors",
+        "Jaundice",
+        "Vomiting"
+      ],
+      "timing": [
+        "Constant"
+      ],
+      "exacerbating": [
+        "Movement"
+      ],
+      "relieving": [
+        "Nothing"
+      ],
+      "severity": [
+        "Severe (7–9/10)"
+      ]
+    },
+    "symptoms": [
+      "epigastric pain",
+      "fever",
+      "rigors",
+      "jaundice",
+      "vomiting"
+    ],
+    "negatives": [
+      "confusion"
+    ],
+    "exam": {
+      "general": "Jaundiced, rigoring. Temperature 39.2°C, pulse 118/min, BP 104/66, RR 22, SpO2 95%. Alert.",
+      "abdomen": "Epigastric and right upper quadrant tenderness with guarding. No peritonism."
+    },
+    "vitals": [
+      {
+        "minutesAgo": 20,
+        "heartRate": 118,
+        "systolicBp": 104,
+        "diastolicBp": 66,
+        "respiratoryRate": 22,
+        "temperatureC": 39.2,
+        "spo2": 95,
+        "avpu": "A",
+        "onSupplementalO2": false
+      }
+    ],
+    "labs": [
+      {
+        "analyte": "lipase",
+        "name": "Lipase",
+        "value": 3100,
+        "unit": "U/L",
+        "minutesAgo": 40
+      },
+      {
+        "analyte": "bilirubin",
+        "name": "Bilirubin",
+        "value": 105,
+        "unit": "µmol/L",
+        "minutesAgo": 40
+      },
+      {
+        "analyte": "alp",
+        "name": "ALP",
+        "value": 420,
+        "unit": "U/L",
+        "minutesAgo": 40
+      },
+      {
+        "analyte": "alt",
+        "name": "ALT",
+        "value": 380,
+        "unit": "U/L",
+        "minutesAgo": 40
+      },
+      {
+        "analyte": "wbc",
+        "name": "WBC",
+        "value": 16.8,
+        "unit": "×10⁹/L",
+        "minutesAgo": 40
+      },
+      {
+        "analyte": "crp",
+        "name": "CRP",
+        "value": 160,
+        "unit": "mg/L",
+        "minutesAgo": 40
+      },
+      {
+        "analyte": "albumin",
+        "name": "Albumin",
+        "value": 34,
+        "unit": "g/L",
+        "minutesAgo": 40
+      },
+      {
+        "analyte": "creatinine",
+        "name": "Creatinine",
+        "value": 112,
+        "unit": "µmol/L",
+        "minutesAgo": 40
+      },
+      {
+        "analyte": "urea",
+        "name": "Urea",
+        "value": 8.1,
+        "unit": "mmol/L",
+        "minutesAgo": 40
+      },
+      {
+        "analyte": "inr",
+        "name": "INR",
+        "value": 1.2,
+        "unit": "",
+        "minutesAgo": 40
+      },
+      {
+        "analyte": "platelets",
+        "name": "Platelets",
+        "value": 190,
+        "unit": "×10⁹/L",
+        "minutesAgo": 40
+      },
+      {
+        "analyte": "lactate",
+        "name": "Lactate",
+        "value": 2.1,
+        "unit": "mmol/L",
+        "minutesAgo": 40
+      }
+    ],
+    "imaging": [
+      {
+        "name": "USS abdomen",
+        "modality": "US",
+        "region": "Abdomen",
+        "minutesAgo": 30,
+        "result": "Gallstones. Common bile duct dilated to 11 mm with a 6 mm stone in the distal duct. Pancreatic head bulky with peripancreatic fluid."
+      }
+    ],
+    "comorbidities": [
+      "Gallstones",
+      "Hypertension"
+    ],
+    "medications": [
+      {
+        "drug": "Amlodipine",
+        "dose": "10 mg",
+        "frequency": "OD",
+        "indication": "Hypertension"
+      }
+    ],
+    "allergies": [],
+    "nkda": true,
+    "socialHistory": "Retired. Non-drinker.",
+    "scoreForms": {
+      "tg18-cholangitis": {
+        "systemicInflammation": true,
+        "cholestasis": true,
+        "imaging": true,
+        "wbcAbnormal": true,
+        "feverAtLeast39": true,
+        "ageAtLeast75": false,
+        "bilirubinAtLeast5mgdl": true,
+        "albuminBelow07LLN": false,
+        "organDysfunction": []
+      }
+    },
+    "confirmedDiagnosis": {
+      "name": "Acute biliary pancreatitis with acute cholangitis",
+      "icd10": "K85.10",
+      "paneDiseaseId": "pancreatitis",
+      "assessmentText": "Acute biliary pancreatitis with concurrent acute cholangitis (TG18 Grade II: WBC >12, fever ≥39 °C, bilirubin ≥5 mg/dL) from a distal CBD stone. No organ failure."
+    },
+    "platform": {
+      "web": {
+        "ccTemplate": "Acute abdominal pain",
+        "symptoms": [
+          "abdominal pain",
+          "epigastric pain",
+          "fever",
+          "rigors",
+          "jaundice",
+          "vomiting"
+        ],
+        "symptomDetails": {
+          "abdominal pain": [
+            "Epigastric",
+            "RUQ",
+            "1–3 days",
+            "Constant",
+            "Sharp",
+            "Severe (7–9)",
+            "Back",
+            "Vomiting",
+            "Fever",
+            "Jaundice",
+            "Rigors"
+          ],
+          "jaundice": [
+            "Fever",
+            "Rigors",
+            "Dark urine",
+            "Abdominal pain",
+            "Known gallstones"
+          ]
+        },
+        "examFindings": {
+          "general": [
+            "Jaundiced"
+          ],
+          "abdomen": [
+            "Epigastric tenderness",
+            "Tender RUQ",
+            "Guarding"
+          ]
+        },
+        "paneAnswers": {
+          "elevated_amylase": true,
+          "us_gallstones": true
+        },
+        "durationDays": 1,
+        "painScore": 8
+      }
+    }
+  },
+  "expected": {
+    "differential": {
+      "mustRankTopK": [
+        {
+          "id": "dx-pancreatitis-top3",
+          "severity": "critical",
+          "match": [
+            "pancreatitis"
+          ],
+          "unless": [
+            "chronic"
+          ],
+          "k": 3,
+          "guidelineRefs": [
+            "atlanta-2012"
+          ]
+        }
+      ],
+      "mustNotMiss": [
+        {
+          "id": "mnm-cholangitis",
+          "severity": "critical",
+          "match": [
+            "cholangitis"
+          ],
+          "unless": [
+            "sclerosing"
+          ],
+          "guidelineRefs": [
+            "tg18-dx-cholangitis"
+          ],
+          "note": "Fever ≥39 °C, rigors, jaundice and a duct stone: concurrent cholangitis changes management (ERCP within 24 h, antibiotics)."
+        }
+      ]
+    },
+    "safety": {
+      "emergencyLevel": {
+        "id": "level-at-least-urgent",
+        "severity": "critical",
+        "atLeast": "urgent",
+        "guidelineRefs": [
+          "tg18-mgmt-cholangitis",
+          "acg-2024"
+        ]
+      },
+      "mustAlarm": [
+        {
+          "id": "alarm-sepsis",
+          "severity": "quality",
+          "match": [
+            "sepsis",
+            "septic"
+          ],
+          "guidelineRefs": [
+            "ssc-2021"
+          ]
+        }
+      ]
+    },
+    "scores": {
+      "recommended": [
+        {
+          "id": "score-rec-tg18-cholangitis",
+          "severity": "quality",
+          "score": "tg18-cholangitis",
+          "guidelineRefs": [
+            "tg18-dx-cholangitis"
+          ]
+        }
+      ],
+      "values": [
+        {
+          "id": "score-tg18-cholangitis-calculator",
+          "severity": "critical",
+          "score": "tg18-cholangitis",
+          "mode": "calculator",
+          "equals": 2,
+          "guidelineRefs": [
+            "tg18-dx-cholangitis"
+          ],
+          "note": "Three Grade II criteria (WBC, fever ≥39, bilirubin ≥5 mg/dL), no organ dysfunction."
+        }
+      ]
+    },
+    "investigations": {
+      "mustInclude": [
+        {
+          "id": "inv-blood-cultures",
+          "severity": "critical",
+          "match": [
+            "blood culture"
+          ],
+          "guidelineRefs": [
+            "tg18-antimicrobial",
+            "ssc-2021"
+          ]
+        }
+      ]
+    },
+    "management": {
+      "mustInclude": [
+        {
+          "id": "mgmt-ercp-urgent",
+          "severity": "critical",
+          "match": [
+            "ercp",
+            "endoscopic retrograde"
+          ],
+          "guidelineRefs": [
+            "acg-2024",
+            "tg18-mgmt-cholangitis"
+          ],
+          "note": "ACG 2024: gallstone pancreatitis with concurrent cholangitis → ERCP."
+        },
+        {
+          "id": "mgmt-ercp-within-24h",
+          "severity": "critical",
+          "match": [
+            "re:ercp[^.;\\n]{0,40}(24 ?h|24 hours|urgent|within hours|same day|same-day)",
+            "re:(urgent|emergency|early)[^.;\\n]{0,20}ercp"
+          ],
+          "guidelineRefs": [
+            "acg-2024",
+            "iap-apa-2013",
+            "tg18-mgmt-cholangitis"
+          ],
+          "note": "Timing matters: ACG 2024 and IAP/APA 2013 — ERCP within 24 h when acute pancreatitis is complicated by cholangitis. A 72-hour window for cholangitis leaves an obstructed, infected duct undrained."
+        },
+        {
+          "id": "mgmt-antibiotics",
+          "severity": "critical",
+          "match": [
+            "antibiotic",
+            "antimicrobial",
+            "co-amoxiclav",
+            "amoxicillin-clavulanate",
+            "piperacillin",
+            "tazocin",
+            "cefuroxime",
+            "ceftriaxone",
+            "meropenem",
+            "imipenem",
+            "carbapenem",
+            "metronidazole"
+          ],
+          "unless": [
+            "avoid",
+            "not ",
+            "no prophylactic",
+            "only if infected"
+          ],
+          "guidelineRefs": [
+            "tg18-antimicrobial"
+          ],
+          "note": "Cholangitis is the indication for antibiotics here (not the pancreatitis)."
+        }
+      ],
+      "mustExclude": [
+        {
+          "id": "mgmt-no-aggressive-fluids",
+          "severity": "critical",
+          "match": [
+            "aggressive",
+            "re:250\\s*-\\s*500\\s*ml"
+          ],
+          "unless": [
+            "avoid aggressive",
+            "not aggressive",
+            "rather than aggressive",
+            "no aggressive"
+          ],
+          "guidelineRefs": [
+            "waterfall-2022",
+            "acg-2024"
+          ],
+          "note": "WATERFALL (NEJM 2022) was stopped for harm: aggressive resuscitation (20 mL/kg bolus then 3 mL/kg/h) caused more fluid overload (20.5% vs 6.3%) without benefit. ACG 2024 recommends moderate, goal-directed fluids. A plan that says \"aggressive\" or 250–500 mL/h is a fluid-overload hazard.",
+          "proposedFix": "lib/pane-engine management protocol \"pancreatitis\" (step 1 and the Hartmann's 500 ml Q2H medication), dx-variants.ts pancreatitis_moderate urgencyNote / pancreatitis_severe planPrefix, and clinical-inference.ts pancreatitis prompts: replace \"aggressive … 250–500 ml/h\" with moderate goal-directed lactated Ringer's (10 mL/kg bolus only if hypovolaemic, then 1.5 mL/kg/h; reassess at 12, 24, 48, 72 h; extra caution in heart failure/CKD/elderly) citing WATERFALL and ACG 2024. Same change in iOS DiagnosisRadiationEngine \"acute pancreatitis\" planTemplate."
+        },
+        {
+          "id": "mgmt-no-appendicectomy",
+          "severity": "critical",
+          "match": [
+            "appendicectomy",
+            "appendectomy"
+          ],
+          "unless": [
+            "not indicated",
+            "no role",
+            "exclude appendicitis"
+          ],
+          "note": "Not an appendix presentation: an appendicectomy operative plan (consent, theatre booking, post-operative orders) is a wrong-procedure suggestion."
+        }
+      ]
+    }
+  },
+  "guideline": [
+    {
+      "id": "atlanta-2012",
+      "name": "Revised Atlanta classification of acute pancreatitis (2012)",
+      "year": 2012,
+      "section": "Diagnosis (2 of 3: typical pain, lipase/amylase ≥3 × ULN, imaging); severity: mild (no organ failure, no local/systemic complications), moderately severe (transient organ failure <48 h and/or local complications), severe (persistent organ failure >48 h); modified Marshall score",
+      "citation": "Banks PA, Bollen TL, Dervenis C, et al. Gut. 2013;62:102–111.",
+      "verified": false
+    },
+    {
+      "id": "acg-2024",
+      "name": "ACG Guideline — management of acute pancreatitis (2024)",
+      "year": 2024,
+      "section": "Moderately aggressive (goal-directed) fluids with lactated Ringer’s; no prophylactic antibiotics (including predicted severe and sterile necrosis); early oral feeding when tolerated; enteral rather than parenteral nutrition; ERCP within 24 h only with concurrent cholangitis; cholecystectomy during the index admission for mild biliary AP; transabdominal US in every patient; triglycerides if no gallstones/alcohol; CT not needed at presentation unless the diagnosis is unclear",
+      "citation": "Tenner S, Vege SS, Sheth SG, et al. Am J Gastroenterol. 2024;119:419–437.",
+      "verified": false
+    },
+    {
+      "id": "waterfall-2022",
+      "name": "WATERFALL trial — aggressive vs moderate fluid resuscitation in acute pancreatitis (NEJM 2022)",
+      "year": 2022,
+      "section": "Moderate (10 mL/kg bolus only if hypovolaemic, then 1.5 mL/kg/h lactated Ringer’s) vs aggressive (20 mL/kg bolus then 3 mL/kg/h): stopped for harm — fluid overload 20.5% vs 6.3% with no improvement in moderately severe/severe AP. Patients with heart failure (NYHA II–IV) were excluded",
+      "citation": "de-Madaria E, Buxbaum JL, Maisonneuve P, et al. N Engl J Med. 2022;387:989–1000.",
+      "verified": false
+    },
+    {
+      "id": "tg18-dx-cholangitis",
+      "name": "Tokyo Guidelines 2018 — diagnostic criteria and severity grading of acute cholangitis",
+      "year": 2018,
+      "section": "Grade II: any two of WBC >12,000 or <4,000/mm³, fever ≥39 °C, age ≥75, total bilirubin ≥5 mg/dL, hypoalbuminaemia (<0.7 × LLN); Grade III: organ dysfunction",
+      "citation": "Kiriyama S, Kozaka K, Takada T, et al. J Hepatobiliary Pancreat Sci. 2018;25:17–30.",
+      "verified": false
+    },
+    {
+      "id": "tg18-mgmt-cholangitis",
+      "name": "Tokyo Guidelines 2018 — flowchart for acute cholangitis",
+      "year": 2018,
+      "section": "Grade II: early biliary drainage; Grade III: organ support then urgent biliary drainage",
+      "citation": "Miura F, Okamoto K, Takada T, et al. J Hepatobiliary Pancreat Sci. 2018;25:31–40.",
+      "verified": false
+    },
+    {
+      "id": "tg18-antimicrobial",
+      "name": "Tokyo Guidelines 2018 — antimicrobial therapy for acute cholangitis and cholecystitis",
+      "year": 2018,
+      "section": "Blood cultures in Grade II/III; antimicrobial choice by severity; duration after source control",
+      "citation": "Gomi H, Solomkin JS, Schlossberg D, et al. J Hepatobiliary Pancreat Sci. 2018;25:3–16.",
+      "verified": false
+    },
+    {
+      "id": "ssc-2021",
+      "name": "Surviving Sepsis Campaign guidelines 2021",
+      "year": 2021,
+      "section": "Blood cultures before antimicrobials; antimicrobials within 1 h for shock; source control; noradrenaline first-line vasopressor",
+      "citation": "Evans L, Rhodes A, Alhazzani W, et al. Crit Care Med. 2021;49:e1063–e1143.",
+      "verified": false
+    },
+    {
+      "id": "iap-apa-2013",
+      "name": "IAP/APA evidence-based guidelines for the management of acute pancreatitis",
+      "year": 2013,
+      "section": "No antibiotic prophylaxis; enteral nutrition in severe AP; same-admission cholecystectomy for mild biliary AP; delay cholecystectomy with peripancreatic collections until they resolve or beyond 6 weeks; intervention for infected necrosis delayed to ≥4 weeks (walled-off)",
+      "citation": "Working Group IAP/APA Acute Pancreatitis Guidelines. Pancreatology. 2013;13(4 Suppl 2):e1–15.",
+      "verified": false
+    }
+  ],
+  "rationale": "Permutation: the exception to \"no ERCP, no antibiotics\" in gallstone pancreatitis — concurrent cholangitis. Tests that cholangitis is recognised alongside pancreatitis and that urgent ERCP and antibiotics appear (while fluids stay moderate).",
+  "authoring": {
+    "author": "Claude (HPB cluster)",
+    "date": "2026-09-25",
+    "notes": "Expectations and citations need surgeon sign-off (reviewedBy). iOS outcomes not yet observed (unverified: ios) — triage after the first CI run."
+  }
+}

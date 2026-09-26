@@ -37,33 +37,44 @@ export interface UsePaneReturn {
   exportDifferential: () => string;
 }
 
-function makeInitState(age: number | null, sex: string): PaneState {
-  return initPaneState(applyModifiers(DISEASES, age, sex));
+/**
+ * Priors for this patient: age, sex and the consultation's pregnancy context ("pregnancy
+ * possible" raises the pregnancy-only diagnoses), exactly as HpiTab / ChiefComplaintStrip seed PANE.
+ */
+function modifiedDiseases(age: number | null, sex: string, pregnancyPossible: boolean) {
+  return applyModifiers(DISEASES, age, sex, undefined, { pregnancyPossible });
+}
+
+function makeInitState(age: number | null, sex: string, pregnancyPossible: boolean): PaneState {
+  return initPaneState(modifiedDiseases(age, sex, pregnancyPossible));
 }
 
 export function usePane(opts: PaneOpts = {}): UsePaneReturn {
   const { age = null, sex = 'unknown', encounterId = null, patientId = null } = opts;
-  const { paneState, setPaneState, setPaneTop, setPaneConverged } = useAppContext();
+  const { paneState, setPaneState, setPaneTop, setPaneConverged, pregnancyPossible } = useAppContext();
 
   // Initialise from context (null = new patient)
-  const state: PaneState = paneState ?? makeInitState(age, sex);
+  const state: PaneState = paneState ?? makeInitState(age, sex, pregnancyPossible);
 
-  // Re-initialise priors when age/sex become available, but only before any Q is answered.
+  // Re-initialise priors when age/sex/pregnancy context become available, but only before any Q
+  // is answered.
   const prevAgeRef = useRef(age);
   const prevSexRef = useRef(sex);
+  const prevPregRef = useRef(pregnancyPossible);
   useEffect(() => {
-    if (prevAgeRef.current === age && prevSexRef.current === sex) return;
+    if (prevAgeRef.current === age && prevSexRef.current === sex && prevPregRef.current === pregnancyPossible) return;
     prevAgeRef.current = age;
     prevSexRef.current = sex;
+    prevPregRef.current = pregnancyPossible;
     setPaneState(prev => {
       if (prev && prev.iteration > 0) return prev; // preserve in-progress session
-      return makeInitState(age, sex);
+      return makeInitState(age, sex, pregnancyPossible);
     });
   // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [age, sex]);
+  }, [age, sex, pregnancyPossible]);
 
   // Derive disease list with modifiers applied (used at init; state holds the result)
-  const diseases = applyModifiers(DISEASES, age, sex);
+  const diseases = modifiedDiseases(age, sex, pregnancyPossible);
 
   const nextQuestion = nextBestQuestion(state, diseases, FEATURES);
   const top = topDiagnoses(state, diseases, 3);
@@ -97,15 +108,15 @@ export function usePane(opts: PaneOpts = {}): UsePaneReturn {
 
   const answer = useCallback((featureId: string, observed: boolean) => {
     setPaneState(prev => {
-      const current = prev ?? makeInitState(age, sex);
-      return updatePosterior(current, applyModifiers(DISEASES, age, sex), featureId, observed);
+      const current = prev ?? makeInitState(age, sex, pregnancyPossible);
+      return updatePosterior(current, modifiedDiseases(age, sex, pregnancyPossible), featureId, observed);
     });
-  }, [age, sex, setPaneState]);
+  }, [age, sex, pregnancyPossible, setPaneState]);
 
   const reset = useCallback(() => {
     setPaneState(prev => {
       if (prev && prev.iteration > 0 && !loggedRef.current) {
-        const currentTop = topDiagnoses(prev, applyModifiers(DISEASES, age, sex), 3);
+        const currentTop = topDiagnoses(prev, modifiedDiseases(age, sex, pregnancyPossible), 3);
         logPaneSession({
           encounter_id:  encounterId,
           patient_id:    patientId,
@@ -121,7 +132,7 @@ export function usePane(opts: PaneOpts = {}): UsePaneReturn {
       loggedRef.current = false;
       return null; // triggers re-init from null → makeInitState in next render
     });
-  }, [age, sex, encounterId, patientId, setPaneState]);
+  }, [age, sex, pregnancyPossible, encounterId, patientId, setPaneState]);
 
   const exportDifferential = useCallback(
     () => exportSummary(state, diseases, FEATURES, 3),

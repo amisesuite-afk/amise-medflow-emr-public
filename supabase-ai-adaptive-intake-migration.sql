@@ -32,10 +32,20 @@ create table if not exists consultation_requests (
 
 alter table consultation_requests enable row level security;
 
--- Staff can read and manage all requests
-drop policy if exists "staff_manage_consultation_requests" on consultation_requests;
-create policy "staff_manage_consultation_requests" on consultation_requests
-  for all to authenticated using (true) with check (true);
+-- Staff can read and manage all requests.
+-- Migration 89 (supabase-staff-only-rls-migration.sql) later narrows this policy
+-- to staff roles, keeping its name. Once 89 has run (its user_profiles_revoked
+-- table exists), leave the policy alone, so re-running the runner from the top
+-- does not re-open it to every signed-in user (portal patients included) until
+-- step 89 comes round again.
+do $guard$ begin
+  if to_regclass('public.user_profiles_revoked') is not null then
+    return;
+  end if;
+  drop policy if exists "staff_manage_consultation_requests" on consultation_requests;
+  create policy "staff_manage_consultation_requests" on consultation_requests
+    for all to authenticated using (true) with check (true);
+end $guard$;
 
 -- Anyone (anon) can submit a new request — this is the public "request consult" form
 drop policy if exists "anon_insert_consultation_requests" on consultation_requests;

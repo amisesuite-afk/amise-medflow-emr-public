@@ -1,0 +1,390 @@
+{
+  "schemaVersion": 1,
+  "id": "mimic-dka-abdominal-pain",
+  "condition": "Diabetic ketoacidosis (GI emergency mimic)",
+  "category": "general-medicine",
+  "permutationOf": null,
+  "permutationLabel": "Type 1 diabetic, severe DKA with abdominal pain and guarding",
+  "summary": "19-year-old with type 1 diabetes, missed insulin, 1 day of diffuse abdominal pain and vomiting, Kussmaul breathing, glucose 29.4, ketones 5.6, pH 7.08, WBC 19.8, amylase 210, voluntary guarding.",
+  "tags": [
+    "mimic",
+    "diabetes",
+    "do-not-miss"
+  ],
+  "inputs": {
+    "patient": {
+      "ageYears": 19,
+      "sex": "male",
+      "pregnancy": {
+        "status": "not-applicable"
+      },
+      "heightCm": 180,
+      "weightKg": 62
+    },
+    "encounter": {
+      "setting": "emergency",
+      "visitType": "urgentReview",
+      "acuity": "urgent"
+    },
+    "chiefComplaint": "Abdominal pain and vomiting",
+    "hpi": "Type 1 diabetes since age 11. 1 day of diffuse abdominal pain and vomiting (8 times). Missed insulin for 2 days because he was not eating. Very thirsty, passing a lot of urine, breathing fast, drowsy.",
+    "socrates": {
+      "onset": [
+        "Yesterday"
+      ],
+      "site": [
+        "Diffuse",
+        "Epigastric"
+      ],
+      "character": [
+        "Dull",
+        "Cramping"
+      ],
+      "radiation": [
+        "No radiation"
+      ],
+      "associations": [
+        "Nausea",
+        "Vomiting"
+      ],
+      "timing": [
+        "Constant"
+      ],
+      "exacerbating": [],
+      "relieving": [
+        "Nothing"
+      ],
+      "severity": [
+        "Moderate (4–6/10)"
+      ]
+    },
+    "symptoms": [
+      "abdominal pain",
+      "vomiting",
+      "polyuria",
+      "polydipsia",
+      "drowsiness"
+    ],
+    "negatives": [
+      "diarrhoea",
+      "fever"
+    ],
+    "exam": {
+      "general": "Drowsy, dry, deep sighing (Kussmaul) respiration, ketotic breath. Temperature 37.2°C, pulse 124/min, BP 104/62, RR 30.",
+      "abdomen": "Diffuse tenderness with voluntary guarding; no rigidity, no rebound. Bowel sounds present."
+    },
+    "vitals": [
+      {
+        "minutesAgo": 10,
+        "heartRate": 124,
+        "systolicBp": 104,
+        "diastolicBp": 62,
+        "respiratoryRate": 30,
+        "temperatureC": 37.2,
+        "spo2": 99,
+        "avpu": "V",
+        "onSupplementalO2": false,
+        "glucoseMmol": 29.4
+      }
+    ],
+    "labs": [
+      {
+        "analyte": "glucose",
+        "name": "Glucose",
+        "value": 29.4,
+        "unit": "mmol/L",
+        "minutesAgo": 30
+      },
+      {
+        "analyte": "ketones",
+        "name": "Blood ketones",
+        "value": 5.6,
+        "unit": "mmol/L",
+        "minutesAgo": 30
+      },
+      {
+        "analyte": "ph",
+        "name": "Venous pH",
+        "value": 7.08,
+        "minutesAgo": 30
+      },
+      {
+        "analyte": "bicarbonate",
+        "name": "Bicarbonate",
+        "value": 7,
+        "unit": "mmol/L",
+        "minutesAgo": 30
+      },
+      {
+        "analyte": "potassium",
+        "name": "Potassium",
+        "value": 5.6,
+        "unit": "mmol/L",
+        "minutesAgo": 30
+      },
+      {
+        "analyte": "sodium",
+        "name": "Sodium",
+        "value": 131,
+        "unit": "mmol/L",
+        "minutesAgo": 30
+      },
+      {
+        "analyte": "creatinine",
+        "name": "Creatinine",
+        "value": 148,
+        "unit": "µmol/L",
+        "minutesAgo": 30
+      },
+      {
+        "analyte": "wbc",
+        "name": "WBC",
+        "value": 19.8,
+        "unit": "×10⁹/L",
+        "minutesAgo": 30
+      },
+      {
+        "analyte": "amylase",
+        "name": "Amylase",
+        "value": 210,
+        "unit": "U/L",
+        "minutesAgo": 30
+      },
+      {
+        "analyte": "lipase",
+        "name": "Lipase",
+        "value": 45,
+        "unit": "U/L",
+        "minutesAgo": 30
+      }
+    ],
+    "imaging": [],
+    "comorbidities": [
+      "Type 1 diabetes mellitus"
+    ],
+    "surgicalHistory": [],
+    "medications": [
+      {
+        "drug": "Insulin glargine",
+        "dose": "22 units",
+        "frequency": "ON",
+        "indication": "Type 1 diabetes"
+      },
+      {
+        "drug": "Insulin aspart",
+        "dose": "sliding scale",
+        "frequency": "with meals",
+        "indication": "Type 1 diabetes"
+      }
+    ],
+    "allergies": [],
+    "nkda": true,
+    "socialHistory": "Student.",
+    "confirmedDiagnosis": {
+      "name": "Diabetic ketoacidosis",
+      "icd10": "E10.10",
+      "assessmentText": "Severe diabetic ketoacidosis (pH 7.08, bicarbonate 7, ketones 5.6) with abdominal pain and non-specific amylase rise; no surgical abdomen at present. Treat DKA and re-examine the abdomen as acidosis corrects."
+    },
+    "platform": {
+      "web": {
+        "ccTemplate": "Acute abdominal pain",
+        "socratesAnswers": {
+          "site": "Generalised, epigastric",
+          "onset": "Yesterday",
+          "character": "Dull, cramping",
+          "associated": "Vomiting x8, nausea, thirst, passing lots of urine",
+          "timing": "Constant",
+          "relief": "Nothing",
+          "severity": "6/10"
+        },
+        "symptoms": [
+          "abdominal pain",
+          "vomiting",
+          "polyuria",
+          "polydipsia",
+          "confusion"
+        ],
+        "symptomDetails": {
+          "abdominal pain": [
+            "Diffuse",
+            "Epigastric",
+            "6–24 hours",
+            "Dull",
+            "Moderate (4–6)",
+            "Vomiting",
+            "Nausea",
+            "Continuous"
+          ]
+        },
+        "examFindings": {
+          "abdomen": [
+            "Diffuse tenderness",
+            "Guarding"
+          ]
+        },
+        "durationDays": 1,
+        "painScore": 6
+      }
+    }
+  },
+  "expected": {
+    "differential": {
+      "mustNotMiss": [
+        {
+          "id": "mnm-dka",
+          "severity": "critical",
+          "match": [
+            "ketoacidosis",
+            "dka",
+            "hyperglyc"
+          ],
+          "guidelineRefs": [
+            "ada-hhc-2024"
+          ],
+          "note": "DKA must be on the displayed differential of abdominal pain in a type 1 diabetic with glucose 29."
+        },
+        {
+          "id": "mnm-dka-symptom-engine",
+          "severity": "quality",
+          "match": [
+            "ketoacidosis",
+            "dka"
+          ],
+          "source": "web.symptomInference",
+          "platforms": [
+            "web"
+          ]
+        }
+      ]
+    },
+    "safety": {
+      "emergencyLevel": {
+        "id": "level-emergency",
+        "severity": "critical",
+        "atLeast": "emergency",
+        "guidelineRefs": [
+          "ada-hhc-2024"
+        ],
+        "knownGapNote": "iOS: ClinicalPathwayEngine reads only CC/PMH keywords; CC 'Abdominal pain and vomiting' gives 'routine'."
+      },
+      "mustAlarm": [
+        {
+          "id": "alarm-dka",
+          "severity": "critical",
+          "match": [
+            "ketoacidosis",
+            "dka",
+            "hyperglyc"
+          ],
+          "guidelineRefs": [
+            "ada-hhc-2024"
+          ]
+        }
+      ]
+    },
+    "investigations": {
+      "mustInclude": [
+        {
+          "id": "inv-ketones-gas",
+          "severity": "critical",
+          "match": [
+            "ketone",
+            "blood gas",
+            "abg",
+            "vbg",
+            "venous gas"
+          ],
+          "guidelineRefs": [
+            "ada-hhc-2024"
+          ]
+        }
+      ]
+    },
+    "management": {
+      "mustInclude": [
+        {
+          "id": "mgmt-insulin",
+          "severity": "critical",
+          "match": [
+            "insulin"
+          ],
+          "unless": [
+            "hold",
+            "stop",
+            "omit"
+          ],
+          "guidelineRefs": [
+            "ada-hhc-2024"
+          ]
+        },
+        {
+          "id": "mgmt-fluids",
+          "severity": "quality",
+          "match": [
+            "crystalloid",
+            "hartmann's",
+            "fluid resuscitation",
+            "iv fluid",
+            "0.9% sodium chloride",
+            "0.9% nacl",
+            "iv fluids"
+          ],
+          "guidelineRefs": [
+            "ada-hhc-2024"
+          ]
+        },
+        {
+          "id": "mgmt-potassium",
+          "severity": "quality",
+          "match": [
+            "potassium"
+          ],
+          "guidelineRefs": [
+            "ada-hhc-2024"
+          ]
+        }
+      ],
+      "mustExclude": [
+        {
+          "id": "mgmt-no-laparotomy-for-dka-pain",
+          "severity": "critical",
+          "match": [
+            "laparotomy",
+            "appendicectomy",
+            "diagnostic laparoscopy",
+            "laparoscopic append"
+          ],
+          "unless": [
+            "avoid",
+            "defer",
+            "not ",
+            "if abdominal signs persist",
+            "reassess",
+            "re-examine"
+          ],
+          "guidelineRefs": [
+            "ada-hhc-2024"
+          ],
+          "note": "DKA pseudo-peritonitis resolves with treatment; an operative plan before correcting the acidosis is dangerous.",
+          "proposedFix": "Negation-aware exam matching, and suppress operative templates while a DKA prompt is active (reassess the abdomen after correction)."
+        }
+      ]
+    }
+  },
+  "guideline": [
+    {
+      "id": "ada-hhc-2024",
+      "name": "Hyperglycaemic crises in adults with diabetes — consensus report (ADA/EASD/JBDS/AACE/DTS)",
+      "year": 2024,
+      "section": "DKA diagnosis (glucose, ketones, pH/bicarbonate); abdominal pain common and resolves with treatment; IV fluids, fixed-rate insulin, potassium; search for precipitant",
+      "citation": "Umpierrez GE, Davis GM, ElSayed NA, et al. Hyperglycemic crises in adults with diabetes: a consensus report. Diabetes Care. 2024;47:1257–75.",
+      "verified": false
+    }
+  ],
+  "rationale": "Dangerous mimic: DKA causes abdominal pain, guarding, leucocytosis and amylase rise. The engines should name DKA, recommend ketones/blood gas, insulin and fluids, and must not generate an operative plan.",
+  "authoring": {
+    "author": "Claude (GI surgical emergencies cluster)",
+    "date": "2026-09-25",
+    "notes": "Expectations need surgeon sign-off (reviewedBy). Every citation is verified: false."
+  }
+}

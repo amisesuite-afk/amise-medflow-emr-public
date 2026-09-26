@@ -1,0 +1,53 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://amise-medflow.local/clinical-content/negation-cues.schema.json",
+  "title": "Negation cue lists",
+  "description": "clinical-content/rules/negation-cues.json: the cue lists of the negation-aware text matcher (NegEx-style). A shared clinical rule file read by the web (lib/triage-engine/src/negation.ts) and iOS (NegationMatcher.swift through SharedClinicalContent); the rule itself stays twinned. Every word is lower case (the matcher lower-cases the text; a right single quote is read as an apostrophe). Registered as negation-cues.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "id", "version", "preCues", "negatingContractions", "pseudoAfter", "pseudoAfterVerbNegation", "verbNegationFillers",
+    "scopeTerminators", "scopeContinuers", "postCues", "notFollowers", "copulas", "fusedNegatives", "hyphenFree", "maxPreWindow"
+  ],
+  "properties": {
+    "$schema": { "type": "string" },
+    "$comment": { "type": "string" },
+    "id": { "const": "negation-cues" },
+    "version": { "type": "string", "pattern": "^\\d+\\.\\d+\\.\\d+$" },
+    "preCues": {
+      "description": "Pre-negation cue -> the number of words allowed between the cue and the term.",
+      "type": "object",
+      "propertyNames": { "pattern": "^[a-z]+$" },
+      "additionalProperties": { "type": "integer", "minimum": 0 }
+    },
+    "negatingContractions": { "description": "Contractions that negate with a window of 5 words (deliberately not can't / couldn't / won't: \"can't swallow\" is a complaint).", "$ref": "#/$defs/contractions" },
+    "pseudoAfter": {
+      "description": "Cue -> words that, directly after it, make it a pseudo-negation (\"no change\", \"not improving\").",
+      "type": "object",
+      "propertyNames": { "pattern": "^[a-z]+$" },
+      "additionalProperties": { "$ref": "#/$defs/words" }
+    },
+    "pseudoAfterVerbNegation": { "description": "After \"not\", \"never\" or a negating contraction: a double negative or a hedge (\"hasn't stopped bleeding\").", "$ref": "#/$defs/words" },
+    "verbNegationFillers": { "description": "Words allowed between a verb negation and a double-negative verb (\"has not yet settled\").", "$ref": "#/$defs/words" },
+    "scopeTerminators": { "description": "Words that end a negation scope: a new assertion starts.", "$ref": "#/$defs/words" },
+    "scopeContinuers": { "description": "Words that continue a negation scope without counting towards the window.", "$ref": "#/$defs/words" },
+    "postCues": { "description": "Post-negation cues (\"Murphy's sign negative\").", "$ref": "#/$defs/words" },
+    "notFollowers": { "description": "\"not X\" after a term: \"rebound not elicited\".", "$ref": "#/$defs/words" },
+    "copulas": { "description": "Words skipped (not counted) between a term and a post-cue.", "$ref": "#/$defs/words" },
+    "fusedNegatives": { "description": "Whole words that negate a root found inside them (\"afebrile\", \"nontender\").", "$ref": "#/$defs/words" },
+    "hyphenFree": { "description": "\"pain-free\": the term's word followed by a hyphen and one of these.", "$ref": "#/$defs/words" },
+    "maxPreWindow": { "description": "Upper bound on the words scanned back from a term for a pre-negation cue.", "type": "integer", "minimum": 0 }
+  },
+  "$defs": {
+    "words": {
+      "type": "array",
+      "uniqueItems": true,
+      "items": { "type": "string", "pattern": "^[a-z]+$" }
+    },
+    "contractions": {
+      "type": "array",
+      "uniqueItems": true,
+      "items": { "type": "string", "pattern": "^[a-z]+'[a-z]+$" }
+    }
+  }
+}

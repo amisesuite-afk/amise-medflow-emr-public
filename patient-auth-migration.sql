@@ -21,7 +21,10 @@ CREATE INDEX IF NOT EXISTS patient_accounts_patient_id_idx ON patient_accounts(p
 -- Row-level security: the API server uses service_role so RLS is bypassed,
 -- but we still set up policies so anon/authenticated roles can't read hashes.
 ALTER TABLE patient_accounts ENABLE ROW LEVEL SECURITY;
-CREATE POLICY patient_accounts_deny_all ON patient_accounts FOR ALL USING (false);
+do $guard$ begin
+  CREATE POLICY patient_accounts_deny_all ON patient_accounts FOR ALL USING (false);
+exception when duplicate_object then null;
+end $guard$;
 
 GRANT ALL ON patient_accounts TO service_role;
 

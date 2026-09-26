@@ -7,7 +7,16 @@
   "exports": {
     ".": "./src/index.ts",
     "./apcq.js": "./src/apcq.ts",
-    "./apcq": "./src/apcq.ts"
+    "./apcq": "./src/apcq.ts",
+    "./report-import": "./src/report-import/index.ts",
+    "./visit-continuity": "./src/visit-continuity.ts",
+    "./diagnostic-reasoning": "./src/diagnostic-reasoning/index.ts",
+    "./lifestyle-practices": "./src/lifestyle-practices.ts",
+    "./lifestyle-questions": "./src/lifestyle-questions.ts",
+    "./outcomes": "./src/outcomes/index.ts",
+    "./reference-ranges": "./src/reference-ranges.ts",
+    "./history-frames": "./src/history-frames/index.ts",
+    "./approved-content": "./src/approved-content/index.ts"
   },
   "scripts": {
     "typecheck": "tsc -p tsconfig.json --noEmit",

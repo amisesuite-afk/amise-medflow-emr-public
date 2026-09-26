@@ -1,0 +1,418 @@
+{
+  "schemaVersion": 1,
+  "id": "choledocholithiasis-pregnancy",
+  "condition": "Choledocholithiasis",
+  "category": "hpb",
+  "permutationOf": "choledocholithiasis-asge-high-risk",
+  "permutationLabel": "Pregnancy, 26 weeks — ASGE high risk, obstructive jaundice",
+  "summary": "31-year-old at 26 weeks with RUQ pain and jaundice; bilirubin 78, ALP 380 (partly placental), ALT 280; ultrasound shows an 11 mm CBD with a distal stone; afebrile; live fetus.",
+  "tags": [
+    "biliary",
+    "pregnancy",
+    "ercp"
+  ],
+  "inputs": {
+    "patient": {
+      "ageYears": 31,
+      "sex": "female",
+      "pregnancy": {
+        "status": "pregnant",
+        "gestationWeeks": 26
+      },
+      "heightCm": 160,
+      "weightKg": 70
+    },
+    "encounter": {
+      "setting": "emergency",
+      "visitType": "urgentReview",
+      "acuity": "urgent"
+    },
+    "chiefComplaint": "Yellow eyes and upper abdominal pain in pregnancy",
+    "hpi": "G1 at 26 weeks. Three days of intermittent right upper quadrant pain, then yellow eyes, dark urine and itching for two days. No fever or rigors. Fetal movements normal, no bleeding or contractions.",
+    "socrates": {
+      "onset": [
+        "2–3 days ago"
+      ],
+      "site": [
+        "RUQ"
+      ],
+      "character": [
+        "Colicky"
+      ],
+      "radiation": [
+        "Back"
+      ],
+      "associations": [
+        "Jaundice",
+        "Nausea"
+      ],
+      "timing": [
+        "Intermittent"
+      ],
+      "exacerbating": [
+        "Eating"
+      ],
+      "relieving": [
+        "Nothing"
+      ],
+      "severity": [
+        "Moderate (4–6/10)"
+      ]
+    },
+    "symptoms": [
+      "right upper quadrant pain",
+      "jaundice",
+      "dark urine",
+      "pruritus"
+    ],
+    "negatives": [
+      "fever",
+      "rigors",
+      "vaginal bleeding"
+    ],
+    "exam": {
+      "general": "Jaundiced. Temperature 37.0°C, pulse 92/min, BP 112/68. Gravid uterus appropriate for dates.",
+      "abdomen": "Right upper quadrant tenderness, no guarding."
+    },
+    "vitals": [
+      {
+        "minutesAgo": 20,
+        "heartRate": 92,
+        "systolicBp": 112,
+        "diastolicBp": 68,
+        "respiratoryRate": 16,
+        "temperatureC": 37,
+        "spo2": 98,
+        "avpu": "A",
+        "onSupplementalO2": false
+      }
+    ],
+    "labs": [
+      {
+        "analyte": "bilirubin",
+        "name": "Bilirubin",
+        "value": 78,
+        "unit": "µmol/L",
+        "minutesAgo": 40
+      },
+      {
+        "analyte": "alp",
+        "name": "ALP",
+        "value": 380,
+        "unit": "U/L",
+        "minutesAgo": 40
+      },
+      {
+        "analyte": "ggt",
+        "name": "GGT",
+        "value": 290,
+        "unit": "U/L",
+        "minutesAgo": 40
+      },
+      {
+        "analyte": "alt",
+        "name": "ALT",
+        "value": 280,
+        "unit": "U/L",
+        "minutesAgo": 40
+      },
+      {
+        "analyte": "wbc",
+        "name": "WBC",
+        "value": 11,
+        "unit": "×10⁹/L",
+        "minutesAgo": 40
+      },
+      {
+        "analyte": "crp",
+        "name": "CRP",
+        "value": 18,
+        "unit": "mg/L",
+        "minutesAgo": 40
+      },
+      {
+        "analyte": "lipase",
+        "name": "Lipase",
+        "value": 48,
+        "unit": "U/L",
+        "minutesAgo": 40
+      },
+      {
+        "analyte": "inr",
+        "name": "INR",
+        "value": 1,
+        "unit": "",
+        "minutesAgo": 40
+      }
+    ],
+    "imaging": [
+      {
+        "name": "USS abdomen",
+        "modality": "US",
+        "region": "Abdomen",
+        "minutesAgo": 30,
+        "result": "Gallstones. CBD dilated to 11 mm with a 7 mm shadowing stone in the distal duct. Single live intrauterine fetus."
+      }
+    ],
+    "comorbidities": [],
+    "medications": [
+      {
+        "drug": "Ferrous sulfate",
+        "dose": "200 mg",
+        "frequency": "OD",
+        "indication": "Pregnancy"
+      }
+    ],
+    "allergies": [],
+    "nkda": true,
+    "socialHistory": "Office worker. Non-smoker.",
+    "confirmedDiagnosis": {
+      "name": "Choledocholithiasis in pregnancy",
+      "icd10": "K80.50",
+      "paneDiseaseId": "choledocholithiasis",
+      "assessmentText": "Choledocholithiasis with obstructive jaundice at 26 weeks’ gestation — ASGE 2019 high risk (stone on ultrasound). No cholangitis."
+    },
+    "platform": {
+      "web": {
+        "ccTemplate": "Obstructive jaundice",
+        "symptoms": [
+          "jaundice",
+          "right upper quadrant pain",
+          "dark urine",
+          "pruritus"
+        ],
+        "symptomDetails": {
+          "jaundice": [
+            "Dark urine",
+            "Pruritus",
+            "Abdominal pain"
+          ]
+        },
+        "examFindings": {
+          "general": [
+            "Jaundiced"
+          ],
+          "abdomen": [
+            "Tender RUQ"
+          ]
+        },
+        "paneAnswers": {
+          "us_gallstones": true,
+          "fever": false
+        },
+        "durationDays": 3,
+        "painScore": 5
+      }
+    }
+  },
+  "expected": {
+    "differential": {
+      "mustRankTopK": [
+        {
+          "id": "dx-cbd-stone-top3",
+          "severity": "critical",
+          "match": [
+            "choledocholithiasis",
+            "cbd stone",
+            "bile duct stone",
+            "common bile duct"
+          ],
+          "k": 3,
+          "guidelineRefs": [
+            "asge-2019"
+          ]
+        }
+      ]
+    },
+    "safety": {
+      "emergencyLevel": {
+        "id": "level-at-least-priority",
+        "severity": "critical",
+        "atLeast": "priority",
+        "guidelineRefs": [
+          "asge-2012-pregnancy"
+        ]
+      },
+      "redFlags": [
+        {
+          "id": "flag-pregnancy",
+          "severity": "critical",
+          "match": [
+            "pregnan"
+          ],
+          "guidelineRefs": [
+            "asge-2012-pregnancy"
+          ]
+        }
+      ]
+    },
+    "investigations": {
+      "mustExclude": [
+        {
+          "id": "inv-no-unqualified-ct",
+          "severity": "quality",
+          "match": [
+            "re:\\bct\\b"
+          ],
+          "unless": [
+            "pregnan",
+            "mri unavailable",
+            "if mri",
+            "if mrcp unavailable"
+          ],
+          "guidelineRefs": [
+            "acog-co723-2017"
+          ]
+        }
+      ]
+    },
+    "management": {
+      "mustInclude": [
+        {
+          "id": "mgmt-ercp",
+          "severity": "critical",
+          "match": [
+            "ercp",
+            "endoscopic retrograde"
+          ],
+          "guidelineRefs": [
+            "asge-2012-pregnancy",
+            "esge-2019-cbds"
+          ],
+          "note": "Therapeutic ERCP is indicated in pregnancy for symptomatic choledocholithiasis, with minimised fluoroscopy."
+        },
+        {
+          "id": "mgmt-fluoroscopy-minimised",
+          "severity": "quality",
+          "match": [
+            "fluoroscopy",
+            "radiation",
+            "shield",
+            "lead"
+          ],
+          "guidelineRefs": [
+            "asge-2012-pregnancy"
+          ],
+          "proposedFix": "Choledocholithiasis protocol: pregnancy branch per ASGE 2012 (therapeutic ERCP, minimal fluoroscopy, obstetric input)."
+        },
+        {
+          "id": "mgmt-obstetric-involvement",
+          "severity": "quality",
+          "match": [
+            "obstetric",
+            "obstetrician",
+            "o&g",
+            "maternity",
+            "fetal monitoring",
+            "fetal heart"
+          ],
+          "guidelineRefs": [
+            "asge-2012-pregnancy",
+            "acog-co775-2019"
+          ]
+        }
+      ],
+      "mustExclude": [
+        {
+          "id": "mgmt-no-nsaid-after-20-weeks",
+          "severity": "critical",
+          "match": [
+            "nsaid",
+            "ibuprofen",
+            "diclofenac",
+            "naproxen",
+            "ketorolac",
+            "parecoxib",
+            "celecoxib"
+          ],
+          "unless": [
+            "re:(avoid|no|not|contraindicated|do not (give|use|prescribe))[^.;\\n]{0,20}(nsaid|ibuprofen|diclofenac|naproxen|ketorolac)",
+            "re:(nsaid|ibuprofen|diclofenac|naproxen|ketorolac)s?[^.;\\n]{0,30}(contraindicated|avoid|not in pregnan)"
+          ],
+          "guidelineRefs": [
+            "fda-2020-nsaid"
+          ]
+        },
+        {
+          "id": "mgmt-no-bhcg-negative-assumption",
+          "severity": "quality",
+          "match": [
+            "re:(β|b|beta)[- ]?hcg (confirmed )?negative"
+          ],
+          "proposedFix": "clinical-inference.ts operative-plan templates (lap chole and appendicectomy post-operative orders): when pregnancyPossible/pregnant, drop ibuprofen (NSAIDs from 20 weeks), replace \"β-HCG confirmed negative\" with the gestation, add obstetric review and fetal heart monitoring, and prefer US/MRI to CT."
+        },
+        {
+          "id": "mgmt-no-appendicectomy",
+          "severity": "critical",
+          "match": [
+            "appendicectomy",
+            "appendectomy"
+          ],
+          "unless": [
+            "not indicated",
+            "no role",
+            "exclude appendicitis"
+          ],
+          "note": "Not an appendix presentation: an appendicectomy operative plan (consent, theatre booking, post-operative orders) is a wrong-procedure suggestion.",
+          "proposedFix": "clinical-inference.ts SURGICAL PATHWAY CASCADE: gate hasAppendicitisIndication/hasGallstoneIndication on the working diagnosis or assessment (as the Alvarado block already does with assessmentHasAppend) and on positive, non-negated findings — not on any \"guarding\", \"gallbladder wall\" or \"gallstone\" substring."
+        }
+      ]
+    }
+  },
+  "guideline": [
+    {
+      "id": "asge-2019",
+      "name": "ASGE guideline on the role of endoscopy in the evaluation and management of choledocholithiasis",
+      "year": 2019,
+      "section": "Risk strata. High: CBD stone on US/cross-sectional imaging, or total bilirubin >4 mg/dL with dilated CBD, or ascending cholangitis → ERCP. Intermediate: abnormal liver tests, age >55, or dilated CBD → EUS/MRCP or intra-operative cholangiography/laparoscopic US. Low: none → cholecystectomy without further CBD evaluation",
+      "citation": "Buxbaum JL, Abbas Fehmi SM, Sultan S, et al. Gastrointest Endosc. 2019;89:1075–1105.e15.",
+      "verified": false
+    },
+    {
+      "id": "asge-2012-pregnancy",
+      "name": "ASGE guideline — endoscopy in pregnant and lactating women",
+      "year": 2012,
+      "section": "Therapeutic ERCP only for strong indications (choledocholithiasis, cholangitis, gallstone pancreatitis); minimise fluoroscopy; obstetric support",
+      "citation": "Shergill AK, Ben-Menachem T, Chandrasekhara V, et al. Gastrointest Endosc. 2012;76:18–24.",
+      "verified": false
+    },
+    {
+      "id": "esge-2019-cbds",
+      "name": "ESGE guideline — endoscopic management of common bile duct stones",
+      "year": 2019,
+      "section": "ERCP for CBD stones; EUS/MRCP for intermediate probability; peri-procedural considerations including pregnancy",
+      "citation": "Manes G, Paspatis G, Aabakken L, et al. Endoscopy. 2019;51:472–491.",
+      "verified": false
+    },
+    {
+      "id": "acog-co723-2017",
+      "name": "ACOG Committee Opinion No. 723 — Guidelines for diagnostic imaging during pregnancy and lactation",
+      "year": 2017,
+      "section": "US and MRI preferred; CT not contraindicated when needed; gadolinium only if it clearly improves diagnosis",
+      "citation": "ACOG Committee Opinion No. 723. Obstet Gynecol. 2017;130:e210–e216.",
+      "verified": false
+    },
+    {
+      "id": "acog-co775-2019",
+      "name": "ACOG Committee Opinion No. 775 — Nonobstetric surgery during pregnancy",
+      "year": 2019,
+      "section": "Obstetric consultation before non-obstetric surgery; fetal heart rate assessment before and after the procedure",
+      "citation": "ACOG Committee Opinion No. 775. Obstet Gynecol. 2019;133:e285–e286.",
+      "verified": false
+    },
+    {
+      "id": "fda-2020-nsaid",
+      "name": "US FDA Drug Safety Communication — NSAIDs in pregnancy at 20 weeks or later",
+      "year": 2020,
+      "section": "Avoid NSAIDs from about 20 weeks’ gestation (fetal renal dysfunction, oligohydramnios)",
+      "citation": "US Food and Drug Administration. Drug Safety Communication, 15 October 2020.",
+      "verified": false
+    }
+  ],
+  "rationale": "Permutation: pregnancy. The high-risk stratum still means ERCP, adapted for pregnancy (minimal fluoroscopy, obstetric support). Tests the pregnancy flag and drug/imaging safety.",
+  "authoring": {
+    "author": "Claude (HPB cluster)",
+    "date": "2026-09-25",
+    "notes": "Expectations and citations need surgeon sign-off (reviewedBy). iOS outcomes not yet observed (unverified: ios) — triage after the first CI run."
+  }
+}

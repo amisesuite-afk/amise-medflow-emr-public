@@ -1,0 +1,160 @@
+{
+  "schemaVersion": 1,
+  "id": "screen-hpylori-fdr-gastric-cancer",
+  "condition": "H. pylori test-and-treat in a first-degree relative of a gastric cancer patient",
+  "category": "upper-gi",
+  "permutationOf": "dyspepsia-young-no-alarm-test-and-treat",
+  "permutationLabel": "Asymptomatic man aged 44, father had gastric cancer",
+  "summary": "44-year-old asymptomatic man whose father died of gastric cancer at 62. Maastricht VI: test first-degree relatives for H. pylori (urea breath test or stool antigen) and treat if positive.",
+  "tags": [
+    "screening",
+    "h-pylori",
+    "gastric-cancer",
+    "family-history"
+  ],
+  "inputs": {
+    "patient": {
+      "ageYears": 44,
+      "sex": "male",
+      "heightCm": 172,
+      "weightKg": 76
+    },
+    "encounter": {
+      "setting": "outpatient",
+      "visitType": "newConsult",
+      "acuity": "routine"
+    },
+    "chiefComplaint": "Father had stomach cancer — wants to be checked",
+    "hpi": "Asymptomatic 44-year-old man. Father died of gastric adenocarcinoma at 62. No dyspepsia, no dysphagia, no weight loss, no vomiting, no melaena. Not on NSAIDs or PPIs. Never tested for H. pylori.",
+    "symptoms": [],
+    "negatives": [
+      "dyspepsia",
+      "dysphagia",
+      "weight loss",
+      "melaena"
+    ],
+    "exam": {
+      "general": "Well. No anaemia.",
+      "abdomen": "Soft, non-tender, no epigastric mass."
+    },
+    "vitals": [
+      {
+        "minutesAgo": 10,
+        "heartRate": 70,
+        "systolicBp": 126,
+        "diastolicBp": 80,
+        "respiratoryRate": 14,
+        "temperatureC": 36.6,
+        "spo2": 98,
+        "avpu": "A",
+        "onSupplementalO2": false
+      }
+    ],
+    "labs": [],
+    "imaging": [],
+    "comorbidities": [
+      "Family history: father gastric cancer at 62"
+    ],
+    "surgicalHistory": [],
+    "medications": [],
+    "allergies": [],
+    "nkda": true,
+    "socialHistory": "Fisherman. Smokes 5 cigarettes/day.",
+    "confirmedDiagnosis": {
+      "name": "Family history of gastric cancer — H. pylori test-and-treat",
+      "icd10": "Z80.0",
+      "assessmentText": "Asymptomatic FDR of a gastric cancer patient. Non-invasive H. pylori test (urea breath test or stool antigen, off PPI 2 weeks); eradicate if positive and confirm eradication."
+    },
+    "platform": {
+      "web": {
+        "ccTemplate": "Other / general surgical",
+        "symptoms": [],
+        "durationDays": 0,
+        "toxicHabits": [
+          "Smoker (5/day)"
+        ]
+      }
+    }
+  },
+  "expected": {
+    "investigations": {
+      "mustInclude": [
+        {
+          "id": "inv-hpylori-test",
+          "severity": "quality",
+          "guidelineRefs": [
+            "maastricht-vi-2022"
+          ],
+          "note": "Maastricht VI: test-and-treat FDRs of gastric cancer patients.",
+          "match": [
+            "pylori",
+            "urea breath",
+            "stool antigen"
+          ],
+          "knownGap": [
+            "ios"
+          ],
+          "knownGapNote": "iOS CI 2026-09-25 (run 36169134350, database mode): no investigation matched among 6 (ios.pipeline.decisions)"
+        }
+      ]
+    },
+    "safety": {
+      "emergencyLevel": {
+        "id": "level-routine",
+        "severity": "quality",
+        "guidelineRefs": [
+          "maastricht-vi-2022"
+        ],
+        "atMost": "priority"
+      }
+    },
+    "management": {
+      "mustExclude": [
+        {
+          "id": "mgmt-no-antithrombotic-plan",
+          "severity": "critical",
+          "guidelineRefs": [
+            "maastricht-vi-2022"
+          ],
+          "note": "An ACS, PE or AF antithrombotic/thrombolytic plan must never be attached to this diagnosis. Regression guard for DiagnosisRadiationEngine keyword matching: before 999f838 (word-boundary lookup) the first-substring match would have attached the acute coronary syndrome (aspirin 300 mg, ticagrelor, fondaparinux) plan to this diagnosis because \"mi\" is inside \"family\". With word-boundary matching no radiation entry matches (simulated from the source), so iOS is expected to pass; to be confirmed on the first iOS CI run.",
+          "match": [
+            "aspirin 300",
+            "ticagrelor",
+            "clopidogrel 300",
+            "fondaparinux",
+            "alteplase",
+            "thrombolysis",
+            "rivaroxaban",
+            "apixaban 10",
+            "apixaban 5 mg bd",
+            "dabigatran",
+            "doacs (preferred)"
+          ],
+          "sources": [
+            "ios.radiation",
+            "ios.soap",
+            "web.plan",
+            "web.protocol",
+            "web.managementPanel"
+          ]
+        }
+      ]
+    }
+  },
+  "guideline": [
+    {
+      "id": "maastricht-vi-2022",
+      "name": "Management of Helicobacter pylori infection — the Maastricht VI/Florence consensus report",
+      "year": 2022,
+      "section": "Test-and-treat for H. pylori in first-degree relatives of patients with gastric cancer; non-invasive testing (urea breath test or monoclonal stool antigen); confirm eradication after treatment",
+      "citation": "Malfertheiner P, Megraud F, Rokkas T, et al. Management of Helicobacter pylori infection: the Maastricht VI/Florence consensus report. Gut. 2022;71:1724–1762.",
+      "verified": false
+    }
+  ],
+  "rationale": "H. pylori eradication in relatives of gastric cancer patients reduces their gastric cancer risk. Negated alarm symptoms and the word \"cancer\" in the family history should not escalate the visit.",
+  "authoring": {
+    "author": "Claude (prevention/screening, obstetric-gynaecological mimics and paediatric surgery cluster)",
+    "date": "2026-09-25",
+    "notes": "Expectations need surgeon sign-off (reviewedBy). Every citation is verified: false. iOS outcomes are unverified (not run on Linux); triage after the first CI run."
+  }
+}

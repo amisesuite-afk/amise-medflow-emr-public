@@ -154,6 +154,7 @@ struct BeliefBar: View {
 
 struct VOIRow: View {
     let item: InformationItem
+    var alreadyResulted: Bool = false
 
     var body: some View {
         HStack(alignment: .top, spacing: 12) {
@@ -170,15 +171,26 @@ struct VOIRow: View {
                     .foregroundStyle(evpiColor)
             }
             .frame(width: 28, height: 28)
+            .opacity(alreadyResulted ? 0.4 : 1.0)
 
             VStack(alignment: .leading, spacing: 2) {
                 HStack {
                     Text(item.name)
                         .font(.system(size: 13, weight: .semibold))
+                        .strikethrough(alreadyResulted)
+                    if alreadyResulted {
+                        Text("Resulted")
+                            .font(.system(size: 10, weight: .semibold))
+                            .foregroundStyle(.green)
+                            .padding(.horizontal, 5).padding(.vertical, 1)
+                            .background(Color.green.opacity(0.12), in: Capsule())
+                    }
                     Spacer()
-                    Text(item.timeToResult)
-                        .font(.system(size: 10))
-                        .foregroundStyle(.secondary)
+                    if !alreadyResulted {
+                        Text(item.timeToResult)
+                            .font(.system(size: 10))
+                            .foregroundStyle(.secondary)
+                    }
                 }
                 Text(item.clinicalNote ?? "")
                     .font(.system(size: 11))
@@ -192,6 +204,7 @@ struct VOIRow: View {
             }
         }
         .padding(.vertical, 2)
+        .opacity(alreadyResulted ? 0.65 : 1.0)
     }
 
     private var evpiColor: Color {

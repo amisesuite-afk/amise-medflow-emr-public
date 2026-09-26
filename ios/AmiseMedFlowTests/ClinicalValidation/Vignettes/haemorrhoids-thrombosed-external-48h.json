@@ -1,0 +1,178 @@
+{
+  "schemaVersion": 1,
+  "id": "haemorrhoids-thrombosed-external-48h",
+  "condition": "Thrombosed external haemorrhoid (< 72 h)",
+  "category": "anorectal",
+  "permutationOf": "haemorrhoids-grade3-over-50",
+  "permutationLabel": "Acutely thrombosed external haemorrhoid at 48 h",
+  "summary": "33-year-old man with 48 h of severe perianal pain and a tense blue lump at the anal verge after heavy lifting. ASCRS 2024: early surgical excision (within about 72 h of onset) gives faster relief; after that, conservative care. Not an abscess.",
+  "tags": [
+    "anorectal",
+    "haemorrhoids",
+    "thrombosed"
+  ],
+  "inputs": {
+    "patient": {
+      "ageYears": 33,
+      "sex": "male",
+      "pregnancy": {
+        "status": "not-applicable"
+      },
+      "heightCm": 181,
+      "weightKg": 88
+    },
+    "encounter": {
+      "setting": "outpatient",
+      "visitType": "urgentReview",
+      "acuity": "priority"
+    },
+    "chiefComplaint": "Very painful lump at the back passage",
+    "hpi": "Two days ago, after lifting at the gym, sudden painful lump at the anus. Pain constant and severe, worse sitting. No fever. Some spotting of blood. No previous anorectal problems.",
+    "socrates": {
+      "onset": [
+        "2–3 days ago",
+        "Sudden"
+      ],
+      "site": [
+        "Perianal"
+      ],
+      "character": [
+        "Sharp",
+        "Throbbing"
+      ],
+      "exacerbating": [
+        "Sitting",
+        "Defaecation"
+      ],
+      "timing": [
+        "Constant"
+      ],
+      "severity": [
+        "Severe (7–9/10)"
+      ]
+    },
+    "symptoms": [
+      "perianal pain",
+      "perianal lump",
+      "rectal bleeding"
+    ],
+    "negatives": [
+      "fever"
+    ],
+    "exam": {
+      "general": "Uncomfortable, afebrile.",
+      "abdomen": "Soft.",
+      "other": "Perianal: 1.5 cm tense, tender, bluish swelling at the anal verge at 3 o’clock, covered by anoderm; no fluctuance, no cellulitis."
+    },
+    "vitals": [
+      {
+        "minutesAgo": 20,
+        "heartRate": 80,
+        "systolicBp": 128,
+        "diastolicBp": 78,
+        "respiratoryRate": 14,
+        "temperatureC": 36.7,
+        "spo2": 99,
+        "avpu": "A",
+        "onSupplementalO2": false
+      }
+    ],
+    "comorbidities": [],
+    "surgicalHistory": [],
+    "medications": [],
+    "allergies": [],
+    "nkda": true,
+    "socialHistory": "Personal trainer.",
+    "confirmedDiagnosis": {
+      "name": "Thrombosed external haemorrhoid (48 h)",
+      "icd10": "K64.5",
+      "paneDiseaseId": "haemorrhoids",
+      "assessmentText": "Acutely thrombosed external haemorrhoid, 48 h from onset. Excision under local anaesthetic offered."
+    },
+    "platform": {
+      "web": {
+        "ccTemplate": "Other / general surgical",
+        "symptoms": [
+          "perianal pain",
+          "perianal lump",
+          "rectal bleeding"
+        ],
+        "examFindings": {
+          "perineal": [
+            "Mass / swelling"
+          ],
+          "anal": [
+            "External haemorrhoids"
+          ]
+        },
+        "paneAnswers": {
+          "anal_pain": true,
+          "perianal_swelling": true,
+          "fever": false
+        },
+        "durationDays": 2,
+        "painScore": 8
+      }
+    }
+  },
+  "expected": {
+    "differential": {
+      "mustRankTopK": [
+        {
+          "id": "dx-haemorrhoids-top3",
+          "severity": "quality",
+          "match": [
+            "haemorrhoid",
+            "hemorrhoid",
+            "anorectal disease"
+          ],
+          "k": 3,
+          "guidelineRefs": [
+            "ascrs-haem-2024"
+          ],
+          "knownGap": [
+            "ios"
+          ],
+          "knownGapNote": "iOS CI 2026-09-25 (run 36169134350, database mode): not in top 3 of ios.bayes: 1. Inguinal Hernia | 2. Perianal Abscess | 3. Skin Abscess | 4. Deep Vein Thrombosis | 5. Fournier's Gangrene"
+        }
+      ]
+    },
+    "management": {
+      "mustInclude": [
+        {
+          "id": "mgmt-excision-72h",
+          "severity": "quality",
+          "match": [
+            "re:excis[^.;\\n]{0,60}(72|thrombos)",
+            "re:thrombos[^.;\\n]{0,60}excis"
+          ],
+          "guidelineRefs": [
+            "ascrs-haem-2024"
+          ],
+          "note": "ASCRS 2024: early excision of a thrombosed external haemorrhoid (typically within 72 h) rather than incision/evacuation alone.",
+          "proposedFix": "Add a thrombosed-external-haemorrhoid dx-variant: < 72 h → excision under LA; > 72 h → conservative (ASCRS 2024).",
+          "knownGap": [
+            "ios"
+          ],
+          "knownGapNote": "iOS CI 2026-09-25 (run 36169134350, database mode): no management item matched among 12 (ios.pipeline.actions, ios.radiation.plan, ios.radiation.followUp, ios.soap.plan)"
+        }
+      ]
+    }
+  },
+  "guideline": [
+    {
+      "id": "ascrs-haem-2024",
+      "name": "ASCRS clinical practice guidelines — management of hemorrhoids",
+      "year": 2024,
+      "section": "Thrombosed external haemorrhoids: early surgical excision (≈ within 72 h of onset) offers faster symptom resolution and lower recurrence",
+      "citation": "Hawkins AT, Davis BR, Bhama AR, et al. The American Society of Colon and Rectal Surgeons clinical practice guidelines for the management of hemorrhoids. Dis Colon Rectum. 2024;67:614–623.",
+      "verified": false
+    }
+  ],
+  "rationale": "Permutation: acute thrombosed external haemorrhoid. Presents like an abscess (perianal pain + lump); checks the plan offers timely excision.",
+  "authoring": {
+    "author": "Claude (colorectal/anorectal cluster)",
+    "date": "2026-09-25",
+    "notes": "Expectations need surgeon sign-off (reviewedBy). Citations verified: false until checked against the source."
+  }
+}

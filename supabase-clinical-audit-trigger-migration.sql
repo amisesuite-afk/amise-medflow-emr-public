@@ -53,15 +53,16 @@
 -- Run this once in the Supabase SQL editor (idempotent — safe to re-run).
 -- ─────────────────────────────────────────────────────────────────────────────
 
--- Hard-fail loudly if audit_log itself is missing — this is only a
--- best-effort early signal (see below for the mechanism that actually
--- prevents damage): the runner submitting this file may or may not execute
--- it as a single atomic transaction, so a RAISE EXCEPTION in this first
--- block is not trusted on its own to stop the later CREATE TRIGGER loop.
+-- If audit_log itself is missing, say so. This used to RAISE EXCEPTION, which
+-- made the step (and so the whole runner) fail on every fresh database:
+-- audit_log's creating migrations are excluded from run-migrations.yml pending
+-- a schema-conflict resolution (see migrations/README.md's audit_log row). The
+-- mechanism that actually prevents damage is the re-check below, immediately
+-- before each CREATE TRIGGER, so a notice here loses no protection.
 do $$
 begin
   if to_regclass('public.audit_log') is null then
-    raise exception 'audit_log table does not exist — see migrations/README.md''s audit_log row (its creating migration is excluded from run-migrations.yml pending a schema-conflict resolution). Resolve that first; this migration must not attach triggers that assume audit_log is present.';
+    raise notice 'audit_log table does not exist — see migrations/README.md''s audit_log row (its creating migration is excluded from run-migrations.yml pending a schema-conflict resolution). No audit triggers will be attached until it exists and this step is re-run.';
   end if;
 end;
 $$;

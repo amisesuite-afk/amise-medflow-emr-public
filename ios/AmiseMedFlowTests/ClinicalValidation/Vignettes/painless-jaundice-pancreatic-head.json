@@ -1,0 +1,487 @@
+{
+  "schemaVersion": 1,
+  "id": "painless-jaundice-pancreatic-head",
+  "condition": "Pancreatic head carcinoma (malignant obstructive jaundice)",
+  "category": "hpb",
+  "permutationOf": null,
+  "permutationLabel": "Base case — painless obstructive jaundice with Courvoisier gallbladder, weight loss and new-onset diabetes",
+  "summary": "68-year-old man with 3 weeks of painless jaundice, pruritus, pale stools, 8 kg weight loss and diabetes diagnosed 4 months ago; palpable non-tender gallbladder; bilirubin 236, ALP 690; ultrasound: double-duct dilatation to a 3 cm hypoechoic pancreatic head lesion.",
+  "tags": [
+    "jaundice",
+    "malignancy",
+    "pancreas",
+    "suspected-cancer"
+  ],
+  "inputs": {
+    "patient": {
+      "ageYears": 68,
+      "sex": "male",
+      "pregnancy": {
+        "status": "not-applicable"
+      },
+      "heightCm": 174,
+      "weightKg": 64
+    },
+    "encounter": {
+      "setting": "outpatient",
+      "visitType": "urgentReview",
+      "acuity": "priority"
+    },
+    "chiefComplaint": "Painless jaundice and itching",
+    "hpi": "Three weeks of yellow skin and eyes without pain, with generalised itching, dark urine and pale stools. Lost 8 kg over three months with poor appetite. Diabetes diagnosed four months ago (HbA1c 7.4%), no family history. Vague dull ache in the upper back at night. No fever or rigors.",
+    "socrates": {
+      "onset": [
+        "1–4 weeks ago"
+      ],
+      "site": [
+        "Epigastric"
+      ],
+      "character": [
+        "Dull"
+      ],
+      "radiation": [
+        "Back"
+      ],
+      "associations": [
+        "Jaundice",
+        "Weight loss",
+        "Anorexia"
+      ],
+      "timing": [
+        "Progressive",
+        "Nocturnal"
+      ],
+      "exacerbating": [],
+      "relieving": [
+        "Nothing"
+      ],
+      "severity": [
+        "Mild (1–3/10)"
+      ]
+    },
+    "symptoms": [
+      "jaundice",
+      "pruritus",
+      "dark urine",
+      "pale stool",
+      "weight loss",
+      "loss of appetite"
+    ],
+    "negatives": [
+      "fever",
+      "rigors",
+      "abdominal pain"
+    ],
+    "exam": {
+      "general": "Deeply jaundiced with scratch marks. Cachectic. Afebrile, pulse 80/min, BP 132/78.",
+      "abdomen": "Palpable, smooth, non-tender gallbladder in the right upper quadrant (Courvoisier's sign). No hepatomegaly, no ascites."
+    },
+    "vitals": [
+      {
+        "minutesAgo": 20,
+        "heartRate": 80,
+        "systolicBp": 132,
+        "diastolicBp": 78,
+        "respiratoryRate": 14,
+        "temperatureC": 36.7,
+        "spo2": 98,
+        "avpu": "A",
+        "onSupplementalO2": false
+      }
+    ],
+    "labs": [
+      {
+        "analyte": "bilirubin",
+        "name": "Bilirubin",
+        "value": 236,
+        "unit": "µmol/L",
+        "minutesAgo": 40
+      },
+      {
+        "analyte": "alp",
+        "name": "ALP",
+        "value": 690,
+        "unit": "U/L",
+        "minutesAgo": 40
+      },
+      {
+        "analyte": "ggt",
+        "name": "GGT",
+        "value": 910,
+        "unit": "U/L",
+        "minutesAgo": 40
+      },
+      {
+        "analyte": "alt",
+        "name": "ALT",
+        "value": 180,
+        "unit": "U/L",
+        "minutesAgo": 40
+      },
+      {
+        "analyte": "inr",
+        "name": "INR",
+        "value": 1.3,
+        "unit": "",
+        "minutesAgo": 40
+      },
+      {
+        "analyte": "albumin",
+        "name": "Albumin",
+        "value": 33,
+        "unit": "g/L",
+        "minutesAgo": 40
+      },
+      {
+        "analyte": "wbc",
+        "name": "WBC",
+        "value": 7.9,
+        "unit": "×10⁹/L",
+        "minutesAgo": 40
+      },
+      {
+        "analyte": "crp",
+        "name": "CRP",
+        "value": 12,
+        "unit": "mg/L",
+        "minutesAgo": 40
+      },
+      {
+        "analyte": "glucose",
+        "name": "Glucose",
+        "value": 11.2,
+        "unit": "mmol/L",
+        "minutesAgo": 40
+      },
+      {
+        "analyte": "hba1c",
+        "name": "A1c (glycated)",
+        "value": 7.4,
+        "unit": "%",
+        "minutesAgo": 40
+      },
+      {
+        "analyte": "creatinine",
+        "name": "Creatinine",
+        "value": 82,
+        "unit": "µmol/L",
+        "minutesAgo": 40
+      }
+    ],
+    "imaging": [
+      {
+        "name": "USS abdomen",
+        "modality": "US",
+        "region": "Abdomen",
+        "minutesAgo": 1440,
+        "result": "Dilated intra- and extrahepatic ducts; CBD 14 mm tapering abruptly at the pancreatic head, where there is a 3 cm hypoechoic lesion. Pancreatic duct 5 mm (double-duct sign). Distended gallbladder without stones. No liver lesions seen."
+      }
+    ],
+    "comorbidities": [
+      "Type 2 diabetes mellitus (new onset)"
+    ],
+    "medications": [
+      {
+        "drug": "Metformin",
+        "dose": "500 mg",
+        "frequency": "BD",
+        "indication": "Type 2 diabetes"
+      }
+    ],
+    "allergies": [],
+    "nkda": true,
+    "socialHistory": "Retired civil servant. Ex-smoker 30 pack-years. Alcohol occasionally.",
+    "confirmedDiagnosis": {
+      "name": "Suspected pancreatic head adenocarcinoma with malignant distal biliary obstruction",
+      "icd10": "C25.0",
+      "paneDiseaseId": "pancreatic_carcinoma",
+      "assessmentText": "Painless obstructive jaundice with Courvoisier gallbladder, weight loss and new-onset diabetes: suspected pancreatic head adenocarcinoma (double-duct sign). Needs pancreas-protocol CT staging and HPB MDT."
+    },
+    "platform": {
+      "web": {
+        "ccTemplate": "Obstructive jaundice",
+        "symptoms": [
+          "jaundice",
+          "pruritus",
+          "dark urine",
+          "pale stool",
+          "weight loss",
+          "loss of appetite"
+        ],
+        "symptomDetails": {
+          "jaundice": [
+            "Dark urine",
+            "Pale stool",
+            "Pruritus",
+            "Weight loss"
+          ],
+          "weight loss": [
+            "5–10 kg",
+            "1–3 months",
+            "Unintentional",
+            "Anorexia"
+          ]
+        },
+        "examFindings": {
+          "general": [
+            "Jaundiced",
+            "Cachectic"
+          ],
+          "abdomen": [
+            "Mass palpable"
+          ]
+        },
+        "paneAnswers": {
+          "weight_loss": true,
+          "jaundice": true,
+          "pruritus": true,
+          "fever": false,
+          "us_gallstones": false
+        },
+        "durationDays": 21,
+        "painScore": 2
+      }
+    }
+  },
+  "expected": {
+    "differential": {
+      "mustRankTopK": [
+        {
+          "id": "dx-pancreatic-cancer-top3",
+          "severity": "critical",
+          "match": [
+            "pancreatic carcinoma",
+            "pancreatic cancer",
+            "pancreatic adenocarcinoma",
+            "periampullary",
+            "re:pancrea\\w*[^,]{0,20}(carcinoma|cancer|malignan|neoplas|tumou?r|adenocarcinoma)"
+          ],
+          "k": 3,
+          "guidelineRefs": [
+            "nice-ng12",
+            "nice-ng85"
+          ]
+        }
+      ],
+      "mustNotMiss": [
+        {
+          "id": "mnm-cholangiocarcinoma-ampullary",
+          "severity": "quality",
+          "match": [
+            "cholangiocarcinoma",
+            "ampullary",
+            "periampullary",
+            "biliary stricture"
+          ],
+          "note": "Other malignant causes of distal biliary obstruction.",
+          "knownGap": [
+            "ios"
+          ],
+          "knownGapNote": "iOS CI 2026-09-25 (run 36169134350, database mode): not in top 5 of ios.bayes: 1. Pancreatic Carcinoma | 2. Non-Alcoholic Fatty Liver Disease (NAFLD/NASH) | 3. Hepatitis B (Chronic Active) | 4. Ascending Cholangitis | 5. Acute Pancreatitis"
+        }
+      ]
+    },
+    "safety": {
+      "emergencyLevel": {
+        "id": "level-at-least-priority",
+        "severity": "critical",
+        "atLeast": "priority",
+        "guidelineRefs": [
+          "nice-ng12"
+        ],
+        "note": "NICE NG12: jaundice at ≥40 → suspected cancer pathway referral. Must not be routine. iOS (predicted, not observed): urgent (\"jaundice\" in the CC)."
+      },
+      "redFlags": [
+        {
+          "id": "flag-malignancy",
+          "severity": "critical",
+          "match": [
+            "malignan",
+            "cancer",
+            "carcinoma",
+            "courvoisier",
+            "neoplas"
+          ],
+          "guidelineRefs": [
+            "nice-ng12"
+          ],
+          "note": "Painless jaundice, weight loss, new diabetes and a Courvoisier gallbladder."
+        }
+      ],
+      "mustNotAlarm": [
+        {
+          "id": "no-sepsis-alarm",
+          "severity": "quality",
+          "match": [
+            "sepsis",
+            "septic"
+          ],
+          "note": "Afebrile, normal WBC/CRP."
+        }
+      ]
+    },
+    "investigations": {
+      "mustInclude": [
+        {
+          "id": "inv-ct-pancreas-protocol",
+          "severity": "critical",
+          "match": [
+            "re:(pancreas|pancreatic)[^.;\\n]{0,30}protocol",
+            "triple-phase",
+            "dual-phase",
+            "multiphase",
+            "re:\\bct\\b[^.;\\n]{0,40}pancrea"
+          ],
+          "guidelineRefs": [
+            "nice-ng85",
+            "esmo-2023-pancreas"
+          ],
+          "note": "NICE NG85: pancreatic-protocol CT for obstructive jaundice with suspected pancreatic cancer — before any stent."
+        },
+        {
+          "id": "inv-ca199",
+          "severity": "quality",
+          "match": [
+            "ca 19-9",
+            "ca19-9",
+            "ca 19.9",
+            "ca199"
+          ],
+          "guidelineRefs": [
+            "esmo-2023-pancreas"
+          ]
+        },
+        {
+          "id": "inv-eus-tissue",
+          "severity": "quality",
+          "match": [
+            "eus",
+            "endoscopic ultrasound",
+            "fna",
+            "fnb",
+            "tissue"
+          ],
+          "guidelineRefs": [
+            "nice-ng85"
+          ]
+        },
+        {
+          "id": "inv-coagulation",
+          "severity": "quality",
+          "match": [
+            "inr",
+            "coagul",
+            "clotting",
+            "vitamin k"
+          ],
+          "note": "Cholestatic coagulopathy (INR 1.3) before any procedure."
+        }
+      ]
+    },
+    "management": {
+      "mustInclude": [
+        {
+          "id": "mgmt-hpb-mdt",
+          "severity": "critical",
+          "match": [
+            "mdt",
+            "multidisciplinary",
+            "hpb"
+          ],
+          "guidelineRefs": [
+            "nice-ng85",
+            "nice-ng12"
+          ],
+          "note": "Specialist pancreatic MDT via the suspected cancer pathway."
+        }
+      ],
+      "mustExclude": [
+        {
+          "id": "mgmt-no-routine-preop-drainage",
+          "severity": "quality",
+          "match": [
+            "re:(pre-?operative|pre-op)[^.;\\n]{0,30}(stent|drainage)",
+            "re:(stent|drain)[^.;\\n]{0,30}before (resection|surgery|whipple)"
+          ],
+          "unless": [
+            "only if",
+            "cholangitis",
+            "neoadjuvant",
+            "delay",
+            "not routine",
+            "avoid",
+            "unless"
+          ],
+          "guidelineRefs": [
+            "drop-2010",
+            "nice-ng85",
+            "esge-2018-stenting"
+          ],
+          "note": "Routine pre-operative biliary drainage increases complications (DROP); reserve it for cholangitis, delayed surgery or neoadjuvant therapy."
+        },
+        {
+          "id": "mgmt-no-appendicectomy",
+          "severity": "critical",
+          "match": [
+            "appendicectomy",
+            "appendectomy"
+          ],
+          "unless": [
+            "not indicated",
+            "no role",
+            "exclude appendicitis"
+          ],
+          "note": "Not an appendix presentation: an appendicectomy operative plan (consent, theatre booking, post-operative orders) is a wrong-procedure suggestion."
+        }
+      ]
+    }
+  },
+  "guideline": [
+    {
+      "id": "nice-ng12",
+      "name": "NICE NG12 — Suspected cancer: recognition and referral (pancreatic cancer)",
+      "year": 2015,
+      "section": "Suspected cancer pathway referral for pancreatic cancer at age ≥40 with jaundice; urgent direct-access CT (within 2 weeks) at age ≥60 with weight loss and any of diarrhoea, back pain, abdominal pain, nausea, vomiting, constipation or new-onset diabetes",
+      "citation": "National Institute for Health and Care Excellence. NICE guideline NG12, June 2015 (updated).",
+      "verified": false
+    },
+    {
+      "id": "nice-ng85",
+      "name": "NICE NG85 — Pancreatic cancer in adults: diagnosis and management",
+      "year": 2018,
+      "section": "Pancreatic-protocol CT for obstructive jaundice with suspected pancreatic cancer; EUS with tissue sampling if unclear; specialist pancreatic MDT; pre-operative biliary drainage only when surgery is delayed, for cholangitis, or before neoadjuvant therapy; SEMS for palliative biliary drainage",
+      "citation": "National Institute for Health and Care Excellence. NICE guideline NG85, February 2018.",
+      "verified": false
+    },
+    {
+      "id": "esmo-2023-pancreas",
+      "name": "ESMO Clinical Practice Guideline — pancreatic cancer",
+      "year": 2023,
+      "section": "Staging with pancreas-protocol CT (chest/abdomen/pelvis); CA 19-9; MDT resectability assessment; best supportive care and palliation in metastatic disease",
+      "citation": "Conroy T, Pfeiffer P, Vilgrain V, et al. Ann Oncol. 2023;34:987–1002.",
+      "verified": false
+    },
+    {
+      "id": "esge-2018-stenting",
+      "name": "ESGE Clinical Guideline — endoscopic biliary stenting: indications, choice of stents and results",
+      "year": 2018,
+      "section": "Self-expanding metal stents for palliation of malignant extrahepatic biliary obstruction; routine pre-operative drainage not recommended",
+      "citation": "Dumonceau JM, Tringali A, Papanikolaou IS, et al. Endoscopy. 2018;50:910–930.",
+      "verified": false
+    },
+    {
+      "id": "drop-2010",
+      "name": "DROP trial — preoperative biliary drainage for cancer of the head of the pancreas",
+      "year": 2010,
+      "section": "Routine preoperative biliary drainage increased serious complications (74% vs 39%) compared with early surgery",
+      "citation": "van der Gaag NA, Rauws EAJ, van Eijck CHJ, et al. N Engl J Med. 2010;362:129–137.",
+      "verified": false
+    }
+  ],
+  "rationale": "Base case for painless obstructive jaundice: the classic malignant picture (Courvoisier, weight loss, new diabetes, double-duct sign). Tests that the engines rank pancreatic cancer, flag malignancy, keep it off the routine pathway, and order a pancreas-protocol CT and MDT referral before any stent.",
+  "authoring": {
+    "author": "Claude (HPB cluster)",
+    "date": "2026-09-25",
+    "notes": "Expectations and citations need surgeon sign-off (reviewedBy). iOS outcomes not yet observed (unverified: ios) — triage after the first CI run."
+  }
+}

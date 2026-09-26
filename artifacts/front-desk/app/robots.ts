@@ -1,4 +1,5 @@
 import type { MetadataRoute } from 'next';
+import { absoluteUrl, siteUrl } from '@/lib/site';
 
 export default function robots(): MetadataRoute.Robots {
   return {
@@ -6,9 +7,10 @@ export default function robots(): MetadataRoute.Robots {
       {
         userAgent: '*',
         allow: '/',
-        disallow: ['/patient/', '/questionnaire/'],
+        disallow: ['/patient/', '/questionnaire/', '/previsit/', '/staff/', '/kiosk'],
       },
     ],
-    sitemap: 'https://amisemedical.com/sitemap.xml',
+    sitemap: absoluteUrl('/sitemap.xml'),
+    host: siteUrl(),
   };
 }

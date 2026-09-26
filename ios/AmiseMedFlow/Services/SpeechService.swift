@@ -54,7 +54,7 @@ enum DictationMode: String, CaseIterable, Identifiable {
     // AI system prompt for this mode
     var systemPrompt: String {
         let base = """
-        You are a medical transcription assistant for Dr Dawit Daniel Kabiye MD DM, consultant general and endoscopic surgeon, Amise Medical Services, Saint Lucia.
+        You are a medical transcription assistant for \(PracticeProfile.current.clinicianSignature), consultant general and endoscopic surgeon, \(PracticeProfile.current.practiceNameWithCountry).
         Convert raw voice dictation into polished clinical prose. British spelling.
         Expand abbreviations, correct medical terminology, organise into clear paragraphs.
         Remove filler words ("um", "uh", "like", "you know"). Never add clinical information not in the dictation.
@@ -155,7 +155,9 @@ final class SpeechService: NSObject, ObservableObject {
 
         let request = SFSpeechAudioBufferRecognitionRequest()
         request.shouldReportPartialResults = true
-        request.requiresOnDeviceRecognition = false   // cloud for accuracy; on-device fallback if unavailable
+        // Dictation is patient data: keep it on the device whenever the device can recognise
+        // speech locally (A12+ with the language downloaded), so audio is not sent to Apple.
+        request.requiresOnDeviceRecognition = recognizer?.supportsOnDeviceRecognition == true
         recognitionRequest = request
 
         let inputNode = audioEngine.inputNode

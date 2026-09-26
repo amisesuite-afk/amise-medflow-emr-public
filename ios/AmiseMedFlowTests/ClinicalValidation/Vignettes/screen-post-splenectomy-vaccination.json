@@ -1,0 +1,209 @@
+{
+  "schemaVersion": 1,
+  "id": "screen-post-splenectomy-vaccination",
+  "condition": "Asplenia after emergency splenectomy — vaccination and prophylaxis",
+  "category": "trauma-burns",
+  "permutationOf": "trauma-splenic-injury-unstable",
+  "permutationLabel": "Post-operative clinic, day 14 after trauma splenectomy, no vaccines given",
+  "summary": "24-year-old man 14 days after emergency splenectomy for a grade IV splenic injury (motorcycle), seen in the post-operative clinic; no vaccines were given before discharge. BSH 2011: pneumococcal, Hib, meningococcal and annual influenza vaccination, antibiotic prophylaxis and alert card.",
+  "tags": [
+    "vaccination",
+    "asplenia",
+    "post-operative",
+    "prevention"
+  ],
+  "inputs": {
+    "patient": {
+      "ageYears": 24,
+      "sex": "male",
+      "heightCm": 181,
+      "weightKg": 76
+    },
+    "encounter": {
+      "setting": "outpatient",
+      "visitType": "postOp",
+      "acuity": "routine",
+      "isPostOp": true,
+      "postOpDays": 14
+    },
+    "chiefComplaint": "Post-operative review after splenectomy",
+    "hpi": "Day 14 after emergency laparotomy and splenectomy for a grade IV splenic injury in a motorcycle collision. Recovering well, eating normally, wound healing. Discharged on day 6 without vaccinations or antibiotic prophylaxis. Travels to Guyana for work.",
+    "symptoms": [
+      "post-op review"
+    ],
+    "negatives": [
+      "fever",
+      "wound discharge",
+      "abdominal pain"
+    ],
+    "exam": {
+      "general": "Well. T 36.7.",
+      "abdomen": "Midline wound healed, no collection, soft."
+    },
+    "vitals": [
+      {
+        "minutesAgo": 10,
+        "heartRate": 72,
+        "systolicBp": 122,
+        "diastolicBp": 76,
+        "respiratoryRate": 14,
+        "temperatureC": 36.7,
+        "spo2": 99,
+        "avpu": "A",
+        "onSupplementalO2": false
+      }
+    ],
+    "labs": [
+      {
+        "analyte": "platelets",
+        "name": "Platelets",
+        "value": 612,
+        "unit": "×10⁹/L",
+        "minutesAgo": 1440
+      }
+    ],
+    "imaging": [],
+    "comorbidities": [],
+    "surgicalHistory": [
+      "Emergency laparotomy and splenectomy (grade IV splenic injury) — 14 days ago"
+    ],
+    "medications": [],
+    "allergies": [],
+    "nkda": true,
+    "socialHistory": "Mining engineer, travels to Guyana.",
+    "confirmedDiagnosis": {
+      "name": "Asplenia after traumatic splenectomy — post-operative review",
+      "icd10": "Z90.81",
+      "assessmentText": "Day 14 after splenectomy for trauma, recovering well. Asplenia: pneumococcal, Hib, meningococcal ACWY and B vaccines now, annual influenza; antibiotic prophylaxis and standby antibiotics; alert card; malaria advice for travel."
+    },
+    "platform": {
+      "web": {
+        "ccTemplate": "Post-op follow-up (routine)",
+        "symptoms": [
+          "post-op review"
+        ],
+        "durationDays": 14
+      }
+    }
+  },
+  "expected": {
+    "management": {
+      "mustInclude": [
+        {
+          "id": "mgmt-pneumococcal",
+          "severity": "critical",
+          "guidelineRefs": [
+            "bsh-spleen-2011"
+          ],
+          "note": "Overwhelming post-splenectomy infection is largely pneumococcal: vaccination at ≥ 2 weeks after emergency splenectomy is a patient-safety item.",
+          "match": [
+            "pneumococ"
+          ]
+        },
+        {
+          "id": "mgmt-meningococcal",
+          "severity": "quality",
+          "guidelineRefs": [
+            "bsh-spleen-2011"
+          ],
+          "match": [
+            "meningococ"
+          ]
+        },
+        {
+          "id": "mgmt-hib",
+          "severity": "quality",
+          "guidelineRefs": [
+            "bsh-spleen-2011"
+          ],
+          "match": [
+            "haemophilus",
+            "re:\\bhib\\b"
+          ]
+        },
+        {
+          "id": "mgmt-influenza",
+          "severity": "quality",
+          "guidelineRefs": [
+            "bsh-spleen-2011"
+          ],
+          "match": [
+            "influenza"
+          ]
+        },
+        {
+          "id": "mgmt-antibiotic-prophylaxis",
+          "severity": "quality",
+          "guidelineRefs": [
+            "bsh-spleen-2011"
+          ],
+          "match": [
+            "penicillin",
+            "phenoxymethylpenicillin",
+            "amoxicillin",
+            "prophyla"
+          ]
+        },
+        {
+          "id": "mgmt-alert-card",
+          "severity": "quality",
+          "guidelineRefs": [
+            "bsh-spleen-2011"
+          ],
+          "match": [
+            "alert card",
+            "opsi",
+            "education",
+            "standby"
+          ]
+        }
+      ],
+      "mustExclude": [
+        {
+          "id": "mgmt-no-antithrombotic-plan",
+          "severity": "critical",
+          "guidelineRefs": [
+            "bsh-spleen-2011"
+          ],
+          "note": "An ACS, PE or AF antithrombotic/thrombolytic plan must never be attached to this diagnosis. Regression guard for DiagnosisRadiationEngine keyword matching: before 999f838 (word-boundary lookup) the first-substring match would have attached the pulmonary-embolism (DOAC, thrombolysis) plan to this diagnosis because \"pe\" is inside \"post-operative\". With word-boundary matching no radiation entry matches (simulated from the source), so iOS is expected to pass; to be confirmed on the first iOS CI run.",
+          "match": [
+            "aspirin 300",
+            "ticagrelor",
+            "clopidogrel 300",
+            "fondaparinux",
+            "alteplase",
+            "thrombolysis",
+            "rivaroxaban",
+            "apixaban 10",
+            "apixaban 5 mg bd",
+            "dabigatran",
+            "doacs (preferred)"
+          ],
+          "sources": [
+            "ios.radiation",
+            "ios.soap",
+            "web.plan",
+            "web.protocol",
+            "web.managementPanel"
+          ]
+        }
+      ]
+    }
+  },
+  "guideline": [
+    {
+      "id": "bsh-spleen-2011",
+      "name": "BCSH (BSH) guideline — prevention and treatment of infection in patients with an absent or dysfunctional spleen",
+      "year": 2011,
+      "section": "Pneumococcal, Haemophilus influenzae type b and meningococcal immunisation and annual influenza vaccine; after emergency splenectomy immunise from 2 weeks post-operatively (or before discharge if follow-up is uncertain); lifelong antibiotic prophylaxis offered (at least in the first 2 years) and standby antibiotics; patient education and alert card",
+      "citation": "Davies JM, Lewis MPN, Wimperis J, et al. Review of guidelines for the prevention and treatment of infection in patients with an absent or dysfunctional spleen: prepared on behalf of the British Committee for Standards in Haematology. Br J Haematol. 2011;155:308–317.",
+      "verified": false
+    }
+  ],
+  "rationale": "Asplenic patients carry a lifelong risk of overwhelming post-splenectomy infection. When vaccines were missed at discharge, the post-operative visit is the safety net.",
+  "authoring": {
+    "author": "Claude (prevention/screening, obstetric-gynaecological mimics and paediatric surgery cluster)",
+    "date": "2026-09-25",
+    "notes": "Expectations need surgeon sign-off (reviewedBy). Every citation is verified: false. iOS outcomes are unverified (not run on Linux); triage after the first CI run."
+  }
+}

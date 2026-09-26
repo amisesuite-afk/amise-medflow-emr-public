@@ -1,0 +1,287 @@
+{
+  "schemaVersion": 1,
+  "id": "ischaemic-colitis-right-af-ami",
+  "condition": "Right-sided colon ischaemia — acute mesenteric ischaemia to be excluded",
+  "category": "vascular",
+  "permutationOf": "ischaemic-colitis-left",
+  "permutationLabel": "Isolated right colon ischaemia, AF off anticoagulation, lactate 4.1",
+  "summary": "79-year-old man with AF (anticoagulation stopped after a fall) and severe periumbilical pain out of proportion, then maroon stools; lactate 4.1; CT shows right colonic wall thickening. ACG 2015: isolated right colon ischaemia → CT angiography to exclude acute mesenteric ischaemia (SMA embolus).",
+  "tags": [
+    "mimic",
+    "ischaemia",
+    "must-not-miss",
+    "af"
+  ],
+  "inputs": {
+    "patient": {
+      "ageYears": 79,
+      "sex": "male",
+      "pregnancy": {
+        "status": "not-applicable"
+      },
+      "heightCm": 171,
+      "weightKg": 73
+    },
+    "encounter": {
+      "setting": "emergency",
+      "visitType": "urgentReview",
+      "acuity": "urgent"
+    },
+    "chiefComplaint": "Severe tummy pain with dark blood from the back passage",
+    "hpi": "Six hours of severe central abdominal pain, came on over minutes, much worse than it looks on examination; vomited twice, then two maroon stools. Atrial fibrillation; apixaban stopped 2 months ago after a fall. Previous myocardial infarction.",
+    "socrates": {
+      "onset": [
+        "Today",
+        "Sudden"
+      ],
+      "site": [
+        "Periumbilical",
+        "Right side"
+      ],
+      "character": [
+        "Sharp"
+      ],
+      "associations": [
+        "Vomiting",
+        "Rectal bleeding"
+      ],
+      "timing": [
+        "Constant"
+      ],
+      "severity": [
+        "Worst (10/10)"
+      ]
+    },
+    "symptoms": [
+      "abdominal pain",
+      "vomiting",
+      "rectal bleeding"
+    ],
+    "negatives": [],
+    "exam": {
+      "general": "Distressed. HR 112 irregularly irregular, BP 104/66, T 37.2°C, RR 22.",
+      "abdomen": "Soft, mild right-sided tenderness only; pain out of proportion to the findings. No peritonism.",
+      "other": "PR: maroon blood."
+    },
+    "vitals": [
+      {
+        "minutesAgo": 20,
+        "heartRate": 112,
+        "systolicBp": 104,
+        "diastolicBp": 66,
+        "respiratoryRate": 22,
+        "temperatureC": 37.2,
+        "spo2": 95,
+        "avpu": "A",
+        "onSupplementalO2": false
+      }
+    ],
+    "labs": [
+      {
+        "analyte": "haemoglobin",
+        "name": "Haemoglobin",
+        "value": 14.1,
+        "unit": "g/dL",
+        "minutesAgo": 60
+      },
+      {
+        "analyte": "wbc",
+        "name": "WBC",
+        "value": 19.6,
+        "unit": "×10⁹/L",
+        "minutesAgo": 60
+      },
+      {
+        "analyte": "crp",
+        "name": "CRP",
+        "value": 34,
+        "unit": "mg/L",
+        "minutesAgo": 60
+      },
+      {
+        "analyte": "lactate",
+        "name": "Lactate",
+        "value": 4.1,
+        "unit": "mmol/L",
+        "minutesAgo": 60
+      },
+      {
+        "analyte": "creatinine",
+        "name": "Creatinine",
+        "value": 132,
+        "unit": "µmol/L",
+        "minutesAgo": 60
+      },
+      {
+        "analyte": "urea",
+        "name": "Urea",
+        "value": 10.2,
+        "unit": "mmol/L",
+        "minutesAgo": 60
+      }
+    ],
+    "imaging": [
+      {
+        "name": "CT abdomen/pelvis (portal venous phase)",
+        "modality": "CT",
+        "region": "Abdomen/pelvis",
+        "result": "Wall thickening of the caecum and ascending colon with surrounding stranding; SMA not assessed (no arterial phase). No free gas.",
+        "minutesAgo": 30
+      }
+    ],
+    "comorbidities": [
+      "Atrial fibrillation",
+      "Ischaemic heart disease",
+      "Previous falls"
+    ],
+    "surgicalHistory": [],
+    "medications": [
+      {
+        "drug": "Bisoprolol",
+        "dose": "5 mg",
+        "frequency": "OD",
+        "indication": "Atrial fibrillation"
+      }
+    ],
+    "allergies": [],
+    "nkda": true,
+    "socialHistory": "Lives with daughter.",
+    "confirmedDiagnosis": {
+      "name": "Isolated right colon ischaemia — acute mesenteric ischaemia not excluded",
+      "icd10": "K55.0",
+      "assessmentText": "Isolated right colon ischaemia in AF off anticoagulation with lactate 4.1 and pain out of proportion: acute mesenteric ischaemia (SMA embolus) must be excluded with CT angiography; vascular surgery."
+    },
+    "platform": {
+      "web": {
+        "ccTemplate": "Acute abdominal pain",
+        "symptoms": [
+          "abdominal pain",
+          "vomiting",
+          "rectal bleeding",
+          "palpitations"
+        ],
+        "symptomDetails": {
+          "abdominal pain": [
+            "Periumbilical",
+            "Sudden",
+            "< 6 hours",
+            "Sharp",
+            "Worst ever (10)",
+            "Vomiting",
+            "PR bleeding",
+            "Continuous"
+          ],
+          "rectal bleeding": [
+            "Dark red"
+          ]
+        },
+        "examFindings": {
+          "abdomen": [
+            "Soft",
+            "Tender RLQ",
+            "PR: blood"
+          ],
+          "cardiovascular": [
+            "Irregular rhythm",
+            "Tachycardia"
+          ]
+        },
+        "paneAnswers": {
+          "pr_bleeding": true,
+          "nausea_vomiting": true
+        },
+        "durationDays": 0.25,
+        "painScore": 10
+      }
+    }
+  },
+  "expected": {
+    "differential": {
+      "mustNotMiss": [
+        {
+          "id": "mnm-ami",
+          "severity": "critical",
+          "match": [
+            "mesenteric isch",
+            "mesenteric ischem",
+            "acute mesenteric"
+          ],
+          "guidelineRefs": [
+            "acg-ci-2015",
+            "esvs-2017"
+          ]
+        }
+      ]
+    },
+    "safety": {
+      "emergencyLevel": {
+        "id": "level-emergency",
+        "severity": "critical",
+        "atLeast": "emergency",
+        "guidelineRefs": [
+          "esvs-2017"
+        ]
+      }
+    },
+    "investigations": {
+      "mustInclude": [
+        {
+          "id": "inv-cta",
+          "severity": "critical",
+          "match": [
+            "ct angiogra",
+            "re:\\bcta\\b",
+            "re:\\bct\\b[^.;\\n]{0,30}angiogra",
+            "ct mesenteric angio"
+          ],
+          "guidelineRefs": [
+            "acg-ci-2015",
+            "esvs-2017"
+          ],
+          "note": "ACG 2015: isolated right colon ischaemia warrants CT angiography to exclude occlusive SMA disease; ESVS 2017: CTA for suspected AMI."
+        }
+      ]
+    },
+    "management": {
+      "mustInclude": [
+        {
+          "id": "mgmt-vascular",
+          "severity": "quality",
+          "match": [
+            "vascular surg",
+            "revascular",
+            "embolectomy",
+            "laparotomy"
+          ],
+          "guidelineRefs": [
+            "esvs-2017"
+          ]
+        }
+      ]
+    }
+  },
+  "guideline": [
+    {
+      "id": "acg-ci-2015",
+      "name": "ACG clinical guideline — colon ischaemia",
+      "year": 2015,
+      "section": "Isolated right colon ischaemia: evaluate the mesenteric vasculature (CTA) — higher mortality and association with AMI",
+      "citation": "Brandt LJ, Feuerstadt P, Longstreth GF, Boley SJ. ACG clinical guideline: epidemiology, risk factors, patterns of presentation, diagnosis, and management of colon ischemia (CI). Am J Gastroenterol. 2015;110:18–44.",
+      "verified": false
+    },
+    {
+      "id": "esvs-2017",
+      "name": "ESVS clinical practice guidelines — diseases of the mesenteric arteries and veins",
+      "year": 2017,
+      "section": "Suspected acute mesenteric ischaemia: CT angiography without delay; revascularisation",
+      "citation": "Björck M, Koelemay M, Acosta S, et al. Management of the diseases of mesenteric arteries and veins: clinical practice guidelines of the European Society of Vascular Surgery (ESVS). Eur J Vasc Endovasc Surg. 2017;53:460–510.",
+      "verified": false
+    }
+  ],
+  "rationale": "Permutation: the right-sided/embolic variant. The portal-venous CT already done does not exclude an SMA embolus; the plan must ask for CTA.",
+  "authoring": {
+    "author": "Claude (colorectal/anorectal cluster)",
+    "date": "2026-09-25",
+    "notes": "Expectations need surgeon sign-off (reviewedBy). Citations verified: false until checked against the source."
+  }
+}

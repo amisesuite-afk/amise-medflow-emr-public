@@ -7,12 +7,37 @@
     "hello": "tsx ./src/hello.ts",
     "lint:grants": "tsx ./src/lint-migration-grants.ts",
     "lint:rls-policies": "tsx ./src/lint-rls-policies.ts",
+    "check:migrations-fresh": "tsx ./src/check-migrations-fresh.ts",
     "lint:dx-phases": "tsx ./src/lint-dx-variant-phases.ts",
+    "lint:patient-instructions": "tsx ./src/lint-patient-instructions.ts",
     "scan:nav-lockout": "tsx ./src/scan-nav-lockout-patterns.ts",
-    "typecheck": "tsc -p tsconfig.json --noEmit"
+    "lint:no-external-qr": "tsx ./src/lint-no-external-qr.ts",
+    "lint:interaction-parity": "tsx ./src/lint-interaction-parity.ts",
+    "lint:report-import-parity": "tsx ./src/lint-report-import-parity.ts",
+    "lint:reference-range-parity": "tsx ./src/lint-reference-range-parity.ts",
+    "lint:guideline-registry": "tsx ./src/lint-guideline-registry.ts",
+    "lint:history-frames": "tsx ./src/lint-history-frames.ts",
+    "gen:history-frames": "tsx ./src/gen-history-frames.ts",
+    "lint:signoff-catalogue": "tsx ./src/signoff-catalogue.ts --check",
+    "signoff:catalogue": "tsx ./src/signoff-catalogue.ts",
+    "signoff:apply": "tsx ./src/signoff-apply.ts",
+    "lint:shared-content": "tsx ./src/lint-shared-content.ts",
+    "lint:vademecum": "tsx ./src/lint-vademecum.ts",
+    "typecheck": "tsc -p tsconfig.json --noEmit",
+    "clinval:web": "tsx ./src/clinval/run-web.ts",
+    "clinval:report": "tsx ./src/clinval/report.ts",
+    "outcomes:calibration": "tsx ./src/outcomes-calibration.ts",
+    "test": "vitest run",
+    "gen:decision-vectors": "tsx ./src/gen-decision-vectors.ts",
+    "gen:whats-missing-vectors": "tsx ./src/gen-whats-missing-vectors.ts",
+    "gen:approved-content-vectors": "tsx ./src/gen-approved-content-vectors.ts",
+    "content:publish": "tsx ./src/content-publish.ts"
   },
   "devDependencies": {
+    "@electric-sql/pglite": "0.5.8",
     "@types/node": "catalog:",
-    "tsx": "catalog:"
+    "ajv": "8.20.0",
+    "tsx": "catalog:",
+    "vitest": "^5.0.1"
   }
 }

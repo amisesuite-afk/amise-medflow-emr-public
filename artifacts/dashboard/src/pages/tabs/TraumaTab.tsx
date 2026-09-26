@@ -2,6 +2,7 @@ import { useMemo } from 'react';
 import { useAppContext, EMPTY_TRAUMA_DATA } from '@/context/AppContext';
 import CollapsibleCard from '@/components/CollapsibleCard';
 import { ManagementPanel } from '@/components/ManagementPanel';
+import { usePlanPatientContext } from '@/hooks/usePlanPatientContext';
 import { saveBlobAsPDF } from './lib/pdfExport';
 import {
   ISS_REGIONS, AIS_LABELS,
@@ -139,6 +140,7 @@ export default function TraumaTab() {
     weightKg, age,
     patientName, sex,
   } = useAppContext();
+  const planPatient = usePlanPatientContext();
 
   const td = traumaData;
   function update(partial: Partial<typeof traumaData>) {
@@ -1039,7 +1041,7 @@ Amise Medical Services, Saint Lucia &middot; ${esc(nowStr)}<br><strong>CONFIDENT
       {/* ── Trauma Management Protocol ───────────────────────────────────── */}
       {primaryDiseaseId && (
         <CollapsibleCard title="Trauma Management Protocol">
-          <ManagementPanel diseaseId={primaryDiseaseId} icdCode={null} />
+          <ManagementPanel diseaseId={primaryDiseaseId} icdCode={null} patient={planPatient} />
         </CollapsibleCard>
       )}
 

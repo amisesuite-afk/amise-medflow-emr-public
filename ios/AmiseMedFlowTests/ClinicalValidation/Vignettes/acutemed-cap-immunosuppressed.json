@@ -1,0 +1,280 @@
+{
+  "schemaVersion": 1,
+  "id": "acutemed-cap-immunosuppressed",
+  "condition": "Pneumonia in an immunosuppressed patient (methotrexate + prednisolone)",
+  "category": "general-medicine",
+  "permutationOf": "acutemed-cap-low-severity",
+  "permutationLabel": "Immunosuppressed (methotrexate + steroids), blunted fever",
+  "summary": "58-year-old woman with rheumatoid arthritis on methotrexate and prednisolone 10 mg: 4 days of dry cough and exertional breathlessness; T 37.6 (blunted), HR 108, RR 26, SpO₂ 90 %.",
+  "tags": [
+    "pneumonia",
+    "immunosuppressed",
+    "steroids"
+  ],
+  "inputs": {
+    "patient": {
+      "ageYears": 58,
+      "sex": "female",
+      "pregnancy": {
+        "status": "not-applicable"
+      },
+      "heightCm": 163,
+      "weightKg": 68
+    },
+    "encounter": {
+      "setting": "outpatient",
+      "visitType": "followUp",
+      "acuity": "priority"
+    },
+    "chiefComplaint": "Dry cough and breathlessness",
+    "hpi": "Seen for follow-up after an incisional hernia repair six weeks ago (wound healed). Four days of dry cough and breathlessness on walking, worse each day. Feels feverish but temperatures modest. Rheumatoid arthritis on weekly methotrexate and prednisolone 10 mg daily for a flare.",
+    "symptoms": [
+      "dry cough",
+      "exertional breathlessness",
+      "malaise"
+    ],
+    "negatives": [
+      "haemoptysis",
+      "chest pain",
+      "leg swelling",
+      "wound problems"
+    ],
+    "exam": {
+      "general": "Breathless on minimal exertion, cushingoid.",
+      "respiratory": "Fine bilateral inspiratory crackles, RR 26.",
+      "cardiovascular": "HR 108, BP 118/72.",
+      "abdomen": "Healed mesh repair, no collection."
+    },
+    "vitals": [
+      {
+        "minutesAgo": 5,
+        "heartRate": 108,
+        "systolicBp": 118,
+        "diastolicBp": 72,
+        "respiratoryRate": 26,
+        "temperatureC": 37.6,
+        "spo2": 90,
+        "avpu": "A",
+        "onSupplementalO2": false
+      }
+    ],
+    "labs": [
+      {
+        "analyte": "wbc",
+        "name": "WBC",
+        "value": 3.4,
+        "unit": "×10⁹/L",
+        "minutesAgo": 30
+      },
+      {
+        "analyte": "crp",
+        "name": "CRP",
+        "value": 96,
+        "unit": "mg/L",
+        "minutesAgo": 30
+      }
+    ],
+    "imaging": [],
+    "comorbidities": [
+      "Rheumatoid arthritis",
+      "Long-term corticosteroid therapy",
+      "Immunosuppressed (methotrexate)"
+    ],
+    "surgicalHistory": [
+      "Open incisional hernia mesh repair (6 weeks ago)"
+    ],
+    "medications": [
+      {
+        "drug": "Methotrexate",
+        "dose": "15 mg",
+        "frequency": "weekly",
+        "indication": "Rheumatoid arthritis"
+      },
+      {
+        "drug": "Prednisolone",
+        "dose": "10 mg",
+        "frequency": "OD",
+        "indication": "RA flare"
+      },
+      {
+        "drug": "Folic acid",
+        "dose": "5 mg",
+        "frequency": "weekly"
+      }
+    ],
+    "allergies": [],
+    "nkda": true,
+    "socialHistory": "Non-smoker.",
+    "confirmedDiagnosis": {
+      "name": "Pneumonia in an immunosuppressed host",
+      "icd10": "J18.9",
+      "assessmentText": "Hypoxic pneumonia in an immunosuppressed patient (methotrexate, prednisolone): admit, CXR, cultures, consider Pneumocystis and methotrexate pneumonitis; steroid cover."
+    },
+    "platform": {
+      "web": {
+        "ccTemplate": "Other / general surgical",
+        "symptoms": [
+          "dry cough",
+          "dyspnoea on exertion",
+          "malaise"
+        ],
+        "examFindings": {
+          "respiratory": [
+            "Crackles (L)",
+            "Crackles (R)"
+          ],
+          "cardiovascular": [
+            "Tachycardia"
+          ]
+        },
+        "durationDays": 4,
+        "painScore": 0
+      }
+    }
+  },
+  "expected": {
+    "differential": {
+      "mustNotMiss": [
+        {
+          "id": "mnm-pneumonia",
+          "severity": "critical",
+          "match": [
+            "pneumonia",
+            "icd:J18",
+            "icd:J15",
+            "icd:J13",
+            "chest infection",
+            "lower respiratory tract infection"
+          ],
+          "guidelineRefs": [
+            "chest-icp-2020"
+          ]
+        }
+      ]
+    },
+    "safety": {
+      "emergencyLevel": {
+        "id": "level-at-least-urgent",
+        "severity": "critical",
+        "atLeast": "urgent",
+        "guidelineRefs": [
+          "chest-icp-2020",
+          "bts-o2-2017"
+        ]
+      },
+      "mustAlarm": [
+        {
+          "id": "alarm-hypoxia",
+          "severity": "critical",
+          "match": [
+            "hypox",
+            "spo₂",
+            "spo2",
+            "oxygen",
+            "saturation"
+          ],
+          "guidelineRefs": [
+            "bts-o2-2017"
+          ]
+        }
+      ],
+      "redFlags": [
+        {
+          "id": "rf-immunosuppression",
+          "severity": "quality",
+          "match": [
+            "immunosupp",
+            "immunocompromis",
+            "methotrexate",
+            "steroid"
+          ],
+          "guidelineRefs": [
+            "chest-icp-2020"
+          ]
+        }
+      ]
+    },
+    "investigations": {
+      "mustInclude": [
+        {
+          "id": "inv-cxr",
+          "severity": "critical",
+          "match": [
+            "re:\\bcxr\\b",
+            "chest x-ray",
+            "chest x ray",
+            "chest radiograph",
+            "re:\\bx-?ray\\b[^.;]{0,15}chest"
+          ],
+          "guidelineRefs": [
+            "chest-icp-2020"
+          ],
+          "note": "CXR is essential in the immunocompromised host.",
+          "proposedFix": "A protocol for the PANE node pneumonia with CXR (NICE NG138 / BTS CAP), or a respiratory prompt that adds CXR as an investigation."
+        },
+        {
+          "id": "inv-blood-cultures",
+          "severity": "quality",
+          "match": [
+            "blood culture"
+          ],
+          "guidelineRefs": [
+            "chest-icp-2020"
+          ]
+        }
+      ]
+    },
+    "management": {
+      "mustInclude": [
+        {
+          "id": "mgmt-pcp-or-pneumonitis",
+          "severity": "quality",
+          "match": [
+            "pneumocystis",
+            "re:\\bpcp\\b",
+            "re:\\bpjp\\b",
+            "pneumonitis",
+            "methotrexate"
+          ],
+          "guidelineRefs": [
+            "chest-icp-2020"
+          ],
+          "note": "Broader differential in the immunocompromised host: Pneumocystis, drug (methotrexate) pneumonitis.",
+          "proposedFix": "Immunosuppression prompt (see rf-immunosuppression) that widens the differential (Pneumocystis, drug pneumonitis)."
+        }
+      ]
+    }
+  },
+  "guideline": [
+    {
+      "id": "chest-icp-2020",
+      "verified": false,
+      "name": "Treatment of community-acquired pneumonia in immunocompromised adults: a consensus statement",
+      "year": 2020,
+      "section": "Immunocompromised hosts (including chronic corticosteroid and other immunosuppressive therapy) need broader initial evaluation (blood cultures, sputum, consideration of Pneumocystis and resistant organisms) and a lower threshold for admission",
+      "citation": "Ramirez JA, Musher DM, Evans SE, et al. Chest. 2020;158:1896-1911."
+    },
+    {
+      "id": "bts-o2-2017",
+      "verified": false,
+      "name": "BTS guideline for oxygen use in healthcare and emergency settings",
+      "year": 2017,
+      "section": "Target SpO2 94-98% for most acutely ill patients; 88-92% for patients at risk of hypercapnic respiratory failure (e.g. COPD) pending blood gases",
+      "citation": "O'Driscoll BR, Howard LS, Earis J, Mak V. Thorax. 2017;72(Suppl 1):ii1-90."
+    },
+    {
+      "id": "nice-ng250",
+      "verified": false,
+      "name": "NICE NG250 - Pneumonia: diagnosis and management",
+      "year": 2025,
+      "section": "Community-acquired pneumonia: severity assessment with clinical judgement and CRB65 (community) / CURB65 (hospital); low severity managed in the community with oral amoxicillin; higher severity: hospital assessment, microbiology, antibiotics within 4 hours of presentation (1 hour if sepsis suspected)",
+      "citation": "National Institute for Health and Care Excellence. Pneumonia: diagnosis and management (NG250). London: NICE; 2025 (replaces CG191 and NG138)."
+    }
+  ],
+  "rationale": "Immunosuppressed permutation: blunted fever means temperature-driven sepsis rules stay silent. Hypoxia and immunosuppression should drive escalation.",
+  "authoring": {
+    "author": "Claude (acute medicine cluster)",
+    "date": "2026-09-25",
+    "notes": "Expectations need surgeon sign-off (reviewedBy). Citations written from the guideline texts, not yet checked against the source (verified: false). iOS outcomes are unverified until the next CI run."
+  }
+}

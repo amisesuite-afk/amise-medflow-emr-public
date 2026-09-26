@@ -88,11 +88,26 @@ private let candidateEvidenceTable: [CandidateEvidence] = [
     CandidateEvidence(key: "lactate",       name: "Serum Lactate",          category: .labBlood, timeToResult: "15 min",   priority: .immediate, lr: ["Septic Shock": 5.0, "Mesenteric Ischaemia": 6.0, "Strangulated Bowel": 4.5, "Acute Limb Ischaemia": 4.0], baseProbPositive: 0.12),
     CandidateEvidence(key: "lft",           name: "Liver Function Tests",   category: .labBlood, timeToResult: "60 min",   priority: .urgent,    lr: ["Ascending Cholangitis": 5.0, "Acute Cholecystitis": 2.5, "Acute Pancreatitis": 2.0], baseProbPositive: 0.20),
     CandidateEvidence(key: "d_dimer",       name: "D-Dimer",                category: .labBlood, timeToResult: "30 min",   priority: .urgent,    lr: ["Pulmonary Embolism": 2.0, "Proximal DVT": 2.2], baseProbPositive: 0.25),
-    CandidateEvidence(key: "troponin",      name: "High-Sensitivity Troponin", category: .labBlood, timeToResult: "60 min", priority: .urgent,   lr: ["Massive Pulmonary Embolism": 3.5], baseProbPositive: 0.08),
+    CandidateEvidence(key: "troponin",      name: "High-Sensitivity Troponin", category: .labBlood, timeToResult: "60 min", priority: .urgent,   lr: ["NSTEMI": 15.0, "STEMI": 20.0, "Acute Coronary Syndrome": 12.0, "Massive Pulmonary Embolism": 3.5, "Type 2 MI": 4.0], baseProbPositive: 0.08),
     CandidateEvidence(key: "blood_culture", name: "Blood Cultures × 2",    category: .labBlood, timeToResult: "48 h",     priority: .urgent,    lr: ["Sepsis": 4.0, "Ascending Cholangitis": 3.5, "Urosepsis": 3.8], baseProbPositive: 0.18),
     CandidateEvidence(key: "lrinec_labs",   name: "LRINEC Panel (FBC/CRP/Na/Cr/Glucose)", category: .labBlood, timeToResult: "60 min", priority: .immediate, lr: ["Necrotising Fasciitis": 6.0, "Fournier's Gangrene": 6.0], baseProbPositive: 0.05),
+    CandidateEvidence(key: "serum_calcium", name: "Serum Calcium (corrected)", category: .labBlood, timeToResult: "60 min", priority: .urgent, lr: ["Primary Hyperparathyroidism": 8.0, "Hypercalcaemia of Malignancy": 6.0, "Acute Pancreatitis": 3.0], baseProbPositive: 0.08),
+    CandidateEvidence(key: "coagulation",   name: "Coagulation Screen (PT/INR/APTT)", category: .labBlood, timeToResult: "60 min", priority: .urgent, lr: ["Acute Liver Failure": 6.0, "Ascending Cholangitis": 3.0, "Disseminated Intravascular Coagulation": 8.0], baseProbPositive: 0.12),
+    CandidateEvidence(key: "hba1c",         name: "HbA1c",                 category: .labBlood, timeToResult: "4–6 h",    priority: .routine,   lr: ["Type 2 Diabetes": 12.0, "Diabetic Ketoacidosis": 4.0], baseProbPositive: 0.22),
+    CandidateEvidence(key: "esr",           name: "ESR",                   category: .labBlood, timeToResult: "60 min",   priority: .routine,   lr: ["Giant Cell Arteritis": 6.0, "Inflammatory Bowel Disease": 3.0, "Malignancy Workup": 2.0], baseProbPositive: 0.25),
+    CandidateEvidence(key: "urine_acr",     name: "Urine ACR / Protein",   category: .labUrine, timeToResult: "30 min",   priority: .routine,   lr: ["Chronic Kidney Disease": 5.0, "Nephrotic Syndrome": 8.0], baseProbPositive: 0.18),
+    CandidateEvidence(key: "fbc",           name: "Full Blood Count",       category: .labBlood, timeToResult: "60 min",   priority: .urgent,    lr: ["Iron Deficiency Anaemia": 10.0, "Haemolytic Anaemia": 8.0, "Lymphoma": 5.0, "Aplastic Anaemia": 12.0, "Myelodysplastic Syndrome": 9.0], baseProbPositive: 0.30),
+    CandidateEvidence(key: "ue",            name: "U&E / Renal Function",   category: .labBlood, timeToResult: "60 min",   priority: .urgent,    lr: ["Acute Kidney Injury": 14.0, "Dehydration": 6.0, "Addison's Disease": 5.0, "Primary Hyperaldosteronism": 8.0], baseProbPositive: 0.25),
+    CandidateEvidence(key: "thyroid_fn",    name: "Thyroid Function (TSH/FT4)", category: .labBlood, timeToResult: "4 h",  priority: .routine,   lr: ["Hypothyroidism": 14.0, "Hyperthyroidism": 16.0, "Thyroiditis": 8.0], baseProbPositive: 0.15),
+    CandidateEvidence(key: "abg",           name: "Arterial Blood Gas",     category: .bedside, timeToResult: "5 min",     priority: .urgent,    lr: ["Septic Shock": 8.0, "Acute Mesenteric Ischaemia": 6.0, "Pulmonary Embolism": 3.0, "Metabolic Acidosis": 10.0], baseProbPositive: 0.20),
+    CandidateEvidence(key: "iron_studies",  name: "Iron Studies / Ferritin", category: .labBlood, timeToResult: "4–6 h",  priority: .routine,   lr: ["Iron Deficiency Anaemia": 14.0, "Haemochromatosis": 8.0, "Anaemia of Chronic Disease": 5.0], baseProbPositive: 0.22),
+    CandidateEvidence(key: "urine_culture", name: "Urine Culture (MSU)",    category: .labUrine, timeToResult: "48 h",     priority: .routine,   lr: ["Pyelonephritis": 10.0, "Urinary Tract Infection": 8.0, "Urosepsis": 6.0], baseProbPositive: 0.28),
+    CandidateEvidence(key: "cortisol",      name: "Cortisol / Short Synacthen Test", category: .labBlood, timeToResult: "4–6 h", priority: .urgent, lr: ["Addison's Disease": 16.0, "Adrenal Insufficiency": 14.0, "Cushing's Syndrome": 6.0], baseProbPositive: 0.06),
 
     // --- Imaging ---
+    CandidateEvidence(key: "ct_chest",      name: "CT Chest",               category: .imaging, timeToResult: "60 min",   priority: .urgent,    lr: ["Pulmonary Tuberculosis": 10.0, "Lung Carcinoma": 12.0, "Community-Acquired Pneumonia": 8.0, "Lymphoma": 7.0, "Pleural Effusion": 6.0], baseProbPositive: 0.18),
+    CandidateEvidence(key: "mri_liver",     name: "MRI Liver / MRCP",       category: .imaging, timeToResult: "2–4 h",    priority: .urgent,    lr: ["Hepatocellular Carcinoma": 14.0, "Choledocholithiasis": 12.0, "Primary Sclerosing Cholangitis": 10.0, "Biliary Stricture": 8.0], baseProbPositive: 0.15),
+    CandidateEvidence(key: "echo",          name: "Echocardiogram (TTE)",   category: .imaging, timeToResult: "4–24 h",   priority: .urgent,    lr: ["Heart Failure": 10.0, "Pericarditis / Pericardial Effusion": 8.0, "Aortic Stenosis": 12.0, "Endocarditis": 9.0], baseProbPositive: 0.20),
     CandidateEvidence(key: "erect_cxr",     name: "Erect CXR",             category: .imaging, timeToResult: "30 min",    priority: .urgent,    lr: ["Perforated Viscus": 12.0, "Perforated Peptic Ulcer": 10.0], baseProbPositive: 0.08),
     CandidateEvidence(key: "us_abdomen",    name: "USS Abdomen / RUQ",     category: .imaging, timeToResult: "30–60 min", priority: .urgent,    lr: ["Acute Cholecystitis": 6.5, "Biliary Colic": 5.0, "Ascending Cholangitis": 4.5, "Acute Pancreatitis": 2.0], baseProbPositive: 0.30),
     CandidateEvidence(key: "ct_abdomen",    name: "CT Abdomen/Pelvis",     category: .imaging, timeToResult: "60–90 min", priority: .urgent,    lr: ["Acute Appendicitis": 10.0, "Perforated Viscus": 15.0, "Bowel Obstruction": 12.0, "Mesenteric Ischaemia": 9.0, "Renal Colic": 14.0], baseProbPositive: 0.35),
@@ -159,7 +174,22 @@ enum ValueOfInformationEngine {
 
     // Convenience overload using PatientStateVector
     static func rank(from psv: PatientStateVector) -> [InformationItem] {
-        let collected = Set(psv.socratesSelections.keys)
+        var collected = Set(psv.socratesSelections.keys)
+        // Mark catalogue entries already ordered/resulted as collected so VoI
+        // doesn't recommend investigations the patient already has in flight.
+        let activeInvNames = psv.investigationEntries
+            .filter { $0.status != .cancelled && $0.status != .suggested }
+            .map { $0.name.lowercased() }
+        for candidate in candidateEvidenceTable {
+            let keyPhrase = candidate.key.replacingOccurrences(of: "_", with: " ")
+            let nameFirst = candidate.name.lowercased().components(separatedBy: " ").first ?? ""
+            let matches = activeInvNames.contains {
+                $0.contains(candidate.key) ||
+                $0.contains(keyPhrase) ||
+                (nameFirst.count >= 4 && $0.contains(nameFirst))
+            }
+            if matches { collected.insert(candidate.key) }
+        }
         return rank(hypotheses: psv.hypotheses, alreadyCollected: collected)
     }
 

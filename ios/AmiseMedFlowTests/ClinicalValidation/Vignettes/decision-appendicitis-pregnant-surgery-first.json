@@ -1,0 +1,162 @@
+{
+  "schemaVersion": 1,
+  "id": "decision-appendicitis-pregnant-surgery-first",
+  "condition": "Acute appendicitis in pregnancy (24 weeks)",
+  "category": "gi-emergency",
+  "permutationOf": null,
+  "summary": "24 weeks pregnant with MRI-confirmed uncomplicated appendicitis: laparoscopic appendicectomy ranks above antibiotics-first; pregnancy lowers the antibiotics-first benefit.",
+  "tags": [
+    "decision-support",
+    "pregnancy",
+    "personalisation"
+  ],
+  "inputs": {
+    "patient": {
+      "ageYears": 29,
+      "sex": "female",
+      "pregnancy": {
+        "status": "pregnant",
+        "gestationWeeks": 24
+      },
+      "heightCm": 165,
+      "weightKg": 72
+    },
+    "encounter": {
+      "setting": "emergency",
+      "visitType": "urgentReview",
+      "acuity": "urgent"
+    },
+    "chiefComplaint": "Right-sided abdominal pain in pregnancy",
+    "hpi": "24 weeks pregnant (G2P1). 30 hours of periumbilical pain moving to the right flank, anorexia and nausea. No vaginal bleeding, fetal movements normal.",
+    "exam": {
+      "general": "Uncomfortable.",
+      "abdomen": "Gravid uterus at 24 weeks. Tender right flank and right iliac fossa with guarding; no generalised peritonism."
+    },
+    "vitals": [
+      {
+        "minutesAgo": 10,
+        "heartRate": 98,
+        "systolicBp": 118,
+        "diastolicBp": 70,
+        "respiratoryRate": 18,
+        "temperatureC": 37.9,
+        "spo2": 98,
+        "avpu": "A",
+        "onSupplementalO2": false
+      }
+    ],
+    "labs": [
+      {
+        "analyte": "wbc",
+        "name": "WBC",
+        "value": 15.1,
+        "unit": "x10^9/L",
+        "minutesAgo": 60
+      },
+      {
+        "analyte": "crp",
+        "name": "CRP",
+        "value": 64,
+        "unit": "mg/L",
+        "minutesAgo": 60
+      },
+      {
+        "analyte": "egfr",
+        "name": "eGFR",
+        "value": 120,
+        "unit": "mL/min/1.73m2",
+        "minutesAgo": 60
+      }
+    ],
+    "imaging": [
+      {
+        "name": "MRI abdomen",
+        "modality": "MRI",
+        "region": "abdomen",
+        "result": "Dilated 9 mm appendix with periappendiceal inflammation, displaced superiorly; no appendicolith, no abscess, no free fluid.",
+        "minutesAgo": 40
+      }
+    ],
+    "nkda": true,
+    "scoreForms": {
+      "asa": {
+        "total": 1
+      }
+    },
+    "confirmedDiagnosis": {
+      "name": "Acute appendicitis (uncomplicated) in pregnancy",
+      "icd10": "K35.80",
+      "paneDiseaseId": "appendicitis",
+      "assessmentText": "Acute uncomplicated appendicitis at 24 weeks' gestation, MRI-confirmed."
+    },
+    "platform": {
+      "web": {
+        "ccTemplate": "Acute abdominal pain",
+        "symptoms": [
+          "Abdominal pain",
+          "Nausea",
+          "Loss of appetite"
+        ]
+      }
+    }
+  },
+  "expected": {
+    "management": {
+      "mustInclude": [
+        {
+          "id": "decision-appendicectomy-first-in-pregnancy",
+          "severity": "critical",
+          "match": [
+            "re:rank 1: laparoscopic appendicectomy[^;]*- treat"
+          ],
+          "sources": [
+            "web.decisions",
+            "ios.decisions"
+          ],
+          "guidelineRefs": [
+            "wses-2020"
+          ]
+        },
+        {
+          "id": "decision-pregnancy-lowers-antibiotics-first",
+          "severity": "quality",
+          "match": [
+            "re:pregnant lowered the benefit of antibiotics-first"
+          ],
+          "sources": [
+            "web.decisions",
+            "ios.decisions"
+          ],
+          "guidelineRefs": [
+            "wses-2020",
+            "coda-2020"
+          ]
+        }
+      ]
+    }
+  },
+  "guideline": [
+    {
+      "id": "wses-2020",
+      "name": "WSES Jerusalem guidelines — acute appendicitis (2020 update)",
+      "year": 2020,
+      "section": "Appendicitis in pregnancy; non-operative management",
+      "citation": "Di Saverio S et al. World J Emerg Surg 2020;15:27.",
+      "verified": false
+    },
+    {
+      "id": "coda-2020",
+      "name": "CODA trial",
+      "year": 2020,
+      "section": "Antibiotics vs appendicectomy",
+      "citation": "CODA Collaborative. N Engl J Med 2020;383:1907-1919.",
+      "verified": false
+    }
+  ],
+  "rationale": "Pregnant women were excluded from CODA and APPAC; WSES 2020 favours laparoscopic appendicectomy in pregnancy because failed non-operative treatment and perforation carry fetal risk.",
+  "authoring": {
+    "author": "Claude (bayes-treatment branch)",
+    "date": "2026-09-25",
+    "notes": "Decision-support vignette (web.decisions / ios.decisions). Expectations test the band and ranking of the decision layer, whose numbers await surgeon sign-off (docs/clinical-validation/changes/bayes-treatment.md)."
+  }
+}

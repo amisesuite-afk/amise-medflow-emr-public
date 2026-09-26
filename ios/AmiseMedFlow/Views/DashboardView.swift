@@ -4,89 +4,45 @@ import SwiftData
 // MARK: - Clinical dashboard — opened by tapping the AMF logo
 
 struct DashboardView: View {
-    @Query private var allPatients: [Patient]
-    @EnvironmentObject private var sync: SyncService
-    @EnvironmentObject private var peerSync: PeerSyncService
+    @Query private var queriedAllPatients: [Patient]
+    // Deleted/detached records are dropped before any view reads them (SwiftData
+    // crashes when a body touches a deleted model before @Query refreshes).
+    private var allPatients: [Patient] { queriedAllPatients.filter(\.isLive) }
+    // SyncService / PeerSyncService are observed by DashboardSyncSection only: they publish many
+    // times during a sync, and observing them here re-ran every patient summary on each publish.
     @Environment(\.dismiss) private var dismiss
-
-    // MARK: Derived counts (deduped so badge numbers reflect real patients)
-
-    private var inpatients: [Patient]   { allPatients.filter { $0.setting == .inpatient || $0.setting == .emergency }.deduped() }
-    private var theatreCases: [Patient] { allPatients.filter { $0.setting == .theatre }.deduped() }
-    private var scopeCases: [Patient]   { allPatients.filter { $0.setting == .endoscopy }.deduped() }
-    private var outpatients: [Patient]  { allPatients.filter { $0.setting == .outpatient }.deduped() }
-
-    private var todayTheatre: [Patient] {
-        let cal = Calendar.current
-        return theatreCases.filter { p in
-            guard let d = p.operationDate else { return false }
-            return cal.isDateInToday(d)
-        }
-    }
-
-    private var todayScope: [Patient] {
-        let cal = Calendar.current
-        return scopeCases.filter { p in
-            guard let d = p.operationDate else { return false }
-            return cal.isDateInToday(d)
-        }
-    }
-
-    // MARK: Alert lists
-
-    private var highNews2: [Patient] {
-        allPatients.deduped().filter { p in
-            guard let v = p.vitalsEntries.sorted(by: { $0.recordedAt > $1.recordedAt }).first,
-                  v.hasAnyValue else { return false }
-            return v.news2Score >= 5
-        }
-    }
-
-    private var emergencyAcuity: [Patient] {
-        allPatients.filter { $0.acuity == .emergency }.deduped()
-    }
-
-    private var consentPending: [Patient] {
-        (theatreCases + scopeCases).filter { !$0.consentSent }
-    }
-
-    private var instructionsPending: [Patient] {
-        (theatreCases + scopeCases).filter { !$0.preOpInstructionsSent }
-    }
-
-    private var unsignedNotes: Int {
-        allPatients.deduped().reduce(0) { $0 + $1.clinicalNotes.filter { $0.status == .draft && !$0.isEmpty }.count }
-    }
-
-    private var pendingInvestigations: Int {
-        allPatients.deduped().reduce(0) { $0 + $1.investigations.filter { $0.status == .ordered || $0.status == .pending }.count }
-    }
 
     // MARK: Body
 
     var body: some View {
+        // Every count and alert list once per render. Before, each tile, badge and alert row
+        // recomputed its list from all patients: ~20 `deduped()` passes over the whole store per
+        // render, every patient's vitals sorted 2-3 times and every patient's investigations JSON
+        // decoded 6-8 times - and the screen re-rendered on every sync publish.
+        let summary = DashboardSummary(patients: allPatients, calendar: .current)
         NavigationStack {
             ScrollView {
                 VStack(alignment: .leading, spacing: 20) {
 
                     // Section count tiles
-                    sectionCountRow
+                    sectionCountRow(summary)
 
                     // Today's list
-                    if !todayTheatre.isEmpty || !todayScope.isEmpty {
-                        todaySection
+                    if !summary.today.isEmpty {
+                        todaySection(summary.today)
                     }
 
                     // Active alerts
-                    alertsSection
+                    alertsSection(summary)
 
                     // Sync status
-                    syncSection
+                    DashboardSyncSection()
                 }
                 .padding(20)
             }
             .navigationTitle("Clinical Overview")
             .navigationBarTitleDisplayMode(.inline)
+            .onAppear { CrashReporting.breadcrumb("Opened clinical overview") }
             .toolbar {
                 ToolbarItem(placement: .confirmationAction) {
                     Button("Done") { dismiss() }
@@ -99,12 +55,12 @@ struct DashboardView: View {
 
     // MARK: - Section count tiles
 
-    private var sectionCountRow: some View {
+    private func sectionCountRow(_ summary: DashboardSummary) -> some View {
         LazyVGrid(columns: Array(repeating: GridItem(.flexible(), spacing: 12), count: 4), spacing: 12) {
-            countTile(label: "Ward", count: inpatients.count, color: Color(hex: "#2563EB"), icon: "bed.double")
-            countTile(label: "Theatre", count: theatreCases.count, color: Color(hex: "#7C3AED"), icon: "scissors")
-            countTile(label: "Scope", count: scopeCases.count, color: Color(hex: "#0891B2"), icon: "circle.dotted")
-            countTile(label: "OPD", count: outpatients.count, color: Color(hex: "#0D9488"), icon: "person.crop.circle")
+            countTile(label: "Ward", count: summary.inpatientCount, color: Color(hex: "#2563EB"), icon: "bed.double")
+            countTile(label: "Theatre", count: summary.theatreCount, color: Color(hex: "#7C3AED"), icon: "scissors")
+            countTile(label: "Scope", count: summary.scopeCount, color: Color(hex: "#0891B2"), icon: "circle.dotted")
+            countTile(label: "OPD", count: summary.outpatientCount, color: Color(hex: "#0D9488"), icon: "person.crop.circle")
         }
     }
 
@@ -128,14 +84,14 @@ struct DashboardView: View {
 
     // MARK: - Today's list
 
-    private var todaySection: some View {
+    private func todaySection(_ today: [Patient]) -> some View {
         VStack(alignment: .leading, spacing: 10) {
             Label("Today", systemImage: "calendar")
                 .font(.subheadline.weight(.semibold))
                 .foregroundStyle(.secondary)
 
             VStack(spacing: 0) {
-                ForEach(todayTheatre + todayScope) { patient in
+                ForEach(today) { patient in
                     HStack(spacing: 10) {
                         AcuityPip(acuity: patient.acuity)
 
@@ -167,7 +123,7 @@ struct DashboardView: View {
                     .padding(.vertical, 8)
                     .padding(.horizontal, 12)
 
-                    if patient.id != (todayTheatre + todayScope).last?.id {
+                    if patient.id != today.last?.id {
                         Divider().padding(.leading, 12)
                     }
                 }
@@ -179,9 +135,16 @@ struct DashboardView: View {
 
     // MARK: - Alerts
 
-    private var alertsSection: some View {
+    private func alertsSection(_ summary: DashboardSummary) -> some View {
         VStack(alignment: .leading, spacing: 10) {
-            let totalAlerts = highNews2.count + emergencyAcuity.count + consentPending.count + instructionsPending.count + unsignedNotes + pendingInvestigations
+            let totalAlerts = summary.totalAlerts
+            let emergencyAcuity = summary.emergencyAcuity
+            let highNews2 = summary.highNews2
+            let consentPending = summary.consentPendingCount
+            let instructionsPending = summary.instructionsPendingCount
+            let unsignedNotes = summary.unsignedNotes
+            let pendingInvestigations = summary.pendingInvestigations
+            let patientsWithNewResults = summary.withNewResults
 
             Label(totalAlerts == 0 ? "No active alerts" : "\(totalAlerts) item\(totalAlerts == 1 ? "" : "s") need attention",
                   systemImage: totalAlerts == 0 ? "checkmark.circle.fill" : "exclamationmark.triangle.fill")
@@ -198,25 +161,28 @@ struct DashboardView: View {
                     if !highNews2.isEmpty {
                         alertRow(icon: "waveform.path.ecg", color: .red,
                                  title: "NEWS2 ≥ 5",
-                                 detail: highNews2.map { p in
-                                    let score = p.vitalsEntries.sorted(by: { $0.recordedAt > $1.recordedAt }).first?.news2Score ?? 0
-                                    return "\(p.fullName) (\(score))"
-                                 }.joined(separator: ", "))
+                                 detail: highNews2.map { "\($0.patient.fullName) (\($0.score))" }
+                                    .joined(separator: ", "))
                     }
-                    if !consentPending.isEmpty {
+                    if consentPending > 0 {
                         alertRow(icon: "doc.badge.ellipsis", color: .orange,
                                  title: "Consent not sent",
-                                 detail: "\(consentPending.count) theatre / scope case\(consentPending.count == 1 ? "" : "s")")
+                                 detail: "\(consentPending) theatre / scope case\(consentPending == 1 ? "" : "s")")
                     }
-                    if !instructionsPending.isEmpty {
+                    if instructionsPending > 0 {
                         alertRow(icon: "list.bullet.clipboard", color: .orange,
                                  title: "Instructions not sent",
-                                 detail: "\(instructionsPending.count) case\(instructionsPending.count == 1 ? "" : "s")")
+                                 detail: "\(instructionsPending) case\(instructionsPending == 1 ? "" : "s")")
                     }
                     if unsignedNotes > 0 {
                         alertRow(icon: "pencil.circle", color: .orange,
                                  title: "Unsigned draft notes",
                                  detail: "\(unsignedNotes) note\(unsignedNotes == 1 ? "" : "s") awaiting signature")
+                    }
+                    if !patientsWithNewResults.isEmpty {
+                        alertRow(icon: "flask.fill", color: .teal,
+                                 title: "Results available",
+                                 detail: ListPerf.namesSummary(patientsWithNewResults.map { $0.fullName }, shown: 3))
                     }
                     if pendingInvestigations > 0 {
                         alertRow(icon: "clock.badge.exclamationmark", color: .secondary,
@@ -249,10 +215,17 @@ struct DashboardView: View {
         .padding(.vertical, 8)
         .padding(.horizontal, 12)
     }
+}
 
-    // MARK: - Sync status
+// MARK: - Sync status
 
-    private var syncSection: some View {
+/// The dashboard's sync rows, in their own view so that SyncService / PeerSyncService publishes
+/// (many per sync) re-render only these rows, not the patient summaries.
+private struct DashboardSyncSection: View {
+    @EnvironmentObject private var sync: SyncService
+    @EnvironmentObject private var peerSync: PeerSyncService
+
+    var body: some View {
         VStack(alignment: .leading, spacing: 10) {
             Label("Sync", systemImage: "arrow.triangle.2.circlepath")
                 .font(.subheadline.weight(.semibold))
@@ -281,13 +254,16 @@ struct DashboardView: View {
 
                 HStack {
                     Image(systemName: "antenna.radiowaves.left.and.right")
-                        .foregroundStyle(peerSync.connectedCount > 0 ? .green : .secondary)
+                        .foregroundStyle(peerSync.connectedCount > 0 ? Color.green
+                                         : peerSync.nearbyCount > 0  ? Color.orange
+                                         : peerSync.isRunning        ? AMColor.accent
+                                         : Color.secondary)
                         .frame(width: 20)
                     Text(peerSync.connectedCount > 0
                          ? "\(peerSync.connectedCount) device\(peerSync.connectedCount == 1 ? "" : "s") connected"
                          : peerSync.nearbyCount > 0
                          ? "\(peerSync.nearbyCount) nearby"
-                         : "No devices nearby")
+                         : peerSync.pairingPrompt ?? (peerSync.isRunning ? "Scanning…" : "No devices nearby"))
                         .font(.system(size: 13))
                     Spacer()
                 }
@@ -296,6 +272,67 @@ struct DashboardView: View {
             }
             .background(Color(.systemBackground), in: RoundedRectangle(cornerRadius: 12))
             .overlay(RoundedRectangle(cornerRadius: 12).stroke(Color(.separator).opacity(0.5), lineWidth: 0.5))
+        }
+    }
+}
+
+// MARK: - Summary (computed once per render)
+
+/// Counts and alert lists of the clinical dashboard, with the same filters and dedup as before.
+/// `patients` must already exclude deleted records (`isLive`).
+private struct DashboardSummary {
+    var inpatientCount = 0
+    var theatreCount = 0
+    var scopeCount = 0
+    var outpatientCount = 0
+    /// Today's theatre cases, then today's scope cases.
+    var today: [Patient] = []
+    var highNews2: [(patient: Patient, score: Int)] = []
+    var emergencyAcuity: [Patient] = []
+    var consentPendingCount = 0
+    var instructionsPendingCount = 0
+    var unsignedNotes = 0
+    var pendingInvestigations = 0
+    var withNewResults: [Patient] = []
+
+    var totalAlerts: Int {
+        highNews2.count + emergencyAcuity.count + consentPendingCount + instructionsPendingCount
+            + unsignedNotes + pendingInvestigations + withNewResults.count
+    }
+
+    init(patients allPatients: [Patient], calendar cal: Calendar) {
+        let inpatients   = allPatients.filter { $0.setting == .inpatient || $0.setting == .emergency }.deduped()
+        let theatreCases = allPatients.filter { $0.setting == .theatre }.deduped()
+        let scopeCases   = allPatients.filter { $0.setting == .endoscopy }.deduped()
+        let outpatients  = allPatients.filter { $0.setting == .outpatient }.deduped()
+        inpatientCount = inpatients.count
+        theatreCount = theatreCases.count
+        scopeCount = scopeCases.count
+        outpatientCount = outpatients.count
+
+        func isToday(_ p: Patient) -> Bool {
+            guard let d = p.operationDate else { return false }
+            return cal.isDateInToday(d)
+        }
+        today = theatreCases.filter(isToday) + scopeCases.filter(isToday)
+
+        emergencyAcuity = allPatients.filter { $0.acuity == .emergency }.deduped()
+        consentPendingCount = (theatreCases + scopeCases).filter { !$0.consentSent }.count
+        instructionsPendingCount = (theatreCases + scopeCases).filter { !$0.preOpInstructionsSent }.count
+
+        // One dedup pass over all patients (was one per alert list, per use), then each
+        // patient's vitals and investigations read once.
+        for p in allPatients.deduped() {
+            if let v = ListPerf.newest(p.vitalsEntries.filter(\.isLive), by: { $0.recordedAt }), v.hasAnyValue {
+                let score = v.news2Score
+                if score >= 5 { highNews2.append((p, score)) }
+            }
+            unsignedNotes += p.clinicalNotes.filter { $0.isLive && $0.status == .draft && !$0.isEmpty }.count
+            let investigations = p.investigations
+            pendingInvestigations += investigations.filter { $0.status == .ordered || $0.status == .pending }.count
+            if investigations.contains(where: { $0.status == .resulted && !$0.result.isEmpty }) {
+                withNewResults.append(p)
+            }
         }
     }
 }

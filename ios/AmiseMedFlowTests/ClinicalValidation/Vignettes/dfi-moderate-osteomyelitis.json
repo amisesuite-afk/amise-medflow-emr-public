@@ -1,0 +1,412 @@
+{
+  "schemaVersion": 1,
+  "id": "dfi-moderate-osteomyelitis",
+  "condition": "Diabetes-related foot infection with osteomyelitis",
+  "category": "soft-tissue",
+  "permutationOf": null,
+  "summary": "61-year-old man with type 2 diabetes and neuropathy: plantar ulcer under the 1st metatarsal head for 6 weeks, cellulitis 3 cm around it, probe-to-bone positive, afebrile; X-ray cortical erosion of the 1st metatarsal head. IWGDF/IDSA grade 3(O).",
+  "tags": [
+    "diabetic-foot",
+    "osteomyelitis",
+    "iwgdf"
+  ],
+  "inputs": {
+    "patient": {
+      "ageYears": 61,
+      "sex": "male",
+      "pregnancy": {
+        "status": "not-applicable"
+      },
+      "heightCm": 174,
+      "weightKg": 91
+    },
+    "encounter": {
+      "setting": "outpatient",
+      "visitType": "urgentReview",
+      "acuity": "priority"
+    },
+    "chiefComplaint": "Non-healing wound on sole of right foot",
+    "hpi": "Six weeks of an ulcer under the ball of the right big toe after new shoes. Numb feet for years. For the last week redness spreading across the forefoot and some discharge. No fevers or rigors. Type 2 diabetes for 15 years, HbA1c 9.1% last month.",
+    "socrates": {
+      "onset": [
+        "1–4 weeks ago"
+      ],
+      "site": [
+        "Foot"
+      ],
+      "character": [
+        "Aching"
+      ],
+      "radiation": [
+        "No radiation"
+      ],
+      "associations": [],
+      "timing": [
+        "Constant"
+      ],
+      "exacerbating": [
+        "Movement"
+      ],
+      "relieving": [
+        "Rest"
+      ],
+      "severity": [
+        "Mild (1–3/10)"
+      ]
+    },
+    "symptoms": [
+      "foot ulcer",
+      "foot redness",
+      "wound discharge"
+    ],
+    "negatives": [
+      "fever",
+      "rigors"
+    ],
+    "exam": {
+      "general": "Well. T 37.3°C, HR 84, BP 142/84, RR 14.",
+      "msk": "Right foot: 1.5 cm plantar ulcer under the 1st metatarsal head with purulent discharge; erythema extending 3 cm from the ulcer edge; probe-to-bone positive. Dorsalis pedis and posterior tibial pulses palpable. Monofilament sensation absent to the ankles bilaterally."
+    },
+    "vitals": [
+      {
+        "minutesAgo": 10,
+        "heartRate": 84,
+        "systolicBp": 142,
+        "diastolicBp": 84,
+        "respiratoryRate": 14,
+        "temperatureC": 37.3,
+        "spo2": 98,
+        "avpu": "A",
+        "onSupplementalO2": false,
+        "glucoseMmol": 12.4
+      }
+    ],
+    "labs": [
+      {
+        "analyte": "wbc",
+        "name": "WBC",
+        "value": 11.8,
+        "unit": "×10⁹/L",
+        "minutesAgo": 60
+      },
+      {
+        "analyte": "crp",
+        "name": "CRP",
+        "value": 64,
+        "unit": "mg/L",
+        "minutesAgo": 60
+      },
+      {
+        "analyte": "hba1c",
+        "name": "HbA1c",
+        "value": 9.1,
+        "unit": "%",
+        "minutesAgo": 40000
+      }
+    ],
+    "imaging": [
+      {
+        "name": "X-ray right foot",
+        "modality": "XR",
+        "region": "Right foot",
+        "result": "Cortical erosion and periosteal reaction of the 1st metatarsal head beneath the ulcer, consistent with osteomyelitis. No gas.",
+        "minutesAgo": 30
+      }
+    ],
+    "comorbidities": [
+      "Type 2 diabetes mellitus",
+      "Peripheral neuropathy",
+      "Hypertension"
+    ],
+    "surgicalHistory": [],
+    "medications": [
+      {
+        "drug": "Metformin",
+        "dose": "1 g",
+        "frequency": "BD",
+        "indication": "Diabetes"
+      },
+      {
+        "drug": "Empagliflozin",
+        "dose": "10 mg",
+        "frequency": "OD",
+        "indication": "Diabetes"
+      },
+      {
+        "drug": "Ramipril",
+        "dose": "5 mg",
+        "frequency": "OD",
+        "indication": "Hypertension"
+      }
+    ],
+    "allergies": [],
+    "nkda": true,
+    "socialHistory": "Taxi driver. Ex-smoker.",
+    "confirmedDiagnosis": {
+      "name": "Diabetic foot infection with osteomyelitis of 1st metatarsal head",
+      "icd10": "E11.621",
+      "assessmentText": "Diabetes-related foot infection, IWGDF/IDSA grade 3 (moderate) with osteomyelitis — 3(O). Neuropathic plantar ulcer, pulses palpable."
+    },
+    "platform": {
+      "web": {
+        "ccTemplate": "Diabetic foot / infected foot",
+        "symptoms": [
+          "diabetic foot infection",
+          "foot ulcer",
+          "numbness feet"
+        ],
+        "symptomDetails": {
+          "diabetic foot infection": [
+            "Ulcer",
+            "Osteomyelitis suspected",
+            "Forefoot",
+            "Spreading redness",
+            "Loss of sensation",
+            "Purulent discharge",
+            "Exposed bone / tendon"
+          ]
+        },
+        "examFindings": {
+          "wound": [
+            "Cellulitis",
+            "Osteomyelitis suspected",
+            "Exposed bone",
+            "Sensation reduced"
+          ],
+          "extremities": [
+            "Pulses present",
+            "Wound present"
+          ]
+        },
+        "paneAnswers": {
+          "skin_ulceration": true,
+          "erythema_surrounding": true,
+          "fever": false
+        },
+        "durationDays": 42,
+        "painScore": 2
+      }
+    }
+  },
+  "expected": {
+    "differential": {
+      "mustNotMiss": [
+        {
+          "id": "mnm-osteomyelitis",
+          "severity": "critical",
+          "match": [
+            "osteomyelitis",
+            "diabetic foot"
+          ],
+          "guidelineRefs": [
+            "iwgdf-2023-infection"
+          ]
+        }
+      ]
+    },
+    "safety": {
+      "emergencyLevel": {
+        "id": "level-at-least-urgent",
+        "severity": "quality",
+        "atLeast": "urgent",
+        "guidelineRefs": [
+          "nice-ng19"
+        ],
+        "note": "Active diabetic foot problem with spreading infection: same/next-day MDT foot service."
+      },
+      "redFlags": [
+        {
+          "id": "flag-diabetic-foot",
+          "severity": "quality",
+          "match": [
+            "diabetic foot",
+            "foot infection",
+            "osteomyelitis"
+          ]
+        }
+      ]
+    },
+    "investigations": {
+      "mustInclude": [
+        {
+          "id": "inv-foot-xray",
+          "severity": "critical",
+          "match": [
+            "re:x-?ray[^.;]{0,20}foot",
+            "re:foot[^.;]{0,20}x-?ray",
+            "plain radiograph",
+            "wound x-ray"
+          ],
+          "guidelineRefs": [
+            "iwgdf-2023-infection"
+          ]
+        },
+        {
+          "id": "inv-mri-or-bone-sample",
+          "severity": "quality",
+          "match": [
+            "mri",
+            "bone biopsy",
+            "bone sample",
+            "bone culture"
+          ],
+          "guidelineRefs": [
+            "iwgdf-2023-infection"
+          ],
+          "proposedFix": "Add a diabetes-related foot disease protocol set (infection graded by IWGDF/IDSA with the (O) suffix, osteomyelitis work-up, PAD assessment with toe pressures, offloading, MDT referral within 1 working day, urgent surgery for severe infection) with E10/E11 .52/.62x and M86/L97 prefixes, and replace the Wagner checklist in rules.ts with IWGDF/IDSA."
+        },
+        {
+          "id": "inv-deep-tissue-culture",
+          "severity": "quality",
+          "match": [
+            "tissue culture",
+            "tissue sample",
+            "deep tissue",
+            "bone culture",
+            "curettage"
+          ],
+          "guidelineRefs": [
+            "iwgdf-2023-infection"
+          ],
+          "note": "IWGDF/IDSA: culture tissue, not superficial swabs.",
+          "proposedFix": "Add a diabetes-related foot disease protocol set (infection graded by IWGDF/IDSA with the (O) suffix, osteomyelitis work-up, PAD assessment with toe pressures, offloading, MDT referral within 1 working day, urgent surgery for severe infection) with E10/E11 .52/.62x and M86/L97 prefixes, and replace the Wagner checklist in rules.ts with IWGDF/IDSA."
+        },
+        {
+          "id": "inv-vascular-assessment",
+          "severity": "quality",
+          "match": [
+            "re:\\babi\\b",
+            "abpi",
+            "ankle-brachial",
+            "ankle brachial",
+            "toe pressure",
+            "re:\\btbi\\b",
+            "doppler",
+            "duplex"
+          ],
+          "guidelineRefs": [
+            "iwgdf-2023-pad"
+          ],
+          "proposedFix": "Add a diabetes-related foot disease protocol set (infection graded by IWGDF/IDSA with the (O) suffix, osteomyelitis work-up, PAD assessment with toe pressures, offloading, MDT referral within 1 working day, urgent surgery for severe infection) with E10/E11 .52/.62x and M86/L97 prefixes, and replace the Wagner checklist in rules.ts with IWGDF/IDSA."
+        }
+      ]
+    },
+    "management": {
+      "mustInclude": [
+        {
+          "id": "mgmt-offloading",
+          "severity": "quality",
+          "match": [
+            "offload",
+            "off-load",
+            "total contact cast",
+            "non-removable"
+          ],
+          "guidelineRefs": [
+            "iwgdf-2023-offloading"
+          ],
+          "proposedFix": "Add a diabetes-related foot disease protocol set (infection graded by IWGDF/IDSA with the (O) suffix, osteomyelitis work-up, PAD assessment with toe pressures, offloading, MDT referral within 1 working day, urgent surgery for severe infection) with E10/E11 .52/.62x and M86/L97 prefixes, and replace the Wagner checklist in rules.ts with IWGDF/IDSA."
+        },
+        {
+          "id": "mgmt-mdt-foot",
+          "severity": "quality",
+          "match": [
+            "re:\\bmdt\\b",
+            "multidisciplinary",
+            "foot care service",
+            "foot team",
+            "foot protection",
+            "podiat"
+          ],
+          "guidelineRefs": [
+            "nice-ng19"
+          ],
+          "proposedFix": "Add a diabetes-related foot disease protocol set (infection graded by IWGDF/IDSA with the (O) suffix, osteomyelitis work-up, PAD assessment with toe pressures, offloading, MDT referral within 1 working day, urgent surgery for severe infection) with E10/E11 .52/.62x and M86/L97 prefixes, and replace the Wagner checklist in rules.ts with IWGDF/IDSA."
+        },
+        {
+          "id": "mgmt-antibiotic",
+          "severity": "quality",
+          "match": [
+            "antibiotic",
+            "flucloxacillin",
+            "co-amoxiclav",
+            "clindamycin",
+            "doxycycline"
+          ],
+          "guidelineRefs": [
+            "iwgdf-2023-infection"
+          ],
+          "proposedFix": "Add a diabetes-related foot disease protocol set (infection graded by IWGDF/IDSA with the (O) suffix, osteomyelitis work-up, PAD assessment with toe pressures, offloading, MDT referral within 1 working day, urgent surgery for severe infection) with E10/E11 .52/.62x and M86/L97 prefixes, and replace the Wagner checklist in rules.ts with IWGDF/IDSA."
+        },
+        {
+          "id": "mgmt-iwgdf-grade",
+          "severity": "quality",
+          "match": [
+            "iwgdf",
+            "idsa",
+            "moderate infection"
+          ],
+          "guidelineRefs": [
+            "iwgdf-2023-infection",
+            "iwgdf-2023-classification"
+          ],
+          "note": "IWGDF 2023 recommends the IWGDF/IDSA infection classification (not Wagner) for infection severity.",
+          "proposedFix": "Add a diabetes-related foot disease protocol set (infection graded by IWGDF/IDSA with the (O) suffix, osteomyelitis work-up, PAD assessment with toe pressures, offloading, MDT referral within 1 working day, urgent surgery for severe infection) with E10/E11 .52/.62x and M86/L97 prefixes, and replace the Wagner checklist in rules.ts with IWGDF/IDSA."
+        }
+      ]
+    },
+    "pathway": {
+      "id": "pathway-first-visit",
+      "severity": "quality",
+      "equals": "firstVisit"
+    }
+  },
+  "guideline": [
+    {
+      "id": "iwgdf-2023-infection",
+      "name": "IWGDF/IDSA guidelines on the diagnosis and treatment of diabetes-related foot infections (2023)",
+      "year": 2023,
+      "section": "IWGDF/IDSA classification: 1 uninfected, 2 mild, 3 moderate (erythema >2 cm or deeper structures), 4 severe (with SIRS); (O) suffix for osteomyelitis; probe-to-bone plus plain X-ray, MRI when unclear; culture deep tissue (not swabs); do not give antibiotics for uninfected ulcers; urgent surgical consultation for severe infection, deep abscess, gas or necrotising infection, extensive gangrene",
+      "citation": "Senneville É, Albalawi Z, van Asten SA, et al. IWGDF/IDSA guidelines on the diagnosis and treatment of diabetes-related foot infections (IWGDF/IDSA 2023). Diabetes Metab Res Rev. 2024;40:e3687.",
+      "verified": false
+    },
+    {
+      "id": "iwgdf-2023-classification",
+      "name": "IWGDF guidelines on the classification of foot ulcers in people with diabetes (2023)",
+      "year": 2023,
+      "section": "Use SINBAD for communication between professionals; IWGDF/IDSA for infection; WIfI for peripheral artery disease; Wagner is not among the recommended systems",
+      "citation": "Monteiro-Soares M, Hamilton EJ, Russell DA, et al. Guidelines on the classification of foot ulcers in people with diabetes (IWGDF 2023 update). Diabetes Metab Res Rev. 2024;40:e3648.",
+      "verified": false
+    },
+    {
+      "id": "iwgdf-2023-pad",
+      "name": "Intersocietal IWGDF/ESVS/SVS guidelines on PAD in people with diabetes and a foot ulcer (2023)",
+      "year": 2023,
+      "section": "Assess every foot ulcer for PAD: pedal pulses plus Doppler waveforms, ABI and TBI (ABI unreliable when vessels are incompressible); toe pressure <30 mmHg or TBI <0.25 → urgent vascular imaging and consideration of revascularisation",
+      "citation": "Fitridge R, Chuter V, Mills J, et al. The intersocietal IWGDF, ESVS, SVS guidelines on peripheral artery disease in people with diabetes and a foot ulcer. Diabetes Metab Res Rev. 2024;40:e3686.",
+      "verified": false
+    },
+    {
+      "id": "iwgdf-2023-offloading",
+      "name": "IWGDF guidelines on offloading foot ulcers in persons with diabetes (2023)",
+      "year": 2023,
+      "section": "Neuropathic plantar forefoot/midfoot ulcer: non-removable knee-high offloading device first choice",
+      "citation": "Bus SA, Armstrong DG, Crews RT, et al. Guidelines on offloading foot ulcers in persons with diabetes (IWGDF 2023 update). Diabetes Metab Res Rev. 2024;40:e3647.",
+      "verified": false
+    },
+    {
+      "id": "nice-ng19",
+      "name": "NICE NG19 — Diabetic foot problems: prevention and management",
+      "year": 2015,
+      "section": "Active diabetic foot problem (ulceration, spreading infection, ischaemia, gangrene, suspected Charcot): refer to the multidisciplinary foot care service within 1 working day; life- or limb-threatening problems (e.g. ulcer with fever/sepsis, ischaemia, deep abscess, gangrene) → immediate referral to acute services",
+      "citation": "National Institute for Health and Care Excellence. Diabetic foot problems: prevention and management (NG19). London: NICE; 2015 (updated 2019).",
+      "verified": false
+    }
+  ],
+  "rationale": "Base diabetic foot case: moderate infection with probe-to-bone positive and X-ray changes — IWGDF/IDSA 3(O). Tests osteomyelitis recognition, imaging, deep cultures, vascular assessment of every ulcer, offloading and IWGDF/IDSA grading. The ICD E11.621 (T2DM with foot ulcer) is what a clinician would code.",
+  "authoring": {
+    "author": "Claude (soft tissue / vascular / trauma / burns cluster)",
+    "date": "2026-09-25",
+    "notes": "Expectations need surgeon sign-off (reviewedBy). Citations verified: false. iOS outcomes are unverified until the first CI run."
+  }
+}

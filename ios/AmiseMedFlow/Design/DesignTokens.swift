@@ -72,7 +72,7 @@ extension View {
 extension Text {
     func amSectionLabel() -> some View {
         self
-            .font(.system(size: 11, weight: .heavy))
+            .scaledFont(size: 11, weight: .heavy)   // 11 pt at default size, follows Dynamic Type
             .textCase(.uppercase)
             .foregroundStyle(AMColor.muted)
             .tracking(0.7)

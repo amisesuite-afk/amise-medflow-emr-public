@@ -1,6 +1,5 @@
 import SwiftUI
 import SwiftData
-import UIKit
 
 // MARK: - Editable clinical summary
 // Persisted as a ClinicalNote(.clinicalSummary) in SwiftData — survives app restart.
@@ -40,7 +39,7 @@ struct PatientSummaryEditorView: View {
                         Text("No summary yet")
                             .font(.title3.weight(.semibold))
                             .foregroundStyle(.secondary)
-                        Text("Start typing, or let AI draft one from the patient's chart.")
+                        Text("Start typing, or auto-generate a draft from the patient's chart.")
                             .font(.subheadline)
                             .foregroundStyle(.tertiary)
                             .multilineTextAlignment(.center)
@@ -48,7 +47,7 @@ struct PatientSummaryEditorView: View {
                         Button {
                             Task { await runAIAssist() }
                         } label: {
-                            Label("Generate with AI", systemImage: "sparkles")
+                            Label("Generate Draft", systemImage: "doc.text.magnifyingglass")
                                 .font(.body.weight(.semibold))
                                 .padding(.horizontal, 20)
                                 .padding(.vertical, 10)
@@ -65,7 +64,7 @@ struct PatientSummaryEditorView: View {
                         VStack(spacing: 14) {
                             ProgressView()
                                 .scaleEffect(1.3)
-                            Text("AI is drafting your summary…")
+                            Text("Generating summary from patient data…")
                                 .font(.subheadline)
                                 .foregroundStyle(.secondary)
                         }
@@ -92,7 +91,7 @@ struct PatientSummaryEditorView: View {
                             Image(systemName: "sparkles")
                         }
                         .disabled(ai.isGenerating)
-                        .help("Regenerate with AI")
+                        .help("Regenerate summary from chart data")
 
                         // Export PDF
                         Button {
@@ -114,12 +113,12 @@ struct PatientSummaryEditorView: View {
                 isPresented: $showAIConfirm,
                 titleVisibility: .visible
             ) {
-                Button("Replace with AI draft", role: .destructive) {
+                Button("Replace with new draft", role: .destructive) {
                     Task { await runAIAssist() }
                 }
                 Button("Cancel", role: .cancel) {}
             } message: {
-                Text("This will replace your current text with a new AI-generated draft.")
+                Text("This will replace your current text with a new generated draft.")
             }
             .alert("AI Error", isPresented: $showError) {
                 Button("OK", role: .cancel) {}
@@ -157,11 +156,15 @@ struct PatientSummaryEditorView: View {
         try? ctx.save()
     }
 
-    // MARK: - AI
+    // MARK: - AI / local draft
 
     private func runAIAssist() async {
         do {
             noteText = try await ai.generateClinicalSummary(patient: patient)
+            save()
+        } catch is AIError {
+            // AI is disabled pending HIPAA BAA — fall back to narrative summary local draft
+            noteText = SOAPDraftEngine.narrativeSummary(patient: patient)
             save()
         } catch {
             ai.error = error.localizedDescription
@@ -172,80 +175,10 @@ struct PatientSummaryEditorView: View {
     // MARK: - PDF export (only on demand)
 
     private func exportAsPDF() -> PDFDataWrapper? {
-        let pageW: CGFloat = 595.2
-        let pageH: CGFloat = 841.8
-        let margin: CGFloat = 48
-        let bodyW = pageW - margin * 2
-
-        let renderer = UIGraphicsPDFRenderer(bounds: CGRect(x: 0, y: 0, width: pageW, height: pageH))
-        let data = renderer.pdfData { ctx in
-            let paragraphStyle = NSMutableParagraphStyle()
-            paragraphStyle.lineSpacing = 3
-
-            let headerAttrs: [NSAttributedString.Key: Any] = [
-                .font: UIFont.systemFont(ofSize: 14, weight: .bold),
-                .paragraphStyle: paragraphStyle
-            ]
-            let bodyAttrs: [NSAttributedString.Key: Any] = [
-                .font: UIFont.systemFont(ofSize: 10),
-                .paragraphStyle: paragraphStyle
-            ]
-            let footerAttrs: [NSAttributedString.Key: Any] = [
-                .font: UIFont.systemFont(ofSize: 8),
-                .foregroundColor: UIColor.secondaryLabel,
-                .paragraphStyle: paragraphStyle
-            ]
-
-            func newPage() {
-                ctx.beginPage()
-            }
-
-            @discardableResult
-            func drawString(_ s: String, attrs: [NSAttributedString.Key: Any], x: CGFloat, y: CGFloat, width: CGFloat) -> CGFloat {
-                let ns = NSAttributedString(string: s, attributes: attrs)
-                let rect = ns.boundingRect(with: CGSize(width: width, height: .greatestFiniteMagnitude),
-                                           options: [.usesLineFragmentOrigin], context: nil)
-                ns.draw(in: CGRect(x: x, y: y, width: width, height: rect.height))
-                return rect.height
-            }
-
-            newPage()
-            var y: CGFloat = margin
-
-            // Header
-            let header = "AMISE MEDICAL SERVICES — \(patient.fullName.uppercased())"
-            y += drawString(header, attrs: headerAttrs, x: margin, y: y, width: bodyW)
-            y += 4
-            let sub = "Clinical Summary  ·  \(DateFormatter.localizedString(from: .now, dateStyle: .long, timeStyle: .short))"
-            y += drawString(sub, attrs: footerAttrs, x: margin, y: y, width: bodyW)
-            y += 12
-
-            // Separator
-            UIColor.separator.setFill()
-            UIRectFill(CGRect(x: margin, y: y, width: bodyW, height: 0.5))
-            y += 12
-
-            // Body — split by lines, start new page when needed
-            let lines = noteText.components(separatedBy: "\n")
-            for line in lines {
-                let attrs: [NSAttributedString.Key: Any] = line == line.uppercased() && line.count > 2
-                    ? headerAttrs : bodyAttrs
-                let ns = NSAttributedString(string: line.isEmpty ? " " : line, attributes: attrs)
-                let rect = ns.boundingRect(with: CGSize(width: bodyW, height: .greatestFiniteMagnitude),
-                                           options: [.usesLineFragmentOrigin], context: nil)
-                if y + rect.height > pageH - margin * 2 {
-                    newPage()
-                    y = margin
-                }
-                ns.draw(in: CGRect(x: margin, y: y, width: bodyW, height: rect.height))
-                y += rect.height + (line.isEmpty ? 2 : 1)
-            }
-
-            // Footer
-            let footerY = pageH - margin
-            drawString("Amise Medical Services · Saint Lucia · Generated \(DateFormatter.localizedString(from: .now, dateStyle: .medium, timeStyle: .short))",
-                       attrs: footerAttrs, x: margin, y: footerY - 16, width: bodyW)
-        }
+        // Ensure the note is saved with current text before exporting
+        save()
+        guard let note = existingNote ?? patient.clinicalNotes.first(where: { $0.noteType == .clinicalSummary }) else { return nil }
+        let data = ClinicalNotePDF.generate(note: note, patient: patient)
         return PDFDataWrapper(data: data)
     }
 }

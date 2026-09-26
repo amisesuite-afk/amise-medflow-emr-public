@@ -1,0 +1,166 @@
+{
+  "schemaVersion": 1,
+  "id": "screen-hepatitis-b-c-hiv-once",
+  "condition": "One-time hepatitis B, hepatitis C and HIV screening in adults",
+  "category": "general-medicine",
+  "permutationOf": "screen-crc-average-risk-46",
+  "permutationLabel": "Man aged 36, never tested",
+  "summary": "36-year-old man at a wellness visit, never tested for blood-borne viruses, tattoos, not vaccinated against hepatitis B. USPSTF 2020 (HCV 18–79 once), CDC 2023 (HBV triple panel once), USPSTF 2019 (HIV 15–65).",
+  "tags": [
+    "screening",
+    "hepatitis",
+    "hiv",
+    "wellness"
+  ],
+  "inputs": {
+    "patient": {
+      "ageYears": 36,
+      "sex": "male",
+      "heightCm": 180,
+      "weightKg": 78
+    },
+    "encounter": {
+      "setting": "outpatient",
+      "visitType": "wellness",
+      "acuity": "routine"
+    },
+    "chiefComplaint": "Wellness check",
+    "hpi": "Well 36-year-old man at a wellness visit before starting work on a cruise ship. Never tested for hepatitis B, hepatitis C or HIV. Several tattoos. No hepatitis B vaccination on record. No jaundice.",
+    "symptoms": [
+      "annual review"
+    ],
+    "negatives": [
+      "jaundice",
+      "weight loss"
+    ],
+    "exam": {
+      "general": "Well. BP 124/78. Multiple tattoos.",
+      "abdomen": "Soft, no hepatomegaly."
+    },
+    "vitals": [
+      {
+        "minutesAgo": 10,
+        "heartRate": 64,
+        "systolicBp": 124,
+        "diastolicBp": 78,
+        "respiratoryRate": 12,
+        "temperatureC": 36.6,
+        "spo2": 99,
+        "avpu": "A",
+        "onSupplementalO2": false
+      }
+    ],
+    "labs": [],
+    "imaging": [],
+    "comorbidities": [],
+    "surgicalHistory": [],
+    "medications": [],
+    "allergies": [],
+    "nkda": true,
+    "socialHistory": "Chef. Non-smoker. Alcohol 12 units/week.",
+    "confirmedDiagnosis": {
+      "name": "Health check — blood-borne virus screening",
+      "icd10": "Z11.59",
+      "assessmentText": "Asymptomatic. One-time screening: HCV antibody, hepatitis B triple panel (HBsAg, anti-HBs, anti-HBc), HIV. Hepatitis B vaccination if non-immune."
+    },
+    "platform": {
+      "web": {
+        "ccTemplate": "Other / general surgical",
+        "symptoms": [
+          "annual review"
+        ],
+        "durationDays": 0
+      }
+    }
+  },
+  "expected": {
+    "investigations": {
+      "mustInclude": [
+        {
+          "id": "inv-hcv",
+          "severity": "quality",
+          "guidelineRefs": [
+            "uspstf-hcv-2020"
+          ],
+          "match": [
+            "hepatitis c",
+            "hcv",
+            "hep c"
+          ],
+          "knownGap": [
+            "ios"
+          ],
+          "knownGapNote": "iOS CI 2026-09-25 (run 36169134350, database mode): no investigation matched among 1 (ios.pipeline.voi)"
+        },
+        {
+          "id": "inv-hbv",
+          "severity": "quality",
+          "guidelineRefs": [
+            "cdc-hbv-2023"
+          ],
+          "match": [
+            "hbsag",
+            "hepatitis b",
+            "hep b",
+            "hbv"
+          ],
+          "knownGap": [
+            "ios"
+          ],
+          "knownGapNote": "iOS CI 2026-09-25 (run 36169134350, database mode): no investigation matched among 1 (ios.pipeline.voi)"
+        },
+        {
+          "id": "inv-hiv",
+          "severity": "quality",
+          "guidelineRefs": [
+            "uspstf-hiv-2019"
+          ],
+          "match": [
+            "re:\\bhiv\\b"
+          ],
+          "knownGap": [
+            "ios"
+          ],
+          "knownGapNote": "iOS CI 2026-09-25 (run 36169134350, database mode): no investigation matched among 1 (ios.pipeline.voi)"
+        }
+      ]
+    },
+    "pathway": {
+      "id": "pathway-wellness",
+      "severity": "quality",
+      "equals": "wellness"
+    }
+  },
+  "guideline": [
+    {
+      "id": "uspstf-hcv-2020",
+      "name": "USPSTF recommendation statement — screening for hepatitis C virus infection in adolescents and adults",
+      "year": 2020,
+      "section": "Screen all adults aged 18–79 for HCV infection (grade B)",
+      "citation": "US Preventive Services Task Force. Screening for hepatitis C virus infection in adolescents and adults: US Preventive Services Task Force recommendation statement. JAMA. 2020;323:970–975.",
+      "verified": false
+    },
+    {
+      "id": "cdc-hbv-2023",
+      "name": "CDC recommendations — screening and testing for hepatitis B virus infection",
+      "year": 2023,
+      "section": "Screen all adults ≥ 18 at least once in a lifetime using the triple panel (HBsAg, anti-HBs, total anti-HBc)",
+      "citation": "Conners EE, Panagiotakopoulos L, Hofmeister MG, et al. Screening and testing for hepatitis B virus infection: CDC recommendations — United States, 2023. MMWR Recomm Rep. 2023;72(1):1–25.",
+      "verified": false
+    },
+    {
+      "id": "uspstf-hiv-2019",
+      "name": "USPSTF recommendation statement — screening for HIV infection",
+      "year": 2019,
+      "section": "Screen adolescents and adults aged 15–65 for HIV infection (grade A)",
+      "citation": "US Preventive Services Task Force. Screening for HIV infection: US Preventive Services Task Force recommendation statement. JAMA. 2019;321:2326–2336.",
+      "verified": false
+    }
+  ],
+  "rationale": "Universal once-in-a-lifetime screening for HCV, HBV and HIV is recommended for adults; a surgical practice offering wellness care should prompt for it, and it matters before any operation.",
+  "authoring": {
+    "author": "Claude (prevention/screening, obstetric-gynaecological mimics and paediatric surgery cluster)",
+    "date": "2026-09-25",
+    "notes": "Expectations need surgeon sign-off (reviewedBy). Every citation is verified: false. iOS outcomes are unverified (not run on Linux); triage after the first CI run."
+  }
+}

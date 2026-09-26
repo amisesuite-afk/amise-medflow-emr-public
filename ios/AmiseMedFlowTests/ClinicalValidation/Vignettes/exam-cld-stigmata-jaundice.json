@@ -1,0 +1,152 @@
+{
+  "schemaVersion": 1,
+  "id": "exam-cld-stigmata-jaundice",
+  "condition": "Decompensated cirrhosis with stigmata of chronic liver disease",
+  "category": "hpb",
+  "permutationOf": null,
+  "permutationLabel": "Spider naevi, palmar erythema and a fluid wave recorded",
+  "summary": "58-year-old man who drinks heavily, 3 weeks of yellow eyes, a swelling abdomen and ankle swelling; spider naevi, palmar erythema and a fluid wave on examination.",
+  "tags": [
+    "evidence-exam",
+    "cirrhosis",
+    "stigmata",
+    "jaundice"
+  ],
+  "inputs": {
+    "patient": {
+      "ageYears": 58,
+      "sex": "male"
+    },
+    "encounter": {
+      "setting": "outpatient",
+      "visitType": "newConsult",
+      "acuity": "priority"
+    },
+    "chiefComplaint": "Yellow eyes and swollen abdomen",
+    "hpi": "Three weeks of yellow eyes and dark urine, abdomen getting bigger, ankles swollen. Drinks a bottle of rum a day for years. No abdominal pain or fever.",
+    "symptoms": [
+      "jaundice",
+      "abdominal distension",
+      "dark urine"
+    ],
+    "exam": {
+      "general": "Jaundiced.",
+      "abdomen": "Distended."
+    },
+    "vitals": [
+      {
+        "minutesAgo": 10,
+        "heartRate": 92,
+        "systolicBp": 112,
+        "diastolicBp": 68,
+        "respiratoryRate": 16,
+        "temperatureC": 36.9,
+        "spo2": 97,
+        "avpu": "A",
+        "onSupplementalO2": false
+      }
+    ],
+    "labs": [
+      {
+        "analyte": "bilirubin",
+        "name": "Bilirubin",
+        "value": 96,
+        "unit": "umol/L",
+        "minutesAgo": 60
+      },
+      {
+        "analyte": "albumin",
+        "name": "Albumin",
+        "value": 26,
+        "unit": "g/L",
+        "minutesAgo": 60
+      },
+      {
+        "analyte": "inr",
+        "name": "INR",
+        "value": 1.7,
+        "unit": "",
+        "minutesAgo": 60
+      }
+    ],
+    "imaging": [],
+    "comorbidities": [],
+    "surgicalHistory": [],
+    "medications": [],
+    "allergies": [],
+    "nkda": true,
+    "socialHistory": "Drinks about a bottle of rum a day.",
+    "examSigns": {
+      "spider_naevi": "present",
+      "palmar_erythema": "present",
+      "fluid_wave": "present"
+    },
+    "platform": {
+      "web": {
+        "ccTemplate": "Jaundice",
+        "symptoms": [
+          "jaundice",
+          "abdominal distension",
+          "dark urine"
+        ],
+        "durationDays": 21
+      }
+    }
+  },
+  "expected": {
+    "differential": {
+      "mustRankTopK": [
+        {
+          "id": "cirrhosis-top3",
+          "severity": "critical",
+          "match": [
+            "cirrho",
+            "chronic liver disease"
+          ],
+          "k": 3
+        }
+      ]
+    },
+    "reasoning": {
+      "mustInclude": [
+        {
+          "id": "spider-lr",
+          "severity": "quality",
+          "match": [
+            "re:Spider naevi present - LR 4\\.3"
+          ],
+          "sources": [
+            "web.reasoning.evidence"
+          ],
+          "platforms": [
+            "web"
+          ]
+        }
+      ]
+    }
+  },
+  "guideline": [
+    {
+      "id": "udell-2012",
+      "name": "Udell JA et al. Does this patient with liver disease have cirrhosis? (JAMA Rational Clinical Examination)",
+      "year": 2012,
+      "section": "Spider angiomata, palmar erythema, ascites",
+      "citation": "JAMA 2012;307:832-42",
+      "verified": false
+    },
+    {
+      "id": "williams-simel-1992",
+      "name": "Williams JW, Simel DL. Does this patient have ascites?",
+      "year": 1992,
+      "section": "Fluid wave LR+ 6.0",
+      "citation": "JAMA 1992;267:2645-8",
+      "verified": false
+    }
+  ],
+  "rationale": "Jaundice with spider naevi, palmar erythema and ascites in a heavy drinker is decompensated cirrhosis until proven otherwise; the stigmata must reach the differential.",
+  "authoring": {
+    "author": "Claude (evidence-exam, 2026-09-26)",
+    "date": "2026-09-26",
+    "notes": "Exam-sign / decision-rule permutation. Likelihood ratios fromMemory; awaiting surgeon sign-off."
+  }
+}

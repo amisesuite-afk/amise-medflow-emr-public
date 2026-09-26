@@ -2,6 +2,7 @@ import { useState, useMemo } from 'react';
 import { useAppContext } from '@/context/AppContext';
 import CollapsibleCard from '@/components/CollapsibleCard';
 import PatientPrepCard from '@/components/PatientPrepCard';
+import SupplementHistoryCard from '@/components/SupplementHistoryCard';
 import { ClassifiedMed, ACTION_META, ACTION_ORDER, MED_RULES, parseDrugs, classifyMed, hasPenAllergyFlag } from '@/lib/periop-meds';
 import type { PeriOpAction } from '@/lib/periop-meds';
 
@@ -196,6 +197,7 @@ const PREP_ITEMS: { id: string; text: string; critical?: boolean; group: string 
   { id: 'consent',    group: 'Patient Verification', critical: true, text: 'Written informed consent obtained and filed in notes' },
   { id: 'site_mark',  group: 'Patient Verification', text: 'Operative site marked by surgeon (if applicable)' },
   { id: 'allergy',    group: 'Patient Verification', critical: true, text: 'Allergy status documented and communicated to anaesthetic team and nursing staff' },
+  { id: 'supplements', group: 'Patient Verification', critical: true, text: 'Herbs, teas, bush remedies & supplements asked and recorded (mandatory — 50–70% of surgical patients do not disclose herbal use); perioperative alerts reviewed' },
   { id: 'nbm_solids', group: 'Fasting',             critical: true, text: 'Nil by mouth — solid food for ≥6 h; patient understands (≥8 h if GLP-1 agonist or gastroparesis)' },
   { id: 'nbm_fluids', group: 'Fasting',             text: 'Nil by mouth — clear fluids for ≥2 h before anaesthesia (standard adult)' },
   { id: 'carb_load',  group: 'Fasting',             text: 'ERAS: pre-operative carbohydrate loading drink given 2–3 h before (if no diabetes or gastroparesis)' },
@@ -431,6 +433,9 @@ export default function PerioperativeTab() {
           </div>
         )}
       </CollapsibleCard>
+
+      {/* ─── Herbs, teas, bush remedies & supplements (mandatory pre-op question) ─── */}
+      <SupplementHistoryCard showPerioperativeAlerts />
 
       {/* ─── Patient Prep Instructions ─────────────────────────────────────── */}
       <PatientPrepCard />

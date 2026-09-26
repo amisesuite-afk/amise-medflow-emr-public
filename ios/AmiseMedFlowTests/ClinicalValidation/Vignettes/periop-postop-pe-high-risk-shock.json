@@ -1,0 +1,339 @@
+{
+  "schemaVersion": 1,
+  "id": "periop-postop-pe-high-risk-shock",
+  "condition": "High-risk (massive) pulmonary embolism 6 days after major surgery",
+  "category": "vascular",
+  "permutationOf": "pe-postop-day5",
+  "permutationLabel": "Obstructive shock, thrombolysis contraindicated (surgery 6 days ago)",
+  "summary": "66-year-old man, day 6 after open Hartmann's procedure: sudden collapse, SBP 78, HR 132, SpO₂ 86% on 15 L oxygen, dilated RV on bedside echo — thrombolysis contraindicated by recent major surgery.",
+  "tags": [
+    "periop",
+    "vte",
+    "pe",
+    "postop",
+    "shock"
+  ],
+  "inputs": {
+    "patient": {
+      "ageYears": 66,
+      "sex": "male",
+      "pregnancy": {
+        "status": "not-applicable"
+      },
+      "heightCm": 178,
+      "weightKg": 92
+    },
+    "encounter": {
+      "setting": "inpatient",
+      "visitType": "wardReview",
+      "acuity": "emergency",
+      "isPostOp": true,
+      "postOpDays": 6
+    },
+    "chiefComplaint": "Sudden collapse and breathlessness on the ward",
+    "hpi": "Day 6 after open Hartmann's procedure for perforated sigmoid diverticulitis. Collapsed on the way to the toilet, now severely breathless and clammy. Enoxaparin 40 mg prophylaxis since day 1; missed two doses for an epidural catheter removal.",
+    "socrates": {
+      "onset": [
+        "Today",
+        "Sudden"
+      ],
+      "site": [
+        "Chest"
+      ],
+      "character": [
+        "Pressure"
+      ],
+      "radiation": [
+        "No radiation"
+      ],
+      "associations": [
+        "Shortness of breath",
+        "Diaphoresis",
+        "Dizziness / syncope"
+      ],
+      "timing": [
+        "Constant"
+      ],
+      "exacerbating": [
+        "Deep breathing"
+      ],
+      "relieving": [
+        "Nothing"
+      ],
+      "severity": [
+        "Severe (7–9/10)"
+      ]
+    },
+    "symptoms": [
+      "shortness of breath",
+      "syncope",
+      "chest pain"
+    ],
+    "negatives": [
+      "haemoptysis",
+      "abdominal pain worse",
+      "fever"
+    ],
+    "exam": {
+      "general": "Grey, clammy, confused. HR 132, BP 78/50, RR 32, SpO2 86% on 15 L non-rebreather, T 37.2°C. JVP raised.",
+      "respiratory": "Chest clear, no pneumothorax signs.",
+      "cardiovascular": "Tachycardic, loud P2.",
+      "abdomen": "Stoma pink and healthy. Wound clean. Abdomen soft.",
+      "msk": "Right calf swollen and tender."
+    },
+    "vitals": [
+      {
+        "minutesAgo": 5,
+        "heartRate": 132,
+        "systolicBp": 78,
+        "diastolicBp": 50,
+        "respiratoryRate": 32,
+        "temperatureC": 37.2,
+        "spo2": 86,
+        "avpu": "C",
+        "onSupplementalO2": true
+      }
+    ],
+    "labs": [
+      {
+        "analyte": "haemoglobin",
+        "name": "Haemoglobin",
+        "value": 11.2,
+        "unit": "g/dL",
+        "minutesAgo": 20
+      },
+      {
+        "analyte": "lactate",
+        "name": "Lactate",
+        "value": 5.2,
+        "unit": "mmol/L",
+        "minutesAgo": 20
+      },
+      {
+        "analyte": "creatinine",
+        "name": "Creatinine",
+        "value": 128,
+        "unit": "µmol/L",
+        "minutesAgo": 20
+      },
+      {
+        "analyte": "platelets",
+        "name": "Platelets",
+        "value": 240,
+        "unit": "×10⁹/L",
+        "minutesAgo": 20
+      }
+    ],
+    "imaging": [
+      {
+        "name": "Bedside echocardiogram",
+        "modality": "US",
+        "region": "Heart",
+        "result": "Dilated, hypokinetic right ventricle, RV:LV ratio >1, septal flattening. No pericardial effusion.",
+        "minutesAgo": 10
+      }
+    ],
+    "comorbidities": [
+      "Perforated sigmoid diverticulitis (Hartmann's day 6)",
+      "Obesity",
+      "Hypertension"
+    ],
+    "surgicalHistory": [
+      "Open Hartmann's procedure (day 6)"
+    ],
+    "medications": [
+      {
+        "drug": "Enoxaparin",
+        "dose": "40 mg",
+        "frequency": "OD",
+        "indication": "VTE prophylaxis"
+      }
+    ],
+    "allergies": [],
+    "nkda": true,
+    "socialHistory": "Ex-smoker.",
+    "confirmedDiagnosis": {
+      "name": "High-risk pulmonary embolism with obstructive shock — day 6 after Hartmann's procedure",
+      "icd10": "I26.99",
+      "paneDiseaseId": "pulmonary_embolism",
+      "assessmentText": "High-risk (massive) PE with obstructive shock and RV dysfunction, 6 days after major abdominal surgery (contraindication to systemic thrombolysis). UFH; surgical embolectomy or catheter-directed therapy; critical care."
+    },
+    "platform": {
+      "web": {
+        "ccTemplate": "Other / general surgical",
+        "symptoms": [
+          "shortness of breath",
+          "syncope",
+          "chest pain"
+        ],
+        "durationDays": 0,
+        "painScore": 7,
+        "paneAnswers": {
+          "dyspnoea_pe": true,
+          "previous_surgery": true,
+          "leg_swelling": true,
+          "calf_tenderness": true,
+          "haemodynamic_instability": true,
+          "mechanism_blunt": false,
+          "chest_wall_tenderness": false
+        }
+      }
+    }
+  },
+  "expected": {
+    "differential": {
+      "mustRankTopK": [
+        {
+          "id": "dx-pe-top3",
+          "severity": "critical",
+          "match": [
+            "pulmonary embol",
+            "re:\\bpe\\b"
+          ],
+          "k": 3,
+          "guidelineRefs": [
+            "esc-pe-2019"
+          ]
+        }
+      ]
+    },
+    "safety": {
+      "emergencyLevel": {
+        "id": "level-emergency",
+        "severity": "critical",
+        "atLeast": "emergency",
+        "guidelineRefs": [
+          "esc-pe-2019"
+        ]
+      },
+      "mustAlarm": [
+        {
+          "id": "alarm-shock",
+          "severity": "critical",
+          "match": [
+            "hypotens",
+            "shock",
+            "sbp"
+          ],
+          "guidelineRefs": [
+            "esc-pe-2019"
+          ]
+        }
+      ]
+    },
+    "investigations": {
+      "mustInclude": [
+        {
+          "id": "inv-echo-or-ctpa",
+          "severity": "quality",
+          "match": [
+            "echo",
+            "ctpa",
+            "ct pulmonary angiogra"
+          ],
+          "guidelineRefs": [
+            "esc-pe-2019"
+          ]
+        }
+      ]
+    },
+    "management": {
+      "mustInclude": [
+        {
+          "id": "mgmt-reperfusion",
+          "severity": "critical",
+          "match": [
+            "thromboly",
+            "alteplase",
+            "embolectomy",
+            "catheter-directed"
+          ],
+          "guidelineRefs": [
+            "esc-pe-2019"
+          ]
+        },
+        {
+          "id": "mgmt-ufh",
+          "severity": "quality",
+          "match": [
+            "unfractionated heparin",
+            "ufh"
+          ],
+          "guidelineRefs": [
+            "esc-pe-2019"
+          ],
+          "knownGap": [
+            "ios"
+          ],
+          "knownGapNote": "iOS CI 2026-09-25 (run 36169134350, database mode): no management item matched among 15 (ios.pipeline.decisions, ios.pipeline.actions, ios.radiation.plan, ios.radiation.followUp, ios.soap.plan)"
+        },
+        {
+          "id": "mgmt-critical-care",
+          "severity": "critical",
+          "match": [
+            "critical care",
+            "re:\\b(icu|itu|hdu)\\b",
+            "intensive care",
+            "high dependency"
+          ],
+          "guidelineRefs": [
+            "esc-pe-2019"
+          ]
+        }
+      ],
+      "mustExclude": [
+        {
+          "id": "mgmt-no-unqualified-thrombolysis",
+          "severity": "critical",
+          "match": [
+            "alteplase",
+            "thromboly",
+            "tenecteplase"
+          ],
+          "unless": [
+            "contraindicat",
+            "recent surgery",
+            "recent major surgery",
+            "bleeding risk",
+            "if thrombolysis"
+          ],
+          "guidelineRefs": [
+            "esc-pe-2019"
+          ],
+          "note": "Major surgery 6 days ago is a contraindication to systemic thrombolysis (ESC 2019); an unqualified thrombolysis order is a bleeding hazard — prefer surgical embolectomy or catheter-directed therapy.",
+          "proposedFix": "Qualify the alteplase medication and key point with the ESC 2019 contraindications (major surgery within 3 weeks) and put surgical embolectomy / catheter-directed therapy first when the patient is post-operative."
+        },
+        {
+          "id": "mgmt-no-appendicectomy",
+          "severity": "critical",
+          "match": [
+            "appendicectomy",
+            "appendectomy"
+          ],
+          "unless": [
+            "not indicated",
+            "no role",
+            "exclude appendicitis"
+          ],
+          "note": "Not an appendix presentation: an appendicectomy operative plan (consent, theatre booking, post-operative orders) is a wrong-procedure suggestion."
+        }
+      ]
+    }
+  },
+  "guideline": [
+    {
+      "id": "esc-pe-2019",
+      "name": "2019 ESC guidelines — acute pulmonary embolism",
+      "year": 2019,
+      "section": "High-risk (haemodynamically unstable) PE: UFH and systemic thrombolysis; surgical embolectomy or catheter-directed treatment when thrombolysis is contraindicated or has failed; recent major surgery (within 3 weeks) is a contraindication to thrombolysis (table of contraindications)",
+      "citation": "Konstantinides SV, Meyer G, Becattini C, et al. Eur Heart J. 2020;41:543–603.",
+      "verified": false
+    }
+  ],
+  "rationale": "Permutation of the post-operative PE seed: high-risk PE where the reperfusion choice is changed by recent surgery. Tests emergency level, shock alarm, reperfusion, critical care and that thrombolysis is not offered without the contraindication.",
+  "authoring": {
+    "author": "Claude (perioperative medicine cluster)",
+    "date": "2026-09-25",
+    "notes": "Expectations and citations need surgeon sign-off (reviewedBy). Citations verified: false. iOS outcomes not yet observed (unverified: ios) — triage after the next CI run."
+  }
+}

@@ -2,7 +2,10 @@ import SwiftUI
 import SwiftData
 
 struct TriageDashboardView: View {
-    @Query(sort: \Patient.createdAt, order: .reverse) private var allPatients: [Patient]
+    @Query(sort: \Patient.createdAt, order: .reverse) private var queriedAllPatients: [Patient]
+    // Deleted/detached records are dropped before any view reads them (SwiftData
+    // crashes when a body touches a deleted model before @Query refreshes).
+    private var allPatients: [Patient] { queriedAllPatients.filter(\.isLive) }
     @Environment(\.dismiss) private var dismiss
 
     private var wardPatients: [Patient] {
@@ -96,10 +99,15 @@ struct TriageDashboardView: View {
                                     }
                                 }
                                 Spacer()
+                                let tLabs = LabPanel.parse(from: patient.investigations)
+                                if tLabs.hasCriticalValues {
+                                    Image(systemName: "flask.fill")
+                                        .font(.system(size: 10, weight: .bold)).foregroundStyle(.red)
+                                }
                                 if patient.hasCriticalAllergy {
                                     Image(systemName: "exclamationmark.shield.fill")
                                         .font(.system(size: 10, weight: .bold)).foregroundStyle(.red)
-                                } else if !patient.allergies.isEmpty {
+                                } else if !patient.recordedAllergies.isEmpty {   // NKDA is not an allergy (UX M2)
                                     Image(systemName: "exclamationmark.shield")
                                         .font(.system(size: 10)).foregroundStyle(.orange)
                                 }
@@ -131,10 +139,15 @@ struct TriageDashboardView: View {
                                     }
                                 }
                                 Spacer()
+                                let eLabs = LabPanel.parse(from: patient.investigations)
+                                if eLabs.hasCriticalValues {
+                                    Image(systemName: "flask.fill")
+                                        .font(.system(size: 10, weight: .bold)).foregroundStyle(.red)
+                                }
                                 if patient.hasCriticalAllergy {
                                     Image(systemName: "exclamationmark.shield.fill")
                                         .font(.system(size: 10, weight: .bold)).foregroundStyle(.red)
-                                } else if !patient.allergies.isEmpty {
+                                } else if !patient.recordedAllergies.isEmpty {   // NKDA is not an allergy (UX M2)
                                     Image(systemName: "exclamationmark.shield")
                                         .font(.system(size: 10)).foregroundStyle(.orange)
                                 }
@@ -194,7 +207,13 @@ struct TriagePatientRow: View {
         patient.vitalsEntries.sorted { $0.recordedAt > $1.recordedAt }.first
     }
 
+    // Rows are built lazily; a patient deleted meanwhile must not be read (SwiftData crash).
     var body: some View {
+        if patient.isLive { liveBody }
+    }
+
+    @ViewBuilder
+    private var liveBody: some View {
         HStack(spacing: 12) {
             ZStack {
                 Circle()
@@ -225,6 +244,7 @@ struct TriagePatientRow: View {
                 } else if let cc = patient.chiefComplaint {
                     Text(cc).font(.system(size: 12)).foregroundStyle(.secondary).lineLimit(1)
                 }
+                let critLabs = LabPanel.parse(from: patient.investigations)
                 if let v = latestVitals, v.hasAnyValue {
                     HStack(spacing: 6) {
                         if let bp = v.bpString {
@@ -238,10 +258,17 @@ struct TriagePatientRow: View {
                             TriageVitalChip(text: "\(spo)", unit: "%", alert: spo < 94)
                         }
                         Spacer()
+                        if critLabs.hasCriticalValues {
+                            Image(systemName: "flask.fill")
+                                .font(.system(size: 9, weight: .bold)).foregroundStyle(.red)
+                        } else if patient.investigations.contains(where: { $0.status == .ordered || $0.status == .pending }) {
+                            Image(systemName: "clock.badge.exclamationmark")
+                                .font(.system(size: 9)).foregroundStyle(.orange)
+                        }
                         if patient.hasCriticalAllergy {
                             Image(systemName: "exclamationmark.shield.fill")
                                 .font(.system(size: 9, weight: .bold)).foregroundStyle(.red)
-                        } else if !patient.allergies.isEmpty {
+                        } else if !patient.recordedAllergies.isEmpty {   // NKDA is not an allergy (UX M2)
                             Image(systemName: "exclamationmark.shield")
                                 .font(.system(size: 9, weight: .semibold)).foregroundStyle(.orange)
                         }
@@ -258,10 +285,17 @@ struct TriagePatientRow: View {
                         Text("No vitals")
                             .font(.caption).foregroundStyle(.tertiary)
                         Spacer()
+                        if critLabs.hasCriticalValues {
+                            Image(systemName: "flask.fill")
+                                .font(.system(size: 9, weight: .bold)).foregroundStyle(.red)
+                        } else if patient.investigations.contains(where: { $0.status == .ordered || $0.status == .pending }) {
+                            Image(systemName: "clock.badge.exclamationmark")
+                                .font(.system(size: 9)).foregroundStyle(.orange)
+                        }
                         if patient.hasCriticalAllergy {
                             Image(systemName: "exclamationmark.shield.fill")
                                 .font(.system(size: 9, weight: .bold)).foregroundStyle(.red)
-                        } else if !patient.allergies.isEmpty {
+                        } else if !patient.recordedAllergies.isEmpty {   // NKDA is not an allergy (UX M2)
                             Image(systemName: "exclamationmark.shield")
                                 .font(.system(size: 9, weight: .semibold)).foregroundStyle(.orange)
                         }

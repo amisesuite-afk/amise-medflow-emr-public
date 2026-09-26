@@ -6,8 +6,11 @@ struct NoteListView: View {
     @Environment(\.modelContext) private var context
 
     @State private var editingNote:    ClinicalNote?
+    /// A note created by "New note": discarded on close if still empty (ClinicalNote+EmptyDraft).
+    @State private var newDraft:       ClinicalNote?
     @State private var shareURL:       URL?
     @State private var showShareSheet  = false
+    @State private var showStorageBlocked = false
 
     private var sortedNotes: [ClinicalNote] {
         // Drafts first, then by date descending
@@ -131,9 +134,13 @@ struct NoteListView: View {
                 .padding(.bottom, 24)
             }
         }
-        .sheet(item: $editingNote) { note in
+        .sheet(item: $editingNote, onDismiss: {
+            newDraft?.discardIfEmptyDraft(in: context)
+            newDraft = nil
+        }) { note in
             NoteEditorView(note: note)
         }
+        .storeWriteBlockedAlert(isPresented: $showStorageBlocked)
         .sheet(isPresented: $showShareSheet) {
             if let url = shareURL {
                 ShareSheet(items: [url])
@@ -165,16 +172,26 @@ struct NoteListView: View {
     private func addNote(type: NoteType) {
         let note = ClinicalNote(noteType: type, patient: patient)
         context.insert(note)
+        newDraft = note
         editingNote = note
     }
 
     private func signNote(_ note: ClinicalNote) {
+        // In-memory store: the signature would be lost on quit (StoreHealth.swift).
+        guard !StoreHealth.blocksNewClinicalData else {
+            showStorageBlocked = true
+            return
+        }
+        AuditLog.record("sign", "clinical_note", patient: patient, resourceId: note.remoteId ?? note.syncCode,
+                        details: ["note_type": note.noteType.rawValue])
         note.status = .signed
         note.updatedAt = .now
         note.pendingSync = true
     }
 
     private func delete(_ note: ClinicalNote) {
+        AuditLog.record("delete", "clinical_note", patient: patient, resourceId: note.remoteId ?? note.syncCode)
+        SyncTombstones.add(note.remoteId, in: .clinicalNotes)
         context.delete(note)
     }
 }

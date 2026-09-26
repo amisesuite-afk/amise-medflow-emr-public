@@ -27,7 +27,11 @@ enum ClinicalNotePDF {
 
             y += 20
             if y > page.height - 180 { ctx.beginPage(); y = 40 }
-            drawVisitHistory(ctx: ctx, page: page, y: y, patient: patient, currentId: note.id, teal: teal)
+            y = drawVisitHistory(ctx: ctx, page: page, y: y, patient: patient, currentId: note.id, teal: teal)
+
+            if note.status == .signed {
+                drawSignatureBlock(ctx: ctx, page: page, y: y, teal: teal)
+            }
 
             drawFooter(page: page, note: note)
         }
@@ -37,29 +41,45 @@ enum ClinicalNotePDF {
 
     @discardableResult
     private static func drawHeader(page: CGRect, y: CGFloat, note: ClinicalNote, teal: UIColor) -> CGFloat {
-        let h: CGFloat = 56
+        let h: CGFloat = 88
         teal.setFill()
         UIRectFill(CGRect(x: 0, y: 0, width: page.width, height: h))
 
-        "Amise Medical Services".draw(
-            in: CGRect(x: 24, y: 10, width: page.width - 160, height: 22),
-            withAttributes: [.font: UIFont.systemFont(ofSize: 16, weight: .bold),
-                             .foregroundColor: UIColor.white])
+        // Brand mark (e.g. "AMISE")
+        PracticeLetterhead.drawBrandMark(at: CGPoint(x: 24, y: 8))
 
+        PracticeProfile.current.practiceName.draw(
+            in: CGRect(x: 24, y: 34, width: 230, height: 14),
+            withAttributes: [.font: UIFont.systemFont(ofSize: 9, weight: .semibold),
+                             .foregroundColor: UIColor.white.withAlphaComponent(0.92)])
+
+        PracticeProfile.current.clinicianLetterheadLine.draw(
+            in: CGRect(x: 24, y: 50, width: 330, height: 12),
+            withAttributes: [.font: UIFont.systemFont(ofSize: 7.5),
+                             .foregroundColor: UIColor.white.withAlphaComponent(0.78)])
+
+        // Right contact block
+        let rightX = page.width - 24 - 160
+        PracticeLetterhead.drawContactBlock(x: rightX)
+
+        // Separator
+        UIColor.white.withAlphaComponent(0.25).setFill()
+        UIRectFill(CGRect(x: 0, y: h - 20, width: page.width, height: 0.5))
+
+        // Document type + status badge on separator baseline
         note.noteType.label.uppercased().draw(
-            in: CGRect(x: 24, y: 32, width: page.width - 160, height: 14),
-            withAttributes: [.font: UIFont.systemFont(ofSize: 9, weight: .medium),
-                             .foregroundColor: UIColor.white.withAlphaComponent(0.8)])
+            in: CGRect(x: 24, y: h - 17, width: page.width - 120, height: 14),
+            withAttributes: [.font: UIFont.systemFont(ofSize: 8.5, weight: .semibold),
+                             .foregroundColor: UIColor.white.withAlphaComponent(0.88),
+                             .kern: 1.5])
 
-        // Status badge
         let isDraft   = note.status == .draft
         let badgeText = isDraft ? "DRAFT" : "SIGNED"
         let badgeBg   = isDraft ? UIColor.systemOrange : UIColor(red: 0.18, green: 0.70, blue: 0.40, alpha: 1)
-        let badgeRect = CGRect(x: page.width - 100, y: 18, width: 76, height: 20)
+        let badgeRect = CGRect(x: page.width - 76, y: h - 22, width: 52, height: 18)
         badgeBg.setFill()
-        UIBezierPath(roundedRect: badgeRect, cornerRadius: 4).fill()
-
-        let bAttrs: [NSAttributedString.Key: Any] = [.font: UIFont.systemFont(ofSize: 9, weight: .bold),
+        UIBezierPath(roundedRect: badgeRect, cornerRadius: 3).fill()
+        let bAttrs: [NSAttributedString.Key: Any] = [.font: UIFont.systemFont(ofSize: 8, weight: .bold),
                                                       .foregroundColor: UIColor.white]
         let bSize = (badgeText as NSString).size(withAttributes: bAttrs)
         badgeText.draw(at: CGPoint(x: badgeRect.midX - bSize.width / 2,
@@ -67,6 +87,53 @@ enum ClinicalNotePDF {
                        withAttributes: bAttrs)
 
         return h
+    }
+
+    // MARK: - Signature block (signed notes only)
+
+    private static func drawSignatureBlock(ctx: UIGraphicsPDFRendererContext,
+                                           page: CGRect, y: CGFloat, teal: UIColor) {
+        var y = y
+        if y > page.height - 110 { ctx.beginPage(); y = 40 }
+        y += 8
+
+        // Section heading
+        "AUTHORISING CLINICIAN".draw(
+            in: CGRect(x: 24, y: y, width: page.width - 48, height: 14),
+            withAttributes: [.font: UIFont.systemFont(ofSize: 10, weight: .semibold),
+                             .foregroundColor: teal])
+        teal.withAlphaComponent(0.2).setFill()
+        UIRectFill(CGRect(x: 24, y: y + 15, width: page.width - 48, height: 0.5))
+        y += 22
+
+        let labelAttrs: [NSAttributedString.Key: Any] = [
+            .font: UIFont.systemFont(ofSize: 8, weight: .semibold),
+            .foregroundColor: UIColor.secondaryLabel,
+        ]
+        let nameAttrs: [NSAttributedString.Key: Any] = [
+            .font: UIFont.systemFont(ofSize: 9),
+            .foregroundColor: UIColor.label,
+        ]
+
+        "Signature:".draw(at: CGPoint(x: 24, y: y), withAttributes: labelAttrs)
+        teal.withAlphaComponent(0.4).setFill()
+        UIRectFill(CGRect(x: 86, y: y + 10, width: 220, height: 0.5))
+        y += 18
+
+        "Name:".draw(at: CGPoint(x: 24, y: y), withAttributes: labelAttrs)
+        PracticeProfile.current.clinicianLetterheadName.draw(
+            in: CGRect(x: 86, y: y, width: 280, height: 13), withAttributes: nameAttrs)
+        y += 16
+
+        "Date / Time:".draw(at: CGPoint(x: 24, y: y), withAttributes: labelAttrs)
+        teal.withAlphaComponent(0.4).setFill()
+        UIRectFill(CGRect(x: 86, y: y + 10, width: 220, height: 0.5))
+        y += 18
+
+        "This document was prepared with AI-assisted clinical software. The clinician's signature confirms review and approval.".draw(
+            in: CGRect(x: 24, y: y, width: page.width - 48, height: 20),
+            withAttributes: [.font: UIFont.italicSystemFont(ofSize: 6.5),
+                             .foregroundColor: UIColor.tertiaryLabel])
     }
 
     // MARK: - Patient identity strip
@@ -99,7 +166,7 @@ enum ClinicalNotePDF {
     @discardableResult
     private static func drawMeta(page: CGRect, y: CGFloat, note: ClinicalNote, teal: UIColor) -> CGFloat {
         let dateStr = DateFormatter.ectLong.string(from: note.createdAt)
-        "Created: \(dateStr) ECT   ·   Author: Dr Dawit Daniel Kabiye MD DM".draw(
+        "Created: \(dateStr) ECT   ·   Author: \(PracticeProfile.current.clinicianSignature)".draw(
             in: CGRect(x: 24, y: y, width: page.width - 48, height: 13),
             withAttributes: [.font: UIFont.systemFont(ofSize: 8.5),
                              .foregroundColor: UIColor.secondaryLabel])
@@ -129,17 +196,36 @@ enum ClinicalNotePDF {
         if let hpi = patient.hpi, !hpi.isEmpty {
             blocks.append(("HISTORY OF PRESENTING ILLNESS", hpi))
         }
-        if let pmh = patient.pmhNotes, !pmh.isEmpty {
+        // PMH — structured entries take priority over free-text
+        let pmhEntries = patient.pmhEntries
+        if !pmhEntries.isEmpty {
+            let pmhText = pmhEntries.map { e -> String in
+                let yr = e.yearText.isEmpty ? "" : " (\(e.yearText))"
+                return "• \(e.condition)\(yr)"
+            }.joined(separator: "\n")
+            blocks.append(("PAST MEDICAL HISTORY", pmhText))
+        } else if let pmh = patient.pmhNotes, !pmh.isEmpty {
             blocks.append(("PAST MEDICAL HISTORY", pmh))
         }
-        if let pshx = patient.surgicalHistory, !pshx.isEmpty {
+
+        // PSHx — structured entries take priority over free-text
+        let pshxEntries = patient.pshxEntries
+        if !pshxEntries.isEmpty {
+            let pshxText = pshxEntries.map { e -> String in
+                var line = "• \(e.procedure)"
+                if !e.yearText.isEmpty { line += " (\(e.yearText))" }
+                if !e.anaesthetic.isEmpty { line += " — \(e.anaesthetic)" }
+                return line
+            }.joined(separator: "\n")
+            blocks.append(("PAST SURGICAL HISTORY", pshxText))
+        } else if let pshx = patient.surgicalHistory, !pshx.isEmpty {
             blocks.append(("PAST SURGICAL HISTORY", pshx))
         }
 
         // Allergies
-        let allergies = patient.allergies
+        let allergies = patient.recordedAllergies
         if allergies.isEmpty {
-            blocks.append(("ALLERGIES", "No known drug allergies (NKDA)"))
+            blocks.append(("ALLERGIES", patient.hasExplicitNKDA ? "No known drug allergies (NKDA)" : "Not recorded"))
         } else {
             let allergyText = allergies.map { "\($0.name) — \($0.reaction) (\($0.severity))" }.joined(separator: "\n")
             blocks.append(("ALLERGIES", allergyText))
@@ -164,7 +250,7 @@ enum ClinicalNotePDF {
         if let sk = patient.examSkin,    !sk.isEmpty  { examParts.append("Skin: \(sk)") }
         if let ot = patient.examOther,   !ot.isEmpty  { examParts.append("Other: \(ot)") }
         if let v  = patient.vitalsEntries.sorted(by: { $0.recordedAt > $1.recordedAt }).first, v.hasAnyValue {
-            var vLine = "Vitals: NEWS2 \(v.news2Score) (\(v.news2Risk))"
+            var vLine = "Vitals: \(v.news2Summary)"
             if let bp  = v.bpString    { vLine += " · BP \(bp) mmHg" }
             if let hr  = v.heartRate   { vLine += " · HR \(hr) bpm" }
             if let rr  = v.respiratoryRate { vLine += " · RR \(rr)/min" }
@@ -198,6 +284,11 @@ enum ClinicalNotePDF {
             blocks.append(("ASSESSMENT", assessment))
         }
 
+        // Plan (from this specific note)
+        if let plan = note.plan, !plan.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty {
+            blocks.append(("PLAN", plan))
+        }
+
         // Medications
         if !patient.prescriptions.isEmpty {
             let rxText = patient.prescriptions.map { "• \($0.displayLine)" }.joined(separator: "\n")
@@ -227,167 +318,4 @@ enum ClinicalNotePDF {
         return y
     }
 
-    // MARK: - SOAP sections
-
-    @discardableResult
-    private static func drawSOAP(ctx: UIGraphicsPDFRendererContext, page: CGRect, y: CGFloat,
-                                  note: ClinicalNote, teal: UIColor) -> CGFloat {
-        var y = y
-        let sections: [(String, String?)] = [
-            ("Subjective", note.subjective),
-            ("Objective",  note.objective),
-            ("Assessment", note.assessment),
-            ("Plan",       note.plan)
-        ]
-        for (label, text) in sections {
-            guard let text, !text.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty else { continue }
-            if y > page.height - 80 { ctx.beginPage(); y = 40 }
-            y = drawSection(ctx: ctx, page: page, y: y, label: label, body: text, teal: teal, mono: false)
-        }
-        return y
-    }
-
-    // MARK: - Free-text note
-
-    @discardableResult
-    private static func drawFreeText(ctx: UIGraphicsPDFRendererContext, page: CGRect, y: CGFloat,
-                                      note: ClinicalNote, teal: UIColor) -> CGFloat {
-        guard let text = note.freeText, !text.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty else { return y }
-        return drawSection(ctx: ctx, page: page, y: y, label: nil, body: text, teal: teal, mono: true)
-    }
-
-    // MARK: - Generic section block
-
-    @discardableResult
-    private static func drawSection(ctx: UIGraphicsPDFRendererContext, page: CGRect, y: CGFloat,
-                                    label: String?, body: String, teal: UIColor, mono: Bool) -> CGFloat {
-        var y = y
-        let maxW = page.width - 48
-
-        if let label {
-            label.uppercased().draw(
-                in: CGRect(x: 24, y: y, width: maxW, height: 14),
-                withAttributes: [.font: UIFont.systemFont(ofSize: 10, weight: .semibold),
-                                 .foregroundColor: teal])
-            teal.withAlphaComponent(0.2).setFill()
-            UIRectFill(CGRect(x: 24, y: y + 15, width: maxW, height: 0.5))
-            y += 19
-        }
-
-        let font: UIFont = mono ? .monospacedSystemFont(ofSize: 9, weight: .regular) : .systemFont(ofSize: 10)
-        let attrs: [NSAttributedString.Key: Any] = [.font: font, .foregroundColor: UIColor.label]
-        let needed = ceil((body as NSString).boundingRect(
-            with: CGSize(width: maxW, height: 10_000),
-            options: .usesLineFragmentOrigin, attributes: attrs, context: nil
-        ).height)
-
-        if y + needed > page.height - 60 { ctx.beginPage(); y = 40 }
-        body.draw(in: CGRect(x: 24, y: y, width: maxW, height: needed + 4), withAttributes: attrs)
-        return y + needed + 14
-    }
-
-    // MARK: - Visit history timeline
-
-    @discardableResult
-    private static func drawVisitHistory(ctx: UIGraphicsPDFRendererContext, page: CGRect, y: CGFloat,
-                                          patient: Patient, currentId: UUID, teal: UIColor) -> CGFloat {
-        var y = y
-
-        // Section heading
-        "VISIT HISTORY".draw(
-            in: CGRect(x: 24, y: y, width: page.width - 48, height: 14),
-            withAttributes: [.font: UIFont.systemFont(ofSize: 10, weight: .semibold),
-                             .foregroundColor: teal])
-        teal.withAlphaComponent(0.25).setFill()
-        UIRectFill(CGRect(x: 24, y: y + 15, width: page.width - 48, height: 0.5))
-        y += 21
-
-        let notes = patient.clinicalNotes
-            .sorted { $0.createdAt > $1.createdAt }
-            .prefix(12)
-
-        guard !notes.isEmpty else {
-            "No previous notes on record.".draw(
-                in: CGRect(x: 24, y: y, width: page.width - 48, height: 13),
-                withAttributes: [.font: UIFont.systemFont(ofSize: 9),
-                                 .foregroundColor: UIColor.secondaryLabel])
-            return y + 13
-        }
-
-        let df = DateFormatter()
-        df.locale     = Locale(identifier: "en_LC")
-        df.timeZone   = .ect
-        df.dateFormat = "dd MMM yyyy  HH:mm"
-
-        for (i, n) in notes.enumerated() {
-            if y > page.height - 50 { ctx.beginPage(); y = 40 }
-
-            let isCurrent = n.id == currentId
-            let bg: UIColor = isCurrent
-                ? teal.withAlphaComponent(0.09)
-                : (i.isMultiple(of: 2) ? UIColor.systemFill.withAlphaComponent(0.25) : .clear)
-            bg.setFill()
-            UIRectFill(CGRect(x: 24, y: y, width: page.width - 48, height: 17))
-
-            // Date/time column
-            df.string(from: n.createdAt).draw(
-                in: CGRect(x: 28, y: y + 2, width: 128, height: 12),
-                withAttributes: [.font: UIFont.monospacedSystemFont(ofSize: 8.5, weight: .regular),
-                                 .foregroundColor: UIColor.secondaryLabel])
-
-            // Note type column
-            let typeLabel = isCurrent ? "\(n.noteType.label) ◀" : n.noteType.label
-            typeLabel.draw(
-                in: CGRect(x: 162, y: y + 2, width: 120, height: 12),
-                withAttributes: [.font: UIFont.systemFont(ofSize: 8.5, weight: isCurrent ? .semibold : .medium),
-                                 .foregroundColor: isCurrent ? teal : UIColor.label])
-
-            // Status + preview column
-            let status  = n.status == .draft ? "[Draft]" : "[Signed]"
-            let snippet = noteSnippet(n)
-            "\(status)  \(snippet)".draw(
-                in: CGRect(x: 286, y: y + 2, width: page.width - 310, height: 12),
-                withAttributes: [.font: UIFont.systemFont(ofSize: 8),
-                                 .foregroundColor: UIColor.secondaryLabel])
-
-            y += 17
-        }
-
-        return y + 6
-    }
-
-    // MARK: - Footer
-
-    private static func drawFooter(page: CGRect, note: ClinicalNote) {
-        let footerY = page.height - 26
-        UIColor.separator.withAlphaComponent(0.4).setFill()
-        UIRectFill(CGRect(x: 24, y: footerY - 5, width: page.width - 48, height: 0.5))
-
-        let isDraft = note.status == .draft
-        let suffix  = isDraft ? " · DRAFT — NOT VALID UNTIL SIGNED" : ""
-        let text    = "Generated \(DateFormatter.ectDateTime.string(from: .now)) ECT · Dr Dawit Daniel Kabiye MD DM · Amise Medical Services, Saint Lucia\(suffix)"
-        text.draw(
-            in: CGRect(x: 24, y: footerY, width: page.width - 48, height: 14),
-            withAttributes: [.font: UIFont.systemFont(ofSize: 7),
-                             .foregroundColor: isDraft
-                                 ? UIColor.systemOrange.withAlphaComponent(0.75)
-                                 : UIColor.secondaryLabel])
-    }
-
-    // MARK: - Snippet helper
-
-    private static func noteSnippet(_ note: ClinicalNote) -> String {
-        if note.noteType.isStructured {
-            let text = [note.assessment, note.plan, note.subjective]
-                .compactMap { $0?.trimmingCharacters(in: .whitespacesAndNewlines) }
-                .first(where: { !$0.isEmpty }) ?? ""
-            return String(text.prefix(55))
-        }
-        let skip = ["OPERATIVE NOTE", "ENDOSCOPY REPORT", "DISCHARGE SUMMARY", "CONSULTATION NOTE"]
-        let line = (note.freeText ?? "")
-            .components(separatedBy: "\n")
-            .map { $0.trimmingCharacters(in: .whitespaces) }
-            .first(where: { line in !line.isEmpty && !skip.contains(where: { line.hasPrefix($0) }) }) ?? ""
-        return String(line.prefix(55))
-    }
 }

@@ -1,0 +1,243 @@
+{
+  "schemaVersion": 1,
+  "id": "food-bolus-complete-obstruction",
+  "condition": "Oesophageal food bolus obstruction",
+  "category": "upper-gi",
+  "permutationOf": null,
+  "summary": "44-year-old man with a piece of steak stuck for 6 hours, unable to swallow saliva, drooling. ESGE: complete oesophageal obstruction → emergency endoscopy, preferably within 6 h; no barium swallow.",
+  "tags": [
+    "dysphagia",
+    "food-bolus",
+    "emergency-endoscopy"
+  ],
+  "inputs": {
+    "patient": {
+      "ageYears": 44,
+      "sex": "male",
+      "pregnancy": {
+        "status": "not-applicable"
+      },
+      "heightCm": 180,
+      "weightKg": 88
+    },
+    "encounter": {
+      "setting": "emergency",
+      "visitType": "urgentReview",
+      "acuity": "urgent"
+    },
+    "chiefComplaint": "Food stuck and cannot swallow",
+    "hpi": "Piece of steak stuck in the lower chest at dinner six hours ago. Cannot swallow anything, not even his own saliva — spitting into a bowl and drooling. Retching without bringing it up. Two previous episodes that passed on their own. Breathing comfortably.",
+    "socrates": {
+      "onset": [
+        "Today",
+        "Sudden"
+      ],
+      "site": [
+        "Lower chest / epigastric"
+      ],
+      "character": [
+        "Pressure"
+      ],
+      "radiation": [
+        "No radiation"
+      ],
+      "associations": [
+        "Regurgitation"
+      ],
+      "timing": [
+        "Constant"
+      ],
+      "exacerbating": [
+        "Both solids and liquids"
+      ],
+      "relieving": [
+        "Nothing"
+      ],
+      "severity": [
+        "Severe (7–9/10)"
+      ]
+    },
+    "symptoms": [
+      "complete dysphagia",
+      "drooling",
+      "inability to swallow saliva",
+      "retrosternal discomfort"
+    ],
+    "negatives": [
+      "stridor",
+      "breathlessness",
+      "haematemesis",
+      "subcutaneous emphysema"
+    ],
+    "exam": {
+      "general": "Distressed, spitting saliva. Speaking in full sentences, no stridor. No surgical emphysema.",
+      "respiratory": "Chest clear.",
+      "abdomen": "Soft, non-tender."
+    },
+    "vitals": [
+      {
+        "minutesAgo": 10,
+        "heartRate": 96,
+        "systolicBp": 142,
+        "diastolicBp": 88,
+        "respiratoryRate": 16,
+        "temperatureC": 36.8,
+        "spo2": 98,
+        "avpu": "A",
+        "onSupplementalO2": false
+      }
+    ],
+    "labs": [],
+    "imaging": [],
+    "comorbidities": [
+      "Asthma (childhood)"
+    ],
+    "surgicalHistory": [],
+    "medications": [],
+    "allergies": [],
+    "nkda": true,
+    "socialHistory": "Engineer. Non-smoker.",
+    "confirmedDiagnosis": {
+      "name": "Oesophageal food bolus obstruction",
+      "icd10": "T18.1",
+      "assessmentText": "Complete oesophageal food bolus obstruction (unable to swallow saliva) — emergency OGD for bolus removal; biopsies for underlying eosinophilic oesophagitis or stricture."
+    },
+    "platform": {
+      "web": {
+        "ccTemplate": "Dysphagia",
+        "symptoms": [
+          "dysphagia",
+          "regurgitation"
+        ],
+        "symptomDetails": {
+          "dysphagia": [
+            "Liquids too",
+            "Painful (odynophagia)"
+          ]
+        },
+        "examFindings": {},
+        "durationDays": 0.25,
+        "painScore": 6
+      }
+    }
+  },
+  "expected": {
+    "safety": {
+      "emergencyLevel": {
+        "id": "level-emergency",
+        "severity": "critical",
+        "atLeast": "emergency",
+        "guidelineRefs": [
+          "esge-fb-2016"
+        ],
+        "note": "Cannot handle saliva: aspiration risk; the app's own APCQ grades \"cannot swallow saliva\" as emergency."
+      },
+      "redFlags": [
+        {
+          "id": "flag-complete-obstruction",
+          "severity": "quality",
+          "match": [
+            "saliva",
+            "complete",
+            "bolus",
+            "obstruct"
+          ],
+          "guidelineRefs": [
+            "esge-fb-2016"
+          ]
+        }
+      ]
+    },
+    "investigations": {
+      "mustInclude": [
+        {
+          "id": "inv-emergency-ogd",
+          "severity": "critical",
+          "match": [
+            "re:\\bogd\\b",
+            "endoscop",
+            "gastroscop",
+            "oesophagogastroduodenoscopy"
+          ],
+          "guidelineRefs": [
+            "esge-fb-2016",
+            "wses-2019"
+          ],
+          "proposedFix": "A protocol for the PANE node food_bolus with emergency OGD within 6 hours for complete obstruction (ESGE 2016 foreign bodies)."
+        }
+      ]
+    },
+    "management": {
+      "mustInclude": [
+        {
+          "id": "mgmt-endoscopic-removal",
+          "severity": "critical",
+          "match": [
+            "re:(\\bogd\\b|endoscop)[^.;\\n]{0,60}(remov|disimpact|extract|push)",
+            "disimpaction",
+            "bolus removal"
+          ],
+          "guidelineRefs": [
+            "esge-fb-2016"
+          ]
+        },
+        {
+          "id": "mgmt-biopsies-underlying-cause",
+          "severity": "quality",
+          "match": [
+            "biops"
+          ],
+          "guidelineRefs": [
+            "esge-fb-2016",
+            "bsg-eoe-2022"
+          ]
+        }
+      ],
+      "mustExclude": [
+        {
+          "id": "mgmt-no-barium",
+          "severity": "quality",
+          "match": [
+            "barium"
+          ],
+          "guidelineRefs": [
+            "esge-fb-2016"
+          ],
+          "note": "ESGE recommends against barium swallow in suspected food bolus (aspiration, impairs endoscopy)."
+        }
+      ]
+    }
+  },
+  "guideline": [
+    {
+      "id": "esge-fb-2016",
+      "name": "ESGE Clinical Guideline — removal of foreign bodies in the upper gastrointestinal tract in adults",
+      "year": 2016,
+      "section": "Complete oesophageal obstruction (unable to manage saliva): emergent endoscopy, preferably within 6 h (at the latest within 24 h); push or retrieval technique; biopsies to find the underlying cause; barium swallow not recommended",
+      "citation": "Birk M, Bauerfeind P, Deprez PH, et al. Endoscopy. 2016;48:489–496.",
+      "verified": false
+    },
+    {
+      "id": "wses-2019",
+      "name": "WSES guidelines — esophageal emergencies (perforation, caustic ingestion, foreign bodies)",
+      "year": 2019,
+      "section": "Food bolus impaction with complete obstruction requires emergency flexible endoscopy",
+      "citation": "Chirica M, Kelly MD, Siboni S, et al. World J Emerg Surg. 2019;14:26.",
+      "verified": false
+    },
+    {
+      "id": "bsg-eoe-2022",
+      "name": "BSG/BSPGHAN joint consensus guidelines — diagnosis and management of eosinophilic oesophagitis in children and adults",
+      "year": 2022,
+      "section": "Food bolus obstruction in young adults: biopsy for eosinophilic oesophagitis",
+      "citation": "Dhar A, Haboubi HN, Attwood SE, et al. Gut. 2022;71:1459–1487.",
+      "verified": false
+    }
+  ],
+  "rationale": "Base food-bolus case with complete obstruction. The distinguishing feature from ordinary dysphagia is inability to swallow saliva, which moves the case from a 2-week OGD to an emergency endoscopy.",
+  "authoring": {
+    "author": "Claude (upper-GI cluster)",
+    "date": "2026-09-25",
+    "notes": "Expectations need surgeon sign-off (reviewedBy). Citations written from the guideline texts, not yet checked against the source (verified: false)."
+  }
+}

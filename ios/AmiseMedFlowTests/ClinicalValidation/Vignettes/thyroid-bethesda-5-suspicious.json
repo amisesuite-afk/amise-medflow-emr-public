@@ -1,0 +1,204 @@
+{
+  "schemaVersion": 1,
+  "id": "thyroid-bethesda-5-suspicious",
+  "condition": "Thyroid nodule — Bethesda V (suspicious for malignancy)",
+  "category": "breast-endocrine",
+  "permutationOf": "thyroid-nodule-euthyroid-tirads4",
+  "permutationLabel": "Bethesda V (suspicious for malignancy)",
+  "summary": "Suspicious for malignancy. Bethesda 2023: molecular testing, lobectomy or near-total thyroidectomy; surgery is indicated.",
+  "tags": [
+    "thyroid",
+    "nodule",
+    "bethesda"
+  ],
+  "inputs": {
+    "patient": {
+      "ageYears": 46,
+      "sex": "female",
+      "pregnancy": {
+        "status": "not-pregnant"
+      },
+      "heightCm": 165,
+      "weightKg": 68
+    },
+    "encounter": {
+      "setting": "outpatient",
+      "visitType": "followUp",
+      "acuity": "routine"
+    },
+    "chiefComplaint": "Lump in the front of the neck",
+    "hpi": "Noticed a painless lump on the right side of the front of her neck 2 months ago. Moves when she swallows. No voice change, no difficulty swallowing or breathing. No palpitations, heat intolerance or weight change. No neck irradiation in childhood. No family history of thyroid cancer.",
+    "socrates": {
+      "onset": [
+        "1–6 months ago",
+        "Gradual"
+      ],
+      "site": [
+        "Thyroid (right lobe)"
+      ],
+      "character": [
+        "Smooth",
+        "Firm",
+        "Non-tender",
+        "Mobile"
+      ],
+      "radiation": [
+        "No radiation"
+      ],
+      "associations": [],
+      "timing": [
+        "Constant"
+      ],
+      "exacerbating": [
+        "None"
+      ],
+      "relieving": [
+        "Nothing"
+      ],
+      "severity": [
+        "Mild (1–3/10)"
+      ]
+    },
+    "symptoms": [
+      "neck lump"
+    ],
+    "negatives": [
+      "hoarseness",
+      "dysphagia",
+      "stridor",
+      "thyrotoxic symptoms"
+    ],
+    "exam": {
+      "general": "Well. Euthyroid clinically. 2 cm firm, smooth nodule in the right thyroid lobe, moves on swallowing, not fixed. No cervical lymphadenopathy. Trachea central."
+    },
+    "vitals": [
+      {
+        "minutesAgo": 15,
+        "heartRate": 72,
+        "systolicBp": 122,
+        "diastolicBp": 76,
+        "respiratoryRate": 14,
+        "temperatureC": 36.6,
+        "spo2": 99,
+        "avpu": "A",
+        "onSupplementalO2": false
+      }
+    ],
+    "labs": [
+      {
+        "analyte": "tsh",
+        "name": "TSH",
+        "value": 1.8,
+        "unit": "mU/L",
+        "minutesAgo": 20160
+      },
+      {
+        "analyte": "ft4",
+        "name": "Free T4",
+        "value": 14.2,
+        "unit": "pmol/L",
+        "minutesAgo": 20160
+      }
+    ],
+    "imaging": [
+      {
+        "name": "USS thyroid",
+        "modality": "US",
+        "region": "Neck",
+        "result": "Right lobe 2.2 cm solid, hypoechoic, wider-than-tall nodule with smooth margins and no echogenic foci — ACR TI-RADS TR4 (4 points). Left lobe normal. No abnormal cervical lymph nodes.",
+        "minutesAgo": 10080
+      },
+      {
+        "name": "US-guided FNA thyroid nodule (cytology)",
+        "modality": "Other",
+        "region": "Neck",
+        "result": "US-guided FNA right thyroid nodule — cytology: Bethesda V, suspicious for malignancy (suspicious for papillary carcinoma).",
+        "minutesAgo": 1440
+      }
+    ],
+    "comorbidities": [],
+    "surgicalHistory": [],
+    "medications": [],
+    "allergies": [],
+    "nkda": true,
+    "socialHistory": "Non-smoker.",
+    "platform": {
+      "web": {
+        "ccTemplate": "Neck lump",
+        "symptoms": [
+          "neck swelling"
+        ],
+        "durationDays": 60,
+        "painScore": 0
+      }
+    },
+    "confirmedDiagnosis": {
+      "name": "Right thyroid nodule — FNA Bethesda V (suspicious for papillary carcinoma)",
+      "icd10": "D44.0",
+      "paneDiseaseId": "thyroid_carcinoma",
+      "assessmentText": "Right thyroid nodule 2.2 cm, FNA Bethesda V (suspicious for papillary carcinoma), cN0 on ultrasound. Surgery: hemithyroidectomy or total thyroidectomy per risk and patient preference; MDT."
+    }
+  },
+  "expected": {
+    "management": {
+      "mustInclude": [
+        {
+          "id": "mgmt-surgery",
+          "severity": "critical",
+          "match": [
+            "thyroidectomy",
+            "lobectomy"
+          ],
+          "guidelineRefs": [
+            "bethesda-2023",
+            "ata-2015"
+          ],
+          "note": "Bethesda V needs surgery (extent by risk); surveillance alone would be unsafe."
+        }
+      ],
+      "mustExclude": [
+        {
+          "id": "mgmt-no-surveillance-only",
+          "severity": "critical",
+          "match": [
+            "no treatment required for benign fnac",
+            "no surgery indicated"
+          ],
+          "note": "Benign-nodule surveillance text would be unsafe for a Bethesda V nodule."
+        }
+      ]
+    },
+    "safety": {
+      "emergencyLevel": {
+        "id": "level-not-emergency",
+        "severity": "quality",
+        "atMost": "priority",
+        "proposedFix": "Add a negation window (\"no\", \"denies\", \"never\", \"non-\") before RED_FLAGS / symptom regex matches in adaptive-triage."
+      }
+    }
+  },
+  "guideline": [
+    {
+      "id": "bethesda-2023",
+      "name": "The 2023 Bethesda System for Reporting Thyroid Cytopathology",
+      "year": 2023,
+      "section": "Diagnostic categories I–VI and usual management (I repeat FNA with US guidance; II clinical and US follow-up; III repeat FNA, molecular testing, diagnostic lobectomy or surveillance; IV molecular testing, diagnostic lobectomy; V molecular testing, lobectomy or near-total thyroidectomy; VI lobectomy or near-total thyroidectomy)",
+      "citation": "Ali SZ, Baloch ZW, Cochand-Priollet B, Schmitt FC, Vielh P, VanderLaan PA. The 2023 Bethesda System for Reporting Thyroid Cytopathology. Thyroid. 2023;33:1039–1044.",
+      "verified": false
+    },
+    {
+      "id": "ata-2015",
+      "name": "2015 American Thyroid Association guidelines — thyroid nodules and differentiated thyroid cancer",
+      "year": 2016,
+      "section": "Nodule evaluation (TSH first; radionuclide scan when TSH is subnormal; hyperfunctioning nodules do not need FNA); cytology-directed management; extent of surgery (total thyroidectomy for cN1 disease)",
+      "citation": "Haugen BR, Alexander EK, Bible KC, et al. 2015 American Thyroid Association management guidelines for adult patients with thyroid nodules and differentiated thyroid cancer. Thyroid. 2016;26:1–133.",
+      "verified": false
+    }
+  ],
+  "rationale": "Bethesda series (Bethesda V (suspicious for malignancy)). Same patient and nodule as the base; only the cytology result (recorded as a resulted report) and the surgeon's assessment change, so any change in output is driven by the category. Tests that management follows the 2023 Bethesda category.",
+  "authoring": {
+    "author": "Claude (hernia / breast / endocrine cluster)",
+    "date": "2026-09-25",
+    "notes": "Expectations need surgeon sign-off (reviewedBy). Citations verified: false."
+  }
+}

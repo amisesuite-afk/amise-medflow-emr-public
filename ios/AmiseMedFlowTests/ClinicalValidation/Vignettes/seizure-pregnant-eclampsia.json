@@ -1,0 +1,266 @@
+{
+  "schemaVersion": 1,
+  "id": "seizure-pregnant-eclampsia",
+  "condition": "Eclampsia (seizure in pregnancy)",
+  "category": "other",
+  "permutationOf": "seizure-first-unprovoked-adult",
+  "permutationLabel": "Pregnant, 34 weeks: eclampsia",
+  "summary": "32-year-old primigravida at 34 weeks with a day of headache and visual disturbance then a generalised seizure; BP 172/114, proteinuria 3+, platelets 92, ALT 110.",
+  "tags": [
+    "neuro",
+    "seizure",
+    "pregnancy",
+    "do-not-miss",
+    "mimic"
+  ],
+  "inputs": {
+    "patient": {
+      "ageYears": 32,
+      "sex": "female",
+      "pregnancy": {
+        "status": "pregnant",
+        "gestationWeeks": 34
+      },
+      "heightCm": 163,
+      "weightKg": 82
+    },
+    "encounter": {
+      "setting": "emergency",
+      "visitType": "urgentReview",
+      "acuity": "emergency"
+    },
+    "chiefComplaint": "Fit in pregnancy after headache",
+    "hpi": "First pregnancy, 34 weeks. One day of severe frontal headache and flashing lights, swollen face and hands. Ten minutes ago a generalised tonic-clonic seizure lasting 1 minute, witnessed by her partner. No history of epilepsy.",
+    "symptoms": [
+      "seizure",
+      "headache",
+      "visual aura",
+      "confusion"
+    ],
+    "negatives": [
+      "fever",
+      "head injury",
+      "vaginal bleeding"
+    ],
+    "exam": {
+      "general": "Drowsy, facial oedema. Pulse 104/min, BP 172/114, RR 20, temperature 36.9°C, SpO2 96%.",
+      "abdomen": "Gravid uterus consistent with 34 weeks; right upper quadrant tenderness.",
+      "neuro": "GCS 13 post-ictal, brisk reflexes with clonus, no focal deficit."
+    },
+    "vitals": [
+      {
+        "minutesAgo": 10,
+        "heartRate": 104,
+        "systolicBp": 172,
+        "diastolicBp": 114,
+        "respiratoryRate": 20,
+        "temperatureC": 36.9,
+        "spo2": 96,
+        "avpu": "V",
+        "onSupplementalO2": false,
+        "glucoseMmol": 5.1,
+        "weightKg": 82
+      }
+    ],
+    "labs": [
+      {
+        "analyte": "urinalysis",
+        "name": "Urine dipstick",
+        "resultText": "Protein 3+",
+        "minutesAgo": 30
+      },
+      {
+        "analyte": "platelets",
+        "name": "Platelets",
+        "value": 92,
+        "unit": "×10⁹/L",
+        "minutesAgo": 30
+      },
+      {
+        "analyte": "alt",
+        "name": "ALT",
+        "value": 110,
+        "unit": "U/L",
+        "minutesAgo": 30
+      },
+      {
+        "analyte": "creatinine",
+        "name": "Creatinine",
+        "value": 96,
+        "unit": "µmol/L",
+        "minutesAgo": 30
+      },
+      {
+        "analyte": "glucose",
+        "name": "Glucose",
+        "value": 5.1,
+        "unit": "mmol/L",
+        "minutesAgo": 30
+      }
+    ],
+    "imaging": [],
+    "comorbidities": [],
+    "surgicalHistory": [],
+    "medications": [
+      {
+        "drug": "Pregnancy multivitamin",
+        "dose": "1 tablet",
+        "frequency": "OD"
+      }
+    ],
+    "allergies": [],
+    "nkda": true,
+    "socialHistory": "Primigravida.",
+    "confirmedDiagnosis": {
+      "name": "Eclampsia at 34 weeks (severe pre-eclampsia with HELLP features)",
+      "icd10": "O15.0",
+      "assessmentText": "Eclamptic seizure at 34 weeks with BP 172/114, proteinuria, low platelets and raised ALT: IV magnesium sulfate, antihypertensive, obstetric emergency, plan birth once stable."
+    },
+    "platform": {
+      "web": {
+        "ccTemplate": "Other / general surgical",
+        "symptoms": [
+          "seizure",
+          "headache",
+          "visual aura",
+          "confusion"
+        ],
+        "symptomDetails": {
+          "headache": [
+            "Frontal",
+            "Pressure / band-like",
+            "Visual aura",
+            "Progressive worsening"
+          ]
+        },
+        "durationDays": 1
+      }
+    }
+  },
+  "expected": {
+    "differential": {
+      "mustNotMiss": [
+        {
+          "id": "mnm-eclampsia",
+          "severity": "critical",
+          "match": [
+            "eclampsia",
+            "pre-eclampsia",
+            "preeclampsia",
+            "hellp"
+          ],
+          "guidelineRefs": [
+            "nice-ng133"
+          ]
+        }
+      ]
+    },
+    "safety": {
+      "emergencyLevel": {
+        "id": "level-emergency",
+        "severity": "critical",
+        "atLeast": "emergency",
+        "guidelineRefs": [
+          "nice-ng133"
+        ]
+      },
+      "mustAlarm": [
+        {
+          "id": "alarm-eclampsia-or-severe-hypertension",
+          "severity": "critical",
+          "match": [
+            "eclampsia",
+            "hypertensive emergency",
+            "hypertensive urgency",
+            "severe hypertension"
+          ],
+          "guidelineRefs": [
+            "nice-ng133"
+          ]
+        }
+      ]
+    },
+    "management": {
+      "mustInclude": [
+        {
+          "id": "mgmt-magnesium-sulfate",
+          "severity": "critical",
+          "match": [
+            "magnesium sulfate",
+            "magnesium sulphate",
+            "mgso4"
+          ],
+          "guidelineRefs": [
+            "nice-ng133"
+          ]
+        },
+        {
+          "id": "mgmt-antihypertensive",
+          "severity": "critical",
+          "match": [
+            "labetalol",
+            "nifedipine",
+            "hydralazine"
+          ],
+          "guidelineRefs": [
+            "nice-ng133"
+          ]
+        },
+        {
+          "id": "mgmt-obstetric-emergency",
+          "severity": "critical",
+          "match": [
+            "obstetric",
+            "fetal",
+            "foetal",
+            "ctg",
+            "cardiotocograph",
+            "maternity",
+            "midwif",
+            "delivery",
+            "birth"
+          ],
+          "guidelineRefs": [
+            "nice-ng133"
+          ]
+        }
+      ],
+      "mustExclude": [
+        {
+          "id": "mgmt-no-aed-first-line",
+          "severity": "quality",
+          "match": [
+            "levetiracetam",
+            "phenytoin",
+            "valproate"
+          ],
+          "unless": [
+            "if magnesium",
+            "second-line",
+            "refractory"
+          ],
+          "guidelineRefs": [
+            "nice-ng133"
+          ],
+          "note": "Magnesium sulfate, not antiepileptic drugs, treats eclampsia."
+        }
+      ]
+    }
+  },
+  "guideline": [
+    {
+      "id": "nice-ng133",
+      "name": "NICE NG133 — Hypertension in pregnancy: diagnosis and management",
+      "year": 2019,
+      "section": "Eclampsia: IV magnesium sulfate; treat severe hypertension (≥160/110 mmHg) in critical care; senior obstetric and anaesthetic involvement; plan birth once stabilised",
+      "citation": "National Institute for Health and Care Excellence. Hypertension in pregnancy: diagnosis and management. NICE guideline NG133. London: NICE; 2019 (updated 2023).",
+      "verified": false
+    }
+  ],
+  "rationale": "A seizure in late pregnancy is eclampsia until proven otherwise: magnesium sulfate, blood pressure control, obstetric emergency (NICE NG133).",
+  "authoring": {
+    "author": "Claude (endocrine / renal / urology / neuro cluster)",
+    "date": "2026-09-25",
+    "notes": "Expectations need surgeon sign-off (reviewedBy). Every citation is verified: false. iOS outcomes not observed (Linux)."
+  }
+}

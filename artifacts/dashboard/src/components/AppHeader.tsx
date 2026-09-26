@@ -8,6 +8,7 @@ import { getMatrix } from '@/lib/cc-matrices';
 import { VISIT_TYPES, resolveEncounterContext } from '@/lib/visit-types';
 import ResultsAlertBadge from '@/components/ResultsAlertBadge';
 import SyncStatusIndicator from '@/components/SyncStatusIndicator';
+import { allergyStatus, allergyHeaderLabel } from '@/lib/allergy-status';
 
 function acuityClass(a: string) {
   return a === 'urgent' ? 'urgent' : a === 'priority' ? 'priority' : a === 'review' ? 'review' : '';
@@ -45,7 +46,7 @@ export default function AppHeader({ completing, completeEncounter, showAiPanel, 
   const userRole = profile?.role ?? 'front_desk';
 
   const consultAmbient = topSection === 'consultation' && (!!patientId || !!patientName);
-  const allergyList = allergies.split(',').map((a: string) => a.trim()).filter(Boolean);
+  const allergyState = allergyStatus(allergies);
   const ccLabel = activeCcKey ? (getMatrix(activeCcKey)?.name ?? null)
     : (symptoms.length > 0 ? symptoms.slice(0, 2).join(', ') : null);
   const patientLabel = patientName.trim() || 'No patient loaded';
@@ -88,13 +89,28 @@ export default function AppHeader({ completing, completeEncounter, showAiPanel, 
               {[age && `${age}y`, sex && sex !== 'unknown' && sex].filter(Boolean).join(' ')}
             </span>
           )}
-          {/* Allergy alert */}
-          {allergyList.length > 0 ? (
-            <span style={{ fontSize: 10, fontWeight: 700, color: '#fbbf24', background: '#422006', border: '1px solid #78350f', borderRadius: 4, padding: '1px 6px', whiteSpace: 'nowrap', flexShrink: 0 }}>
-              ⚠ {allergyList[0]}{allergyList.length > 1 ? ` +${allergyList.length - 1}` : ''}
+          {/* Allergy status — three explicit states. An empty field is "not recorded",
+              never NKDA (NKDA only when the clinician recorded it). */}
+          {allergyState.kind === 'recorded' ? (
+            <span
+              title={allergyState.conflictsWithNkda ? 'NKDA and allergies are both recorded — reconcile on the Allergies step' : allergyState.allergies.join(', ')}
+              style={{ fontSize: 10, fontWeight: 700, color: '#fbbf24', background: '#422006', border: '1px solid #78350f', borderRadius: 4, padding: '1px 6px', whiteSpace: 'nowrap', flexShrink: 0 }}>
+              {allergyHeaderLabel(allergies)}
+            </span>
+          ) : allergyState.kind === 'nkda' ? (
+            <span
+              title="No known drug allergies (recorded)"
+              style={{ fontSize: 10, fontWeight: 700, color: '#86efac', background: 'rgba(22,163,74,0.12)', border: '1px solid rgba(22,163,74,0.35)', borderRadius: 4, padding: '1px 6px', whiteSpace: 'nowrap', flexShrink: 0 }}>
+              NKDA
             </span>
           ) : patientName ? (
-            <span style={{ fontSize: 10, color: '#475569', whiteSpace: 'nowrap', flexShrink: 0 }}>NKDA</span>
+            <button
+              type="button"
+              onClick={() => setActiveSection('allergies')}
+              title="Allergies have not been recorded — open the Allergies step"
+              style={{ fontSize: 10, fontWeight: 700, color: '#fbbf24', background: 'transparent', border: '1px dashed #b45309', borderRadius: 4, padding: '1px 6px', whiteSpace: 'nowrap', flexShrink: 0, cursor: 'pointer' }}>
+              {allergyHeaderLabel(allergies)}
+            </button>
           ) : null}
           {/* Visit type — inline select in consultation header */}
           {(() => {
@@ -167,11 +183,7 @@ export default function AppHeader({ completing, completeEncounter, showAiPanel, 
           {encounterId ? (
             <button
               type="button"
-              onClick={() => {
-                if (window.confirm('Mark this encounter as complete and close it?')) {
-                  completeEncounter();
-                }
-              }}
+              onClick={completeEncounter /* opens the in-app sign-off dialog (Home.tsx) */}
               style={{ display: 'flex', alignItems: 'center', gap: 4, padding: '3px 8px', borderRadius: 5, border: '1px solid rgba(220,38,38,0.4)', background: completing ? 'rgba(220,38,38,0.2)' : 'rgba(220,38,38,0.1)', color: '#fca5a5', fontSize: 10, fontWeight: 700, cursor: completing ? 'wait' : 'pointer', whiteSpace: 'nowrap', flexShrink: 0 }}
               title="Close this encounter"
               disabled={completing}

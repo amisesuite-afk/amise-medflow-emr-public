@@ -1,0 +1,307 @@
+{
+  "schemaVersion": 1,
+  "id": "lbo-cancer-impending-caecal-perforation",
+  "condition": "Large bowel obstruction",
+  "category": "colorectal",
+  "permutationOf": "lbo-obstructing-sigmoid-cancer",
+  "permutationLabel": "Impending caecal perforation (closed loop, 13.5 cm, pneumatosis), sepsis",
+  "summary": "79-year-old woman with heart failure, 5 days of LBO from sigmoid cancer, now RIF peritonism, T 38.2 °C, HR 122, BP 96/58, lactate 3.6; CT: competent ileocaecal valve, caecum 13.5 cm with pneumatosis.",
+  "tags": [
+    "obstruction",
+    "malignancy",
+    "sepsis",
+    "elderly"
+  ],
+  "inputs": {
+    "patient": {
+      "ageYears": 79,
+      "sex": "female",
+      "pregnancy": {
+        "status": "not-applicable"
+      },
+      "heightCm": 160,
+      "weightKg": 66
+    },
+    "encounter": {
+      "setting": "emergency",
+      "visitType": "urgentReview",
+      "acuity": "emergency"
+    },
+    "chiefComplaint": "Swollen abdomen and right-sided abdominal pain",
+    "hpi": "5 days of no bowel motion or flatus with increasing distension. Since this morning, constant severe pain in the right side of the abdomen, fever and shaking. Recent change in bowel habit for 2 months.",
+    "socrates": {
+      "onset": [
+        "4–7 days ago"
+      ],
+      "site": [
+        "Diffuse",
+        "RLQ"
+      ],
+      "character": [
+        "Bloating",
+        "Sharp"
+      ],
+      "radiation": [
+        "No radiation"
+      ],
+      "associations": [
+        "Vomiting",
+        "Fever",
+        "Rigors",
+        "Change in bowel habit"
+      ],
+      "timing": [
+        "Constant",
+        "Progressive"
+      ],
+      "exacerbating": [
+        "Movement"
+      ],
+      "relieving": [
+        "Nothing"
+      ],
+      "severity": [
+        "Severe (7–9/10)"
+      ]
+    },
+    "symptoms": [
+      "abdominal distension",
+      "absolute constipation",
+      "abdominal pain",
+      "fever",
+      "vomiting"
+    ],
+    "negatives": [],
+    "exam": {
+      "general": "Unwell, flushed. Temperature 38.2°C, pulse 122/min, BP 96/58, RR 24.",
+      "abdomen": "Massively distended; tender with guarding and rebound in the right iliac fossa over a tense caecum. Bowel sounds absent."
+    },
+    "vitals": [
+      {
+        "minutesAgo": 10,
+        "heartRate": 122,
+        "systolicBp": 96,
+        "diastolicBp": 58,
+        "respiratoryRate": 24,
+        "temperatureC": 38.2,
+        "spo2": 94,
+        "avpu": "A",
+        "onSupplementalO2": false
+      }
+    ],
+    "labs": [
+      {
+        "analyte": "wbc",
+        "name": "WBC",
+        "value": 18.6,
+        "unit": "×10⁹/L",
+        "minutesAgo": 30
+      },
+      {
+        "analyte": "crp",
+        "name": "CRP",
+        "value": 188,
+        "unit": "mg/L",
+        "minutesAgo": 30
+      },
+      {
+        "analyte": "lactate",
+        "name": "Lactate",
+        "value": 3.6,
+        "unit": "mmol/L",
+        "minutesAgo": 30
+      },
+      {
+        "analyte": "creatinine",
+        "name": "Creatinine",
+        "value": 156,
+        "unit": "µmol/L",
+        "minutesAgo": 30
+      }
+    ],
+    "imaging": [
+      {
+        "name": "CT abdomen/pelvis with IV contrast",
+        "modality": "CT",
+        "region": "Abdomen/pelvis",
+        "result": "Large bowel obstruction from a stenosing sigmoid tumour with a competent ileocaecal valve (closed loop). Caecum 13.5 cm with pneumatosis of the caecal wall — impending perforation. No free gas yet.",
+        "minutesAgo": 10
+      }
+    ],
+    "comorbidities": [
+      "Hypertension",
+      "Heart failure"
+    ],
+    "surgicalHistory": [],
+    "medications": [
+      {
+        "drug": "Furosemide",
+        "dose": "40 mg",
+        "frequency": "OD",
+        "indication": "Heart failure"
+      },
+      {
+        "drug": "Bisoprolol",
+        "dose": "5 mg",
+        "frequency": "OD",
+        "indication": "Heart failure"
+      }
+    ],
+    "allergies": [],
+    "nkda": true,
+    "socialHistory": "Lives with daughter.",
+    "confirmedDiagnosis": {
+      "name": "Malignant large bowel obstruction with impending caecal perforation",
+      "icd10": "C18.7",
+      "paneDiseaseId": "colorectal_cancer",
+      "assessmentText": "Large bowel obstruction from sigmoid carcinoma with closed-loop caecal distension 13.5 cm and caecal pneumatosis (impending perforation), sepsis. Emergency laparotomy — subtotal colectomy."
+    },
+    "platform": {
+      "web": {
+        "ccTemplate": "Acute abdominal pain",
+        "socratesAnswers": {
+          "site": "Right lower (RLQ) and generalised",
+          "onset": "5 days; severe since this morning",
+          "character": "Bloating, now sharp and constant",
+          "associated": "Distension, no flatus (constipation), fever, rigors, vomiting",
+          "timing": "Constant, worsening",
+          "triggers": "Movement",
+          "relief": "Nothing helps",
+          "severity": "8/10"
+        },
+        "symptoms": [
+          "abdominal distension",
+          "constipation",
+          "abdominal pain",
+          "fever",
+          "vomiting",
+          "rigors"
+        ],
+        "symptomDetails": {
+          "abdominal pain": [
+            "RLQ",
+            "Diffuse",
+            "> 3 days",
+            "Constant",
+            "Severe (7–9)",
+            "Distension",
+            "Constipation",
+            "Fever",
+            "Rigors",
+            "Worsening over time"
+          ]
+        },
+        "examFindings": {
+          "abdomen": [
+            "Distended",
+            "Tender RLQ",
+            "Guarding",
+            "Rebound tenderness",
+            "Bowel sounds absent"
+          ]
+        },
+        "durationDays": 5,
+        "painScore": 8
+      }
+    }
+  },
+  "expected": {
+    "safety": {
+      "emergencyLevel": {
+        "id": "level-emergency",
+        "severity": "critical",
+        "atLeast": "emergency",
+        "guidelineRefs": [
+          "wses-lbo-2018"
+        ],
+        "knownGapNote": "iOS: ClinicalPathwayEngine reads only CC/PMH keywords; CC 'Swollen abdomen and right-sided abdominal pain' gives 'routine'."
+      },
+      "mustAlarm": [
+        {
+          "id": "alarm-sepsis",
+          "severity": "critical",
+          "match": [
+            "sepsis",
+            "septic"
+          ],
+          "guidelineRefs": [
+            "ssc-2021"
+          ]
+        }
+      ]
+    },
+    "management": {
+      "mustInclude": [
+        {
+          "id": "mgmt-emergency-surgery",
+          "severity": "critical",
+          "match": [
+            "subtotal colectomy",
+            "emergency laparotomy",
+            "re:emergency[^\\n]{0,30}(resection|colectomy|laparotomy)",
+            "re:hartmann'?s?'? (procedure|operation)",
+            "emergency hartmann"
+          ],
+          "guidelineRefs": [
+            "wses-lbo-2018"
+          ]
+        }
+      ],
+      "mustExclude": [
+        {
+          "id": "mgmt-no-stent-with-impending-perforation",
+          "severity": "critical",
+          "match": [
+            "stent",
+            "sems"
+          ],
+          "unless": [
+            "contraindicat",
+            "perforat",
+            "avoid",
+            "not if",
+            "ischaem",
+            "closed loop",
+            "closed-loop"
+          ],
+          "guidelineRefs": [
+            "wses-lbo-2018"
+          ],
+          "note": "WSES 2018: stenting is contraindicated with perforation or signs of caecal ischaemia/impending perforation (pneumatosis, peritonism); a closed-loop caecum at 13.5 cm needs emergency surgery."
+        }
+      ]
+    },
+    "dxVariant": {
+      "id": "variant-lbo-malignant",
+      "severity": "quality",
+      "equals": "lbo_malignant",
+      "guidelineRefs": [
+        "wses-lbo-2018"
+      ]
+    }
+  },
+  "guideline": [
+    {
+      "id": "wses-lbo-2018",
+      "name": "WSES guidelines — colon and rectal cancer emergencies: obstruction and perforation (2017)",
+      "year": 2018,
+      "section": "CT for diagnosis; left-sided obstruction (Hartmann's vs resection with primary anastomosis ± stoma; SEMS as a bridge in selected patients); right-sided obstruction (right colectomy with primary anastomosis); caecal distension and perforation (emergency surgery, no stent)",
+      "citation": "Pisano M, Zorcolo L, Merli C, et al. 2017 WSES guidelines on colon and rectal cancer emergencies: obstruction and perforation. World J Emerg Surg. 2018;13:36.",
+      "verified": false
+    },
+    {
+      "id": "ssc-2021",
+      "name": "Surviving Sepsis Campaign — international guidelines for sepsis and septic shock 2021",
+      "year": 2021,
+      "section": "Screening (do not use qSOFA alone), antibiotics within 1 h of shock, blood cultures, lactate, 30 mL/kg crystalloid for hypoperfusion, vasopressors, source control",
+      "citation": "Evans L, Rhodes A, Alhazzani W, et al. Surviving Sepsis Campaign: international guidelines for management of sepsis and septic shock 2021. Crit Care Med. 2021;49:e1063–e1143.",
+      "verified": false
+    }
+  ],
+  "rationale": "Permutation: severity. Caecal pneumatosis and peritonism in a closed-loop LBO mean emergency resection; a stent is contraindicated.",
+  "authoring": {
+    "author": "Claude (GI surgical emergencies cluster)",
+    "date": "2026-09-25",
+    "notes": "Expectations need surgeon sign-off (reviewedBy). Every citation is verified: false."
+  }
+}

@@ -1,0 +1,437 @@
+{
+  "schemaVersion": 1,
+  "id": "cholecystitis-tg18-grade2",
+  "condition": "Acute calculous cholecystitis",
+  "category": "hpb",
+  "permutationOf": "cholecystitis-tg18-grade1",
+  "permutationLabel": "TG18 Grade II (moderate) — palpable tender RUQ mass is the only Grade II criterion",
+  "summary": "57-year-old diabetic man, 60 h of RUQ pain, fever 38.6 °C, tender palpable RUQ mass, WBC 15.6, CRP 188; ultrasound shows a distended, thick-walled gallbladder with pericholecystic inflammation. No organ dysfunction.",
+  "tags": [
+    "biliary",
+    "surgical",
+    "diabetes"
+  ],
+  "inputs": {
+    "patient": {
+      "ageYears": 57,
+      "sex": "male",
+      "pregnancy": {
+        "status": "not-applicable"
+      },
+      "heightCm": 175,
+      "weightKg": 92
+    },
+    "encounter": {
+      "setting": "emergency",
+      "visitType": "urgentReview",
+      "acuity": "urgent"
+    },
+    "chiefComplaint": "Right upper quadrant pain with fever",
+    "hpi": "Two and a half days of constant right upper quadrant pain with fevers and vomiting. Known gallstones, awaiting elective cholecystectomy. Type 2 diabetic on metformin; sugars running high since the pain started. No jaundice.",
+    "socrates": {
+      "onset": [
+        "2–3 days ago"
+      ],
+      "site": [
+        "RUQ"
+      ],
+      "character": [
+        "Aching",
+        "Sharp"
+      ],
+      "radiation": [
+        "Right shoulder"
+      ],
+      "associations": [
+        "Nausea",
+        "Vomiting",
+        "Fever"
+      ],
+      "timing": [
+        "Constant",
+        "Progressive"
+      ],
+      "exacerbating": [
+        "Movement",
+        "Deep breathing"
+      ],
+      "relieving": [
+        "Nothing"
+      ],
+      "severity": [
+        "Severe (7–9/10)"
+      ]
+    },
+    "symptoms": [
+      "right upper quadrant pain",
+      "fever",
+      "vomiting"
+    ],
+    "negatives": [
+      "jaundice"
+    ],
+    "exam": {
+      "general": "Unwell, alert. Temperature 38.6°C, pulse 104/min, BP 142/88.",
+      "abdomen": "Tender palpable mass in the right upper quadrant (inflamed gallbladder with omental phlegmon), positive Murphy's sign, localised guarding. No generalised peritonism."
+    },
+    "vitals": [
+      {
+        "minutesAgo": 20,
+        "heartRate": 104,
+        "systolicBp": 142,
+        "diastolicBp": 88,
+        "respiratoryRate": 20,
+        "temperatureC": 38.6,
+        "spo2": 97,
+        "avpu": "A",
+        "onSupplementalO2": false,
+        "glucoseMmol": 13.2
+      }
+    ],
+    "labs": [
+      {
+        "analyte": "wbc",
+        "name": "WBC",
+        "value": 15.6,
+        "unit": "×10⁹/L",
+        "minutesAgo": 40
+      },
+      {
+        "analyte": "crp",
+        "name": "CRP",
+        "value": 188,
+        "unit": "mg/L",
+        "minutesAgo": 40
+      },
+      {
+        "analyte": "bilirubin",
+        "name": "Bilirubin",
+        "value": 22,
+        "unit": "µmol/L",
+        "minutesAgo": 40
+      },
+      {
+        "analyte": "alp",
+        "name": "ALP",
+        "value": 140,
+        "unit": "U/L",
+        "minutesAgo": 40
+      },
+      {
+        "analyte": "alt",
+        "name": "ALT",
+        "value": 55,
+        "unit": "U/L",
+        "minutesAgo": 40
+      },
+      {
+        "analyte": "creatinine",
+        "name": "Creatinine",
+        "value": 88,
+        "unit": "µmol/L",
+        "minutesAgo": 40
+      },
+      {
+        "analyte": "glucose",
+        "name": "Glucose",
+        "value": 13.2,
+        "unit": "mmol/L",
+        "minutesAgo": 40
+      },
+      {
+        "analyte": "lipase",
+        "name": "Lipase",
+        "value": 42,
+        "unit": "U/L",
+        "minutesAgo": 40
+      }
+    ],
+    "imaging": [
+      {
+        "name": "USS abdomen",
+        "modality": "US",
+        "region": "Abdomen",
+        "result": "Distended gallbladder (11 × 5 cm) with multiple gallstones; wall thickened to 7 mm with pericholecystic fluid and surrounding inflammatory change. No intramural gas. CBD 6 mm.",
+        "minutesAgo": 15
+      }
+    ],
+    "comorbidities": [
+      "Type 2 diabetes mellitus",
+      "Hypertension"
+    ],
+    "surgicalHistory": [],
+    "medications": [
+      {
+        "drug": "Metformin",
+        "dose": "1 g",
+        "frequency": "BD",
+        "indication": "Type 2 diabetes"
+      },
+      {
+        "drug": "Lisinopril",
+        "dose": "10 mg",
+        "frequency": "OD",
+        "indication": "Hypertension"
+      }
+    ],
+    "allergies": [],
+    "nkda": true,
+    "socialHistory": "Taxi driver. Smoker, 10 a day. Occasional alcohol.",
+    "scoreForms": {
+      "tg18-cholecystitis": {
+        "localSigns": true,
+        "systemicSigns": true,
+        "imagingCharacteristic": true,
+        "wbcAbove18": false,
+        "palpableTenderRUQMass": true,
+        "durationOver72h": false,
+        "markedLocalInflammation": false,
+        "organDysfunction": []
+      }
+    },
+    "confirmedDiagnosis": {
+      "name": "Acute calculous cholecystitis",
+      "icd10": "K81.0",
+      "paneDiseaseId": "cholecystitis",
+      "assessmentText": "Acute calculous cholecystitis, Tokyo (TG18) Grade II (moderate) — palpable tender RUQ mass. No organ dysfunction."
+    },
+    "platform": {
+      "web": {
+        "ccTemplate": "Acute abdominal pain",
+        "symptoms": [
+          "abdominal pain",
+          "right upper quadrant pain",
+          "fever",
+          "vomiting"
+        ],
+        "symptomDetails": {
+          "abdominal pain": [
+            "RUQ",
+            "1–3 days",
+            "Constant",
+            "Sharp",
+            "Severe (7–9)",
+            "Shoulder tip",
+            "Vomiting",
+            "Fever",
+            "Continuous",
+            "Worsening over time",
+            "Movement"
+          ]
+        },
+        "examFindings": {
+          "abdomen": [
+            "Tender RUQ",
+            "Murphy's sign +",
+            "Guarding",
+            "Mass palpable"
+          ]
+        },
+        "durationDays": 2.5,
+        "painScore": 8
+      }
+    }
+  },
+  "expected": {
+    "differential": {
+      "mustRankTopK": [
+        {
+          "id": "dx-cholecystitis-top3",
+          "severity": "critical",
+          "match": [
+            "acute cholecystitis",
+            "calculous cholecystitis",
+            "re:^cholecystitis"
+          ],
+          "unless": [
+            "acalculous"
+          ],
+          "k": 3,
+          "guidelineRefs": [
+            "tg18-dx-cholecystitis"
+          ]
+        }
+      ],
+      "mustNotMiss": []
+    },
+    "safety": {
+      "emergencyLevel": {
+        "id": "level-at-least-urgent",
+        "severity": "critical",
+        "atLeast": "urgent",
+        "guidelineRefs": [
+          "tg18-mgmt-cholecystitis"
+        ],
+        "knownGapNote": "iOS ClinicalPathwayEngine leaves RUQ pain + fever at routine."
+      },
+      "redFlags": [
+        {
+          "id": "flag-diabetes",
+          "severity": "quality",
+          "match": [
+            "diabet"
+          ],
+          "note": "Diabetes: infection risk, glycaemic control and metformin plan around theatre."
+        }
+      ]
+    },
+    "scores": {
+      "recommended": [
+        {
+          "id": "score-rec-tg18-cholecystitis",
+          "severity": "quality",
+          "score": "tg18-cholecystitis",
+          "guidelineRefs": [
+            "tg18-dx-cholecystitis"
+          ]
+        }
+      ],
+      "values": [
+        {
+          "id": "score-tg18-calculator",
+          "severity": "critical",
+          "score": "tg18-cholecystitis",
+          "mode": "calculator",
+          "equals": 2,
+          "guidelineRefs": [
+            "tg18-dx-cholecystitis"
+          ],
+          "note": "TG18: a palpable tender mass in the RUQ is on its own a Grade II criterion. Under-grading to Grade I changes the management flowchart (Grade II: early cholecystectomy only in an experienced centre if fit; otherwise antibiotics ± gallbladder drainage; blood cultures).",
+          "knownGapNote": "Neither calculator has a \"palpable tender RUQ mass\" Grade II criterion (iOS folds it into Grade I local signs; web grades II only on WBC >18)."
+        }
+      ]
+    },
+    "investigations": {
+      "mustInclude": [
+        {
+          "id": "inv-blood-cultures",
+          "severity": "quality",
+          "match": [
+            "blood culture"
+          ],
+          "guidelineRefs": [
+            "tg18-antimicrobial"
+          ],
+          "note": "TG18: blood cultures are recommended in Grade II and III."
+        },
+        {
+          "id": "inv-glucose",
+          "severity": "quality",
+          "match": [
+            "glucose",
+            "hba1c",
+            "blood sugar",
+            "cbg"
+          ],
+          "knownGap": [
+            "ios"
+          ],
+          "knownGapNote": "iOS CI 2026-09-25 (run 36169134350, database mode): no investigation matched among 12 (ios.pipeline.decisions, ios.radiation)"
+        }
+      ],
+      "mustExclude": []
+    },
+    "management": {
+      "mustInclude": [
+        {
+          "id": "mgmt-lap-cholecystectomy",
+          "severity": "critical",
+          "match": [
+            "laparoscopic cholecystectomy",
+            "lap chole",
+            "re:lap(\\.|aroscopic)? cholecystectomy"
+          ],
+          "guidelineRefs": [
+            "tg18-mgmt-cholecystitis"
+          ]
+        },
+        {
+          "id": "mgmt-gb-drainage-option",
+          "severity": "quality",
+          "match": [
+            "cholecystostomy",
+            "gallbladder drainage",
+            "ptgbd"
+          ],
+          "guidelineRefs": [
+            "tg18-mgmt-cholecystitis"
+          ],
+          "note": "TG18 Grade II: gallbladder drainage if the patient does not respond to initial treatment or is not fit for early surgery."
+        },
+        {
+          "id": "mgmt-antibiotics",
+          "severity": "quality",
+          "match": [
+            "antibiotic",
+            "co-amoxiclav",
+            "amoxicillin-clavulanate",
+            "piperacillin",
+            "cefuroxime",
+            "ceftriaxone"
+          ],
+          "guidelineRefs": [
+            "tg18-antimicrobial"
+          ]
+        },
+        {
+          "id": "mgmt-diabetes-plan",
+          "severity": "quality",
+          "match": [
+            "metformin",
+            "insulin",
+            "glucose",
+            "glycaemic",
+            "diabet"
+          ],
+          "note": "Peri-operative glycaemic and metformin plan."
+        }
+      ],
+      "mustExclude": []
+    },
+    "pathway": {
+      "id": "pathway-first-visit",
+      "severity": "quality",
+      "equals": "firstVisit"
+    },
+    "dxVariant": {
+      "id": "variant-grade2",
+      "severity": "quality",
+      "equals": "cholecystitis_grade2",
+      "guidelineRefs": [
+        "tg18-mgmt-cholecystitis"
+      ]
+    }
+  },
+  "guideline": [
+    {
+      "id": "tg18-dx-cholecystitis",
+      "name": "Tokyo Guidelines 2018 — diagnostic criteria and severity grading of acute cholecystitis",
+      "year": 2018,
+      "section": "Grade II criteria: WBC >18,000/mm³; palpable tender mass in the RUQ; duration >72 h; marked local inflammation (any one)",
+      "citation": "Yokoe M, Hata J, Takada T, et al. J Hepatobiliary Pancreat Sci. 2018;25:41–54.",
+      "verified": false
+    },
+    {
+      "id": "tg18-mgmt-cholecystitis",
+      "name": "Tokyo Guidelines 2018 — flowchart for the management of acute cholecystitis",
+      "year": 2018,
+      "section": "Grade II: early laparoscopic cholecystectomy in an advanced centre if CCI ≤5 and ASA ≤2; otherwise antibiotics and urgent/early gallbladder drainage if not responding",
+      "citation": "Okamoto K, Suzuki K, Takada T, et al. J Hepatobiliary Pancreat Sci. 2018;25:55–72.",
+      "verified": false
+    },
+    {
+      "id": "tg18-antimicrobial",
+      "name": "Tokyo Guidelines 2018 — antimicrobial therapy for acute cholangitis and cholecystitis",
+      "year": 2018,
+      "section": "Blood cultures in Grade II/III; antimicrobial choice by severity",
+      "citation": "Gomi H, Solomkin JS, Schlossberg D, et al. J Hepatobiliary Pancreat Sci. 2018;25:3–16.",
+      "verified": false
+    }
+  ],
+  "rationale": "Permutation: the only Grade II criterion is the palpable tender RUQ mass (WBC 15.6 <18, 60 h <72 h). This isolates whether each calculator implements all four TG18 Grade II criteria, and whether the web plan picks the Grade II variant from the assessment text.",
+  "authoring": {
+    "author": "Claude (phase 0 seed)",
+    "date": "2026-09-25",
+    "notes": "Expectations need surgeon sign-off (reviewedBy)."
+  }
+}

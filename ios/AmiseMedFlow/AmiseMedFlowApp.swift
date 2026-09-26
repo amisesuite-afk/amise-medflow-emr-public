@@ -11,35 +11,74 @@ struct AmiseMedFlowApp: App {
     @StateObject private var notifications = NotificationService()
     @Environment(\.scenePhase) private var scenePhase
 
-    var sharedModelContainer: ModelContainer = {
-        let schema = Schema([Patient.self, ClinicalNote.self, VitalsEntry.self, Prescription.self, PatientDocument.self, OperativePlan.self, BillingLineItem.self, Encounter.self, ScoreHistoryEntry.self])
+    let sharedModelContainer: ModelContainer
+
+    init() {
+        #if DEBUG
+        // UI-test demo mode (UITestDemoMode.swift, DEBUG only): synthetic in-memory store, no
+        // Sentry, and the on-disk store is never opened.
+        if UITestDemoMode.isActive {
+            sharedModelContainer = UITestDemoMode.makeSeededContainer(schema: Self.makeSchema())
+            return
+        }
+        #endif
+        // First, so a crash anywhere during launch is still reported (and so a store failure
+        // below can be reported: the container used to be built before this ran).
+        CrashReporting.start()
+        sharedModelContainer = Self.makeModelContainer()
+    }
+
+    /// Every @Model type the app stores.
+    private static func makeSchema() -> Schema {
+        Schema([Patient.self, ClinicalNote.self, VitalsEntry.self, Prescription.self, PatientDocument.self, OperativePlan.self, BillingLineItem.self, Encounter.self, ScoreHistoryEntry.self])
+    }
+
+    /// Opens the on-device store without ever deleting or resetting it (see StoreHealth.swift):
+    /// on disk → retry the untouched file → move it aside (timestamped, never deleted) and open
+    /// a fresh store once → in-memory fallback, which shows a red banner and blocks new patients
+    /// and note signing. Every failed step is reported with its error domain and code only.
+    private static func makeModelContainer() -> ModelContainer {
+        let schema = makeSchema()
 
         // CloudKit sync requires iCloud entitlement — not configured, so use local store only.
-        func makePersistentContainer() throws -> ModelContainer {
-            let config = ModelConfiguration(
-                schema: schema,
-                isStoredInMemoryOnly: false,
-                cloudKitDatabase: .none
-            )
-            do {
-                return try ModelContainer(for: schema, configurations: [config])
-            } catch {
-                // Schema changed — back up the corrupted store and start fresh.
-                let backupURL = config.url.deletingLastPathComponent()
-                    .appendingPathComponent("medflow-backup-\(Int(Date().timeIntervalSince1970)).store")
-                try? FileManager.default.copyItem(at: config.url, to: backupURL)
-                try? FileManager.default.removeItem(at: config.url)
-                return try ModelContainer(for: schema, configurations: [config])
+        let config = ModelConfiguration(
+            schema: schema,
+            isStoredInMemoryOnly: false,
+            cloudKitDatabase: .none
+        )
+        let storeURL = config.url
+
+        let outcome = StoreRecovery.open(
+            openOnDisk: { try ModelContainer(for: schema, configurations: [config]) },
+            storeFileState: { StoreRecovery.fileState(at: storeURL) },
+            moveAside: { try StoreRecovery.moveStoreAside(storeURL: storeURL) },
+            openInMemory: {
+                let memoryConfig = ModelConfiguration(schema: schema, isStoredInMemoryOnly: true)
+                return try ModelContainer(for: schema, configurations: [memoryConfig])
             }
+        )
+
+        StoreHealth.record(status: outcome.status, storeURL: storeURL)
+
+        let outcomeTag: String
+        switch outcome.status {
+        case .onDisk:               outcomeTag = "on_disk"
+        case .onDiskAfterMoveAside: outcomeTag = "moved_aside"
+        case .inMemoryFallback:     outcomeTag = "in_memory_fallback"
+        }
+        if !outcome.failures.isEmpty {
+            CrashReporting.breadcrumb("Store opened: \(outcomeTag)", category: "storage")
+        }
+        for failure in outcome.failures {
+            CrashReporting.captureStoreFailure(domain: failure.domain, code: failure.code,
+                                               stage: failure.stage.rawValue, outcome: outcomeTag)
         }
 
-        if let container = try? makePersistentContainer() { return container }
-
-        // Last-resort in-memory store: app stays functional, data won't persist this session.
-        let fallbackConfig = ModelConfiguration(schema: schema, isStoredInMemoryOnly: true)
-        return (try? ModelContainer(for: schema, configurations: [fallbackConfig]))
-            ?? { fatalError("SwiftData: even an in-memory container failed to initialize.") }()
-    }()
+        guard let container = outcome.container else {
+            fatalError("SwiftData: even an in-memory container failed to initialize.")
+        }
+        return container
+    }
 
     var body: some Scene {
         WindowGroup {
@@ -60,6 +99,9 @@ struct AmiseMedFlowApp: App {
                 }
             }
             .animation(.easeInOut(duration: 0.2), value: bioAuth.isLocked)
+            // Report PDFs shared from another app (e.g. the Laboratory Services Ltd app):
+            // staged on arrival, shown only when unlocked, signed in and not in hand-over mode.
+            .incomingReportHandling(bioAuth: bioAuth, sync: sync)
         }
         .modelContainer(sharedModelContainer)
         .onChange(of: scenePhase, initial: false) { _, newPhase in

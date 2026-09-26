@@ -1,0 +1,172 @@
+{
+  "schemaVersion": 1,
+  "id": "decision-diverticulitis-uncomplicated-observe",
+  "condition": "Uncomplicated diverticulitis — fit outpatient",
+  "category": "colorectal",
+  "permutationOf": null,
+  "summary": "Fit 52-year-old with CT-confirmed uncomplicated diverticulitis: observe — no routine antibiotics and outpatient management.",
+  "tags": [
+    "decision-support",
+    "negation"
+  ],
+  "inputs": {
+    "patient": {
+      "ageYears": 52,
+      "sex": "male",
+      "pregnancy": {
+        "status": "not-applicable"
+      },
+      "heightCm": 178,
+      "weightKg": 84
+    },
+    "encounter": {
+      "setting": "outpatient",
+      "visitType": "urgentReview",
+      "acuity": "priority"
+    },
+    "chiefComplaint": "Left lower abdominal pain",
+    "hpi": "Two days of constant left iliac fossa pain with mild nausea; eating and drinking. Otherwise fit, no immunosuppression. Non-smoker.",
+    "exam": {
+      "general": "Comfortable at rest.",
+      "abdomen": "Tender left iliac fossa with mild localised guarding; no peritonism, no mass."
+    },
+    "vitals": [
+      {
+        "minutesAgo": 10,
+        "heartRate": 86,
+        "systolicBp": 132,
+        "diastolicBp": 80,
+        "respiratoryRate": 16,
+        "temperatureC": 37.8,
+        "spo2": 98,
+        "avpu": "A",
+        "onSupplementalO2": false
+      }
+    ],
+    "labs": [
+      {
+        "analyte": "wbc",
+        "name": "WBC",
+        "value": 12.4,
+        "unit": "x10^9/L",
+        "minutesAgo": 60
+      },
+      {
+        "analyte": "crp",
+        "name": "CRP",
+        "value": 70,
+        "unit": "mg/L",
+        "minutesAgo": 60
+      },
+      {
+        "analyte": "egfr",
+        "name": "eGFR",
+        "value": 92,
+        "unit": "mL/min/1.73m2",
+        "minutesAgo": 60
+      }
+    ],
+    "imaging": [
+      {
+        "name": "CT abdomen/pelvis",
+        "modality": "CT",
+        "region": "abdomen/pelvis",
+        "result": "Uncomplicated sigmoid diverticulitis (modified Hinchey Ia): pericolic fat stranding; no abscess, no free gas, no free fluid.",
+        "minutesAgo": 60
+      }
+    ],
+    "comorbidities": [],
+    "medications": [],
+    "nkda": true,
+    "confirmedDiagnosis": {
+      "name": "Acute uncomplicated diverticulitis",
+      "icd10": "K57.32",
+      "paneDiseaseId": "diverticulitis",
+      "assessmentText": "CT-confirmed uncomplicated sigmoid diverticulitis, tolerating oral intake."
+    },
+    "platform": {
+      "web": {
+        "ccTemplate": "Acute abdominal pain",
+        "symptoms": [
+          "Abdominal pain",
+          "Nausea"
+        ]
+      }
+    }
+  },
+  "expected": {
+    "management": {
+      "mustInclude": [
+        {
+          "id": "decision-no-routine-antibiotics",
+          "severity": "critical",
+          "match": [
+            "re:observe rather than antibiotics: observation without antibiotics"
+          ],
+          "sources": [
+            "web.decisions",
+            "ios.decisions"
+          ],
+          "guidelineRefs": [
+            "diabolo-2017",
+            "wses-div-2020"
+          ]
+        },
+        {
+          "id": "decision-outpatient",
+          "severity": "quality",
+          "match": [
+            "re:observe rather than hospital admission: outpatient management"
+          ],
+          "sources": [
+            "web.decisions",
+            "ios.decisions"
+          ],
+          "guidelineRefs": [
+            "wses-div-2020"
+          ]
+        }
+      ],
+      "mustExclude": [
+        {
+          "id": "decision-no-antibiotics-treat-band",
+          "severity": "critical",
+          "match": [
+            "re:antibiotics - treat"
+          ],
+          "sources": [
+            "web.decisions",
+            "ios.decisions"
+          ],
+          "guidelineRefs": [
+            "diabolo-2017"
+          ]
+        }
+      ]
+    }
+  },
+  "guideline": [
+    {
+      "id": "wses-div-2020",
+      "name": "WSES guidelines — acute colonic diverticulitis (2020 update)",
+      "year": 2020,
+      "section": "Uncomplicated diverticulitis: antibiotics and outpatient management",
+      "citation": "Sartelli M et al. World J Emerg Surg 2020;15:32.",
+      "verified": false
+    },
+    {
+      "id": "diabolo-2017",
+      "name": "DIABOLO trial",
+      "year": 2017,
+      "section": "Observation vs antibiotics",
+      "citation": "Daniels L et al. Br J Surg 2017;104:52-61.",
+      "verified": false
+    }
+  ],
+  "rationale": "DIABOLO and AVOD showed no benefit of antibiotics in CT-proven uncomplicated diverticulitis in immunocompetent patients; WSES 2020 supports outpatient management without routine antibiotics.",
+  "authoring": {
+    "author": "Claude (bayes-treatment branch)",
+    "date": "2026-09-25",
+    "notes": "Decision-support vignette (web.decisions / ios.decisions). Expectations test the band and ranking of the decision layer, whose numbers await surgeon sign-off (docs/clinical-validation/changes/bayes-treatment.md)."
+  }
+}

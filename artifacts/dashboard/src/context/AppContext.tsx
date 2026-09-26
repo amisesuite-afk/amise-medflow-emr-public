@@ -1,13 +1,31 @@
 import React, { createContext, useContext, useEffect, useMemo, useRef, useState, useCallback } from 'react';
-import { enqueue, flush, type SyncStatus } from '@/lib/sync-outbox';
+import {
+  OutboxRefusalError, enqueue, flush, isPermanentRefusal, reportRefusal, type SyncStatus,
+} from '@/lib/sync-outbox';
 import '@/lib/sync-executors'; // registers outbox executors — side-effect import, must run before any save can fail
-import { adaptiveTriage, AdaptiveTriageInput, AdaptiveTriageResult, Sex, VitalSigns } from '@workspace/triage-engine';
+import { registerBeforeSignOut } from '@/lib/secure-sign-out';
+import { loadLifestyleHistory, saveLifestyleHistory } from '@/lib/lifestyle-history-db';
+import { emptyLifestyleHistory, parseLifestyleHistory, type LifestyleHistory } from '@workspace/triage-engine/lifestyle-practices';
+import { EMPTY_VITALS, restoreVitalsState, type VitalsState, type VitalKey } from '@/lib/vitals-state';
+import { adaptiveTriage, AdaptiveTriageInput, AdaptiveTriageResult, Sex, VitalSigns, type News2Avpu } from '@workspace/triage-engine';
 import { type SiteCode, supabase } from '@/lib/supabase';
 import { useAuth } from '@/context/AuthContext';
-import { updateDefaultSite, saveAssessment, savePlan, syncAllergyList, syncMedicationList, saveExamFindings, syncSurgicalHistory, syncToxicHabits, syncRosFindings, syncProcedureData, syncTraumaRecord, loadPatientProblems, savePatientProblem, updatePatientProblemStatus, removePatientProblem, type PatientProblem, loadWoundAssessments, saveWoundAssessment, deleteWoundAssessment, emptyWound, type WoundAssessment, savePmhNotes, saveHpiNote, clearHpiNote, syncInvestigationOrders, updateEncounterType, toDbEncounterType, saveInpatientDetails, saveClinicalScores, listPatientEncounters, type EncounterSummary } from '@/lib/db';
+import { updateDefaultSite, saveAssessment, savePlan, syncAllergyList, syncMedicationList, saveExamFindings, syncSurgicalHistory, syncToxicHabits, syncRosFindings, syncProcedureData, syncTraumaRecord, loadPatientProblems, savePatientProblem, updatePatientProblemStatus, removePatientProblem, type PatientProblem, loadWoundAssessments, saveWoundAssessment, deleteWoundAssessment, emptyWound, type WoundAssessment, savePmhNotes, saveHpiNote, clearHpiNote, syncInvestigationOrders, updateEncounterType, toDbEncounterType, saveInpatientDetails, saveClinicalScores, listPatientEncounters, getLatestClosedEncounter, type EncounterSummary } from '@/lib/db';
+import { switchEncounter, type EncounterSwitchResult, type EncounterSwitchTarget } from '@/lib/encounter-switch';
+import { loadEncounterData, type EncounterData } from '@/lib/db';
+import { isMissingColumnError } from '@/lib/vitals-news2-fields';
+import {
+  createAutosaveGuard, resetGuard, clearSections, beginLoad, finishLoad, checkAutosave,
+  fingerprint, sectionValueFromState, sectionValueFromPayload, isReadOnlyEncounterStatus,
+  ALL_SAVE_SECTIONS, ENCOUNTER_SAVE_SECTIONS, PATIENT_SAVE_SECTIONS, RECORD_LOAD_SECTIONS, SEPARATELY_LOADED_SECTIONS,
+  ENTITY_TYPE_SECTION,
+  type SaveSection, type SectionState,
+} from '@/lib/autosave-guard';
 import type { PaneState, RankedDiagnosis, ProtocolMedication } from '@workspace/pane-engine';
 import { isImagingInvestigation, parseImagingToRequest, imagingAlreadyRequested } from '@/lib/imaging-utils';
 import { scoreDiagnosis } from '@/lib/diagnosis-proc-mapper';
+import { EMPTY_SUPPLEMENT_HISTORY, normaliseSupplementHistory, type SupplementHistory } from '@/lib/supplement-catalogue';
+import { loadSupplementHistory, saveSupplementHistory } from '@/lib/supplement-store';
 
 export { type SiteCode } from '@/lib/supabase';
 export type Section =
@@ -71,6 +89,10 @@ export interface VitalRecord {
   gcs?: string;
   pain?: string;
   urine?: string;
+  /** NEWS2 ACVPU ('A'…'U'); absent = not recorded. Saved to vitals.avpu (Migration 91). */
+  avpu?: string;
+  /** NEWS2 air / oxygen ('air' | 'o2'); absent = not recorded. Saved to vitals.on_supplemental_o2. */
+  o2?: string;
   notes?: string;
 }
 
@@ -139,7 +161,7 @@ export const EMPTY_TRAUMA_DATA: TraumaData = {
   burnRegions: {}, burnTimeOfInjury: '', burnInhalation: false,
 };
 
-export type VitalsState = Record<keyof VitalSigns, string>;
+export { EMPTY_VITALS, restoreVitalsState, type VitalsState, type VitalKey } from '@/lib/vitals-state';
 
 function toNum(v: string): number | null {
   if (!v.trim()) return null;
@@ -282,7 +304,7 @@ interface CtxValue {
   isPostOp: boolean; setIsPostOp(v: boolean): void;
   postOpDays: string; setPostOpDays(v: string): void;
   pregnancyPossible: boolean; setPregnancyPossible(v: boolean): void;
-  vitals: VitalsState; updateVital(k: keyof VitalSigns, v: string): void;
+  vitals: VitalsState; updateVital(k: VitalKey, v: string): void;
 
   comorbidities: string[]; toggleComorbidity(v: string): void; setComorbidities(list: string[]): void;
   pmhNotes: string; setPmhNotes(v: string): void;
@@ -294,11 +316,46 @@ interface CtxValue {
   medications: string[]; toggleMedication(v: string): void; setMedications(v: string[]): void;
   medicationsText: string; setMedicationsText(v: string): void;
   allergies: string; setAllergies(v: string): void;
+  /** Herbs, teas, bush remedies & supplements (patient-level; patients.pathway_data_json "supplements"). */
+  supplementHistory: SupplementHistory; setSupplementHistory(v: SupplementHistory): void;
   toxicHabits: string[]; setToxicHabits(v: string[]): void; toggleToxicHabit(v: string): void;
+  /** Ritual fasting, complementary therapies, night-shift work, usual sleep (lifestyle-practices.ts). */
+  lifestyleHistory: LifestyleHistory; setLifestyleHistory(v: LifestyleHistory): void;
+  /** false = patients.pathway_data_json is missing on this database: kept in this browser only. */
+  lifestyleStorageAvailable: boolean | null;
   occupation: string; setOccupation(v: string): void;
   hpiNotes: string; setHpiNotes(v: string): void;
 
   clearPatient(): void;
+
+  /**
+   * Point the consultation at another encounter of the loaded patient — a new one ("+ New
+   * encounter") or a stored one ("Load this encounter"). Flushes the current encounter's pending
+   * autosaves to the current encounter first, then starts from clean per-encounter state (standing
+   * history kept) so nothing of the previous visit is saved into the other one; `apply` then fills
+   * in the target's stored data in the same render. Refused when the patient has changed meanwhile.
+   * Never call setEncounterId() alone to switch encounters. See lib/encounter-switch.ts.
+   */
+  beginEncounter(target: EncounterSwitchTarget, apply?: () => void): EncounterSwitchResult;
+
+  // ── Loading a stored record (lib/autosave-guard.ts) ──
+  /** Autosave pauses until the record has loaded. Call right after clearPatient(); returns the load token. */
+  beginRecordLoad(): number;
+  /** Ends load `token` with nothing loaded (demo mode, or the load was abandoned). */
+  endRecordLoad(token: number): void;
+  /** Loads standing history and (with an id) the encounter, applies what loaded, ends the load. */
+  loadRecordIntoContext(token: number, patientId: string, encounterId: string | null): Promise<{ failed: SaveSection[]; error: string | null }>;
+  /** For beginEncounter(target, apply): puts a stored encounter's own sections into state. */
+  applyStoredEncounter(d: EncounterData): void;
+  /** Sections whose read failed: shown as "Couldn't load — retry"; not autosaved until edited or reloaded. */
+  notLoadedSections: SaveSection[];
+  /** A record load is in progress (nothing is autosaved). */
+  recordLoading: boolean;
+  retryNotLoaded(): Promise<void>;
+  /** The encounter is closed / cancelled: its sections are read-only (not autosaved) until reopened. */
+  encounterReadOnly: boolean;
+  /** Sends pending autosaves now and waits for in-flight ones (call before closing the encounter). */
+  flushAutosaves(): Promise<void>;
 
   examGeneral: string; setExamGeneral(v: string): void;
   examCardio: string; setExamCardio(v: string): void;
@@ -400,6 +457,9 @@ interface CtxValue {
 
   /** Previous encounters for the loaded patient (excludes current encounter). */
   recentEncounters: EncounterSummary[];
+  /** Patient whose encounters `recentEncounters` holds (null until the list has loaded), so
+   *  visit continuity never decides from the previous patient's list or an unloaded one. */
+  recentEncountersPatientId: string | null;
 
   /** Wound assessments for current encounter. */
   wounds: WoundAssessment[];
@@ -443,6 +503,10 @@ export interface PriorVitalSnapshot {
   rr: number | null;
   weightKg: number | null;
   bmi: number | null;
+  /** NEWS2 ACVPU from vitals.avpu (Migration 91); null/absent = not recorded. */
+  avpu?: News2Avpu | null;
+  /** NEWS2 air / oxygen from vitals.on_supplemental_o2 (Migration 91); null/absent = not recorded. */
+  onSupplementalO2?: boolean | null;
 }
 
 export interface PriorEncounterSummary {
@@ -537,6 +601,10 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
   }
 
   const [patientId, setPatientId] = useState<string | null>(null);
+  // Latest patient id for async handlers (an encounter created or loaded for one patient must not
+  // be attached after the user has moved on to another — beginEncounter()).
+  const patientIdRef = useRef<string | null>(null);
+  patientIdRef.current = patientId;
   const [encounterId, setEncounterId] = useState<string | null>(null);
   const [encounterStatus, setEncounterStatus] = useState<string | null>(null);
   const [encounterClosedAt, setEncounterClosedAt] = useState<string | null>(null);
@@ -572,9 +640,7 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
   const [isPostOp, setIsPostOp] = useState(false);
   const [postOpDays, setPostOpDays] = useState('');
   const [pregnancyPossible, setPregnancyPossible] = useState(false);
-  const [vitals, setVitals] = useState<VitalsState>({
-    systolicBp: '', diastolicBp: '', heartRate: '', temperatureC: '', respiratoryRate: '', spo2: '', glucoseMmol: '',
-  });
+  const [vitals, setVitals] = useState<VitalsState>(EMPTY_VITALS);
 
   const [comorbidities, setComorbidities] = useState<string[]>([]);
   const [pmhNotes, setPmhNotes] = useState('');
@@ -586,7 +652,22 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
   const [medications, setMedications] = useState<string[]>([]);
   const [medicationsText, setMedicationsText] = useState('');
   const [allergies, setAllergies] = useState('');
+  const [supplementHistory, setSupplementHistoryState] = useState<SupplementHistory>(EMPTY_SUPPLEMENT_HISTORY);
+  /** True once the clinician edits the history in this session (then it is saved, never overwritten by a load). */
+  const supplementDirtyRef = useRef(false);
+  const setSupplementHistory = useCallback((v: SupplementHistory) => {
+    supplementDirtyRef.current = true;
+    setSupplementHistoryState(v);
+  }, []);
   const [toxicHabits, setToxicHabits] = useState<string[]>([]);
+  const [lifestyleHistory, setLifestyleHistoryState] = useState<LifestyleHistory>(emptyLifestyleHistory);
+  const [lifestyleStorageAvailable, setLifestyleStorageAvailable] = useState<boolean | null>(null);
+  // True once the clinician edits the lifestyle history (a server load never overwrites an edit).
+  const lifestyleDirtyRef = useRef(false);
+  const setLifestyleHistory = useCallback((v: LifestyleHistory) => {
+    lifestyleDirtyRef.current = true;
+    setLifestyleHistoryState(v);
+  }, []);
   const [occupation, setOccupation] = useState('');
   const [hpiNotes, setHpiNotes] = useState('');
 
@@ -746,6 +827,9 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
 
   const [problems, setProblems] = useState<PatientProblem[]>([]);
   const [recentEncounters, setRecentEncounters] = useState<EncounterSummary[]>([]);
+  const [recentEncountersPatientId, setRecentEncountersPatientId] = useState<string | null>(null);
+  // Bumped by beginEncounter() so the patient's encounter list is reloaded with the new encounter.
+  const [encounterListVersion, setEncounterListVersion] = useState(0);
   const [wounds, setWounds] = useState<WoundAssessment[]>([]);
   const [extractedLabs, setExtractedLabs] = useState<Record<string, number | null>>({});
   const [clinicalScores, setClinicalScores] = useState<Record<string, unknown>>({});
@@ -760,6 +844,36 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
   // Sync status from the IndexedDB outbox (surfaced to the sync indicator)
   const [syncStatus, setSyncStatus] = useState<SyncStatus>('synced');
 
+  // ── Autosave guard (lib/autosave-guard.ts) ────────────────────────────────
+  // No autosave while a record loads; none into a closed / cancelled encounter; and a section
+  // whose value is still what was loaded (or whose read FAILED — "not loaded") is not written
+  // until the clinician changes it or a retry loads it. Checked in trackedSave when a debounced
+  // save fires (and when the page-hide / switch flush sends it), so every autosave path is covered.
+  const guardRef = useRef(createAutosaveGuard());
+  const encounterIdRef = useRef<string | null>(null);
+  encounterIdRef.current = encounterId;
+  const readOnlyRef = useRef(false);
+  readOnlyRef.current = isReadOnlyEncounterStatus(encounterStatus);
+  const [notLoadedSections, setNotLoadedSections] = useState<SaveSection[]>([]);
+  const [recordLoading, setRecordLoading] = useState(false);
+  const syncGuardState = useCallback(() => {
+    const g = guardRef.current;
+    setNotLoadedSections(ALL_SAVE_SECTIONS.filter(s => g.notLoaded.has(s)));
+    setRecordLoading(g.hydrating);
+  }, []);
+  /** May this autosave be written now? Also unblocks a section on the clinician's first edit. */
+  const autosaveAllowed = useCallback((descriptor: { entityType: string; entityId: string; payload: Record<string, unknown> }): boolean => {
+    const section = ENTITY_TYPE_SECTION[descriptor.entityType];
+    if (!section) return true;
+    const decision = checkAutosave(guardRef.current, {
+      section,
+      fingerprint: fingerprint(sectionValueFromPayload(descriptor.entityType, descriptor.payload)),
+      readOnly: readOnlyRef.current && descriptor.entityId === encounterIdRef.current,
+    });
+    if (decision.allow && decision.unblocked) syncGuardState();
+    return decision.allow;
+  }, [syncGuardState]);
+
   const trackedSave = useCallback(async <T,>(
     fn: () => Promise<T>,
     /**
@@ -773,6 +887,9 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
      */
     descriptor?: { entityType: string; entityId: string; payload: Record<string, unknown> },
   ): Promise<T | undefined> => {
+    // Not written (and not queued): the record is loading, the encounter is closed, or the
+    // section still holds what was loaded / a failed read's placeholder.
+    if (descriptor && !autosaveAllowed(descriptor)) return undefined;
     const epoch = saveEpoch.current;
     pendingSaves.current++;
     _setSaveStatus('saving');
@@ -782,15 +899,23 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
       // throwing — without this check a failed write (bad grant, missing
       // table, RLS denial) would still report "saved" here.
       if (result && typeof result === 'object' && 'error' in result && (result as { error: unknown }).error) {
+        // A role refusal (42501, e.g. Migration 89 on pathway_data_json) is flagged `refused`.
+        if ((result as { refused?: unknown }).refused === true) {
+          throw new OutboxRefusalError(String((result as { error: unknown }).error));
+        }
         throw new Error(String((result as { error: unknown }).error));
       }
-      if (saveEpoch.current !== epoch) return undefined;
       pendingSaves.current--;
       if (pendingSaves.current === 0) {
         _setSaveStatus('saved');
         if (savedTimer.current) clearTimeout(savedTimer.current);
         savedTimer.current = setTimeout(() => _setSaveStatus('idle'), 2000);
       }
+      // Started before the patient or encounter changed (clearPatient / beginEncounter): the
+      // write went to the encounter it was scheduled for, but its result (e.g. an optimistic-lock
+      // version) belongs to that encounter and must not be applied to the current one. The
+      // counter above is still decremented, or sign-out would wait on a save that has finished.
+      if (saveEpoch.current !== epoch) return undefined;
       return result;
     } catch (err) {
       pendingSaves.current--;
@@ -803,14 +928,19 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
       // not whether the backend is actually reachable (e.g. a captive
       // portal or DNS failure still reports online), so gating on it missed
       // the most common real-world offline failure mode.
-      if (descriptor) {
+      if (descriptor && isPermanentRefusal(descriptor.entityType, err)) {
+        // Retrying can never succeed for this role: do not queue it (it would retry forever);
+        // show the one-line notice instead (SyncStatusIndicator).
+        console.warn(`[autosave] ${descriptor.entityType} refused by the server (permission) — not queued`);
+        reportRefusal(descriptor.entityType, msg);
+      } else if (descriptor) {
         setSyncStatus('pending');
         void enqueue(descriptor.entityType, descriptor.entityId, descriptor.payload)
           .catch(e => console.error('[autosave] enqueue failed:', e));
       }
       return undefined;
     }
-  }, []);
+  }, [autosaveAllowed]);
 
   // Flush the IndexedDB outbox when the browser regains connectivity.
   // We keep direct closure retry for in-session closures (faster), and the
@@ -835,7 +965,7 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
       if (!raw) return;
       const d = JSON.parse(raw) as Record<string, unknown>;
       if (!d.patientName && !(Array.isArray(d.symptoms) && (d.symptoms as string[]).length > 0)) return;
-      if (d.vitals && typeof d.vitals === 'object') setVitals(d.vitals as VitalsState);
+      if (d.vitals && typeof d.vitals === 'object') setVitals(restoreVitalsState(d.vitals));
       if (Array.isArray(d.symptoms)) setSymptoms(d.symptoms as string[]);
       if (d.symptomDetails && typeof d.symptomDetails === 'object') setSymptomDetails(d.symptomDetails as Record<string, string[]>);
       if (typeof d.freeText === 'string') setFreeText(d.freeText);
@@ -884,11 +1014,13 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
       if (Array.isArray(d.medications)) setMedications(d.medications as string[]);
       if (typeof d.medicationsText === 'string') setMedicationsText(d.medicationsText);
       if (typeof d.allergies === 'string') setAllergies(d.allergies);
+      if (d.supplementHistory && typeof d.supplementHistory === 'object') setSupplementHistoryState(normaliseSupplementHistory(d.supplementHistory));
       if (Array.isArray(d.pendingPrescriptions)) setPendingPrescriptions(d.pendingPrescriptions as ProtocolMedication[]);
       if (Array.isArray(d.familyHistory)) setFamilyHistory(d.familyHistory as string[]);
       if (typeof d.familyHistoryNotes === 'string') setFamilyHistoryNotes(d.familyHistoryNotes as string);
       if (Array.isArray(d.toxicHabits)) setToxicHabits(d.toxicHabits as string[]);
       if (typeof d.occupation === 'string') setOccupation(d.occupation);
+      if (d.lifestyleHistory && typeof d.lifestyleHistory === 'object') setLifestyleHistoryState(parseLifestyleHistory(d.lifestyleHistory));
       if (typeof d.hpiNotes === 'string') setHpiNotes(d.hpiNotes);
       if (typeof d.patientName === 'string') setPatientName(d.patientName);
       if (typeof d.age === 'string') setAge(d.age);
@@ -1016,7 +1148,8 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
       assessment, differentials, plan, followUpNotes, referralNotes, procedures, billing, documents, surgicalClassifications,
       insuranceProvider, policyNumber, nhiNumber, preAuthStatus,
       comorbidities, pmhNotes, surgicalHistory, surgicalNotes, recentSurgeryDate,
-      medications, medicationsText, allergies, familyHistory, familyHistoryNotes, toxicHabits, occupation, hpiNotes,
+      medications, medicationsText, allergies, familyHistory, familyHistoryNotes, toxicHabits, occupation, lifestyleHistory, hpiNotes,
+      supplementHistory,
       pendingPrescriptions,
       patientId, encounterId,
       patientName, age, sex, dob, phone, email, address, quarter, referredBy,
@@ -1041,7 +1174,8 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
     assessment, differentials, plan, followUpNotes, referralNotes, procedures, billing, documents, surgicalClassifications,
     insuranceProvider, policyNumber, nhiNumber, preAuthStatus,
     comorbidities, pmhNotes, surgicalHistory, surgicalNotes, recentSurgeryDate,
-    medications, medicationsText, allergies, familyHistory, familyHistoryNotes, toxicHabits, occupation, hpiNotes,
+    medications, medicationsText, allergies, familyHistory, familyHistoryNotes, toxicHabits, occupation, lifestyleHistory, hpiNotes,
+    supplementHistory,
     pendingPrescriptions,
     patientId, encounterId,
     patientName, age, sex, dob, phone, email, address, quarter, referredBy,
@@ -1061,7 +1195,7 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
       return { ...c, [sym]: toggleList(cur, opt) };
     });
   }
-  function updateVital(k: keyof VitalSigns, v: string) { setVitals(c => ({ ...c, [k]: v })); }
+  function updateVital(k: VitalKey, v: string) { setVitals(c => ({ ...c, [k]: v })); }
   function toggleComorbidity(v: string) { setComorbidities(c => toggleList(c, v)); }
   function toggleFamilyHistory(v: string) { setFamilyHistory(c => toggleList(c, v)); }
   function toggleSurgical(v: string) { setSurgicalHistory(c => toggleList(c, v)); }
@@ -1074,9 +1208,11 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
   // ── Timer refs for autosave debouncing (hoisted so clearPatient can cancel them) ─
   const autoSaveTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const allergyTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const supplementTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const examTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const surgicalTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const toxicTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const lifestyleTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const rosTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const procedureTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const traumaTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
@@ -1087,14 +1223,70 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
   const inpatientTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const clinicalScoresTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
+  /**
+   * Every per-encounter field (ENCOUNTER_SCOPED_FIELDS in lib/encounter-switch.ts) back to its
+   * empty value. Patient-scoped state is untouched. Used by clearPatient() and beginEncounter();
+   * encounter-switch.test.ts fails if a field in that list has no reset here.
+   */
+  function resetEncounterState() {
+    setDurationDays(''); setPainScore(''); setSymptoms([]); setSymptomDetails({});
+    setFreeText(''); setIsPostOp(false); setPostOpDays(''); setPregnancyPossible(false);
+    setHpiNotes(''); setActiveCcKey(null); setProcedureData({});
+    setMedications([]); setMedicationsText(''); setPendingPrescriptions([]);
+    setVitals(EMPTY_VITALS);
+    setWeightKg(''); setHeightCm(''); setWaistCm(''); setHipCm(''); setMuacCm('');
+    setExamGeneral(''); setExamCardio(''); setExamResp(''); setExamAbdomen('');
+    setExamNeuro(''); setExamExtremities(''); setExamBreast(''); setExamWound('');
+    setExamFindings({}); setExamNotes({}); setExamPhotos([]); setAnatomicalFindings([]);
+    setRosFindings({});
+    setOrderedInvestigations([]); setRadiologyRequests([]); setInvestigationResults({});
+    setExtractedLabs({}); setClinicalScores({}); setVitalRecords([]); setLabRecords([]);
+    setAssessment(''); setDifferentials(''); setPlan(''); setFollowUpNotes(''); setReferralNotes('');
+    setAssessmentUpdatedAt(null); setPlanUpdatedAt(null); setSaveConflict(null);
+    setIcdCodes([]); setCptCodes([]); setConfirmedDiagnoses([]); setWorkingDiagnosis(null);
+    setPaneState(null); setPaneTop([]); setPaneConverged(false);
+    setSurgicalClassifications({}); setTraumaData(EMPTY_TRAUMA_DATA);
+    setProcedures(''); setBilling(''); setDocuments(''); setPreAuthStatus('');
+    setFinalDocument(''); setProgressNotes([]); setAttachments([]); setWounds([]);
+    setPeriopProcId(''); setWhoProc({ procedureName: '', procedureDate: '', procedureTime: '', theatre: '', site: '', surgeon: 'Dr Dawit Daniel Kabiye', anaesthetist: '', scrubNurse: '', circulatingNurse: '' });
+    setVisitType(''); setPostOpDate(''); setPostOpReviewNum(1); setPreVisitStatus('new');
+    setEncounterMode('outpatient'); setEncounterType('surgical_consult');
+    setWard(''); setDateAdmission(''); setDateDischarge('');
+    setAdmittingSurgeon('Dr Dawit Daniel Kabiye, MD, DM'); setReferringPhysician('');
+    setPriorEncounterSummary(null);
+  }
+
+  function beginEncounter(target: EncounterSwitchTarget, apply?: () => void): EncounterSwitchResult {
+    return switchEncounter({
+      currentPatientId: () => patientIdRef.current,
+      // flushRef holds the flush of the latest render: its closure still has the current
+      // encounter id and content, so pending saves land on the encounter they were typed for.
+      flushPendingSaves: () => flushRef.current(),
+      invalidateInFlightSaves: () => { saveEpoch.current++; },
+      resetEncounterState,
+      setEncounter: t => {
+        // The other encounter's sections have no loaded values yet (a stored encounter's are
+        // marked by applyStoredEncounter() in `apply`, right after this).
+        clearSections(guardRef.current, ENCOUNTER_SAVE_SECTIONS);
+        syncGuardState();
+        setEncounterId(t.encounterId);
+        setEncounterStatus(t.status);
+        setEncounterClosedAt(t.closedAt);
+        setEncounterListVersion(v => v + 1);
+      },
+    }, target, apply);
+  }
+
   function clearPatient() {
     // Invalidate in-flight saves and cancel all debounce timers
     saveEpoch.current++;
     if (autoSaveTimerRef.current) { clearTimeout(autoSaveTimerRef.current); autoSaveTimerRef.current = null; }
     if (allergyTimerRef.current) { clearTimeout(allergyTimerRef.current); allergyTimerRef.current = null; }
+    if (supplementTimerRef.current) { clearTimeout(supplementTimerRef.current); supplementTimerRef.current = null; }
     if (examTimerRef.current) { clearTimeout(examTimerRef.current); examTimerRef.current = null; }
     if (surgicalTimerRef.current) { clearTimeout(surgicalTimerRef.current); surgicalTimerRef.current = null; }
     if (toxicTimerRef.current) { clearTimeout(toxicTimerRef.current); toxicTimerRef.current = null; }
+    if (lifestyleTimerRef.current) { clearTimeout(lifestyleTimerRef.current); lifestyleTimerRef.current = null; }
     if (rosTimerRef.current) { clearTimeout(rosTimerRef.current); rosTimerRef.current = null; }
     if (procedureTimerRef.current) { clearTimeout(procedureTimerRef.current); procedureTimerRef.current = null; }
     if (traumaTimerRef.current) { clearTimeout(traumaTimerRef.current); traumaTimerRef.current = null; }
@@ -1105,50 +1297,226 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
     if (inpatientTimerRef.current) { clearTimeout(inpatientTimerRef.current); inpatientTimerRef.current = null; }
     if (clinicalScoresTimerRef.current) { clearTimeout(clinicalScoresTimerRef.current); clinicalScoresTimerRef.current = null; }
     setPatientId(null); setEncounterId(null); setEncounterStatus(null); setEncounterClosedAt(null);
-    setPatientName(''); setAge(''); setSex('unknown'); setDob(''); setPhone(''); setEmail(''); setPatientPhoto(''); setExamPhotos([]);
-    setDurationDays(''); setPainScore(''); setSymptoms([]); setSymptomDetails({});
-    setFreeText(''); setIsPostOp(false); setPostOpDays(''); setPregnancyPossible(false);
-    setVitals({ systolicBp: '', diastolicBp: '', heartRate: '', temperatureC: '', respiratoryRate: '', spo2: '', glucoseMmol: '' });
+    resetEncounterState();
+    // Patient-scoped state (PATIENT_SCOPED_FIELDS) — kept by beginEncounter(), cleared here.
+    setPatientName(''); setAge(''); setSex('unknown'); setDob(''); setPhone(''); setEmail(''); setPatientPhoto('');
+    setAddress(''); setQuarter(''); setReferredBy(''); setOccupation('');
     setComorbidities([]); setPmhNotes(''); setFamilyHistory([]); setFamilyHistoryNotes('');
-    setSurgicalHistory([]); setSurgicalNotes(''); setRecentSurgeryDate(''); setMedications([]); setMedicationsText('');
-    setAllergies(''); setToxicHabits([]); setOccupation(''); setHpiNotes('');
-    setExamGeneral(''); setExamCardio(''); setExamResp(''); setExamAbdomen('');
-    setExamNeuro(''); setExamExtremities(''); setExamBreast(''); setExamWound('');
-    setExamFindings({}); setExamNotes({});
-    setOrderedInvestigations([]); setInvestigationResults({}); setIcdCodes([]); setCptCodes([]);
-    setAddress(''); setQuarter(''); setReferredBy('');
-    setWeightKg(''); setHeightCm(''); setWaistCm(''); setHipCm(''); setMuacCm(''); setAnatomicalFindings([]);
-    setRosFindings({}); setProcedureData({}); setPreVisitStatus('new');
-    setVisitType(''); setPostOpDate(''); setPostOpReviewNum(1);
-    setPeriopProcId(''); setWhoProc({ procedureName: '', procedureDate: '', procedureTime: '', theatre: '', site: '', surgeon: 'Dr Dawit Daniel Kabiye', anaesthetist: '', scrubNurse: '', circulatingNurse: '' });
-    setAssessment(''); setDifferentials(''); setPlan(''); setFollowUpNotes(''); setReferralNotes('');
-    setAssessmentUpdatedAt(null); setPlanUpdatedAt(null); setSaveConflict(null);
-    setConfirmedDiagnoses([]);
-    setWorkingDiagnosis(null);
-    setProcedures(''); setBilling(''); setDocuments(''); setSurgicalClassifications({});
-    setInsuranceProvider(''); setPolicyNumber(''); setNhiNumber(''); setPreAuthStatus('');
-    setAttachments([]); setRadiologyRequests([]); setFinalDocument('');
-    setProgressNotes([]);
-    setVitalRecords([]); setLabRecords([]);
-    setEncounterMode('outpatient');
-    setEncounterType('surgical_consult');
-    setMrNumber(''); setWard(''); setDateAdmission(''); setDateDischarge('');
-    setBloodGroup(''); setNokName(''); setNokRelation(''); setNokTel('');
-    setAdmittingSurgeon('Dr Dawit Daniel Kabiye, MD, DM'); setReferringPhysician('');
-    setPaneState(null); setPaneTop([]); setPaneConverged(false);
-    setTraumaData(EMPTY_TRAUMA_DATA);
-    setActiveCcKey(null);
+    setSurgicalHistory([]); setSurgicalNotes(''); setRecentSurgeryDate('');
+    setAllergies(''); setToxicHabits([]);
+    setInsuranceProvider(''); setPolicyNumber(''); setNhiNumber('');
+    setMrNumber(''); setBloodGroup(''); setNokName(''); setNokRelation(''); setNokTel('');
+    lifestyleDirtyRef.current = false; setLifestyleHistoryState(emptyLifestyleHistory()); setLifestyleStorageAvailable(null);
+    setSupplementHistoryState(EMPTY_SUPPLEMENT_HISTORY); supplementDirtyRef.current = false;
     setProblems([]);
-    setWounds([]);
-    setExtractedLabs({});
-    setClinicalScores({});
-    setPriorEncounterSummary(null);
+    // A load still running for the previous patient is abandoned (its token no longer matches).
+    resetGuard(guardRef.current);
+    pendingFinishRef.current = null;
+    syncGuardState();
     try {
       localStorage.removeItem(ENC_KEY);
       localStorage.removeItem('amise-attachments-v1');
       localStorage.removeItem('amise-patient-photo-v1');
       localStorage.removeItem('amise-exam-photos-v1');
     } catch { /* ignore */ }
+  }
+
+  // ── Loading a stored record into the consultation ─────────────────────────
+  // Every loader goes through here, so a failed read is marked "not loaded" (never applied as an
+  // empty value) and each loaded section gets its baseline (lib/autosave-guard.ts).
+
+  // A finished load, waiting for its data to be in state: the baseline is taken by the effect
+  // below, in the commit that applied the data (before any debounced save can fire).
+  const pendingFinishRef = useRef<{ token: number; loaded: SaveSection[]; failed: SaveSection[] } | null>(null);
+  const [guardEpoch, setGuardEpoch] = useState(0);
+
+  function markRecordLoaded(token: number, loaded: readonly SaveSection[], failed: readonly SaveSection[]) {
+    const failedSet = new Set(failed);
+    pendingFinishRef.current = { token, loaded: [...loaded], failed: loaded.filter(s => failedSet.has(s)) };
+    setGuardEpoch(e => e + 1);
+  }
+
+  const sectionState = (): SectionState => ({
+    assessment, differentials, icdCodes, cptCodes, plan, medications, medicationsText,
+    examFindings, examNotes, rosFindings, procedureData, traumaData, hpiNotes, orderedInvestigations,
+    dbEncounterType: toDbEncounterType(encounterType, encounterMode),
+    inpatient: { ward, dateAdmission, dateDischarge, admittingSurgeon, referringPhysician, nokName, nokRelation, nokTel, bloodGroup, mrNumber },
+    clinicalScores, extractedLabs, allergies, surgicalHistory, surgicalNotes, recentSurgeryDate,
+    toxicHabits, pmhNotes, familyHistoryNotes, lifestyleHistory, supplementHistory,
+  });
+
+  useEffect(() => {
+    const p = pendingFinishRef.current;
+    if (!p) return;
+    pendingFinishRef.current = null;
+    const s = sectionState();
+    const fps: Partial<Record<SaveSection, string>> = {};
+    for (const sec of p.loaded) fps[sec] = fingerprint(sectionValueFromState(sec, s));
+    finishLoad(guardRef.current, p.token, p.loaded, p.failed, fps);
+    syncGuardState();
+  // Runs once per markRecordLoaded(), after the loaded data is in state.
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [guardEpoch]);
+
+  /**
+   * Puts loaded data into state, section by section. A failed section is left as it is (empty
+   * after clearPatient / a switch) — never set from the empty placeholder. `patientSections`
+   * false leaves the standing history alone (another encounter of the same patient).
+   */
+  function applyEncounterData(d: EncounterData, opts: { patientSections: boolean; only?: ReadonlySet<SaveSection> }) {
+    const failed = new Set(d.failedSections);
+    const use = (s: SaveSection) => d.loadedSections.includes(s) && !failed.has(s)
+      && (opts.patientSections || !PATIENT_SAVE_SECTIONS.includes(s)) && (!opts.only || opts.only.has(s));
+    if (use('assessment')) {
+      setAssessment(d.assessment); setDifferentials(d.differentials); setIcdCodes(d.icdCodes);
+      setAssessmentUpdatedAt(d.assessmentUpdatedAt);
+    }
+    if (use('plan')) { setPlan(d.plan); setPlanUpdatedAt(d.planUpdatedAt); }
+    if (use('medications')) { setMedications(d.medications); setMedicationsText(d.medicationsFreeText); }
+    if (use('hpi')) {
+      setHpiNotes(d.hpiNotes);
+      // A stored HPI that the clinician then empties is a clearing (deletes the draft).
+      hpiSavedRef.current = !!d.hpiNotes.trim();
+    }
+    if (use('exam')) { setExamFindings(d.examFindings); setExamNotes(d.examNotes); }
+    if (use('investigations')) setOrderedInvestigations(d.orderedInvestigations);
+    if (use('ros')) setRosFindings(d.rosFindings as Record<string, RosFinding>);
+    if (use('procedure_data')) setProcedureData(d.procedureData);
+    if (use('trauma')) setTraumaData(d.traumaData ?? EMPTY_TRAUMA_DATA);
+    if (use('clinical_scores')) { setClinicalScores(d.clinicalScores); setExtractedLabs(d.extractedLabs); }
+    if (use('inpatient') && d.inpatientDetails) {
+      const ip = d.inpatientDetails;
+      const str = (k: string) => (typeof ip[k] === 'string' ? ip[k] as string : undefined);
+      setInpatientAdmin(prev => ({
+        ...prev,
+        ward: str('ward') ?? prev.ward, dateAdmission: str('dateAdmission') ?? prev.dateAdmission,
+        dateDischarge: str('dateDischarge') ?? prev.dateDischarge,
+        admittingSurgeon: str('admittingSurgeon') ?? prev.admittingSurgeon,
+        referringPhysician: str('referringPhysician') ?? prev.referringPhysician,
+        nokName: str('nokName') ?? prev.nokName, nokRelation: str('nokRelation') ?? prev.nokRelation,
+        nokTel: str('nokTel') ?? prev.nokTel, bloodGroup: str('bloodGroup') ?? prev.bloodGroup,
+        mrNumber: str('mrNumber') ?? prev.mrNumber,
+      }));
+    }
+    if (use('allergies')) setAllergies(d.allergens.join(', '));
+    if (use('surgical_history')) {
+      setSurgicalHistory(d.surgicalHistory); setSurgicalNotes(d.surgicalNotes); setRecentSurgeryDate(d.recentSurgeryDate);
+    }
+    if (use('toxic_habits')) setToxicHabits(d.toxicHabits);
+    if (use('pmh_notes')) { setPmhNotes(d.pmhNotes); setFamilyHistoryNotes(d.familyHistoryNotes); }
+  }
+
+  /** Autosave pauses until the record has loaded. Call right after clearPatient(). */
+  function beginRecordLoad(): number {
+    const token = beginLoad(guardRef.current);
+    syncGuardState();
+    return token;
+  }
+
+  /** The load `token` ends with nothing loaded (demo mode, or the caller gave up). */
+  function endRecordLoad(token: number) {
+    markRecordLoaded(token, [], []);
+  }
+
+  /**
+   * Loads the patient's standing history and (when `encounterId` is given) that encounter into
+   * state, then ends the load `token`. Nothing is applied when the patient or encounter changed
+   * meanwhile. Returns the sections that could not be loaded.
+   */
+  async function loadRecordIntoContext(token: number, patientIdVal: string, encounterIdVal: string | null): Promise<{ failed: SaveSection[]; error: string | null }> {
+    const expected: SaveSection[] = RECORD_LOAD_SECTIONS.filter(s => encounterIdVal || PATIENT_SAVE_SECTIONS.includes(s));
+    let r: Awaited<ReturnType<typeof loadEncounterData>>;
+    try {
+      r = await loadEncounterData(encounterIdVal, patientIdVal);
+    } catch (e) {
+      r = { data: null, error: e instanceof Error ? e.message : 'Load failed' };
+    }
+    if (guardRef.current.loadToken !== token) return { failed: [], error: 'superseded' };
+    if (patientIdRef.current !== patientIdVal || (encounterIdVal && encounterIdRef.current !== encounterIdVal)) {
+      // Moved on without clearPatient(): apply nothing, but do not leave autosave paused.
+      markRecordLoaded(token, [], []);
+      return { failed: [], error: 'superseded' };
+    }
+    if (r.error || !r.data) {
+      markRecordLoaded(token, expected, expected);
+      return { failed: expected, error: r.error ?? 'Load failed' };
+    }
+    applyEncounterData(r.data, { patientSections: true });
+    markRecordLoaded(token, r.data.loadedSections, r.data.failedSections);
+    return { failed: r.data.failedSections, error: null };
+  }
+
+  /** Inside beginEncounter(target, apply): the stored encounter's own sections, loaded. */
+  function applyStoredEncounter(d: EncounterData) {
+    const token = beginLoad(guardRef.current);
+    applyEncounterData(d, { patientSections: false });
+    const loaded = d.loadedSections.filter(s => ENCOUNTER_SAVE_SECTIONS.includes(s));
+    markRecordLoaded(token, loaded, d.failedSections);
+  }
+
+  /** "Couldn't load — retry": reads again and fills in the sections that still hold nothing. */
+  // The lifestyle history and the supplements have their own loaders (below, once per patient).
+  // A failed read leaves this browser's copy (empty, or the encounter cache) in state: "not
+  // loaded", not saved until edited or reloaded — unless the clinician has already edited it.
+  const separateValueRef = useRef({ lifestyle: lifestyleHistory as unknown, supplements: supplementHistory as unknown });
+  separateValueRef.current = { lifestyle: lifestyleHistory, supplements: supplementHistory };
+  function markSeparateLoad(section: 'lifestyle' | 'supplements', failed: boolean) {
+    const g = guardRef.current;
+    const dirty = section === 'lifestyle' ? lifestyleDirtyRef.current : supplementDirtyRef.current;
+    if (failed && !dirty) {
+      g.notLoaded.add(section);
+      g.baseline[section] = fingerprint(separateValueRef.current[section]);
+    } else {
+      g.notLoaded.delete(section);
+      delete g.baseline[section];
+    }
+    syncGuardState();
+  }
+  /** A pathway_data_json read failed for a reason other than the column not existing yet. */
+  const pathwayReadFailed = (error: string | null) =>
+    !!error && !isMissingColumnError({ message: error }, ['pathway_data_json']);
+
+  async function retryNotLoaded(): Promise<void> {
+    const pid = patientIdRef.current;
+    const eid = encounterIdRef.current;
+    const g = guardRef.current;
+    if (!pid || g.notLoaded.size === 0) return;
+    if (g.notLoaded.has('lifestyle')) {
+      const lr = await loadLifestyleHistory(pid).catch(() => null);
+      if (lr && g === guardRef.current && pid === patientIdRef.current && g.notLoaded.has('lifestyle') && !lr.error) {
+        setLifestyleStorageAvailable(lr.available);
+        if (lr.lifestyle && !lifestyleDirtyRef.current) setLifestyleHistoryState(lr.lifestyle);
+        markSeparateLoad('lifestyle', false);
+      }
+    }
+    if (g.notLoaded.has('supplements')) {
+      const sr = await loadSupplementHistory(pid).catch(() => null);
+      if (sr && g === guardRef.current && pid === patientIdRef.current && g.notLoaded.has('supplements') && !pathwayReadFailed(sr.error)) {
+        if (sr.history && !supplementDirtyRef.current) setSupplementHistoryState(sr.history);
+        markSeparateLoad('supplements', false);
+      }
+    }
+    if ([...g.notLoaded].every(s => SEPARATELY_LOADED_SECTIONS.includes(s))) return;
+    const token = g.loadToken;
+    let r: Awaited<ReturnType<typeof loadEncounterData>>;
+    try { r = await loadEncounterData(eid, pid); } catch { return; }
+    if (g !== guardRef.current || token !== g.loadToken || pid !== patientIdRef.current || eid !== encounterIdRef.current) return;
+    if (!r.data) return;
+    const d = r.data;
+    // Sections the clinician has edited since are no longer "not loaded" and are left alone.
+    const nowLoaded = [...g.notLoaded].filter(s => d.loadedSections.includes(s) && !d.failedSections.includes(s));
+    if (!nowLoaded.length) return;
+    applyEncounterData(d, { patientSections: true, only: new Set(nowLoaded) });
+    markRecordLoaded(token, nowLoaded, []);
+  }
+
+  /** Sends pending autosaves now and waits (up to 7 s) for in-flight ones — before closing. */
+  async function flushAutosaves(): Promise<void> {
+    flushRef.current();
+    const deadline = Date.now() + 7_000;
+    while (pendingSaves.current > 0 && Date.now() < deadline) {
+      await new Promise(r => setTimeout(r, 100));
+    }
   }
 
   const triageInput: AdaptiveTriageInput = useMemo(() => ({
@@ -1176,7 +1544,18 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
     isPostOp,
     postOpDays: toNum(postOpDays),
     pregnancyPossible,
-  }), [age, sex, symptoms, symptomDetails, freeText, comorbidities, surgicalHistory, medications, medicationsText, allergies, toxicHabits, vitals, durationDays, painScore, isPostOp, postOpDays, pregnancyPossible]);
+    // The rest of the record for the emergency-recognition layer: triage level =
+    // max(text, vitals/NEWS2, BP, critical labs, ECG, confirmed diagnosis).
+    examText: [examGeneral, examCardio, examResp, examAbdomen, examNeuro, examExtremities, examBreast, examWound]
+      .filter(Boolean).join('\n'),
+    investigationResults,
+    resultReports: radiologyRequests.filter(r => r.resultReceived && r.resultNotes).map(r => `${r.modality} ${r.anatomicalRegion}: ${r.resultNotes}`),
+    diagnosis: { text: assessment, icd10: [...icdCodes, workingDiagnosis?.icdCode ?? null] },
+    avpu: (['A', 'C', 'V', 'P', 'U'] as const).find(x => x === vitals.avpu) ?? null,
+    onSupplementalO2: vitals.onSupplementalO2 === 'o2' ? true : vitals.onSupplementalO2 === 'air' ? false : null,
+  }), [age, sex, symptoms, symptomDetails, freeText, comorbidities, surgicalHistory, medications, medicationsText, allergies, toxicHabits, vitals, durationDays, painScore, isPostOp, postOpDays, pregnancyPossible,
+    examGeneral, examCardio, examResp, examAbdomen, examNeuro, examExtremities, examBreast, examWound,
+    investigationResults, radiologyRequests, assessment, icdCodes, workingDiagnosis]);
 
   const triageResult = useMemo(() => adaptiveTriage(triageInput), [triageInput]);
 
@@ -1188,14 +1567,38 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
 
   // ── Load recent encounters whenever patient changes ───────────────────────
   useEffect(() => {
+    setRecentEncountersPatientId(null);
     if (!patientId) { setRecentEncounters([]); return; }
-    void listPatientEncounters(patientId).then(setRecentEncounters);
-  }, [patientId]);
+    let cancelled = false;
+    void listPatientEncounters(patientId).then(list => {
+      if (cancelled) return;
+      setRecentEncounters(list);
+      setRecentEncountersPatientId(patientId);
+    });
+    return () => { cancelled = true; };
+  }, [patientId, encounterListVersion]);
 
   // ── Load wound assessments whenever encounter changes ─────────────────────
   useEffect(() => {
     if (!patientId || !encounterId) { setWounds([]); return; }
-    void loadWoundAssessments(patientId, encounterId).then(setWounds);
+    let cancelled = false;
+    // A late answer for the previous encounter must not land in the current one.
+    void loadWoundAssessments(patientId, encounterId).then(list => { if (!cancelled) setWounds(list); });
+    return () => { cancelled = true; };
+  }, [patientId, encounterId]);
+
+  // ── Prior closed encounter (Ambient view "Prior visit" strip) ─────────────
+  // Loaded here, keyed on the patient and encounter, rather than by each patient-loading tab:
+  // a tab's promise could resolve after the user had moved on (and PatientSearchTab's guard read
+  // a stale patient id, so the strip never appeared). The encounter being documented is excluded.
+  useEffect(() => {
+    if (!patientId) { setPriorEncounterSummary(null); return; }
+    let cancelled = false;
+    void getLatestClosedEncounter(patientId, { excludeEncounterId: encounterId }).then(({ data, error }) => {
+      if (cancelled) return;
+      setPriorEncounterSummary(error ? null : data);
+    });
+    return () => { cancelled = true; };
   }, [patientId, encounterId]);
 
   // Shared by the debounced autosave effect and the page-hide flush path
@@ -1294,6 +1697,31 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [patientId, allergies]);
 
+  // ── Supplements: load the patient's stored history (unless edited here), autosave edits ─
+  // Patient-level, shared with iOS through patients.pathway_data_json (lib/supplement-store.ts).
+  useEffect(() => {
+    if (!patientId) return;
+    let cancelled = false;
+    void loadSupplementHistory(patientId).then(({ history, error }) => {
+      if (cancelled) return;
+      markSeparateLoad('supplements', pathwayReadFailed(error));
+      if (history && !supplementDirtyRef.current) setSupplementHistoryState(history);
+    });
+    return () => { cancelled = true; };
+  }, [patientId]);
+
+  useEffect(() => {
+    if (!patientId || !supplementDirtyRef.current) return;
+    if (supplementTimerRef.current) clearTimeout(supplementTimerRef.current);
+    supplementTimerRef.current = setTimeout(() => {
+      supplementTimerRef.current = null;
+      void trackedSave(() => saveSupplementHistory(patientId, supplementHistory),
+        { entityType: 'supplements', entityId: patientId, payload: { patientId, history: supplementHistory } });
+    }, 2000);
+    return () => { if (supplementTimerRef.current) clearTimeout(supplementTimerRef.current); };
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [patientId, supplementHistory]);
+
   // ── Autosave examination findings (debounced 3 s) ─────────────────────────
   useEffect(() => {
     if (!patientId || !encounterId) return;
@@ -1329,6 +1757,45 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
     return () => { if (toxicTimerRef.current) clearTimeout(toxicTimerRef.current); };
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [patientId, toxicHabits]);
+
+  // ── Lifestyle history (patient-level; patients.pathway_data_json → lifestyle) ──
+  // Load once per patient. A server copy never replaces an edit made here (lifestyleDirtyRef).
+  // Opening a different patient without clearPatient() must never carry this one's record over
+  // (the autosave below would otherwise write it to the new patient).
+  const lifestylePatientRef = useRef<string | null>(null);
+  useEffect(() => {
+    if (!patientId) return;
+    if (lifestylePatientRef.current && lifestylePatientRef.current !== patientId) {
+      if (lifestyleTimerRef.current) { clearTimeout(lifestyleTimerRef.current); lifestyleTimerRef.current = null; }
+      lifestyleDirtyRef.current = false;
+      setLifestyleHistoryState(emptyLifestyleHistory());
+    }
+    lifestylePatientRef.current = patientId;
+    let cancelled = false;
+    void loadLifestyleHistory(patientId).then(r => {
+      if (cancelled) return;
+      setLifestyleStorageAvailable(r.available);
+      markSeparateLoad('lifestyle', r.error !== null);
+      if (r.lifestyle && !lifestyleDirtyRef.current) setLifestyleHistoryState(r.lifestyle);
+    });
+    return () => { cancelled = true; };
+  }, [patientId]);
+
+  // Autosave (debounced 3 s), only after an edit here.
+  useEffect(() => {
+    if (!patientId || !lifestyleDirtyRef.current) return;
+    if (lifestyleTimerRef.current) clearTimeout(lifestyleTimerRef.current);
+    lifestyleTimerRef.current = setTimeout(() => {
+      lifestyleTimerRef.current = null;
+      void trackedSave(async () => {
+        const r = await saveLifestyleHistory(patientId, lifestyleHistory);
+        setLifestyleStorageAvailable(r.available);
+        return r;
+      }, { entityType: 'lifestyle_history', entityId: patientId, payload: { patientId, lifestyle: lifestyleHistory } });
+    }, 3000);
+    return () => { if (lifestyleTimerRef.current) clearTimeout(lifestyleTimerRef.current); };
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [patientId, lifestyleHistory]);
 
   // ── Autosave ROS findings (encounter-level, debounced 3 s) ────────────────
   useEffect(() => {
@@ -1483,6 +1950,12 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
       void trackedSave(() => syncMedicationList(patientId, encounterId, medications, medicationsText),
         { entityType: 'medications', entityId: encounterId, payload: { patientId, encounterId, chipMeds: medications, freeText: medicationsText } });
     }
+    if (supplementTimerRef.current && patientId) {
+      clearTimeout(supplementTimerRef.current);
+      supplementTimerRef.current = null;
+      void trackedSave(() => saveSupplementHistory(patientId, supplementHistory),
+        { entityType: 'supplements', entityId: patientId, payload: { patientId, history: supplementHistory } });
+    }
     if (allergyTimerRef.current && patientId) {
       clearTimeout(allergyTimerRef.current);
       allergyTimerRef.current = null;
@@ -1508,6 +1981,12 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
       void trackedSave(() => syncToxicHabits(patientId, toxicHabits),
         { entityType: 'toxic_habits', entityId: patientId, payload: { patientId, habits: toxicHabits } });
     }
+    if (lifestyleTimerRef.current && patientId) {
+      clearTimeout(lifestyleTimerRef.current);
+      lifestyleTimerRef.current = null;
+      void trackedSave(() => saveLifestyleHistory(patientId, lifestyleHistory),
+        { entityType: 'lifestyle_history', entityId: patientId, payload: { patientId, lifestyle: lifestyleHistory } });
+    }
     if (rosTimerRef.current && patientId && encounterId) {
       clearTimeout(rosTimerRef.current);
       rosTimerRef.current = null;
@@ -1529,8 +2008,15 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
     if (hpiTimerRef.current && patientId && encounterId) {
       clearTimeout(hpiTimerRef.current);
       hpiTimerRef.current = null;
-      void trackedSave(() => saveHpiNote(encounterId, patientId, hpiNotes),
-        { entityType: 'hpi_note', entityId: encounterId, payload: { encounterId, patientId, hpiNotes } });
+      if (hpiNotes.trim()) {
+        void trackedSave(() => saveHpiNote(encounterId, patientId, hpiNotes),
+          { entityType: 'hpi_note', entityId: encounterId, payload: { encounterId, patientId, hpiNotes } });
+      } else {
+        // The pending save was the clearing of a saved HPI (see the HPI autosave effect).
+        hpiSavedRef.current = false;
+        void trackedSave(() => clearHpiNote(encounterId),
+          { entityType: 'hpi_note_clear', entityId: encounterId, payload: { encounterId } });
+      }
     }
     if (pmhTimerRef.current && patientId) {
       clearTimeout(pmhTimerRef.current);
@@ -1571,8 +2057,8 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
   }, [patientId, encounterId, assessment, differentials, icdCodes, cptCodes, plan,
     assessmentUpdatedAt, planUpdatedAt,
     triageResult.acuity, triageResult.score, medications, medicationsText,
-    allergies, examFindings, examNotes, surgicalHistory, surgicalNotes,
-    toxicHabits, rosFindings, procedureData, traumaData,
+    allergies, supplementHistory, examFindings, examNotes, surgicalHistory, surgicalNotes,
+    toxicHabits, lifestyleHistory, rosFindings, procedureData, traumaData,
     hpiNotes, pmhNotes, familyHistoryNotes, orderedInvestigations, encounterType, encounterMode,
     ward, dateAdmission, dateDischarge, admittingSurgeon, referringPhysician,
     nokName, nokRelation, nokTel, bloodGroup, mrNumber,
@@ -1585,8 +2071,8 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
 
   // Track whether any debounce timer is pending (for beforeunload confirmation)
   const hasPendingTimers = useCallback(() =>
-    !!(autoSaveTimerRef.current || allergyTimerRef.current || examTimerRef.current ||
-       surgicalTimerRef.current || toxicTimerRef.current || rosTimerRef.current ||
+    !!(autoSaveTimerRef.current || allergyTimerRef.current || supplementTimerRef.current || examTimerRef.current ||
+       surgicalTimerRef.current || toxicTimerRef.current || lifestyleTimerRef.current || rosTimerRef.current ||
        procedureTimerRef.current || traumaTimerRef.current ||
        hpiTimerRef.current || pmhTimerRef.current || investigationTimerRef.current ||
        encounterTypeTimerRef.current || inpatientTimerRef.current ||
@@ -1616,6 +2102,18 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
       document.removeEventListener('visibilitychange', handleVisibilityChange);
     };
   }, [hasPendingTimers]);
+
+  // Before sign-out (manual or idle timeout): push any debounced autosave out
+  // now and wait for in-flight saves, so a just-typed edit is either saved or
+  // queued in the outbox — and therefore counted by the unsynced-changes
+  // check — rather than lost when the app unmounts (secure-sign-out.ts).
+  useEffect(() => registerBeforeSignOut(async () => {
+    flushRef.current();
+    const deadline = Date.now() + 7_000;
+    while (pendingSaves.current > 0 && Date.now() < deadline) {
+      await new Promise(r => setTimeout(r, 100));
+    }
+  }), []);
 
   // ── Bayesian diagnosis-to-procedure autofill ──────────────────────────────
   // Refs let the effect read latest values without adding them as dependencies
@@ -1680,10 +2178,17 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
     medications, toggleMedication, setMedications,
     medicationsText, setMedicationsText,
     allergies, setAllergies,
+    supplementHistory, setSupplementHistory,
     toxicHabits, setToxicHabits, toggleToxicHabit,
+    lifestyleHistory, setLifestyleHistory, lifestyleStorageAvailable,
     occupation, setOccupation,
     hpiNotes, setHpiNotes,
     clearPatient,
+    beginEncounter,
+    beginRecordLoad, endRecordLoad, loadRecordIntoContext, applyStoredEncounter,
+    notLoadedSections, recordLoading, retryNotLoaded,
+    encounterReadOnly: isReadOnlyEncounterStatus(encounterStatus),
+    flushAutosaves,
     examGeneral, setExamGeneral,
     examCardio, setExamCardio,
     examResp, setExamResp,
@@ -1756,6 +2261,7 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
     traumaData, setTraumaData,
     problems,
     recentEncounters,
+    recentEncountersPatientId,
     addProblem: async (problem) => {
       const tmp: PatientProblem = { ...problem, id: `tmp-${Date.now()}` };
       setProblems(prev => [...prev, tmp]);

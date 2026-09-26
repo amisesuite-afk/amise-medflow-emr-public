@@ -5,9 +5,27 @@
  *
  * Also detects presentations that are primarily internal medicine / allied
  * health and flags them for appropriate initial assessment or referral.
+ *
+ * Version 1.1.0 (2026-09-25, SURGEON-DECISIONS C9 / C1): adds the NG12 rules the clinical
+ * validation found missing (nipple change ≥ 50, rectal bleeding ≥ 50, weight loss + abdominal
+ * pain ≥ 40, visible haematuria ≥ 45), and rules that read LAB VALUES rather than text:
+ * FIT ≥ 10 µg Hb/g (NICE DG56 2023 / BSG-ACPGBI 2022) and iron-deficiency anaemia from Hb +
+ * ferritin (NICE NG12 2015; BSG 2021). Free text is matched negation-aware (negation.ts).
+ * Every citation is unverified until the surgeon checks it (docs/clinical-validation).
+ *
+ * Asymptomatic, age-based screening (USPSTF) lives in ./screening/preventive.ts.
+ *
+ * iOS twin: ios/AmiseMedFlow/Services/SuspectedCancerScreening.swift (+Prompt.swift), registry
+ * `ios-suspected-cancer-screening`, same version number. Change both, and both test files
+ * (artifacts/api-server/src/test/cancer-screening-ng12.test.ts,
+ * ios/AmiseMedFlowTests/SuspectedCancerScreeningTests.swift), together.
  */
 
 import { Severity } from './rules';
+import { joinClauses, testAffirmed } from './negation';
+
+/** Rule-set version (clinical-content/registry.json `cancer-screening`). Bump with a changelog entry. */
+export const CANCER_SCREENING_VERSION = '1.1.0';
 
 export interface CancerScreenResult {
   triggered: boolean;
@@ -21,6 +39,34 @@ export interface CancerCriterion {
   rule: string;
   met: boolean;
   guideline: string;
+  /**
+   * Referral pathway when met. Absent = NG12 suspected-cancer (2-week-wait) referral. 'urgent'
+   * marks an urgent-but-not-2WW investigation (BSG 2021 IDA under 60 years).
+   */
+  pathway?: 'two_week_wait' | 'urgent';
+  /**
+   * Set on the rules added in 1.1.0 (the red flags and lab results the clinical validation found
+   * easy to miss). The consultation prompt strip shows these criteria; the older chip-based rules
+   * reach the clinician through the triage banner only.
+   */
+  id?: string;
+  /** Cancer site the criterion points to (1.1.0 rules). */
+  site?: string;
+  /** Investigations for this criterion when met (1.1.0 rules). */
+  investigations?: string[];
+}
+
+/**
+ * Laboratory values the lab-driven rules read. Hb in g/dL, ferritin in µg/L (= ng/mL), MCV in fL,
+ * FIT in µg Hb/g faeces. `fitPositive` is set when a FIT result is recorded as positive/negative
+ * without a number.
+ */
+export interface CancerScreenLabs {
+  haemoglobinGdl?: number | null;
+  ferritinUgL?: number | null;
+  mcvFl?: number | null;
+  fitUgHbG?: number | null;
+  fitPositive?: boolean | null;
 }
 
 export interface ReferralRecommendation {
@@ -38,6 +84,86 @@ export interface ScreeningInput {
   familyHistory: string[];
   duration?: string;
   responses: Record<string, string | string[]>;
+  /**
+   * Clinician free text (HPI, assessment). Read negation-aware by the rules added in 1.1.0 only;
+   * the older rules read the chips/complaints above.
+   */
+  freeText?: string;
+  /** Structured lab values (see readCancerScreenLabs). */
+  labs?: CancerScreenLabs;
+}
+
+// ── Lab reading ────────────────────────────────────────────────────────────
+
+const HB_KEY = /\b(haemoglobin|hemoglobin|hb|hgb)\b/i;
+const HB_EXCLUDE = /a1c|glyc|electrophoresis|hplc|urine|dipstick/i;
+const FERRITIN_KEY = /\bferritin\b/i;
+const MCV_KEY = /\bmcv\b|mean cell volume|mean corpuscular volume/i;
+const FIT_KEY = /\bq?fit\b|faecal immunochemical|fecal immunochemical/i;
+
+function firstNumber(v: string): number | null {
+  const m = v.replace(/,/g, '').match(/-?\d+(?:\.\d+)?/);
+  if (!m) return null;
+  const n = parseFloat(m[0]);
+  return Number.isFinite(n) ? n : null;
+}
+
+/**
+ * Reads Hb, ferritin, MCV and FIT from a "result name → result text" map (the dashboard's
+ * investigationResults). Names are matched on whole words, so "HbA1c" is not haemoglobin and
+ * "benefit" is not FIT. Hb above 25 (or written in g/L) is converted to g/dL.
+ */
+export function readCancerScreenLabs(results: Record<string, string>): CancerScreenLabs {
+  const out: CancerScreenLabs = {};
+  for (const [name, raw] of Object.entries(results ?? {})) {
+    const value = String(raw ?? '');
+    if (!value.trim()) continue;
+    if (out.haemoglobinGdl == null && HB_KEY.test(name) && !HB_EXCLUDE.test(name)) {
+      const n = firstNumber(value);
+      if (n !== null && n > 0) {
+        const gPerL = /g\s*\/\s*l\b/i.test(value) && !/g\s*\/\s*dl/i.test(value);
+        out.haemoglobinGdl = gPerL || n > 25 ? n / 10 : n;
+      }
+    } else if (out.ferritinUgL == null && FERRITIN_KEY.test(name)) {
+      out.ferritinUgL = firstNumber(value);
+    } else if (out.mcvFl == null && MCV_KEY.test(name)) {
+      out.mcvFl = firstNumber(value);
+    } else if (out.fitUgHbG == null && out.fitPositive == null && FIT_KEY.test(name)) {
+      const n = firstNumber(value);
+      const below = /(<|less than|below)\s*\d/i.test(value);
+      if (n !== null) {
+        out.fitUgHbG = below ? Math.max(0, n - 0.1) : n;
+      } else if (/\bnot detected\b|\bnegative\b/i.test(value)) {
+        out.fitPositive = false;
+      } else if (/\bpositive\b|\bdetected\b/i.test(value)) {
+        out.fitPositive = true;
+      }
+    }
+  }
+  return out;
+}
+
+/** WHO / BSG 2021 anaemia thresholds: Hb < 13.0 g/dL (men), < 12.0 g/dL (non-pregnant women). */
+export function isAnaemic(hbGdl: number | null | undefined, sex: ScreeningInput['sex']): boolean {
+  if (hbGdl == null) return false;
+  const threshold = sex === 'male' ? 13.0 : 12.0; // unknown sex: the lower (female) threshold
+  return hbGdl < threshold;
+}
+
+/**
+ * Iron-deficiency anaemia on bloods: anaemia plus serum ferritin < 45 µg/L (BSG 2021, Snook et
+ * al., Gut 2021: 45 µg/L is the recommended cut-off; < 15 µg/L is diagnostic).
+ */
+export function hasLabIronDeficiencyAnaemia(labs: CancerScreenLabs | undefined, sex: ScreeningInput['sex']): boolean {
+  if (!labs) return false;
+  return isAnaemic(labs.haemoglobinGdl, sex) && labs.ferritinUgL != null && labs.ferritinUgL < 45;
+}
+
+/** FIT ≥ 10 µg Hb/g faeces (NICE DG56 2023; BSG/ACPGBI FIT guideline 2022), or recorded positive. */
+export function isFitPositive(labs: CancerScreenLabs | undefined): boolean {
+  if (!labs) return false;
+  if (labs.fitUgHbG != null) return labs.fitUgHbG >= 10;
+  return labs.fitPositive === true;
 }
 
 // ── NICE NG12 2-Week-Wait Cancer Criteria ─────────────────────────────────
@@ -49,17 +175,31 @@ export function screenForCancer(input: ScreeningInput): CancerScreenResult {
   const age = input.age ?? 0;
   const cc = input.chiefComplaints.map(c => c.toLowerCase());
   const sx = input.symptoms.map(s => s.toLowerCase());
-  const all = [...cc, ...sx].join(' ');
-  const fhx = input.familyHistory.map(f => f.toLowerCase()).join(' ');
+  // One clause per chip / complaint, so a negation in one item cannot reach the next; every text
+  // test below is negation-aware ("no weight loss" in a chip or the free text does not count).
+  const all = joinClauses([...cc, ...sx]);
+  const text = joinClauses([...cc, ...sx, input.freeText ?? '']);
+  const fhx = joinClauses(input.familyHistory.map(f => f.toLowerCase()));
   const r = input.responses;
+  const labs = input.labs;
+  const sex = input.sex;
+  const t = (re: RegExp, s: string = all) => testAffirmed(re, s);
 
   // --- Colorectal cancer ---
-  const hasRectalBleeding = cc.includes('rectal_bleeding') || /rectal bleed|blood in stool|pr bleed/i.test(all);
-  const hasBowelChange = cc.includes('change_in_bowel_habit') || /bowel habit change|alternating/i.test(all);
+  const hasRectalBleeding = cc.includes('rectal_bleeding') || t(/rectal bleed|blood in stool|pr bleed/i);
+  const hasBowelChange = cc.includes('change_in_bowel_habit') || t(/bowel habit change|alternating/i);
   const hasDarkStool = r['rectal_bleeding_character'] === 'dark_tarry';
-  const hasWeightLoss = cc.includes('weight_loss') || /weight loss/i.test(all);
-  const hasIronDeficiency = /anaemia|pale|unusually tired/i.test(all);
-  const hasFhxCRC = /bowel|colon|colorectal|rectal/i.test(fhx);
+  const hasWeightLoss = cc.includes('weight_loss') || t(/weight loss/i);
+  const hasIronDeficiency = t(/anaemia|pale|unusually tired/i);
+  const hasFhxCRC = t(/bowel|colon|colorectal|rectal/i, fhx);
+  // 1.1.0 rules: chips/complaints plus the clinician's free text, whole-word, negation-aware.
+  const txRectalBleeding = hasRectalBleeding
+    || t(/\b(rectal bleed(ing)?|bleeding per rectum|blood (in|mixed with|on) (the )?(stools?|faeces|feces)|bright red blood|haematochezia|hematochezia|pr bleed(ing)?)\b/i, text);
+  const txWeightLoss = hasWeightLoss || t(/\b(weight loss|losing weight|lost \d+(\.\d+)? ?(kg|lb|kilos?|pounds))\b/i, text);
+  const txAbdoPain = cc.includes('abdominal_pain')
+    || t(/\b(abdominal pain|abdominal discomfort|tummy pain|belly pain|abdominal cramps?|abdominal cramping)\b/i, text);
+  const labIda = hasLabIronDeficiencyAnaemia(labs, sex);
+  const fitPositive = isFitPositive(labs);
 
   // NICE NG12: age >=40 with rectal bleeding + change in bowel habit
   criteria.push({
@@ -96,20 +236,73 @@ export function screenForCancer(input: ScreeningInput): CancerScreenResult {
     guideline: 'BSG polyp surveillance',
   });
 
-  if (criteria.some(c => c.met && c.rule.includes('colorectal') || c.rule.includes('bowel') || c.rule.includes('rectal') || c.rule.includes('tarry'))) {
+  // NICE NG12 (2015) 1.3.1: aged 50 and over with unexplained rectal bleeding. (The 2023 NG12
+  // update puts FIT first for this group; direct referral is kept here as the more conservative
+  // choice for a practice without a FIT pathway — listed for sign-off.)
+  const lowerGiInvestigations = ['Colonoscopy', 'FBC with iron studies'];
+  // BSG 2021: IDA → bidirectional endoscopy (OGD + colonoscopy), coeliac serology and urinalysis.
+  const idaInvestigations = ['Colonoscopy', 'OGD (bidirectional endoscopy with colonoscopy)', 'Coeliac serology (tTG-IgA)', 'Urinalysis'];
+  criteria.push({
+    rule: 'Age >=50 with unexplained rectal bleeding',
+    met: age >= 50 && txRectalBleeding,
+    guideline: 'NICE NG12 1.3.1 (2015)',
+    id: 'ng12-rectal-bleeding-50', site: 'colorectal', investigations: lowerGiInvestigations,
+  });
+
+  // NICE NG12 (2015) 1.3.1: aged 40 and over with unexplained weight loss and abdominal pain.
+  criteria.push({
+    rule: 'Age >=40 with unexplained weight loss AND abdominal pain (colorectal)',
+    met: age >= 40 && txWeightLoss && txAbdoPain,
+    guideline: 'NICE NG12 1.3.1 (2015)',
+    id: 'ng12-weight-loss-abdominal-pain-40', site: 'colorectal', investigations: lowerGiInvestigations,
+  });
+
+  // NICE DG56 (2023) / NG12 2023 update; BSG-ACPGBI FIT guideline (Monahan, Gut 2022):
+  // FIT ≥ 10 µg Hb/g faeces → suspected colorectal cancer pathway referral, at any age.
+  criteria.push({
+    rule: 'FIT >=10 µg Hb/g faeces (colorectal)',
+    met: fitPositive,
+    guideline: 'NICE DG56 (2023); BSG/ACPGBI FIT 2022',
+    id: 'fit-10', site: 'colorectal', investigations: lowerGiInvestigations,
+  });
+
+  // NICE NG12 (2015) 1.3.1: aged 60 and over with iron-deficiency anaemia — read from Hb + ferritin.
+  criteria.push({
+    rule: 'Age >=60 with iron deficiency anaemia on blood results (colorectal)',
+    met: age >= 60 && labIda,
+    guideline: 'NICE NG12 1.3.1 (2015); BSG 2021 IDA thresholds',
+    id: 'ng12-ida-60', site: 'colorectal / upper GI', investigations: idaInvestigations,
+  });
+
+  // BSG 2021 IDA guideline (Snook, Gut 2021): bidirectional endoscopy (OGD + colonoscopy) for
+  // men and post-menopausal women with IDA, with or without GI symptoms. Age ≥ 50 stands in for
+  // post-menopausal status (menopausal status is not recorded). Urgent, not 2-week-wait, under 60.
+  criteria.push({
+    rule: 'Iron deficiency anaemia in a man or a woman aged >=50: bidirectional endoscopy (colorectal / upper GI)',
+    met: labIda && age >= 18 && age < 60 && (sex === 'male' || age >= 50),
+    guideline: 'BSG 2021 iron deficiency anaemia',
+    pathway: 'urgent',
+    id: 'bsg-ida', site: 'colorectal / upper GI', investigations: idaInvestigations,
+  });
+
+  // Parenthesised: `c.met && a || b || c` was true whenever any colorectal rule merely existed,
+  // so every 2-week-wait screen (breast, upper GI, pancreas) was labelled colorectal. The IDA
+  // rule belongs to this block (NG12 colorectal) and was labelled colorectal before, so it stays.
+  if (criteria.some(c => c.met && (c.rule.includes('colorectal') || c.rule.includes('bowel') || c.rule.includes('rectal') || c.rule.includes('tarry') || c.rule.includes('iron deficiency')))) {
     cancerType = 'colorectal';
     investigations.push('Colonoscopy', 'FBC with iron studies', 'CEA');
     if (hasDarkStool) investigations.push('OGD (to exclude upper GI source)');
+    if (labIda) investigations.push(...idaInvestigations);
   }
 
   // --- Upper GI / oesophago-gastric cancer ---
-  const hasDysphagia = cc.includes('difficulty_swallowing') || /dysphagia|swallowing/i.test(all);
-  const hasAlarmGI = hasWeightLoss || hasDysphagia || /loss of appetite|early satiety/i.test(all);
+  const hasDysphagia = cc.includes('difficulty_swallowing') || t(/dysphagia|swallowing/i);
+  const hasAlarmGI = hasWeightLoss || hasDysphagia || t(/loss of appetite|early satiety/i);
 
   // NICE NG12: age >=55 with weight loss and upper GI symptoms
   criteria.push({
     rule: 'Age >=55 with weight loss AND upper abdominal symptoms or reflux',
-    met: age >= 55 && hasWeightLoss && /reflux|heartburn|epigastric|abdominal pain|dyspepsia/i.test(all),
+    met: age >= 55 && hasWeightLoss && t(/reflux|heartburn|epigastric|abdominal pain|dyspepsia/i),
     guideline: 'NICE NG12 1.6.1',
   });
 
@@ -123,7 +316,7 @@ export function screenForCancer(input: ScreeningInput): CancerScreenResult {
   // Age >=55 with persistent dyspepsia + alarm features
   criteria.push({
     rule: 'Age >=55 with treatment-resistant dyspepsia',
-    met: age >= 55 && /reflux|heartburn|dyspepsia|acid/i.test(all) && hasAlarmGI,
+    met: age >= 55 && t(/reflux|heartburn|dyspepsia|acid/i) && hasAlarmGI,
     guideline: 'NICE NG12 1.6.3',
   });
 
@@ -134,11 +327,16 @@ export function screenForCancer(input: ScreeningInput): CancerScreenResult {
   }
 
   // --- Breast cancer ---
-  const hasBreastLump = cc.includes('breast_concern') || cc.includes('lump_or_mass') || /breast lump|breast mass/i.test(all);
-  const hasNippleDischarge = /bloody nipple|nipple discharge.*bloody/i.test(all) || r['nipple_discharge_type'] === 'bloody';
-  const hasSkinChanges = /dimpling|puckering|skin changes.*breast|peau d.orange/i.test(all) || r['skin_changes'] === 'true';
-  const hasBreastFhx = /breast|ovarian|brca/i.test(fhx);
+  const hasBreastLump = cc.includes('breast_concern') || cc.includes('lump_or_mass') || t(/breast lump|breast mass/i);
+  const hasNippleDischarge = t(/bloody nipple|nipple discharge.*bloody/i) || r['nipple_discharge_type'] === 'bloody';
+  const hasSkinChanges = t(/dimpling|puckering|skin changes.*breast|peau d.orange/i) || r['skin_changes'] === 'true';
+  const hasBreastFhx = t(/breast|ovarian|brca/i, fhx);
   const lumpGrowing = r['breast_lump_change'] === 'getting_larger';
+  // NG12 1.8: discharge, retraction or other change of concern in ONE nipple. Bilateral wording
+  // excludes it; laterality not recorded counts (conservative).
+  const nippleChange = cc.includes('nipple_discharge') || !!r['nipple_discharge_type']
+    || t(/\b(nipple discharge|discharge from (the |her |his |my )?(left |right )?nipple|bloody nipple|blood-stained (nipple )?discharge|nipple (retraction|inversion|change|eczema|crusting)|(retracted|inverted) nipple)\b/i, text);
+  const nippleBilateral = t(/\bbilateral\b[^.]{0,30}\bnipple|\bnipple[^.]{0,30}\b(bilateral|both (breasts|nipples|sides))\b/i, text);
 
   // NICE NG12: age >=30 with unexplained breast lump
   criteria.push({
@@ -161,15 +359,33 @@ export function screenForCancer(input: ScreeningInput): CancerScreenResult {
     guideline: 'NICE NG12 1.8.3',
   });
 
-  if (criteria.some(c => c.met && c.rule.includes('breast'))) {
+  // NICE NG12 (2015) 1.8.1: aged 50 and over with discharge, retraction or other changes of
+  // concern in one nipple only.
+  const bloodyNippleDischarge = hasNippleDischarge
+    || t(/\b(blood[- ]stained|bloody|haemoserous|serosanguinous)\b[^.]{0,30}\b(nipple|discharge)\b/i, text);
+  // Single-duct bloody discharge with normal imaging: duct excision for histology (ACR
+  // Appropriateness Criteria, evaluation of nipple discharge, 2022).
+  const ductExcision = 'Microdochectomy / duct excision if imaging is normal';
+  criteria.push({
+    rule: 'Age >=50 with discharge, retraction or other change in one nipple (breast)',
+    met: age >= 50 && nippleChange && !nippleBilateral,
+    guideline: 'NICE NG12 1.8.1 (2015)',
+    id: 'ng12-nipple-50', site: 'breast',
+    investigations: ['Mammogram', 'Breast ultrasound', ...(bloodyNippleDischarge ? [ductExcision] : [])],
+  });
+
+  if (criteria.some(c => c.met && c.rule.toLowerCase().includes('breast'))) { // "Breast lump …" rules start with a capital
     cancerType = cancerType ?? 'breast';
     investigations.push('Breast ultrasound', 'Mammogram');
-    if (hasNippleDischarge) investigations.push('Ductogram or MRI breast');
+    if (bloodyNippleDischarge) {
+      investigations.push('Ductogram or MRI breast');
+      if (nippleChange) investigations.push(ductExcision);
+    }
     if (hasBreastFhx) investigations.push('BRCA risk assessment');
   }
 
   // --- Pancreatic cancer ---
-  const hasJaundice = cc.includes('jaundice') || /jaundice|yellow/i.test(all);
+  const hasJaundice = cc.includes('jaundice') || t(/jaundice|yellow/i);
 
   criteria.push({
     rule: 'Age >=40 with jaundice',
@@ -179,7 +395,7 @@ export function screenForCancer(input: ScreeningInput): CancerScreenResult {
 
   criteria.push({
     rule: 'Unexplained weight loss with new-onset back or epigastric pain',
-    met: hasWeightLoss && /back pain|epigastric/i.test(all),
+    met: hasWeightLoss && t(/back pain|epigastric/i),
     guideline: 'NICE NG12 1.10.2',
   });
 
@@ -189,10 +405,34 @@ export function screenForCancer(input: ScreeningInput): CancerScreenResult {
     if (hasJaundice) investigations.push('MRCP or ERCP');
   }
 
+  // --- Bladder / renal cancer ---
+  // NICE NG12 (2015) 1.6 (bladder): aged 45 and over with unexplained visible haematuria without
+  // urinary tract infection. "Unexplained": not counted with a recorded UTI, dysuria, loin pain,
+  // renal colic or stone; non-visible (dipstick/microscopic) haematuria is not this rule.
+  const visibleHaematuria = cc.includes('haematuria') || cc.includes('blood_in_urine')
+    || t(/\b(haematuria|hematuria|blood in (the |his |her |my )?urine|red urine|passing blood in (the )?urine)\b/i, text);
+  const nonVisibleOnly = t(/\b(non-visible|nonvisible|microscopic|dipstick) (haematuria|hematuria)\b/i, text)
+    && !t(/\b(visible|frank|macroscopic|gross) (haematuria|hematuria)\b/i, text);
+  const haematuriaExplained = t(/\b(uti|urinary tract infection|cystitis|dysuria|loin pain|flank pain|renal colic|ureteric colic|kidney stones?|renal stones?|ureteric stones?|urolithiasis|calculus|calculi)\b/i, text);
+  criteria.push({
+    rule: 'Age >=45 with unexplained visible haematuria (urological)',
+    met: age >= 45 && visibleHaematuria && !nonVisibleOnly && !haematuriaExplained,
+    guideline: 'NICE NG12 1.6 (2015) bladder cancer',
+    id: 'ng12-haematuria-45', site: 'urological',
+    investigations: ['Cystoscopy', 'CT urogram', 'Urine culture (exclude UTI)', 'U&E / eGFR'],
+  });
+
+  if (criteria.some(c => c.met && c.rule.includes('haematuria'))) {
+    cancerType = cancerType ?? 'urological';
+    investigations.push('Cystoscopy', 'CT urogram', 'Urine culture (exclude UTI)', 'U&E / eGFR');
+  }
+
   const metCriteria = criteria.filter(c => c.met);
   let referralUrgency: CancerScreenResult['referralUrgency'] = 'none';
-  if (metCriteria.length > 0) {
+  if (metCriteria.some(c => (c.pathway ?? 'two_week_wait') === 'two_week_wait')) {
     referralUrgency = 'two_week_wait';
+  } else if (metCriteria.length > 0) {
+    referralUrgency = 'urgent';
   }
 
   return {
@@ -253,17 +493,18 @@ const INTERNAL_MEDICINE_PATTERNS: Array<{
 ];
 
 export function detectReferrals(input: ScreeningInput): ReferralRecommendation[] {
-  const all = [
+  // One clause per item and negation-aware ("no chest pain" is not a cardiology referral).
+  const all = joinClauses([
     ...input.chiefComplaints,
     ...input.symptoms,
     ...Object.values(input.responses).flat(),
-  ].join(' ');
+  ]);
 
   const referrals: ReferralRecommendation[] = [];
   const seenSpecialties = new Set<string>();
 
   for (const { pattern, specialty, reason, urgency } of INTERNAL_MEDICINE_PATTERNS) {
-    if (pattern.test(all) && !seenSpecialties.has(specialty)) {
+    if (testAffirmed(pattern, all) && !seenSpecialties.has(specialty)) {
       seenSpecialties.add(specialty);
       referrals.push({ specialty, reason, urgency, isPrimarilySurgical: false });
     }

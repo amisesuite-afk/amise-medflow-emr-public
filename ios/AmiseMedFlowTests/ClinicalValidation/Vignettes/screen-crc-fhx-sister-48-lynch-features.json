@@ -1,0 +1,173 @@
+{
+  "schemaVersion": 1,
+  "id": "screen-crc-fhx-sister-48-lynch-features",
+  "condition": "Colorectal cancer screening — family history with Lynch-syndrome features",
+  "category": "colorectal",
+  "permutationOf": "screen-crc-average-risk-46",
+  "permutationLabel": "Age 41, sister CRC at 48, mother endometrial cancer at 55",
+  "summary": "41-year-old woman, sister diagnosed with colorectal cancer at 48 (tumour MMR status unknown), mother endometrial cancer at 55. Increased-risk screening (colonoscopy from 40, 5-yearly) and suspicion of Lynch syndrome (tumour MMR testing / genetics referral).",
+  "tags": [
+    "screening",
+    "family-history",
+    "lynch",
+    "colorectal"
+  ],
+  "inputs": {
+    "patient": {
+      "ageYears": 41,
+      "sex": "female",
+      "pregnancy": {
+        "status": "not-pregnant"
+      },
+      "heightCm": 168,
+      "weightKg": 70
+    },
+    "encounter": {
+      "setting": "outpatient",
+      "visitType": "newConsult",
+      "acuity": "routine"
+    },
+    "chiefComplaint": "Worried about bowel cancer — sister recently diagnosed",
+    "hpi": "Asymptomatic 41-year-old woman. Her younger sister was diagnosed with colon cancer at 48 last year (right colon, operated abroad; not known whether the tumour was tested for mismatch repair). Mother had womb (endometrial) cancer at 55. No bowel symptoms. Never had a colonoscopy.",
+    "symptoms": [],
+    "negatives": [
+      "rectal bleeding",
+      "change in bowel habit",
+      "anaemia symptoms"
+    ],
+    "exam": {
+      "general": "Well. BP 118/74.",
+      "abdomen": "Soft, non-tender, no masses."
+    },
+    "vitals": [
+      {
+        "minutesAgo": 10,
+        "heartRate": 70,
+        "systolicBp": 118,
+        "diastolicBp": 74,
+        "respiratoryRate": 14,
+        "temperatureC": 36.6,
+        "spo2": 99,
+        "avpu": "A",
+        "onSupplementalO2": false
+      }
+    ],
+    "labs": [],
+    "imaging": [],
+    "comorbidities": [
+      "Family history: sister colorectal cancer at 48",
+      "Family history: mother endometrial cancer at 55"
+    ],
+    "surgicalHistory": [],
+    "medications": [],
+    "allergies": [],
+    "nkda": true,
+    "socialHistory": "Teacher. Non-smoker.",
+    "confirmedDiagnosis": {
+      "name": "Family history of colorectal cancer (FDR < 50) with possible Lynch syndrome — asymptomatic",
+      "icd10": "Z80.0",
+      "assessmentText": "Asymptomatic. Sister colorectal cancer at 48, mother endometrial cancer at 55: increased-risk family history with Lynch features. Colonoscopy now (from 40, 5-yearly); request sister's tumour MMR/MSI result; clinical genetics referral."
+    },
+    "platform": {
+      "web": {
+        "ccTemplate": "Colonoscopy (diagnostic / surveillance)",
+        "symptoms": [],
+        "durationDays": 0
+      }
+    }
+  },
+  "expected": {
+    "safety": {
+      "emergencyLevel": {
+        "id": "level-not-urgent",
+        "severity": "quality",
+        "guidelineRefs": [
+          "mstf-fhx-2017"
+        ],
+        "atMost": "priority"
+      }
+    },
+    "management": {
+      "mustInclude": [
+        {
+          "id": "mgmt-colonoscopy",
+          "severity": "quality",
+          "guidelineRefs": [
+            "mstf-fhx-2017",
+            "acg-crc-2021"
+          ],
+          "note": "One FDR with CRC < 60: colonoscopy from 40 (or 10 years before the youngest case), 5-yearly. Web harness limit: the web runner passes familyHistory: [] to computeClinicalPrompts (the vignette schema has no family-history field). Calling computeClinicalPrompts directly with the dashboard's 'Colorectal cancer' family-history chip at 41 produces 'Arrange colonoscopy — FHx CRC, early surveillance criterion', so the dashboard would pass when that chip is ticked. Web, 2026-09-25 (fix-web-screening): now observed in the harness — the preventive-screening engine reads the \"Family history: …\" and \"Lynch syndrome\" comorbidity entries, which the dashboard passes too; web removed from unverified.",
+          "match": [
+            "colonoscopy"
+          ]
+        },
+        {
+          "id": "mgmt-lynch-genetics",
+          "severity": "quality",
+          "guidelineRefs": [
+            "bsg-hereditary-2020",
+            "nice-dg27-2017"
+          ],
+          "note": "CRC < 50 in a sister plus endometrial cancer in the mother: Lynch syndrome must be considered — tumour MMR/MSI testing of the affected relative and genetics referral.",
+          "match": [
+            "genetic",
+            "lynch",
+            "mismatch repair",
+            "mmr",
+            "microsatellite",
+            "msi"
+          ],
+          "knownGap": [
+            "ios"
+          ],
+          "knownGapNote": "iOS CI 2026-09-25 (run 36169134350, database mode): no management item matched among 13 (ios.pipeline.actions, ios.radiation.plan, ios.radiation.followUp, ios.soap.plan)"
+        }
+      ]
+    },
+    "pathway": {
+      "id": "pathway-firstvisit",
+      "severity": "quality",
+      "equals": "firstVisit"
+    }
+  },
+  "guideline": [
+    {
+      "id": "mstf-fhx-2017",
+      "name": "US Multi-Society Task Force on Colorectal Cancer — screening recommendations",
+      "year": 2017,
+      "section": "Family history: FDR with CRC or advanced adenoma < 60 years, or two FDRs at any age — colonoscopy every 5 years beginning at 40 or 10 years before the youngest affected relative",
+      "citation": "Rex DK, Boland CR, Dominitz JA, et al. Colorectal cancer screening: recommendations for physicians and patients from the U.S. Multi-Society Task Force on Colorectal Cancer. Gastroenterology. 2017;153:307–323.",
+      "verified": false
+    },
+    {
+      "id": "acg-crc-2021",
+      "name": "ACG clinical guidelines — colorectal cancer screening",
+      "year": 2021,
+      "section": "Average risk: start at 45; one first-degree relative with CRC or advanced adenoma diagnosed < 60, or two FDRs at any age: colonoscopy from 40 (or 10 years before the youngest affected relative) every 5 years",
+      "citation": "Shaukat A, Kahi CJ, Burke CA, et al. ACG clinical guidelines: colorectal cancer screening 2021. Am J Gastroenterol. 2021;116:458–479.",
+      "verified": false
+    },
+    {
+      "id": "bsg-hereditary-2020",
+      "name": "BSG/ACPGBI/UKCGG guidelines — management of hereditary colorectal cancer",
+      "year": 2020,
+      "section": "Family-history assessment; Lynch syndrome suspected with CRC < 50 or Lynch-spectrum cancers (e.g. endometrial) in relatives — tumour MMR/MSI testing of the affected relative and clinical genetics referral",
+      "citation": "Monahan KJ, Bradshaw N, Dolwani S, et al. Guidelines for the management of hereditary colorectal cancer from the British Society of Gastroenterology (BSG)/Association of Coloproctology of Great Britain and Ireland (ACPGBI)/United Kingdom Cancer Genetics Group (UKCGG). Gut. 2020;69:411–444.",
+      "verified": false
+    },
+    {
+      "id": "nice-dg27-2017",
+      "name": "NICE DG27 — molecular testing strategies for Lynch syndrome in people with colorectal cancer",
+      "year": 2017,
+      "section": "Offer MMR immunohistochemistry or MSI testing to everyone with colorectal cancer when first diagnosed, to identify Lynch syndrome",
+      "citation": "National Institute for Health and Care Excellence. Molecular testing strategies for Lynch syndrome in people with colorectal cancer. Diagnostics guidance DG27, 2017.",
+      "verified": false
+    }
+  ],
+  "rationale": "An FDR with colorectal cancer before 50 and an endometrial cancer in another FDR raise the family to increased risk with Lynch features. US guidance: colonoscopy from 40, 5-yearly; UK guidance: seek the relative's tumour MMR status and refer to genetics.",
+  "authoring": {
+    "author": "Claude (prevention/screening, obstetric-gynaecological mimics and paediatric surgery cluster)",
+    "date": "2026-09-25",
+    "notes": "Expectations need surgeon sign-off (reviewedBy). Every citation is verified: false. iOS outcomes are unverified (not run on Linux); triage after the first CI run."
+  }
+}

@@ -1,0 +1,438 @@
+{
+  "schemaVersion": 1,
+  "id": "appendicitis-paediatric-9y",
+  "condition": "Acute appendicitis",
+  "category": "gi-emergency",
+  "permutationOf": "appendicitis-adult-typical",
+  "permutationLabel": "Child (9 years), ultrasound-confirmed",
+  "summary": "9-year-old boy, 30 h migratory RIF pain, vomiting, fever 38.2 °C, RIF peritonism, WBC 15.9, CRP 38; ultrasound shows an 8 mm non-compressible appendix. Uncomplicated appendicitis in a child.",
+  "tags": [
+    "acute-abdomen",
+    "paediatric"
+  ],
+  "inputs": {
+    "patient": {
+      "ageYears": 9,
+      "sex": "male",
+      "pregnancy": {
+        "status": "not-applicable"
+      },
+      "heightCm": 134,
+      "weightKg": 30
+    },
+    "encounter": {
+      "setting": "emergency",
+      "visitType": "urgentReview",
+      "acuity": "urgent"
+    },
+    "chiefComplaint": "Tummy pain and vomiting",
+    "hpi": "9-year-old boy brought by his mother. 30 hours of pain around the belly button that moved to the right lower abdomen this morning. Off his food, vomited three times, felt hot overnight. Pain on walking and when the car went over bumps. No diarrhoea, no urinary symptoms, no testicular pain. No recent sore throat or cough.",
+    "socrates": {
+      "onset": [
+        "Yesterday"
+      ],
+      "site": [
+        "Periumbilical",
+        "RLQ"
+      ],
+      "character": [
+        "Sharp"
+      ],
+      "radiation": [
+        "No radiation"
+      ],
+      "associations": [
+        "Nausea",
+        "Vomiting",
+        "Anorexia",
+        "Fever"
+      ],
+      "timing": [
+        "Constant",
+        "Progressive"
+      ],
+      "exacerbating": [
+        "Movement",
+        "Coughing"
+      ],
+      "relieving": [
+        "Rest"
+      ],
+      "severity": [
+        "Severe (7–9/10)"
+      ]
+    },
+    "symptoms": [
+      "abdominal pain",
+      "migration of pain to the right iliac fossa",
+      "anorexia",
+      "vomiting",
+      "fever"
+    ],
+    "negatives": [
+      "diarrhoea",
+      "dysuria",
+      "testicular pain",
+      "sore throat"
+    ],
+    "exam": {
+      "general": "Flushed, lying still, reluctant to hop. Temperature 38.2°C, pulse 118/min.",
+      "abdomen": "Tender right iliac fossa with guarding; percussion tenderness and pain on coughing. Rovsing's sign positive. No mass. Testes normal, both descended, non-tender.",
+      "other": "Throat and chest clear."
+    },
+    "vitals": [
+      {
+        "minutesAgo": 20,
+        "heartRate": 118,
+        "systolicBp": 108,
+        "diastolicBp": 64,
+        "respiratoryRate": 24,
+        "temperatureC": 38.2,
+        "spo2": 98,
+        "avpu": "A",
+        "onSupplementalO2": false
+      }
+    ],
+    "labs": [
+      {
+        "analyte": "wbc",
+        "name": "WBC",
+        "value": 15.9,
+        "unit": "×10⁹/L",
+        "minutesAgo": 30
+      },
+      {
+        "analyte": "neutrophilPct",
+        "name": "Neutrophils (%)",
+        "value": 81,
+        "unit": "%",
+        "minutesAgo": 30
+      },
+      {
+        "analyte": "crp",
+        "name": "CRP",
+        "value": 38,
+        "unit": "mg/L",
+        "minutesAgo": 30
+      },
+      {
+        "analyte": "creatinine",
+        "name": "Creatinine",
+        "value": 42,
+        "unit": "µmol/L",
+        "minutesAgo": 30
+      },
+      {
+        "analyte": "urinalysis",
+        "name": "Urine dipstick",
+        "resultText": "Negative for leucocytes, nitrites and blood",
+        "minutesAgo": 35
+      }
+    ],
+    "imaging": [
+      {
+        "name": "USS abdomen (graded compression)",
+        "modality": "US",
+        "region": "Abdomen",
+        "result": "Non-compressible blind-ending tubular structure in the right iliac fossa, 8 mm diameter, with surrounding echogenic fat. No collection. No free fluid.",
+        "minutesAgo": 10
+      }
+    ],
+    "comorbidities": [],
+    "surgicalHistory": [],
+    "medications": [],
+    "allergies": [],
+    "nkda": true,
+    "socialHistory": "Lives with parents, year 5 at school.",
+    "scoreForms": {
+      "alvarado": {
+        "migration": true,
+        "anorexia": true,
+        "nauseaVomiting": true,
+        "rifTenderness": true,
+        "rebound": true,
+        "temperatureRaised": true,
+        "wbcAbove10": true,
+        "neutrophilia": true
+      }
+    },
+    "confirmedDiagnosis": {
+      "name": "Acute appendicitis",
+      "icd10": "K35.80",
+      "paneDiseaseId": "appendicitis",
+      "assessmentText": "Acute appendicitis in a 9-year-old, confirmed on ultrasound (8 mm non-compressible appendix), no abscess or perforation — uncomplicated."
+    },
+    "platform": {
+      "web": {
+        "ccTemplate": "Acute abdominal pain",
+        "socratesAnswers": {
+          "site": "Periumbilical, now right lower abdomen (RLQ)",
+          "onset": "Yesterday, gradual",
+          "character": "Sharp",
+          "radiation": "No radiation",
+          "associated": "Nausea, vomiting x3, anorexia, fever",
+          "timing": "Constant, worsening",
+          "triggers": "Movement, coughing, hopping",
+          "relief": "Rest",
+          "severity": "7/10"
+        },
+        "symptoms": [
+          "abdominal pain",
+          "vomiting",
+          "anorexia",
+          "fever"
+        ],
+        "symptomDetails": {
+          "abdominal pain": [
+            "Periumbilical",
+            "RLQ",
+            "6–24 hours",
+            "Sharp",
+            "Severe (7–9)",
+            "Vomiting",
+            "Fever",
+            "Anorexia",
+            "Continuous",
+            "Movement",
+            "Coughing"
+          ]
+        },
+        "examFindings": {
+          "abdomen": [
+            "Tender RLQ",
+            "Guarding",
+            "Rovsing's sign +"
+          ]
+        },
+        "durationDays": 1,
+        "painScore": 7
+      }
+    }
+  },
+  "expected": {
+    "differential": {
+      "mustRankTopK": [
+        {
+          "id": "dx-appendicitis-top3",
+          "severity": "critical",
+          "match": [
+            "appendic"
+          ],
+          "k": 3,
+          "guidelineRefs": [
+            "wses-2020"
+          ]
+        }
+      ],
+      "mustNotMiss": [
+        {
+          "id": "mnm-mesenteric-adenitis",
+          "severity": "quality",
+          "match": [
+            "mesenteric adenitis",
+            "adenitis"
+          ],
+          "source": "web.symptomInference",
+          "platforms": [
+            "web"
+          ],
+          "note": "The commonest paediatric mimic; secondary engine checked because PANE has no mesenteric adenitis node."
+        }
+      ]
+    },
+    "safety": {
+      "emergencyLevel": {
+        "id": "level-at-least-urgent",
+        "severity": "critical",
+        "atLeast": "urgent",
+        "guidelineRefs": [
+          "wses-2020"
+        ],
+        "note": "Suspected appendicitis in a child: same-day surgical assessment.",
+        "knownGapNote": "iOS: ClinicalPathwayEngine reads only CC/PMH keywords; CC 'Tummy pain and vomiting' gives 'routine'."
+      }
+    },
+    "scores": {
+      "recommended": [
+        {
+          "id": "score-rec-pas",
+          "severity": "quality",
+          "score": "pas",
+          "guidelineRefs": [
+            "wses-2020",
+            "pas-2002"
+          ],
+          "note": "WSES 2020: in children, PAS (or AIR) with ultrasound; Alvarado alone is less reliable.",
+          "knownGap": [
+            "web",
+            "ios"
+          ],
+          "knownGapNote": "Web: Web CDS has no PAS (or AIR) rule; Alvarado is suggested in a 9-year-old. | iOS CI 2026-09-25 (run 36169134350, database mode): pas not recommended; recommended: alvarado, air, ripasa, news2, rcri, asa, mews"
+        }
+      ],
+      "values": [
+        {
+          "id": "score-alvarado-calculator",
+          "severity": "critical",
+          "score": "alvarado",
+          "mode": "calculator",
+          "equals": 10,
+          "guidelineRefs": [
+            "alvarado-1986"
+          ],
+          "note": "All eight items present = 10."
+        }
+      ]
+    },
+    "investigations": {
+      "mustInclude": [
+        {
+          "id": "inv-ultrasound",
+          "severity": "quality",
+          "match": [
+            "ultrasound",
+            "uss"
+          ],
+          "guidelineRefs": [
+            "wses-2020"
+          ],
+          "note": "WSES 2020: ultrasound first in children."
+        }
+      ],
+      "mustExclude": []
+    },
+    "management": {
+      "mustInclude": [
+        {
+          "id": "mgmt-lap-appendicectomy",
+          "severity": "critical",
+          "match": [
+            "re:laparoscopic append(ic)?ectomy",
+            "re:lap(\\.|aroscopic)? append"
+          ],
+          "guidelineRefs": [
+            "wses-2020"
+          ]
+        },
+        {
+          "id": "mgmt-antibiotics",
+          "severity": "quality",
+          "match": [
+            "antibiotic",
+            "co-amoxiclav",
+            "piperacillin",
+            "tazocin",
+            "cefuroxime",
+            "ceftriaxone",
+            "metronidazole",
+            "meropenem",
+            "pip-tazo"
+          ],
+          "guidelineRefs": [
+            "wses-2020"
+          ]
+        }
+      ],
+      "mustExclude": [
+        {
+          "id": "mgmt-no-unqualified-ct-child",
+          "severity": "quality",
+          "match": [
+            "re:\\bct\\b[^\\n]{0,40}(abdo|pelvi)"
+          ],
+          "unless": [
+            "inconclusive",
+            "non-diagnostic",
+            "equivocal",
+            "if us",
+            "if uss",
+            "child",
+            "paediatric"
+          ],
+          "guidelineRefs": [
+            "wses-2020"
+          ],
+          "note": "Ultrasound has already confirmed appendicitis; CT (radiation) is not indicated in a child unless US is inconclusive."
+        },
+        {
+          "id": "mgmt-no-adult-fixed-doses",
+          "severity": "critical",
+          "match": [
+            "re:paracetamol 1 ?g",
+            "re:ibuprofen 400 ?mg",
+            "re:4\\.5 ?g",
+            "re:co-amoxiclav[^\\n]{0,20}1\\.2 ?g",
+            "re:amoxiclav 1\\.2 ?g"
+          ],
+          "unless": [
+            "adult",
+            "mg/kg",
+            ">50 kg",
+            "over 50 kg",
+            "age ≥ 12"
+          ],
+          "note": "Weight 30 kg. Paracetamol 1 g QDS (133 mg/kg/day), ibuprofen 400 mg (13 mg/kg/dose), piperacillin-tazobactam 4.5 g (150 mg/kg) and co-amoxiclav 1.2 g are adult fixed doses; a child needs weight-based (mg/kg) dosing. Quality of prescribing is a patient-safety issue, so critical.",
+          "knownGapNote": "Web: Protocol steps, protocol medications and the appendicectomy prompt carry adult fixed doses (co-amoxiclav 1.2 g TDS, paracetamol 1 g, ibuprofen 400 mg TDS, pip-tazo 4.5 g) with no weight or age adjustment for a 30 kg child.",
+          "proposedFix": "Give protocol medications and prompt templates an age/weight branch (mg/kg with adult maximum) and suppress fixed adult doses when age < 16 or weight < 50 kg."
+        },
+        {
+          "id": "mgmt-no-routine-postop-antibiotics",
+          "severity": "quality",
+          "match": [
+            "re:simple appendicitis[^\\n]{0,120}5 days",
+            "re:uncomplicated appendicitis[^\\n]{0,120}(antibiotic|co-amoxiclav)[^\\n]{0,60}days"
+          ],
+          "guidelineRefs": [
+            "wses-2020"
+          ],
+          "note": "WSES 2020: no postoperative antibiotics after appendicectomy for uncomplicated appendicitis."
+        }
+      ]
+    },
+    "pathway": {
+      "id": "pathway-first-visit",
+      "severity": "quality",
+      "equals": "firstVisit"
+    },
+    "dxVariant": {
+      "id": "variant-uncomplicated",
+      "severity": "quality",
+      "equals": "appendicitis_uncomplicated",
+      "guidelineRefs": [
+        "wses-2020"
+      ]
+    }
+  },
+  "guideline": [
+    {
+      "id": "wses-2020",
+      "name": "WSES Jerusalem guidelines — diagnosis and treatment of acute appendicitis (2020 update)",
+      "year": 2020,
+      "section": "Clinical scores (AIR/AAS over Alvarado), imaging by age/sex/pregnancy, antibiotic-first option, complicated appendicitis (abscess), antibiotic duration",
+      "citation": "Di Saverio S, Podda M, De Simone B, et al. Diagnosis and treatment of acute appendicitis: 2020 update of the WSES Jerusalem guidelines. World J Emerg Surg. 2020;15:27.",
+      "verified": false
+    },
+    {
+      "id": "alvarado-1986",
+      "name": "Alvarado score (MANTRELS)",
+      "year": 1986,
+      "section": "Items and weights; ≤4 unlikely, 5–6 possible, 7–8 probable, 9–10 very probable",
+      "citation": "Alvarado A. A practical score for the early diagnosis of acute appendicitis. Ann Emerg Med. 1986;15:557–64.",
+      "verified": false
+    },
+    {
+      "id": "pas-2002",
+      "name": "Pediatric Appendicitis Score (PAS)",
+      "year": 2002,
+      "section": "Items and weights for children",
+      "citation": "Samuel M. Pediatric appendicitis score. J Pediatr Surg. 2002;37:877–81.",
+      "verified": false
+    }
+  ],
+  "rationale": "Permutation: age. Tests that the engines recognise appendicitis in a child, use ultrasound rather than CT, and that plan templates do not carry adult fixed doses into a 30 kg child. The CC is the parent's words ('Tummy pain and vomiting').",
+  "authoring": {
+    "author": "Claude (GI surgical emergencies cluster)",
+    "date": "2026-09-25",
+    "notes": "Expectations need surgeon sign-off (reviewedBy). Every citation is verified: false."
+  }
+}

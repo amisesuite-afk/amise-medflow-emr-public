@@ -1,0 +1,330 @@
+{
+  "schemaVersion": 1,
+  "id": "hyperkalaemia-severe-ckd-acei",
+  "condition": "Severe hyperkalaemia",
+  "category": "general-medicine",
+  "permutationOf": null,
+  "permutationLabel": "CKD 4, ACE inhibitor + spironolactone + trimethoprim, ECG changes",
+  "summary": "71-year-old man with CKD 4 and heart failure on ramipril, spironolactone and recent trimethoprim; weakness, HR 46, K 7.2 with peaked T waves and QRS 140 ms.",
+  "tags": [
+    "ckd",
+    "elderly",
+    "do-not-miss",
+    "metabolic"
+  ],
+  "inputs": {
+    "patient": {
+      "ageYears": 71,
+      "sex": "male",
+      "pregnancy": {
+        "status": "not-applicable"
+      },
+      "heightCm": 172,
+      "weightKg": 84
+    },
+    "encounter": {
+      "setting": "emergency",
+      "visitType": "urgentReview",
+      "acuity": "urgent"
+    },
+    "chiefComplaint": "Generalised weakness and slow pulse",
+    "hpi": "Diabetic nephropathy (CKD 4) and heart failure on ramipril and spironolactone. Given trimethoprim by his GP 5 days ago for a urinary infection. Two days of generalised weakness, heavy legs and light-headedness. No chest pain.",
+    "symptoms": [
+      "generalised weakness",
+      "fatigue",
+      "dizziness",
+      "palpitations"
+    ],
+    "negatives": [
+      "chest pain",
+      "syncope",
+      "vomiting"
+    ],
+    "exam": {
+      "general": "Alert, pale. Pulse 46/min regular, BP 118/64, RR 18, temperature 36.7°C, SpO2 96%.",
+      "cardiovascular": "Bradycardic, heart sounds normal, mild ankle oedema. ECG: tall peaked T waves, flattened P waves, QRS 140 ms.",
+      "neuro": "Generalised proximal weakness 4/5, reflexes reduced."
+    },
+    "vitals": [
+      {
+        "minutesAgo": 10,
+        "heartRate": 46,
+        "systolicBp": 118,
+        "diastolicBp": 64,
+        "respiratoryRate": 18,
+        "temperatureC": 36.7,
+        "spo2": 96,
+        "avpu": "A",
+        "onSupplementalO2": false,
+        "glucoseMmol": 6.2,
+        "weightKg": 84
+      }
+    ],
+    "labs": [
+      {
+        "analyte": "potassium",
+        "name": "Potassium",
+        "value": 7.2,
+        "unit": "mmol/L",
+        "minutesAgo": 20
+      },
+      {
+        "analyte": "creatinine",
+        "name": "Creatinine",
+        "value": 312,
+        "unit": "µmol/L",
+        "minutesAgo": 30
+      },
+      {
+        "analyte": "urea",
+        "name": "Urea",
+        "value": 28.4,
+        "unit": "mmol/L",
+        "minutesAgo": 30
+      },
+      {
+        "analyte": "bicarbonate",
+        "name": "Bicarbonate",
+        "value": 17,
+        "unit": "mmol/L",
+        "minutesAgo": 30
+      },
+      {
+        "analyte": "sodium",
+        "name": "Sodium",
+        "value": 134,
+        "unit": "mmol/L",
+        "minutesAgo": 30
+      },
+      {
+        "analyte": "glucose",
+        "name": "Glucose",
+        "value": 6.2,
+        "unit": "mmol/L",
+        "minutesAgo": 30
+      },
+      {
+        "analyte": "haemoglobin",
+        "name": "Haemoglobin",
+        "value": 10.4,
+        "unit": "g/dL",
+        "minutesAgo": 30
+      }
+    ],
+    "imaging": [],
+    "comorbidities": [
+      "Chronic kidney disease stage 4 (diabetic nephropathy)",
+      "Type 2 diabetes mellitus",
+      "Heart failure (EF 35%)"
+    ],
+    "surgicalHistory": [],
+    "medications": [
+      {
+        "drug": "Ramipril",
+        "dose": "10 mg",
+        "frequency": "OD",
+        "indication": "Heart failure"
+      },
+      {
+        "drug": "Spironolactone",
+        "dose": "25 mg",
+        "frequency": "OD",
+        "indication": "Heart failure"
+      },
+      {
+        "drug": "Trimethoprim",
+        "dose": "200 mg",
+        "frequency": "BD",
+        "indication": "UTI (started 5 days ago)"
+      },
+      {
+        "drug": "Bisoprolol",
+        "dose": "2.5 mg",
+        "frequency": "OD",
+        "indication": "Heart failure"
+      },
+      {
+        "drug": "Insulin glargine",
+        "dose": "20 units",
+        "frequency": "ON",
+        "indication": "Type 2 diabetes"
+      }
+    ],
+    "allergies": [],
+    "nkda": true,
+    "socialHistory": "Retired. Non-smoker.",
+    "confirmedDiagnosis": {
+      "name": "Severe hyperkalaemia with ECG changes",
+      "icd10": "E87.5",
+      "assessmentText": "Severe hyperkalaemia (K 7.2) with ECG changes (peaked T, QRS 140 ms, bradycardia 46) on ramipril, spironolactone and trimethoprim with CKD 4."
+    },
+    "platform": {
+      "web": {
+        "ccTemplate": "Other / general surgical",
+        "symptoms": [
+          "generalised weakness",
+          "fatigue",
+          "dizziness",
+          "palpitations"
+        ],
+        "durationDays": 2
+      }
+    }
+  },
+  "expected": {
+    "differential": {
+      "mustNotMiss": [
+        {
+          "id": "mnm-hyperkalaemia",
+          "severity": "critical",
+          "match": [
+            "hyperkal",
+            "potassium"
+          ],
+          "guidelineRefs": [
+            "ukka-hyperk-2023"
+          ]
+        }
+      ]
+    },
+    "safety": {
+      "emergencyLevel": {
+        "id": "level-emergency",
+        "severity": "critical",
+        "atLeast": "emergency",
+        "guidelineRefs": [
+          "ukka-hyperk-2023"
+        ]
+      },
+      "mustAlarm": [
+        {
+          "id": "alarm-hyperkalaemia",
+          "severity": "critical",
+          "match": [
+            "hyperkal",
+            "potassium"
+          ],
+          "guidelineRefs": [
+            "ukka-hyperk-2023"
+          ]
+        }
+      ]
+    },
+    "management": {
+      "mustInclude": [
+        {
+          "id": "mgmt-ecg-monitoring",
+          "severity": "critical",
+          "match": [
+            "ecg",
+            "electrocardiogram",
+            "cardiac monitor"
+          ],
+          "guidelineRefs": [
+            "ukka-hyperk-2023"
+          ],
+          "note": "Graded as management because the web prompt adds this test as a plan line, not an investigation order."
+        },
+        {
+          "id": "mgmt-iv-calcium",
+          "severity": "critical",
+          "match": [
+            "calcium gluconate",
+            "calcium chloride"
+          ],
+          "guidelineRefs": [
+            "ukka-hyperk-2023"
+          ],
+          "note": "ECG changes: IV calcium for membrane stabilisation."
+        },
+        {
+          "id": "mgmt-iv-calcium-dose",
+          "severity": "quality",
+          "match": [
+            "re:calcium gluconate[^.;\\n]{0,20}30 ?ml",
+            "re:30 ?ml[^.;\\n]{0,20}calcium gluconate",
+            "re:calcium chloride[^.;\\n]{0,20}10 ?ml",
+            "re:10 ?ml[^.;\\n]{0,20}calcium chloride"
+          ],
+          "guidelineRefs": [
+            "ukka-hyperk-2023"
+          ],
+          "note": "UKKA 2023: calcium chloride 10% 10 mL or calcium gluconate 10% 30 mL."
+        },
+        {
+          "id": "mgmt-insulin-glucose",
+          "severity": "critical",
+          "match": [
+            "re:insulin[^.;\\n]{0,60}(glucose|dextrose)",
+            "actrapid"
+          ],
+          "guidelineRefs": [
+            "ukka-hyperk-2023"
+          ]
+        },
+        {
+          "id": "mgmt-glucose-monitoring",
+          "severity": "critical",
+          "match": [
+            "re:(monitor|check)[^.;\\n]{0,30}(glucose|bgl|cbg)",
+            "hypoglyc"
+          ],
+          "guidelineRefs": [
+            "ukka-hyperk-2023"
+          ],
+          "note": "Insulin–glucose causes hypoglycaemia, particularly in CKD."
+        },
+        {
+          "id": "mgmt-salbutamol",
+          "severity": "quality",
+          "match": [
+            "salbutamol"
+          ],
+          "guidelineRefs": [
+            "ukka-hyperk-2023"
+          ]
+        },
+        {
+          "id": "mgmt-stop-causative-drugs",
+          "severity": "quality",
+          "match": [
+            "re:(stop|hold|withhold|omit)[^.;\\n]{0,40}(ace|ramipril|spironolactone|arb|trimethoprim|potassium-sparing)"
+          ],
+          "guidelineRefs": [
+            "ukka-hyperk-2023"
+          ]
+        },
+        {
+          "id": "mgmt-renal-referral",
+          "severity": "quality",
+          "match": [
+            "nephrolog",
+            "renal team",
+            "dialysis",
+            "haemodialysis",
+            "renal replacement"
+          ],
+          "guidelineRefs": [
+            "ukka-hyperk-2023"
+          ]
+        }
+      ]
+    }
+  },
+  "guideline": [
+    {
+      "id": "ukka-hyperk-2023",
+      "name": "UK Kidney Association — Clinical practice guideline: treatment of acute hyperkalaemia in adults",
+      "year": 2023,
+      "section": "Severity (mild 5.5–5.9, moderate 6.0–6.4, severe ≥6.5 mmol/L); urgent 12-lead ECG and cardiac monitoring; IV calcium (calcium chloride 10% 10 mL or calcium gluconate 10% 30 mL) for ECG changes; insulin–glucose (10 units soluble insulin with 25 g glucose) with glucose monitoring to prevent hypoglycaemia; nebulised salbutamol as adjunct; stop/withhold drugs that raise potassium; treat the cause; dialysis for refractory hyperkalaemia",
+      "citation": "UK Kidney Association. Clinical Practice Guidelines: Treatment of Acute Hyperkalaemia in Adults. UKKA; 2023 (update of the 2020 Renal Association guideline).",
+      "verified": false
+    }
+  ],
+  "rationale": "UKKA 2023: ECG, IV calcium for ECG changes, insulin–glucose with glucose monitoring, salbutamol, stop contributing drugs, renal input.",
+  "authoring": {
+    "author": "Claude (endocrine / renal / urology / neuro cluster)",
+    "date": "2026-09-25",
+    "notes": "Expectations need surgeon sign-off (reviewedBy). Every citation is verified: false. iOS outcomes not observed (Linux)."
+  }
+}

@@ -1,0 +1,283 @@
+{
+  "schemaVersion": 1,
+  "id": "hyponatraemia-severe-postop-seizure",
+  "condition": "Severe symptomatic hyponatraemia",
+  "category": "general-medicine",
+  "permutationOf": null,
+  "permutationLabel": "Acute post-operative hyponatraemia with seizure",
+  "summary": "34-year-old woman, day 1 after laparoscopic cholecystectomy, 3 L of 5% glucose overnight, vomiting and a generalised seizure; sodium 116 (139 pre-op).",
+  "tags": [
+    "post-operative",
+    "seizure",
+    "do-not-miss",
+    "metabolic"
+  ],
+  "inputs": {
+    "patient": {
+      "ageYears": 34,
+      "sex": "female",
+      "pregnancy": {
+        "status": "not-pregnant"
+      },
+      "heightCm": 163,
+      "weightKg": 60
+    },
+    "encounter": {
+      "setting": "inpatient",
+      "visitType": "wardReview",
+      "acuity": "emergency",
+      "isPostOp": true,
+      "postOpDays": 1
+    },
+    "chiefComplaint": "Seizure and drowsiness on the ward after gallbladder surgery",
+    "hpi": "Day 1 after laparoscopic cholecystectomy. Post-operative nausea overnight; given 3 litres of 5% glucose IV, morphine and ondansetron. This morning headache and repeated vomiting, then a generalised tonic-clonic seizure lasting 3 minutes. Now drowsy. Pre-operative sodium 139.",
+    "symptoms": [
+      "seizure",
+      "headache",
+      "vomiting",
+      "confusion"
+    ],
+    "negatives": [
+      "fever",
+      "head injury",
+      "history of epilepsy"
+    ],
+    "exam": {
+      "general": "Drowsy, responds to voice. Pulse 98/min, BP 138/84, RR 18, temperature 36.9°C, SpO2 95% on air. Euvolaemic.",
+      "abdomen": "Port sites clean, abdomen soft, appropriately tender.",
+      "neuro": "GCS 12, no focal deficit, pupils equal and reactive."
+    },
+    "vitals": [
+      {
+        "minutesAgo": 10,
+        "heartRate": 98,
+        "systolicBp": 138,
+        "diastolicBp": 84,
+        "respiratoryRate": 18,
+        "temperatureC": 36.9,
+        "spo2": 95,
+        "avpu": "V",
+        "onSupplementalO2": false,
+        "glucoseMmol": 6.1,
+        "weightKg": 60
+      }
+    ],
+    "labs": [
+      {
+        "analyte": "sodium",
+        "name": "Sodium",
+        "value": 116,
+        "unit": "mmol/L",
+        "minutesAgo": 10
+      },
+      {
+        "analyte": "potassium",
+        "name": "Potassium",
+        "value": 3.6,
+        "unit": "mmol/L",
+        "minutesAgo": 30
+      },
+      {
+        "analyte": "glucose",
+        "name": "Glucose",
+        "value": 6.1,
+        "unit": "mmol/L",
+        "minutesAgo": 30
+      },
+      {
+        "analyte": "osmolality",
+        "name": "Serum osmolality",
+        "value": 244,
+        "unit": "mOsm/kg",
+        "minutesAgo": 30
+      },
+      {
+        "analyte": "osmolality",
+        "name": "Urine osmolality",
+        "value": 480,
+        "unit": "mOsm/kg",
+        "minutesAgo": 30
+      },
+      {
+        "analyte": "sodium",
+        "name": "Urine sodium",
+        "value": 48,
+        "unit": "mmol/L",
+        "minutesAgo": 30
+      }
+    ],
+    "imaging": [],
+    "comorbidities": [],
+    "surgicalHistory": [
+      "Laparoscopic cholecystectomy yesterday"
+    ],
+    "medications": [
+      {
+        "drug": "Glucose 5% IV",
+        "dose": "125 mL/h",
+        "frequency": "continuous",
+        "indication": "Maintenance fluid"
+      },
+      {
+        "drug": "Morphine",
+        "dose": "5 mg",
+        "frequency": "PRN",
+        "indication": "Analgesia"
+      },
+      {
+        "drug": "Ondansetron",
+        "dose": "4 mg",
+        "frequency": "TDS PRN",
+        "indication": "Nausea"
+      }
+    ],
+    "allergies": [],
+    "nkda": true,
+    "socialHistory": "Hairdresser.",
+    "confirmedDiagnosis": {
+      "name": "Acute severe symptomatic hyponatraemia (post-operative, hypotonic fluids)",
+      "icd10": "E87.1",
+      "assessmentText": "Acute hyponatraemia (Na 116 from 139 in <24 h) with seizure and reduced GCS after hypotonic IV fluids and post-operative ADH release."
+    },
+    "platform": {
+      "web": {
+        "ccTemplate": "Other / general surgical",
+        "symptoms": [
+          "seizure",
+          "headache",
+          "vomiting",
+          "confusion"
+        ],
+        "symptomDetails": {
+          "headache": [
+            "Generalised",
+            "Dull ache",
+            "Nausea / vomiting",
+            "Constant"
+          ]
+        },
+        "durationDays": 0.3
+      }
+    }
+  },
+  "expected": {
+    "differential": {
+      "mustNotMiss": [
+        {
+          "id": "mnm-hyponatraemia",
+          "severity": "critical",
+          "match": [
+            "hyponat",
+            "sodium"
+          ],
+          "guidelineRefs": [
+            "eur-hypona-2014"
+          ]
+        }
+      ]
+    },
+    "safety": {
+      "emergencyLevel": {
+        "id": "level-emergency",
+        "severity": "critical",
+        "atLeast": "emergency",
+        "guidelineRefs": [
+          "eur-hypona-2014"
+        ]
+      },
+      "mustAlarm": [
+        {
+          "id": "alarm-hyponatraemia",
+          "severity": "critical",
+          "match": [
+            "hyponat",
+            "sodium"
+          ],
+          "guidelineRefs": [
+            "eur-hypona-2014"
+          ]
+        }
+      ]
+    },
+    "management": {
+      "mustInclude": [
+        {
+          "id": "mgmt-sodium-recheck",
+          "severity": "quality",
+          "match": [
+            "re:(repeat|recheck|monitor|check)[^.;\\n]{0,30}(sodium|na)",
+            "serum sodium"
+          ],
+          "guidelineRefs": [
+            "eur-hypona-2014"
+          ],
+          "note": "Sodium rechecked after each hypertonic bolus (European 2014)."
+        },
+        {
+          "id": "mgmt-hypertonic-saline",
+          "severity": "critical",
+          "match": [
+            "hypertonic",
+            "3% saline",
+            "3% sodium chloride",
+            "3% nacl"
+          ],
+          "guidelineRefs": [
+            "eur-hypona-2014"
+          ]
+        },
+        {
+          "id": "mgmt-hypertonic-bolus-150",
+          "severity": "quality",
+          "match": [
+            "re:150 ?ml"
+          ],
+          "guidelineRefs": [
+            "eur-hypona-2014"
+          ],
+          "note": "European 2014: 150 mL 3% over 20 min, repeated, target +5 mmol/L."
+        },
+        {
+          "id": "mgmt-correction-limit",
+          "severity": "critical",
+          "match": [
+            "re:10 mmol/l[^;\\n]{0,40}24",
+            "re:max(imum)? 10 mmol",
+            "overcorrect",
+            "osmotic demyelination"
+          ],
+          "guidelineRefs": [
+            "eur-hypona-2014"
+          ]
+        },
+        {
+          "id": "mgmt-stop-hypotonic-fluids",
+          "severity": "critical",
+          "match": [
+            "re:(stop|avoid|discontinu)[^.;\\n]{0,40}(hypotonic|5% (glucose|dextrose)|dextrose 5%|glucose 5%)"
+          ],
+          "guidelineRefs": [
+            "eur-hypona-2014"
+          ],
+          "note": "The cause (hypotonic fluid) must be stopped."
+        }
+      ]
+    }
+  },
+  "guideline": [
+    {
+      "id": "eur-hypona-2014",
+      "name": "European clinical practice guideline on diagnosis and treatment of hyponatraemia (ESE/ESICM/ERBP)",
+      "year": 2014,
+      "section": "Severe symptoms (seizure, vomiting, reduced consciousness): 150 mL 3% hypertonic saline over 20 min, repeated (up to twice) checking sodium, target +5 mmol/L; moderately severe symptoms: single 150 mL 3% infusion; limit the rise to 10 mmol/L in the first 24 h and 8 mmol/L in each subsequent 24 h; hypovolaemic hyponatraemia: restore volume with 0.9% saline or balanced crystalloid; SIADH: fluid restriction first line; stop contributing drugs",
+      "citation": "Spasovski G, Vanholder R, Allolio B, et al. Clinical practice guideline on diagnosis and treatment of hyponatraemia. Eur J Endocrinol. 2014;170:G1–47.",
+      "verified": false
+    }
+  ],
+  "rationale": "Acute hyponatraemia with severe symptoms: bolus hypertonic saline, limit correction, stop hypotonic fluids (European guideline 2014).",
+  "authoring": {
+    "author": "Claude (endocrine / renal / urology / neuro cluster)",
+    "date": "2026-09-25",
+    "notes": "Expectations need surgeon sign-off (reviewedBy). Every citation is verified: false. iOS outcomes not observed (Linux)."
+  }
+}

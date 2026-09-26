@@ -1,0 +1,175 @@
+{
+  "schemaVersion": 1,
+  "id": "screen-aaa-lung-ex-smoker-68",
+  "condition": "AAA and lung cancer screening — man aged 65–75 who has smoked",
+  "category": "vascular",
+  "permutationOf": "screen-crc-average-risk-46",
+  "permutationLabel": "Man aged 68, 30 pack-years, quit 10 years ago",
+  "summary": "68-year-old ex-smoker (30 pack-years, quit 10 years ago) at a wellness visit, no symptoms. USPSTF 2019: one-time ultrasound for AAA; USPSTF 2021: annual low-dose CT chest.",
+  "tags": [
+    "screening",
+    "aaa",
+    "lung",
+    "wellness"
+  ],
+  "inputs": {
+    "patient": {
+      "ageYears": 68,
+      "sex": "male",
+      "heightCm": 175,
+      "weightKg": 80
+    },
+    "encounter": {
+      "setting": "outpatient",
+      "visitType": "wellness",
+      "acuity": "routine"
+    },
+    "chiefComplaint": "Wellness check",
+    "hpi": "Asymptomatic 68-year-old retired mechanic at a wellness visit. Smoked 30 pack-years, quit 10 years ago. Treated hypertension. No abdominal or back pain, no cough or haemoptysis. Colonoscopy 4 years ago normal. Never had an aortic scan or chest CT.",
+    "symptoms": [
+      "annual review"
+    ],
+    "negatives": [
+      "abdominal pain",
+      "back pain",
+      "haemoptysis"
+    ],
+    "exam": {
+      "general": "Well. BP 136/82.",
+      "abdomen": "Soft; aorta not palpable (BMI 26)."
+    },
+    "vitals": [
+      {
+        "minutesAgo": 10,
+        "heartRate": 70,
+        "systolicBp": 136,
+        "diastolicBp": 82,
+        "respiratoryRate": 14,
+        "temperatureC": 36.6,
+        "spo2": 97,
+        "avpu": "A",
+        "onSupplementalO2": false
+      }
+    ],
+    "labs": [],
+    "imaging": [],
+    "comorbidities": [
+      "Hypertension"
+    ],
+    "surgicalHistory": [
+      "Colonoscopy 4 years ago — normal"
+    ],
+    "medications": [
+      {
+        "drug": "Amlodipine",
+        "dose": "10 mg",
+        "frequency": "OD",
+        "indication": "Hypertension"
+      }
+    ],
+    "allergies": [],
+    "nkda": true,
+    "socialHistory": "Retired mechanic. Ex-smoker: 30 pack-years, stopped 10 years ago.",
+    "confirmedDiagnosis": {
+      "name": "Health check — ex-smoker aged 68: AAA and lung screening",
+      "icd10": "Z13.6",
+      "assessmentText": "Asymptomatic ex-smoker, 68. One-time abdominal aortic ultrasound; annual low-dose CT chest (30 pack-years, quit < 15 years)."
+    },
+    "platform": {
+      "web": {
+        "ccTemplate": "Other / general surgical",
+        "symptoms": [
+          "annual review"
+        ],
+        "toxicHabits": [
+          "Ex-smoker (30 pack-years)"
+        ],
+        "durationDays": 0
+      }
+    }
+  },
+  "expected": {
+    "management": {
+      "mustInclude": [
+        {
+          "id": "mgmt-aaa-ultrasound",
+          "severity": "quality",
+          "guidelineRefs": [
+            "uspstf-aaa-2019"
+          ],
+          "note": "USPSTF 2019 grade B: one-time AAA ultrasound for men 65–75 who have ever smoked. Graded as management because the engine emits arranged screening tests as plan lines.",
+          "match": [
+            "re:aort[^\\n]{0,40}(ultrasound|uss|\\bus\\b|scan)",
+            "re:(ultrasound|uss)[^\\n]{0,40}aort",
+            "aaa screen"
+          ],
+          "knownGap": [
+            "ios"
+          ],
+          "knownGapNote": "iOS CI 2026-09-25 (run 36169134350, database mode): no management item matched among 19 (ios.pipeline.actions, ios.radiation.plan, ios.radiation.referral, ios.radiation.followUp, ios.soap.plan)"
+        },
+        {
+          "id": "mgmt-ldct",
+          "severity": "quality",
+          "guidelineRefs": [
+            "uspstf-lung-2021"
+          ],
+          "note": "USPSTF 2021: annual LDCT at 50–80 with ≥ 20 pack-years, quit within 15 years.",
+          "match": [
+            "low-dose ct",
+            "ldct",
+            "low dose ct"
+          ],
+          "knownGap": [
+            "ios"
+          ],
+          "knownGapNote": "iOS CI 2026-09-25 (run 36169134350, database mode): no management item matched among 19 (ios.pipeline.actions, ios.radiation.plan, ios.radiation.referral, ios.radiation.followUp, ios.soap.plan)"
+        }
+      ]
+    },
+    "safety": {
+      "mustNotAlarm": [
+        {
+          "id": "no-emergency-banner",
+          "severity": "quality",
+          "guidelineRefs": [
+            "uspstf-aaa-2019"
+          ],
+          "note": "An asymptomatic screening visit must not raise an \"emergency now\" banner (alarm fatigue; front desk would redirect a well person).",
+          "match": [
+            "emergency now"
+          ]
+        }
+      ]
+    },
+    "pathway": {
+      "id": "pathway-wellness",
+      "severity": "quality",
+      "equals": "wellness"
+    }
+  },
+  "guideline": [
+    {
+      "id": "uspstf-aaa-2019",
+      "name": "USPSTF recommendation statement — screening for abdominal aortic aneurysm",
+      "year": 2019,
+      "section": "Men 65–75 who have ever smoked: one-time ultrasound screening for AAA (grade B)",
+      "citation": "US Preventive Services Task Force. Screening for abdominal aortic aneurysm: US Preventive Services Task Force recommendation statement. JAMA. 2019;322:2211–2218.",
+      "verified": false
+    },
+    {
+      "id": "uspstf-lung-2021",
+      "name": "USPSTF recommendation statement — screening for lung cancer",
+      "year": 2021,
+      "section": "Annual low-dose CT for adults 50–80 with a ≥ 20 pack-year history who currently smoke or quit within the past 15 years (grade B)",
+      "citation": "US Preventive Services Task Force. Screening for lung cancer: US Preventive Services Task Force recommendation statement. JAMA. 2021;325:962–970.",
+      "verified": false
+    }
+  ],
+  "rationale": "Men 65–75 who have ever smoked benefit from a single aortic ultrasound; the same smoking history qualifies for lung cancer screening. Both are one-line prompts that are easy to miss in a surgical clinic.",
+  "authoring": {
+    "author": "Claude (prevention/screening, obstetric-gynaecological mimics and paediatric surgery cluster)",
+    "date": "2026-09-25",
+    "notes": "Expectations need surgeon sign-off (reviewedBy). Every citation is verified: false. iOS outcomes are unverified (not run on Linux); triage after the first CI run."
+  }
+}

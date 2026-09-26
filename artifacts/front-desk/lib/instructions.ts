@@ -6,6 +6,10 @@
  * Clinical decisions remain with Dr Kabiye and the clinical team.
  */
 
+// Relative import (not '@/lib/…') so scripts/src/lint-patient-instructions.ts
+// can load this file under tsx without the Next.js path alias.
+import { APPOINTMENT_TYPES, isAppointmentTypeKey, type AppointmentTypeKey } from './scheduling';
+
 export interface ProcedureInstructions {
   displayName:    string;
   location:       string;
@@ -27,6 +31,37 @@ const URGENT_SIGNS_GENERAL = [
   'Difficulty breathing or chest pain',
 ];
 
+// Hazard H-10 / CLAUDE.md Tone rule: these instructions are emailed to the
+// patient automatically on booking (lib/email.ts), so they carry logistics
+// only — never an instruction to take, hold, stop, skip or adjust a medicine.
+// Patients on insulin, diabetes medicines or blood thinners are told to call
+// the clinic for individual instructions. Wording approved by Dr Kabiye and
+// matched to the api-server prep templates (artifacts/api-server/src/lib/sms.ts).
+// Enforced by `pnpm --filter @workspace/scripts run lint:patient-instructions`.
+// Any wording change here needs the clinical owner's approval.
+const MEDICATIONS_CALL =
+  'MEDICATIONS: If you take insulin, blood thinners or diabetes medicines, please call the clinic before your procedure for instructions. If you have any questions about your other medicines, please call us.';
+
+// Surgeon decision 2026-09-25 (docs/clinical-validation/SURGEON-DECISIONS.md): patients MAY be
+// told to stop HERBAL products 2 weeks before an operation or a procedure with sedation or an
+// anaesthetic, with the reason and the circumstances. Prescribed medicines are unchanged (H-10:
+// never take / hold / stop). Same words as the api-server prep templates (lib/sms.ts) and the
+// dashboard (supplement-catalogue.ts HERBAL_PREOP_PATIENT_TEXT); lint:patient-instructions pins
+// all three. Not added to minor procedures under local anaesthetic or the pre-op assessment
+// visit (pending sign-off).
+const HERBAL_SUPPLEMENTS_STOP =
+  "Herbal remedies, bush teas and supplements: please stop them 2 weeks before your operation or procedure. This includes garlic tablets, ginkgo, ginseng, ginger supplements, turmeric (curcumin), St John's wort, kava, echinacea, ashwagandha, ephedra (ma huang) and bush teas or herbal mixtures (tablets, capsules, extracts or strong teas — normal amounts in food are fine). Why: some of these increase bleeding, change how the anaesthetic or sedation works, raise blood pressure or blood sugar problems, or stop your other medicines working properly. When: this applies to planned operations and to procedures with sedation or an anaesthetic, including gastroscopy, colonoscopy and ERCP. If your operation is less than 2 weeks away, stop them now and tell the team what you take. If you take valerian every night, do not stop it suddenly — call the clinic. This does not apply to medicines prescribed by a doctor: do not stop any prescribed medicine unless the clinic tells you to. Please bring all your herbs, teas and supplements (or their labels) to your appointment.";
+
+const BLOOD_THINNERS_CALL =
+  'BLOOD THINNERS: If you take blood thinners, please call the clinic before your appointment for instructions.';
+
+// Standard pre-procedure fasting (ASA 2023 / ESAIC) for general anaesthesia,
+// sedation, OGD and ERCP — the same 6 h food / 2 h clear-fluid rule as the
+// api-server templates. Not used for colonoscopy (bowel prep needs fluid),
+// minor procedures, or the diabetic foot clinic.
+const FASTING_STANDARD =
+  'Nothing to eat for 6 hours and nothing to drink for 2 hours before your appointment time (clear fluids such as water are fine until then).';
+
 const BRING_STANDARD = [
   'Valid photo ID (passport or national ID)',
   'Health insurance card (if applicable)',
@@ -34,7 +69,33 @@ const BRING_STANDARD = [
   'Any relevant prior test results, imaging, or hospital records',
 ];
 
-export const PROCEDURE_INSTRUCTIONS: Record<string, ProcedureInstructions> = {
+const PROCEDURE_INSTRUCTIONS_DEFS = {
+
+  // ── NEUTRAL (no procedure-specific instructions) ───────────────────────────
+  // Sent for booking types mapped to `null` in APPOINTMENT_INSTRUCTIONS below
+  // (and for unknown types) — logistics only, no fasting or preparation rules.
+  // displayName is replaced with the booking type's own label at lookup time.
+
+  general_appointment: {
+    displayName: 'Appointment',
+    location:    'As shown in your appointment details',
+    duration:    'As advised by the clinic',
+    beforeVisit: [
+      'Our team will contact you with any preparation needed for this appointment.',
+      'If you are not sure whether you need to prepare (for example, whether you need to fast), please call the clinic before your appointment.',
+    ],
+    onTheDay: [
+      'Arrive 10 minutes early for registration.',
+      'Bring your photo ID and insurance card.',
+    ],
+    afterCare: null,
+    whatToBring: [
+      ...BRING_STANDARD,
+    ],
+    urgentSigns: [
+      'If your condition worsens before your appointment — do not wait, attend the nearest emergency department or call Tapion Hospital: 758-284-0557 / 758-720-7111',
+    ],
+  },
 
   // ── CONSULTATIONS ──────────────────────────────────────────────────────────
 
@@ -111,21 +172,42 @@ export const PROCEDURE_INSTRUCTIONS: Record<string, ProcedureInstructions> = {
 
   // ── ENDOSCOPY ──────────────────────────────────────────────────────────────
 
+  // Dr Kabiye's decision: an `ercp_workup` booking is the ERCP PROCEDURE
+  // itself, at Tapion Hospital, under general anaesthesia (ERCP is currently
+  // done under GA, in hospital). Standard GA fasting (6 h food / 2 h clear
+  // fluids), a responsible adult to bring the patient, take them home and stay
+  // 24 h, and the call-the-clinic lines for blood thinners and other medicines.
+  // No sedation wording. Matches the api-server 48 h reminder (sms.ts
+  // ercp_workup), the dashboard staff text (BookingInboxTab.tsx) and the slot
+  // engine (lib/triage-engine SLOT_RULES.ercp_workup, Tapion).
   ercp_workup: {
-    displayName: 'ERCP Work-up Consultation',
-    location:    'Rodney Bay (Providence Building)',
-    duration:    '30 minutes',
+    displayName: 'ERCP / Biliary Investigation',
+    location:    'Tapion Hospital (La Toc, Castries)',
+    duration:    '60–90 minutes (plus recovery time)',
     beforeVisit: [
-      'No special preparation is required for the work-up consultation.',
+      'Your ERCP is done under general anaesthesia at Tapion Hospital.',
+      FASTING_STANDARD,
+      BLOOD_THINNERS_CALL,
+      MEDICATIONS_CALL,
+      HERBAL_SUPPLEMENTS_STOP,
+      'A responsible adult must bring you to Tapion Hospital, take you home, and stay with you for 24 hours after your procedure — you cannot drive after a general anaesthetic.',
       'Gather all relevant imaging (ultrasound, CT, MRCP) and blood test results (especially liver function tests — LFTs and bilirubin).',
       'Make a note of all medications, particularly blood-thinning agents (warfarin, rivaroxaban, apixaban, clopidogrel, aspirin).',
       'Note any prior procedures on the bile duct, gallbladder, or pancreas.',
     ],
     onTheDay: [
-      'Arrive 10 minutes early.',
-      'You may eat and drink normally before this consultation.',
+      'Arrive at Tapion Hospital at the time given.',
+      'Remove all jewellery, nail polish, and contact lenses.',
+      'Wear loose, comfortable clothing.',
+      'Bring your responsible adult, who will take you home and stay with you for 24 hours.',
     ],
-    afterCare: null,
+    afterCare: [
+      'Rest at home for the remainder of the procedure day.',
+      'Do not drive or operate machinery for 24 hours after a general anaesthetic.',
+      'You may have a mild sore throat — this is normal and will settle.',
+      'You will be given discharge instructions by the nursing team at Tapion Hospital.',
+      'Attend your follow-up appointment as scheduled.',
+    ],
     whatToBring: [
       ...BRING_STANDARD,
       'All abdominal imaging (ultrasound, CT, MRCP scans) — digital or film',
@@ -143,22 +225,24 @@ export const PROCEDURE_INSTRUCTIONS: Record<string, ProcedureInstructions> = {
     location:    'Tapion Hospital (La Toc, Castries)',
     duration:    '60–90 minutes (plus recovery time)',
     beforeVisit: [
-      'Nil by mouth: no food or drink (including water) from midnight the night before your procedure.',
-      'Blood thinners (warfarin, rivaroxaban, apixaban, clopidogrel, aspirin): stop as specifically instructed by Dr Kabiye. Do not stop without instruction.',
-      'Diabetic patients: adjust your insulin or oral medications as directed. Do not skip meals the day before. On the procedure day, hold your morning diabetes medications unless told otherwise.',
-      'Arrange for a responsible adult to drive you home — sedation will be given and you cannot drive or operate machinery for 24 hours after.',
+      'Your ERCP is done under general anaesthesia at Tapion Hospital.',
+      FASTING_STANDARD,
+      BLOOD_THINNERS_CALL,
+      MEDICATIONS_CALL,
+      HERBAL_SUPPLEMENTS_STOP,
+      'A responsible adult must bring you to Tapion Hospital, take you home, and stay with you for 24 hours after your procedure — you cannot drive or operate machinery for 24 hours after a general anaesthetic.',
       'Plan for a full day at the hospital (arrival, preparation, procedure, and recovery).',
       'You may be required to stay overnight — arrange accordingly.',
     ],
     onTheDay: [
-      'Arrive at the time given by Tapion Hospital admissions.',
+      'Arrive at Tapion Hospital at the time given.',
       'Remove all jewellery, nail polish, and contact lenses.',
       'Wear loose, comfortable clothing.',
-      'Bring a responsible adult who will stay until you are discharged.',
+      'Bring a responsible adult who will stay until you are discharged, take you home, and stay with you for 24 hours.',
     ],
     afterCare: [
       'Rest at home for the remainder of the procedure day.',
-      'Do not drive or operate machinery for 24 hours after sedation.',
+      'Do not drive or operate machinery for 24 hours after a general anaesthetic.',
       'You may have a mild sore throat — this is normal and will settle.',
       'Light diet on the day of the procedure; progress to normal diet as tolerated.',
       'You will be given discharge instructions by the nursing team at Tapion Hospital.',
@@ -188,9 +272,9 @@ export const PROCEDURE_INSTRUCTIONS: Record<string, ProcedureInstructions> = {
       '1 day before: Clear liquids only — water, apple juice (no pulp), clear broth, plain jelly (no red or purple colours). No solid food at all.',
       'Bowel preparation medication: take exactly as prescribed and at the times specified. This is essential for a successful examination.',
       'Stay close to a toilet once you start the bowel preparation.',
-      'After midnight on the day of procedure: nil by mouth (no food or drink including water). Small sips of water to take essential medications only — check with Dr Kabiye.',
-      'Blood thinners: stop as instructed by Dr Kabiye.',
-      'Diabetic patients: adjust insulin and medications as directed.',
+      'On the day of your procedure: finish your bowel prep as directed. Clear fluids only, then nothing to drink for 2 hours before your appointment time.',
+      MEDICATIONS_CALL,
+      HERBAL_SUPPLEMENTS_STOP,
       'Arrange for a responsible adult to drive you home — you cannot drive after sedation.',
     ],
     onTheDay: [
@@ -226,12 +310,10 @@ export const PROCEDURE_INSTRUCTIONS: Record<string, ProcedureInstructions> = {
     location:    'Tapion Hospital (La Toc, Castries)',
     duration:    '15–30 minutes (plus preparation and recovery)',
     beforeVisit: [
-      'Nil by mouth: no food or milk for 6 hours before the procedure.',
-      'Clear fluids (water only) permitted up to 2 hours before the procedure.',
-      'Continue your regular medications with a small sip of water unless told otherwise.',
+      FASTING_STANDARD,
+      MEDICATIONS_CALL,
+      HERBAL_SUPPLEMENTS_STOP,
       'If you take medication for acid reflux (proton pump inhibitors), check with Dr Kabiye whether to pause them.',
-      'Diabetic patients: adjust medications as directed.',
-      'Blood thinners: stop as instructed.',
       'If sedation is planned: arrange for a responsible adult to drive you home.',
       'If throat spray only (no sedation): you may be able to drive yourself — confirm with the team.',
     ],
@@ -257,6 +339,44 @@ export const PROCEDURE_INSTRUCTIONS: Record<string, ProcedureInstructions> = {
       'Difficulty swallowing that is new or worsening',
       'High fever',
       'Contact Tapion Hospital immediately: 758-284-0557 / 758-720-7111',
+    ],
+  },
+
+  // Dr Kabiye's decision: light breakfast on the morning of the procedure (no
+  // 6-hour fast). Matches the api-server `flexi_sig` template (sms.ts) and the
+  // dashboard staff summary (BookingInboxTab.tsx).
+  flexi_sig: {
+    displayName: 'Flexible Sigmoidoscopy',
+    location:    'Tapion Hospital (La Toc, Castries)',
+    duration:    '15–30 minutes (plus preparation and recovery time)',
+    beforeVisit: [
+      'Follow the bowel preparation instructions provided (usually a single enema or mini-prep on the morning of the procedure).',
+      'Light breakfast only on the morning of the procedure (toast, tea — avoid heavy or greasy food).',
+      MEDICATIONS_CALL,
+      HERBAL_SUPPLEMENTS_STOP,
+      'You may not need sedation — ask us about your options.',
+      'If sedation is planned: arrange for a responsible adult to drive you home — you cannot drive after sedation.',
+      'If you develop fever, a new cough, vomiting, or feel unwell in the days before your procedure, call us — we may need to reschedule.',
+    ],
+    onTheDay: [
+      'Arrive at the time stated.',
+      'Wear loose, comfortable clothing — you will be asked to change into a hospital gown.',
+      'Remove all jewellery, piercings, watches, and hair accessories before arrival.',
+    ],
+    afterCare: [
+      'If sedation was given: rest for the remainder of the day; do not drive or make important decisions for 24 hours.',
+      'You may have mild bloating or wind — this is normal and will pass.',
+      'Results will be discussed at your follow-up appointment or by phone.',
+    ],
+    whatToBring: [
+      ...BRING_STANDARD,
+      'Responsible adult if sedation is planned',
+    ],
+    urgentSigns: [
+      'Significant rectal bleeding (more than a small amount of streaking)',
+      'Severe abdominal pain or distension',
+      'High fever above 38.5 °C',
+      'Go to the nearest emergency department or call Tapion Hospital: 758-284-0557 / 758-720-7111',
     ],
   },
 
@@ -288,6 +408,35 @@ export const PROCEDURE_INSTRUCTIONS: Record<string, ProcedureInstructions> = {
       'Rapidly enlarging breast lump or swelling',
       'Breast redness, warmth, and fever (may indicate infection) — contact us promptly',
       'Nipple discharge that is bloody',
+    ],
+  },
+
+  // ── THYROID CLINIC (consultation — NOT thyroid surgery, see thyroid_surgery) ─
+
+  thyroid_clinic: {
+    displayName: 'Thyroid Clinic',
+    location:    'Rodney Bay (Providence Building)',
+    duration:    '45 minutes',
+    beforeVisit: [
+      'No special preparation is required for the clinic. You may eat and drink normally.',
+      'Collect and bring any thyroid blood test results, neck ultrasound or scan reports, and biopsy reports you have.',
+      'Note when you first noticed any neck swelling or other symptoms and how they have changed.',
+      'Note all medications you are currently taking, including vitamins and supplements.',
+    ],
+    onTheDay: [
+      'Arrive at least 10 minutes early for registration.',
+      'Wear a top with an open or low neckline so your neck can be examined easily.',
+      'You are welcome to bring a family member or trusted person for support.',
+    ],
+    afterCare: null,
+    whatToBring: [
+      ...BRING_STANDARD,
+      'Any thyroid blood test results',
+      'Any neck ultrasound, scan, or biopsy reports',
+      'Referral letter from your GP or specialist (if applicable)',
+    ],
+    urgentSigns: [
+      'Difficulty breathing or swallowing, or rapidly increasing neck swelling — go to the nearest emergency department or call Tapion Hospital: 758-284-0557 / 758-720-7111',
     ],
   },
 
@@ -350,7 +499,42 @@ export const PROCEDURE_INSTRUCTIONS: Record<string, ProcedureInstructions> = {
     ],
   },
 
-  // ── GENERAL ELECTIVE SURGERY (used for pre-op instructions) ───────────────
+  // ── PRE-OPERATIVE ASSESSMENT (clinic visit before an operation) ───────────
+  // Dr Kabiye's decision: the `pre_op` booking type is the assessment visit,
+  // not the operation, so there is no fasting here. Matches the api-server
+  // `pre_op` template (sms.ts); the day-of-surgery fasting / shower / escort
+  // text lives under the api-server `surgery_theatre` key instead.
+
+  pre_op_assessment: {
+    displayName: 'Pre-operative Assessment',
+    location:    'Rodney Bay (Providence Building)',
+    duration:    '45 minutes',
+    beforeVisit: [
+      'This is a check-up visit before your operation, not the operation itself. No fasting is needed for this visit unless the clinic has told you otherwise.',
+      'Write down any problems you or your family have had with anaesthetics in the past.',
+      'Note any medical conditions you have (for example diabetes, heart disease, or asthma) and any allergies.',
+      'Note all medications you are currently taking, including vitamins and supplements — your medicines will be reviewed at this visit.',
+      'Your instructions for the day of your operation will be given to you separately.',
+    ],
+    onTheDay: [
+      'Arrive 10 minutes early for registration.',
+      'Wear loose, comfortable clothing.',
+      'You are welcome to bring a family member or trusted person for support.',
+    ],
+    afterCare: null,
+    whatToBring: [
+      ...BRING_STANDARD,
+      'All current medications in their original packaging',
+      'Any letter or information you have about your planned operation',
+      'Results of any blood tests, ECG, or scans done for your operation',
+    ],
+    urgentSigns: [
+      'If you develop any illness (fever, cough, cold) in the days before your operation, call us — your operation may need to be postponed for your safety.',
+      'Sudden worsening of your condition before your operation — go to the nearest emergency department or call Tapion Hospital: 758-284-0557 / 758-720-7111',
+    ],
+  },
+
+  // ── GENERAL ELECTIVE SURGERY (staff-scheduled surgery, day of operation) ──
 
   elective_surgery: {
     displayName: 'Elective Surgery',
@@ -358,9 +542,9 @@ export const PROCEDURE_INSTRUCTIONS: Record<string, ProcedureInstructions> = {
     duration:    'As per surgical team instructions',
     beforeVisit: [
       'Pre-operative assessment: you will be seen by the team before your surgery date to review your fitness for anaesthesia.',
-      'Nil by mouth: no food for 6 hours before surgery; no clear fluids for 2 hours before.',
-      'Blood thinners: stop exactly as instructed by Dr Kabiye. Do not stop without being told to do so.',
-      'Diabetic medications: hold morning insulin/tablets on the day of surgery unless instructed otherwise.',
+      FASTING_STANDARD,
+      MEDICATIONS_CALL,
+      HERBAL_SUPPLEMENTS_STOP,
       'Shower with soap or antiseptic wash (e.g. Dettol or Savlon) the evening before and the morning of surgery.',
       'Remove nail polish (fingers and toes), jewellery, piercings, and contact lenses before arriving.',
       'Do not apply creams, lotions, or deodorant to the surgical site on the day.',
@@ -397,8 +581,9 @@ export const PROCEDURE_INSTRUCTIONS: Record<string, ProcedureInstructions> = {
     duration:    '45–90 minutes',
     beforeVisit: [
       'Pre-operative assessment required before your surgery date.',
-      'Nil by mouth from midnight the night before surgery.',
-      'Stop blood-thinning medications as directed by Dr Kabiye.',
+      FASTING_STANDARD,
+      MEDICATIONS_CALL,
+      HERBAL_SUPPLEMENTS_STOP,
       'Shower with antiseptic wash the evening before and morning of surgery.',
       'Remove jewellery, nail polish, and contact lenses.',
       'Arrange transport — you cannot drive after general anaesthesia.',
@@ -435,8 +620,9 @@ export const PROCEDURE_INSTRUCTIONS: Record<string, ProcedureInstructions> = {
     beforeVisit: [
       'Same preparation as for elective surgery above.',
       'Pre-operative assessment required.',
-      'Nil by mouth from midnight.',
-      'Stop blood thinners as directed.',
+      FASTING_STANDARD,
+      MEDICATIONS_CALL,
+      HERBAL_SUPPLEMENTS_STOP,
       'Arrange transport — cannot drive after anaesthesia.',
     ],
     onTheDay: [
@@ -472,8 +658,9 @@ export const PROCEDURE_INSTRUCTIONS: Record<string, ProcedureInstructions> = {
     duration:    '30–60 minutes',
     beforeVisit: [
       'Bowel preparation: as prescribed by Dr Kabiye — follow timing instructions exactly.',
-      'Nil by mouth from midnight.',
-      'Stop blood-thinning medications as instructed.',
+      FASTING_STANDARD,
+      MEDICATIONS_CALL,
+      HERBAL_SUPPLEMENTS_STOP,
       'Arrange transport.',
     ],
     onTheDay: [
@@ -504,14 +691,18 @@ export const PROCEDURE_INSTRUCTIONS: Record<string, ProcedureInstructions> = {
 
   // ── THYROID SURGERY ────────────────────────────────────────────────────────
 
-  thyroid: {
+  // Renamed from `thyroid`: that key collided with the `thyroid` booking type
+  // (the Thyroid CLINIC, a consultation), so clinic patients were emailed
+  // fasting and surgical instructions.
+  thyroid_surgery: {
     displayName: 'Thyroid Surgery',
     location:    'Tapion Hospital (La Toc, Castries)',
     duration:    '90–180 minutes',
     beforeVisit: [
       'Pre-operative assessment including blood tests (thyroid function, calcium levels) and ENT vocal cord review.',
-      'Nil by mouth from midnight.',
-      'Stop blood thinners and thyroid-affecting medications as directed.',
+      FASTING_STANDARD,
+      MEDICATIONS_CALL,
+      HERBAL_SUPPLEMENTS_STOP,
       'Arrange transport.',
     ],
     onTheDay: [
@@ -541,6 +732,34 @@ export const PROCEDURE_INSTRUCTIONS: Record<string, ProcedureInstructions> = {
     ],
   },
 
+  // ── FASTING BLOOD TEST (staff-booked lab visit — NOT colonoscopy prep) ────
+  // Dr Kabiye's decision: `lab_fasting` gets fasting-bloods wording (8–10 h,
+  // plain water allowed, insulin / diabetes medicines → call the clinic).
+  // Other lab booking types stay on the neutral set. Matches the api-server
+  // `lab_fasting` template (sms.ts).
+
+  lab_fasting: {
+    displayName: 'Fasting Blood Test',
+    location:    'Rodney Bay (Providence Building)',
+    duration:    'As advised by the clinic',
+    beforeVisit: [
+      'FASTING BLOOD TEST: Nothing to eat for 8–10 hours before your blood test. You may drink plain water. Please call the clinic if you take insulin or diabetes medicines, for instructions before fasting.',
+    ],
+    onTheDay: [
+      'Arrive at the time given.',
+      'Bring your photo ID and your blood test request form.',
+    ],
+    afterCare: null,
+    whatToBring: [
+      'Valid photo ID (passport or national ID)',
+      'Health insurance card (if applicable)',
+      'Your blood test request form',
+    ],
+    urgentSigns: [
+      'Medical emergency — call 911 or go to the nearest emergency department or Tapion Hospital: 758-284-0557 / 758-720-7111',
+    ],
+  },
+
   // ── MINOR PROCEDURES (lipoma, cyst, skin lesions) ─────────────────────────
 
   minor_procedure: {
@@ -548,8 +767,9 @@ export const PROCEDURE_INSTRUCTIONS: Record<string, ProcedureInstructions> = {
     location:    'Rodney Bay (Providence Building) or Tapion Hospital',
     duration:    '15–45 minutes',
     beforeVisit: [
-      'No special fasting is required for most minor procedures under local anaesthesia.',
-      'If a general anaesthetic is planned, nil by mouth instructions will be given separately.',
+      'No fasting is needed. Please eat a light meal before your appointment.',
+      'If you have been told you will have a general anaesthetic, the clinic will give you separate instructions.',
+      MEDICATIONS_CALL,
       'Do not shave or apply cream to the area yourself.',
     ],
     onTheDay: [
@@ -572,24 +792,87 @@ export const PROCEDURE_INSTRUCTIONS: Record<string, ProcedureInstructions> = {
       'High fever',
     ],
   },
-};
+} satisfies Record<string, ProcedureInstructions>;
+
+export type InstructionKey = keyof typeof PROCEDURE_INSTRUCTIONS_DEFS;
+
+export const PROCEDURE_INSTRUCTIONS: Readonly<Record<InstructionKey, ProcedureInstructions>> =
+  PROCEDURE_INSTRUCTIONS_DEFS;
 
 /**
- * Returns the instructions for a given appointment type.
- * Falls back to new_consult if the type is not found.
+ * Which instruction set is emailed for each bookable appointment type.
+ *
+ * Booking-type keys and instruction keys are separate namespaces: never look
+ * an instruction set up by the raw booking type. Doing so previously sent the
+ * New Consultation text for OGD, flexi-sig and pre-op bookings (no entry of
+ * that name) and thyroid SURGERY text — including fasting — to Thyroid CLINIC
+ * patients (same key).
+ *
+ * `null` = no procedure-specific instructions; the neutral
+ * `general_appointment` set is sent under the booking type's own label.
+ *
+ * Typed as a Record over AppointmentTypeKey, so adding a booking type to
+ * APPOINTMENT_TYPES without choosing its instructions here fails typecheck.
+ * `pnpm --filter @workspace/scripts run lint:patient-instructions` checks the
+ * same at runtime.
+ *
+ * Not reachable from any booking type (kept for staff-scheduled surgery and
+ * procedures, looked up by instruction key): ercp, elective_surgery,
+ * hernia_repair, cholecystectomy, colorectal, thyroid_surgery, minor_procedure.
  */
-export function getInstructions(appointmentType: string): ProcedureInstructions {
-  return (
-    PROCEDURE_INSTRUCTIONS[appointmentType] ??
-    PROCEDURE_INSTRUCTIONS['new_consult']
-  );
+export const APPOINTMENT_INSTRUCTIONS: Readonly<Record<AppointmentTypeKey, InstructionKey | null>> = {
+  new_consult:               'new_consult',
+  follow_up:                 'follow_up',
+  telephone:                 'telephone',
+  ogd:                       'gastroscopy',
+  colonoscopy:               'colonoscopy',
+  ercp_workup:               'ercp_workup',
+  flexi_sig:                 'flexi_sig',
+  breast:                    'breast',
+  thyroid:                   'thyroid_clinic',
+  diabetic_foot:             'diabetic_foot',
+  pre_op:                    'pre_op_assessment',
+  post_op:                   'post_op',
+  // Fasting bloods: Dr Kabiye's 8–10 h fasting-bloods wording.
+  lab_fasting:               'lab_fasting',
+  // Anaesthesia pre-assessment and the other lab visits have no approved
+  // patient instruction set — send the neutral set and let staff give specifics.
+  anaesthesia_preassessment: null,
+  lab_collection:            null,
+  lab_urine:                 null,
+  lab_histology:             null,
+};
+
+function isInstructionKey(key: string): key is InstructionKey {
+  return Object.prototype.hasOwnProperty.call(PROCEDURE_INSTRUCTIONS, key);
+}
+
+/**
+ * Returns the patient instructions for a booking/appointment type.
+ *
+ *  1. A bookable type (APPOINTMENT_TYPES key) goes through
+ *     APPOINTMENT_INSTRUCTIONS; a `null` mapping gives the neutral set
+ *     labelled with the booking type's name.
+ *  2. Otherwise, a string that is itself an instruction key (e.g. `ercp`,
+ *     `hernia_repair` for staff-scheduled surgery) gets that set.
+ *  3. Anything else gets the neutral set — never another type's preparation.
+ */
+export function getInstructionsForAppointment(appointmentType: string): ProcedureInstructions {
+  if (isAppointmentTypeKey(appointmentType)) {
+    const key = APPOINTMENT_INSTRUCTIONS[appointmentType];
+    if (key) return PROCEDURE_INSTRUCTIONS[key];
+    return { ...PROCEDURE_INSTRUCTIONS.general_appointment, displayName: APPOINTMENT_TYPES[appointmentType].label };
+  }
+  if (isInstructionKey(appointmentType)) return PROCEDURE_INSTRUCTIONS[appointmentType];
+  console.warn(`[instructions] No instruction mapping for appointment type "${appointmentType}" — sending neutral instructions`);
+  return PROCEDURE_INSTRUCTIONS.general_appointment;
 }
 
 /**
  * Returns a plain-text version of instructions for SMS / short-form WhatsApp.
  */
 export function shortInstructions(appointmentType: string): string {
-  const inst = getInstructions(appointmentType);
+  const inst = getInstructionsForAppointment(appointmentType);
   const key  = inst.beforeVisit[0] ?? 'No special preparation required.';
   return `Preparation: ${key} What to bring: ${inst.whatToBring.slice(0, 2).join('; ')}. Questions? Call 758-284-0557.`;
 }

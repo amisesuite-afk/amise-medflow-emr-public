@@ -1,0 +1,279 @@
+{
+  "schemaVersion": 1,
+  "id": "crc-rectal-mass-fit-negative",
+  "condition": "Rectal cancer — palpable rectal mass with a negative FIT",
+  "category": "colorectal",
+  "permutationOf": "crc-cibh-fit-positive-older",
+  "permutationLabel": "FIT < 10 but rectal mass on DRE",
+  "summary": "71-year-old man with tenesmus and a hard irregular rectal mass 6 cm from the anal verge; FIT 6 µg Hb/g. A rectal mass is referred regardless of the FIT (BSG/ACPGBI 2022); MRI pelvis for local staging.",
+  "tags": [
+    "crc",
+    "rectal-mass",
+    "fit-negative",
+    "false-reassurance"
+  ],
+  "inputs": {
+    "patient": {
+      "ageYears": 71,
+      "sex": "male",
+      "pregnancy": {
+        "status": "not-applicable"
+      },
+      "heightCm": 169,
+      "weightKg": 72
+    },
+    "encounter": {
+      "setting": "outpatient",
+      "visitType": "newConsult",
+      "acuity": "priority"
+    },
+    "chiefComplaint": "Feeling of incomplete emptying of the bowel",
+    "hpi": "Two months of feeling he has not finished after opening his bowels, going 3–4 times each morning. Occasional mucus. No visible blood. Weight steady. GP FIT 6 µg Hb/g, reported as negative. Hypertension.",
+    "socrates": {
+      "onset": [
+        "1–6 months ago"
+      ],
+      "site": [
+        "Rectum"
+      ],
+      "associations": [
+        "Tenesmus",
+        "Mucus discharge"
+      ],
+      "timing": [
+        "Constant"
+      ],
+      "severity": [
+        "Mild (1–3/10)"
+      ]
+    },
+    "symptoms": [
+      "tenesmus",
+      "incomplete evacuation",
+      "mucus in stool"
+    ],
+    "negatives": [
+      "rectal bleeding",
+      "weight loss"
+    ],
+    "exam": {
+      "general": "Well. HR 74, BP 142/84.",
+      "abdomen": "Soft, non-tender, no mass. PR: hard, irregular, fixed rectal mass on the anterior wall, lower edge 6 cm from the anal verge; no blood on the glove.",
+      "other": "Rigid sigmoidoscopy: ulcerated tumour at 6–10 cm."
+    },
+    "vitals": [
+      {
+        "minutesAgo": 20,
+        "heartRate": 74,
+        "systolicBp": 142,
+        "diastolicBp": 84,
+        "respiratoryRate": 14,
+        "temperatureC": 36.5,
+        "spo2": 98,
+        "avpu": "A",
+        "onSupplementalO2": false
+      }
+    ],
+    "labs": [
+      {
+        "analyte": "haemoglobin",
+        "name": "Haemoglobin",
+        "value": 13.1,
+        "unit": "g/dL",
+        "minutesAgo": 60
+      },
+      {
+        "analyte": "mcv",
+        "name": "MCV",
+        "value": 85,
+        "unit": "fL",
+        "minutesAgo": 60
+      },
+      {
+        "analyte": "ferritin",
+        "name": "Ferritin",
+        "value": 60,
+        "unit": "µg/L",
+        "minutesAgo": 60
+      },
+      {
+        "analyte": "fit",
+        "name": "FIT (faecal immunochemical test)",
+        "value": 6,
+        "unit": "µg Hb/g faeces",
+        "minutesAgo": 60
+      },
+      {
+        "analyte": "cea",
+        "name": "CEA",
+        "value": 7.8,
+        "unit": "µg/L",
+        "minutesAgo": 60
+      }
+    ],
+    "comorbidities": [
+      "Hypertension"
+    ],
+    "surgicalHistory": [],
+    "medications": [
+      {
+        "drug": "Ramipril",
+        "dose": "5 mg",
+        "frequency": "OD",
+        "indication": "Hypertension"
+      }
+    ],
+    "allergies": [],
+    "nkda": true,
+    "socialHistory": "Retired farmer. Smoker, 15 a day.",
+    "confirmedDiagnosis": {
+      "name": "Rectal mass — suspected rectal cancer",
+      "icd10": "C20",
+      "paneDiseaseId": "rectal_carcinoma",
+      "assessmentText": "Hard, fixed rectal mass at 6 cm on DRE with a negative FIT. Suspected rectal cancer: biopsy, MRI pelvis, CT chest/abdomen/pelvis, colonoscopy; colorectal MDT."
+    },
+    "platform": {
+      "web": {
+        "ccTemplate": "Change in bowel habit",
+        "symptoms": [
+          "tenesmus",
+          "incomplete evacuation",
+          "mucus in stool"
+        ],
+        "examFindings": {
+          "abdomen": [
+            "Soft"
+          ],
+          "anal": [
+            "Mass palpable"
+          ]
+        },
+        "paneAnswers": {
+          "tenesmus": true,
+          "mucus_pr": true,
+          "pr_bleeding": false
+        },
+        "durationDays": 60,
+        "painScore": 1
+      }
+    }
+  },
+  "expected": {
+    "differential": {
+      "mustRankTopK": [
+        {
+          "id": "dx-rectal-cancer-top3",
+          "severity": "critical",
+          "match": [
+            "colorectal cancer",
+            "colorectal carcinoma",
+            "colorectal malignancy",
+            "rectal carcinoma",
+            "rectal cancer",
+            "colon cancer",
+            "colonic carcinoma",
+            "colonic cancer",
+            "caecal carcinoma",
+            "icd:C18",
+            "icd:C20"
+          ],
+          "k": 3,
+          "guidelineRefs": [
+            "nice-ng12"
+          ]
+        }
+      ]
+    },
+    "safety": {
+      "emergencyLevel": {
+        "id": "level-at-least-priority",
+        "severity": "critical",
+        "atLeast": "priority",
+        "guidelineRefs": [
+          "bsg-acpgbi-fit-2022"
+        ]
+      },
+      "redFlags": [
+        {
+          "id": "flag-rectal-mass",
+          "severity": "critical",
+          "match": [
+            "rectal mass",
+            "colorectal malignancy"
+          ],
+          "guidelineRefs": [
+            "bsg-acpgbi-fit-2022",
+            "nice-ng12"
+          ]
+        }
+      ]
+    },
+    "investigations": {
+      "mustInclude": [
+        {
+          "id": "inv-mri-pelvis",
+          "severity": "critical",
+          "match": [
+            "mri pelvis",
+            "mri rectum",
+            "pelvic mri",
+            "re:mri[^.;\\n]{0,20}(pelvi|rect)"
+          ],
+          "guidelineRefs": [
+            "nice-ng12"
+          ],
+          "note": "MRI pelvis for T/N stage, CRM and EMVI before any treatment decision."
+        },
+        {
+          "id": "inv-colonoscopy",
+          "severity": "quality",
+          "match": [
+            "colonoscop"
+          ],
+          "guidelineRefs": [
+            "bsg-acpgbi-fit-2022"
+          ]
+        }
+      ]
+    },
+    "management": {
+      "mustInclude": [
+        {
+          "id": "mgmt-mdt",
+          "severity": "quality",
+          "match": [
+            "mdt",
+            "multidisciplinary"
+          ],
+          "guidelineRefs": [
+            "nice-ng12"
+          ]
+        }
+      ]
+    }
+  },
+  "guideline": [
+    {
+      "id": "bsg-acpgbi-fit-2022",
+      "name": "ACPGBI/BSG joint guideline — FIT in patients with signs or symptoms of suspected colorectal cancer",
+      "year": 2022,
+      "section": "Patients with a rectal or abdominal mass, anal ulceration or IDA are referred irrespective of the FIT result",
+      "citation": "Monahan KJ, Davies MM, Abulafi M, et al. Faecal immunochemical testing (FIT) in patients with signs or symptoms of suspected colorectal cancer (CRC): a joint guideline from the Association of Coloproctology of Great Britain and Ireland (ACPGBI) and the British Society of Gastroenterology (BSG). Gut. 2022;71:1939–1962.",
+      "verified": false
+    },
+    {
+      "id": "nice-ng12",
+      "name": "NICE NG12 — suspected cancer: recognition and referral (lower gastrointestinal tract cancers)",
+      "year": 2023,
+      "section": "Lower GI: consider suspected cancer pathway referral for a rectal or abdominal mass",
+      "citation": "National Institute for Health and Care Excellence. Suspected cancer: recognition and referral (NG12). First published 2015; lower GI recommendations updated 2023 to incorporate DG56.",
+      "verified": false
+    }
+  ],
+  "rationale": "Permutation: FIT below threshold, but a hard rectal mass on examination. The DRE finding is written in the abdominal examination field (where many clinicians record PR), because the web Anal/Rectal examination section is not read by the clinical prompts.",
+  "authoring": {
+    "author": "Claude (colorectal/anorectal cluster)",
+    "date": "2026-09-25",
+    "notes": "Expectations need surgeon sign-off (reviewedBy). Citations verified: false until checked against the source."
+  }
+}

@@ -1,5 +1,6 @@
 import { useAppContext } from '@/context/AppContext';
 import { VISIT_TYPES } from '@/lib/visit-types';
+import { allergyStatus } from '@/lib/allergy-status';
 
 interface PatientContextBannerProps {
   guidedMode: boolean;
@@ -27,7 +28,8 @@ export default function PatientContextBanner({ guidedMode, setGuidedMode, setNot
   const consultAmbient = topSection === 'consultation' && (!!patientId || !!patientName);
   if (topSection !== 'consultation' || consultAmbient) return null;
 
-  const allergyList = allergies.split(',').map(a => a.trim()).filter(Boolean);
+  const allergyState = allergyStatus(allergies);
+  const allergyList = allergyState.kind === 'recorded' ? allergyState.allergies : [];
   const ac = ACUITY_COLORS[triageResult.acuity] ?? { bg: '#1e293b', text: '#94a3b8' };
   const vt = ctxVisitType ? VISIT_TYPES.find(v => v.id === ctxVisitType) : null;
 
@@ -56,8 +58,12 @@ export default function PatientContextBanner({ guidedMode, setGuidedMode, setNot
           ⚠ {allergyList.slice(0, 2).join(', ')}{allergyList.length > 2 ? ` +${allergyList.length - 2}` : ''}
         </span>
       )}
-      {allergyList.length === 0 && (
-        <span style={{ fontSize: 11, color: '#334155', whiteSpace: 'nowrap', flexShrink: 0 }}>NKDA</span>
+      {/* Empty = not recorded (amber); NKDA only when the clinician recorded it. */}
+      {allergyState.kind === 'nkda' && (
+        <span style={{ fontSize: 11, color: '#86efac', whiteSpace: 'nowrap', flexShrink: 0 }}>NKDA</span>
+      )}
+      {allergyState.kind === 'not_recorded' && (
+        <span style={{ fontSize: 11, color: '#fbbf24', whiteSpace: 'nowrap', flexShrink: 0 }}>Allergies: not recorded</span>
       )}
       {/* Visit type badge — persistent context during encounter */}
       {vt && (

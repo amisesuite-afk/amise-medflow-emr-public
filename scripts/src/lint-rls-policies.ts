@@ -42,7 +42,9 @@ const REQUIRED_POLICIES: Record<string, string[]> = {
   patients: [
     'staff_select_patients',
     'staff_insert_patients',
-    'doctors_update_patients',
+    // Was 'doctors_update_patients'; replaced (and opened to front_desk, with
+    // a column guard trigger) by supabase-staff-only-rls-migration.sql.
+    'staff_update_patients',
     'admins_delete_patients',
   ],
   clinical_notes: [
@@ -59,6 +61,44 @@ const REQUIRED_POLICIES: Record<string, string[]> = {
   ],
   appointment_requests: [
     'staff_all',
+  ],
+  // Migration 94 (supabase-outcomes-calibration-migration.sql): nurse / doctor / admin only;
+  // front desk and portal patients have no policy. No UPDATE policy on snapshots (write-once).
+  prediction_snapshots: [
+    'clinicians_select_prediction_snapshots',
+    'clinicians_insert_prediction_snapshots',
+  ],
+  diagnosis_outcomes: [
+    'clinicians_select_diagnosis_outcomes',
+    'clinicians_insert_diagnosis_outcomes',
+    'clinicians_update_diagnosis_outcomes',
+  ],
+  // Migration 95 (supabase-clinical-signoffs-migration.sql): nurse / doctor / admin read;
+  // doctor / admin insert as themselves; no UPDATE / DELETE policy (append-only).
+  clinical_signoffs: [
+    'clinicians_select_clinical_signoffs',
+    'reviewers_insert_clinical_signoffs',
+  ],
+  // Migration 96 (supabase-lab-feed-migration.sql): ranges read by staff, written by admin;
+  // lab-feed log and reconciliation queue read by nurse / doctor / admin only (front desk and
+  // portal patients have no policy); only the service role writes them.
+  lab_reference_ranges: [
+    'staff_select_lab_reference_ranges',
+    'admin_insert_lab_reference_ranges',
+    'admin_update_lab_reference_ranges',
+  ],
+  lab_feed_messages: [
+    'clinicians_select_lab_feed_messages',
+  ],
+  lab_results_to_reconcile: [
+    'clinicians_select_lab_results_to_reconcile',
+  ],
+  // Migration 98 (supabase-approved-content-migration.sql): every staff role reads published
+  // rule-file releases; doctor / admin publish and revoke as themselves; no DELETE policy.
+  clinical_content_releases: [
+    'staff_select_clinical_content_releases',
+    'publishers_insert_clinical_content_releases',
+    'publishers_revoke_clinical_content_releases',
   ],
 };
 
@@ -87,6 +127,57 @@ function stripComments(sql: string): string {
 
 // Static historical dump, not a source of truth — see file header comment.
 const EXCLUDED_FILES = new Set(['supabase-all-migrations-consolidated.sql']);
+
+// ── Effective-definition check (security finding S-2) ──────────────────────
+// Presence alone can't catch a policy being *re-opened*: the permissive
+// `auth.uid() is not null` / `using (true)` versions of these policy names
+// still exist in older files, and supabase-staff-only-rls-migration.sql
+// replaces them with staff-role-only versions. Since the runner applies files
+// in order and `drop policy if exists` + `create policy` means the last
+// definition wins, check the LAST definition of each required policy, in
+// run-migrations.yml order, and fail if it only tests "is authenticated".
+// Patient-portal users are authenticated users in the same Supabase project,
+// so such a policy exposes every row to every portal patient.
+const WORKFLOW = join('.github', 'workflows', 'run-migrations.yml');
+const WORKFLOW_FILE_RE = /<\s*([A-Za-z0-9_.-]+\.sql)/g;
+const POLICY_STATEMENT_RE =
+  /create\s+policy\s+"([^"]+)"\s+on\s+(?:public\.)?"?([a-zA-Z_][a-zA-Z0-9_]*)"?([^;]*);/gi;
+const OPEN_PREDICATE_RE =
+  /(?:using|with\s+check)\s*\(\s*(?:true|auth\.uid\(\)\s+is\s+not\s+null|auth\.role\(\)\s*=\s*'authenticated')\s*\)/i;
+
+function checkEffectiveDefinitions(): string[] {
+  const workflow = readFileSync(join(REPO_ROOT, WORKFLOW), 'utf8');
+  const runOrder = [...workflow.matchAll(WORKFLOW_FILE_RE)].map(m => m[1]);
+  const last = new Map<string, { file: string; body: string }>();
+  for (const file of runOrder) {
+    let raw: string;
+    try {
+      raw = readFileSync(join(REPO_ROOT, file), 'utf8');
+    } catch {
+      continue; // a missing file is the workflow's problem, not this check's
+    }
+    for (const m of stripComments(raw).matchAll(POLICY_STATEMENT_RE)) {
+      const [, name, table, body] = m;
+      last.set(`${table.toLowerCase()}.${name}`, { file, body: body.replace(/\s+/g, ' ').trim() });
+    }
+  }
+
+  const failures: string[] = [];
+  for (const [table, names] of Object.entries(REQUIRED_POLICIES)) {
+    for (const name of names) {
+      const def = last.get(`${table}.${name}`);
+      if (!def) continue; // presence is reported by the main check
+      if (OPEN_PREDICATE_RE.test(def.body)) {
+        failures.push(
+          `${table}: policy "${name}" is last defined (in run-migrations.yml order) in ${def.file} ` +
+          `with an "any authenticated user" predicate (${def.body}). Portal patients are authenticated ` +
+          `users too — gate it on auth_role() in ('front_desk','nurse','doctor','admin').`,
+        );
+      }
+    }
+  }
+  return failures;
+}
 
 function findMigrationFiles(): string[] {
   return readdirSync(REPO_ROOT)
@@ -162,12 +253,17 @@ function main() {
     }
   }
 
+  failures.push(...checkEffectiveDefinitions());
+
   console.log(
     `Checked RLS presence for ${targetTables.length} high-risk table(s) across ${files.length} migration file(s).`,
   );
 
   if (failures.length === 0) {
-    console.log('✓ RLS is enabled and every expected policy is present for: ' + targetTables.join(', ') + '.');
+    console.log(
+      '✓ RLS is enabled and every expected policy is present for: ' + targetTables.join(', ') +
+      '; no required policy is last defined as "any authenticated user".',
+    );
     return;
   }
 

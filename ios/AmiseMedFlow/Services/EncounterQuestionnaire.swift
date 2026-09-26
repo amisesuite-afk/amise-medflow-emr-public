@@ -26,14 +26,33 @@ enum CCCategory: String, CaseIterable, Codable {
     case screening            = "Screening / routine review"
     case other                = "Other"
 
-    // Full SOCRATES is only clinically meaningful for pain presentations.
-    // Non-pain CCs still capture onset, severity, associations — but skip
-    // site / character / radiation / exacerbating / relieving.
-    var isPainType: Bool {
-        switch self {
-        case .abdominalPain, .chestPain, .perianal, .hernia: return true
-        default: return false
+    /// Which symptom questions the patient is asked, chosen from the complaint's history-frames
+    /// symptom type (HistoryFrameClassifier, twin of lib/triage-engine/src/history-frames
+    /// classify.ts): pain questions (SOCRATES) only for pain, lump questions for a lump or
+    /// swelling. A hernia is a lump: it used to be asked the pain questions ("What is it like?",
+    /// "Does the pain spread?"). Other complaints go straight to the associated symptoms.
+    enum QuestionSet: Equatable {
+        case pain, lump, other
+    }
+
+    var questionSet: QuestionSet {
+        switch HistoryFrameClassifier.classify(rawValue).type {
+        case "pain": return .pain
+        case "lump": return .lump
+        default: return .other
         }
+    }
+
+    /// Pain questions (SOCRATES): abdominal pain, chest pain, perianal symptoms.
+    var isPainType: Bool { questionSet == .pain }
+
+    /// Lump questions: neck lump, hernia / groin lump.
+    var isLumpType: Bool { questionSet == .lump }
+
+    /// The lump's history-frame variant ("hernia", "neck" …): variant-specific lump questions.
+    var lumpVariant: String? {
+        let choice = HistoryFrameClassifier.classify(rawValue)
+        return choice.type == "lump" ? choice.variant : nil
     }
 
     // Associated symptoms that are clinically relevant for this CC.
@@ -106,8 +125,6 @@ enum CCCategory: String, CaseIterable, Codable {
         case .chestPain:
             return ["Exertion", "Deep breath", "Lying flat", "Eating",
                     "Stress", "Cold air"]
-        case .hernia:
-            return ["Standing", "Coughing", "Straining", "Lifting"]
         case .perianal:
             return ["Defaecation", "Sitting", "Prolonged standing", "Lifting"]
         default:
@@ -124,8 +141,6 @@ enum CCCategory: String, CaseIterable, Codable {
         case .chestPain:
             return ["Rest", "GTN spray", "Sitting upright", "Antacids",
                     "Analgesia"]
-        case .hernia:
-            return ["Lying down", "Pushing it back", "Reducing the hernia"]
         case .perianal:
             return ["Warm bath (sitz bath)", "Analgesia", "Laxatives"]
         default:
@@ -157,6 +172,80 @@ enum PainTiming: String, CaseIterable, Codable {
     case constant            = "Constant"
     case intermittent        = "Comes and goes"
     case worseningConstant   = "Constant and worsening"
+}
+
+// MARK: — Lump questions (lump and hernia complaints)
+// Plain wording for the patient (rawValue); `chip` is the history-frame chip the clinician's
+// history builder and the engine read (lump frames in lib/triage-engine/src/history-frames/frames.ts).
+// Administrative intake: the answers are recorded for the clinician, no advice is given.
+
+enum LumpDuration: String, CaseIterable, Codable {
+    case days   = "A few days"
+    case weeks  = "A few weeks"
+    case months = "A few months"
+    case years  = "A year or more"
+    case sudden = "It came up suddenly"
+
+    var chip: String {
+        switch self {
+        case .days:   return "Days"
+        case .weeks:  return "Weeks"
+        case .months: return "Months"
+        case .years:  return "Years"
+        case .sudden: return "Sudden"
+        }
+    }
+}
+
+enum LumpSizeChange: String, CaseIterable, Codable {
+    case rapid      = "Getting bigger quickly"
+    case slow       = "Getting bigger slowly"
+    case stable     = "About the same size"
+    case fluctuates = "Comes and goes"
+    case smaller    = "Getting smaller"
+
+    var chip: String {
+        switch self {
+        case .rapid:      return "Rapid growth"
+        case .slow:       return "Slow growth"
+        case .stable:     return "Stable"
+        case .fluctuates: return "Fluctuates in size"
+        case .smaller:    return "Getting smaller"
+        }
+    }
+}
+
+enum LumpPain: String, CaseIterable, Codable {
+    case painless  = "No pain"
+    case tender    = "Sore or tender to touch"
+    case sometimes = "Painful at times"
+
+    var chip: String {
+        switch self {
+        case .painless:  return "Painless"
+        case .tender:    return "Tender"
+        case .sometimes: return "Painful at times"
+        }
+    }
+}
+
+/// Hernia only: what the lump does (lump.hernia "Reducibility").
+enum LumpBehaviour: String, CaseIterable, Codable {
+    case liesBack      = "It goes back in when I lie down"
+    case pushBack      = "I can push it back in"
+    case biggerOnCough = "It gets bigger when I cough or strain"
+    case staysOut      = "It does not go back in"
+    case recentlyStuck = "It used to go back in but now it does not"
+
+    var chip: String {
+        switch self {
+        case .liesBack:      return "Reduces on lying down"
+        case .pushBack:      return "Reducible"
+        case .biggerOnCough: return "Cough impulse"
+        case .staysOut:      return "Irreducible"
+        case .recentlyStuck: return "Recently irreducible"
+        }
+    }
 }
 
 // MARK: — PMHx conditions
@@ -193,6 +282,15 @@ enum AlcoholUse: String, CaseIterable, Codable {
     case heavy   = "Heavy (daily / harmful)"
 }
 
+/// Answer to the mandatory "herbs, bush teas, vitamins or supplements" question
+/// (SupplementCatalogue.patientQuestion).
+enum SupplementAnswer: String, CaseIterable, Codable {
+    case notAnswered = "Not answered"
+    case yes         = "Yes"
+    case no          = "No"
+    case unsure      = "Not sure"
+}
+
 // MARK: — Canonical encounter answer store
 // One instance per encounter session. Every field has exactly one
 // authoritative value — reading from two sources and merging is
@@ -217,6 +315,36 @@ struct EncounterAnswers {
     var painWorsenedBy: Set<String> = []
     var painRelievedBy: Set<String> = []
 
+    // ── Phase 2 (lump / hernia complaints): lump questions ──────────────────
+    var lumpSite: String = ""
+    var lumpDuration: LumpDuration?
+    var lumpSizeChange: LumpSizeChange?
+    var lumpPain: LumpPain?
+    var lumpBehaviour: Set<LumpBehaviour> = []   // hernia only
+    var lumpMovesOnSwallowing: Bool = false        // neck only
+    var lumpSkinRed: Bool = false
+
+    /// Clears the lump answers (the complaint changed).
+    mutating func resetLumpAnswers() {
+        lumpSite = ""
+        lumpDuration = nil
+        lumpSizeChange = nil
+        lumpPain = nil
+        lumpBehaviour = []
+        lumpMovesOnSwallowing = false
+        lumpSkinRed = false
+    }
+
+    /// Lump answers stored as history-frame chips under "associations" (size change,
+    /// reducibility, movement, skin).
+    var lumpAssociationChips: Set<String> {
+        var chips = Set(lumpBehaviour.map(\.chip))
+        if let s = lumpSizeChange { chips.insert(s.chip) }
+        if lumpMovesOnSwallowing { chips.insert("Moves on swallowing") }
+        if lumpSkinRed { chips.insert("Redness") }
+        return chips
+    }
+
     // ── Phase 3: Associated symptoms (CC-gated) ──────────────────────────────
     var associatedSymptoms: Set<String> = []
     var associatedOther: String = ""
@@ -234,12 +362,18 @@ struct EncounterAnswers {
     var medications: String = ""
     var allergies: String = ""
     var surgicalHistory: String = ""
+    /// Herbs, bush teas, bush medicines, vitamins or supplements (patient's own words).
+    var supplementAnswer: SupplementAnswer = .notAnswered
+    var supplements: String = ""
 
     // ── Phase 6: Social history / Last meal ──────────────────────────────────
     var smokingStatus: SmokingStatus = .never
     var alcoholUse: AlcoholUse = .none
     var lastMealTime: Date? = nil
     var occupation: String = ""
+    /// Religious / ritual fasting and complementary treatments, asked last (LifestyleQuestions.swift,
+    /// twin of the web lifestyle-questions.ts). Information only.
+    var lifestyle = LifestyleQuestionnaireAnswers()
 
     // MARK: - Derived canonical strings (written to Patient model)
 
@@ -290,6 +424,17 @@ struct EncounterAnswers {
             if !painRelievedBy.isEmpty {
                 lines.append("BETTER: \(painRelievedBy.sorted().joined(separator: ", "))")
             }
+        } else if cc.isLumpType {
+            // KEY: value lines the consultation reads back (parseSocratesFromHPI).
+            if !lumpSite.isEmpty { lines.append("SITE: \(lumpSite)") }
+            if let d = lumpDuration { lines.append("ONSET: \(d.chip)") }
+            if let c = lumpSizeChange { lines.append("SIZE CHANGE: \(c.chip)") }
+            if let p = lumpPain { lines.append("CHARACTER: \(p.chip)") }
+            if !lumpBehaviour.isEmpty {
+                lines.append("REDUCIBILITY: \(lumpBehaviour.map(\.chip).sorted().joined(separator: ", "))")
+            }
+            if lumpMovesOnSwallowing { lines.append("MOVEMENT: Moves on swallowing") }
+            if lumpSkinRed { lines.append("SKIN: Redness") }
         } else if severityAnswered {
             lines.append("SEVERITY: \(painSeverity)/10")
         }
@@ -315,6 +460,20 @@ struct EncounterAnswers {
         return lines.joined(separator: "\n")
     }
 
+    /// "SUPPLEMENTS (PATIENT-REPORTED): …" — read back by Patient.patientReportedSupplements for the
+    /// clinician to confirm in the Meds step. Nil when the question was not answered.
+    var supplementsLine: String? {
+        let named = supplements.trimmingCharacters(in: .whitespacesAndNewlines)
+        let value: String
+        switch supplementAnswer {
+        case .notAnswered: return nil
+        case .yes:    value = named.isEmpty ? SupplementHistory.questionnaireYesUnnamed : named
+        case .no:     value = SupplementHistory.questionnaireNone
+        case .unsure: value = named.isEmpty ? SupplementHistory.questionnaireUnsure : "\(SupplementHistory.questionnaireUnsure) — \(named)"
+        }
+        return "\(SupplementHistory.questionnairePrefix) \(value)"
+    }
+
     // Structured PMHx text for PatientStateVector parser
     var pmhxText: String {
         var lines: [String] = []
@@ -324,9 +483,13 @@ struct EncounterAnswers {
         if !medications.isEmpty     { lines.append("MEDICATIONS: \(medications)") }
         if !allergies.isEmpty       { lines.append("ALLERGIES: \(allergies)") }
         if !surgicalHistory.isEmpty { lines.append("SURGICAL HISTORY: \(surgicalHistory)") }
+        if let line = supplementsLine { lines.append(line) }
         if !occupation.isEmpty      { lines.append("OCCUPATION: \(occupation)") }
         lines.append("SMOKING: \(smokingStatus.rawValue)")
         lines.append("ALCOHOL: \(alcoholUse.rawValue)")
+        // "Fasting (patient-reported): …" lines, the same as the web intake; read back by
+        // Patient.patientReportedLifestyle for the clinician to confirm.
+        lines += lifestyle.lines
         return lines.joined(separator: "\n")
     }
 
@@ -334,6 +497,15 @@ struct EncounterAnswers {
     // Keys MUST be lowercase to match the engine's switch statement.
     var socratesSelections: [String: Set<String>] {
         var dict: [String: Set<String>] = [:]
+        if ccCategory?.isLumpType == true {
+            // Lump answers under the lump frame's keys (site, onset, character, associations).
+            if !lumpSite.isEmpty    { dict["site"]      = [lumpSite] }
+            if let d = lumpDuration { dict["onset"]     = [d.chip] }
+            if let p = lumpPain     { dict["character"] = [p.chip] }
+            let lumpChips = lumpAssociationChips.union(associatedSymptoms)
+            if !lumpChips.isEmpty   { dict["associations"] = lumpChips }
+            return dict
+        }
         if !painSite.isEmpty          { dict["site"]         = [painSite] }
         if let c = painCharacter      { dict["character"]    = [c.rawValue] }
         if painRadiates {

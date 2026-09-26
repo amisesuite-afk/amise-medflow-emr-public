@@ -173,7 +173,7 @@ export const skinSoftTissueProtocols: ManagementProtocol[] = [
   },
   {
     diseaseId: 'skin_abscess',
-    icd10Prefixes: ['L02.9'],
+    icd10Prefixes: ['L02'],
     label: 'Skin Abscess / Furuncle / Carbuncle',
     keyPoints: [
       'S. aureus (including MRSA in high-risk groups) is the causative organism in >75% of skin abscesses.',
@@ -188,6 +188,8 @@ export const skinSoftTissueProtocols: ManagementProtocol[] = [
       { label: 'Clinical diagnosis (fluctuant, tender, warm)', urgency: 'routine' },
       { label: 'FBC, CRP if systemically unwell', urgency: 'urgent' },
       { label: 'Pus C&S + MRSA swab', urgency: 'routine' },
+      { label: 'Groin abscess in a person who injects drugs: duplex ultrasound of the femoral vessels before any incision (exclude a femoral pseudoaneurysm)', urgency: 'urgent' },
+      { label: 'Injecting drug use: offer HIV, hepatitis B and hepatitis C (blood-borne virus) testing', urgency: 'routine' },
       { label: 'Random glucose (recurrent abscesses — screen for diabetes)', urgency: 'routine' },
     ],
     management: [
@@ -208,7 +210,7 @@ export const skinSoftTissueProtocols: ManagementProtocol[] = [
   },
   {
     diseaseId: 'cellulitis',
-    icd10Prefixes: ['L03.9'],
+    icd10Prefixes: ['L03'],
     label: 'Cellulitis',
     keyPoints: [
       'Group A Streptococcus (Strep. pyogenes) causes 80% of cellulitis — most do not require microbiological confirmation.',

@@ -1,0 +1,392 @@
+{
+  "schemaVersion": 1,
+  "id": "hernia-groin-strangulated",
+  "condition": "Strangulated inguinal hernia",
+  "category": "hernia",
+  "permutationOf": "hernia-groin-incarcerated",
+  "permutationLabel": "Strangulated (SIRS, lactate 4.2, CT ischaemia)",
+  "summary": "74-year-old man, irreducible right inguinal hernia for 20 hours: tense, very tender, red overlying skin, bilious vomiting, HR 118, T 38.3, lactate 4.2, WCC 17.8; CT shows a closed small-bowel loop with reduced wall enhancement. WSES: signs of strangulation, no manual reduction, emergency surgery.",
+  "tags": [
+    "emergency",
+    "groin",
+    "strangulated",
+    "sepsis"
+  ],
+  "inputs": {
+    "patient": {
+      "ageYears": 74,
+      "sex": "male",
+      "pregnancy": {
+        "status": "not-applicable"
+      },
+      "heightCm": 170,
+      "weightKg": 74
+    },
+    "encounter": {
+      "setting": "emergency",
+      "visitType": "urgentReview",
+      "acuity": "emergency"
+    },
+    "chiefComplaint": "Painful groin lump with vomiting",
+    "hpi": "Right groin hernia for years. Became stuck yesterday evening (20 hours ago) and is now very painful, red and hard. Vomiting green fluid since the early morning, abdomen swelling, no flatus for 8 hours. Feels hot and shivery.",
+    "socrates": {
+      "onset": [
+        "Yesterday",
+        "Sudden"
+      ],
+      "site": [
+        "Right inguinal"
+      ],
+      "character": [
+        "Hard",
+        "Tender"
+      ],
+      "radiation": [
+        "No radiation"
+      ],
+      "associations": [],
+      "timing": [
+        "Constant",
+        "Progressive"
+      ],
+      "exacerbating": [
+        "None"
+      ],
+      "relieving": [
+        "Nothing"
+      ],
+      "severity": [
+        "Severe (7–9/10)"
+      ]
+    },
+    "symptoms": [
+      "groin swelling",
+      "groin pain",
+      "vomiting",
+      "abdominal distension",
+      "no flatus",
+      "fever"
+    ],
+    "negatives": [],
+    "exam": {
+      "general": "Unwell, dry, flushed. Pulse 118 regular, BP 98/60, RR 24, temperature 38.3°C.",
+      "abdomen": "Distended, tympanic, high-pitched bowel sounds, generalised tenderness without guarding. Right inguinal hernia tense, irreducible, exquisitely tender with erythematous, warm overlying skin."
+    },
+    "vitals": [
+      {
+        "minutesAgo": 15,
+        "heartRate": 118,
+        "systolicBp": 98,
+        "diastolicBp": 60,
+        "respiratoryRate": 24,
+        "temperatureC": 38.3,
+        "spo2": 95,
+        "avpu": "A",
+        "onSupplementalO2": false
+      }
+    ],
+    "labs": [
+      {
+        "analyte": "wbc",
+        "name": "WBC",
+        "value": 17.8,
+        "unit": "×10⁹/L",
+        "minutesAgo": 60
+      },
+      {
+        "analyte": "crp",
+        "name": "CRP",
+        "value": 186,
+        "unit": "mg/L",
+        "minutesAgo": 60
+      },
+      {
+        "analyte": "lactate",
+        "name": "Lactate",
+        "value": 4.2,
+        "unit": "mmol/L",
+        "minutesAgo": 60
+      },
+      {
+        "analyte": "creatinine",
+        "name": "Creatinine",
+        "value": 142,
+        "unit": "µmol/L",
+        "minutesAgo": 60
+      },
+      {
+        "analyte": "urea",
+        "name": "Urea",
+        "value": 12.1,
+        "unit": "mmol/L",
+        "minutesAgo": 60
+      },
+      {
+        "analyte": "haemoglobin",
+        "name": "Haemoglobin",
+        "value": 15.1,
+        "unit": "g/dL",
+        "minutesAgo": 60
+      }
+    ],
+    "imaging": [
+      {
+        "name": "CT abdomen and pelvis with contrast",
+        "modality": "CT",
+        "region": "Abdomen/pelvis",
+        "result": "Right inguinal hernia containing a closed small-bowel loop with reduced mural enhancement and mesenteric fat stranding; upstream small-bowel dilatation; small volume free fluid. No free gas.",
+        "minutesAgo": 30
+      }
+    ],
+    "comorbidities": [
+      "Type 2 diabetes",
+      "Chronic kidney disease stage 3a"
+    ],
+    "surgicalHistory": [],
+    "medications": [
+      {
+        "drug": "Metformin",
+        "dose": "1 g",
+        "frequency": "BD",
+        "indication": "Type 2 diabetes"
+      }
+    ],
+    "allergies": [],
+    "nkda": true,
+    "socialHistory": "Lives alone. Smoker.",
+    "scoreForms": {
+      "qsofa": {
+        "alteredMentation": false,
+        "rrAtLeast22": true,
+        "sbpAtMost100": true,
+        "suspectedInfection": true
+      }
+    },
+    "confirmedDiagnosis": {
+      "name": "Strangulated right inguinal hernia with small bowel obstruction",
+      "icd10": "K40.40",
+      "paneDiseaseId": "inguinal_hernia",
+      "assessmentText": "Strangulated right inguinal hernia — irreducible for 20 h, tender with skin erythema, SIRS, lactate 4.2, CT reduced bowel-wall enhancement. Emergency repair and bowel assessment; no attempt at reduction."
+    },
+    "platform": {
+      "web": {
+        "ccTemplate": "Inguinal / groin hernia",
+        "symptoms": [
+          "hernia",
+          "groin swelling",
+          "groin pain",
+          "vomiting",
+          "abdominal distension",
+          "fever"
+        ],
+        "symptomDetails": {
+          "hernia": [
+            "Right groin",
+            "Irreducible",
+            "Pain",
+            "Tenderness",
+            "Hard",
+            "Vomiting",
+            "Can't pass gas",
+            "Redness"
+          ],
+          "vomiting": [
+            "Bile"
+          ]
+        },
+        "examFindings": {
+          "abdomen": [
+            "Distended",
+            "Diffuse tenderness",
+            "Hernia present"
+          ],
+          "general": [
+            "In distress"
+          ]
+        },
+        "paneAnswers": {
+          "hernia_irreducible": true
+        },
+        "durationDays": 1,
+        "painScore": 8
+      }
+    }
+  },
+  "expected": {
+    "differential": {
+      "mustRankTopK": [
+        {
+          "id": "dx-hernia-top3",
+          "severity": "critical",
+          "match": [
+            "hernia",
+            "icd:K40",
+            "icd:K41"
+          ],
+          "k": 3,
+          "guidelineRefs": [
+            "wses-hernia-2017"
+          ]
+        }
+      ],
+      "mustNotMiss": [
+        {
+          "id": "mnm-strangulation-or-obstruction",
+          "severity": "quality",
+          "match": [
+            "strangulat",
+            "obstruct"
+          ],
+          "source": "web.symptomInference",
+          "platforms": [
+            "web"
+          ],
+          "note": "The secondary symptom engine has an \"Obstructed / strangulated hernia\" entry; it should be listed."
+        }
+      ]
+    },
+    "safety": {
+      "emergencyLevel": {
+        "id": "level-emergency",
+        "severity": "critical",
+        "atLeast": "emergency",
+        "guidelineRefs": [
+          "wses-hernia-2017"
+        ]
+      },
+      "mustAlarm": [
+        {
+          "id": "alarm-strangulation-or-sepsis",
+          "severity": "critical",
+          "match": [
+            "strangulat",
+            "emergency now",
+            "sepsis",
+            "obstruct"
+          ],
+          "guidelineRefs": [
+            "wses-hernia-2017"
+          ]
+        }
+      ]
+    },
+    "scores": {
+      "recommended": [
+        {
+          "id": "score-rec-qsofa",
+          "severity": "quality",
+          "score": "qsofa"
+        }
+      ],
+      "values": [
+        {
+          "id": "score-qsofa-calculator",
+          "severity": "critical",
+          "score": "qsofa",
+          "mode": "calculator",
+          "equals": 2,
+          "platforms": [
+            "ios"
+          ],
+          "note": "RR 24 (≥22) + SBP 98 (≤100) = 2 (Sepsis-3)."
+        }
+      ]
+    },
+    "investigations": {
+      "mustInclude": [
+        {
+          "id": "inv-lactate",
+          "severity": "quality",
+          "match": [
+            "lactate"
+          ],
+          "guidelineRefs": [
+            "wses-hernia-2017"
+          ]
+        }
+      ]
+    },
+    "management": {
+      "mustInclude": [
+        {
+          "id": "mgmt-emergency-surgery",
+          "severity": "critical",
+          "match": [
+            "re:emergency (theatre|surgery|surgical|repair|operat|laparotomy|exploration)",
+            "prompt surgery",
+            "re:urgent (surgery|surgical repair|operat|exploration)",
+            "return to theatre",
+            "re:emergency[^.]{0,30}hernia repair"
+          ],
+          "guidelineRefs": [
+            "wses-hernia-2017"
+          ]
+        },
+        {
+          "id": "mgmt-bowel-viability",
+          "severity": "quality",
+          "match": [
+            "viab",
+            "re:resect(ion)?"
+          ],
+          "guidelineRefs": [
+            "wses-hernia-2017"
+          ]
+        },
+        {
+          "id": "mgmt-resuscitation",
+          "severity": "quality",
+          "match": [
+            "resuscitat",
+            "re:iv fluid",
+            "hartmann",
+            "crystalloid"
+          ]
+        }
+      ],
+      "mustExclude": [
+        {
+          "id": "mgmt-no-manual-reduction",
+          "severity": "critical",
+          "match": [
+            "re:(attempt|gentle)[^.]{0,30}(manual )?reduction",
+            "taxis"
+          ],
+          "unless": [
+            "do not",
+            "don't",
+            "contraindicated",
+            "not if"
+          ],
+          "guidelineRefs": [
+            "wses-hernia-2017"
+          ],
+          "note": "WSES 2017: manual reduction is contraindicated when strangulation is suspected (risk of reducing non-viable bowel)."
+        }
+      ]
+    },
+    "dxVariant": {
+      "id": "variant-strangulated",
+      "severity": "critical",
+      "equals": "hernia_strangulated",
+      "note": "The strangulated variant is the one without a reduction attempt (immediate + surgical phases only).",
+      "proposedFix": "Match detectKeywords on word boundaries, check the most severe variant first (strangulated → incarcerated → reducible), and add negative look-behind for 'ir'/'non-' (\"irreducible\" contains \"reducible\"); \"bethesda vi\" contains \"bethesda v\"."
+    }
+  },
+  "guideline": [
+    {
+      "id": "wses-hernia-2017",
+      "name": "WSES guidelines — emergency repair of complicated abdominal wall hernias (2017 update)",
+      "year": 2017,
+      "section": "Diagnosis of strangulation (clinical signs, lactate, CPK, D-dimer, CT); timing of surgery; manual reduction only without strangulation; mesh in clean (CDC I) and clean-contaminated fields",
+      "citation": "Birindelli A, Sartelli M, Di Saverio S, et al. 2017 update of the WSES guidelines for emergency repair of complicated abdominal wall hernias. World J Emerg Surg. 2017;12:37.",
+      "verified": false
+    }
+  ],
+  "rationale": "Permutation: duration, systemic toxicity and CT evidence of ischaemia. The assessment contains both \"strangulated\" and \"irreducible\", as surgeons write it. Checks that the plan moves to emergency surgery without a reduction attempt and that the variant engine picks the strangulated variant.",
+  "authoring": {
+    "author": "Claude (hernia / breast / endocrine cluster)",
+    "date": "2026-09-25",
+    "notes": "Expectations need surgeon sign-off (reviewedBy). Citations verified: false."
+  }
+}

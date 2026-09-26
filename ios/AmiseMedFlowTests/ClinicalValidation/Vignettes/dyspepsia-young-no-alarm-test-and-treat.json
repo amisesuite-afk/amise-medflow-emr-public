@@ -1,0 +1,295 @@
+{
+  "schemaVersion": 1,
+  "id": "dyspepsia-young-no-alarm-test-and-treat",
+  "condition": "Uninvestigated dyspepsia (no alarm features)",
+  "category": "upper-gi",
+  "permutationOf": null,
+  "summary": "32-year-old woman with 3 months of epigastric burning after meals, no alarm features, no NSAIDs. NICE CG184 / Maastricht VI: H. pylori test-and-treat (or 4 weeks of full-dose PPI); no endoscopy.",
+  "tags": [
+    "dyspepsia",
+    "h-pylori",
+    "no-alarm",
+    "over-investigation"
+  ],
+  "inputs": {
+    "patient": {
+      "ageYears": 32,
+      "sex": "female",
+      "pregnancy": {
+        "status": "not-pregnant"
+      },
+      "heightCm": 163,
+      "weightKg": 64
+    },
+    "encounter": {
+      "setting": "outpatient",
+      "visitType": "newConsult",
+      "acuity": "routine"
+    },
+    "chiefComplaint": "Burning pain in the upper abdomen after meals",
+    "hpi": "Three months of burning upper abdominal discomfort after meals with bloating and belching. Antacids help a little. Weight steady, eating normally, swallowing normal, stools normal colour. No vomiting. Takes no anti-inflammatories. No family history of stomach cancer.",
+    "socrates": {
+      "onset": [
+        "1–6 months ago"
+      ],
+      "site": [
+        "Epigastric"
+      ],
+      "character": [
+        "Burning"
+      ],
+      "radiation": [
+        "No radiation"
+      ],
+      "associations": [
+        "Nausea"
+      ],
+      "timing": [
+        "Post-prandial",
+        "Intermittent"
+      ],
+      "exacerbating": [
+        "Eating"
+      ],
+      "relieving": [
+        "Antacids"
+      ],
+      "severity": [
+        "Mild (1–3/10)"
+      ]
+    },
+    "symptoms": [
+      "epigastric pain",
+      "bloating",
+      "belching"
+    ],
+    "negatives": [
+      "weight loss",
+      "dysphagia",
+      "vomiting",
+      "haematemesis",
+      "melaena",
+      "anaemia",
+      "NSAID use"
+    ],
+    "exam": {
+      "general": "Well.",
+      "abdomen": "Soft, mild epigastric tenderness, no mass."
+    },
+    "vitals": [
+      {
+        "minutesAgo": 20,
+        "heartRate": 72,
+        "systolicBp": 118,
+        "diastolicBp": 74,
+        "respiratoryRate": 14,
+        "temperatureC": 36.6,
+        "spo2": 99,
+        "avpu": "A",
+        "onSupplementalO2": false
+      }
+    ],
+    "labs": [
+      {
+        "analyte": "haemoglobin",
+        "name": "Haemoglobin",
+        "value": 13.4,
+        "unit": "g/dL",
+        "minutesAgo": 1440
+      }
+    ],
+    "imaging": [],
+    "comorbidities": [],
+    "surgicalHistory": [],
+    "medications": [],
+    "allergies": [],
+    "nkda": true,
+    "socialHistory": "Nurse. Non-smoker. Coffee 4 cups a day. Alcohol occasional.",
+    "confirmedDiagnosis": {
+      "name": "Uninvestigated dyspepsia",
+      "icd10": "K30",
+      "assessmentText": "Uninvestigated dyspepsia, age 32, no alarm features — H. pylori test-and-treat; no endoscopy indicated."
+    },
+    "platform": {
+      "web": {
+        "ccTemplate": "Other / general surgical",
+        "symptoms": [
+          "epigastric pain",
+          "indigestion",
+          "bloating",
+          "belching"
+        ],
+        "symptomDetails": {},
+        "examFindings": {
+          "abdomen": [
+            "Epigastric tenderness"
+          ]
+        },
+        "durationDays": 90,
+        "painScore": 3
+      }
+    }
+  },
+  "expected": {
+    "differential": {
+      "mustRankTopK": [
+        {
+          "id": "dx-dyspepsia-causes-top3",
+          "severity": "quality",
+          "match": [
+            "peptic",
+            "gastritis",
+            "gord",
+            "reflux",
+            "dyspep",
+            "functional"
+          ],
+          "k": 3,
+          "guidelineRefs": [
+            "nice-cg184"
+          ]
+        }
+      ]
+    },
+    "safety": {
+      "emergencyLevel": {
+        "id": "level-routine",
+        "severity": "quality",
+        "atMost": "priority",
+        "guidelineRefs": [
+          "nice-cg184"
+        ],
+        "note": "No alarm features: routine primary/secondary care management.",
+        "proposedFix": "adaptive-triage: negation handling (see gord-no-alarm-empirical-ppi)."
+      },
+      "mustNotAlarm": [
+        {
+          "id": "no-cancer-alarm",
+          "severity": "quality",
+          "match": [
+            "2-week",
+            "two-week",
+            "malignan"
+          ],
+          "guidelineRefs": [
+            "nice-ng12"
+          ]
+        }
+      ]
+    },
+    "investigations": {
+      "mustInclude": [
+        {
+          "id": "inv-hpylori-non-invasive",
+          "severity": "quality",
+          "match": [
+            "breath test",
+            "stool antigen",
+            "re:\\bubt\\b",
+            "pylori"
+          ],
+          "guidelineRefs": [
+            "nice-cg184",
+            "maastricht-6"
+          ],
+          "proposedFix": "Add a dyspepsia (K30/R10.13) protocol: CG184 test-and-treat or 4-week PPI; NG12 alarm check.",
+          "knownGap": [
+            "ios"
+          ],
+          "knownGapNote": "iOS CI 2026-09-25 (run 36169134350, database mode): no investigation output on ios"
+        }
+      ],
+      "mustExclude": [
+        {
+          "id": "inv-no-urgent-ogd",
+          "severity": "quality",
+          "match": [
+            "urgent ogd",
+            "2-week",
+            "two-week",
+            "urgent upper gi endoscopy"
+          ],
+          "guidelineRefs": [
+            "nice-cg184",
+            "nice-ng12"
+          ]
+        }
+      ]
+    },
+    "management": {
+      "mustInclude": [
+        {
+          "id": "mgmt-test-and-treat-or-ppi",
+          "severity": "quality",
+          "match": [
+            "pylori",
+            "ppi",
+            "omeprazole",
+            "esomeprazole",
+            "pantoprazole",
+            "lansoprazole",
+            "proton pump"
+          ],
+          "guidelineRefs": [
+            "nice-cg184",
+            "maastricht-6"
+          ],
+          "knownGap": [
+            "ios"
+          ],
+          "knownGapNote": "iOS CI 2026-09-25 (run 36169134350, database mode): no management item matched among 4 (ios.pipeline.actions, ios.soap.plan)"
+        },
+        {
+          "id": "mgmt-lifestyle",
+          "severity": "quality",
+          "match": [
+            "lifestyle",
+            "caffeine",
+            "smaller meals",
+            "small frequent meals",
+            "weight"
+          ],
+          "guidelineRefs": [
+            "nice-cg184"
+          ],
+          "knownGap": [
+            "ios"
+          ],
+          "knownGapNote": "iOS CI 2026-09-25 (run 36169134350, database mode): no management item matched among 4 (ios.pipeline.actions, ios.soap.plan)"
+        }
+      ]
+    }
+  },
+  "guideline": [
+    {
+      "id": "nice-cg184",
+      "name": "NICE CG184 — Gastro-oesophageal reflux disease and dyspepsia in adults: investigation and management",
+      "year": 2014,
+      "section": "Uninvestigated dyspepsia without alarm features: lifestyle advice; offer either H. pylori test-and-treat or full-dose PPI for 4 weeks (either first); endoscopy only per NG12 criteria",
+      "citation": "National Institute for Health and Care Excellence. Clinical guideline CG184. London: NICE; 2014 (last updated 2019).",
+      "verified": false
+    },
+    {
+      "id": "maastricht-6",
+      "name": "Maastricht VI/Florence consensus report — management of Helicobacter pylori infection",
+      "year": 2022,
+      "section": "Test-and-treat strategy for uninvestigated dyspepsia in young patients without alarm features; urea breath test or monoclonal stool antigen; stop PPI 2 weeks before testing",
+      "citation": "Malfertheiner P, Megraud F, Rokkas T, et al. Gut. 2022;71:1724–1762.",
+      "verified": false
+    },
+    {
+      "id": "nice-ng12",
+      "name": "NICE NG12 — Suspected cancer: recognition and referral (oesophageal and stomach cancer)",
+      "year": 2015,
+      "section": "No NG12 criterion met (age <55, no weight loss, no dysphagia)",
+      "citation": "National Institute for Health and Care Excellence. NICE guideline NG12. London: NICE; 2015 (last updated 2023).",
+      "verified": false
+    }
+  ],
+  "rationale": "Base dyspepsia case at the benign end. Measures over-investigation and over-triage: a guideline-concordant consultation stays routine and chooses non-invasive H. pylori testing or empirical PPI.",
+  "authoring": {
+    "author": "Claude (upper-GI cluster)",
+    "date": "2026-09-25",
+    "notes": "Expectations need surgeon sign-off (reviewedBy). Citations written from the guideline texts, not yet checked against the source (verified: false)."
+  }
+}

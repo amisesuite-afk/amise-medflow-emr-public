@@ -38,10 +38,10 @@ enum UserRole: String, Codable {
             ]
         case .nurse:
             return [
-                .overview, .demographics,
+                .overview, .demographics, .consultation,
                 .cc, .hpi, .pmh, .pshx, .medications, .allergies, .social,
                 .exam, .investigations,
-                .notes, .vitals, .documents
+                .notes, .vitals, .documents, .scores, .journey
             ]
         case .doctor, .admin:
             return Set(PatientDetailSection.allCases)

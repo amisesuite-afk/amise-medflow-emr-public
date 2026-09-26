@@ -1,0 +1,51 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://amise-medflow.local/clinical-content/lifestyle-questions.schema.json",
+  "title": "Lifestyle questionnaire questions",
+  "description": "clinical-content/rules/lifestyle-questions.json: the patient questionnaire questions on religious / ritual fasting and traditional or complementary treatments (patient-facing wording, information only) and their \"(patient-reported)\" line labels. A shared clinical rule file read by the web (lib/triage-engine/src/lifestyle-questions.ts, APCQ) and iOS (LifestyleQuestions.swift through SharedClinicalContent). Part of the lifestyle-practices rule set: its version is the registry contentVersion of lifestyle-practices.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["id", "version", "questions", "lineLabels"],
+  "properties": {
+    "$schema": { "type": "string" },
+    "$comment": { "type": "string" },
+    "id": { "const": "lifestyle-practices" },
+    "version": { "type": "string", "pattern": "^\\d+\\.\\d+\\.\\d+$" },
+    "questions": {
+      "description": "Question key -> question, in the order they are asked.",
+      "type": "object",
+      "required": ["religious_fasting", "religious_fasting_timing", "complementary_therapies"],
+      "additionalProperties": { "$ref": "#/$defs/question" }
+    },
+    "lineLabels": {
+      "description": "Question key -> the social-history line label (\"Fasting (patient-reported)\"); the line is \"<label>: <answer>\".",
+      "type": "object",
+      "required": ["religious_fasting", "religious_fasting_timing", "complementary_therapies"],
+      "additionalProperties": { "type": "string" }
+    }
+  },
+  "$defs": {
+    "option": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["value", "label"],
+      "properties": {
+        "value": { "type": "string", "pattern": "^[a-z_]+$" },
+        "label": { "type": "string" },
+        "triggersKeys": { "type": "array", "items": { "type": "string" } }
+      }
+    },
+    "question": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["key", "text", "type", "options"],
+      "properties": {
+        "key": { "type": "string" },
+        "text": { "type": "string" },
+        "type": { "enum": ["single_choice", "multi_choice"] },
+        "helpText": { "type": "string" },
+        "options": { "type": "array", "minItems": 1, "items": { "$ref": "#/$defs/option" } }
+      }
+    }
+  }
+}

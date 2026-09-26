@@ -5,6 +5,8 @@
  * surface the most discriminating questions first.
  */
 
+import { containsAffirmed, joinClauses } from '@workspace/triage-engine';
+
 // ─── Types ────────────────────────────────────────────────────────────────────
 
 export type DxUrgency = 'urgent' | 'priority' | 'routine';
@@ -1357,6 +1359,31 @@ export const DIFFERENTIALS: DifferentialEntry[] = [
     symptomWeights: {
       'rash': 28,
       'pruritus': 25,
+    },
+  },
+  {
+    // Resuscitation Council UK 2021: sudden airway / breathing / circulation problem with skin or
+    // mucosal change after a trigger. Added so the secondary view can name it (clinval acutemed 3).
+    id: 'anaphylaxis',
+    name: 'Anaphylaxis',
+    category: 'Dermatology',
+    urgency: 'urgent',
+    basePrior: 3,
+    symptomWeights: {
+      'rash': 18,
+      'wheeze': 18,
+      'stridor': 25,
+      'hoarse voice': 15,
+      'shortness of breath': 12,
+      'pre-syncope': 15,
+      'syncope': 10,
+      'vomiting': 6,
+      'lip swelling': 30,
+      'facial swelling': 25,
+    },
+    detailWeights: {
+      'rash.Urticarial (wheals)': 25,
+      'rash.Recent medication': 20,
     },
   },
 
@@ -4148,6 +4175,100 @@ const PATHOGNOMONIC_SIGNS: Record<string, string[]> = {
   hepatocellular_carcinoma:["bruit hepatic", "arterial bruit liver"],
 };
 
+/**
+ * SmartSymptomPicker option → the detailWeights keys written for it.
+ *
+ * detailWeights are looked up as `${symptom}.${option}`, but many keys were written with wording
+ * that no picker option produces ("chest pain.Radiating to arm" while the option is "Left arm",
+ * "abdominal pain.Associated.Fever" while the option is "Fever"), so those weights never fired
+ * (clinval acutemed "chest-pain detail weights", colorectal item 20). Each picker option below
+ * also scores the keys listed for it. Options and keys are checked by
+ * symptom-inference-detail-keys.test.ts (every source is a real option, every target a real key).
+ */
+export const DETAIL_KEY_ALIASES: Record<string, string[]> = {
+  'chest pain.Crushing / pressure': ['chest pain.Crushing', 'chest pain.Crushing or pressure quality', 'chest pain.Dull or pressure'],
+  'chest pain.Left arm': ['chest pain.Radiating to arm', 'chest pain.Radiation to left arm'],
+  'chest pain.Right arm': ['chest pain.Radiating to arm'],
+  'chest pain.Jaw': ['chest pain.Radiating to jaw', 'chest pain.Radiation to jaw'],
+  'chest pain.Tearing / ripping': ['chest pain.Tearing'],
+  'chest pain.Pleuritic': ['chest pain.Pleuritic or acute chest'],
+  'abdominal pain.Shoulder tip': ['abdominal pain.Radiation to shoulder tip'],
+  'abdominal pain.Back': ['abdominal pain.Radiation to back'],
+  'abdominal pain.Burning': ['abdominal pain.Character.Burning'],
+  'abdominal pain.Fever': ['abdominal pain.Associated.Fever'],
+  'abdominal pain.Anorexia': ['abdominal pain.Associated.Anorexia'],
+  'abdominal pain.Vomiting': ['abdominal pain.Associated.Vomiting'],
+  'abdominal pain.Constipation': ['abdominal pain.Associated.Constipation'],
+  'abdominal pain.Diarrhoea': ['abdominal pain.Associated.Diarrhoea'],
+  'abdominal pain.LLQ': ['abdominal pain.LIF'],
+  'abdominal pain.RLQ': ['abdominal pain.Right iliac fossa'],
+  'abdominal pain.Diffuse': ['abdominal pain.Generalised'],
+  'abdominal pain.Sudden': ['abdominal pain.Sudden onset'],
+  'abdominal pain.Severe (7–9)': ['abdominal pain.Severe'],
+  'abdominal pain.Worst ever (10)': ['abdominal pain.Severe'],
+  'black stool.NSAIDs': ['black stool.Risk factors.NSAIDs'],
+  'black stool.Alcohol': ['black stool.Risk factors.Alcohol'],
+  'black stool.Aspirin': ['black stool.Risk factors.Aspirin'],
+  'black stool.Prior PUD': ['black stool.Risk factors.Prior PUD'],
+  'rectal bleeding.Weight loss': ['rectal bleeding.Associated.Weight loss'],
+  'rectal bleeding.Diarrhoea': ['rectal bleeding.Associated.Diarrhoea'],
+  'rectal bleeding.Constipation': ['rectal bleeding.Associated.Constipation'],
+  'rectal bleeding.Fresh red': ['rectal bleeding.Bright red'],
+  'weight loss.Altered bowel habit': ['weight loss.Associated.Altered bowel habit'],
+  'weight loss.Abdominal mass': ['weight loss.Associated.Abdominal mass'],
+  'weight loss.Night sweats': ['weight loss.Associated.Night sweats'],
+  'weight loss.Fatigue': ['weight loss.Associated.Fatigue'],
+  'dysphagia.Solids only': ['dysphagia.Type.Solids only'],
+  'dysphagia.Progressive': ['dysphagia.Type.Progressive'],
+  'dysphagia.Weight loss': ['dysphagia.Associated.Weight loss'],
+  'dysphagia.Regurgitation': ['dysphagia.Associated.Regurgitation'],
+  'dysphagia.Hoarse voice': ['dysphagia.Associated.Hoarse voice'],
+  'hernia.Right groin': ['hernia.Location.Right groin'],
+  'hernia.Left groin': ['hernia.Location.Left groin'],
+  'hernia.Umbilical': ['hernia.Location.Umbilical'],
+  'hernia.Incisional': ['hernia.Location.Incisional'],
+  'hernia.Easily reducible': ['hernia.Reducibility.Easily reducible'],
+  'hernia.Reducible with effort': ['hernia.Reducibility.Reducible with effort'],
+  'hernia.Irreducible': ['hernia.Reducibility.Irreducible'],
+  "hernia.Can't assess": ["hernia.Reducibility.Can't assess"],
+  'breast lump.Hard': ['breast lump.Character.Hard'],
+  'breast lump.Fixed': ['breast lump.Character.Fixed'],
+  'breast lump.Soft': ['breast lump.Character.Soft'],
+  'breast lump.Mobile': ['breast lump.Character.Mobile'],
+  'breast lump.Tender': ['breast lump.Character.Tender'],
+  'breast lump.Skin change': ['breast lump.Associated.Skin change'],
+  'breast lump.Skin tethering': ['breast lump.Associated.Skin tethering'],
+  'breast lump.Nipple inversion': ['breast lump.Associated.Nipple inversion'],
+  'breast lump.Axillary lump': ['breast lump.Associated.Axillary lump'],
+  'breast lump.Months': ['breast lump.Duration.Months'],
+  'breast lump.Years': ['breast lump.Duration.Years'],
+  'breast lump.< 2 weeks': ['breast lump.Duration.< 2 weeks'],
+  'breast lump.2–6 weeks': ['breast lump.Duration.2–6 weeks'],
+  'breast lump.Family history': ['breast lump.Risk factors.Family history'],
+  'breast lump.Prior breast cancer': ['breast lump.Risk factors.Prior breast cancer'],
+  'breast lump.BRCA known': ['breast lump.Risk factors.BRCA known'],
+  'nipple discharge.Bloody': ['nipple discharge.Character.Bloody'],
+  'fever after surgery.Day 0–1': ['fever after surgery.Within 1 week'],
+  'fever after surgery.Day 2–3': ['fever after surgery.Within 1 week'],
+  'fever after surgery.Day 4–5': ['fever after surgery.Within 1 week'],
+  'vomiting.Bile': ['vomiting.Bile-stained', 'vomiting.Bilious green sudden onset'],
+  'vomiting.Projectile': ['vomiting.Projectile non-bilious'],
+  'headache.First / worst ever': ['headache.Severe or worst ever'],
+  'headache.Thunderclap (sudden worst-ever)': ['headache.Severe or worst ever'],
+  'shortness of breath.Sudden': ['shortness of breath.Sudden onset'],
+  'joint pain.Ankle': ['joint pain.Ankles and knees'],
+  'lower back pain.Down leg (sciatica)': ['lower back pain.Radiation below knee'],
+};
+
+/** The detailWeights keys one picker selection scores (its own key plus its aliases). */
+export function detailKeysFor(symptom: string, option: string): string[] {
+  const key = `${symptom}.${option}`;
+  return [key, ...(DETAIL_KEY_ALIASES[key] ?? [])];
+}
+
+/** Childhood-category diseases that also occur in adults (scored ×0.3 rather than ×0.05 from 16). */
+const ADULT_ALSO = new Set(['hsp', 'epiglottitis', 'meckel_diverticulum', 'scarlet_fever']);
+
 const EXCLUSION_SIGNS: Record<string, string[]> = {
   acute_appendicitis:   ["murphy's sign", "murphy sign"],
   acute_cholecystitis:  ["rovsing's sign", "psoas sign", "mcburney's sign"],
@@ -4233,7 +4354,10 @@ export function computeDxMarkers(
       let bestT = 0;
       for (const dx of DIFFERENTIALS) {
         let ts = 0;
-        for (const key of temporalDetails) ts += dx.detailWeights?.[key] ?? 0;
+        for (const key of temporalDetails) {
+          const i = key.indexOf('.');
+          for (const k of detailKeysFor(key.slice(0, i), key.slice(i + 1))) ts += dx.detailWeights?.[k] ?? 0;
+        }
         if (ts > bestT) { bestT = ts; temporalBestId = dx.id; }
       }
     }
@@ -4247,12 +4371,14 @@ function computeRawScore(
   { symptoms, symptomDetails, age, sex, examText }: InferenceInput,
 ): number {
   // ── Pathognomonic check: single sign drives score +150 ────────────────────
-  const fullClinicalText = [...symptoms, examText ?? ''].join(' ').toLowerCase();
+  // Negation-aware (negation.ts): "Murphy's sign negative" neither confirms cholecystitis nor
+  // excludes appendicitis.
+  const fullClinicalText = joinClauses([...symptoms, examText ?? '']);
   const pathoSigns = PATHOGNOMONIC_SIGNS[dx.id];
-  const matchedSign = pathoSigns?.find(s => fullClinicalText.includes(s.toLowerCase()));
+  const matchedSign = pathoSigns?.find(s => containsAffirmed(fullClinicalText, s));
 
   const exclusionSigns = EXCLUSION_SIGNS[dx.id] ?? dx.exclusionSigns;
-  const isExcluded = exclusionSigns?.some(s => fullClinicalText.includes(s.toLowerCase()));
+  const isExcluded = exclusionSigns?.some(s => containsAffirmed(fullClinicalText, s));
   if (isExcluded) return 0;
 
   let score = dx.basePrior;
@@ -4267,10 +4393,11 @@ function computeRawScore(
 
   for (const [sym, details] of Object.entries(symptomDetails)) {
     for (const detail of details) {
-      const key = `${sym}.${detail}`;
-      const dw = dx.detailWeights?.[key] ?? 0;
-      score += dw;
-      if (dw > 0) symptomHit = true;
+      for (const key of detailKeysFor(sym, detail)) {
+        const dw = dx.detailWeights?.[key] ?? 0;
+        score += dw;
+        if (dw > 0) symptomHit = true;
+      }
     }
   }
 
@@ -4282,6 +4409,12 @@ function computeRawScore(
   }
   if (dx.sexModifier && sex === dx.sexModifier.sex) {
     score += dx.sexModifier.add;
+  }
+  // Childhood diseases (paediatric flag or a Paediatric category) are rarely the answer in adults:
+  // ×0.05 from age 16, ×0.3 for the few that also occur in adults. Before this an adult with
+  // wheeze got "Bronchiolitis (RSV)" first (clinval acutemed anaphylaxis / asthma).
+  if (age != null && age >= 16 && (dx.paediatric || dx.category.startsWith('Paediatric'))) {
+    score *= ADULT_ALSO.has(dx.id) ? 0.3 : 0.05;
   }
 
   // When the clinician has selected symptoms but none appear in this differential's
@@ -4299,7 +4432,7 @@ function computeRawScore(
  * values add to ≤ 100 (softmax-like).
  */
 export function computeRankedDifferentials(input: InferenceInput): RankedDifferential[] {
-  const fullClinicalText = [...input.symptoms, input.examText ?? ''].join(' ').toLowerCase();
+  const fullClinicalText = joinClauses([...input.symptoms, input.examText ?? '']);
   const scored = DIFFERENTIALS.map(dx => ({
     ...dx,
     rawScore: computeRawScore(dx, input),
@@ -4309,7 +4442,7 @@ export function computeRankedDifferentials(input: InferenceInput): RankedDiffere
   const ranked = scored
     .map(d => {
       const pathoSigns = PATHOGNOMONIC_SIGNS[d.id];
-      const matchedSign = pathoSigns?.find(s => fullClinicalText.includes(s.toLowerCase()));
+      const matchedSign = pathoSigns?.find(s => containsAffirmed(fullClinicalText, s));
       return {
         id: d.id,
         name: d.name,

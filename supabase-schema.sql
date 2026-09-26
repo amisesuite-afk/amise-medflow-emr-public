@@ -18,13 +18,21 @@ create table if not exists user_profiles (
   updated_at  timestamptz not null default now()
 );
 
--- Auto-create profile on new user signup
+-- Auto-create a staff profile ONLY when the admin API set
+-- app_metadata.staff_role. Patient-portal users are auth users in this same
+-- project, so defaulting every new user to 'front_desk' made every portal
+-- patient staff (security finding S-2). Kept identical to the definition in
+-- supabase-staff-only-rls-migration.sql, which is the authoritative one.
 create or replace function handle_new_user()
-returns trigger language plpgsql security definer as $$
+returns trigger language plpgsql security definer set search_path = public, pg_temp as $$
+declare
+  requested_role text := new.raw_app_meta_data ->> 'staff_role';
 begin
-  insert into public.user_profiles (id, full_name, role)
-  values (new.id, new.raw_user_meta_data->>'full_name', 'front_desk')
-  on conflict (id) do nothing;
+  if requested_role in ('front_desk', 'nurse', 'doctor', 'admin') then
+    insert into public.user_profiles (id, full_name, role)
+    values (new.id, new.raw_user_meta_data ->> 'full_name', requested_role)
+    on conflict (id) do nothing;
+  end if;
   return new;
 end;
 $$;
@@ -309,110 +317,229 @@ end $$;
 
 -- ── user_profiles ──
 -- Users can read their own profile; admins see all
-create policy "users_select_own_profile" on user_profiles
-  for select using (id = auth.uid() or auth_role() = 'admin');
-create policy "admins_manage_profiles" on user_profiles
-  for all using (auth_role() = 'admin');
+do $guard$ begin
+  create policy "users_select_own_profile" on user_profiles
+    for select using (id = auth.uid() or auth_role() = 'admin');
+exception when duplicate_object then null;
+end $guard$;
+do $guard$ begin
+  create policy "admins_manage_profiles" on user_profiles
+    for all using (auth_role() = 'admin');
+exception when duplicate_object then null;
+end $guard$;
 
 -- ── patients ──
 -- All authenticated staff can read patients
-create policy "staff_select_patients" on patients
-  for select using (auth.uid() is not null);
+do $guard$ begin
+  create policy "staff_select_patients" on patients
+    for select using (auth.uid() is not null);
+exception when duplicate_object then null;
+end $guard$;
 -- Front desk, nurses, doctors, admins can insert
-create policy "staff_insert_patients" on patients
-  for insert with check (auth.uid() is not null);
--- Doctors and admins can update
-create policy "doctors_update_patients" on patients
-  for update using (auth_role() in ('doctor', 'admin', 'nurse'));
+do $guard$ begin
+  create policy "staff_insert_patients" on patients
+    for insert with check (auth.uid() is not null);
+exception when duplicate_object then null;
+end $guard$;
+-- Doctors and admins can update.
+-- Migration 89 replaces this with staff_update_patients; once it has run (its
+-- user_profiles_revoked table exists), do not re-create it on a re-run.
+do $guard$ begin
+  if to_regclass('public.user_profiles_revoked') is not null then
+    return;
+  end if;
+  create policy "doctors_update_patients" on patients
+    for update using (auth_role() in ('doctor', 'admin', 'nurse'));
+exception when duplicate_object then null;
+end $guard$;
 -- Admins only can delete
-create policy "admins_delete_patients" on patients
-  for delete using (auth_role() = 'admin');
+do $guard$ begin
+  create policy "admins_delete_patients" on patients
+    for delete using (auth_role() = 'admin');
+exception when duplicate_object then null;
+end $guard$;
 
 -- ── encounters ──
-create policy "staff_select_encounters" on encounters
-  for select using (auth.uid() is not null);
-create policy "staff_insert_encounters" on encounters
-  for insert with check (auth.uid() is not null);
-create policy "doctors_update_encounters" on encounters
-  for update using (auth_role() in ('doctor', 'admin', 'nurse'));
-create policy "admins_delete_encounters" on encounters
-  for delete using (auth_role() = 'admin');
+do $guard$ begin
+  create policy "staff_select_encounters" on encounters
+    for select using (auth.uid() is not null);
+exception when duplicate_object then null;
+end $guard$;
+do $guard$ begin
+  create policy "staff_insert_encounters" on encounters
+    for insert with check (auth.uid() is not null);
+exception when duplicate_object then null;
+end $guard$;
+do $guard$ begin
+  create policy "doctors_update_encounters" on encounters
+    for update using (auth_role() in ('doctor', 'admin', 'nurse'));
+exception when duplicate_object then null;
+end $guard$;
+do $guard$ begin
+  create policy "admins_delete_encounters" on encounters
+    for delete using (auth_role() = 'admin');
+exception when duplicate_object then null;
+end $guard$;
 
 -- ── vitals ──
-create policy "staff_select_vitals" on vitals
-  for select using (auth.uid() is not null);
-create policy "nurses_insert_vitals" on vitals
-  for insert with check (auth_role() in ('nurse', 'doctor', 'admin'));
-create policy "nurses_update_vitals" on vitals
-  for update using (auth_role() in ('nurse', 'doctor', 'admin'));
+do $guard$ begin
+  create policy "staff_select_vitals" on vitals
+    for select using (auth.uid() is not null);
+exception when duplicate_object then null;
+end $guard$;
+do $guard$ begin
+  create policy "nurses_insert_vitals" on vitals
+    for insert with check (auth_role() in ('nurse', 'doctor', 'admin'));
+exception when duplicate_object then null;
+end $guard$;
+do $guard$ begin
+  create policy "nurses_update_vitals" on vitals
+    for update using (auth_role() in ('nurse', 'doctor', 'admin'));
+exception when duplicate_object then null;
+end $guard$;
 
 -- ── symptoms ──
-create policy "staff_select_symptoms" on symptoms
-  for select using (auth.uid() is not null);
-create policy "staff_insert_symptoms" on symptoms
-  for insert with check (auth.uid() is not null);
-create policy "staff_update_symptoms" on symptoms
-  for update using (created_by = auth.uid() or auth_role() in ('doctor', 'admin'));
+do $guard$ begin
+  create policy "staff_select_symptoms" on symptoms
+    for select using (auth.uid() is not null);
+exception when duplicate_object then null;
+end $guard$;
+do $guard$ begin
+  create policy "staff_insert_symptoms" on symptoms
+    for insert with check (auth.uid() is not null);
+exception when duplicate_object then null;
+end $guard$;
+do $guard$ begin
+  create policy "staff_update_symptoms" on symptoms
+    for update using (created_by = auth.uid() or auth_role() in ('doctor', 'admin'));
+exception when duplicate_object then null;
+end $guard$;
 
 -- ── medications ──
-create policy "staff_select_medications" on medications
-  for select using (auth.uid() is not null);
-create policy "nurses_insert_medications" on medications
-  for insert with check (auth_role() in ('nurse', 'doctor', 'admin', 'front_desk'));
-create policy "nurses_update_medications" on medications
-  for update using (auth_role() in ('nurse', 'doctor', 'admin'));
+do $guard$ begin
+  create policy "staff_select_medications" on medications
+    for select using (auth.uid() is not null);
+exception when duplicate_object then null;
+end $guard$;
+do $guard$ begin
+  create policy "nurses_insert_medications" on medications
+    for insert with check (auth_role() in ('nurse', 'doctor', 'admin', 'front_desk'));
+exception when duplicate_object then null;
+end $guard$;
+do $guard$ begin
+  create policy "nurses_update_medications" on medications
+    for update using (auth_role() in ('nurse', 'doctor', 'admin'));
+exception when duplicate_object then null;
+end $guard$;
 
 -- ── allergies ──
-create policy "staff_select_allergies" on allergies
-  for select using (auth.uid() is not null);
-create policy "staff_insert_allergies" on allergies
-  for insert with check (auth.uid() is not null);
-create policy "staff_update_allergies" on allergies
-  for update using (created_by = auth.uid() or auth_role() in ('doctor', 'admin', 'nurse'));
+do $guard$ begin
+  create policy "staff_select_allergies" on allergies
+    for select using (auth.uid() is not null);
+exception when duplicate_object then null;
+end $guard$;
+do $guard$ begin
+  create policy "staff_insert_allergies" on allergies
+    for insert with check (auth.uid() is not null);
+exception when duplicate_object then null;
+end $guard$;
+do $guard$ begin
+  create policy "staff_update_allergies" on allergies
+    for update using (created_by = auth.uid() or auth_role() in ('doctor', 'admin', 'nurse'));
+exception when duplicate_object then null;
+end $guard$;
 
 -- ── assessments (doctor/admin only) ──
-create policy "doctors_select_assessments" on assessments
-  for select using (auth_role() in ('doctor', 'admin', 'nurse'));
-create policy "doctors_insert_assessments" on assessments
-  for insert with check (auth_role() in ('doctor', 'admin'));
-create policy "doctors_update_assessments" on assessments
-  for update using (auth_role() in ('doctor', 'admin'));
+do $guard$ begin
+  create policy "doctors_select_assessments" on assessments
+    for select using (auth_role() in ('doctor', 'admin', 'nurse'));
+exception when duplicate_object then null;
+end $guard$;
+do $guard$ begin
+  create policy "doctors_insert_assessments" on assessments
+    for insert with check (auth_role() in ('doctor', 'admin'));
+exception when duplicate_object then null;
+end $guard$;
+do $guard$ begin
+  create policy "doctors_update_assessments" on assessments
+    for update using (auth_role() in ('doctor', 'admin'));
+exception when duplicate_object then null;
+end $guard$;
 
 -- ── plans (doctor/admin only) ──
-create policy "doctors_select_plans" on plans
-  for select using (auth_role() in ('doctor', 'admin', 'nurse'));
-create policy "doctors_insert_plans" on plans
-  for insert with check (auth_role() in ('doctor', 'admin'));
-create policy "doctors_update_plans" on plans
-  for update using (auth_role() in ('doctor', 'admin'));
+do $guard$ begin
+  create policy "doctors_select_plans" on plans
+    for select using (auth_role() in ('doctor', 'admin', 'nurse'));
+exception when duplicate_object then null;
+end $guard$;
+do $guard$ begin
+  create policy "doctors_insert_plans" on plans
+    for insert with check (auth_role() in ('doctor', 'admin'));
+exception when duplicate_object then null;
+end $guard$;
+do $guard$ begin
+  create policy "doctors_update_plans" on plans
+    for update using (auth_role() in ('doctor', 'admin'));
+exception when duplicate_object then null;
+end $guard$;
 
 -- ── procedures ──
-create policy "staff_select_procedures" on procedures
-  for select using (auth.uid() is not null);
-create policy "doctors_manage_procedures" on procedures
-  for all using (auth_role() in ('doctor', 'admin'));
+do $guard$ begin
+  create policy "staff_select_procedures" on procedures
+    for select using (auth.uid() is not null);
+exception when duplicate_object then null;
+end $guard$;
+do $guard$ begin
+  create policy "doctors_manage_procedures" on procedures
+    for all using (auth_role() in ('doctor', 'admin'));
+exception when duplicate_object then null;
+end $guard$;
 
 -- ── referrals ──
-create policy "staff_select_referrals" on referrals
-  for select using (auth.uid() is not null);
-create policy "doctors_manage_referrals" on referrals
-  for all using (auth_role() in ('doctor', 'admin'));
+do $guard$ begin
+  create policy "staff_select_referrals" on referrals
+    for select using (auth.uid() is not null);
+exception when duplicate_object then null;
+end $guard$;
+do $guard$ begin
+  create policy "doctors_manage_referrals" on referrals
+    for all using (auth_role() in ('doctor', 'admin'));
+exception when duplicate_object then null;
+end $guard$;
 
 -- ── appointments ──
-create policy "staff_select_appointments" on appointments
-  for select using (auth.uid() is not null);
-create policy "staff_insert_appointments" on appointments
-  for insert with check (auth.uid() is not null);
-create policy "staff_update_appointments" on appointments
-  for update using (auth.uid() is not null);
-create policy "admins_delete_appointments" on appointments
-  for delete using (auth_role() = 'admin');
+do $guard$ begin
+  create policy "staff_select_appointments" on appointments
+    for select using (auth.uid() is not null);
+exception when duplicate_object then null;
+end $guard$;
+do $guard$ begin
+  create policy "staff_insert_appointments" on appointments
+    for insert with check (auth.uid() is not null);
+exception when duplicate_object then null;
+end $guard$;
+do $guard$ begin
+  create policy "staff_update_appointments" on appointments
+    for update using (auth.uid() is not null);
+exception when duplicate_object then null;
+end $guard$;
+do $guard$ begin
+  create policy "admins_delete_appointments" on appointments
+    for delete using (auth_role() = 'admin');
+exception when duplicate_object then null;
+end $guard$;
 
 -- ── audit_logs (append-only for all authenticated; read for doctors/admins) ──
-create policy "staff_insert_audit" on audit_logs
-  for insert with check (auth.uid() is not null);
-create policy "admins_select_audit" on audit_logs
-  for select using (auth_role() in ('doctor', 'admin'));
+do $guard$ begin
+  create policy "staff_insert_audit" on audit_logs
+    for insert with check (auth.uid() is not null);
+exception when duplicate_object then null;
+end $guard$;
+do $guard$ begin
+  create policy "admins_select_audit" on audit_logs
+    for select using (auth_role() in ('doctor', 'admin'));
+exception when duplicate_object then null;
+end $guard$;
 
 -- ─────────────────────────────────────────────────────────────
 -- INDEXES
@@ -499,7 +626,10 @@ create table if not exists appointment_requests (
 );
 
 alter table appointment_requests enable row level security;
-create policy "staff_all" on appointment_requests for all using (true);
+do $guard$ begin
+  create policy "staff_all" on appointment_requests for all using (true);
+exception when duplicate_object then null;
+end $guard$;
 grant select, insert, update        on public.appointment_requests to authenticated, service_role;
 
 create index if not exists idx_appt_requests_pending_created

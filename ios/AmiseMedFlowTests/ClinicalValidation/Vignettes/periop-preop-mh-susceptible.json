@@ -1,0 +1,232 @@
+{
+  "schemaVersion": 1,
+  "id": "periop-preop-mh-susceptible",
+  "condition": "Pre-operative assessment — malignant hyperthermia susceptibility (untested first-degree relative)",
+  "category": "other",
+  "permutationOf": "periop-preop-asa1-lap-chole",
+  "permutationLabel": "Untested first-degree relative of an MH-susceptible patient",
+  "summary": "27-year-old man whose brother is IVCT-confirmed MH-susceptible, untested himself, listed for laparoscopic cholecystectomy.",
+  "tags": [
+    "periop",
+    "preop",
+    "malignant-hyperthermia",
+    "anaesthetic-alert"
+  ],
+  "inputs": {
+    "patient": {
+      "ageYears": 27,
+      "sex": "male",
+      "pregnancy": {
+        "status": "not-applicable"
+      },
+      "heightCm": 181,
+      "weightKg": 78
+    },
+    "encounter": {
+      "setting": "outpatient",
+      "visitType": "surgeryElective",
+      "acuity": "routine"
+    },
+    "chiefComplaint": "Pre-operative assessment for planned gallbladder operation",
+    "hpi": "Symptomatic gallstones, listed for laparoscopic cholecystectomy. His brother developed malignant hyperthermia during an appendicectomy in 2022 and was confirmed MH-susceptible on muscle biopsy (IVCT). The patient has not been tested. Never had a general anaesthetic. Fit and well otherwise.",
+    "symptoms": [
+      "biliary colic"
+    ],
+    "negatives": [
+      "jaundice",
+      "fever",
+      "chest pain",
+      "breathlessness"
+    ],
+    "exam": {
+      "general": "Well. HR 66, BP 124/76, RR 12, SpO2 99% on air, T 36.6°C.",
+      "abdomen": "Soft, non-tender.",
+      "cardiovascular": "Heart sounds normal.",
+      "respiratory": "Chest clear."
+    },
+    "vitals": [
+      {
+        "minutesAgo": 5,
+        "heartRate": 66,
+        "systolicBp": 124,
+        "diastolicBp": 76,
+        "respiratoryRate": 12,
+        "temperatureC": 36.6,
+        "spo2": 99,
+        "avpu": "A",
+        "onSupplementalO2": false
+      }
+    ],
+    "labs": [
+      {
+        "analyte": "haemoglobin",
+        "name": "Haemoglobin",
+        "value": 13.2,
+        "unit": "g/dL",
+        "minutesAgo": 10080
+      },
+      {
+        "analyte": "wbc",
+        "name": "WBC",
+        "value": 6.4,
+        "unit": "×10⁹/L",
+        "minutesAgo": 10080
+      },
+      {
+        "analyte": "platelets",
+        "name": "Platelets",
+        "value": 260,
+        "unit": "×10⁹/L",
+        "minutesAgo": 10080
+      },
+      {
+        "analyte": "bilirubin",
+        "name": "Bilirubin",
+        "value": 9,
+        "unit": "µmol/L",
+        "minutesAgo": 10080
+      },
+      {
+        "analyte": "alp",
+        "name": "ALP",
+        "value": 84,
+        "unit": "U/L",
+        "minutesAgo": 10080
+      },
+      {
+        "analyte": "alt",
+        "name": "ALT",
+        "value": 22,
+        "unit": "U/L",
+        "minutesAgo": 10080
+      }
+    ],
+    "imaging": [
+      {
+        "name": "USS abdomen",
+        "modality": "US",
+        "region": "Abdomen",
+        "result": "Multiple mobile gallstones, gallbladder wall 2 mm, no pericholecystic fluid. CBD 4 mm. Liver normal.",
+        "minutesAgo": 43200
+      }
+    ],
+    "comorbidities": [
+      "Family history of malignant hyperthermia (brother IVCT-confirmed MH-susceptible); patient untested"
+    ],
+    "surgicalHistory": [],
+    "medications": [],
+    "allergies": [],
+    "nkda": true,
+    "socialHistory": "Non-smoker. Plays football.",
+    "confirmedDiagnosis": {
+      "name": "Pre-operative assessment — symptomatic gallstones; first-degree relative MH-susceptible",
+      "icd10": "Z01.818",
+      "assessmentText": "Symptomatic cholelithiasis. Brother IVCT-confirmed malignant hyperthermia susceptible; patient untested — treat as MH-susceptible."
+    },
+    "platform": {
+      "web": {
+        "ccTemplate": "Other / general surgical",
+        "symptoms": [
+          "biliary colic"
+        ],
+        "durationDays": 240,
+        "painScore": 0
+      }
+    }
+  },
+  "expected": {
+    "safety": {
+      "redFlags": [
+        {
+          "id": "flag-mh",
+          "severity": "critical",
+          "match": [
+            "malignant hyperthermia",
+            "mh-suscept",
+            "mh suscept",
+            "mhs"
+          ],
+          "guidelineRefs": [
+            "aa-mh-2021"
+          ],
+          "note": "An MH alert must be visible before any anaesthetic is planned."
+        }
+      ]
+    },
+    "management": {
+      "mustInclude": [
+        {
+          "id": "mgmt-trigger-free-anaesthesia",
+          "severity": "critical",
+          "match": [
+            "trigger-free",
+            "trigger free",
+            "tiva",
+            "total intravenous",
+            "re:(avoid|no|without)[^.;\\n]{0,30}(volatile|suxamethonium|succinylcholine)"
+          ],
+          "guidelineRefs": [
+            "aa-mh-2021"
+          ]
+        },
+        {
+          "id": "mgmt-dantrolene",
+          "severity": "quality",
+          "match": [
+            "dantrolene"
+          ],
+          "guidelineRefs": [
+            "aa-mh-2021"
+          ]
+        },
+        {
+          "id": "mgmt-mh-unit-referral",
+          "severity": "quality",
+          "match": [
+            "mh unit",
+            "malignant hyperthermia unit",
+            "ivct",
+            "muscle biopsy",
+            "genetic test"
+          ],
+          "guidelineRefs": [
+            "aa-mh-2021"
+          ],
+          "proposedFix": "Add an anaesthetic-alert rule set (PMH/allergy text: malignant hyperthermia, suxamethonium apnoea/butyrylcholinesterase, latex, difficult airway, OSA) that raises a persistent red flag and a plan line (trigger-free anaesthesia + dantrolene; avoid suxamethonium/mivacurium; latex-free theatre, first on list)."
+        }
+      ],
+      "mustExclude": [
+        {
+          "id": "mgmt-no-appendicectomy",
+          "severity": "critical",
+          "match": [
+            "appendicectomy",
+            "appendectomy"
+          ],
+          "unless": [
+            "not indicated",
+            "no role",
+            "exclude appendicitis"
+          ],
+          "note": "Not an appendix presentation: an appendicectomy operative plan (consent, theatre booking, post-operative orders) is a wrong-procedure suggestion."
+        }
+      ]
+    }
+  },
+  "guideline": [
+    {
+      "id": "aa-mh-2021",
+      "name": "Association of Anaesthetists guideline — malignant hyperthermia 2020",
+      "year": 2021,
+      "section": "MH-susceptible patients and untested first-degree relatives of an MH-susceptible patient: trigger-free anaesthesia (no volatile agents, no suxamethonium), dantrolene immediately available, refer relatives to an MH unit for testing",
+      "citation": "Hopkins PM, Girard T, Dalay S, et al. Malignant hyperthermia 2020: Guideline from the Association of Anaesthetists. Anaesthesia. 2021;76:655–64.",
+      "verified": false
+    }
+  ],
+  "rationale": "Permutation: anaesthetic-specific hazard recorded in the history. Tests an MH alert, trigger-free anaesthesia, dantrolene availability and referral of the untested relative.",
+  "authoring": {
+    "author": "Claude (perioperative medicine cluster)",
+    "date": "2026-09-25",
+    "notes": "Expectations and citations need surgeon sign-off (reviewedBy). Citations verified: false. iOS outcomes not yet observed (unverified: ios) — triage after the next CI run."
+  }
+}

@@ -1,13 +1,13 @@
-import Anthropic from '@anthropic-ai/sdk';
 import type {
   ConversationThread, TriageLevel, PatientMessage,
   TriageSnapshot, AppointmentSlot,
 } from '@/types';
 import { adaptiveTriage, checkForbiddenContent, FORBIDDEN_PATTERNS } from '@workspace/triage-engine';
 import { findSlots } from './calendar';
+import { createAnthropicClient, isAiEnabled } from './ai-gate';
 
 function getAnthropicClient() {
-  return new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY ?? '' });
+  return createAnthropicClient();
 }
 
 const SYSTEM_PROMPT = `You are the AI intake assistant for Amise Medical Services, Saint Lucia — a general and endoscopic surgical practice led by Dr Dawit Daniel Kabiye, MD, DM.
@@ -20,7 +20,7 @@ B. Contact — phone confirmed from channel
 C. Chief complaint — main symptom or reason for visit (1–2 sentences)
 D. Symptom characterisation — onset, duration, severity (0–10), location, aggravating/relieving factors
 E. Red-flag screen — ask explicitly: chest pain, difficulty breathing, severe abdominal pain, vomiting blood, rectal bleeding, loss of consciousness, high fever, stroke signs (FAST)
-F. Medical context — relevant past medical history, current medications, allergies
+F. Medical context — relevant past medical history, current medications, allergies. Always ask, in these words: "Do you take any herbs, bush teas, bush medicines, vitamins or supplements? Please include teas and remedies from the garden or market." Record what they say; never advise them to take, stop or change anything
 G. Administrative — preferred clinic (Rodney Bay / Tapion Hospital), preferred appointment time
 
 After EVERY patient message, output ONLY valid JSON with this exact structure:
@@ -68,6 +68,58 @@ interface ClaudeIntakeResult {
   triage: { level: TriageLevel; reason: string; red_flags: string[] };
   intake_complete: boolean;
   appointment_intent: boolean;
+}
+
+const HOLDING_REPLY = 'Thank you for your message. A member of our team will be in touch shortly.';
+// Same wording the system prompt mandates for EMERGENT replies.
+const EMERGENCY_REPLY = 'This sounds like a medical emergency. Please call 911 or go to the nearest emergency department immediately. Do not wait.';
+
+/**
+ * DISABLE_AI=true fallback for one intake turn: nothing is sent to Anthropic.
+ * The deterministic PANE triage (already run on the message) sets the level,
+ * so an emergency still gets the fixed ER/911 redirect and escalates; every
+ * other message gets a holding reply and waits for staff. No fields are
+ * extracted and no slots are offered — staff complete the intake by hand.
+ */
+function deterministicIntakeResult(pane: ReturnType<typeof adaptiveTriage>): ClaudeIntakeResult {
+  const level: TriageLevel =
+    pane.recommendedAction === 'emergency_now'   ? 'EMERGENT' :
+    pane.recommendedAction === 'same_day_call'   ? 'URGENT'   :
+    pane.recommendedAction === 'priority_24_48h' ? 'ROUTINE'  : 'INFO';
+  return {
+    reply:              level === 'EMERGENT' ? EMERGENCY_REPLY : HOLDING_REPLY,
+    section_completed:  null,
+    extracted:          {},
+    triage:             { level, reason: `AI disabled — deterministic triage (${pane.recommendedAction})`, red_flags: [] },
+    intake_complete:    false,
+    appointment_intent: false,
+  };
+}
+
+async function claudeIntakeResult(
+  history: { role: 'user' | 'assistant'; content: string }[],
+): Promise<ClaudeIntakeResult> {
+  try {
+    const response = await getAnthropicClient().messages.create({
+      model:      'claude-haiku-4-5-20251001',
+      max_tokens: 1024,
+      system:     SYSTEM_PROMPT,
+      messages:   history,
+    });
+    const raw = response.content[0].type === 'text' ? response.content[0].text : '';
+    const jsonMatch = raw.match(/```json\s*([\s\S]+?)\s*```/) ?? raw.match(/(\{[\s\S]+\})/);
+    return JSON.parse(jsonMatch ? jsonMatch[1] : raw) as ClaudeIntakeResult;
+  } catch (err) {
+    console.error('[Claude] Parse error:', err);
+    return {
+      reply:             HOLDING_REPLY,
+      section_completed: null,
+      extracted:         {},
+      triage:            { level: 'INFO', reason: 'Parse error fallback', red_flags: [] },
+      intake_complete:   false,
+      appointment_intent: false,
+    };
+  }
 }
 
 function runForbiddenCheck(text: string): string {
@@ -124,29 +176,10 @@ export async function runIntakeTurn(
     content: `${triageCtx}\n\n<patient_message>${newPatientMessage}</patient_message>`,
   });
 
-  // 3. Call Claude
-  let result: ClaudeIntakeResult;
-  try {
-    const response = await getAnthropicClient().messages.create({
-      model:      'claude-haiku-4-5-20251001',
-      max_tokens: 1024,
-      system:     SYSTEM_PROMPT,
-      messages:   history,
-    });
-    const raw = response.content[0].type === 'text' ? response.content[0].text : '';
-    const jsonMatch = raw.match(/```json\s*([\s\S]+?)\s*```/) ?? raw.match(/(\{[\s\S]+\})/);
-    result = JSON.parse(jsonMatch ? jsonMatch[1] : raw) as ClaudeIntakeResult;
-  } catch (err) {
-    console.error('[Claude] Parse error:', err);
-    result = {
-      reply:             'Thank you for your message. A member of our team will be in touch shortly.',
-      section_completed: null,
-      extracted:         {},
-      triage:            { level: 'INFO', reason: 'Parse error fallback', red_flags: [] },
-      intake_complete:   false,
-      appointment_intent: false,
-    };
-  }
+  // 3. Call Claude (or the deterministic fallback when DISABLE_AI=true)
+  const result: ClaudeIntakeResult = isAiEnabled()
+    ? await claudeIntakeResult(history)
+    : deterministicIntakeResult(pane);
 
   // 4. Safety filter on every Claude reply
   const safeReply = runForbiddenCheck(result.reply);
@@ -287,7 +320,9 @@ export async function draftProcedurePrepAdjustment(
   const name = patientFirstName || 'the patient';
   const context = patientMessages.join('\n').trim();
 
-  if (!context) {
+  // DISABLE_AI=true: no draft. The standard prep instructions are unaffected;
+  // staff still see the patient's own messages in the thread.
+  if (!context || !isAiEnabled()) {
     return { body: '', flagged: false, safe: true, violations: [] };
   }
 

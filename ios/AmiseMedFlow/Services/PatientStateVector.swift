@@ -60,8 +60,10 @@ struct LabPanel {
     var urea: FusedValue<Double>?        // mmol/L
     var bilirubin: FusedValue<Double>?   // µmol/L
     var alt: FusedValue<Double>?         // U/L
+    var ast: FusedValue<Double>?         // U/L
     var alp: FusedValue<Double>?         // U/L
     var albumin: FusedValue<Double>?     // g/dL
+    var calcium: FusedValue<Double>?     // mmol/L
     var amylase: FusedValue<Double>?     // U/L
     var lipase: FusedValue<Double>?      // U/L
     var lactate: FusedValue<Double>?     // mmol/L
@@ -78,8 +80,36 @@ struct LabPanel {
     var crpHigh: Bool     { (crp?.value ?? 0) > 100 }
     var lactateElevated: Bool { (lactate?.value ?? 0) >= 2.0 }
     var amylaseElevated: Bool { (amylase?.value ?? 0) > 100 }
+    var lipaseElevated: Bool  { (lipase?.value ?? 0) > 200 }
     var bilirubinElevated: Bool { (bilirubin?.value ?? 0) > 20 }
     var dDimerElevated: Bool  { (dDimer?.value ?? 0) > 500 }
+    var troponinElevated: Bool { (troponin?.value ?? 0) > 14 }
+    var anaemia: Bool     { (haemoglobin?.value ?? 99) < 10 }
+    var akiMarker: Bool   { (creatinine?.value ?? 0) > 130 }
+    var inrElevated: Bool { (inr?.value ?? 0) > 1.5 }
+    var altElevated: Bool { (alt?.value ?? 0) > 40 }
+    var astElevated: Bool { (ast?.value ?? 0) > 40 }
+    var glucoseLow: Bool  { glucose.map { $0.value < 4.0 } ?? false }
+    var glucoseHigh: Bool { glucose.map { $0.value > 11.0 } ?? false }
+    var hypercalcaemia: Bool { calcium.map { $0.value > 2.6 } ?? false }
+    var hypocalcaemia: Bool  { calcium.map { $0.value < 2.1 } ?? false }
+    var esrHigh: Bool     { (esr?.value ?? 0) > 50 }
+    // Calcium < 1.75 mmol/L = critical hypocalcaemia; > 3.0 = hypercalcaemia crisis
+    var calciumCritical: Bool { calcium.map { $0.value < 1.75 || $0.value > 3.0 } ?? false }
+
+    // True when any result meets a pre-operative critical threshold
+    var hasCriticalValues: Bool {
+        (haemoglobin.map { $0.value < 8.0 } ?? false) ||
+        (platelets.map   { $0.value < 50   } ?? false) ||
+        (creatinine.map  { $0.value > 300  } ?? false) ||
+        (inr.map         { $0.value > 2.5  } ?? false) ||
+        (sodium.map      { $0.value < 120 || $0.value > 155 } ?? false) ||
+        (potassium.map   { $0.value < 2.5 || $0.value > 6.0 } ?? false) ||
+        (lactate.map     { $0.value >= 4.0 } ?? false) ||
+        (glucose.map     { $0.value < 3.0 || $0.value > 20.0 } ?? false) ||
+        (troponin.map    { $0.value > 52  } ?? false) ||
+        calciumCritical
+    }
 }
 
 // MARK: - Vitals snapshot (most recent)
@@ -231,7 +261,10 @@ extension PatientStateVector {
         psv.allergiesRaw = patient.allergiesJson
 
         // PMH flags from raw text
-        psv.pmh = PMHFlags.parse(from: patient.pmhNotes ?? "")
+        // A relative's disease ("Family history of colorectal cancer (father, 58)") is not the
+        // patient's comorbidity (web adaptive-triage, web-last-gaps): entries naming a relative are
+        // removed before the flags are read.
+        psv.pmh = PMHFlags.parse(from: PlanSafetyFilter.removingRelativeEntries(patient.pmhNotes ?? ""))
 
         // Latest vitals snapshot
         if let v = patient.vitalsEntries.sorted(by: { $0.recordedAt > $1.recordedAt }).first {
@@ -246,8 +279,12 @@ extension PatientStateVector {
         // Matches by test name keyword; takes the most recent resulted entry per field.
         psv.labs = LabPanel.parse(from: patient.investigations)
 
-        // Exam flags from free text
-        psv.exam = ExamFindings.parse(from: [patient.examAbdo, patient.examGeneral].compactMap { $0 }.joined(separator: " "))
+        // Exam flags from all exam fields — CVS/Resp/Neuro/MSK/Skin add to abdo/general
+        let allExamText = [patient.examAbdo, patient.examGeneral, patient.examCVS,
+                           patient.examResp, patient.examNeuro, patient.examMSK,
+                           patient.examSkin, patient.examOther]
+            .compactMap { $0 }.filter { !$0.isEmpty }.joined(separator: " ")
+        psv.exam = ExamFindings.parse(from: allExamText)
 
         psv.inputSources = [.typed]
         psv.assembledAt = .now
@@ -259,7 +296,8 @@ extension PatientStateVector {
 
 extension PMHFlags {
     static func parse(from text: String) -> PMHFlags {
-        let t = text.lowercased()
+        // Negation-aware (NegationMatcher): "No history of DVT" is not a prior DVT.
+        let t = NegationMatcher.Source(text)
         return PMHFlags(
             previousAbdominalSurgery: t.contains("laparotomy") || t.contains("appendicect") || t.contains("cholecystect") || t.contains("abdominal surgery"),
             heartDisease:    t.contains("ihd") || t.contains("ischaemic heart") || t.contains("mi ") || t.contains("heart failure") || t.contains("cad") || t.contains("coronary"),
@@ -302,7 +340,7 @@ extension LabPanel {
     static func parse(from entries: [InvestigationEntry]) -> LabPanel {
         var lab = LabPanel()
         let resulted = entries
-            .filter { $0.status == .resulted && !$0.result.isEmpty }
+            .filter { $0.status == .resulted && !$0.result.isEmpty && $0.category.holdsLabValues }
             .sorted { ($0.resultedAt ?? $0.orderedAt) > ($1.resultedAt ?? $1.orderedAt) }
 
         func fv(_ raw: String, at date: Date) -> FusedValue<Double>? {
@@ -323,31 +361,37 @@ extension LabPanel {
         }
 
         for entry in resulted {
-            let n = entry.name.lowercased()
+            // Whole-word matching (LabNameMatch): "Hb A1c" is not Hb, "Fasting glucose" is not
+            // AST, "Lactate dehydrogenase" is not lactate, "Urine sodium" is not sodium.
+            let w = LabNameMatch.words(of: entry.name)
+            func has(_ keywords: String...) -> Bool { LabNameMatch.matchesAny(w, keywords) }
+            func only(_ keyword: String) -> Bool { LabNameMatch.isExactly(w, keyword) }
             let date = entry.resultedAt ?? entry.orderedAt
             guard let val = fv(entry.result, at: date) else { continue }
 
-            if n.contains("wbc") || n.contains("white cell") || n.contains("white blood")                     { if lab.wbc == nil { lab.wbc = val } }
-            else if n.contains("haemoglobin") || n.contains("hemoglobin") || n == "hb"                        { if lab.haemoglobin == nil { lab.haemoglobin = val } }
-            else if n.contains("platelet")                                                                     { if lab.platelets == nil { lab.platelets = val } }
-            else if n.contains("crp") || n.contains("c-reactive")                                             { if lab.crp == nil { lab.crp = val } }
-            else if n.contains("esr")                                                                          { if lab.esr == nil { lab.esr = val } }
-            else if n.contains("sodium") || n == "na"                                                          { if lab.sodium == nil { lab.sodium = val } }
-            else if n.contains("potassium") || n == "k"                                                        { if lab.potassium == nil { lab.potassium = val } }
-            else if n.contains("creatinine") && !n.contains("egfr")                                           { if lab.creatinine == nil { lab.creatinine = val } }
-            else if n.contains("urea") || n.contains("bun")                                                   { if lab.urea == nil { lab.urea = val } }
-            else if n.contains("bilirubin")                                                                    { if lab.bilirubin == nil { lab.bilirubin = val } }
-            else if n.contains("alt") || n.contains("alanine")                                                 { if lab.alt == nil { lab.alt = val } }
-            else if n.contains("alp") || n.contains("alkaline phosphatase")                                    { if lab.alp == nil { lab.alp = val } }
-            else if n.contains("albumin")                                                                      { if lab.albumin == nil { lab.albumin = val } }
-            else if n.contains("amylase") && !n.contains("lipase")                                             { if lab.amylase == nil { lab.amylase = val } }
-            else if n.contains("lipase")                                                                       { if lab.lipase == nil { lab.lipase = val } }
-            else if n.contains("lactate")                                                                      { if lab.lactate == nil { lab.lactate = val } }
-            else if n.contains("d-dimer") || n.contains("ddimer") || n.contains("d dimer")                    { if lab.dDimer == nil { lab.dDimer = val } }
-            else if n.contains("troponin")                                                                     { if lab.troponin == nil { lab.troponin = val } }
-            else if n.contains("inr")                                                                          { if lab.inr == nil { lab.inr = val } }
-            else if n.contains("glucose") && !n.contains("hba1c")                                             { if lab.glucose == nil { lab.glucose = val } }
-            else if n.contains("hba1c") || n.contains("haemoglobin a1c")                                      { if lab.hba1c == nil { lab.hba1c = val } }
+            if has("wbc", "white cell", "white blood", "leucocyte", "leukocyte")                 { if lab.wbc == nil { lab.wbc = val } }
+            else if has("haemoglobin", "hemoglobin", "hgb", "hb")                              { if lab.haemoglobin == nil { lab.haemoglobin = val } }
+            else if has("platelet")                                                            { if lab.platelets == nil { lab.platelets = val } }
+            else if has("crp", "c-reactive")                                                   { if lab.crp == nil { lab.crp = val } }
+            else if has("esr")                                                                 { if lab.esr == nil { lab.esr = val } }
+            else if has("sodium") || only("na")                                                { if lab.sodium == nil { lab.sodium = val } }
+            else if has("potassium") || only("k")                                              { if lab.potassium == nil { lab.potassium = val } }
+            else if has("creatinine") && !w.contains("egfr")                                   { if lab.creatinine == nil { lab.creatinine = val } }
+            else if has("urea", "bun")                                                         { if lab.urea == nil { lab.urea = val } }
+            else if has("bilirubin")                                                           { if lab.bilirubin == nil { lab.bilirubin = val } }
+            else if has("alt", "alanine")                                                      { if lab.alt == nil { lab.alt = val } }
+            else if has("ast", "aspartate")                                                    { if lab.ast == nil { lab.ast = val } }
+            else if has("alp", "alkaline phosphatase")                                         { if lab.alp == nil { lab.alp = val } }
+            else if has("albumin")                                                             { if lab.albumin == nil { lab.albumin = val } }
+            else if (has("calcium") || only("ca")) && !w.contains("bicarbonate")               { if lab.calcium == nil { lab.calcium = val } }
+            else if has("amylase") && !w.contains("lipase")                                    { if lab.amylase == nil { lab.amylase = val } }
+            else if has("lipase")                                                              { if lab.lipase == nil { lab.lipase = val } }
+            else if has("lactate")                                                             { if lab.lactate == nil { lab.lactate = val } }
+            else if has("d-dimer", "ddimer")                                                   { if lab.dDimer == nil { lab.dDimer = val } }
+            else if has("troponin")                                                            { if lab.troponin == nil { lab.troponin = val } }
+            else if has("inr")                                                                 { if lab.inr == nil { lab.inr = val } }
+            else if has("glucose") && !w.contains("hba1c")                                     { if lab.glucose == nil { lab.glucose = val } }
+            else if has("hba1c", "a1c", "glycated", "glycosylated")                            { if lab.hba1c == nil { lab.hba1c = val } }
         }
         return lab
     }

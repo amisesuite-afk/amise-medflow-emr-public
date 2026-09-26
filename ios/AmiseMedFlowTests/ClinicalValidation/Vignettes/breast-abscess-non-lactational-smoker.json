@@ -1,0 +1,247 @@
+{
+  "schemaVersion": 1,
+  "id": "breast-abscess-non-lactational-smoker",
+  "condition": "Non-lactational (periductal) breast abscess",
+  "category": "breast-endocrine",
+  "permutationOf": "breast-abscess-lactational",
+  "permutationLabel": "Non-lactational, smoker, recurrent",
+  "summary": "41-year-old smoker, not lactating, with a third episode of a painful periareolar abscess. Periductal mastitis: ultrasound + aspiration, antibiotics covering anaerobes, smoking cessation, and imaging to exclude an underlying carcinoma once settled; recurrent disease may need duct excision.",
+  "tags": [
+    "breast",
+    "infection"
+  ],
+  "inputs": {
+    "patient": {
+      "ageYears": 41,
+      "sex": "female",
+      "pregnancy": {
+        "status": "not-pregnant"
+      }
+    },
+    "encounter": {
+      "setting": "outpatient",
+      "visitType": "urgentReview",
+      "acuity": "priority"
+    },
+    "chiefComplaint": "Painful swelling next to the left nipple again",
+    "hpi": "Third episode in 18 months of a painful swelling beside the left nipple. Previous two were drained. Not breastfeeding (children 12 and 15). Smokes 20 a day. Some cheesy discharge from the nipple.",
+    "socrates": {
+      "onset": [
+        "4–7 days ago"
+      ],
+      "site": [
+        "Central / areola"
+      ],
+      "character": [
+        "Cystic",
+        "Tender"
+      ],
+      "radiation": [
+        "No radiation"
+      ],
+      "associations": [
+        "Nipple discharge"
+      ],
+      "timing": [
+        "Progressive"
+      ],
+      "exacerbating": [
+        "None"
+      ],
+      "relieving": [
+        "Nothing"
+      ],
+      "severity": [
+        "Moderate (4–6/10)"
+      ]
+    },
+    "symptoms": [
+      "breast lump",
+      "breast pain",
+      "breast redness",
+      "nipple discharge"
+    ],
+    "negatives": [
+      "fever",
+      "lactation"
+    ],
+    "exam": {
+      "general": "Afebrile.",
+      "other": "Left breast: 2.5 cm tender fluctuant periareolar swelling at 4 o'clock with erythema; slit-like nipple retraction; scar from previous drainage. No axillary nodes."
+    },
+    "vitals": [
+      {
+        "minutesAgo": 15,
+        "heartRate": 84,
+        "systolicBp": 126,
+        "diastolicBp": 80,
+        "respiratoryRate": 14,
+        "temperatureC": 37.4,
+        "spo2": 98,
+        "avpu": "A",
+        "onSupplementalO2": false
+      }
+    ],
+    "labs": [],
+    "imaging": [
+      {
+        "name": "USS left breast",
+        "modality": "US",
+        "region": "Breast",
+        "result": "Periareolar 2.2 cm collection communicating with a dilated subareolar duct.",
+        "minutesAgo": 30
+      }
+    ],
+    "comorbidities": [],
+    "surgicalHistory": [
+      "Incision and drainage left periareolar abscess x2"
+    ],
+    "medications": [],
+    "allergies": [],
+    "nkda": true,
+    "socialHistory": "Smoker, 20/day.",
+    "confirmedDiagnosis": {
+      "name": "Recurrent non-lactational periareolar abscess (periductal mastitis) in a smoker",
+      "icd10": "N61.1",
+      "paneDiseaseId": "breast_abscess",
+      "assessmentText": "Recurrent non-lactational periareolar breast abscess (periductal mastitis), smoker. Ultrasound-guided aspiration, co-amoxiclav (anaerobic cover), smoking cessation; imaging after resolution; consider total duct excision when quiescent."
+    },
+    "platform": {
+      "web": {
+        "ccTemplate": "Breast lump",
+        "symptoms": [
+          "breast lump",
+          "breast pain",
+          "breast redness",
+          "nipple discharge"
+        ],
+        "symptomDetails": {
+          "breast lump": [
+            "Left",
+            "Tender",
+            "< 2 weeks",
+            "Nipple discharge"
+          ],
+          "nipple discharge": [
+            "Left",
+            "Only on squeezing"
+          ]
+        },
+        "toxicHabits": [
+          "Smoking"
+        ],
+        "paneAnswers": {
+          "post_lactation": false
+        },
+        "durationDays": 5,
+        "painScore": 5
+      }
+    }
+  },
+  "expected": {
+    "differential": {
+      "mustRankTopK": [
+        {
+          "id": "dx-abscess-top3",
+          "severity": "quality",
+          "match": [
+            "abscess",
+            "mastitis",
+            "duct ectasia",
+            "icd:N61"
+          ],
+          "k": 3
+        }
+      ]
+    },
+    "investigations": {
+      "mustInclude": [
+        {
+          "id": "inv-uss",
+          "severity": "critical",
+          "match": [
+            "re:(uss|ultrasound|\\bus\\b)[^.;\\n]{0,30}(breast|subareolar|retroareolar|axilla)",
+            "re:(breast|subareolar|retroareolar)[^.;\\n]{0,30}(uss|ultrasound)",
+            "mammography + uss",
+            "mammogram/uss"
+          ],
+          "guidelineRefs": [
+            "abs-best-practice-2010"
+          ]
+        }
+      ]
+    },
+    "management": {
+      "mustInclude": [
+        {
+          "id": "mgmt-aspiration",
+          "severity": "critical",
+          "match": [
+            "aspiration",
+            "aspirate",
+            "drainage"
+          ],
+          "guidelineRefs": [
+            "abs-best-practice-2010"
+          ]
+        },
+        {
+          "id": "mgmt-anaerobic-cover",
+          "severity": "quality",
+          "match": [
+            "co-amoxiclav",
+            "metronidazole",
+            "anaerob"
+          ]
+        },
+        {
+          "id": "mgmt-smoking-cessation",
+          "severity": "quality",
+          "match": [
+            "smok"
+          ]
+        },
+        {
+          "id": "mgmt-exclude-malignancy",
+          "severity": "quality",
+          "match": [
+            "exclude underlying carcinoma",
+            "mammogra",
+            "exclude malignancy"
+          ]
+        }
+      ],
+      "mustExclude": [
+        {
+          "id": "mgmt-no-breastfeeding-advice",
+          "severity": "quality",
+          "match": [
+            "continue breastfeeding",
+            "breastfeeding"
+          ],
+          "unless": [
+            "if lactational",
+            "not breastfeeding"
+          ],
+          "note": "Breastfeeding advice is irrelevant (not lactating): a sign that the plan does not adapt to the history."
+        }
+      ]
+    }
+  },
+  "guideline": [
+    {
+      "id": "abs-best-practice-2010",
+      "name": "Best practice diagnostic guidelines for patients presenting with breast symptoms (ABS / RCR, Department of Health)",
+      "year": 2010,
+      "section": "Triple assessment (clinical examination, age-appropriate imaging, needle biopsy); imaging by age; nipple discharge; breast infection; breast pain",
+      "citation": "Willett AM, Michell MJ, Lee MJR (eds). Best practice diagnostic guidelines for patients presenting with breast symptoms. London: Department of Health / Association of Breast Surgery; 2010.",
+      "verified": false
+    }
+  ],
+  "rationale": "Permutation: non-lactational, smoker, recurrent. Tests that the plan adapts (anaerobic cover, smoking, exclude carcinoma, duct excision) rather than repeating the lactational template.",
+  "authoring": {
+    "author": "Claude (hernia / breast / endocrine cluster)",
+    "date": "2026-09-25",
+    "notes": "Expectations need surgeon sign-off (reviewedBy). Citations verified: false."
+  }
+}

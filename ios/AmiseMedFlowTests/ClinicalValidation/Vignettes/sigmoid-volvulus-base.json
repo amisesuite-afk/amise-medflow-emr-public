@@ -1,0 +1,347 @@
+{
+  "schemaVersion": 1,
+  "id": "sigmoid-volvulus-base",
+  "condition": "Sigmoid volvulus",
+  "category": "colorectal",
+  "permutationOf": null,
+  "permutationLabel": "Sigmoid volvulus, viable (base case)",
+  "summary": "81-year-old nursing-home resident with Parkinson's and chronic constipation, 2 days of massive distension; AXR coffee-bean sign, CT whirl without ischaemia.",
+  "tags": [
+    "obstruction",
+    "volvulus",
+    "elderly"
+  ],
+  "inputs": {
+    "patient": {
+      "ageYears": 81,
+      "sex": "male",
+      "pregnancy": {
+        "status": "not-applicable"
+      },
+      "heightCm": 168,
+      "weightKg": 60
+    },
+    "encounter": {
+      "setting": "emergency",
+      "visitType": "urgentReview",
+      "acuity": "urgent"
+    },
+    "chiefComplaint": "Massive abdominal distension",
+    "hpi": "Nursing-home resident with Parkinson's disease and chronic constipation on laxatives. 2 days of rapidly increasing abdominal distension, no flatus or stool, mild colicky lower abdominal pain, vomited once. Similar smaller episode a year ago that settled.",
+    "socrates": {
+      "onset": [
+        "2–3 days ago"
+      ],
+      "site": [
+        "Diffuse",
+        "LLQ"
+      ],
+      "character": [
+        "Bloating",
+        "Colicky"
+      ],
+      "radiation": [
+        "No radiation"
+      ],
+      "associations": [
+        "Vomiting"
+      ],
+      "timing": [
+        "Progressive"
+      ],
+      "exacerbating": [],
+      "relieving": [
+        "Nothing"
+      ],
+      "severity": [
+        "Mild (1–3/10)"
+      ]
+    },
+    "symptoms": [
+      "abdominal distension",
+      "absolute constipation",
+      "abdominal pain",
+      "vomiting"
+    ],
+    "negatives": [
+      "fever",
+      "rectal bleeding"
+    ],
+    "exam": {
+      "general": "Frail, alert. Temperature 36.9°C, pulse 98/min, BP 128/70.",
+      "abdomen": "Massive tympanic distension, mild diffuse tenderness, no guarding, no peritonism. Empty rectum."
+    },
+    "vitals": [
+      {
+        "minutesAgo": 20,
+        "heartRate": 98,
+        "systolicBp": 128,
+        "diastolicBp": 70,
+        "respiratoryRate": 18,
+        "temperatureC": 36.9,
+        "spo2": 96,
+        "avpu": "A",
+        "onSupplementalO2": false
+      }
+    ],
+    "labs": [
+      {
+        "analyte": "wbc",
+        "name": "WBC",
+        "value": 11.4,
+        "unit": "×10⁹/L",
+        "minutesAgo": 30
+      },
+      {
+        "analyte": "crp",
+        "name": "CRP",
+        "value": 30,
+        "unit": "mg/L",
+        "minutesAgo": 30
+      },
+      {
+        "analyte": "lactate",
+        "name": "Lactate",
+        "value": 1.7,
+        "unit": "mmol/L",
+        "minutesAgo": 30
+      },
+      {
+        "analyte": "potassium",
+        "name": "Potassium",
+        "value": 3.2,
+        "unit": "mmol/L",
+        "minutesAgo": 30
+      },
+      {
+        "analyte": "creatinine",
+        "name": "Creatinine",
+        "value": 126,
+        "unit": "µmol/L",
+        "minutesAgo": 30
+      }
+    ],
+    "imaging": [
+      {
+        "name": "Abdominal X-ray",
+        "modality": "XR",
+        "region": "Abdomen",
+        "result": "Massively dilated inverted-U loop of sigmoid colon arising from the pelvis ('coffee bean' sign).",
+        "minutesAgo": 60
+      },
+      {
+        "name": "CT abdomen/pelvis with IV contrast",
+        "modality": "CT",
+        "region": "Abdomen/pelvis",
+        "result": "Sigmoid volvulus with a mesenteric whirl sign. Normal bowel wall enhancement, no pneumatosis, no free gas or fluid.",
+        "minutesAgo": 30
+      }
+    ],
+    "comorbidities": [
+      "Parkinson's disease",
+      "Chronic constipation"
+    ],
+    "surgicalHistory": [],
+    "medications": [
+      {
+        "drug": "Co-careldopa",
+        "dose": "25/100 mg",
+        "frequency": "TDS",
+        "indication": "Parkinson's disease"
+      },
+      {
+        "drug": "Macrogol",
+        "dose": "1 sachet",
+        "frequency": "BD",
+        "indication": "Constipation"
+      },
+      {
+        "drug": "Senna",
+        "dose": "15 mg",
+        "frequency": "ON",
+        "indication": "Constipation"
+      }
+    ],
+    "allergies": [],
+    "nkda": true,
+    "socialHistory": "Nursing-home resident, mobilises with a frame.",
+    "confirmedDiagnosis": {
+      "name": "Sigmoid volvulus",
+      "icd10": "K56.2",
+      "paneDiseaseId": "bowel_obstruction",
+      "assessmentText": "Sigmoid volvulus without clinical or CT signs of ischaemia or perforation — endoscopic decompression (flexible sigmoidoscopy, flatus tube), then consider sigmoid resection during the same admission."
+    },
+    "platform": {
+      "web": {
+        "ccTemplate": "Acute abdominal pain",
+        "socratesAnswers": {
+          "site": "Generalised, left lower",
+          "onset": "2 days ago",
+          "character": "Bloating, colicky",
+          "associated": "Distension, no flatus or stool (constipation), vomited once",
+          "timing": "Worsening",
+          "relief": "Nothing",
+          "severity": "3/10"
+        },
+        "symptoms": [
+          "abdominal distension",
+          "constipation",
+          "abdominal pain",
+          "vomiting"
+        ],
+        "symptomDetails": {
+          "abdominal pain": [
+            "Diffuse",
+            "LLQ",
+            "1–3 days",
+            "Colicky",
+            "Mild (1–3)",
+            "Distension",
+            "Constipation",
+            "Vomiting",
+            "Worsening over time"
+          ]
+        },
+        "examFindings": {
+          "abdomen": [
+            "Distended",
+            "Soft"
+          ]
+        },
+        "durationDays": 2,
+        "painScore": 3
+      }
+    }
+  },
+  "expected": {
+    "differential": {
+      "mustRankTopK": [
+        {
+          "id": "dx-obstruction-top3",
+          "severity": "critical",
+          "match": [
+            "volvulus",
+            "obstruct"
+          ],
+          "k": 3,
+          "guidelineRefs": [
+            "ascrs-volvulus-2021"
+          ]
+        }
+      ],
+      "mustNotMiss": [
+        {
+          "id": "mnm-volvulus",
+          "severity": "quality",
+          "match": [
+            "volvulus"
+          ],
+          "guidelineRefs": [
+            "ascrs-volvulus-2021"
+          ],
+          "knownGap": [
+            "ios"
+          ],
+          "knownGapNote": "iOS CI 2026-09-25 (run 36169134350, database mode): not in top 5 of ios.bayes: 1. Small Bowel Obstruction | 2. Acute Diverticulitis | 3. Irritable Bowel Syndrome | 4. Acute Appendicitis | 5. Non-Occlusive Mesenteric Ischaemia (NOMI); also in ios.triage#4"
+        }
+      ]
+    },
+    "safety": {
+      "emergencyLevel": {
+        "id": "level-at-least-urgent",
+        "severity": "critical",
+        "atLeast": "urgent",
+        "guidelineRefs": [
+          "ascrs-volvulus-2021"
+        ]
+      }
+    },
+    "management": {
+      "mustInclude": [
+        {
+          "id": "mgmt-endoscopic-decompression",
+          "severity": "critical",
+          "match": [
+            "endoscopic decompression",
+            "endoscopic detorsion",
+            "sigmoidoscop",
+            "flatus tube",
+            "rectal tube",
+            "colonoscopic decompression"
+          ],
+          "guidelineRefs": [
+            "ascrs-volvulus-2021",
+            "wses-volvulus-2023"
+          ],
+          "note": "First-line treatment without peritonitis or ischaemia; avoids an emergency laparotomy in a frail 81-year-old.",
+          "knownGapNote": "Web: No endoscopic decompression step in any management output; the lbo_volvulus plan prefix is only a heading ('Sigmoid/Caecal Volvulus — Management:') followed by bowel-obstruction steps. Decompression appears only in the dx-variant urgency note.",
+          "proposedFix": "Give lbo_volvulus a real plan prefix: sigmoid — endoscopic detorsion + flatus tube if no peritonitis/ischaemia, then sigmoid colectomy in the same admission; caecal — right hemicolectomy; gangrene/peritonitis — Hartmann's. Split into sigmoid and caecal variants."
+        },
+        {
+          "id": "mgmt-same-admission-resection",
+          "severity": "quality",
+          "match": [
+            "sigmoid colectomy",
+            "sigmoidectomy",
+            "sigmoid resection"
+          ],
+          "guidelineRefs": [
+            "ascrs-volvulus-2021",
+            "wses-volvulus-2023"
+          ],
+          "note": "Recurrence after decompression alone is high; sigmoid resection in the same admission if fit.",
+          "knownGapNote": "Web: No sigmoid colectomy after decompression."
+        },
+        {
+          "id": "mgmt-potassium",
+          "severity": "quality",
+          "match": [
+            "potassium",
+            "re:\\bkcl\\b"
+          ],
+          "knownGapNote": "Web: No potassium replacement despite K 3.2. | iOS CI 2026-09-25 (run 36169134350, database mode): no management item matched among 17 (ios.pipeline.decisions, ios.pipeline.actions, ios.radiation.plan, ios.radiation.followUp, ios.soap.plan)",
+          "knownGap": [
+            "ios"
+          ]
+        }
+      ]
+    },
+    "pathway": {
+      "id": "pathway-first-visit",
+      "severity": "quality",
+      "equals": "firstVisit"
+    },
+    "dxVariant": {
+      "id": "variant-lbo-volvulus",
+      "severity": "quality",
+      "equals": "lbo_volvulus",
+      "guidelineRefs": [
+        "ascrs-volvulus-2021"
+      ]
+    }
+  },
+  "guideline": [
+    {
+      "id": "ascrs-volvulus-2021",
+      "name": "ASCRS clinical practice guidelines — colonic volvulus and acute colonic pseudo-obstruction",
+      "year": 2021,
+      "section": "Sigmoid volvulus: endoscopic detorsion without peritonitis/ischaemia, then sigmoid colectomy during the same admission; emergency resection for gangrene/perforation; caecal volvulus: operative management, endoscopic reduction not recommended",
+      "citation": "Alavi K, Poylin V, Davids JS, et al. The American Society of Colon and Rectal Surgeons clinical practice guidelines for the management of colonic volvulus and acute colonic pseudo-obstruction. Dis Colon Rectum. 2021;64:1046–57.",
+      "verified": false
+    },
+    {
+      "id": "wses-volvulus-2023",
+      "name": "WSES consensus guidelines — sigmoid volvulus management",
+      "year": 2023,
+      "section": "Endoscopic decompression when no peritonitis/ischaemia; emergency surgery (Hartmann's) for gangrene, perforation or failed decompression; elective sigmoidectomy after decompression",
+      "citation": "Tian BWCA, Vigutto G, Tan E, et al. WSES consensus guidelines on sigmoid volvulus management. World J Emerg Surg. 2023;18:34.",
+      "verified": false
+    }
+  ],
+  "rationale": "Base case for sigmoid volvulus: endoscopic decompression when there is no peritonitis or ischaemia, then sigmoid resection in the same admission if fit.",
+  "authoring": {
+    "author": "Claude (GI surgical emergencies cluster)",
+    "date": "2026-09-25",
+    "notes": "Expectations need surgeon sign-off (reviewedBy). Every citation is verified: false."
+  }
+}

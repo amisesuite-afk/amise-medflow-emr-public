@@ -1,0 +1,230 @@
+{
+  "schemaVersion": 1,
+  "id": "hernia-inguinal-female-occult-femoral",
+  "condition": "Groin hernia in a woman",
+  "category": "hernia",
+  "permutationOf": "hernia-inguinal-elective-minimal-symptoms",
+  "permutationLabel": "Woman (femoral hernia risk)",
+  "summary": "46-year-old woman with an intermittent left groin bulge. In women HerniaSurge recommends considering a femoral hernia and suggests a laparoscopic repair (identifies occult femoral defects); watchful waiting is not advised because of the femoral-hernia risk.",
+  "tags": [
+    "elective",
+    "groin",
+    "female"
+  ],
+  "inputs": {
+    "patient": {
+      "ageYears": 46,
+      "sex": "female",
+      "pregnancy": {
+        "status": "not-pregnant"
+      },
+      "heightCm": 164,
+      "weightKg": 70
+    },
+    "encounter": {
+      "setting": "outpatient",
+      "visitType": "newConsult",
+      "acuity": "routine"
+    },
+    "chiefComplaint": "Intermittent lump in the left groin",
+    "hpi": "Four months of an intermittent left groin lump, worse after lifting her grandchild, with a sharp twinge on coughing. Goes away overnight. No vomiting, no change in bowel habit. LMP 2 weeks ago, regular cycles, not pregnant.",
+    "socrates": {
+      "onset": [
+        "1–6 months ago",
+        "Gradual"
+      ],
+      "site": [
+        "Left inguinal"
+      ],
+      "character": [
+        "Soft",
+        "Tender"
+      ],
+      "radiation": [
+        "No radiation"
+      ],
+      "associations": [],
+      "timing": [
+        "Intermittent"
+      ],
+      "exacerbating": [
+        "Straining / Valsalva"
+      ],
+      "relieving": [
+        "Lying down"
+      ],
+      "severity": [
+        "Mild (1–3/10)"
+      ]
+    },
+    "symptoms": [
+      "groin swelling",
+      "groin pain on coughing"
+    ],
+    "negatives": [
+      "vomiting",
+      "change in bowel habit"
+    ],
+    "exam": {
+      "general": "Well.",
+      "abdomen": "Soft. Left groin: small reducible swelling near the pubic tubercle with a cough impulse; its relation to the inguinal ligament is difficult to define clinically. Right groin normal."
+    },
+    "vitals": [
+      {
+        "minutesAgo": 15,
+        "heartRate": 76,
+        "systolicBp": 122,
+        "diastolicBp": 76,
+        "respiratoryRate": 14,
+        "temperatureC": 36.6,
+        "spo2": 99,
+        "avpu": "A",
+        "onSupplementalO2": false
+      }
+    ],
+    "labs": [],
+    "imaging": [],
+    "comorbidities": [],
+    "surgicalHistory": [
+      "Caesarean section x2"
+    ],
+    "medications": [],
+    "allergies": [],
+    "nkda": true,
+    "socialHistory": "Non-smoker.",
+    "confirmedDiagnosis": {
+      "name": "Left groin hernia (inguinal vs femoral) in a woman",
+      "icd10": "K40.90",
+      "paneDiseaseId": "inguinal_hernia",
+      "assessmentText": "Symptomatic left groin hernia in a woman — inguinal vs femoral not certain clinically. Plan laparoscopic repair (TEP/TAPP) to assess the femoral canal."
+    },
+    "platform": {
+      "web": {
+        "ccTemplate": "Inguinal / groin hernia",
+        "symptoms": [
+          "hernia",
+          "groin swelling",
+          "groin pain"
+        ],
+        "symptomDetails": {
+          "hernia": [
+            "Left groin",
+            "Easily reducible",
+            "Pain"
+          ]
+        },
+        "examFindings": {
+          "abdomen": [
+            "Soft",
+            "Hernia present"
+          ]
+        },
+        "durationDays": 120,
+        "painScore": 3
+      }
+    }
+  },
+  "expected": {
+    "differential": {
+      "mustNotMiss": [
+        {
+          "id": "mnm-femoral-hernia",
+          "severity": "critical",
+          "match": [
+            "femoral",
+            "icd:K41"
+          ],
+          "guidelineRefs": [
+            "herniasurge-2018"
+          ],
+          "note": "HerniaSurge: femoral hernias are relatively common in women with groin hernias and are frequently misdiagnosed as inguinal."
+        }
+      ]
+    },
+    "safety": {
+      "emergencyLevel": {
+        "id": "level-not-emergency",
+        "severity": "quality",
+        "atMost": "priority"
+      }
+    },
+    "management": {
+      "mustInclude": [
+        {
+          "id": "mgmt-laparoscopic",
+          "severity": "quality",
+          "match": [
+            "re:\\b(tep|tapp)\\b",
+            "laparoscop",
+            "totally extraperitoneal",
+            "transabdominal preperitoneal"
+          ],
+          "guidelineRefs": [
+            "herniasurge-2018"
+          ],
+          "note": "HerniaSurge suggests a laparoscopic approach for groin hernia repair in women (occult femoral hernia).",
+          "knownGap": [
+            "ios"
+          ],
+          "knownGapNote": "iOS CI 2026-09-25 (run 36169134350, database mode): no management item matched among 3 (ios.pipeline.actions, ios.soap.plan)"
+        }
+      ],
+      "mustExclude": [
+        {
+          "id": "mgmt-no-watchful-waiting",
+          "severity": "critical",
+          "match": [
+            "watchful waiting",
+            "re:\\btruss\\b",
+            "active observation"
+          ],
+          "unless": [
+            "unfit",
+            "declin"
+          ],
+          "guidelineRefs": [
+            "herniasurge-2018"
+          ],
+          "note": "Watchful waiting is a men-only option in HerniaSurge; in women the femoral-hernia (strangulation) risk argues for repair."
+        }
+      ]
+    },
+    "investigations": {
+      "mustExclude": [
+        {
+          "id": "inv-no-unrelated-seeded-orders",
+          "severity": "quality",
+          "match": [
+            "mrcp",
+            "blood cultures",
+            "erect cxr",
+            "ogd"
+          ],
+          "sources": [
+            "web.pane.seeded"
+          ],
+          "platforms": [
+            "web"
+          ],
+          "note": "Orders seeded from the PANE top 3 should belong to the groin presentation."
+        }
+      ]
+    }
+  },
+  "guideline": [
+    {
+      "id": "herniasurge-2018",
+      "name": "HerniaSurge — International guidelines for groin hernia management",
+      "year": 2018,
+      "section": "Diagnosis (clinical examination, ultrasound for uncertain swellings); watchful waiting in minimally symptomatic men; mesh repair (Lichtenstein, TEP/TAPP); groin hernia in women; femoral hernia; emergency repair",
+      "citation": "HerniaSurge Group. International guidelines for groin hernia management. Hernia. 2018;22:1–165.",
+      "verified": false
+    }
+  ],
+  "rationale": "Permutation: sex. Same presentation as the base in a woman; the expected plan changes (femoral must be considered, laparoscopic repair suggested, no watchful waiting).",
+  "authoring": {
+    "author": "Claude (hernia / breast / endocrine cluster)",
+    "date": "2026-09-25",
+    "notes": "Expectations need surgeon sign-off (reviewedBy). Citations verified: false."
+  }
+}

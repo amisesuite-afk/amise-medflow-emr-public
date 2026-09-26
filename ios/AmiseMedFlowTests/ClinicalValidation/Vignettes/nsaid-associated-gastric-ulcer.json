@@ -1,0 +1,308 @@
+{
+  "schemaVersion": 1,
+  "id": "nsaid-associated-gastric-ulcer",
+  "condition": "NSAID-associated gastric ulcer (uncomplicated)",
+  "category": "upper-gi",
+  "permutationOf": null,
+  "summary": "58-year-old man on diclofenac for osteoarthritis and aspirin 75 mg for secondary prevention: 6 weeks of epigastric pain; OGD shows a 1 cm benign-looking antral ulcer, CLO negative, biopsies taken. Stop the NSAID, full-dose PPI 8 weeks, repeat OGD for gastric ulcer; aspirin decision stays with the clinician.",
+  "tags": [
+    "peptic-ulcer",
+    "nsaid",
+    "antiplatelet"
+  ],
+  "inputs": {
+    "patient": {
+      "ageYears": 58,
+      "sex": "male",
+      "pregnancy": {
+        "status": "not-applicable"
+      },
+      "heightCm": 175,
+      "weightKg": 92
+    },
+    "encounter": {
+      "setting": "outpatient",
+      "visitType": "followUp",
+      "acuity": "routine"
+    },
+    "chiefComplaint": "Upper abdominal pain — review after endoscopy",
+    "hpi": "Six weeks of gnawing epigastric pain, worse after food. Takes diclofenac 50 mg three times daily for knee osteoarthritis and aspirin 75 mg since a TIA two years ago. OGD last week: 1 cm clean-based antral gastric ulcer, benign appearance, biopsies taken, rapid urease test negative. No bleeding, weight steady.",
+    "socrates": {
+      "onset": [
+        "1–6 months ago"
+      ],
+      "site": [
+        "Epigastric"
+      ],
+      "character": [
+        "Aching"
+      ],
+      "radiation": [
+        "No radiation"
+      ],
+      "associations": [
+        "Nausea"
+      ],
+      "timing": [
+        "Post-prandial"
+      ],
+      "exacerbating": [
+        "Eating",
+        "NSAIDs"
+      ],
+      "relieving": [
+        "Antacids"
+      ],
+      "severity": [
+        "Moderate (4–6/10)"
+      ]
+    },
+    "symptoms": [
+      "epigastric pain"
+    ],
+    "negatives": [
+      "haematemesis",
+      "melaena",
+      "weight loss",
+      "dysphagia"
+    ],
+    "exam": {
+      "general": "Well.",
+      "abdomen": "Mild epigastric tenderness, no peritonism."
+    },
+    "vitals": [
+      {
+        "minutesAgo": 20,
+        "heartRate": 76,
+        "systolicBp": 136,
+        "diastolicBp": 84,
+        "respiratoryRate": 14,
+        "temperatureC": 36.6,
+        "spo2": 98,
+        "avpu": "A",
+        "onSupplementalO2": false
+      }
+    ],
+    "labs": [
+      {
+        "analyte": "haemoglobin",
+        "name": "Haemoglobin",
+        "value": 13.9,
+        "unit": "g/dL",
+        "minutesAgo": 10080
+      },
+      {
+        "analyte": "creatinine",
+        "name": "Creatinine",
+        "value": 96,
+        "unit": "µmol/L",
+        "minutesAgo": 10080
+      },
+      {
+        "analyte": "urea",
+        "name": "Urea",
+        "value": 6.2,
+        "unit": "mmol/L",
+        "minutesAgo": 10080
+      }
+    ],
+    "imaging": [
+      {
+        "name": "OGD",
+        "modality": "Endoscopy",
+        "region": "Upper GI",
+        "result": "1 cm clean-based gastric antral ulcer, benign appearance (Forrest III). Biopsies from ulcer edge taken. Rapid urease test negative.",
+        "minutesAgo": 10080
+      }
+    ],
+    "comorbidities": [
+      "Osteoarthritis of knees",
+      "Previous TIA",
+      "Hypertension"
+    ],
+    "surgicalHistory": [],
+    "medications": [
+      {
+        "drug": "Diclofenac",
+        "dose": "50 mg",
+        "frequency": "TDS",
+        "indication": "Osteoarthritis"
+      },
+      {
+        "drug": "Aspirin",
+        "dose": "75 mg",
+        "frequency": "OD",
+        "indication": "Secondary prevention after TIA"
+      },
+      {
+        "drug": "Amlodipine",
+        "dose": "10 mg",
+        "frequency": "OD",
+        "indication": "Hypertension"
+      }
+    ],
+    "allergies": [],
+    "nkda": true,
+    "socialHistory": "Builder. Smokes 10/day.",
+    "confirmedDiagnosis": {
+      "name": "NSAID-associated gastric ulcer",
+      "icd10": "K25.7",
+      "paneDiseaseId": "peptic_ulcer",
+      "assessmentText": "Uncomplicated NSAID-associated gastric antral ulcer (no bleeding), H. pylori rapid urease negative, biopsies pending. On diclofenac and low-dose aspirin (secondary prevention after TIA)."
+    },
+    "platform": {
+      "web": {
+        "ccTemplate": "Other / general surgical",
+        "symptoms": [
+          "epigastric pain",
+          "indigestion"
+        ],
+        "symptomDetails": {},
+        "examFindings": {
+          "abdomen": [
+            "Epigastric tenderness"
+          ]
+        },
+        "durationDays": 42,
+        "painScore": 4
+      }
+    }
+  },
+  "expected": {
+    "safety": {
+      "redFlags": [
+        {
+          "id": "flag-nsaid",
+          "severity": "critical",
+          "match": [
+            "nsaid",
+            "diclofenac"
+          ],
+          "guidelineRefs": [
+            "nice-cg184"
+          ],
+          "note": "Continuing the NSAID risks bleeding or perforation."
+        }
+      ],
+      "emergencyLevel": {
+        "id": "level-not-emergency",
+        "severity": "quality",
+        "atMost": "priority",
+        "guidelineRefs": [
+          "nice-cg184"
+        ],
+        "proposedFix": "Negation handling in adaptive-triage and computeClinicalPrompts exam-text rules."
+      }
+    },
+    "investigations": {
+      "mustInclude": [
+        {
+          "id": "inv-hpylori",
+          "severity": "quality",
+          "match": [
+            "pylori"
+          ],
+          "guidelineRefs": [
+            "nice-cg184",
+            "maastricht-6"
+          ],
+          "note": "A negative rapid urease test on PPI/NSAID may be false-negative; confirm with histology or breath/stool test."
+        }
+      ]
+    },
+    "management": {
+      "mustInclude": [
+        {
+          "id": "mgmt-stop-nsaid",
+          "severity": "critical",
+          "match": [
+            "re:(stop|discontinue|withdraw|cease)[^.;\\n]{0,20}(nsaid|diclofenac)",
+            "switch to paracetamol"
+          ],
+          "guidelineRefs": [
+            "nice-cg184"
+          ]
+        },
+        {
+          "id": "mgmt-ppi-8-weeks",
+          "severity": "quality",
+          "match": [
+            "re:(ppi|omeprazole|lansoprazole|esomeprazole)[^\\n]{0,60}8 ?weeks",
+            "4–8 weeks",
+            "4-8 weeks"
+          ],
+          "guidelineRefs": [
+            "nice-cg184"
+          ]
+        },
+        {
+          "id": "mgmt-repeat-ogd-gastric-ulcer",
+          "severity": "quality",
+          "match": [
+            "re:repeat (ogd|endoscopy)",
+            "check healing",
+            "exclude malignancy"
+          ],
+          "guidelineRefs": [
+            "nice-cg184"
+          ]
+        }
+      ],
+      "mustExclude": [
+        {
+          "id": "mgmt-no-blanket-stop-aspirin",
+          "severity": "critical",
+          "match": [
+            "re:(stop|discontinue|withhold|cease)[^.;\\n]{0,15}(all )?(aspirin|antiplatelet)"
+          ],
+          "unless": [
+            "resume",
+            "restart",
+            "unless",
+            "clinician",
+            "neurolog",
+            "cardiolog"
+          ],
+          "guidelineRefs": [
+            "nice-cg184"
+          ],
+          "note": "Aspirin for secondary prevention after TIA is continued with PPI cover; stopping it is a clinician decision, never an automatic plan line."
+        },
+        {
+          "id": "mgmt-no-patient-hold-advice",
+          "severity": "quality",
+          "match": [
+            "re:(advise|tell|instruct)[^.;\\n]{0,30}patient[^.;\\n]{0,30}(to )?(stop|hold|omit|withhold|skip)[^.;\\n]{0,30}(warfarin|apixaban|rivaroxaban|aspirin|clopidogrel|anticoag|antiplatelet|blood thinner)"
+          ],
+          "guidelineRefs": [
+            "nice-cg184"
+          ]
+        }
+      ]
+    }
+  },
+  "guideline": [
+    {
+      "id": "nice-cg184",
+      "name": "NICE CG184 — Gastro-oesophageal reflux disease and dyspepsia in adults: investigation and management",
+      "year": 2014,
+      "section": "NSAID-associated peptic ulcer: stop the NSAID where possible; full-dose PPI or H2RA for 8 weeks; test for H. pylori; repeat endoscopy 6–8 weeks after treatment for gastric ulcer; low-dose aspirin continued with gastroprotection when indicated",
+      "citation": "National Institute for Health and Care Excellence. Clinical guideline CG184. London: NICE; 2014 (last updated 2019).",
+      "verified": false
+    },
+    {
+      "id": "maastricht-6",
+      "name": "Maastricht VI/Florence consensus report — management of Helicobacter pylori infection",
+      "year": 2022,
+      "section": "Test for H. pylori in peptic ulcer disease; rapid urease test sensitivity reduced by PPI",
+      "citation": "Malfertheiner P, Megraud F, Rokkas T, et al. Gut. 2022;71:1724–1762.",
+      "verified": false
+    }
+  ],
+  "rationale": "Uncomplicated NSAID ulcer with low-dose aspirin for secondary prevention. The NSAID must stop; the aspirin must not be stopped by a template. Also checks that an uncomplicated ulcer is not treated as a bleed by the web variant logic.",
+  "authoring": {
+    "author": "Claude (upper-GI cluster)",
+    "date": "2026-09-25",
+    "notes": "Expectations need surgeon sign-off (reviewedBy). Citations written from the guideline texts, not yet checked against the source (verified: false)."
+  }
+}

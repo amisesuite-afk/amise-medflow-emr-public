@@ -10,13 +10,13 @@
  */
 
 import { Router } from 'express';
-import Anthropic from '@anthropic-ai/sdk';
+import { createAnthropicClient, rejectIfAiDisabled } from '../lib/ai-gate.js';
 import { requireStaffAuth } from '../lib/supabase.js';
 import { logger, errStr } from '../lib/logger.js';
 import { logAudit } from '../lib/audit.js';
 
 const router = Router();
-const client = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY! });
+const client = createAnthropicClient();
 const MODEL = process.env.CLAUDE_MODEL || 'claude-haiku-4-5-20251001';
 
 function pmhPrompt(chips: string[]): string {
@@ -160,6 +160,7 @@ const PROMPT_MAP: Record<string, (chips: string[], cc?: CcContext | null) => str
 
 router.post('/api/narrative/parse', async (req, res) => {
   if (!(await requireStaffAuth(req, res))) return;
+  if (rejectIfAiDisabled(res)) return;
 
   const { section, text, chipOptions = [], ccContext = null } = (req.body ?? {}) as {
     section?: string;

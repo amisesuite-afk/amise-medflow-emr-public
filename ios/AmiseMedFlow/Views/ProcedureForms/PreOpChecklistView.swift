@@ -6,7 +6,7 @@ import SwiftData
 struct PreOpChecklistData: Codable {
     var checklistDate: Date = .now
     var location: String = ""
-    var surgeonName: String = "Dr Dawit Daniel Kabiye, MD, DM"
+    var surgeonName: String = PracticeProfile.current.clinicianNameWithCredentials
     var anaesthetistName: String = ""
     var scrubNurseName: String = ""
     var circulatingNurseName: String = ""
@@ -84,13 +84,16 @@ extension Patient {
 
 struct PreOpChecklistView: View {
     @Bindable var patient: Patient
-    @Environment(\.modelContext) private var context
+    @Environment(\.modelContext) var context
 
-    @State private var data = PreOpChecklistData()
-    @State private var pdfWrapper: PDFDataWrapper?
+    @State var data = PreOpChecklistData()
+    @State var pdfWrapper: PDFDataWrapper?
 
     var body: some View {
         Form {
+            preOpSafetySection
+            // Mandatory pre-op question (owner's briefing §7): same record as the Meds step.
+            SupplementHistorySection(patient: patient, showPerioperativeAlerts: true)
             teamSection
             signInSection
             timeOutSection
@@ -128,245 +131,55 @@ struct PreOpChecklistView: View {
             if data.circulatingNurseName.isEmpty { data.circulatingNurseName = sx.circNurse }
 
             save()
-        }
-    }
 
-    // MARK: - Sections
-
-    private var teamSection: some View {
-        Section("Team & Date") {
-            DatePicker("Date", selection: Binding(
-                get: { data.checklistDate },
-                set: { data.checklistDate = $0; save() }
-            ), displayedComponents: [.date])
-            TextField("Location / Theatre", text: $data.location,
-                      prompt: Text("e.g. Tapion OR 1"))
-                .onChange(of: data.location) { _, _ in save() }
-            TextField("Surgeon", text: $data.surgeonName)
-                .onChange(of: data.surgeonName) { _, _ in save() }
-            TextField("Anaesthetist", text: $data.anaesthetistName)
-                .onChange(of: data.anaesthetistName) { _, _ in save() }
-            TextField("Scrub nurse", text: $data.scrubNurseName)
-                .onChange(of: data.scrubNurseName) { _, _ in save() }
-            TextField("Circulating nurse", text: $data.circulatingNurseName)
-                .onChange(of: data.circulatingNurseName) { _, _ in save() }
-        }
-    }
-
-    private var signInSection: some View {
-        Section {
-            checkRow("Patient identity confirmed (name, DOB, MRN)", value: $data.si_identityConfirmed)
-            checkRow("Site and procedure confirmed", value: $data.si_siteProcedureConfirmed)
-            checkRow("Consent obtained and signed", value: $data.si_consentConfirmed)
-
-            HStack(spacing: 12) {
-                checkRow("Surgical site marked", value: $data.si_siteMarked)
-                Divider()
-                checkRow("N/A", value: $data.si_siteMarkingNA)
-            }
-
-            checkRow("Anaesthesia machine / medication check complete", value: $data.si_anaesthesiaCheckComplete)
-            checkRow("Pulse oximeter on and functioning", value: $data.si_pulseOxFunctioning)
-
-            // Known allergy
-            checkRow("Known allergy?", value: $data.si_knownAllergy, accent: .orange)
-            if data.si_knownAllergy {
-                TextField("Allergy details", text: $data.si_allergyDetails)
-                    .onChange(of: data.si_allergyDetails) { _, _ in save() }
-            }
-
-            // Difficult airway
-            checkRow("Difficult airway / aspiration risk?", value: $data.si_difficultAirway, accent: .orange)
-            if data.si_difficultAirway {
-                TextField("Airway plan / details", text: $data.si_airwayDetails, axis: .vertical)
-                    .lineLimit(2...)
-                    .onChange(of: data.si_airwayDetails) { _, _ in save() }
-            }
-
-            // Blood loss risk
-            checkRow("Risk of blood loss > 500 mL?", value: $data.si_bloodLossRisk, accent: .orange)
-            if data.si_bloodLossRisk {
-                TextField("IV access / fluid preparation", text: $data.si_bloodLossPrep)
-                    .onChange(of: data.si_bloodLossPrep) { _, _ in save() }
-            }
-
-            phaseTimeRow(label: "Sign In time",
-                         recorded: $data.si_timeRecorded,
-                         time: $data.si_time,
-                         confirmedBy: $data.si_confirmedBy)
-        } header: {
-            phaseHeader("Sign In", subtitle: "Before induction of anaesthesia",
-                        complete: signInComplete)
-        }
-    }
-
-    private var timeOutSection: some View {
-        Section {
-            checkRow("All team members introduced by name and role", value: $data.to_teamIntroduced)
-            checkRow("Patient identity, site and procedure confirmed by all", value: $data.to_patientSiteProcedureConfirmed)
-            checkRow("Surgeon: critical steps, duration, anticipated blood loss stated", value: $data.to_surgeonCriticalSteps)
-            checkRow("Anaesthesia: patient-specific concerns stated", value: $data.to_anaesthesiaConcerns)
-            checkRow("Nursing: sterility confirmed, equipment issues stated", value: $data.to_nursingEquipmentReady)
-
-            // Antibiotic prophylaxis
-            HStack(spacing: 12) {
-                checkRow("Antibiotic prophylaxis given (within 60 min)", value: $data.to_antibioticGiven)
-                Divider()
-                checkRow("N/A", value: $data.to_antibioticNA)
-            }
-            if data.to_antibioticGiven {
-                TextField("Antibiotic and dose", text: $data.to_antibioticName,
-                          prompt: Text("e.g. Cefazolin 2g IV"))
-                    .onChange(of: data.to_antibioticName) { _, _ in save() }
-            }
-
-            // Essential imaging
-            HStack(spacing: 12) {
-                checkRow("Essential imaging displayed", value: $data.to_imagingDisplayed)
-                Divider()
-                checkRow("N/A", value: $data.to_imagingNA)
-            }
-
-            phaseTimeRow(label: "Time Out time",
-                         recorded: $data.to_timeRecorded,
-                         time: $data.to_time,
-                         confirmedBy: $data.to_confirmedBy)
-        } header: {
-            phaseHeader("Time Out", subtitle: "Before skin incision",
-                        complete: timeOutComplete)
-        }
-    }
-
-    private var signOutSection: some View {
-        Section {
-            checkRow("Procedure name documented", value: $data.so_procedureDocumented)
-            checkRow("Instrument count correct", value: $data.so_instrumentCountCorrect)
-            checkRow("Sponge count correct", value: $data.so_spongeCountCorrect)
-            checkRow("Needle / sharps count correct", value: $data.so_needleCountCorrect)
-            if !data.so_instrumentCountCorrect || !data.so_spongeCountCorrect || !data.so_needleCountCorrect {
-                TextField("Count discrepancy / action taken", text: $data.so_countDiscrepancy, axis: .vertical)
-                    .lineLimit(2...)
-                    .onChange(of: data.so_countDiscrepancy) { _, _ in save() }
-            }
-
-            // Specimen
-            HStack(spacing: 12) {
-                checkRow("Specimen labelled (name, site, laterality)", value: $data.so_specimenLabelled)
-                Divider()
-                checkRow("N/A", value: $data.so_specimenNA)
-            }
-            if data.so_specimenLabelled {
-                TextField("Specimen details", text: $data.so_specimenDetails,
-                          prompt: Text("e.g. Gallbladder — histopathology"))
-                    .onChange(of: data.so_specimenDetails) { _, _ in save() }
-            }
-
-            checkRow("Equipment issues to be addressed?", value: $data.so_equipmentIssues, accent: .orange)
-            if data.so_equipmentIssues {
-                TextField("Equipment notes", text: $data.so_equipmentNotes, axis: .vertical)
-                    .lineLimit(2...)
-                    .onChange(of: data.so_equipmentNotes) { _, _ in save() }
-            }
-
-            TextField("Key concerns for recovery / ward handover",
-                      text: $data.so_recoveryConcerns, axis: .vertical)
-                .lineLimit(3...)
-                .onChange(of: data.so_recoveryConcerns) { _, _ in save() }
-
-            phaseTimeRow(label: "Sign Out time",
-                         recorded: $data.so_timeRecorded,
-                         time: $data.so_time,
-                         confirmedBy: $data.so_confirmedBy)
-        } header: {
-            phaseHeader("Sign Out", subtitle: "Before patient leaves operating room",
-                        complete: signOutComplete)
-        }
-    }
-
-    // MARK: - Helpers
-
-    private var signInComplete: Bool {
-        data.si_identityConfirmed && data.si_siteProcedureConfirmed &&
-        data.si_consentConfirmed && (data.si_siteMarked || data.si_siteMarkingNA) &&
-        data.si_anaesthesiaCheckComplete && data.si_pulseOxFunctioning &&
-        data.si_timeRecorded
-    }
-
-    private var timeOutComplete: Bool {
-        data.to_teamIntroduced && data.to_patientSiteProcedureConfirmed &&
-        data.to_surgeonCriticalSteps && data.to_anaesthesiaConcerns &&
-        data.to_nursingEquipmentReady &&
-        (data.to_antibioticGiven || data.to_antibioticNA) &&
-        (data.to_imagingDisplayed || data.to_imagingNA) &&
-        data.to_timeRecorded
-    }
-
-    private var signOutComplete: Bool {
-        data.so_procedureDocumented &&
-        data.so_instrumentCountCorrect && data.so_spongeCountCorrect && data.so_needleCountCorrect &&
-        (data.so_specimenLabelled || data.so_specimenNA) &&
-        data.so_timeRecorded
-    }
-
-    private func save() {
-        patient.preOpChecklistData = data
-        patient.updatedAt = .now
-        patient.pendingSync = true
-        try? context.save()
-    }
-
-    @ViewBuilder
-    private func phaseHeader(_ title: String, subtitle: String, complete: Bool) -> some View {
-        HStack(spacing: 6) {
-            Text(title)
-            Text("·")
-                .foregroundStyle(.secondary)
-            Text(subtitle)
-                .font(.caption)
-                .foregroundStyle(.secondary)
-            Spacer()
-            Image(systemName: complete ? "checkmark.circle.fill" : "circle")
-                .foregroundStyle(complete ? .green : Color.secondary.opacity(0.4))
-                .font(.system(size: 14))
-        }
-    }
-
-    @ViewBuilder
-    private func checkRow(_ label: String, value: Binding<Bool>,
-                          accent: Color = AMColor.accent) -> some View {
-        Button {
-            value.wrappedValue.toggle()
-            save()
-        } label: {
-            HStack(spacing: 10) {
-                Image(systemName: value.wrappedValue ? "checkmark.square.fill" : "square")
-                    .foregroundStyle(value.wrappedValue ? accent : .secondary)
-                    .font(.system(size: 18))
-                Text(label)
-                    .font(.subheadline)
-                    .foregroundStyle(.primary)
-                    .multilineTextAlignment(.leading)
-                Spacer()
-            }
-        }
-        .buttonStyle(.plain)
-    }
-
-    @ViewBuilder
-    private func phaseTimeRow(label: String,
-                              recorded: Binding<Bool>,
-                              time: Binding<Date>,
-                              confirmedBy: Binding<String>) -> some View {
-        Toggle(label, isOn: recorded)
-            .onChange(of: recorded.wrappedValue) { _, newVal in
-                if newVal { time.wrappedValue = .now }
+            // Auto-seed known allergy from patient record
+            // Real allergies only: an NKDA patient must not be ticked "known allergy" with
+            // "NKDA (Mild)" as the detail (UX review M2).
+            if !data.si_knownAllergy && !patient.recordedAllergies.isEmpty {
+                data.si_knownAllergy = true
+                if data.si_allergyDetails.isEmpty {
+                    data.si_allergyDetails = patient.recordedAllergies
+                        .map { "\($0.name) (\($0.severity))" }
+                        .joined(separator: ", ")
+                }
                 save()
             }
-        if recorded.wrappedValue {
-            DatePicker("Time", selection: time, displayedComponents: [.hourAndMinute])
-                .onChange(of: time.wrappedValue) { _, _ in save() }
-            TextField("Confirmed by", text: confirmedBy)
-                .onChange(of: confirmedBy.wrappedValue) { _, _ in save() }
+
+            // Auto-flag blood loss risk from pre-op lab values
+            let labs = LabPanel.parse(from: patient.investigations)
+            let anaemia = labs.haemoglobin.map { $0.value < 100 } ?? false
+            let lowPlts = labs.platelets.map   { $0.value < 100 } ?? false
+            if !data.si_bloodLossRisk && (anaemia || lowPlts || patient.hasAnticoagulation) {
+                data.si_bloodLossRisk = true
+                if data.si_bloodLossPrep.isEmpty {
+                    var reasons: [String] = []
+                    if anaemia, let hb = labs.haemoglobin {
+                        reasons.append("Hb \(String(format: "%.1f", hb.value)) g/dL")
+                    }
+                    if lowPlts, let plt = labs.platelets {
+                        reasons.append("Plt \(Int(plt.value))")
+                    }
+                    if patient.hasAnticoagulation { reasons.append("anticoagulation") }
+                    data.si_bloodLossPrep = "Large-bore IV × 2; G&S/crossmatch. [\(reasons.joined(separator: ", "))]"
+                }
+                save()
+            }
+
+            // Auto-flag difficult airway from Mallampati ≥ 3
+            if !data.si_difficultAirway, let mallampati = patient.mallampatiScore, mallampati >= 3 {
+                data.si_difficultAirway = true
+                if data.si_airwayDetails.isEmpty {
+                    data.si_airwayDetails = "Mallampati class \(mallampati) — anticipate difficult intubation; senior anaesthetist and videolaryngoscope."
+                }
+                save()
+            }
+
+            // Auto-mark site marking N/A for endoscopy (no skin-site marking required)
+            if !data.si_siteMarked && !data.si_siteMarkingNA && patient.setting == .endoscopy {
+                data.si_siteMarkingNA = true
+                save()
+            }
         }
     }
+
 }

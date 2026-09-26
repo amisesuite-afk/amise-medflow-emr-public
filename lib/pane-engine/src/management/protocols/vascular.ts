@@ -1,4 +1,5 @@
 import type { ManagementProtocol } from '../types.js';
+import { EMERGENCY_REDIRECT } from './shared.js';
 
 export const vascularProtocols: ManagementProtocol[] = [
   {
@@ -45,12 +46,15 @@ export const vascularProtocols: ManagementProtocol[] = [
 
   {
     diseaseId: 'aortic_aneurysm',
-    icd10Prefixes: ['I71.9'],
-    label: 'Aortic Aneurysm',
+    icd10Prefixes: ['I71', 'I72'],
+    label: 'Aortic Aneurysm (and peripheral arterial aneurysm)',
+    guidelines: ['ESVS 2024 clinical practice guidelines on abdominal aorto-iliac artery aneurysms', 'NICE NG156 (2020) abdominal aortic aneurysm'],
     keyPoints: [
       'Abdominal aortic aneurysm (AAA): defined as aortic diameter >3 cm; risk of rupture rises sharply above 5.5 cm (men) and 5.0 cm (women).',
       'Rupture presents as triad of hypotension, back/abdominal pain, and pulsatile abdominal mass — mortality without surgery >90%.',
       'Symptomatic or rapidly expanding AAA (>1 cm/year or >0.5 cm/6 months) warrants urgent repair regardless of size.',
+      'A first episode of "renal colic" over 60 without a stone history is a leaking AAA until the aorta has been imaged (bedside ultrasound / CT angiography).',
+      'Suspected rupture: permissive hypotension (target systolic 70–90 mmHg while conscious) — no large crystalloid bolus; immediate vascular surgery (ESVS 2024).',
     ],
     redFlags: [
       'Acute severe back, abdominal, or flank pain in known AAA — suspect rupture; immediate resuscitation and emergency surgery',
@@ -59,15 +63,17 @@ export const vascularProtocols: ManagementProtocol[] = [
       'Mycotic aneurysm: fever, raised inflammatory markers, eccentric saccular aneurysm',
     ],
     investigations: [
-      { label: 'Abdominal ultrasound (initial screening, surveillance)', urgency: 'routine' },
-      { label: 'CT aortography (definitive assessment, operative planning)', urgency: 'urgent' },
+      { label: 'Bedside ultrasound (POCUS) of the abdominal aorta — immediately if rupture or a symptomatic AAA is suspected', urgency: 'stat' },
+      { label: 'CT angiography (CTA) of the aorta — if haemodynamically able; definitive assessment and repair planning', urgency: 'urgent' },
       { label: 'FBC, coagulation screen, group and save', urgency: 'urgent' },
       { label: 'Renal function, eGFR (contrast planning)', urgency: 'urgent' },
       { label: 'ECG, troponin (cardiac risk stratification)', urgency: 'routine' },
       { label: 'Echo (if cardiac symptoms or high-risk surgery planned)', urgency: 'routine' },
     ],
     management: [
-      { phase: 'immediate', step: 'Ruptured AAA: two large-bore IV cannulae, cross-match 6 units RBC, permissive hypotension (systolic 70–80 mmHg) until in theatre.' },
+      { phase: 'immediate', step: `Suspected ruptured or symptomatic AAA: ${EMERGENCY_REDIRECT}` },
+      { phase: 'immediate', step: 'Ruptured AAA: two large-bore IV cannulae, cross-match 6 units RBC, permissive hypotension (systolic 70–90 mmHg while conscious) — avoid large fluid boluses; blood products rather than crystalloid (ESVS 2024).' },
+      { phase: 'surgical', step: 'Ruptured or symptomatic AAA: immediate vascular surgery — emergency EVAR where anatomy allows, otherwise open repair (ESVS 2024).' },
       { phase: 'conservative', step: 'Small AAA (3.0–5.4 cm): surveillance ultrasound 3-yearly (3–4.4 cm) or annually (4.5–5.4 cm).' },
       { phase: 'conservative', step: 'Cardiovascular risk reduction: statin, antiplatelet, smoking cessation, blood pressure control.' },
       { phase: 'surgical', step: 'Elective repair for AAA ≥5.5 cm (men) / ≥5.0 cm (women), or symptomatic/rapidly expanding: EVAR preferred where anatomy permits.' },
@@ -79,16 +85,16 @@ export const vascularProtocols: ManagementProtocol[] = [
       { drugName: 'Aspirin', dose: '75 mg', frequency: 'OD (once daily)', route: 'PO (oral)', indication: 'Antiplatelet', phase: 'maintenance' },
       { drugName: 'Ramipril', dose: '5 mg', frequency: 'OD (once daily)', route: 'PO (oral)', indication: 'Antihypertensive — caution: do NOT aggressively lower BP in ruptured AAA pre-operatively', phase: 'maintenance' },
       { drugName: 'Morphine sulfate', dose: '2.5–5 mg', frequency: 'Q4H (every 4 hours)', route: 'IV (intravenous)', indication: 'Pain', phase: 'immediate' },
-      { drugName: '0.9% Sodium Chloride', dose: 'titrate to SBP 70–80 mmHg', frequency: 'continuous infusion', route: 'IV (intravenous)', indication: 'Permissive hypotensive resuscitation — ruptured AAA (avoid aggressive fluid resuscitation pre-repair)', phase: 'immediate' },
-      { drugName: 'Tranexamic acid', dose: '1 g', frequency: 'stat (single dose)', route: 'IV (intravenous)', indication: 'Haemorrhage control — ruptured AAA', phase: 'immediate' },
+      { drugName: '0.9% Sodium Chloride', dose: 'small aliquots only, titrated to SBP 70–90 mmHg', frequency: 'as needed', route: 'IV (intravenous)', indication: 'Permissive hypotensive resuscitation — ruptured AAA (avoid aggressive fluid resuscitation pre-repair)', phase: 'immediate' },
     ],
     referral: 'Vascular Surgery immediately for symptomatic or ruptured AAA; urgent referral for AAA ≥5.5 cm or rapidly expanding.',
   },
 
   {
     diseaseId: 'deep_vein_thrombosis',
-    icd10Prefixes: ['I82.4'],
+    icd10Prefixes: ['I82.4', 'I82.5', 'I82.6', 'I80.1', 'I80.2', 'I80.3', 'O22.3'],
     label: 'Deep Vein Thrombosis',
+    guidelines: ['NICE NG158 (2020, updated 2023) venous thromboembolic diseases', 'RCOG Green-top Guideline 37b (2015) thrombosis and embolism in pregnancy — acute management'],
     keyPoints: [
       'Wells score guides pre-test probability: ≥2 = high probability, requires USS; negative D-dimer safely excludes DVT if Wells <2.',
       'Proximal DVT (popliteal and above) carries higher PE risk than distal (calf vein) DVT.',
@@ -100,7 +106,7 @@ export const vascularProtocols: ManagementProtocol[] = [
       'DVT in unusual sites (cerebral venous sinus, mesenteric, hepatic) — consider thrombophilia or malignancy',
     ],
     investigations: [
-      { label: 'D-dimer (only if pre-test probability low/intermediate)', urgency: 'urgent' },
+      { label: 'D-dimer (only if pre-test probability low/intermediate; not used to exclude VTE in pregnancy — RCOG GTG 37b)', urgency: 'urgent' },
       { label: 'Venous duplex ultrasound of affected limb', urgency: 'urgent' },
       { label: 'FBC, coagulation screen (APTT, PT, fibrinogen)', urgency: 'urgent' },
       { label: 'Renal function (guides anticoagulant choice)', urgency: 'urgent' },
@@ -110,7 +116,8 @@ export const vascularProtocols: ManagementProtocol[] = [
     management: [
       { phase: 'immediate', step: 'Anticoagulate immediately on clinical suspicion (do not delay for imaging if high probability).' },
       { phase: 'conservative', step: 'Direct oral anticoagulant (DOAC): rivaroxaban 15 mg BD for 21 days then 20 mg OD; or apixaban 10 mg BD for 7 days then 5 mg BD.' },
-      { phase: 'conservative', step: 'Alternative: LMWH bridging to warfarin (target INR 2–3) if DOAC contraindicated (severe renal failure, pregnancy).' },
+      { phase: 'conservative', step: 'Alternative: LMWH bridging to warfarin (target INR 2–3) if a DOAC is contraindicated (severe renal failure, antiphospholipid syndrome) — warfarin is contraindicated in pregnancy (teratogenic).' },
+      { phase: 'conservative', step: 'Pregnancy: treatment-dose LMWH by early-pregnancy weight for the rest of the pregnancy and at least 6 weeks after birth (at least 3 months in total); DOACs are contraindicated and warfarin is contraindicated (teratogenic) in pregnancy; compression duplex — D-dimer is not used to exclude DVT in pregnancy (RCOG GTG 37b). Obstetric and haematology involvement.', onlyIf: 'pregnant' },
       { phase: 'conservative', step: 'Graduated compression stockings (knee-high, 20–30 mmHg) to reduce post-thrombotic syndrome.' },
       { phase: 'conservative', step: 'Ambulation encouraged — bed rest does not reduce PE risk and increases post-thrombotic morbidity.' },
       { phase: 'followup', step: 'Review at 3 months; decision on duration of anticoagulation based on provoked vs unprovoked status and bleeding risk.' },
@@ -120,7 +127,7 @@ export const vascularProtocols: ManagementProtocol[] = [
       { drugName: 'Rivaroxaban', dose: '20 mg', frequency: 'OD with evening meal (once daily)', route: 'PO (oral)', duration: '3–6 months', indication: 'Maintenance anticoagulation', phase: 'maintenance', alternativeTo: 'Apixaban' },
       { drugName: 'Apixaban', dose: '10 mg', frequency: 'BD (twice daily)', route: 'PO (oral)', duration: '7 days', indication: 'Alternative initial anticoagulation', phase: 'immediate', alternativeTo: 'Rivaroxaban 15mg BD' },
       { drugName: 'Apixaban', dose: '5 mg', frequency: 'BD (twice daily)', route: 'PO (oral)', duration: '3–6 months', indication: 'Maintenance anticoagulation', phase: 'maintenance' },
-      { drugName: 'Enoxaparin', dose: '1.5 mg/kg', frequency: 'OD (once daily)', route: 'SC (subcutaneous)', indication: 'LMWH bridge if DOAC contraindicated (pregnancy, antiphospholipid syndrome)', phase: 'immediate' },
+      { drugName: 'Enoxaparin', dose: '1.5 mg/kg (non-pregnant, BNF); pregnancy — dose by early-pregnancy weight per RCOG GTG 37b', frequency: 'OD (non-pregnant) — per RCOG in pregnancy', route: 'SC (subcutaneous)', indication: 'LMWH treatment — pregnancy, antiphospholipid syndrome or DOAC contraindicated', phase: 'immediate' },
       { drugName: 'Warfarin', dose: '5 mg', frequency: 'OD (once daily)', route: 'PO (oral)', indication: 'If DOAC contraindicated — target INR 2–3', phase: 'maintenance' },
       { drugName: 'Paracetamol', dose: '1 g', frequency: 'QDS (four times daily)', route: 'PO (oral)', indication: 'Analgesia', phase: 'discharge' },
     ],
@@ -316,11 +323,12 @@ export const vascularProtocols: ManagementProtocol[] = [
 
   {
     diseaseId: 'pulmonary_embolism',
-    icd10Prefixes: ['I26.9'],
+    icd10Prefixes: ['I26', 'O88.2'],
+    guidelines: ['ESC 2019 acute pulmonary embolism', 'NICE NG158 (2020, updated 2023)', 'RCOG Green-top Guideline 37b (2015)'],
     label: 'Pulmonary Embolism',
     keyPoints: [
       'Wells PE score and PERC rule guide pre-test probability; CT pulmonary angiography (CTPA) is the gold-standard investigation.',
-      'Massive PE (haemodynamic instability): systemic thrombolysis (alteplase 100 mg IV over 2 hours) is life-saving.',
+      'Massive PE (haemodynamic instability): systemic thrombolysis (alteplase 100 mg IV over 2 hours) is life-saving — contraindicated after major surgery, trauma or bleeding in the previous 3 weeks (surgical embolectomy or catheter-directed therapy instead) (ESC 2019).',
       'Troponin and BNP predict right heart strain; PESI score guides outpatient vs inpatient management.',
     ],
     redFlags: [
@@ -331,29 +339,31 @@ export const vascularProtocols: ManagementProtocol[] = [
     ],
     investigations: [
       { label: 'D-dimer (if low pre-test probability — Wells <2)', urgency: 'stat' },
-      { label: 'CTPA (CT pulmonary angiography) — gold standard', urgency: 'stat' },
+      { label: 'CTPA (CT pulmonary angiography) — if the two-level Wells score is > 4 (PE likely), or if ≤ 4 with a positive D-dimer; not needed when PERC-negative at low pre-test probability (NICE NG158; ESC 2019)', urgency: 'stat' },
       { label: 'ECG (sinus tachycardia, S1Q3T3, new RBBB)', urgency: 'stat' },
       { label: 'ABG / pulse oximetry', urgency: 'stat' },
       { label: 'Troponin, BNP/NT-proBNP (risk stratification)', urgency: 'urgent' },
-      { label: 'Echocardiography (RV function; if CTPA unavailable)', urgency: 'urgent' },
+      { label: 'Bedside echocardiography (RV dysfunction) — immediately in shock or if CTPA is not feasible (ESC 2019)', urgency: 'stat' },
       { label: 'Venous duplex USS lower limbs (concurrent DVT)', urgency: 'urgent' },
     ],
     management: [
-      { phase: 'immediate', step: 'High-flow O2; IV access; haemodynamic monitoring; alert anaesthetics/ICU if unstable.' },
-      { phase: 'immediate', step: 'Massive PE: alteplase 10 mg IV bolus then 90 mg over 2 h (if no contraindication); surgical embolectomy if thrombolysis fails or contraindicated.' },
-      { phase: 'conservative', step: 'Anticoagulation: rivaroxaban 15 mg BD × 21 days then 20 mg OD; or LMWH/warfarin.' },
+      { phase: 'immediate', step: `Suspected PE with hypoxia, chest pain or collapse seen in clinic: ${EMERGENCY_REDIRECT}` },
+      { phase: 'immediate', step: 'Oxygen to SpO₂ 94–98%; IV access; haemodynamic monitoring; alert anaesthetics/ICU if unstable. Avoid large fluid boluses — at most a cautious 500 mL challenge; noradrenaline for hypotension (ESC 2019).' },
+      { phase: 'immediate', step: 'High-risk (massive) PE: IV unfractionated heparin (UFH) 80 units/kg bolus without delay, then systemic thrombolysis — alteplase 100 mg over 2 h (ESC 2019). Thrombolysis is contraindicated after major surgery, trauma or head injury in the previous 3 weeks, active bleeding, haemorrhagic stroke or recent ischaemic stroke — then surgical embolectomy or catheter-directed therapy.' },
+      { phase: 'conservative', step: 'Non-high-risk PE: anticoagulation with a DOAC (e.g. rivaroxaban 15 mg BD × 21 days then 20 mg OD, or apixaban) or LMWH; warfarin if a DOAC is contraindicated (NICE NG158).' },
+      { phase: 'conservative', step: 'Pregnancy: CTPA or V/Q per the obstetric/radiology team; treatment-dose LMWH (DOACs and warfarin contraindicated); D-dimer is not used to exclude PE in pregnancy (RCOG GTG 37b). Obstetric team involvement.', onlyIf: 'pregnant' },
       { phase: 'conservative', step: 'Low-risk PE (PESI I–II, normal troponin/BNP, adequate home support): early discharge protocol.' },
       { phase: 'followup', step: 'Duration of anticoagulation: 3 months for provoked, ≥6 months for unprovoked; reassess bleeding vs clot risk at 3 months.' },
       { phase: 'followup', step: 'Thrombophilia screen and malignancy workup if unprovoked; CTPA at 3–6 months to exclude chronic thromboembolic disease.' },
     ],
     medications: [
-      { drugName: 'Alteplase', dose: '10 mg IV bolus, then 90 mg over 2 hours', frequency: 'stat (once)', route: 'IV (intravenous)', indication: 'Massive PE with haemodynamic compromise — systemic thrombolysis', phase: 'immediate' },
-      { drugName: 'Unfractionated heparin', dose: '80 units/kg bolus, then 18 units/kg/h', frequency: 'continuous infusion', route: 'IV (intravenous)', indication: 'Concurrent with thrombolysis or high-risk PE', phase: 'immediate' },
+      { drugName: 'Alteplase', dose: '100 mg over 2 hours (ESC 2019)', frequency: 'stat (once)', route: 'IV (intravenous)', indication: 'High-risk PE with shock — contraindicated after major surgery or trauma in the previous 3 weeks, or with active bleeding (ESC 2019)', phase: 'immediate' },
+      { drugName: 'Unfractionated heparin', dose: '80 units/kg bolus, then 18 units/kg/h', frequency: 'continuous infusion', route: 'IV (intravenous)', indication: 'High-risk PE, and with thrombolysis if thrombolysis is not contraindicated (no major surgery, trauma or bleeding in the previous 3 weeks — ESC 2019)', phase: 'immediate' },
       { drugName: 'Rivaroxaban', dose: '15 mg', frequency: 'BD (twice daily)', route: 'PO (oral)', duration: '21 days', indication: 'Non-massive PE — initial anticoagulation', phase: 'immediate' },
       { drugName: 'Rivaroxaban', dose: '20 mg', frequency: 'OD with evening meal (once daily)', route: 'PO (oral)', duration: '3–6 months', indication: 'Maintenance anticoagulation', phase: 'maintenance' },
       { drugName: 'Apixaban', dose: '10 mg', frequency: 'BD (twice daily)', route: 'PO (oral)', duration: '7 days', indication: 'Alternative initial anticoagulation', phase: 'immediate', alternativeTo: 'Rivaroxaban 15mg BD' },
       { drugName: 'Apixaban', dose: '5 mg', frequency: 'BD (twice daily)', route: 'PO (oral)', duration: '3–6 months', indication: 'Maintenance anticoagulation', phase: 'maintenance', alternativeTo: 'Rivaroxaban 20mg OD' },
-      { drugName: 'Oxygen', dose: '15 L/min', frequency: 'continuous', route: 'inhalation via non-rebreather mask', indication: 'Hypoxia — maintain SpO₂ ≥94%', phase: 'immediate' },
+      { drugName: 'Oxygen', dose: 'Titrate to SpO₂ 94–98%', frequency: 'continuous', route: 'inhalation', indication: 'Hypoxia (BTS 2017; 88–92% if at risk of hypercapnia)', phase: 'immediate' },
     ],
     referral: 'Respiratory/Acute Medicine for submassive/massive PE; Vascular Surgery for surgical embolectomy; Haematology for thrombophilia workup.',
   },

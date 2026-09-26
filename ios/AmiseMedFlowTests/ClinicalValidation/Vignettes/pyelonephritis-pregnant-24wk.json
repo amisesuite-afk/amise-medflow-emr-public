@@ -1,0 +1,393 @@
+{
+  "schemaVersion": 1,
+  "id": "pyelonephritis-pregnant-24wk",
+  "condition": "Acute pyelonephritis in pregnancy",
+  "category": "urology",
+  "permutationOf": "pyelonephritis-adult-female",
+  "permutationLabel": "Pregnant, 24 weeks",
+  "summary": "31-year-old at 24 weeks with dysuria, left loin pain, fever 38.6 and rigors; nitrite-positive urine.",
+  "tags": [
+    "infection",
+    "pregnancy",
+    "renal"
+  ],
+  "inputs": {
+    "patient": {
+      "ageYears": 31,
+      "sex": "female",
+      "pregnancy": {
+        "status": "pregnant",
+        "gestationWeeks": 24
+      },
+      "heightCm": 160,
+      "weightKg": 70
+    },
+    "encounter": {
+      "setting": "emergency",
+      "visitType": "urgentReview",
+      "acuity": "urgent"
+    },
+    "chiefComplaint": "Left loin pain and fever in pregnancy",
+    "hpi": "24 weeks pregnant (second pregnancy). Three days of dysuria then left loin pain, fever and rigors. Nauseated. Fetal movements normal. No vaginal bleeding or contractions.",
+    "socrates": {
+      "onset": [
+        "Yesterday"
+      ],
+      "site": [
+        "Loin",
+        "Left side"
+      ],
+      "character": [
+        "Aching"
+      ],
+      "radiation": [
+        "No radiation"
+      ],
+      "associations": [
+        "Fever",
+        "Rigors",
+        "Dysuria",
+        "Nausea"
+      ],
+      "timing": [
+        "Constant"
+      ],
+      "exacerbating": [
+        "Movement"
+      ],
+      "relieving": [
+        "Nothing"
+      ],
+      "severity": [
+        "Moderate (4–6/10)"
+      ]
+    },
+    "symptoms": [
+      "loin pain",
+      "fever",
+      "rigors",
+      "dysuria",
+      "nausea"
+    ],
+    "negatives": [
+      "vaginal bleeding",
+      "contractions",
+      "headache"
+    ],
+    "exam": {
+      "general": "Unwell, flushed. Pulse 110/min, BP 110/64, RR 20, temperature 38.6°C, SpO2 98%.",
+      "abdomen": "Gravid uterus consistent with 24 weeks, non-tender. Left renal angle tenderness."
+    },
+    "vitals": [
+      {
+        "minutesAgo": 10,
+        "heartRate": 110,
+        "systolicBp": 110,
+        "diastolicBp": 64,
+        "respiratoryRate": 20,
+        "temperatureC": 38.6,
+        "spo2": 98,
+        "avpu": "A",
+        "onSupplementalO2": false,
+        "weightKg": 70
+      }
+    ],
+    "labs": [
+      {
+        "analyte": "urinalysis",
+        "name": "Urine dipstick",
+        "resultText": "Nitrite positive, leucocytes 2+",
+        "minutesAgo": 30
+      },
+      {
+        "analyte": "wbc",
+        "name": "WBC",
+        "value": 15.0,
+        "unit": "×10⁹/L",
+        "minutesAgo": 30
+      },
+      {
+        "analyte": "crp",
+        "name": "CRP",
+        "value": 96,
+        "unit": "mg/L",
+        "minutesAgo": 30
+      },
+      {
+        "analyte": "creatinine",
+        "name": "Creatinine",
+        "value": 54,
+        "unit": "µmol/L",
+        "minutesAgo": 30
+      }
+    ],
+    "imaging": [],
+    "comorbidities": [],
+    "surgicalHistory": [],
+    "medications": [
+      {
+        "drug": "Pregnancy multivitamin",
+        "dose": "1 tablet",
+        "frequency": "OD"
+      }
+    ],
+    "allergies": [],
+    "nkda": true,
+    "socialHistory": "Shop assistant.",
+    "confirmedDiagnosis": {
+      "name": "Acute pyelonephritis in pregnancy (24 weeks)",
+      "icd10": "O23.0",
+      "assessmentText": "Acute left pyelonephritis at 24 weeks gestation; admit, IV cephalosporin, obstetric review."
+    },
+    "platform": {
+      "web": {
+        "ccTemplate": "Acute abdominal pain",
+        "socratesAnswers": {
+          "onset": "Yesterday",
+          "site": "Left loin / flank",
+          "character": "Aching",
+          "associated": "Fever, rigors, dysuria, nausea",
+          "timing": "Constant",
+          "triggers": "Movement",
+          "relief": "Nothing",
+          "severity": "6/10"
+        },
+        "symptoms": [
+          "loin pain",
+          "fever",
+          "rigors",
+          "dysuria",
+          "nausea"
+        ],
+        "durationDays": 3,
+        "painScore": 6
+      }
+    }
+  },
+  "expected": {
+    "differential": {
+      "mustRankTopK": [
+        {
+          "id": "dx-pyelonephritis-top3",
+          "severity": "critical",
+          "match": [
+            "pyelonephritis",
+            "urinary tract infection",
+            "re:\\buti\\b"
+          ],
+          "k": 3,
+          "guidelineRefs": [
+            "nice-ng111"
+          ]
+        }
+      ]
+    },
+    "safety": {
+      "emergencyLevel": {
+        "id": "level-urgent",
+        "severity": "critical",
+        "atLeast": "urgent",
+        "guidelineRefs": [
+          "nice-ng111"
+        ]
+      }
+    },
+    "investigations": {
+      "mustInclude": [
+        {
+          "id": "inv-urine-culture",
+          "severity": "critical",
+          "match": [
+            "msu",
+            "urine culture",
+            "c&s",
+            "mid-stream",
+            "midstream",
+            "csu",
+            "catheter specimen"
+          ],
+          "guidelineRefs": [
+            "nice-ng111"
+          ]
+        }
+      ]
+    },
+    "management": {
+      "mustInclude": [
+        {
+          "id": "mgmt-pregnancy-safe-antibiotic",
+          "severity": "critical",
+          "match": [
+            "cefalexin",
+            "cefuroxime",
+            "ceftriaxone",
+            "co-amoxiclav",
+            "amoxicillin",
+            "piperacillin"
+          ],
+          "guidelineRefs": [
+            "nice-ng111"
+          ],
+          "note": "Any effective antibiotic that is compatible with pregnancy (broad-spectrum sepsis cover counts here, as in the base vignette)."
+        },
+        {
+          "id": "mgmt-ng111-pregnancy-antibiotic",
+          "severity": "quality",
+          "match": [
+            "cefalexin",
+            "cefuroxime"
+          ],
+          "guidelineRefs": [
+            "nice-ng111"
+          ],
+          "note": "The NICE NG111 pregnancy choices.",
+          "knownGapNote": "Web: The only antibiotic is pip-tazo from the SIRS prompt; no cefalexin or cefuroxime (O23.0 has no protocol).",
+          "proposedFix": "Map O23.0/N10 to a pyelonephritis protocol with an NG111 pregnancy branch."
+        },
+        {
+          "id": "mgmt-obstetric",
+          "severity": "critical",
+          "match": [
+            "obstetric",
+            "fetal",
+            "foetal",
+            "ctg",
+            "cardiotocograph",
+            "maternity",
+            "midwif"
+          ],
+          "guidelineRefs": [
+            "nice-ng111"
+          ]
+        }
+      ],
+      "mustExclude": [
+        {
+          "id": "mgmt-no-quinolone",
+          "severity": "critical",
+          "match": [
+            "ciprofloxacin",
+            "levofloxacin",
+            "ofloxacin",
+            "quinolone"
+          ],
+          "unless": [
+            "avoid",
+            "contraindicat",
+            "not in pregnancy"
+          ],
+          "guidelineRefs": [
+            "nice-ng111"
+          ],
+          "note": "NICE NG111 lists cefalexin (oral) or cefuroxime (IV) in pregnancy; quinolones are avoided."
+        },
+        {
+          "id": "mgmt-no-nitrofurantoin",
+          "severity": "critical",
+          "match": [
+            "nitrofurantoin"
+          ],
+          "unless": [
+            "lower uti",
+            "cystitis",
+            "prophylaxis",
+            "not for pyelo",
+            "avoid"
+          ],
+          "guidelineRefs": [
+            "nice-ng111"
+          ]
+        },
+        {
+          "id": "mgmt-no-trimethoprim",
+          "severity": "quality",
+          "match": [
+            "trimethoprim"
+          ],
+          "unless": [
+            "avoid",
+            "first trimester",
+            "prophylaxis",
+            "lower uti",
+            "culture"
+          ],
+          "guidelineRefs": [
+            "nice-ng111"
+          ],
+          "note": "Not a NICE NG111 option for pyelonephritis in pregnancy."
+        },
+        {
+          "id": "mgmt-no-nsaid-pregnancy",
+          "severity": "critical",
+          "match": [
+            "re:ibuprofen \\d",
+            "re:diclofenac \\d",
+            "re:naproxen \\d",
+            "re:ketorolac",
+            "re:\\bnsaid\\b[^.;\\n]{0,30}(first|analges)"
+          ],
+          "unless": [
+            "avoid nsaid",
+            "avoid in pregnancy",
+            "not in pregnancy",
+            "contraindicated in pregnancy",
+            "hold nsaid",
+            "stop nsaid",
+            "do not give"
+          ],
+          "guidelineRefs": [
+            "fda-nsaid-2020"
+          ]
+        },
+        {
+          "id": "mgmt-no-cholecystectomy",
+          "severity": "critical",
+          "match": [
+            "cholecystectomy",
+            "cholecystostomy"
+          ],
+          "guidelineRefs": [
+            "nice-ng111"
+          ],
+          "note": "No biliary indication: a gallbladder plan for pyelonephritis in pregnancy is a wrong-procedure suggestion."
+        },
+        {
+          "id": "mgmt-no-laparotomy",
+          "severity": "critical",
+          "match": [
+            "emergency laparotomy",
+            "re:\\blaparotomy\\b",
+            "bowel obstruction — operative plan"
+          ],
+          "guidelineRefs": [
+            "nice-ng111"
+          ]
+        }
+      ]
+    }
+  },
+  "guideline": [
+    {
+      "id": "nice-ng111",
+      "name": "NICE NG111 — Pyelonephritis (acute): antimicrobial prescribing",
+      "year": 2018,
+      "section": "Send midstream urine for culture; non-pregnant adults: cefalexin, co-amoxiclav (only with culture susceptibility), trimethoprim (only with culture susceptibility) or ciprofloxacin; pregnant: oral cefalexin, IV cefuroxime if severely unwell; refer to hospital if signs of sepsis; nitrofurantoin not used (inadequate renal tissue levels)",
+      "citation": "National Institute for Health and Care Excellence. Pyelonephritis (acute): antimicrobial prescribing. NICE guideline NG111. London: NICE; 2018.",
+      "verified": false
+    },
+    {
+      "id": "fda-nsaid-2020",
+      "name": "FDA Drug Safety Communication — avoid NSAIDs in pregnancy at 20 weeks or later",
+      "year": 2020,
+      "section": "NSAIDs at about 20 weeks of gestation or later can cause fetal renal dysfunction and oligohydramnios; avoid unless specifically advised (low-dose aspirin excepted)",
+      "citation": "US Food and Drug Administration. FDA recommends avoiding use of NSAIDs in pregnancy at 20 weeks or later because they can result in low amniotic fluid. Drug Safety Communication, 15 October 2020.",
+      "verified": false
+    }
+  ],
+  "rationale": "Pregnancy changes the antibiotic (cefalexin/cefuroxime, no quinolone) and needs obstetric input (NICE NG111).",
+  "authoring": {
+    "author": "Claude (endocrine / renal / urology / neuro cluster)",
+    "date": "2026-09-25",
+    "notes": "Expectations need surgeon sign-off (reviewedBy). Every citation is verified: false. iOS outcomes not observed (Linux)."
+  }
+}

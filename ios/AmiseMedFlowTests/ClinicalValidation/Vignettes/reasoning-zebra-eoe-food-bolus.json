@@ -1,0 +1,106 @@
+{
+  "schemaVersion": 1,
+  "id": "reasoning-zebra-eoe-food-bolus",
+  "condition": "Eosinophilic oesophagitis (recurrent food bolus in an atopic young man)",
+  "category": "upper-gi",
+  "permutationOf": null,
+  "summary": "26-year-old man with asthma and eczema, third food bolus impaction this year.",
+  "tags": [
+    "diagnostic-reasoning"
+  ],
+  "inputs": {
+    "patient": {
+      "ageYears": 26,
+      "sex": "male"
+    },
+    "encounter": {
+      "setting": "outpatient",
+      "visitType": "newConsult",
+      "acuity": "routine"
+    },
+    "chiefComplaint": "Food stuck in the throat",
+    "hpi": "Food keeps sticking behind the breastbone; third food bolus this year, cleared by itself today. Dysphagia to solids for years, eats slowly. Asthma and eczema since childhood; hay fever.",
+    "socrates": {},
+    "symptoms": [],
+    "exam": {
+      "general": "Well.",
+      "abdomen": "Soft, non-tender."
+    },
+    "vitals": [
+      {
+        "minutesAgo": 10,
+        "heartRate": 76,
+        "systolicBp": 124,
+        "diastolicBp": 76,
+        "respiratoryRate": 14,
+        "temperatureC": 36.7,
+        "spo2": 99,
+        "avpu": "A",
+        "onSupplementalO2": false
+      }
+    ],
+    "labs": [
+      {
+        "analyte": "eosinophils",
+        "name": "Eosinophils",
+        "value": 0.8,
+        "unit": "10^9/L",
+        "minutesAgo": 20
+      }
+    ],
+    "imaging": [],
+    "comorbidities": [
+      "Asthma",
+      "Eczema"
+    ],
+    "surgicalHistory": [],
+    "medications": [],
+    "allergies": [],
+    "nkda": true,
+    "socialHistory": "",
+    "platform": {
+      "web": {
+        "ccTemplate": "Dysphagia",
+        "symptoms": [
+          "Difficulty swallowing"
+        ]
+      }
+    }
+  },
+  "expected": {
+    "reasoning": {
+      "mustInclude": [
+        {
+          "id": "zebra-eoe",
+          "severity": "quality",
+          "match": [
+            "eosinophilic oesophagitis"
+          ],
+          "sources": [
+            "web.reasoning.zebra",
+            "ios.reasoning.zebra"
+          ],
+          "guidelineRefs": [
+            "agree-2018"
+          ],
+          "note": "Dysphagia / food bolus with atopy or eosinophilia fits EoE (AGREE 2018); OGD with biopsies from two levels."
+        }
+      ]
+    }
+  },
+  "guideline": [
+    {
+      "id": "agree-2018",
+      "name": "Updated international consensus diagnostic criteria for eosinophilic esophagitis (AGREE)",
+      "year": 2018,
+      "section": "Clinical features",
+      "citation": "Dellon ES et al. Gastroenterology 2018;155:1022-1033"
+    }
+  ],
+  "rationale": "The zebra check should offer EoE for the recurrent bolus + atopy combination.",
+  "authoring": {
+    "author": "Claude (diagnostic-reasoning branch)",
+    "date": "2026-09-25",
+    "notes": "Reasoning-layer vignette. iOS reasoning output is unverified here (Swift not built in this environment)."
+  }
+}

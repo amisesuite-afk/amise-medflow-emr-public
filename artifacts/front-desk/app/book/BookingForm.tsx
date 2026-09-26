@@ -30,7 +30,7 @@ const TRACK_INFO: Record<BookingTrack, { label: string; description: string; ico
 // doctors' names here — that would need to be sourced from a verified
 // registry such as the SLMDA roster rather than guessed at.)
 const SAINT_LUCIA_HEALTH_INSTITUTIONS = [
-  'Victoria Hospital', 'Tapion Hospital', 'St Jude Hospital',
+  'OKEU Hospital', 'Tapion Hospital', 'St Jude Hospital',
   'Soufrière Hospital', 'Dennery Hospital', 'Gros Islet Polyclinic',
   'Castries Polyclinic', 'Vieux Fort Polyclinic', 'Micoud Polyclinic',
   'Babonneau Polyclinic', 'Choiseul Polyclinic', 'Anse La Raye Polyclinic',

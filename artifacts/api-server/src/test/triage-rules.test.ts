@@ -103,6 +103,30 @@ describe('scanRedFlags', () => {
   });
 });
 
+// ── Negated mentions (clinical validation, 2026-09) ─────────────────────────
+
+describe('scanRedFlags ignores explicit negations', () => {
+  it.each([
+    'No bleeding.',
+    'No chest pain described.',
+    'Patient denies chest pain.',
+    'No episodes of severe pain.',
+    'No weight loss, no night sweats.',
+    'No family history of stomach cancer.',
+    'No fever or rigors.',
+    'Not breathless.',
+  ])('%s → not flagged', text => {
+    expect(scanRedFlags(text).flagged).toBe(false);
+  });
+
+  it('keeps the flag when the finding is present or only hedged', () => {
+    expect(scanRedFlags('Bleeding has not settled.').flagged).toBe(true);
+    expect(scanRedFlags("It hasn't stopped bleeding.").flagged).toBe(true);
+    expect(scanRedFlags('No vomiting. Severe abdominal pain since this morning.').matches.map(m => m.reason))
+      .toContain('Acute abdominal pain');
+  });
+});
+
 // ── checkForbiddenContent ────────────────────────────────────────────────────
 
 describe('checkForbiddenContent', () => {

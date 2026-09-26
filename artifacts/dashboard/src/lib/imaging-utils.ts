@@ -58,15 +58,28 @@ export function isImagingInvestigation(label: string): boolean {
   return IMAGING_PATTERNS.some(re => re.test(label));
 }
 
+const MODALITY_PATTERNS: [string, RegExp][] = [
+  ['Ultrasound', /\buss\b|\bultrasound\b|\bduplex\b/],
+  ['MRI', /\bmrcp\b|\bmri\b/],
+  ['CT', /\bct\b|\bcect\b|\b4d-ct\b|\bct,|\bct\//],
+  ['XRay', /\bcxr\b|\baxr\b|\bx-ray\b|\bxray\b|\bradiograph\b|\berect\b/],
+  ['Functional', /\bechocardiogram\b/],
+  ['XRay', /\bmammograph/],
+];
+
+/**
+ * The modality named FIRST in the label: "CT abdomen/pelvis … — in pregnancy MRI / ultrasound
+ * first" is a CT request, not an ultrasound (protocol labels and plan-safety caveats name other
+ * modalities after the one being requested).
+ */
 function detectModality(label: string): string {
   const l = label.toLowerCase();
-  if (/\buss\b|\bultrasound\b|\bduplex\b/.test(l)) return 'Ultrasound';
-  if (/\bmrcp\b|\bmri\b/.test(l)) return 'MRI';
-  if (/\bct\b|\bcect\b|\b4d-ct\b|\bct,|\bct\//.test(l)) return 'CT';
-  if (/\bcxr\b|\baxr\b|\bx-ray\b|\bxray\b|\bradiograph\b|\berect\b/.test(l)) return 'XRay';
-  if (/\bechocardiogram\b/.test(l)) return 'Functional';
-  if (/\bmammograph/.test(l)) return 'XRay';
-  return 'Other';
+  let best: { modality: string; at: number } | null = null;
+  for (const [modality, re] of MODALITY_PATTERNS) {
+    const m = re.exec(l);
+    if (m && (!best || m.index < best.at)) best = { modality, at: m.index };
+  }
+  return best?.modality ?? 'Other';
 }
 
 function detectRegion(label: string): string {

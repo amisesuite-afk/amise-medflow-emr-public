@@ -1,0 +1,164 @@
+{
+  "schemaVersion": 1,
+  "id": "reasoning-closure-biliary-colic-lipase",
+  "condition": "Acute gallstone pancreatitis first labelled biliary colic",
+  "category": "hpb",
+  "permutationOf": null,
+  "summary": "44-year-old woman confirmed as biliary colic in clinic; the bloods sent at the visit return with lipase 1850 U/L.",
+  "tags": [
+    "diagnostic-reasoning"
+  ],
+  "inputs": {
+    "patient": {
+      "ageYears": 44,
+      "sex": "female",
+      "pregnancy": {
+        "status": "not-pregnant"
+      }
+    },
+    "encounter": {
+      "setting": "outpatient",
+      "visitType": "newConsult",
+      "acuity": "routine"
+    },
+    "chiefComplaint": "Upper abdominal pain",
+    "hpi": "Eight hours of constant epigastric pain radiating through to the back after a fatty meal, with repeated vomiting. Known gallstones on a scan last year. Drinks rarely.",
+    "socrates": {},
+    "symptoms": [],
+    "exam": {
+      "general": "Uncomfortable, sitting forward.",
+      "abdomen": "Epigastric tenderness. No guarding. Murphy's sign negative."
+    },
+    "vitals": [
+      {
+        "minutesAgo": 90,
+        "heartRate": 96,
+        "systolicBp": 128,
+        "diastolicBp": 80,
+        "respiratoryRate": 18,
+        "temperatureC": 37.4,
+        "spo2": 98,
+        "avpu": "A",
+        "onSupplementalO2": false
+      },
+      {
+        "minutesAgo": 10,
+        "heartRate": 104,
+        "systolicBp": 122,
+        "diastolicBp": 78,
+        "respiratoryRate": 20,
+        "temperatureC": 37.6,
+        "spo2": 97,
+        "avpu": "A",
+        "onSupplementalO2": false
+      }
+    ],
+    "labs": [
+      {
+        "analyte": "lipase",
+        "name": "Lipase",
+        "value": 1850,
+        "unit": "U/L",
+        "minutesAgo": 10
+      },
+      {
+        "analyte": "wbc",
+        "name": "WBC",
+        "value": 13.2,
+        "unit": "10^9/L",
+        "minutesAgo": 10
+      },
+      {
+        "analyte": "crp",
+        "name": "CRP",
+        "value": 24,
+        "unit": "mg/L",
+        "minutesAgo": 10
+      }
+    ],
+    "imaging": [],
+    "comorbidities": [
+      "Gallstones"
+    ],
+    "surgicalHistory": [],
+    "medications": [],
+    "allergies": [],
+    "nkda": true,
+    "socialHistory": "",
+    "platform": {
+      "web": {
+        "ccTemplate": "Acute abdominal pain",
+        "symptoms": [
+          "Abdominal pain",
+          "Vomiting"
+        ],
+        "socratesAnswers": {
+          "site": "Epigastric",
+          "radiation": "Through to the back",
+          "character": "Constant",
+          "onset": "Sudden, after a fatty meal"
+        }
+      }
+    },
+    "confirmedDiagnosis": {
+      "name": "Biliary colic",
+      "icd10": "K80.20",
+      "paneDiseaseId": "biliary_colic",
+      "assessmentText": "Biliary colic."
+    }
+  },
+  "expected": {
+    "reasoning": {
+      "mustInclude": [
+        {
+          "id": "alert-favours-pancreatitis",
+          "severity": "critical",
+          "match": [
+            "re:doesn't fit the working diagnosis.*pancreatitis"
+          ],
+          "sources": [
+            "web.reasoning.alert",
+            "ios.reasoning.alert"
+          ],
+          "guidelineRefs": [
+            "atlanta-2012"
+          ],
+          "note": "A lipase > 3 x ULN with typical pain makes acute pancreatitis (revised Atlanta 2012) the working diagnosis; biliary colic does not explain it."
+        },
+        {
+          "id": "alert-names-lipase",
+          "severity": "quality",
+          "match": [
+            "re:amylase|lipase"
+          ],
+          "sources": [
+            "web.reasoning.alert",
+            "ios.reasoning.alert"
+          ]
+        }
+      ]
+    }
+  },
+  "guideline": [
+    {
+      "id": "atlanta-2012",
+      "name": "Classification of acute pancreatitis — revised Atlanta classification",
+      "year": 2013,
+      "section": "Diagnosis: 2 of 3 (pain, lipase/amylase > 3 x ULN, imaging)",
+      "citation": "Banks PA et al. Gut 2013;62:102-111"
+    },
+    {
+      "id": "croskerry-2003",
+      "name": "The importance of cognitive errors in diagnosis and strategies to minimize them",
+      "year": 2003,
+      "section": "Premature closure; cognitive forcing strategies",
+      "citation": "Croskerry P. Acad Med 2003;78:775-780"
+    }
+  ],
+  "rationale": "A confirmed working diagnosis that a later result contradicts is the classic set-up for premature closure; the guard must name the result (lipase) and the diagnosis it favours (acute pancreatitis).",
+  "authoring": {
+    "author": "Claude (diagnostic-reasoning branch)",
+    "date": "2026-09-25",
+    "notes": "Reasoning-layer vignette. iOS reasoning output is unverified here (Swift not built in this environment)."
+  }
+}

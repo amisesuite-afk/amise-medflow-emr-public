@@ -1,0 +1,408 @@
+{
+  "schemaVersion": 1,
+  "id": "periop-diabetes-sglt2-euglycaemic-dka-postop",
+  "condition": "Euglycaemic diabetic ketoacidosis after surgery (SGLT2 inhibitor not withheld)",
+  "category": "other",
+  "permutationOf": "periop-diabetes-sglt2-preop-withhold",
+  "permutationLabel": "Post-operative euglycaemic DKA (SGLT2i continued)",
+  "summary": "61-year-old woman on empagliflozin, day 2 after laparoscopic cholecystectomy with poor oral intake: vomiting, abdominal pain, tachypnoea; glucose 9.8 mmol/L, pH 7.18, bicarbonate 10, ketones 5.4 mmol/L.",
+  "tags": [
+    "periop",
+    "diabetes",
+    "sglt2",
+    "dka",
+    "postop",
+    "dangerous-mimic"
+  ],
+  "inputs": {
+    "patient": {
+      "ageYears": 61,
+      "sex": "female",
+      "pregnancy": {
+        "status": "not-applicable"
+      },
+      "heightCm": 162,
+      "weightKg": 78
+    },
+    "encounter": {
+      "setting": "inpatient",
+      "visitType": "wardReview",
+      "acuity": "urgent",
+      "isPostOp": true,
+      "postOpDays": 2
+    },
+    "chiefComplaint": "Vomiting and breathlessness two days after gallbladder operation",
+    "hpi": "Day 2 after laparoscopic cholecystectomy. Empagliflozin and metformin were taken until the morning of surgery and restarted yesterday. Nauseated since surgery, eating very little; vomited four times today. Vague generalised abdominal ache, feels breathless and weak. Glucose readings 8–10 mmol/L so no insulin given.",
+    "socrates": {
+      "onset": [
+        "Today"
+      ],
+      "site": [
+        "Diffuse"
+      ],
+      "character": [
+        "Aching"
+      ],
+      "radiation": [
+        "No radiation"
+      ],
+      "associations": [
+        "Nausea",
+        "Vomiting",
+        "Anorexia"
+      ],
+      "timing": [
+        "Constant"
+      ],
+      "exacerbating": [
+        "Eating"
+      ],
+      "relieving": [
+        "Nothing"
+      ],
+      "severity": [
+        "Moderate (4–6/10)"
+      ]
+    },
+    "symptoms": [
+      "vomiting",
+      "abdominal pain",
+      "shortness of breath",
+      "malaise"
+    ],
+    "negatives": [
+      "fever",
+      "jaundice",
+      "chest pain"
+    ],
+    "exam": {
+      "general": "Dry mucous membranes. Deep sighing respiration. HR 112, BP 108/68, RR 28, SpO2 97% on air, T 36.9°C.",
+      "abdomen": "Port sites clean. Soft, mild generalised tenderness, no peritonism.",
+      "respiratory": "Chest clear. Kussmaul breathing."
+    },
+    "vitals": [
+      {
+        "minutesAgo": 5,
+        "heartRate": 112,
+        "systolicBp": 108,
+        "diastolicBp": 68,
+        "respiratoryRate": 28,
+        "temperatureC": 36.9,
+        "spo2": 97,
+        "avpu": "A",
+        "onSupplementalO2": false,
+        "glucoseMmol": 9.8
+      }
+    ],
+    "labs": [
+      {
+        "analyte": "glucose",
+        "name": "Glucose",
+        "value": 9.8,
+        "unit": "mmol/L",
+        "minutesAgo": 30
+      },
+      {
+        "analyte": "ph",
+        "name": "Venous pH",
+        "value": 7.18,
+        "unit": "",
+        "minutesAgo": 30
+      },
+      {
+        "analyte": "bicarbonate",
+        "name": "Bicarbonate",
+        "value": 10,
+        "unit": "mmol/L",
+        "minutesAgo": 30
+      },
+      {
+        "analyte": "ketones",
+        "name": "Blood ketones",
+        "value": 5.4,
+        "unit": "mmol/L",
+        "minutesAgo": 30
+      },
+      {
+        "analyte": "lactate",
+        "name": "Lactate",
+        "value": 1.4,
+        "unit": "mmol/L",
+        "minutesAgo": 30
+      },
+      {
+        "analyte": "potassium",
+        "name": "Potassium",
+        "value": 4.9,
+        "unit": "mmol/L",
+        "minutesAgo": 30
+      },
+      {
+        "analyte": "sodium",
+        "name": "Sodium",
+        "value": 139,
+        "unit": "mmol/L",
+        "minutesAgo": 30
+      },
+      {
+        "analyte": "creatinine",
+        "name": "Creatinine",
+        "value": 104,
+        "unit": "µmol/L",
+        "minutesAgo": 30
+      },
+      {
+        "analyte": "wbc",
+        "name": "WBC",
+        "value": 12.1,
+        "unit": "×10⁹/L",
+        "minutesAgo": 30
+      },
+      {
+        "analyte": "crp",
+        "name": "CRP",
+        "value": 38,
+        "unit": "mg/L",
+        "minutesAgo": 30
+      },
+      {
+        "analyte": "bilirubin",
+        "name": "Bilirubin",
+        "value": 14,
+        "unit": "µmol/L",
+        "minutesAgo": 30
+      },
+      {
+        "analyte": "alp",
+        "name": "ALP",
+        "value": 110,
+        "unit": "U/L",
+        "minutesAgo": 30
+      }
+    ],
+    "imaging": [],
+    "comorbidities": [
+      "Type 2 diabetes mellitus",
+      "Hypertension"
+    ],
+    "surgicalHistory": [
+      "Laparoscopic cholecystectomy (day 2)"
+    ],
+    "medications": [
+      {
+        "drug": "Empagliflozin",
+        "dose": "10 mg",
+        "frequency": "OD",
+        "indication": "Type 2 diabetes"
+      },
+      {
+        "drug": "Metformin",
+        "dose": "1 g",
+        "frequency": "BD",
+        "indication": "Type 2 diabetes"
+      },
+      {
+        "drug": "Ramipril",
+        "dose": "5 mg",
+        "frequency": "OD",
+        "indication": "Hypertension"
+      },
+      {
+        "drug": "Enoxaparin",
+        "dose": "40 mg",
+        "frequency": "OD",
+        "indication": "VTE prophylaxis"
+      }
+    ],
+    "allergies": [],
+    "nkda": true,
+    "socialHistory": "Non-smoker.",
+    "confirmedDiagnosis": {
+      "name": "Euglycaemic diabetic ketoacidosis (SGLT2 inhibitor) — day 2 after laparoscopic cholecystectomy",
+      "icd10": "E11.10",
+      "assessmentText": "Euglycaemic DKA: glucose 9.8 mmol/L, pH 7.18, bicarbonate 10, ketones 5.4 mmol/L, on empagliflozin continued peri-operatively. Stop empagliflozin; DKA protocol with fixed-rate insulin and glucose."
+    },
+    "platform": {
+      "web": {
+        "ccTemplate": "Nausea / vomiting",
+        "symptoms": [
+          "vomiting",
+          "abdominal pain",
+          "shortness of breath",
+          "malaise"
+        ],
+        "durationDays": 1,
+        "painScore": 4,
+        "paneAnswers": {
+          "previous_surgery": true,
+          "nausea_vomiting": true,
+          "postop_fever": false
+        }
+      }
+    }
+  },
+  "expected": {
+    "differential": {
+      "mustNotMiss": [
+        {
+          "id": "mnm-dka",
+          "severity": "critical",
+          "match": [
+            "ketoacidosis",
+            "dka"
+          ],
+          "guidelineRefs": [
+            "jbds-dka-2023"
+          ],
+          "note": "Euglycaemic DKA: the glucose is normal, so a glucose-driven rule will not find it."
+        },
+        {
+          "id": "mnm-bile-leak-or-collection",
+          "severity": "quality",
+          "match": [
+            "bile leak",
+            "leak",
+            "collection",
+            "abscess",
+            "surgical site"
+          ],
+          "note": "Day 2 after cholecystectomy with abdominal pain: bile leak remains in the differential.",
+          "knownGap": [
+            "ios"
+          ],
+          "knownGapNote": "iOS CI 2026-09-25 (run 36169134350, database mode): not in top 5 of ios.bayes: 1. Diabetic Ketoacidosis | 2. Community-Acquired Pneumonia | 3. Pulmonary Embolism | 4. Acute Appendicitis | 5. Atrial Fibrillation; also in ios.ccEarly#2"
+        }
+      ]
+    },
+    "safety": {
+      "emergencyLevel": {
+        "id": "level-at-least-urgent",
+        "severity": "critical",
+        "atLeast": "urgent",
+        "guidelineRefs": [
+          "jbds-dka-2023"
+        ]
+      },
+      "mustAlarm": [
+        {
+          "id": "alarm-ketoacidosis",
+          "severity": "critical",
+          "match": [
+            "ketoacidosis",
+            "dka",
+            "ketone",
+            "acidosis"
+          ],
+          "guidelineRefs": [
+            "jbds-dka-2023"
+          ]
+        }
+      ]
+    },
+    "investigations": {
+      "mustInclude": [
+        {
+          "id": "inv-ketones-gas",
+          "severity": "critical",
+          "match": [
+            "ketone",
+            "blood gas",
+            "vbg",
+            "abg",
+            "bicarbonate"
+          ],
+          "guidelineRefs": [
+            "jbds-dka-2023"
+          ]
+        }
+      ]
+    },
+    "management": {
+      "mustInclude": [
+        {
+          "id": "mgmt-stop-sglt2",
+          "severity": "critical",
+          "match": [
+            "re:(withh|omit|stop|hold|discontinu|suspend)\\w*[^.;\\n]{0,40}(sglt2|sglt-2|gliflozin)",
+            "re:(sglt2|sglt-2|gliflozin)[^.;\\n]{0,40}(withh|omit|stop|hold|discontinu|suspend)",
+            "re:(withh|omit|stop|hold)\\w*[^.;\\n]{0,40}empagliflozin",
+            "re:empagliflozin[^.;\\n]{0,40}(withh|omit|stop|hold)"
+          ],
+          "guidelineRefs": [
+            "jbds-dka-2023",
+            "cpoc-diabetes-2022"
+          ]
+        },
+        {
+          "id": "mgmt-dka-insulin-with-glucose",
+          "severity": "quality",
+          "match": [
+            "fixed-rate",
+            "fixed rate",
+            "fixed-rate intravenous insulin",
+            "frii",
+            "dka protocol"
+          ],
+          "guidelineRefs": [
+            "jbds-dka-2023"
+          ],
+          "note": "Fixed-rate IV insulin with 10% glucose alongside because the glucose is not high."
+        }
+      ],
+      "mustExclude": [
+        {
+          "id": "mgmt-no-emergency-laparotomy",
+          "severity": "critical",
+          "match": [
+            "emergency laparotomy"
+          ],
+          "unless": [
+            "hinchey",
+            "grade c",
+            "if peritonitis",
+            "if generalised peritonitis"
+          ],
+          "note": "No generalised peritonitis or perforation: an emergency-laparotomy consent line is a wrong-procedure suggestion."
+        },
+        {
+          "id": "mgmt-no-appendicectomy",
+          "severity": "critical",
+          "match": [
+            "appendicectomy",
+            "appendectomy"
+          ],
+          "unless": [
+            "not indicated",
+            "no role",
+            "exclude appendicitis"
+          ],
+          "note": "Not an appendix presentation: an appendicectomy operative plan (consent, theatre booking, post-operative orders) is a wrong-procedure suggestion."
+        }
+      ]
+    }
+  },
+  "guideline": [
+    {
+      "id": "jbds-dka-2023",
+      "name": "JBDS — management of diabetic ketoacidosis in adults",
+      "year": 2023,
+      "section": "DKA: ketonaemia ≥3.0 mmol/L (or ketonuria ≥2+), bicarbonate <15 mmol/L and/or pH <7.3; euglycaemic DKA in people on SGLT2 inhibitors (glucose may be normal); stop the SGLT2 inhibitor; fixed-rate IV insulin infusion with glucose 10% when glucose is below 14 mmol/L",
+      "citation": "Joint British Diabetes Societies for Inpatient Care. The management of diabetic ketoacidosis in adults. 2023 update.",
+      "verified": false
+    },
+    {
+      "id": "cpoc-diabetes-2022",
+      "name": "CPOC guideline — perioperative care for people with diabetes mellitus undergoing elective and emergency surgery",
+      "year": 2022,
+      "section": "SGLT2 inhibitors: omit the day before and the day of surgery, check ketones; sulfonylureas omitted on the day of surgery; people with diabetes early on the list; capillary glucose monitoring; VRIII when more than one meal will be missed or in emergency surgery; type 1 diabetes: never omit basal insulin (continue long-acting insulin, usually at a reduced dose) alongside VRIII",
+      "citation": "Centre for Perioperative Care. Guideline for perioperative care for people with diabetes mellitus undergoing elective and emergency surgery. London: CPOC; 2021 (updated 2022).",
+      "verified": false
+    }
+  ],
+  "rationale": "Permutation: the complication the base case prevents. A dangerous mimic of post-operative ileus/leak; glucose is not raised, so glucose-threshold rules do not fire. Tests the DKA diagnosis, alarm, ketone/gas tests and stopping the SGLT2 inhibitor.",
+  "authoring": {
+    "author": "Claude (perioperative medicine cluster)",
+    "date": "2026-09-25",
+    "notes": "Expectations and citations need surgeon sign-off (reviewedBy). Citations verified: false. iOS outcomes not yet observed (unverified: ios) — triage after the next CI run."
+  }
+}

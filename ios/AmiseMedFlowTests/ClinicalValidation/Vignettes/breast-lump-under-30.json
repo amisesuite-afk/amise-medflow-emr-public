@@ -1,0 +1,268 @@
+{
+  "schemaVersion": 1,
+  "id": "breast-lump-under-30",
+  "condition": "Breast lump, age under 30 (probable fibroadenoma)",
+  "category": "breast-endocrine",
+  "permutationOf": null,
+  "summary": "24-year-old woman with a 2 cm smooth, mobile, non-tender breast lump. Triple assessment with ultrasound as the imaging modality (mammography is not first-line under 30), core biopsy per imaging; NICE NG12 does not require a suspected-cancer referral under 30.",
+  "tags": [
+    "breast",
+    "lump",
+    "age-series"
+  ],
+  "inputs": {
+    "patient": {
+      "ageYears": 24,
+      "sex": "female",
+      "pregnancy": {
+        "status": "not-pregnant"
+      }
+    },
+    "encounter": {
+      "setting": "outpatient",
+      "visitType": "newConsult",
+      "acuity": "priority"
+    },
+    "chiefComplaint": "Lump in the left breast",
+    "hpi": "Found a lump in the upper outer left breast in the shower 3 weeks ago. Not painful, no change with her cycle. No nipple discharge. No family history of breast or ovarian cancer. On the combined pill.",
+    "socrates": {
+      "onset": [
+        "1–4 weeks ago"
+      ],
+      "site": [
+        "Upper outer (left)"
+      ],
+      "character": [
+        "Smooth",
+        "Mobile",
+        "Non-tender"
+      ],
+      "radiation": [
+        "No radiation"
+      ],
+      "associations": [],
+      "timing": [
+        "Constant"
+      ],
+      "exacerbating": [
+        "None"
+      ],
+      "relieving": [
+        "Nothing"
+      ],
+      "severity": [
+        "Mild (1–3/10)"
+      ]
+    },
+    "symptoms": [
+      "breast lump"
+    ],
+    "negatives": [
+      "nipple discharge",
+      "skin change"
+    ],
+    "exam": {
+      "general": "Well.",
+      "other": "Breasts: 2 cm smooth, rubbery, highly mobile, well-defined lump at 2 o'clock left breast, 4 cm from the nipple. No skin change, nipples normal, no axillary or supraclavicular nodes. Right breast normal."
+    },
+    "vitals": [
+      {
+        "minutesAgo": 15,
+        "heartRate": 74,
+        "systolicBp": 118,
+        "diastolicBp": 72,
+        "respiratoryRate": 14,
+        "temperatureC": 36.6,
+        "spo2": 99,
+        "avpu": "A",
+        "onSupplementalO2": false
+      }
+    ],
+    "labs": [],
+    "imaging": [],
+    "comorbidities": [],
+    "surgicalHistory": [],
+    "medications": [
+      {
+        "drug": "Combined oral contraceptive",
+        "dose": "",
+        "frequency": "OD",
+        "indication": "Contraception"
+      }
+    ],
+    "allergies": [],
+    "nkda": true,
+    "socialHistory": "Non-smoker.",
+    "platform": {
+      "web": {
+        "ccTemplate": "Breast lump",
+        "symptoms": [
+          "breast lump"
+        ],
+        "symptomDetails": {
+          "breast lump": [
+            "Left",
+            "Mobile",
+            "Non-tender",
+            "2–6 weeks"
+          ]
+        },
+        "durationDays": 21,
+        "painScore": 1
+      }
+    },
+    "confirmedDiagnosis": {
+      "name": "Left breast lump, clinically benign (probable fibroadenoma) — triple assessment",
+      "icd10": "N63.0",
+      "paneDiseaseId": "fibroadenoma",
+      "assessmentText": "Breast lump (left), 2 cm, clinically benign features in a 24-year-old — probable fibroadenoma. Triple assessment: ultrasound (no mammogram at this age) ± core biopsy."
+    }
+  },
+  "expected": {
+    "differential": {
+      "mustRankTopK": [
+        {
+          "id": "dx-fibroadenoma-top3",
+          "severity": "quality",
+          "match": [
+            "fibroadenoma",
+            "icd:D24"
+          ],
+          "k": 3,
+          "guidelineRefs": [
+            "abs-best-practice-2010"
+          ]
+        }
+      ]
+    },
+    "safety": {
+      "emergencyLevel": {
+        "id": "level-not-urgent",
+        "severity": "quality",
+        "atMost": "priority",
+        "guidelineRefs": [
+          "nice-ng12"
+        ],
+        "note": "Under 30 with a clinically benign lump: non-urgent referral (NICE NG12). Same-day escalation is over-triage.",
+        "knownGap": [
+          "web"
+        ],
+        "knownGapNote": "Triage same_day_call: \"breast lump\" RED_FLAG is priority (\"Possible malignancy\") regardless of age, and the adaptive action maps priority to a same-day call."
+      }
+    },
+    "investigations": {
+      "mustInclude": [
+        {
+          "id": "inv-uss",
+          "severity": "critical",
+          "match": [
+            "re:(uss|ultrasound|\\bus\\b)[^.;\\n]{0,30}(breast|subareolar|retroareolar|axilla)",
+            "re:(breast|subareolar|retroareolar)[^.;\\n]{0,30}(uss|ultrasound)",
+            "mammography + uss",
+            "mammogram/uss"
+          ],
+          "guidelineRefs": [
+            "abs-best-practice-2010",
+            "nccn-breast-dx-2025"
+          ],
+          "note": "Imaging is part of triple assessment at every age; ultrasound is the modality under 30."
+        }
+      ],
+      "mustExclude": [
+        {
+          "id": "inv-no-first-line-mammogram",
+          "severity": "quality",
+          "match": [
+            "mammogra"
+          ],
+          "unless": [
+            "≥35",
+            ">35",
+            "≥ 35",
+            "35",
+            "40",
+            "if ",
+            "age "
+          ],
+          "guidelineRefs": [
+            "nccn-breast-dx-2025",
+            "abs-best-practice-2010"
+          ],
+          "note": "Mammography is not first-line under 30 (dense tissue, radiation); an age-conditional mention is acceptable."
+        },
+        {
+          "id": "inv-no-unrelated-seeded-orders",
+          "severity": "quality",
+          "match": [
+            "mrcp",
+            "blood cultures",
+            "erect cxr",
+            "ogd",
+            "amylase"
+          ],
+          "sources": [
+            "web.pane.seeded"
+          ],
+          "platforms": [
+            "web"
+          ],
+          "note": "Orders seeded from the PANE top 3 should belong to the breast presentation, not to abdominal diagnoses."
+        }
+      ]
+    },
+    "management": {
+      "mustInclude": [
+        {
+          "id": "mgmt-triple-assessment",
+          "severity": "quality",
+          "match": [
+            "triple assessment",
+            "core",
+            "biopsy"
+          ],
+          "guidelineRefs": [
+            "abs-best-practice-2010"
+          ],
+          "proposedFix": "Map N63 (unspecified breast lump) to a \"breast lump — triple assessment\" protocol with age-banded imaging; add exam.breast to the vignette schema and pass it as examBreast in web-runner.ts."
+        }
+      ]
+    },
+    "dxVariant": {
+      "id": "variant-triple-assessment",
+      "severity": "quality",
+      "equals": "breast_triple_assessment"
+    }
+  },
+  "guideline": [
+    {
+      "id": "abs-best-practice-2010",
+      "name": "Best practice diagnostic guidelines for patients presenting with breast symptoms (ABS / RCR, Department of Health)",
+      "year": 2010,
+      "section": "Triple assessment (clinical examination, age-appropriate imaging, needle biopsy); imaging by age; nipple discharge; breast infection; breast pain",
+      "citation": "Willett AM, Michell MJ, Lee MJR (eds). Best practice diagnostic guidelines for patients presenting with breast symptoms. London: Department of Health / Association of Breast Surgery; 2010.",
+      "verified": false
+    },
+    {
+      "id": "nccn-breast-dx-2025",
+      "name": "NCCN Guidelines — Breast Cancer Screening and Diagnosis",
+      "year": 2025,
+      "section": "Palpable mass: age <30 ultrasound first; age ≥30 diagnostic mammography + ultrasound; tissue sampling of suspicious findings; nipple discharge (spontaneous, unilateral, single duct, bloody); skin changes",
+      "citation": "National Comprehensive Cancer Network. NCCN Clinical Practice Guidelines in Oncology: Breast Cancer Screening and Diagnosis (current version at authoring).",
+      "verified": false
+    },
+    {
+      "id": "nice-ng12",
+      "name": "NICE NG12 — Suspected cancer: recognition and referral",
+      "year": 2015,
+      "section": "Site-specific recommendations: breast cancer (age ≥30 unexplained lump; ≥50 unilateral nipple discharge/retraction; skin changes; men ≥50 subareolar mass), haematological cancers (unexplained lymphadenopathy), head and neck (unexplained thyroid lump)",
+      "citation": "National Institute for Health and Care Excellence. Suspected cancer: recognition and referral. NICE guideline NG12. London: NICE; 2015 (updated).",
+      "verified": false
+    }
+  ],
+  "rationale": "Base of the breast-lump age series (<30 / 30–35 / >35). The surgeon records the pre-biopsy working diagnosis as \"breast lump\" (ICD-10 N63.0), as is usual before histology. Breast findings are recorded in exam.other because the vignette schema has no breast field (the dashboard has examBreast; see the findings file).",
+  "authoring": {
+    "author": "Claude (hernia / breast / endocrine cluster)",
+    "date": "2026-09-25",
+    "notes": "Expectations need surgeon sign-off (reviewedBy). Citations verified: false."
+  }
+}

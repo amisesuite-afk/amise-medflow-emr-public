@@ -1,0 +1,232 @@
+{
+  "schemaVersion": 1,
+  "id": "acutemed-af-unstable-hypotension",
+  "condition": "Atrial fibrillation with haemodynamic instability",
+  "category": "general-medicine",
+  "permutationOf": "acutemed-af-new-onset-rapid",
+  "permutationLabel": "Haemodynamically unstable, elderly, off anticoagulation",
+  "summary": "76-year-old woman with 3 hours of palpitations, chest tightness and dizziness: AF 168/min, BP 78/50, confused. ESC 2024: emergency electrical cardioversion.",
+  "tags": [
+    "af",
+    "shock",
+    "emergency",
+    "elderly"
+  ],
+  "inputs": {
+    "patient": {
+      "ageYears": 76,
+      "sex": "female",
+      "pregnancy": {
+        "status": "not-applicable"
+      },
+      "heightCm": 158,
+      "weightKg": 64
+    },
+    "encounter": {
+      "setting": "outpatient",
+      "visitType": "urgentReview",
+      "acuity": "urgent"
+    },
+    "chiefComplaint": "Racing heart and dizziness",
+    "hpi": "Three hours of a racing heartbeat, tightness across the chest, and feeling faint; now muddled. Known paroxysmal AF, stopped her apixaban last month because of bruising. Attending for a post-operative check after laparoscopic cholecystectomy 6 weeks ago.",
+    "symptoms": [
+      "palpitations",
+      "chest tightness",
+      "dizziness",
+      "confusion"
+    ],
+    "negatives": [
+      "fever",
+      "haematemesis",
+      "melaena",
+      "cough"
+    ],
+    "exam": {
+      "general": "Pale, clammy, confused.",
+      "cardiovascular": "Pulse 168 irregularly irregular, BP 78/50, cool peripheries.",
+      "respiratory": "Fine bibasal crackles, RR 26.",
+      "abdomen": "Healed port sites."
+    },
+    "vitals": [
+      {
+        "minutesAgo": 3,
+        "heartRate": 168,
+        "systolicBp": 78,
+        "diastolicBp": 50,
+        "respiratoryRate": 26,
+        "temperatureC": 36.6,
+        "spo2": 93,
+        "avpu": "C",
+        "onSupplementalO2": false
+      }
+    ],
+    "labs": [],
+    "imaging": [],
+    "comorbidities": [
+      "Paroxysmal atrial fibrillation",
+      "Hypertension"
+    ],
+    "surgicalHistory": [
+      "Laparoscopic cholecystectomy (6 weeks ago)"
+    ],
+    "medications": [
+      {
+        "drug": "Bisoprolol",
+        "dose": "2.5 mg",
+        "frequency": "OD"
+      },
+      {
+        "drug": "Apixaban",
+        "dose": "5 mg",
+        "frequency": "BD (stopped by patient)"
+      }
+    ],
+    "allergies": [],
+    "nkda": true,
+    "socialHistory": "Lives alone.",
+    "confirmedDiagnosis": {
+      "name": "Atrial fibrillation with rapid ventricular response and haemodynamic instability",
+      "icd10": "I48.91",
+      "assessmentText": "Fast AF with hypotension, chest tightness and confusion - haemodynamically unstable: emergency transfer for synchronised DC cardioversion."
+    },
+    "platform": {
+      "web": {
+        "ccTemplate": "Other / general surgical",
+        "symptoms": [
+          "palpitations",
+          "chest tightness",
+          "dizziness",
+          "confusion"
+        ],
+        "symptomDetails": {
+          "dizziness": [
+            "Lightheadedness / pre-syncope",
+            "Palpitations"
+          ]
+        },
+        "examFindings": {
+          "cardiovascular": [
+            "Irregular rhythm",
+            "Tachycardia",
+            "Capillary refill > 2s"
+          ],
+          "respiratory": [
+            "Crackles (L)",
+            "Crackles (R)"
+          ],
+          "neurology": [
+            "Confused"
+          ]
+        },
+        "durationDays": 0.1,
+        "painScore": 4
+      }
+    }
+  },
+  "expected": {
+    "differential": {
+      "mustNotMiss": [
+        {
+          "id": "mnm-af",
+          "severity": "critical",
+          "match": [
+            "atrial fibrillation",
+            "re:\\baf\\b",
+            "icd:I48",
+            "flutter"
+          ],
+          "guidelineRefs": [
+            "esc-af-2024"
+          ]
+        }
+      ]
+    },
+    "safety": {
+      "emergencyLevel": {
+        "id": "level-emergency",
+        "severity": "critical",
+        "atLeast": "emergency",
+        "guidelineRefs": [
+          "esc-af-2024"
+        ]
+      },
+      "mustAlarm": [
+        {
+          "id": "alarm-shock",
+          "severity": "critical",
+          "match": [
+            "hypotension",
+            "shock",
+            "haemodynamic"
+          ],
+          "guidelineRefs": [
+            "esc-af-2024"
+          ]
+        }
+      ]
+    },
+    "scores": {
+      "recommended": [
+        {
+          "id": "score-rec-cha2ds2vasc",
+          "severity": "quality",
+          "score": "cha2ds2-vasc",
+          "guidelineRefs": [
+            "esc-af-2024"
+          ]
+        }
+      ]
+    },
+    "investigations": {
+      "mustInclude": [
+        {
+          "id": "inv-ecg",
+          "severity": "critical",
+          "match": [
+            "ecg",
+            "electrocardiogram",
+            "re:12.lead",
+            "ekg"
+          ],
+          "guidelineRefs": [
+            "esc-af-2024"
+          ]
+        }
+      ]
+    },
+    "management": {
+      "mustInclude": [
+        {
+          "id": "mgmt-cardioversion",
+          "severity": "critical",
+          "match": [
+            "cardioversion",
+            "dc shock",
+            "synchronised shock",
+            "synchronized shock"
+          ],
+          "guidelineRefs": [
+            "esc-af-2024"
+          ],
+          "note": "Emergency electrical cardioversion for haemodynamically unstable AF (ESC 2024, class I)."
+        }
+      ]
+    }
+  },
+  "guideline": [
+    {
+      "id": "esc-af-2024",
+      "verified": false,
+      "name": "2024 ESC Guidelines for the management of atrial fibrillation",
+      "year": 2024,
+      "section": "AF-CARE: 12-lead ECG to confirm AF; emergency electrical cardioversion for haemodynamic instability; rate control (beta-blocker, diltiazem/verapamil, digoxin); stroke risk with CHA2DS2-VA - oral anticoagulation recommended for score >=2 and considered for 1; DOAC preferred over VKA; look for precipitants (thyroid function, infection)",
+      "citation": "Van Gelder IC, Rienstra M, Bunting KV, et al. 2024 ESC Guidelines for the management of atrial fibrillation developed in collaboration with EACTS. Eur Heart J. 2024;45:3314-3414."
+    }
+  ],
+  "rationale": "Unstable AF: the one AF situation where rate control and anticoagulation discussions must wait for electrical cardioversion.",
+  "authoring": {
+    "author": "Claude (acute medicine cluster)",
+    "date": "2026-09-25",
+    "notes": "Expectations need surgeon sign-off (reviewedBy). Citations written from the guideline texts, not yet checked against the source (verified: false). iOS outcomes are unverified until the next CI run."
+  }
+}

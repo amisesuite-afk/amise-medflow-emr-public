@@ -1,0 +1,339 @@
+{
+  "schemaVersion": 1,
+  "id": "dfu-ischaemic-calcified-abpi",
+  "condition": "Ischaemic diabetes-related foot ulcer (chronic limb-threatening ischaemia)",
+  "category": "vascular",
+  "permutationOf": "dfi-moderate-osteomyelitis",
+  "permutationLabel": "Ischaemic ulcer, falsely normal ABPI (incompressible vessels)",
+  "summary": "74-year-old man with diabetes and CKD: 8-week heel ulcer, no infection, absent pedal pulses, ABPI 1.4 (incompressible), toe pressure 24 mmHg, TBPI 0.18.",
+  "tags": [
+    "diabetic-foot",
+    "pad",
+    "clti",
+    "abpi"
+  ],
+  "inputs": {
+    "patient": {
+      "ageYears": 74,
+      "sex": "male",
+      "pregnancy": {
+        "status": "not-applicable"
+      },
+      "heightCm": 170,
+      "weightKg": 76
+    },
+    "encounter": {
+      "setting": "outpatient",
+      "visitType": "newConsult",
+      "acuity": "priority"
+    },
+    "chiefComplaint": "Heel ulcer not healing",
+    "hpi": "Eight weeks of a painful ulcer on the back of the left heel after a hospital admission. Pain at night relieved by hanging the leg over the bed. No discharge or spreading redness. Diabetes 20 years, CKD stage 4, ex-smoker.",
+    "socrates": {
+      "onset": [
+        "1–6 months ago"
+      ],
+      "site": [
+        "Foot"
+      ],
+      "character": [
+        "Aching"
+      ],
+      "radiation": [
+        "No radiation"
+      ],
+      "associations": [],
+      "timing": [
+        "Nocturnal",
+        "Constant"
+      ],
+      "exacerbating": [
+        "Lying flat"
+      ],
+      "relieving": [
+        "Nothing"
+      ],
+      "severity": [
+        "Moderate (4–6/10)"
+      ]
+    },
+    "symptoms": [
+      "foot ulcer",
+      "rest pain"
+    ],
+    "negatives": [
+      "fever",
+      "discharge",
+      "spreading redness"
+    ],
+    "exam": {
+      "general": "Well. T 36.8°C, HR 76, BP 156/78.",
+      "msk": "Left heel: 2 × 2 cm dry, pale-based ulcer, no erythema, no discharge, no probe-to-bone. Foot cool, dependent rubor. Femoral pulse palpable; popliteal, dorsalis pedis and posterior tibial pulses absent. Monophasic Doppler signals at the ankle."
+    },
+    "vitals": [
+      {
+        "minutesAgo": 10,
+        "heartRate": 76,
+        "systolicBp": 156,
+        "diastolicBp": 78,
+        "respiratoryRate": 14,
+        "temperatureC": 36.8,
+        "spo2": 97,
+        "avpu": "A",
+        "onSupplementalO2": false
+      }
+    ],
+    "labs": [
+      {
+        "analyte": "crp",
+        "name": "CRP",
+        "value": 6,
+        "unit": "mg/L",
+        "minutesAgo": 60
+      },
+      {
+        "analyte": "creatinine",
+        "name": "Creatinine",
+        "value": 240,
+        "unit": "µmol/L",
+        "minutesAgo": 60
+      },
+      {
+        "analyte": "abpi",
+        "name": "ABPI (left)",
+        "value": 1.4,
+        "unit": "",
+        "minutesAgo": 20
+      },
+      {
+        "analyte": "tbpi",
+        "name": "Toe-brachial index (left)",
+        "value": 0.18,
+        "unit": "",
+        "minutesAgo": 20
+      },
+      {
+        "analyte": "toePressure",
+        "name": "Toe pressure (left hallux)",
+        "value": 24,
+        "unit": "mmHg",
+        "minutesAgo": 20
+      }
+    ],
+    "imaging": [],
+    "comorbidities": [
+      "Type 2 diabetes mellitus",
+      "Chronic kidney disease stage 4",
+      "Hypertension"
+    ],
+    "surgicalHistory": [],
+    "medications": [
+      {
+        "drug": "Insulin glargine",
+        "dose": "18 units",
+        "frequency": "nocte",
+        "indication": "Diabetes"
+      },
+      {
+        "drug": "Amlodipine",
+        "dose": "10 mg",
+        "frequency": "OD",
+        "indication": "Hypertension"
+      }
+    ],
+    "allergies": [],
+    "nkda": true,
+    "socialHistory": "Ex-smoker 50 pack-years.",
+    "confirmedDiagnosis": {
+      "name": "Ischaemic diabetic foot ulcer — chronic limb-threatening ischaemia",
+      "icd10": "I70.244",
+      "assessmentText": "Uninfected ischaemic heel ulcer with rest pain in a diabetic with incompressible tibial vessels (ABPI 1.4 falsely reassuring); toe pressure 24 mmHg, TBPI 0.18 — chronic limb-threatening ischaemia."
+    },
+    "platform": {
+      "web": {
+        "ccTemplate": "Diabetic foot / infected foot",
+        "symptoms": [
+          "foot ulcer",
+          "rest pain",
+          "cold foot"
+        ],
+        "examFindings": {
+          "extremities": [
+            "DP absent",
+            "PT absent",
+            "Wound present"
+          ],
+          "wound": [
+            "Pulses absent"
+          ]
+        },
+        "paneAnswers": {
+          "skin_ulceration": true,
+          "rest_pain": true,
+          "absent_pulses": true,
+          "fever": false
+        },
+        "durationDays": 56,
+        "painScore": 5
+      }
+    }
+  },
+  "expected": {
+    "differential": {
+      "mustNotMiss": [
+        {
+          "id": "mnm-limb-ischaemia",
+          "severity": "critical",
+          "match": [
+            "arterial",
+            "isch",
+            "peripheral arterial",
+            "limb-threatening"
+          ],
+          "guidelineRefs": [
+            "iwgdf-2023-pad"
+          ]
+        }
+      ]
+    },
+    "safety": {
+      "emergencyLevel": {
+        "id": "level-at-least-priority",
+        "severity": "critical",
+        "atLeast": "priority",
+        "guidelineRefs": [
+          "iwgdf-2023-pad",
+          "nice-ng19"
+        ],
+        "note": "CLTI with tissue loss must not be booked as routine."
+      },
+      "redFlags": [
+        {
+          "id": "flag-incompressible",
+          "severity": "quality",
+          "match": [
+            "incompressible",
+            "calcif",
+            "falsely",
+            "toe pressure",
+            "re:\\btbi\\b"
+          ],
+          "guidelineRefs": [
+            "iwgdf-2023-pad"
+          ],
+          "knownGap": [
+            "web",
+            "ios"
+          ],
+          "knownGapNote": "The arterial-ulcer protocol mentions TBI in investigations but no red flag says the ABPI of 1.4 is falsely reassuring. | iOS CI 2026-09-25 (run 36169134350, database mode): no red flag matched among 7 (ios.visitRisk, ios.allergyBanner, ios.triage, ios.acuity)"
+        }
+      ]
+    },
+    "investigations": {
+      "mustInclude": [
+        {
+          "id": "inv-toe-pressure-or-imaging",
+          "severity": "critical",
+          "match": [
+            "toe pressure",
+            "toe-brachial",
+            "re:\\btbi\\b",
+            "duplex",
+            "re:\\bangiogra",
+            "ct angiogra",
+            "re:\\bcta\\b"
+          ],
+          "guidelineRefs": [
+            "iwgdf-2023-pad"
+          ],
+          "note": "With ABPI >1.3 the ABPI cannot exclude PAD; toe pressures/TBPI or imaging are needed."
+        }
+      ]
+    },
+    "management": {
+      "mustInclude": [
+        {
+          "id": "mgmt-vascular-referral",
+          "severity": "critical",
+          "match": [
+            "vascular surg",
+            "vascular team",
+            "vascular review",
+            "vascular referral",
+            "vascular service",
+            "vascular on-call",
+            "revascularis"
+          ],
+          "guidelineRefs": [
+            "iwgdf-2023-pad"
+          ],
+          "note": "Toe pressure <30 mmHg / TBPI <0.25: urgent vascular imaging and consideration of revascularisation."
+        }
+      ],
+      "mustExclude": [
+        {
+          "id": "mgmt-no-compression",
+          "severity": "critical",
+          "match": [
+            "compression bandag",
+            "compression stocking",
+            "4-layer",
+            "four-layer"
+          ],
+          "unless": [
+            "contraindicated",
+            "avoid",
+            "do not",
+            "not "
+          ],
+          "guidelineRefs": [
+            "iwgdf-2023-pad"
+          ],
+          "note": "Compression is contraindicated in significant arterial disease."
+        },
+        {
+          "id": "mgmt-no-antibiotics-uninfected",
+          "severity": "quality",
+          "match": [
+            "re:(start|commence|prescribe|give)[^.;]{0,30}antibiotic"
+          ],
+          "guidelineRefs": [
+            "iwgdf-2023-infection"
+          ]
+        }
+      ]
+    }
+  },
+  "guideline": [
+    {
+      "id": "iwgdf-2023-pad",
+      "name": "Intersocietal IWGDF/ESVS/SVS guidelines on PAD in people with diabetes and a foot ulcer (2023)",
+      "year": 2023,
+      "section": "Assess every foot ulcer for PAD: pedal pulses plus Doppler waveforms, ABI and TBI (ABI unreliable when vessels are incompressible); toe pressure <30 mmHg or TBI <0.25 → urgent vascular imaging and consideration of revascularisation",
+      "citation": "Fitridge R, Chuter V, Mills J, et al. The intersocietal IWGDF, ESVS, SVS guidelines on peripheral artery disease in people with diabetes and a foot ulcer. Diabetes Metab Res Rev. 2024;40:e3686.",
+      "verified": false
+    },
+    {
+      "id": "iwgdf-2023-infection",
+      "name": "IWGDF/IDSA guidelines on the diagnosis and treatment of diabetes-related foot infections (2023)",
+      "year": 2023,
+      "section": "IWGDF/IDSA classification: 1 uninfected, 2 mild, 3 moderate (erythema >2 cm or deeper structures), 4 severe (with SIRS); (O) suffix for osteomyelitis; probe-to-bone plus plain X-ray, MRI when unclear; culture deep tissue (not swabs); do not give antibiotics for uninfected ulcers; urgent surgical consultation for severe infection, deep abscess, gas or necrotising infection, extensive gangrene",
+      "citation": "Senneville É, Albalawi Z, van Asten SA, et al. IWGDF/IDSA guidelines on the diagnosis and treatment of diabetes-related foot infections (IWGDF/IDSA 2023). Diabetes Metab Res Rev. 2024;40:e3687.",
+      "verified": false
+    },
+    {
+      "id": "nice-ng19",
+      "name": "NICE NG19 — Diabetic foot problems: prevention and management",
+      "year": 2015,
+      "section": "Active diabetic foot problem (ulceration, spreading infection, ischaemia, gangrene, suspected Charcot): refer to the multidisciplinary foot care service within 1 working day; life- or limb-threatening problems (e.g. ulcer with fever/sepsis, ischaemia, deep abscess, gangrene) → immediate referral to acute services",
+      "citation": "National Institute for Health and Care Excellence. Diabetic foot problems: prevention and management (NG19). London: NICE; 2015 (updated 2019).",
+      "verified": false
+    }
+  ],
+  "rationale": "Permutation: the ulcer is ischaemic, not infected, and the ABPI is falsely normal from medial calcification (common in diabetes and CKD). IWGDF/ESVS/SVS: use toe pressure/TBPI; toe pressure <30 mmHg → urgent vascular imaging/revascularisation. Tests whether engines are misled by a \"normal\" ABPI.",
+  "authoring": {
+    "author": "Claude (soft tissue / vascular / trauma / burns cluster)",
+    "date": "2026-09-25",
+    "notes": "Expectations need surgeon sign-off (reviewedBy). Citations verified: false. iOS outcomes are unverified until the first CI run."
+  }
+}

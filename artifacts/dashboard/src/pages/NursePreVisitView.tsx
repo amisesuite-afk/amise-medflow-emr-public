@@ -4,6 +4,7 @@ import { useAuth } from '@/context/AuthContext';
 import { ROLE_LABELS, SITE_LABELS, SITE_CODES } from '@/lib/supabase';
 import CollapsibleCard from '@/components/CollapsibleCard';
 import WheelPicker from '@/components/WheelPicker';
+import News2ObservationFields from '@/components/News2ObservationFields';
 import { createEncounter, saveVitals, saveSymptoms, saveAllergyFreeText } from '@/lib/db';
 import type { VitalSigns } from '@workspace/triage-engine';
 
@@ -282,6 +283,14 @@ export default function NursePreVisitView() {
                   );
                 })}
               </div>
+            </div>
+            {/* NEWS2 consciousness + air/O₂ — saved with the vitals (Migration 91) */}
+            <div style={{ marginTop: 10 }}>
+              <News2ObservationFields
+                avpu={vitals.avpu}
+                onSupplementalO2={vitals.onSupplementalO2}
+                onChange={updateVital}
+              />
             </div>
           </CollapsibleCard>
 

@@ -124,6 +124,38 @@ describe('screenForCancer', () => {
     const r = screenForCancer(baseInput);
     expect(valid).toContain(r.referralUrgency);
   });
+
+  // Operator-precedence bug: `c.met && a || b || …` labelled every screen colorectal.
+  describe('cancerType follows the criterion that was met', () => {
+    it('breast lump ≥30 → breast, without colonoscopy/CEA', () => {
+      const r = screenForCancer({ ...baseInput, sex: 'female', age: 42, symptoms: ['breast lump'] });
+      expect(r.cancerType).toBe('breast');
+      expect(r.recommendedInvestigation).not.toContain('Colonoscopy');
+      expect(r.recommendedInvestigation).not.toContain('CEA');
+    });
+    it('breast lump <30 with skin changes → breast', () => {
+      const r = screenForCancer({ ...baseInput, sex: 'female', age: 26, symptoms: ['breast lump', 'dimpling'] });
+      expect(r.cancerType).toBe('breast');
+    });
+    it('dysphagia → oesophago-gastric', () => {
+      const r = screenForCancer({ ...baseInput, age: 60, symptoms: ['dysphagia'] });
+      expect(r.cancerType).toBe('oesophago-gastric');
+      expect(r.recommendedInvestigation).not.toContain('Colonoscopy');
+    });
+    it('jaundice ≥40 → pancreatic', () => {
+      const r = screenForCancer({ ...baseInput, age: 70, symptoms: ['jaundice'] });
+      expect(r.cancerType).toBe('pancreatic');
+    });
+    it('rectal bleeding + change in bowel habit ≥40 → colorectal', () => {
+      const r = screenForCancer({ ...baseInput, age: 65, chiefComplaints: ['rectal_bleeding', 'change_in_bowel_habit'] });
+      expect(r.cancerType).toBe('colorectal');
+      expect(r.recommendedInvestigation).toContain('Colonoscopy');
+    });
+    it('iron-deficiency anaemia ≥60 stays colorectal', () => {
+      const r = screenForCancer({ ...baseInput, age: 72, symptoms: ['anaemia'] });
+      expect(r.cancerType).toBe('colorectal');
+    });
+  });
 });
 
 // ── detectReferrals ───────────────────────────────────────────────────────────

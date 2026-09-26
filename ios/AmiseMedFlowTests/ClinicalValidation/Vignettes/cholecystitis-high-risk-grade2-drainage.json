@@ -1,0 +1,480 @@
+{
+  "schemaVersion": 1,
+  "id": "cholecystitis-high-risk-grade2-drainage",
+  "condition": "Acute calculous cholecystitis",
+  "category": "hpb",
+  "permutationOf": "cholecystitis-tg18-grade1",
+  "permutationLabel": "High surgical risk (84, CCI 8, ASA IV) — TG18 Grade II not responding to antibiotics → percutaneous drainage",
+  "summary": "84-year-old man with HFrEF (EF 25%), severe COPD and CKD 3b; 4 days of RUQ pain, fever 38.4 °C, WBC 16, CRP 230, characteristic ultrasound; still febrile after 48 h of IV co-amoxiclav.",
+  "tags": [
+    "biliary",
+    "elderly",
+    "high-risk",
+    "frailty"
+  ],
+  "inputs": {
+    "patient": {
+      "ageYears": 84,
+      "sex": "male",
+      "pregnancy": {
+        "status": "not-applicable"
+      },
+      "heightCm": 170,
+      "weightKg": 66
+    },
+    "encounter": {
+      "setting": "inpatient",
+      "visitType": "wardReview",
+      "acuity": "urgent"
+    },
+    "chiefComplaint": "Persistent right upper abdominal pain and fever despite antibiotics",
+    "hpi": "Admitted 2 days ago with 2 days of right upper quadrant pain and fever (symptoms now 4 days). On IV co-amoxiclav for 48 hours but still febrile to 38.4°C with ongoing pain. Heart failure with reduced ejection fraction (EF 25%), severe COPD (FEV1 35%, breathless on 20 metres), CKD 3b, previous MI with stents. Charlson comorbidity index 8; anaesthetic review: ASA IV.",
+    "socrates": {
+      "onset": [
+        "4–7 days ago"
+      ],
+      "site": [
+        "RUQ"
+      ],
+      "character": [
+        "Aching"
+      ],
+      "radiation": [
+        "No radiation"
+      ],
+      "associations": [
+        "Fever",
+        "Nausea",
+        "Anorexia"
+      ],
+      "timing": [
+        "Constant"
+      ],
+      "exacerbating": [
+        "Movement",
+        "Deep breathing"
+      ],
+      "relieving": [
+        "Analgesics"
+      ],
+      "severity": [
+        "Moderate (4–6/10)"
+      ]
+    },
+    "symptoms": [
+      "right upper quadrant pain",
+      "fever",
+      "anorexia"
+    ],
+    "negatives": [
+      "jaundice"
+    ],
+    "exam": {
+      "general": "Frail, breathless at rest on 2 L oxygen. Temperature 38.4°C, pulse 102/min, BP 118/64.",
+      "abdomen": "Right upper quadrant tenderness, positive Murphy's sign, no generalised peritonism.",
+      "respiratory": "Reduced air entry bilaterally with prolonged expiration."
+    },
+    "vitals": [
+      {
+        "minutesAgo": 20,
+        "heartRate": 102,
+        "systolicBp": 118,
+        "diastolicBp": 64,
+        "respiratoryRate": 22,
+        "temperatureC": 38.4,
+        "spo2": 93,
+        "avpu": "A",
+        "onSupplementalO2": true
+      }
+    ],
+    "labs": [
+      {
+        "analyte": "wbc",
+        "name": "WBC",
+        "value": 16,
+        "unit": "×10⁹/L",
+        "minutesAgo": 40
+      },
+      {
+        "analyte": "crp",
+        "name": "CRP",
+        "value": 230,
+        "unit": "mg/L",
+        "minutesAgo": 40
+      },
+      {
+        "analyte": "bilirubin",
+        "name": "Bilirubin",
+        "value": 20,
+        "unit": "µmol/L",
+        "minutesAgo": 40
+      },
+      {
+        "analyte": "alp",
+        "name": "ALP",
+        "value": 130,
+        "unit": "U/L",
+        "minutesAgo": 40
+      },
+      {
+        "analyte": "alt",
+        "name": "ALT",
+        "value": 42,
+        "unit": "U/L",
+        "minutesAgo": 40
+      },
+      {
+        "analyte": "creatinine",
+        "name": "Creatinine",
+        "value": 160,
+        "unit": "µmol/L",
+        "minutesAgo": 40
+      },
+      {
+        "analyte": "urea",
+        "name": "Urea",
+        "value": 12.1,
+        "unit": "mmol/L",
+        "minutesAgo": 40
+      },
+      {
+        "analyte": "platelets",
+        "name": "Platelets",
+        "value": 210,
+        "unit": "×10⁹/L",
+        "minutesAgo": 40
+      },
+      {
+        "analyte": "inr",
+        "name": "INR",
+        "value": 1.1,
+        "unit": "",
+        "minutesAgo": 40
+      }
+    ],
+    "imaging": [
+      {
+        "name": "USS abdomen",
+        "modality": "US",
+        "region": "Abdomen",
+        "minutesAgo": 2880,
+        "result": "Gallstones with a thickened 7 mm wall and pericholecystic fluid; distended gallbladder. CBD 5 mm."
+      }
+    ],
+    "comorbidities": [
+      "Heart failure with reduced ejection fraction (EF 25%)",
+      "COPD (severe)",
+      "Chronic kidney disease stage 3b",
+      "Ischaemic heart disease"
+    ],
+    "surgicalHistory": [
+      "Coronary stents 2019"
+    ],
+    "medications": [
+      {
+        "drug": "Bisoprolol",
+        "dose": "2.5 mg",
+        "frequency": "OD",
+        "indication": "Heart failure"
+      },
+      {
+        "drug": "Furosemide",
+        "dose": "40 mg",
+        "frequency": "OD",
+        "indication": "Heart failure"
+      },
+      {
+        "drug": "Aspirin",
+        "dose": "75 mg",
+        "frequency": "OD",
+        "indication": "IHD"
+      },
+      {
+        "drug": "Tiotropium/olodaterol",
+        "dose": "2 puffs",
+        "frequency": "OD",
+        "indication": "COPD"
+      },
+      {
+        "drug": "Co-amoxiclav",
+        "dose": "1.2 g IV",
+        "frequency": "TDS",
+        "indication": "Cholecystitis (day 2)"
+      }
+    ],
+    "allergies": [],
+    "nkda": true,
+    "socialHistory": "Lives with wife. Housebound. Ex-smoker 50 pack-years.",
+    "scoreForms": {
+      "tg18-cholecystitis": {
+        "localSigns": true,
+        "systemicSigns": true,
+        "imagingCharacteristic": true,
+        "wbcAbove18": false,
+        "palpableTenderRUQMass": false,
+        "durationOver72h": true,
+        "markedLocalInflammation": false,
+        "organDysfunction": []
+      }
+    },
+    "confirmedDiagnosis": {
+      "name": "Acute calculous cholecystitis",
+      "icd10": "K81.0",
+      "paneDiseaseId": "cholecystitis",
+      "assessmentText": "Acute calculous cholecystitis, Tokyo (TG18) Grade II (moderate; symptoms >72 h), not responding to 48 h of antibiotics. High surgical risk (CCI 8, ASA IV): for percutaneous cholecystostomy."
+    },
+    "platform": {
+      "web": {
+        "ccTemplate": "Acute abdominal pain",
+        "symptoms": [
+          "abdominal pain",
+          "right upper quadrant pain",
+          "fever",
+          "loss of appetite"
+        ],
+        "symptomDetails": {
+          "abdominal pain": [
+            "RUQ",
+            "> 3 days",
+            "Constant",
+            "Dull",
+            "Moderate (4–6)",
+            "Fever",
+            "Anorexia",
+            "Continuous",
+            "Movement"
+          ]
+        },
+        "examFindings": {
+          "abdomen": [
+            "Tender RUQ",
+            "Murphy's sign +"
+          ],
+          "respiratory": [
+            "Wheeze"
+          ]
+        },
+        "durationDays": 4,
+        "painScore": 5
+      }
+    }
+  },
+  "expected": {
+    "differential": {
+      "mustRankTopK": [
+        {
+          "id": "dx-cholecystitis-top3",
+          "severity": "critical",
+          "match": [
+            "cholecystitis"
+          ],
+          "k": 3,
+          "guidelineRefs": [
+            "tg18-dx-cholecystitis"
+          ]
+        }
+      ]
+    },
+    "safety": {
+      "emergencyLevel": {
+        "id": "level-at-least-urgent",
+        "severity": "critical",
+        "atLeast": "urgent",
+        "guidelineRefs": [
+          "tg18-mgmt-cholecystitis"
+        ]
+      },
+      "redFlags": [
+        {
+          "id": "flag-surgical-risk",
+          "severity": "quality",
+          "match": [
+            "heart failure",
+            "copd",
+            "cardiac",
+            "frail",
+            "asa",
+            "high risk",
+            "surgical risk",
+            "comorbid"
+          ],
+          "guidelineRefs": [
+            "tg18-mgmt-cholecystitis"
+          ]
+        }
+      ]
+    },
+    "scores": {
+      "recommended": [
+        {
+          "id": "score-rec-asa",
+          "severity": "quality",
+          "score": "asa",
+          "guidelineRefs": [
+            "tg18-mgmt-cholecystitis"
+          ],
+          "note": "TG18 uses CCI and ASA-PS to choose between early LC and drainage."
+        }
+      ],
+      "values": [
+        {
+          "id": "score-tg18-calculator",
+          "severity": "critical",
+          "score": "tg18-cholecystitis",
+          "mode": "calculator",
+          "equals": 2,
+          "guidelineRefs": [
+            "tg18-dx-cholecystitis"
+          ],
+          "note": "Duration >72 h is on its own a Grade II criterion."
+        }
+      ]
+    },
+    "investigations": {
+      "mustInclude": [
+        {
+          "id": "inv-blood-cultures",
+          "severity": "quality",
+          "match": [
+            "blood culture"
+          ],
+          "guidelineRefs": [
+            "tg18-antimicrobial"
+          ]
+        }
+      ]
+    },
+    "management": {
+      "mustInclude": [
+        {
+          "id": "mgmt-gallbladder-drainage",
+          "severity": "critical",
+          "match": [
+            "cholecystostomy",
+            "gallbladder drainage",
+            "ptgbd",
+            "re:gallbladder (aspiration|drain)",
+            "percutaneous transhepatic gallbladder"
+          ],
+          "guidelineRefs": [
+            "tg18-mgmt-cholecystitis",
+            "tg18-gb-drainage"
+          ],
+          "note": "TG18 Grade II, CCI ≥6 / ASA-PS ≥3, not responding to antimicrobials: urgent/early gallbladder drainage."
+        },
+        {
+          "id": "mgmt-drainage-in-documented-plan",
+          "severity": "quality",
+          "platforms": [
+            "web"
+          ],
+          "match": [
+            "cholecystostomy",
+            "gallbladder drainage",
+            "ptgbd",
+            "re:gallbladder (aspiration|drain)",
+            "percutaneous transhepatic gallbladder"
+          ],
+          "sources": [
+            "web.plan"
+          ],
+          "guidelineRefs": [
+            "tg18-mgmt-cholecystitis"
+          ],
+          "note": "The Plan tab text is the documented plan; drainage must be in it, not only in the Assessment panel.",
+          "proposedFix": "dx-variants.ts: include the conservative (drainage) phase in the Grade II variant, and fix variant order (see variant-grade2)."
+        }
+      ],
+      "mustExclude": [
+        {
+          "id": "mgmt-no-unqualified-early-lc",
+          "severity": "quality",
+          "match": [
+            "re:early (laparoscopic )?cholecystectomy"
+          ],
+          "unless": [
+            "if fit",
+            "unfit",
+            "cci",
+            "asa",
+            "low risk",
+            "delayed",
+            "favourable"
+          ],
+          "guidelineRefs": [
+            "tg18-mgmt-cholecystitis"
+          ],
+          "note": "For CCI 8 / ASA IV, TG18 does not recommend early LC; an unqualified early-LC line in the plan is misleading. Quality because the plan lists options and the surgeon chooses.",
+          "proposedFix": "Cholecystitis protocol: \"Early LC within 72 h if CCI ≤5 and ASA-PS ≤2 (TG18)\"; add a high-risk branch \"antibiotics, then PTGBD if not responding; delayed LC if fitness improves\".",
+          "knownGap": [
+            "ios"
+          ],
+          "knownGapNote": "iOS CI 2026-09-25 (run 36169134350, database mode): forbidden management item present in ios.radiation.plan: \"consider early laparoscopic cholecystectomy within 72h (grade i-ii tokyo)\" (+2 more)"
+        },
+        {
+          "id": "mgmt-no-appendicectomy",
+          "severity": "critical",
+          "match": [
+            "appendicectomy",
+            "appendectomy"
+          ],
+          "unless": [
+            "not indicated",
+            "no role",
+            "exclude appendicitis"
+          ],
+          "note": "Not an appendix presentation: an appendicectomy operative plan (consent, theatre booking, post-operative orders) is a wrong-procedure suggestion."
+        }
+      ]
+    },
+    "dxVariant": {
+      "id": "variant-grade2",
+      "severity": "quality",
+      "equals": "cholecystitis_grade2",
+      "guidelineRefs": [
+        "tg18-mgmt-cholecystitis"
+      ],
+      "proposedFix": "dx-variants.ts: check Grade III → II → I."
+    }
+  },
+  "guideline": [
+    {
+      "id": "tg18-dx-cholecystitis",
+      "name": "Tokyo Guidelines 2018 — diagnostic criteria and severity grading of acute cholecystitis",
+      "year": 2018,
+      "section": "Diagnostic criteria (A local + B systemic + C imaging); Grade II: WBC >18,000/mm³, palpable tender RUQ mass, duration >72 h, marked local inflammation (gangrenous, emphysematous, abscess, biliary peritonitis); Grade III: organ dysfunction",
+      "citation": "Yokoe M, Hata J, Takada T, et al. J Hepatobiliary Pancreat Sci. 2018;25:41–54.",
+      "verified": false
+    },
+    {
+      "id": "tg18-mgmt-cholecystitis",
+      "name": "Tokyo Guidelines 2018 — flowchart for the management of acute cholecystitis",
+      "year": 2018,
+      "section": "Grade I: early LC if CCI ≤5 / ASA-PS ≤2; Grade II: early LC in an advanced centre if fit, otherwise antibiotics and urgent/early gallbladder drainage when not responding; Grade III: organ support, antibiotics, drainage unless favourable organ dysfunction",
+      "citation": "Okamoto K, Suzuki K, Takada T, et al. J Hepatobiliary Pancreat Sci. 2018;25:55–72.",
+      "verified": false
+    },
+    {
+      "id": "tg18-gb-drainage",
+      "name": "Tokyo Guidelines 2018 — management strategies for gallbladder drainage in acute cholecystitis",
+      "year": 2018,
+      "section": "Percutaneous transhepatic gallbladder drainage (PTGBD) as first-line drainage in high-risk surgical patients; acalculous cholecystitis in the critically ill",
+      "citation": "Mori Y, Itoi T, Baron TH, et al. J Hepatobiliary Pancreat Sci. 2018;25:87–95.",
+      "verified": false
+    },
+    {
+      "id": "tg18-antimicrobial",
+      "name": "Tokyo Guidelines 2018 — antimicrobial therapy for acute cholangitis and cholecystitis",
+      "year": 2018,
+      "section": "Blood cultures in Grade II/III; antimicrobial choice by severity; duration after source control",
+      "citation": "Gomi H, Solomkin JS, Schlossberg D, et al. J Hepatobiliary Pancreat Sci. 2018;25:3–16.",
+      "verified": false
+    }
+  ],
+  "rationale": "Permutation: the TG18 Grade II branch for a patient who is not fit for early surgery and is failing antibiotics. The correct plan is percutaneous gallbladder drainage with delayed cholecystectomy only if fitness improves. Tests risk-aware plan selection.",
+  "authoring": {
+    "author": "Claude (HPB cluster)",
+    "date": "2026-09-25",
+    "notes": "Expectations and citations need surgeon sign-off (reviewedBy). iOS outcomes not yet observed (unverified: ios) — triage after the first CI run."
+  }
+}

@@ -207,30 +207,60 @@ do $$ declare t text; begin
 end $$;
 
 -- ── prescriptions (doctor/admin only for write) ──
-create policy "staff_select_prescriptions" on prescriptions
-  for select using (auth.uid() is not null);
-create policy "doctors_insert_prescriptions" on prescriptions
-  for insert with check (auth_role() in ('doctor', 'admin'));
-create policy "doctors_update_prescriptions" on prescriptions
-  for update using (auth_role() in ('doctor', 'admin'));
-create policy "admins_delete_prescriptions" on prescriptions
-  for delete using (auth_role() = 'admin');
+do $guard$ begin
+  create policy "staff_select_prescriptions" on prescriptions
+    for select using (auth.uid() is not null);
+exception when duplicate_object then null;
+end $guard$;
+do $guard$ begin
+  create policy "doctors_insert_prescriptions" on prescriptions
+    for insert with check (auth_role() in ('doctor', 'admin'));
+exception when duplicate_object then null;
+end $guard$;
+do $guard$ begin
+  create policy "doctors_update_prescriptions" on prescriptions
+    for update using (auth_role() in ('doctor', 'admin'));
+exception when duplicate_object then null;
+end $guard$;
+do $guard$ begin
+  create policy "admins_delete_prescriptions" on prescriptions
+    for delete using (auth_role() = 'admin');
+exception when duplicate_object then null;
+end $guard$;
 
 -- ── clinical_guidelines (all staff can read; admins manage) ──
-create policy "staff_select_guidelines" on clinical_guidelines
-  for select using (auth.uid() is not null);
-create policy "admins_manage_guidelines" on clinical_guidelines
-  for all using (auth_role() in ('doctor', 'admin'));
+do $guard$ begin
+  create policy "staff_select_guidelines" on clinical_guidelines
+    for select using (auth.uid() is not null);
+exception when duplicate_object then null;
+end $guard$;
+do $guard$ begin
+  create policy "admins_manage_guidelines" on clinical_guidelines
+    for all using (auth_role() in ('doctor', 'admin'));
+exception when duplicate_object then null;
+end $guard$;
 
 -- ── patient_tasks (all clinical staff) ──
-create policy "staff_select_tasks" on patient_tasks
-  for select using (auth.uid() is not null);
-create policy "staff_insert_tasks" on patient_tasks
-  for insert with check (auth.uid() is not null);
-create policy "staff_update_tasks" on patient_tasks
-  for update using (auth.uid() is not null);
-create policy "admins_delete_tasks" on patient_tasks
-  for delete using (auth_role() = 'admin');
+do $guard$ begin
+  create policy "staff_select_tasks" on patient_tasks
+    for select using (auth.uid() is not null);
+exception when duplicate_object then null;
+end $guard$;
+do $guard$ begin
+  create policy "staff_insert_tasks" on patient_tasks
+    for insert with check (auth.uid() is not null);
+exception when duplicate_object then null;
+end $guard$;
+do $guard$ begin
+  create policy "staff_update_tasks" on patient_tasks
+    for update using (auth.uid() is not null);
+exception when duplicate_object then null;
+end $guard$;
+do $guard$ begin
+  create policy "admins_delete_tasks" on patient_tasks
+    for delete using (auth_role() = 'admin');
+exception when duplicate_object then null;
+end $guard$;
 
 -- ─────────────────────────────────────────────────────────────
 -- INDEXES

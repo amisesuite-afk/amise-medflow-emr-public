@@ -1,0 +1,243 @@
+{
+  "schemaVersion": 1,
+  "id": "trauma-stab-abdomen-stable-snom",
+  "condition": "Penetrating abdominal trauma (stable anterior stab wound)",
+  "category": "trauma-burns",
+  "permutationOf": "trauma-stab-abdomen-evisceration",
+  "permutationLabel": "Stable, no peritonism, no evisceration",
+  "summary": "31-year-old man with a 1.5 cm anterior abdominal stab wound (right upper quadrant) 1 h ago; HR 84, BP 132/80, no peritonism, no evisceration.",
+  "tags": [
+    "trauma",
+    "penetrating",
+    "snom"
+  ],
+  "inputs": {
+    "patient": {
+      "ageYears": 31,
+      "sex": "male",
+      "pregnancy": {
+        "status": "not-applicable"
+      },
+      "heightCm": 177,
+      "weightKg": 81
+    },
+    "encounter": {
+      "setting": "emergency",
+      "visitType": "trauma",
+      "acuity": "urgent"
+    },
+    "chiefComplaint": "Stab wound to abdomen",
+    "hpi": "Stabbed once in the right upper abdomen with a small knife 1 hour ago. Pain only at the wound. No vomiting. Tetanus up to date.",
+    "socrates": {
+      "onset": [
+        "Today",
+        "Sudden"
+      ],
+      "site": [
+        "RUQ"
+      ],
+      "character": [
+        "Sharp"
+      ],
+      "radiation": [
+        "No radiation"
+      ],
+      "associations": [],
+      "timing": [
+        "Constant"
+      ],
+      "exacerbating": [
+        "Movement"
+      ],
+      "relieving": [
+        "Analgesics"
+      ],
+      "severity": [
+        "Mild (1–3/10)"
+      ]
+    },
+    "symptoms": [
+      "abdominal pain"
+    ],
+    "negatives": [
+      "vomiting",
+      "haematemesis"
+    ],
+    "exam": {
+      "general": "Alert. HR 84, BP 132/80, RR 16, SpO2 99%. Haemodynamically stable.",
+      "abdomen": "1.5 cm stab wound in the right upper quadrant below the costal margin, minimal bleeding. Soft, tenderness only around the wound, no guarding or peritonism, no evisceration."
+    },
+    "vitals": [
+      {
+        "minutesAgo": 10,
+        "heartRate": 84,
+        "systolicBp": 132,
+        "diastolicBp": 80,
+        "respiratoryRate": 16,
+        "temperatureC": 36.8,
+        "spo2": 99,
+        "avpu": "A",
+        "onSupplementalO2": false
+      }
+    ],
+    "labs": [
+      {
+        "analyte": "haemoglobin",
+        "name": "Haemoglobin",
+        "value": 14.6,
+        "unit": "g/dL",
+        "minutesAgo": 20
+      }
+    ],
+    "imaging": [],
+    "comorbidities": [],
+    "surgicalHistory": [],
+    "medications": [],
+    "allergies": [],
+    "nkda": true,
+    "socialHistory": "Warehouse worker.",
+    "confirmedDiagnosis": {
+      "name": "Anterior abdominal stab wound, haemodynamically stable",
+      "icd10": "S31.609A",
+      "paneDiseaseId": "penetrating_abdominal_trauma",
+      "assessmentText": "Anterior abdominal stab wound, stable, no peritonism or evisceration. Selective non-operative management: CT abdomen, serial examination, laparotomy if peritonism or instability develops."
+    },
+    "platform": {
+      "web": {
+        "ccTemplate": "Acute abdominal pain",
+        "symptoms": [
+          "abdominal pain"
+        ],
+        "examFindings": {
+          "abdomen": [
+            "Soft"
+          ]
+        },
+        "paneAnswers": {
+          "abdominal_tenderness": true,
+          "guarding": false,
+          "haemodynamic_instability": false,
+          "mechanism_blunt": false
+        },
+        "durationDays": 0,
+        "painScore": 3
+      }
+    }
+  },
+  "expected": {
+    "safety": {
+      "emergencyLevel": {
+        "id": "level-at-least-urgent",
+        "severity": "critical",
+        "atLeast": "urgent",
+        "guidelineRefs": [
+          "east-penetrating-2010"
+        ]
+      }
+    },
+    "investigations": {
+      "mustInclude": [
+        {
+          "id": "inv-ct-or-lwe",
+          "severity": "quality",
+          "match": [
+            "re:\\bct\\b[^.;]{0,30}(abdo|pelvi)",
+            "wound exploration"
+          ],
+          "guidelineRefs": [
+            "east-penetrating-2010"
+          ]
+        }
+      ]
+    },
+    "management": {
+      "mustInclude": [
+        {
+          "id": "mgmt-serial-exam",
+          "severity": "critical",
+          "match": [
+            "serial",
+            "observation",
+            "non-operative",
+            "re:obs[^.;]{0,20}every"
+          ],
+          "guidelineRefs": [
+            "east-penetrating-2010"
+          ],
+          "note": "SNOM is safe only with serial examination by a surgeon."
+        }
+      ],
+      "mustExclude": [
+        {
+          "id": "mgmt-no-mandatory-laparotomy",
+          "severity": "quality",
+          "match": [
+            "mandatory laparotomy",
+            "mandatory exploratory laparotomy"
+          ],
+          "unless": [
+            "gunshot"
+          ],
+          "guidelineRefs": [
+            "east-penetrating-2010"
+          ]
+        },
+        {
+          "id": "mgmt-no-antithrombotic-plan",
+          "severity": "critical",
+          "match": [
+            "aspirin 300",
+            "ticagrelor",
+            "clopidogrel 300",
+            "fondaparinux",
+            "alteplase",
+            "thrombolysis",
+            "rivaroxaban",
+            "apixaban 10",
+            "doacs (preferred)"
+          ],
+          "sources": [
+            "ios.radiation",
+            "ios.soap",
+            "web.plan",
+            "web.protocol",
+            "web.managementPanel"
+          ],
+          "guidelineRefs": [
+            "east-penetrating-2010"
+          ],
+          "note": "A PE or ACS antithrombotic/thrombolytic plan must never be attached to a haemorrhagic or non-thrombotic diagnosis. Reading the iOS source, DiagnosisRadiationEngine.radiate matches keywords by substring and would attach the ACS plan (\"mi\" inside \"abdominal\", \"limb\", \"haemodynamically\") or the PE plan (\"pe\" inside \"suspected\", \"penetrating\", \"superficial\") to this diagnosis — to be confirmed on the first iOS CI run."
+        }
+      ]
+    },
+    "pathway": {
+      "id": "pathway-trauma",
+      "severity": "quality",
+      "equals": "trauma"
+    }
+  },
+  "guideline": [
+    {
+      "id": "east-penetrating-2010",
+      "name": "EAST practice management guideline — selective non-operative management of penetrating abdominal trauma",
+      "year": 2010,
+      "section": "Haemodynamic instability, peritonitis or evisceration → laparotomy; stable patients without peritonitis may undergo serial examination (± CT, local wound exploration)",
+      "citation": "Como JJ, Bokhari F, Chiu WC, et al. Practice management guidelines for selective nonoperative management of penetrating abdominal trauma. J Trauma. 2010;68:721–33.",
+      "verified": false
+    },
+    {
+      "id": "atls-10-abdomen",
+      "name": "ATLS 10th edition — abdominal and pelvic trauma",
+      "year": 2018,
+      "section": "Chapter 5: FAST in the unstable patient; haemodynamically abnormal patient with positive FAST → laparotomy; CT only in stable patients; evisceration, peritonitis or haemodynamic instability after penetrating trauma → laparotomy; selective non-operative management of anterior stab wounds in stable patients",
+      "citation": "American College of Surgeons Committee on Trauma. ATLS Student Course Manual. 10th ed. Chicago: ACS; 2018. Chapter 5.",
+      "verified": false
+    }
+  ],
+  "rationale": "Permutation: stable anterior stab without peritonism. EAST 2010: selective non-operative management with serial examination (± CT, local wound exploration). Tests that the plan adapts to stability instead of defaulting to laparotomy, while keeping urgency.",
+  "authoring": {
+    "author": "Claude (soft tissue / vascular / trauma / burns cluster)",
+    "date": "2026-09-25",
+    "notes": "Expectations need surgeon sign-off (reviewedBy). Citations verified: false. iOS outcomes are unverified until the first CI run."
+  }
+}

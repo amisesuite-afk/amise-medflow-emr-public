@@ -5,6 +5,8 @@
  * and detects pathognomonic findings for immediate flagging.
  */
 
+import { CURRENT_FEATURES, findRecordMatches } from './record-text-match';
+
 export interface ObservedFeature {
   featureId: string;
   observed: boolean; // true = present, false = absent (negated)
@@ -392,6 +394,11 @@ export const FEATURE_KEYWORD_MAP: Record<string, string[]> = {
 };
 
 // ── Negation prefixes ─────────────────────────────────────────────────────────
+// Superseded by the shared negation-aware matcher (lib/triage-engine/src/negation.ts), which
+// extractFeaturesFromTranscript and detectPathognomonic now use. The old 40-character window
+// marked a finding absent whenever any of these appeared shortly before it, even in the
+// previous sentence ("No vomiting. Guarding in the RIF" recorded guarding as absent). Kept
+// exported for reference only.
 
 export const NEGATION_PREFIXES: string[] = [
   'no ',
@@ -424,16 +431,19 @@ export function extractFeaturesFromTranscript(text: string): ObservedFeature[] {
 
   for (const [featureId, keywords] of Object.entries(FEATURE_KEYWORD_MAP)) {
     for (const kw of keywords) {
-      const idx = lower.indexOf(kw);
-      if (idx === -1) continue;
+      if (!lower.includes(kw)) continue;
 
-      // Check for negation in the 40 characters before the match
-      const windowStart = Math.max(0, idx - 40);
-      const pre = lower.slice(windowStart, idx);
-      const negated = NEGATION_PREFIXES.some(prefix => pre.includes(prefix));
+      // Present when any mention is about the patient now (record-text-match.ts: negation.ts,
+      // negated lists, family history, and for symptoms / signs historical or background
+      // mentions); absent when every mention is negated ("no vomiting", "Murphy's sign negative",
+      // "never had jaundice, pain or fever"). A mention that is only family history or history
+      // ("mother had gallstones") records nothing: the next keyword is tried.
+      const current = findRecordMatches(lower, kw, { current: CURRENT_FEATURES.has(featureId) }).length > 0;
+      const negated = !current && findRecordMatches(lower, kw, { negationOnly: true }).length === 0;
+      if (!current && !negated) continue;
 
       if (!seen.has(featureId)) {
-        results.push({ featureId, observed: !negated });
+        results.push({ featureId, observed: current });
         seen.add(featureId);
       }
       break; // first matching keyword wins for this feature
@@ -477,12 +487,14 @@ export function detectPathognomonic(text: string): PathognomicMatch[] {
   const matches: PathognomicMatch[] = [];
 
   for (const pattern of PATHOGNOMONIC_PATTERNS) {
-    const match = text.match(pattern.regex);
+    // Negation-aware (record-text-match.ts): "no Rovsing's sign", "psoas sign negative", "no
+    // Rovsing's, psoas or obturator sign" suggest nothing.
+    const match = findRecordMatches(text, pattern.regex, { current: true })[0];
     if (!match) continue;
     if (seen.has(pattern.diseaseId)) continue;
     seen.add(pattern.diseaseId);
     matches.push({
-      finding: match[0],
+      finding: text.substr(match.index, match.text.length),
       diseaseId: pattern.diseaseId,
       diseaseLabel: pattern.diseaseLabel,
       icd10: pattern.icd10,

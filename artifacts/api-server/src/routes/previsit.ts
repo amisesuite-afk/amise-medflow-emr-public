@@ -1,11 +1,13 @@
 import { Router } from 'express';
-import Anthropic from '@anthropic-ai/sdk';
+import { createAnthropicClient, rejectIfAiDisabled } from '../lib/ai-gate.js';
 import { sb, requireStaffAuth } from '../lib/supabase.js';
 import { logger as log } from '../lib/logger.js';
 import { logAudit } from '../lib/audit.js';
+import { sendSms as sendSmsMessage } from '../lib/sms.js';
+import { patientSiteBaseUrl } from '../lib/site-urls.js';
 
 const router = Router();
-const client = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY! });
+const client = createAnthropicClient();
 const MODEL = process.env.CLAUDE_MODEL || 'claude-sonnet-4-6';
 
 const PREVISIT_SYSTEM_PROMPT = `You are formatting a patient's pre-visit questionnaire for Dr Dawit Daniel Kabiye (specialist general and endoscopic surgeon, Saint Lucia). Transform raw patient-submitted answers into structured clinical documentation. Use British medical English. Be concise and professional.
@@ -113,21 +115,21 @@ router.post('/api/previsit/create', async (req, res) => {
       submissionId = created.id as string;
     }
 
-    const portalUrl = process.env.PORTAL_URL ?? 'https://front-desk-amisesuite-afks-projects.vercel.app';
+    const portalUrl = patientSiteBaseUrl();
     const link = `${portalUrl}/previsit/${token}`;
 
     // Send SMS if requested
     let smsSent = false;
     if (sendSms && patientPhone && process.env.SMS_PROVIDER === 'twilio') {
       try {
-        const twilio = await import('twilio').then(m => m.default);
-        const tw = twilio(process.env.TWILIO_ACCOUNT_SID!, process.env.TWILIO_AUTH_TOKEN!);
-        await tw.messages.create({
-          from: process.env.TWILIO_FROM_NUMBER!,
+        // Routed through lib/sms.ts so the MODE gate applies (H-09) — this
+        // used to call the Twilio client directly and ignored MODE=dry_run.
+        const result = await sendSmsMessage({
           to: patientPhone,
           body: `AMISE Medical Services: Please complete your pre-visit questionnaire before your appointment. Your secure link: ${link}`,
+          forceChannel: 'sms',
         });
-        smsSent = true;
+        smsSent = result.action === 'sent';
       } catch (smsErr) {
         log.warn({ err: smsErr }, 'previsit SMS send failed (non-fatal)');
       }
@@ -206,6 +208,21 @@ router.get('/api/previsit/prefill/:token', async (req, res) => {
   }
 });
 
+export const PREVISIT_SUPPLEMENT_INDICATION = 'Herbs, bush teas, vitamins or supplements (patient-reported answer)';
+
+/** The patient's answer to the herbs / bush teas / supplements question as a medications row. */
+export function previsitSupplementRow(
+  s: { answer?: string; details?: string } | undefined,
+): { name: string; dose: string; frequency: string; indication: string } | null {
+  if (!s || typeof s !== 'object') return null;
+  const details = typeof s.details === 'string' ? s.details.trim().slice(0, 500) : '';
+  const name = s.answer === 'yes' ? (details || 'Yes (not named)')
+    : s.answer === 'no' ? 'None'
+    : s.answer === 'unsure' ? `Not sure${details ? ` — ${details}` : ''}`
+    : null;
+  return name ? { name, dose: '', frequency: '', indication: PREVISIT_SUPPLEMENT_INDICATION } : null;
+}
+
 router.post('/api/previsit/submit', async (req, res) => {
   const {
     patient_token,
@@ -217,6 +234,7 @@ router.post('/api/previsit/submit', async (req, res) => {
     allergies,
     ros,
     photos,
+    supplements,
   } = req.body as {
     patient_token: string;
     cc?: string;
@@ -227,6 +245,8 @@ router.post('/api/previsit/submit', async (req, res) => {
     allergies?: string;
     ros?: Record<string, string>;
     photos?: Array<{ url: string; context: string; uploaded_at: string }>;
+    /** Mandatory herbs / bush teas / supplements question (front-desk lib/supplements-question.ts). */
+    supplements?: { answer?: string; details?: string };
   };
 
   if (!patient_token) {
@@ -269,7 +289,12 @@ router.post('/api/previsit/submit', async (req, res) => {
     if (cc !== undefined) updates.cc = cc;
     if (hpi_raw !== undefined) updates.hpi_raw = hpi_raw;
     if (pmh !== undefined) updates.pmh = pmh;
-    if (medications !== undefined) updates.medications = medications;
+    // The supplements answer is kept as one extra row of the medications jsonb[] (no new column),
+    // marked by its indication; meds_complete above still counts only the patient's medicines.
+    const supplementRow = previsitSupplementRow(supplements);
+    if (medications !== undefined || supplementRow) {
+      updates.medications = [...(medications ?? []), ...(supplementRow ? [supplementRow] : [])];
+    }
     if (surgical_history !== undefined) updates.surgical_history = surgical_history;
     if (allergies !== undefined) updates.allergies = allergies;
     if (ros !== undefined) updates.ros = ros;
@@ -298,6 +323,7 @@ router.post('/api/previsit/submit', async (req, res) => {
 router.post('/api/previsit/ai-format', async (req, res) => {
   const ok = await requireStaffAuth(req, res);
   if (!ok) return;
+  if (rejectIfAiDisabled(res)) return;
 
   const { patientId, submissionId } = req.body as { patientId: string; submissionId?: string };
 

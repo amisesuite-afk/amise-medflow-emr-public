@@ -1,0 +1,384 @@
+{
+  "schemaVersion": 1,
+  "id": "crc-cibh-fit-positive-older",
+  "condition": "Colorectal cancer — symptomatic, FIT positive",
+  "category": "colorectal",
+  "permutationOf": null,
+  "summary": "67-year-old man with 10 weeks of looser stools, dark blood mixed with stool, 4 kg weight loss, iron-deficiency anaemia (Hb 10.2, ferritin 9) and FIT 186 µg Hb/g: suspected colorectal cancer pathway (colonoscopy) under NICE NG12/DG56.",
+  "tags": [
+    "crc",
+    "red-flags",
+    "fit",
+    "iron-deficiency-anaemia",
+    "diabetes"
+  ],
+  "inputs": {
+    "patient": {
+      "ageYears": 67,
+      "sex": "male",
+      "pregnancy": {
+        "status": "not-applicable"
+      },
+      "heightCm": 174,
+      "weightKg": 79
+    },
+    "encounter": {
+      "setting": "outpatient",
+      "visitType": "newConsult",
+      "acuity": "priority"
+    },
+    "chiefComplaint": "Change in bowel habit with blood in the stool",
+    "hpi": "Ten weeks of looser stools, 3–4 a day (previously once daily), with intermittent dark red blood mixed in. Lost 4 kg without trying. More tired and breathless on the stairs. No abdominal pain. GP FIT result 186 µg Hb/g. No previous colonoscopy. No family history of bowel cancer. Type 2 diabetes on metformin.",
+    "socrates": {
+      "onset": [
+        "1–6 months ago"
+      ],
+      "associations": [
+        "Change in bowel habit",
+        "Rectal bleeding",
+        "Weight loss"
+      ],
+      "timing": [
+        "Progressive"
+      ],
+      "severity": [
+        "Mild (1–3/10)"
+      ]
+    },
+    "symptoms": [
+      "change in bowel habit",
+      "rectal bleeding",
+      "weight loss",
+      "fatigue"
+    ],
+    "negatives": [
+      "abdominal pain",
+      "family history of colorectal cancer"
+    ],
+    "exam": {
+      "general": "Pale. HR 86, BP 136/78. BMI 26.",
+      "abdomen": "Soft, non-tender, no palpable mass, no hepatomegaly.",
+      "other": "PR: no palpable mass; dark blood on the glove."
+    },
+    "vitals": [
+      {
+        "minutesAgo": 20,
+        "heartRate": 86,
+        "systolicBp": 136,
+        "diastolicBp": 78,
+        "respiratoryRate": 16,
+        "temperatureC": 36.7,
+        "spo2": 98,
+        "avpu": "A",
+        "onSupplementalO2": false
+      }
+    ],
+    "labs": [
+      {
+        "analyte": "haemoglobin",
+        "name": "Haemoglobin",
+        "value": 10.2,
+        "unit": "g/dL",
+        "minutesAgo": 60
+      },
+      {
+        "analyte": "mcv",
+        "name": "MCV",
+        "value": 74,
+        "unit": "fL",
+        "minutesAgo": 60
+      },
+      {
+        "analyte": "ferritin",
+        "name": "Ferritin",
+        "value": 9,
+        "unit": "µg/L",
+        "minutesAgo": 60
+      },
+      {
+        "analyte": "platelets",
+        "name": "Platelets",
+        "value": 412,
+        "unit": "×10⁹/L",
+        "minutesAgo": 60
+      },
+      {
+        "analyte": "crp",
+        "name": "CRP",
+        "value": 12,
+        "unit": "mg/L",
+        "minutesAgo": 60
+      },
+      {
+        "analyte": "creatinine",
+        "name": "Creatinine",
+        "value": 84,
+        "unit": "µmol/L",
+        "minutesAgo": 60
+      },
+      {
+        "analyte": "fit",
+        "name": "FIT (faecal immunochemical test)",
+        "value": 186,
+        "unit": "µg Hb/g faeces",
+        "minutesAgo": 60
+      },
+      {
+        "analyte": "hba1c",
+        "name": "HbA1c",
+        "value": 58,
+        "unit": "mmol/mol",
+        "minutesAgo": 60
+      }
+    ],
+    "comorbidities": [
+      "Type 2 diabetes mellitus"
+    ],
+    "surgicalHistory": [],
+    "medications": [
+      {
+        "drug": "Metformin",
+        "dose": "1 g",
+        "frequency": "BD",
+        "indication": "Type 2 diabetes"
+      }
+    ],
+    "allergies": [],
+    "nkda": true,
+    "socialHistory": "Retired civil servant. Ex-smoker (20 pack-years). 10 units alcohol a week.",
+    "confirmedDiagnosis": {
+      "name": "Suspected colorectal cancer",
+      "icd10": "C18.9",
+      "paneDiseaseId": "colorectal_cancer",
+      "assessmentText": "Suspected colorectal cancer: change in bowel habit, rectal bleeding, weight loss, iron-deficiency anaemia, FIT 186 µg Hb/g. Urgent colonoscopy on the suspected cancer pathway."
+    },
+    "platform": {
+      "web": {
+        "ccTemplate": "Change in bowel habit",
+        "symptoms": [
+          "change in bowel habit",
+          "rectal bleeding",
+          "weight loss",
+          "fatigue"
+        ],
+        "symptomDetails": {
+          "rectal bleeding": [
+            "Dark red",
+            "Mixed with stool",
+            "Diarrhoea",
+            "Weight loss"
+          ],
+          "weight loss": [
+            "< 5 kg",
+            "1–3 months",
+            "Unintentional",
+            "Fatigue",
+            "Altered bowel habit"
+          ]
+        },
+        "examFindings": {
+          "abdomen": [
+            "Soft",
+            "PR: blood"
+          ],
+          "skin": [
+            "Pallor"
+          ]
+        },
+        "paneAnswers": {
+          "change_bowel_habit": true,
+          "pr_bleeding": true,
+          "weight_loss": true
+        },
+        "durationDays": 70,
+        "painScore": 0
+      }
+    }
+  },
+  "expected": {
+    "differential": {
+      "mustRankTopK": [
+        {
+          "id": "dx-crc-top3",
+          "severity": "critical",
+          "match": [
+            "colorectal cancer",
+            "colorectal carcinoma",
+            "colorectal malignancy",
+            "rectal carcinoma",
+            "rectal cancer",
+            "colon cancer",
+            "colonic carcinoma",
+            "colonic cancer",
+            "caecal carcinoma",
+            "icd:C18",
+            "icd:C20"
+          ],
+          "k": 3,
+          "guidelineRefs": [
+            "nice-ng12"
+          ]
+        }
+      ]
+    },
+    "safety": {
+      "emergencyLevel": {
+        "id": "level-at-least-priority",
+        "severity": "critical",
+        "atLeast": "priority",
+        "guidelineRefs": [
+          "nice-ng12"
+        ],
+        "note": "Suspected cancer pathway: seen within 2 weeks. \"priority\" or above."
+      },
+      "redFlags": [
+        {
+          "id": "flag-crc",
+          "severity": "critical",
+          "match": [
+            "colorectal malignancy",
+            "colorectal cancer",
+            "colorectal carcinoma",
+            "crc",
+            "cancer screening",
+            "lower gi red flag",
+            "malignancy"
+          ],
+          "guidelineRefs": [
+            "nice-ng12"
+          ]
+        },
+        {
+          "id": "flag-ng12-cancer-screen",
+          "severity": "quality",
+          "match": [
+            "cancer screening triggered"
+          ],
+          "sources": [
+            "web.triage.reasons"
+          ],
+          "guidelineRefs": [
+            "nice-ng12"
+          ],
+          "note": "The triage cancer screen (NG12 criteria) should trigger: age ≥ 60 with change in bowel habit, IDA, rectal bleeding."
+        },
+        {
+          "id": "flag-fit-read",
+          "severity": "quality",
+          "match": [
+            "re:\\bfit\\b",
+            "faecal immunochemical",
+            "fecal immunochemical"
+          ],
+          "guidelineRefs": [
+            "nice-dg56",
+            "bsg-acpgbi-fit-2022"
+          ],
+          "note": "FIT ≥ 10 µg Hb/g is the NICE DG56 threshold for a suspected cancer referral; the result should be read and surfaced."
+        }
+      ]
+    },
+    "investigations": {
+      "mustInclude": [
+        {
+          "id": "inv-colonoscopy",
+          "severity": "critical",
+          "match": [
+            "colonoscop",
+            "ct colonograph"
+          ],
+          "guidelineRefs": [
+            "nice-ng12",
+            "bsg-acpgbi-fit-2022"
+          ]
+        },
+        {
+          "id": "inv-ct-staging",
+          "severity": "quality",
+          "match": [
+            "re:ct[^.;\\n]{0,20}(chest|thorax)[^.;\\n]{0,30}(abdo|pelvi)"
+          ],
+          "guidelineRefs": [
+            "nice-ng12"
+          ]
+        }
+      ]
+    },
+    "management": {
+      "mustInclude": [
+        {
+          "id": "mgmt-suspected-cancer-pathway",
+          "severity": "critical",
+          "match": [
+            "2-week",
+            "two-week",
+            "2ww",
+            "suspected cancer",
+            "urgent colonoscopy",
+            "urgent referral",
+            "re:urgent[^.;\\n]{0,40}colonoscop"
+          ],
+          "guidelineRefs": [
+            "nice-ng12",
+            "nice-dg56"
+          ]
+        },
+        {
+          "id": "mgmt-iron",
+          "severity": "quality",
+          "match": [
+            "iron"
+          ],
+          "unless": [
+            "iron studies",
+            "iron-deficiency anaemia",
+            "iron deficiency anaemia)"
+          ],
+          "guidelineRefs": [
+            "bsg-ida-2021"
+          ]
+        }
+      ]
+    }
+  },
+  "guideline": [
+    {
+      "id": "nice-ng12",
+      "name": "NICE NG12 — suspected cancer: recognition and referral (lower gastrointestinal tract cancers)",
+      "year": 2023,
+      "section": "Lower GI (updated 2023): refer on the suspected cancer pathway if FIT ≥ 10 µg Hb/g; offer FIT to adults with symptoms such as change in bowel habit, IDA, weight loss",
+      "citation": "National Institute for Health and Care Excellence. Suspected cancer: recognition and referral (NG12). First published 2015; lower GI recommendations updated 2023 to incorporate DG56.",
+      "verified": false
+    },
+    {
+      "id": "nice-dg56",
+      "name": "NICE DG56 — quantitative FIT to guide colorectal cancer pathway referral in primary care",
+      "year": 2023,
+      "section": "FIT threshold 10 µg Hb/g faeces for suspected colorectal cancer referral",
+      "citation": "National Institute for Health and Care Excellence. Quantitative faecal immunochemical testing to guide colorectal cancer pathway referral in primary care (DG56). 2023.",
+      "verified": false
+    },
+    {
+      "id": "bsg-acpgbi-fit-2022",
+      "name": "ACPGBI/BSG joint guideline — FIT in patients with signs or symptoms of suspected colorectal cancer",
+      "year": 2022,
+      "section": "Symptomatic FIT ≥ 10 µg Hb/g → urgent colorectal investigation (colonoscopy or CT colonography)",
+      "citation": "Monahan KJ, Davies MM, Abulafi M, et al. Faecal immunochemical testing (FIT) in patients with signs or symptoms of suspected colorectal cancer (CRC): a joint guideline from the Association of Coloproctology of Great Britain and Ireland (ACPGBI) and the British Society of Gastroenterology (BSG). Gut. 2022;71:1939–1962.",
+      "verified": false
+    },
+    {
+      "id": "bsg-ida-2021",
+      "name": "BSG guideline — management of iron deficiency anaemia in adults",
+      "year": 2021,
+      "section": "Iron replacement alongside investigation",
+      "citation": "Snook J, Bhala N, Beales ILP, et al. British Society of Gastroenterology guidelines for the management of iron deficiency anaemia in adults. Gut. 2021;70:2030–2051.",
+      "verified": false
+    }
+  ],
+  "rationale": "Base case for the colorectal-cancer red flags: every NG12 feature is present (age ≥ 60, CIBH, rectal bleeding, weight loss, IDA) plus a FIT well above 10 µg Hb/g. If this does not reach the suspected cancer pathway, nothing will. Pairs with rectal-bleeding-young-haemorrhoidal.",
+  "authoring": {
+    "author": "Claude (colorectal/anorectal cluster)",
+    "date": "2026-09-25",
+    "notes": "Expectations need surgeon sign-off (reviewedBy). Citations verified: false until checked against the source."
+  }
+}

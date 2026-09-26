@@ -5,11 +5,19 @@ import { getApiOrigin } from '@/lib/api-origin';
 import { staffAuthHeaders } from '@/lib/staff-auth';
 import { supabase } from '@/lib/supabase';
 import { saveDischargeNotes, loadDischargeNotes } from '@/lib/db';
-import { getProtocol, getProtocolByIcd } from '@workspace/pane-engine';
-import type { ManagementProtocol } from '@workspace/pane-engine';
+import type { AdaptedProtocol } from '@workspace/pane-engine';
+import { confirmedPlanSource } from '@/lib/diagnosis-suggestion';
+import { dischargeProtocolFill, patientProtocol } from '@/lib/plan-builder';
+import { usePlanPatientContext } from '@/hooks/usePlanPatientContext';
 import CollapsibleCard from '@/components/CollapsibleCard';
 import { AMISE_LOGO_SVG } from './lib/docTemplate';
 import { saveBlobAsPDF } from './lib/pdfExport';
+import { allergyStatus, allergyNoteText } from '@/lib/allergy-status';
+import { examNoteLines } from '@/lib/exam-documentation';
+import { lifestyleSummary } from '@workspace/triage-engine/lifestyle-practices';
+import { supplementNoteLine } from '@/lib/supplement-catalogue';
+import { dedupePlanAgainstOrders } from '@/lib/plan-dedupe';
+import FinalDiagnosisPanel from '@/components/outcomes/FinalDiagnosisPanel';
 
 // ── helpers ────────────────────────────────────────────────────────────────
 
@@ -451,6 +459,8 @@ function planTextToHtml(plan: string): string {
 }
 
 function buildDirectSummaryHtml(ctx: DirectCtx, meta: PrintMeta): string {
+  // Fasting, complementary therapies, night-shift work, sleep — only when recorded.
+  const lifestyleLine = lifestyleSummary(ctx.lifestyleHistory);
   const site = SITE_INFO[meta.site] ?? SITE_INFO.rodney_bay;
   const now = new Date();
   const ect = { timeZone: 'America/St_Lucia' };
@@ -468,16 +478,8 @@ function buildDirectSummaryHtml(ctx: DirectCtx, meta: PrintMeta): string {
     'BSL':  ctx.vitals.glucoseMmol    ? `${ctx.vitals.glucoseMmol} mmol/L` : '',
   }).filter(([, v]) => v).map(([k, v]) => `${k}: ${v}`);
 
-  const examLines = [
-    ctx.examGeneral     && `General: ${ctx.examGeneral}`,
-    ctx.examCardio      && `Cardiovascular: ${ctx.examCardio}`,
-    ctx.examResp        && `Respiratory: ${ctx.examResp}`,
-    ctx.examAbdomen     && `Abdomen: ${ctx.examAbdomen}`,
-    ctx.examNeuro       && `Neurological: ${ctx.examNeuro}`,
-    ctx.examExtremities && `Extremities: ${ctx.examExtremities}`,
-    ctx.examBreast      && `Breast / Local: ${ctx.examBreast}`,
-    ctx.examWound       && `Wound: ${ctx.examWound}`,
-  ].filter(Boolean) as string[];
+  // Only systems the clinician documented (nothing is pre-filled as normal any more).
+  const examLines = examNoteLines(ctx);
 
   // Prescribed medications table — rendered from protocol queue if populated
   const hasMedTable = ctx.pendingPrescriptions && ctx.pendingPrescriptions.length > 0;
@@ -540,7 +542,13 @@ ${ctx.surgicalNotes ? `<div style="margin-top:4px">${escHtml(ctx.surgicalNotes)}
 
 <div class="section">
 <div class="sec-hdr sec-hdr--warn">Allergies</div>
-<div class="sec-body" style="font-weight:700;color:#b91c1c">${ctx.allergies ? escHtml(ctx.allergies) : '<span style="color:#94a3b8;font-weight:400;font-style:italic;font-size:12px">No known drug allergies (NKDA)</span>'}</div>
+${(() => {
+  // An empty field is "not recorded" — never printed as NKDA (see lib/allergy-status.ts).
+  const st = allergyStatus(ctx.allergies);
+  if (st.kind === 'not_recorded') return '<div class="sec-body" style="color:#b45309;font-weight:700;font-style:italic">Allergies: not recorded</div>';
+  if (st.kind === 'nkda') return '<div class="sec-body">No known drug allergies (NKDA)</div>';
+  return `<div class="sec-body" style="font-weight:700;color:#b91c1c">${escHtml(allergyNoteText(ctx.allergies))}</div>`;
+})()}
 </div>
 
 <div class="section">
@@ -550,6 +558,11 @@ ${ctx.medications.length ? items(ctx.medications) : ''}
 ${ctx.medicationsText ? `<div>${escHtml(ctx.medicationsText)}</div>` : ''}
 ${!ctx.medications.length && !ctx.medicationsText ? '<div style="color:#94a3b8;font-size:12px;font-style:italic">None</div>' : ''}
 </div></div>
+
+<div class="section">
+<div class="sec-hdr">Herbs, teas, bush remedies &amp; supplements</div>
+<div class="sec-body">${escHtml(supplementNoteLine(ctx.supplementHistory))}</div>
+</div>
 
 ${ctx.symptoms.length ? `<div class="section">
 <div class="sec-hdr">Review of Systems</div>
@@ -565,7 +578,8 @@ ${ctx.familyHistory && ctx.familyHistory.length ? `<div style="margin-bottom:6px
 ${ctx.familyHistoryNotes ? `<div style="margin-bottom:6px">${escHtml(ctx.familyHistoryNotes)}</div>` : ''}
 ${ctx.toxicHabits && ctx.toxicHabits.length ? `<div style="margin-bottom:6px"><div class="sub-lbl">Social / Habits</div>${items(ctx.toxicHabits)}</div>` : ''}
 ${ctx.occupation ? `<div><span class="lbl">Occupation:</span> ${escHtml(ctx.occupation)}</div>` : ''}
-${(!ctx.familyHistory?.length && !ctx.familyHistoryNotes && !ctx.toxicHabits?.length && !ctx.occupation) ? '<div style="color:#94a3b8;font-size:12px;font-style:italic">Not reported</div>' : ''}
+${lifestyleLine ? `<div><span class="lbl">Lifestyle:</span> ${escHtml(lifestyleLine)}</div>` : ''}
+${(!ctx.familyHistory?.length && !ctx.familyHistoryNotes && !ctx.toxicHabits?.length && !ctx.occupation && !lifestyleLine) ? '<div style="color:#94a3b8;font-size:12px;font-style:italic">Not reported</div>' : ''}
 </div></div>
 
 ${vitalsArr.length ? `<div class="section">
@@ -638,9 +652,16 @@ ${(() => {
 ${ctx.plan ? `<div class="section">
 <div class="sec-hdr">Management Plan</div>
 <div class="sec-body" style="line-height:1.75">${(() => {
-  const planBody = ctx.plan;
-  const dedupNote = hasInvestigations
-    ? '<div style="font-size:11px;color:#0d9488;background:#f0fdfa;border:1px solid #99f6e4;border-radius:4px;padding:5px 10px;margin-bottom:10px">↑ Investigations already ordered above — plan sections 1–2 may overlap</div>'
+  // Plan lines that only repeat an investigation listed above are not printed twice (UX review
+  // M12; the record's plan is unchanged). Replaces the old "plan sections 1–2 overlap" banner.
+  const orderedLabels = hasInvestigations ? [
+    ...ctx.orderedInvestigations,
+    ...(ctx.radiologyRequests ?? []).map(r =>
+      [r.modality, r.anatomicalRegion, r.laterality && r.laterality !== 'N/A' ? r.laterality : ''].filter(Boolean).join(' — ')),
+  ] : [];
+  const { plan: planBody, removed } = dedupePlanAgainstOrders(ctx.plan, orderedLabels);
+  const dedupNote = removed > 0
+    ? `<div style="font-size:11px;color:#64748b;margin-bottom:8px">${removed} line${removed === 1 ? '' : 's'} already listed under Investigations above ${removed === 1 ? 'is' : 'are'} not repeated here.</div>`
     : '';
   return dedupNote + planTextToHtml(planBody);
 })()}</div>
@@ -706,10 +727,15 @@ ${ctx.medications.length || ctx.medicationsText ? `<div class="section">
 <div class="sec-body">${items(ctx.medications)}${ctx.medicationsText ? `<div>${escHtml(ctx.medicationsText)}</div>` : ''}</div>
 </div>` : ''}
 
-${ctx.allergies ? `<div class="section">
+<div class="section">
+<div class="sec-hdr">Herbs, teas, bush remedies &amp; supplements</div>
+<div class="sec-body">${escHtml(supplementNoteLine(ctx.supplementHistory))}</div>
+</div>
+
+<div class="section">
 <div class="sec-hdr">Allergies</div>
-<div class="sec-body">${escHtml(ctx.allergies)}</div>
-</div>` : ''}
+<div class="sec-body">${escHtml(allergyNoteText(ctx.allergies))}</div>
+</div>
 
 ${ctx.assessment ? `<div class="section">
 <div class="sec-hdr">Clinical Assessment</div>
@@ -980,6 +1006,9 @@ function DirectExportPanel() {
   const [aiError, setAiError] = useState('');
   const [showPreview, setShowPreview] = useState(true);
   const [protocolFillMsg, setProtocolFillMsg] = useState('');
+  // The patient on record, for the plan-safety filter on the protocol fill (allergy, pregnancy,
+  // under 16): a withheld drug never reaches the discharge summary.
+  const planPatient = usePlanPatientContext();
 
   const locked = ctx.encounterStatus === 'closed';
 
@@ -1024,10 +1053,13 @@ function DirectExportPanel() {
   // the same clinical protocol data (lib/pane-engine) that drives the working
   // diagnosis's posterior probability and the Management panel, so it never
   // needs a network round-trip and always matches the protocol on file.
-  function resolveProtocol(): ManagementProtocol | null {
-    return (ctx.workingDiagnosis?.diseaseId ? getProtocol(ctx.workingDiagnosis.diseaseId) : null) ??
-      (ctx.workingDiagnosis?.icdCode ? getProtocolByIcd(ctx.workingDiagnosis.icdCode) : null) ??
-      (ctx.icdCodes[0] ? getProtocolByIcd(ctx.icdCodes[0]) : null);
+  // Only a CONFIRMED diagnosis (locked working diagnosis or recorded ICD-10 code), resolved with
+  // pane-engine resolveProtocol and adapted to the patient on record (plan-builder.ts
+  // patientProtocol) — never the raw protocol: a drug withheld for allergy, pregnancy or age is
+  // replaced by the protocol's alternative with the reason, and a child's doses by the BNFc line.
+  function resolveProtocol(): AdaptedProtocol | null {
+    const { diseaseId, icdCode } = confirmedPlanSource(ctx.workingDiagnosis, ctx.icdCodes);
+    return patientProtocol(diseaseId, icdCode, planPatient);
   }
 
   function handleProtocolFill() {
@@ -1039,18 +1071,13 @@ function DirectExportPanel() {
       return;
     }
 
-    if (protocol.redFlags.length) setWarningSign(protocol.redFlags.join('\n'));
+    const fill = dischargeProtocolFill(protocol);
+    if (fill.warningSigns.length) setWarningSign(fill.warningSigns.join('\n'));
+    if (fill.followUp.length) setFollowUp(fill.followUp.join('\n'));
+    if (fill.dischargeNotes.length) setDischargeNotes(fill.dischargeNotes.join('\n'));
 
-    const followUpSteps = protocol.management.filter(s => s.phase === 'followup').map(s => s.step);
-    const followUpText = [...followUpSteps, protocol.referral ? `Referral: ${protocol.referral}` : null].filter(Boolean).join('\n');
-    if (followUpText) setFollowUp(followUpText);
-
-    const dischargeMeds = (protocol.medications ?? []).filter(m => m.phase === 'discharge')
-      .map(m => `${m.drugName} ${m.dose} ${m.route}, ${m.frequency}${m.duration ? ` for ${m.duration}` : ''} — ${m.indication}`);
-    const instructionLines = [...dischargeMeds, ...protocol.keyPoints];
-    if (instructionLines.length) setDischargeNotes(instructionLines.join('\n'));
-
-    setProtocolFillMsg(`Filled from protocol: ${protocol.label}`);
+    const withheld = protocol.withheld.filter(w => w.from === 'medication' && w.phase === 'discharge').length;
+    setProtocolFillMsg(`Filled from protocol: ${protocol.label}${withheld ? ` — ${withheld} medicine(s) withheld for this patient, see the discharge notes` : ''}`);
   }
 
   // protocol.referral (e.g. "Surgical team — same day admission.") previously
@@ -1067,9 +1094,12 @@ function DirectExportPanel() {
 
     if (protocol.referral) setReferTo(protocol.referral);
 
+    const safetyTexts = new Set(protocol.safetyNotes.map(n => n.text));
     const justification = [
       `Working diagnosis: ${protocol.label}${ctx.icdCodes[0] ? ` (${ctx.icdCodes[0]})` : ''}`,
-      ...protocol.redFlags,
+      ...protocol.redFlags.filter(f => !safetyTexts.has(f)),
+      // Patient-specific lines the receiving clinician needs (allergy, pregnancy, anticoagulation …).
+      ...protocol.safetyNotes.filter(n => n.severity === 'critical').map(n => `⚠ ${n.text}`),
     ].join('\n');
     setReferNotes(justification);
 
@@ -1584,6 +1614,9 @@ export default function SummaryTab() {
 
       {/* ── Print / Export — always visible compact bar ── */}
       <DirectExportPanel />
+
+      {/* ── Final diagnosis (outcomes loop; nurse / doctor / admin) ── */}
+      <FinalDiagnosisPanel />
 
       {/* ── AI Summary — secondary, collapsed by default ── */}
       <CollapsibleCard title="AI Clinical Summary (optional)" defaultOpen={false}>

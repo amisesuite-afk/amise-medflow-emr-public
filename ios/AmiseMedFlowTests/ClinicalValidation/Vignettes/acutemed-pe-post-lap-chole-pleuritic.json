@@ -1,0 +1,274 @@
+{
+  "schemaVersion": 1,
+  "id": "acutemed-pe-post-lap-chole-pleuritic",
+  "condition": "Pulmonary embolism presenting as post-operative pleuritic pain",
+  "category": "general-medicine",
+  "permutationOf": "acutemed-pe-ocp-long-haul",
+  "permutationLabel": "Post-operative mimic (after laparoscopic cholecystectomy)",
+  "summary": "52-year-old woman on day 9 after day-case laparoscopic cholecystectomy, at post-op clinic with right pleuritic chest and shoulder-tip pain she attributes to \"gas pain\", plus breathlessness; HR 106, SpO₂ 94 %.",
+  "tags": [
+    "pe",
+    "post-op",
+    "mimic"
+  ],
+  "inputs": {
+    "patient": {
+      "ageYears": 52,
+      "sex": "female",
+      "pregnancy": {
+        "status": "not-pregnant"
+      },
+      "heightCm": 160,
+      "weightKg": 86
+    },
+    "encounter": {
+      "setting": "outpatient",
+      "visitType": "postOp",
+      "acuity": "priority",
+      "isPostOp": true,
+      "postOpDays": 9
+    },
+    "chiefComplaint": "Right shoulder and chest pain after gallbladder operation",
+    "hpi": "Day 9 after laparoscopic cholecystectomy (discharged same day). Two days of sharp right lower chest pain on deep breathing, going to the right shoulder tip, and breathlessness climbing stairs. She thinks it is the gas pain she was warned about. No cough, no fever, eating normally, no jaundice. Has been mostly resting on the sofa.",
+    "socrates": {
+      "onset": [
+        "2–3 days ago"
+      ],
+      "site": [
+        "Right chest",
+        "Right shoulder"
+      ],
+      "character": [
+        "Sharp"
+      ],
+      "radiation": [
+        "No radiation"
+      ],
+      "associations": [
+        "Shortness of breath",
+        "Pleuritic pain"
+      ],
+      "timing": [
+        "Constant"
+      ],
+      "exacerbating": [
+        "Deep breathing"
+      ],
+      "relieving": [
+        "Rest"
+      ],
+      "severity": [
+        "Moderate (4–6/10)"
+      ]
+    },
+    "symptoms": [
+      "right pleuritic chest pain",
+      "right shoulder-tip pain",
+      "exertional breathlessness"
+    ],
+    "negatives": [
+      "cough",
+      "fever",
+      "jaundice",
+      "vomiting",
+      "wound discharge"
+    ],
+    "exam": {
+      "general": "Mildly breathless on the walk in.",
+      "respiratory": "Chest clear.",
+      "cardiovascular": "HR 106, BP 128/80.",
+      "abdomen": "Port sites clean and dry, abdomen soft, mild right upper quadrant tenderness only.",
+      "msk": "Calves soft."
+    },
+    "vitals": [
+      {
+        "minutesAgo": 5,
+        "heartRate": 106,
+        "systolicBp": 128,
+        "diastolicBp": 80,
+        "respiratoryRate": 22,
+        "temperatureC": 37.4,
+        "spo2": 94,
+        "avpu": "A",
+        "onSupplementalO2": false
+      }
+    ],
+    "labs": [],
+    "imaging": [],
+    "comorbidities": [
+      "Obesity (BMI 34)"
+    ],
+    "surgicalHistory": [
+      "Laparoscopic cholecystectomy (day 9)"
+    ],
+    "medications": [
+      {
+        "drug": "Paracetamol",
+        "dose": "1 g",
+        "frequency": "QDS PRN"
+      }
+    ],
+    "allergies": [],
+    "nkda": true,
+    "socialHistory": "Non-smoker.",
+    "confirmedDiagnosis": {
+      "name": "Suspected post-operative pulmonary embolism",
+      "icd10": "I26.99",
+      "paneDiseaseId": "pulmonary_embolism",
+      "assessmentText": "Pleuritic chest pain, tachycardia and borderline hypoxia 9 days after laparoscopic cholecystectomy: pulmonary embolism until proven otherwise (Wells PE 6); bile leak/subphrenic collection also to exclude."
+    },
+    "platform": {
+      "web": {
+        "ccTemplate": "Post-op follow-up (routine)",
+        "symptoms": [
+          "pleuritic chest pain",
+          "shoulder pain",
+          "dyspnoea on exertion"
+        ],
+        "examFindings": {
+          "respiratory": [
+            "Clear to auscultation"
+          ],
+          "cardiovascular": [
+            "Tachycardia"
+          ]
+        },
+        "paneAnswers": {
+          "pleuritic_chest_pain": true,
+          "dyspnoea_pe": true,
+          "previous_surgery": true,
+          "mechanism_blunt": false,
+          "chest_wall_tenderness": false
+        },
+        "durationDays": 2,
+        "painScore": 5
+      }
+    }
+  },
+  "expected": {
+    "differential": {
+      "mustNotMiss": [
+        {
+          "id": "mnm-pe",
+          "severity": "critical",
+          "match": [
+            "pulmonary embol",
+            "re:\\bpe\\b",
+            "icd:I26"
+          ],
+          "guidelineRefs": [
+            "esc-pe-2019",
+            "nice-ng158"
+          ]
+        },
+        {
+          "id": "mnm-postop-collection",
+          "severity": "quality",
+          "match": [
+            "bile leak",
+            "collection",
+            "subphrenic",
+            "abscess",
+            "anastomotic"
+          ],
+          "note": "Post-cholecystectomy alternative: bile leak / subphrenic collection.",
+          "knownGap": [
+            "web",
+            "ios"
+          ],
+          "knownGapNote": "Web run 2026-09-25: not in top 3 of web.pane: 1. Surgical Site Infection (SSI) | 2. Acute Cholecystitis | 3. Pulmonary Embolism. PANE ranked surgical site infection first because the \"Post-op follow-up\" CC template hint sets wound_erythema and wound_discharge to present. | iOS CI 2026-09-25 (run 36169134350, database mode): not in top 5 of ios.bayes: 1. Stable Angina | 2. Pneumothorax | 3. Surgical Site Infection | 4. Pulmonary Embolism | 5. Atrial Fibrillation",
+          "proposedFix": "Do not infer wound_erythema/wound_discharge from a \"post-op\" CC template; derive them from the wound exam."
+        }
+      ]
+    },
+    "safety": {
+      "emergencyLevel": {
+        "id": "level-at-least-urgent",
+        "severity": "critical",
+        "atLeast": "urgent",
+        "guidelineRefs": [
+          "nice-ng158"
+        ]
+      },
+      "mustAlarm": [
+        {
+          "id": "alarm-hypoxia-or-tachycardia",
+          "severity": "quality",
+          "match": [
+            "hypox",
+            "spo₂",
+            "spo2",
+            "oxygen",
+            "saturation",
+            "tachycardia"
+          ],
+          "guidelineRefs": [
+            "esc-pe-2019"
+          ],
+          "note": "SpO2 94% and HR 106 sit just inside the web alarm thresholds (SpO2 <94, HR >110); no guideline sets an alarm cut-off, so quality only.",
+          "knownGap": [
+            "web",
+            "ios"
+          ],
+          "knownGapNote": "Web run 2026-09-25: no matching alarm. Alarms raised: Emergency now; Pre-operative assessment. | iOS CI 2026-09-25 (run 36169134350, database mode): no alarm matched among 1 (ios.acuity)",
+          "proposedFix": "Optional: a NEWS2-based alarm (aggregate >=5) rather than single-parameter cut-offs."
+        }
+      ]
+    },
+    "scores": {
+      "recommended": [
+        {
+          "id": "score-rec-wells-pe",
+          "severity": "quality",
+          "score": "wells-pe",
+          "guidelineRefs": [
+            "nice-ng158"
+          ]
+        }
+      ]
+    },
+    "investigations": {
+      "mustInclude": [
+        {
+          "id": "inv-ctpa",
+          "severity": "critical",
+          "match": [
+            "ctpa",
+            "ct pulmonary angiogra",
+            "pulmonary angiogra",
+            "re:v/?q scan",
+            "ventilation.perfusion"
+          ],
+          "guidelineRefs": [
+            "nice-ng158",
+            "esc-pe-2019"
+          ]
+        }
+      ]
+    }
+  },
+  "guideline": [
+    {
+      "id": "esc-pe-2019",
+      "verified": false,
+      "name": "2019 ESC Guidelines for the diagnosis and management of acute pulmonary embolism",
+      "year": 2019,
+      "section": "Sections 4-6: clinical probability (Wells/Geneva), PERC in low probability, D-dimer only when probability is not high, CTPA; anticoagulation while awaiting results in high/intermediate probability; high-risk (haemodynamically unstable) PE: UFH, bedside echocardiography if CTPA not immediately feasible, systemic thrombolysis; Section 9 pregnancy: D-dimer/CUS/CTPA or V/Q, LMWH (NOACs not recommended in pregnancy)",
+      "citation": "Konstantinides SV, Meyer G, Becattini C, et al. Eur Heart J. 2020;41:543-603."
+    },
+    {
+      "id": "nice-ng158",
+      "verified": false,
+      "name": "NICE NG158 - Venous thromboembolic diseases: diagnosis, management and thrombophilia testing",
+      "year": 2020,
+      "section": "1.1 DVT: two-level Wells; likely -> proximal leg vein ultrasound within 4 h (interim anticoagulation if delayed); 1.1 PE: two-level Wells; likely (>4) -> CTPA immediately (interim anticoagulation if delayed); unlikely -> D-dimer; PERC when pre-test probability is low",
+      "citation": "National Institute for Health and Care Excellence. NG158. London: NICE; 2020 (updated 2023)."
+    }
+  ],
+  "rationale": "Mimic: PE after surgery described as shoulder-tip \"gas pain\" at a routine post-op visit. Wells PE: surgery within 4 weeks 1.5 + HR >100 1.5 + PE most likely 3 = 6 (likely). D-dimer is uninformative after surgery.",
+  "authoring": {
+    "author": "Claude (acute medicine cluster)",
+    "date": "2026-09-25",
+    "notes": "Expectations need surgeon sign-off (reviewedBy). Citations written from the guideline texts, not yet checked against the source (verified: false). iOS outcomes are unverified until the next CI run."
+  }
+}

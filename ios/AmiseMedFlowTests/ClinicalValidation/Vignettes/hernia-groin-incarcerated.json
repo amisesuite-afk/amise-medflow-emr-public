@@ -1,0 +1,340 @@
+{
+  "schemaVersion": 1,
+  "id": "hernia-groin-incarcerated",
+  "condition": "Incarcerated inguinal hernia (no strangulation)",
+  "category": "hernia",
+  "permutationOf": null,
+  "summary": "67-year-old man whose known right inguinal hernia became irreducible 5 hours ago; mildly tender, no skin change, no obstruction, normal vitals, lactate 1.3. WSES: no signs of strangulation, so gentle reduction may be tried, then repair; mesh in a clean field.",
+  "tags": [
+    "emergency",
+    "groin",
+    "incarcerated"
+  ],
+  "inputs": {
+    "patient": {
+      "ageYears": 67,
+      "sex": "male",
+      "pregnancy": {
+        "status": "not-applicable"
+      },
+      "heightCm": 172,
+      "weightKg": 79
+    },
+    "encounter": {
+      "setting": "emergency",
+      "visitType": "urgentReview",
+      "acuity": "urgent"
+    },
+    "chiefComplaint": "Groin lump that will not go back",
+    "hpi": "Known right groin hernia for 2 years, always reducible. Five hours ago it came out while lifting and will not go back. Aching 4/10, not getting worse. Passing flatus, bowels opened this morning. No vomiting. No fever.",
+    "socrates": {
+      "onset": [
+        "Today",
+        "Sudden"
+      ],
+      "site": [
+        "Right inguinal"
+      ],
+      "character": [
+        "Firm",
+        "Tender"
+      ],
+      "radiation": [
+        "No radiation"
+      ],
+      "associations": [],
+      "timing": [
+        "Constant"
+      ],
+      "exacerbating": [
+        "Straining / Valsalva"
+      ],
+      "relieving": [
+        "Nothing"
+      ],
+      "severity": [
+        "Moderate (4–6/10)"
+      ]
+    },
+    "symptoms": [
+      "groin swelling",
+      "groin pain"
+    ],
+    "negatives": [
+      "vomiting",
+      "absolute constipation",
+      "fever",
+      "skin erythema"
+    ],
+    "exam": {
+      "general": "Comfortable. Pulse 84 regular, BP 142/84, temperature 36.9°C.",
+      "abdomen": "Abdomen soft, not distended, non-tender, normal bowel sounds. Right inguinoscrotal hernia, irreducible, mildly tender, no overlying erythema or warmth, no peritonism."
+    },
+    "vitals": [
+      {
+        "minutesAgo": 15,
+        "heartRate": 84,
+        "systolicBp": 142,
+        "diastolicBp": 84,
+        "respiratoryRate": 16,
+        "temperatureC": 36.9,
+        "spo2": 97,
+        "avpu": "A",
+        "onSupplementalO2": false
+      }
+    ],
+    "labs": [
+      {
+        "analyte": "wbc",
+        "name": "WBC",
+        "value": 9.1,
+        "unit": "×10⁹/L",
+        "minutesAgo": 60
+      },
+      {
+        "analyte": "crp",
+        "name": "CRP",
+        "value": 8,
+        "unit": "mg/L",
+        "minutesAgo": 60
+      },
+      {
+        "analyte": "lactate",
+        "name": "Lactate",
+        "value": 1.3,
+        "unit": "mmol/L",
+        "minutesAgo": 60
+      },
+      {
+        "analyte": "creatinine",
+        "name": "Creatinine",
+        "value": 88,
+        "unit": "µmol/L",
+        "minutesAgo": 60
+      },
+      {
+        "analyte": "haemoglobin",
+        "name": "Haemoglobin",
+        "value": 14.2,
+        "unit": "g/dL",
+        "minutesAgo": 60
+      }
+    ],
+    "imaging": [],
+    "comorbidities": [
+      "Hypertension"
+    ],
+    "surgicalHistory": [],
+    "medications": [
+      {
+        "drug": "Ramipril",
+        "dose": "5 mg",
+        "frequency": "OD",
+        "indication": "Hypertension"
+      }
+    ],
+    "allergies": [],
+    "nkda": true,
+    "socialHistory": "Ex-smoker.",
+    "scoreForms": {
+      "qsofa": {
+        "alteredMentation": false,
+        "rrAtLeast22": false,
+        "sbpAtMost100": false,
+        "suspectedInfection": false
+      }
+    },
+    "confirmedDiagnosis": {
+      "name": "Incarcerated right inguinal hernia without strangulation",
+      "icd10": "K40.30",
+      "paneDiseaseId": "inguinal_hernia",
+      "assessmentText": "Irreducible inguinal hernia (right), incarcerated for 5 h. No clinical or biochemical signs of strangulation (lactate 1.3, WCC 9.1, no skin change, no obstruction). Gentle reduction under analgesia, then repair."
+    },
+    "platform": {
+      "web": {
+        "ccTemplate": "Inguinal / groin hernia",
+        "symptoms": [
+          "hernia",
+          "groin swelling",
+          "groin pain"
+        ],
+        "symptomDetails": {
+          "hernia": [
+            "Right groin",
+            "Irreducible",
+            "Pain",
+            "Tenderness"
+          ]
+        },
+        "examFindings": {
+          "abdomen": [
+            "Soft",
+            "Hernia present"
+          ]
+        },
+        "paneAnswers": {
+          "hernia_irreducible": true
+        },
+        "durationDays": 0.2,
+        "painScore": 4
+      }
+    }
+  },
+  "expected": {
+    "differential": {
+      "mustRankTopK": [
+        {
+          "id": "dx-hernia-top3",
+          "severity": "critical",
+          "match": [
+            "hernia",
+            "icd:K40",
+            "icd:K41"
+          ],
+          "k": 3,
+          "guidelineRefs": [
+            "wses-hernia-2017"
+          ]
+        }
+      ]
+    },
+    "safety": {
+      "emergencyLevel": {
+        "id": "level-at-least-urgent",
+        "severity": "critical",
+        "atLeast": "urgent",
+        "guidelineRefs": [
+          "wses-hernia-2017"
+        ],
+        "note": "An irreducible hernia needs same-day surgical assessment: strangulation cannot be excluded without it."
+      },
+      "redFlags": [
+        {
+          "id": "flag-irreducible",
+          "severity": "critical",
+          "match": [
+            "irreducib",
+            "incarcerat",
+            "complicated hernia",
+            "strangulat"
+          ],
+          "guidelineRefs": [
+            "wses-hernia-2017"
+          ]
+        }
+      ]
+    },
+    "scores": {
+      "values": [
+        {
+          "id": "score-qsofa-calculator",
+          "severity": "quality",
+          "score": "qsofa",
+          "mode": "calculator",
+          "equals": 0,
+          "platforms": [
+            "ios"
+          ]
+        }
+      ]
+    },
+    "investigations": {
+      "mustInclude": [
+        {
+          "id": "inv-lactate",
+          "severity": "quality",
+          "match": [
+            "lactate"
+          ],
+          "guidelineRefs": [
+            "wses-hernia-2017"
+          ],
+          "note": "WSES 2017: lactate (with CPK, D-dimer) helps predict strangulation.",
+          "proposedFix": "Add lactate (± CPK, D-dimer) and CT when strangulation is uncertain to the hernia protocols for irreducible hernias."
+        }
+      ]
+    },
+    "management": {
+      "mustInclude": [
+        {
+          "id": "mgmt-reduction-or-repair",
+          "severity": "critical",
+          "match": [
+            "reduc",
+            "re:(emergency|urgent|semi-elective|prompt)[^.]{0,40}(repair|surgery|theatre)"
+          ],
+          "guidelineRefs": [
+            "wses-hernia-2017"
+          ],
+          "note": "Either gentle reduction followed by early repair, or emergency repair."
+        },
+        {
+          "id": "mgmt-mesh-clean-field",
+          "severity": "quality",
+          "match": [
+            "mesh"
+          ],
+          "guidelineRefs": [
+            "wses-hernia-2017"
+          ],
+          "note": "WSES 2017: synthetic mesh repair is recommended in a clean surgical field (no bowel resection).",
+          "knownGap": [
+            "ios"
+          ],
+          "knownGapNote": "iOS CI 2026-09-25 (run 36169134350, database mode): no management item matched among 20 (ios.pipeline.decisions, ios.pipeline.actions, ios.radiation.plan, ios.radiation.referral, ios.radiation.followUp, ios.scoreCalculator.qsofa, ios.soap.plan)"
+        }
+      ],
+      "mustExclude": [
+        {
+          "id": "mgmt-no-watchful-waiting",
+          "severity": "critical",
+          "match": [
+            "watchful waiting",
+            "re:\\btruss\\b",
+            "active observation"
+          ],
+          "unless": [
+            "unfit",
+            "declin"
+          ],
+          "guidelineRefs": [
+            "herniasurge-2018",
+            "wses-hernia-2017"
+          ],
+          "note": "Watchful waiting applies to reducible minimally symptomatic hernias only."
+        }
+      ]
+    },
+    "dxVariant": {
+      "id": "variant-incarcerated",
+      "severity": "critical",
+      "equals": "hernia_incarcerated",
+      "note": "The documented plan must be the incarcerated-hernia plan (reduction attempt, then early repair), not the elective plan.",
+      "proposedFix": "Match detectKeywords on word boundaries, check the most severe variant first (strangulated → incarcerated → reducible), and add negative look-behind for 'ir'/'non-' (\"irreducible\" contains \"reducible\"); \"bethesda vi\" contains \"bethesda v\"."
+    }
+  },
+  "guideline": [
+    {
+      "id": "wses-hernia-2017",
+      "name": "WSES guidelines — emergency repair of complicated abdominal wall hernias (2017 update)",
+      "year": 2017,
+      "section": "Diagnosis of strangulation (clinical signs, lactate, CPK, D-dimer, CT); timing of surgery; manual reduction only without strangulation; mesh in clean (CDC I) and clean-contaminated fields",
+      "citation": "Birindelli A, Sartelli M, Di Saverio S, et al. 2017 update of the WSES guidelines for emergency repair of complicated abdominal wall hernias. World J Emerg Surg. 2017;12:37.",
+      "verified": false
+    },
+    {
+      "id": "herniasurge-2018",
+      "name": "HerniaSurge — International guidelines for groin hernia management",
+      "year": 2018,
+      "section": "Diagnosis (clinical examination, ultrasound for uncertain swellings); watchful waiting in minimally symptomatic men; mesh repair (Lichtenstein, TEP/TAPP); groin hernia in women; femoral hernia; emergency repair",
+      "citation": "HerniaSurge Group. International guidelines for groin hernia management. Hernia. 2018;22:1–165.",
+      "verified": false
+    }
+  ],
+  "rationale": "Base emergency hernia case. The assessment is phrased the way surgeons write it (\"Irreducible inguinal hernia (right)\"), which also tests keyword-based variant detection. Negatives in the HPI (\"No vomiting. No fever.\") exercise negation handling.",
+  "authoring": {
+    "author": "Claude (hernia / breast / endocrine cluster)",
+    "date": "2026-09-25",
+    "notes": "Expectations need surgeon sign-off (reviewedBy). Citations verified: false."
+  }
+}

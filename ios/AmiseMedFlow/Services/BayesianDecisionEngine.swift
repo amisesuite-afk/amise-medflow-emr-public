@@ -76,11 +76,16 @@ struct DecisionContext {
     var acuity: Acuity
     var clinicalScores: [ClinicalScore]
     var vitalsAlerts: [ChangePointAlert]
+    var labs: LabPanel
 }
 
 // MARK: - Engine
 
 enum BayesianDecisionEngine {
+
+    // Aliases used by the BayesianDecisionEngine+*.swift extension files.
+    typealias Candidate       = BayesianDiagnosisEngine.Candidate
+    typealias DiagnosisResult = BayesianDiagnosisEngine.DiagnosisResult
 
     // Probability above which a life-threatening diagnosis triggers the max rule
     private static let lifeThreatThreshold: Double = 0.15
@@ -203,7 +208,7 @@ enum BayesianDecisionEngine {
                 priority: .emergency,
                 actions: [
                     "IV heparin 5000 units bolus if no contraindication",
-                    "Aggressive IV resuscitation; correct metabolic acidosis",
+                    "Prompt goal-directed IV resuscitation; correct metabolic acidosis",
                     "Immediate CT mesenteric angiography",
                     "Vascular + general surgery dual alert",
                     "Endovascular or open revascularisation depending on CT findings"
@@ -260,7 +265,7 @@ enum BayesianDecisionEngine {
                 priority: .emergency,
                 actions: [
                     "Blood cultures × 2 before antibiotics",
-                    "IV antibiotics within 1 hour (broad-spectrum; narrow when cultures return)",
+                    "IV antibiotics within 1 hour if suspected infection (broad-spectrum; narrow when cultures return)",
                     "IV crystalloid 30 mL/kg over 3 h if lactate ≥4 or hypotension",
                     "Vasopressors (noradrenaline) if MAP <65 despite resuscitation",
                     "Measure serum lactate; repeat if initial ≥2 mmol/L",
@@ -294,14 +299,14 @@ enum BayesianDecisionEngine {
 
         case "Incarcerated / Strangulated Hernia":
             return ClinicalDecision(
-                title: "Emergency Hernia Repair — Suspected Strangulation",
+                title: "Hernia with Suspected Strangulation — Emergency Surgical Review",
                 rationale: "Strangulated hernia with bowel compromise requires urgent repair to prevent perforation.",
                 priority: .emergency,
                 actions: [
                     "NBM; IV access; fluid resuscitation",
                     "IV antibiotics if peritonism or systemic sepsis",
                     "Do not attempt manual reduction if strangulation suspected",
-                    "Emergency surgical review; consent for laparoscopic or open repair ± bowel resection",
+                    "Emergency surgical review; if strangulation is confirmed, emergency repair ± bowel resection (consent for laparoscopic or open)",
                     "Theatre within 4–6 hours"
                 ],
                 investigations: ["CT abdomen/pelvis", "FBC, U&E, lactate, G&S"],
@@ -324,8 +329,8 @@ enum BayesianDecisionEngine {
     ) -> ClinicalDecision? {
         let p = Int(hyp.probability * 100)
 
-        // Look up from ManagementEngine
-        let plans = ManagementEngine.plans(forDiagnosis: hyp.name)
+        // Look up from ManagementEngine with lab-aware urgency modulation
+        let plans = ManagementEngine.plans(forDiagnosis: hyp.name, withLab: context.labs)
         guard let plan = plans.first else { return nil }
 
         let priority: DecisionPriority
@@ -388,8 +393,8 @@ enum BayesianDecisionEngine {
                 actions: [
                     "Full SOFA assessment",
                     "Blood cultures × 2 before antibiotics",
-                    "IV antibiotics within 1 hour",
-                    "Serum lactate; aggressive fluid resuscitation if raised"
+                    "IV antibiotics within 1 hour if suspected infection",
+                    "Serum lactate; goal-directed fluid resuscitation if raised (SSC 2021)"
                 ],
                 investigations: ["Blood cultures", "Serum lactate", "FBC, CRP, U&E, LFT, coag"],
                 disposition: .hduMonitoring,

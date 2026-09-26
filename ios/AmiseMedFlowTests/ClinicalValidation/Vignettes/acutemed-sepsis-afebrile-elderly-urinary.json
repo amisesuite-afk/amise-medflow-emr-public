@@ -1,0 +1,414 @@
+{
+  "schemaVersion": 1,
+  "id": "acutemed-sepsis-afebrile-elderly-urinary",
+  "condition": "Sepsis without fever in an older person (urinary source)",
+  "category": "general-medicine",
+  "permutationOf": null,
+  "summary": "86-year-old care-home resident with a day of new confusion, poor intake and offensive urine; T 36.0, HR 114, RR 24, BP 94/58, AVPU C, lactate 3.1. NEWS2 11, qSOFA 3 - afebrile sepsis.",
+  "tags": [
+    "sepsis",
+    "afebrile",
+    "elderly",
+    "news2",
+    "qsofa"
+  ],
+  "inputs": {
+    "patient": {
+      "ageYears": 86,
+      "sex": "female",
+      "pregnancy": {
+        "status": "not-applicable"
+      },
+      "heightCm": 150,
+      "weightKg": 48
+    },
+    "encounter": {
+      "setting": "outpatient",
+      "visitType": "urgentReview",
+      "acuity": "priority"
+    },
+    "chiefComplaint": "More confused than usual",
+    "hpi": "Care-home staff report one day of new confusion, drowsiness, refusing food and drink, and offensive-smelling urine. No cough. No vomiting or diarrhoea. Booked today to discuss a large parastomal hernia. No temperature recorded at the home.",
+    "symptoms": [
+      "new confusion",
+      "drowsiness",
+      "reduced intake",
+      "offensive urine"
+    ],
+    "negatives": [
+      "fever",
+      "cough",
+      "vomiting",
+      "diarrhoea",
+      "abdominal pain"
+    ],
+    "exam": {
+      "general": "Drowsy, confused, dry mucous membranes, cool peripheries.",
+      "cardiovascular": "HR 114, BP 94/58, CRT 4 s.",
+      "respiratory": "Chest clear, RR 24.",
+      "abdomen": "Soft, suprapubic tenderness, large reducible parastomal hernia, stoma healthy.",
+      "neuro": "Confused, no focal deficit, no neck stiffness."
+    },
+    "vitals": [
+      {
+        "minutesAgo": 5,
+        "heartRate": 114,
+        "systolicBp": 94,
+        "diastolicBp": 58,
+        "respiratoryRate": 24,
+        "temperatureC": 36.0,
+        "spo2": 95,
+        "avpu": "C",
+        "onSupplementalO2": false
+      }
+    ],
+    "labs": [
+      {
+        "analyte": "wbc",
+        "name": "WBC",
+        "value": 15.8,
+        "unit": "×10⁹/L",
+        "minutesAgo": 30
+      },
+      {
+        "analyte": "crp",
+        "name": "CRP",
+        "value": 142,
+        "unit": "mg/L",
+        "minutesAgo": 30
+      },
+      {
+        "analyte": "creatinine",
+        "name": "Creatinine",
+        "value": 168,
+        "unit": "µmol/L",
+        "minutesAgo": 30
+      },
+      {
+        "analyte": "lactate",
+        "name": "Lactate",
+        "value": 3.1,
+        "unit": "mmol/L",
+        "minutesAgo": 30
+      },
+      {
+        "analyte": "urinalysis",
+        "name": "Urine dipstick",
+        "resultText": "Nitrite positive, leucocytes 3+, blood 1+",
+        "minutesAgo": 30
+      }
+    ],
+    "imaging": [],
+    "comorbidities": [
+      "Dementia (mild)",
+      "End colostomy (Hartmann's 2019)",
+      "Parastomal hernia",
+      "Hypertension"
+    ],
+    "surgicalHistory": [
+      "Hartmann's procedure 2019"
+    ],
+    "medications": [
+      {
+        "drug": "Donepezil",
+        "dose": "10 mg",
+        "frequency": "ON"
+      },
+      {
+        "drug": "Amlodipine",
+        "dose": "5 mg",
+        "frequency": "OD"
+      }
+    ],
+    "allergies": [],
+    "nkda": true,
+    "socialHistory": "Care-home resident.",
+    "scoreForms": {
+      "qsofa": {
+        "alteredMentation": true,
+        "rrAtLeast22": true,
+        "sbpAtMost100": true,
+        "suspectedInfection": true
+      }
+    },
+    "confirmedDiagnosis": {
+      "name": "Sepsis secondary to urinary tract infection",
+      "icd10": "A41.9",
+      "assessmentText": "Urosepsis in an afebrile 86-year-old: NEWS2 11, qSOFA 3, lactate 3.1 - sepsis six now; emergency transfer."
+    },
+    "platform": {
+      "web": {
+        "ccTemplate": "Other / general surgical",
+        "symptoms": [
+          "confusion",
+          "malaise",
+          "dehydration"
+        ],
+        "examFindings": {
+          "general": [
+            "In distress"
+          ],
+          "neurology": [
+            "Confused"
+          ],
+          "cardiovascular": [
+            "Tachycardia",
+            "Capillary refill > 2s"
+          ]
+        },
+        "durationDays": 1,
+        "painScore": 0
+      }
+    }
+  },
+  "expected": {
+    "differential": {
+      "mustNotMiss": [
+        {
+          "id": "mnm-sepsis",
+          "severity": "critical",
+          "match": [
+            "sepsis",
+            "septic",
+            "icd:A41",
+            "icd:A40"
+          ],
+          "guidelineRefs": [
+            "nice-ng51",
+            "ssc-2021"
+          ]
+        },
+        {
+          "id": "mnm-urinary-source",
+          "severity": "quality",
+          "match": [
+            "urinary tract infection",
+            "pyelonephritis",
+            "urosepsis",
+            "re:\\buti\\b",
+            "icd:N39",
+            "icd:N10"
+          ],
+          "guidelineRefs": [
+            "nice-ng51"
+          ],
+          "knownGap": [
+            "ios"
+          ],
+          "knownGapNote": "iOS CI 2026-09-25 (run 36169134350, database mode): not in top 5 of ios.bayes: 1. Sepsis | 2. Acute Kidney Injury | 3. Delirium (Acute Confusional State) | 4. Community-Acquired Pneumonia | 5. Bacterial Meningitis / Meningococcal Sepsis; also in ios.ccEarly#3"
+        }
+      ]
+    },
+    "safety": {
+      "emergencyLevel": {
+        "id": "level-emergency",
+        "severity": "critical",
+        "atLeast": "emergency",
+        "guidelineRefs": [
+          "nice-ng51",
+          "rcp-news2-2017"
+        ],
+        "note": "NEWS2 >=7: emergency response."
+      },
+      "mustAlarm": [
+        {
+          "id": "alarm-sepsis",
+          "severity": "critical",
+          "match": [
+            "sepsis",
+            "septic",
+            "icd:A41",
+            "icd:A40"
+          ],
+          "guidelineRefs": [
+            "nice-ng51",
+            "ssc-2021"
+          ]
+        }
+      ]
+    },
+    "scores": {
+      "recommended": [
+        {
+          "id": "score-rec-news2",
+          "severity": "quality",
+          "score": "news2",
+          "guidelineRefs": [
+            "rcp-news2-2017",
+            "nice-ng51"
+          ]
+        },
+        {
+          "id": "score-rec-qsofa",
+          "severity": "quality",
+          "score": "qsofa",
+          "guidelineRefs": [
+            "sepsis3-2016"
+          ],
+          "note": "SSC 2021 recommends against qSOFA alone for screening; suggesting it alongside NEWS2 is still reasonable."
+        }
+      ],
+      "values": [
+        {
+          "id": "score-qsofa-calculator",
+          "severity": "quality",
+          "score": "qsofa",
+          "mode": "calculator",
+          "platforms": [
+            "ios"
+          ],
+          "guidelineRefs": [
+            "sepsis3-2016"
+          ],
+          "equals": 3
+        },
+        {
+          "id": "score-qsofa-autofill",
+          "severity": "quality",
+          "score": "qsofa",
+          "mode": "autofill",
+          "platforms": [
+            "ios"
+          ],
+          "guidelineRefs": [
+            "sepsis3-2016"
+          ],
+          "min": 2
+        }
+      ]
+    },
+    "investigations": {
+      "mustInclude": [
+        {
+          "id": "inv-blood-cultures",
+          "severity": "critical",
+          "match": [
+            "blood culture"
+          ],
+          "guidelineRefs": [
+            "ssc-2021",
+            "nice-ng51"
+          ],
+          "proposedFix": "A protocol for the PANE node sepsis (NICE NG51: blood cultures, lactate), or a physiology-based sepsis prompt that adds blood cultures."
+        },
+        {
+          "id": "inv-lactate",
+          "severity": "quality",
+          "match": [
+            "lactate"
+          ],
+          "guidelineRefs": [
+            "ssc-2021"
+          ]
+        }
+      ]
+    },
+    "management": {
+      "mustInclude": [
+        {
+          "id": "mgmt-antibiotics",
+          "severity": "critical",
+          "match": [
+            "antibiotic",
+            "antimicrobial",
+            "piperacillin",
+            "tazobactam",
+            "co-amoxiclav",
+            "amoxicillin",
+            "ceftriaxone",
+            "cefotaxime",
+            "meropenem",
+            "clarithromycin",
+            "doxycycline",
+            "gentamicin",
+            "cefuroxime",
+            "benzylpenicillin"
+          ],
+          "unless": [
+            "before antibiotic",
+            "before first antibiotic",
+            "at induction",
+            "prophyla"
+          ],
+          "guidelineRefs": [
+            "ssc-2021",
+            "nice-ng51"
+          ],
+          "note": "Antimicrobials within 1 hour for sepsis with hypoperfusion."
+        },
+        {
+          "id": "mgmt-iv-fluids",
+          "severity": "quality",
+          "match": [
+            "iv fluid",
+            "intravenous fluid",
+            "hartmann",
+            "crystalloid",
+            "sodium chloride 0.9",
+            "0.9% saline",
+            "fluid resuscitation",
+            "fluid challenge"
+          ],
+          "guidelineRefs": [
+            "ssc-2021"
+          ]
+        }
+      ],
+      "mustExclude": [
+        {
+          "id": "mgmt-no-emergency-hernia-surgery",
+          "severity": "critical",
+          "match": [
+            "emergency theatre",
+            "emergency laparoscopic inguinal hernia",
+            "strangulated hernia"
+          ],
+          "guidelineRefs": [
+            "nice-ng51"
+          ],
+          "note": "The parastomal hernia is documented as reducible; the tenderness is suprapubic (urinary source). An emergency hernia operation is a wrong-procedure output."
+        }
+      ]
+    }
+  },
+  "guideline": [
+    {
+      "id": "nice-ng51",
+      "verified": false,
+      "name": "NICE NG51 - Suspected sepsis: recognition, diagnosis and early management",
+      "year": 2024,
+      "section": "Think sepsis in anyone with a possible infection, including people who are afebrile, older or frail; NEWS2 used for risk stratification in adults in acute hospital settings; high risk -> senior review, blood cultures, lactate and antibiotics within 1 hour",
+      "citation": "National Institute for Health and Care Excellence. NG51. London: NICE; 2016 (updated 2024)."
+    },
+    {
+      "id": "ssc-2021",
+      "verified": false,
+      "name": "Surviving Sepsis Campaign: international guidelines for management of sepsis and septic shock 2021",
+      "year": 2021,
+      "section": "Screening: recommend against qSOFA alone compared with SIRS, NEWS or MEWS; antimicrobials within 1 h for possible septic shock or high likelihood of sepsis; blood cultures before antimicrobials; lactate measurement; 30 mL/kg IV crystalloid within 3 h for sepsis-induced hypoperfusion or septic shock; noradrenaline first-line vasopressor, MAP target 65 mmHg",
+      "citation": "Evans L, Rhodes A, Alhazzani W, et al. Crit Care Med. 2021;49:e1063-e1143."
+    },
+    {
+      "id": "sepsis3-2016",
+      "verified": false,
+      "name": "Third International Consensus Definitions for Sepsis and Septic Shock (Sepsis-3)",
+      "year": 2016,
+      "section": "qSOFA: respiratory rate >=22/min, altered mentation, systolic BP <=100 mmHg; >=2 identifies infected patients at risk of poor outcome outside the ICU",
+      "citation": "Singer M, Deutschman CS, Seymour CW, et al. JAMA. 2016;315:801-10."
+    },
+    {
+      "id": "rcp-news2-2017",
+      "verified": false,
+      "name": "Royal College of Physicians - National Early Warning Score (NEWS) 2",
+      "year": 2017,
+      "section": "Clinical response thresholds: aggregate 5-6 or a single parameter scoring 3 -> urgent response; aggregate >=7 -> emergency response; SpO2 Scale 2 only for confirmed hypercapnic respiratory failure",
+      "citation": "Royal College of Physicians. National Early Warning Score (NEWS) 2: standardising the assessment of acute-illness severity in the NHS. London: RCP; 2017."
+    }
+  ],
+  "rationale": "Base sepsis case: the afebrile older person. NICE NG51 warns fever may be absent; the web sepsis cascade requires T >=38. NEWS2: RR 24 (2) + SpO₂ 95 (1) + SBP 94 (2) + HR 114 (2) + new confusion (3) + T 36.0 (1) = 11.",
+  "authoring": {
+    "author": "Claude (acute medicine cluster)",
+    "date": "2026-09-25",
+    "notes": "Expectations need surgeon sign-off (reviewedBy). Citations written from the guideline texts, not yet checked against the source (verified: false). iOS outcomes are unverified until the next CI run."
+  }
+}

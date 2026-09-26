@@ -1,0 +1,458 @@
+{
+  "schemaVersion": 1,
+  "id": "obs-hellp-ruq-pain-34wk",
+  "condition": "Severe pre-eclampsia / HELLP syndrome presenting as RUQ pain",
+  "category": "other",
+  "permutationOf": null,
+  "permutationLabel": "34 weeks, epigastric/RUQ pain referred as \"gallbladder\" (base case)",
+  "summary": "33-year-old primigravida at 34 weeks referred to the surgeons as \"?biliary colic\": 12 h epigastric/RUQ pain, vomiting, headache; BP 168/112, proteinuria 3+, platelets 72, ALT 312, LDH 820; gallbladder normal on US. HELLP syndrome: obstetric emergency (magnesium, antihypertensive, delivery).",
+  "tags": [
+    "mimic",
+    "pregnancy",
+    "pre-eclampsia",
+    "hellp",
+    "do-not-miss"
+  ],
+  "inputs": {
+    "patient": {
+      "ageYears": 33,
+      "sex": "female",
+      "pregnancy": {
+        "status": "pregnant",
+        "gestationWeeks": 34
+      },
+      "heightCm": 160,
+      "weightKg": 82
+    },
+    "encounter": {
+      "setting": "emergency",
+      "visitType": "urgentReview",
+      "acuity": "urgent"
+    },
+    "chiefComplaint": "Upper abdominal pain and vomiting, 34 weeks pregnant",
+    "hpi": "Primigravida at 34 weeks referred as \"?gallbladder\". 12 hours of constant epigastric and right upper quadrant pain, vomiting three times, frontal headache since this morning and \"flashing lights\". Swollen face and hands for 3 days. Booking BP 118/74. Baby moving.",
+    "socrates": {
+      "onset": [
+        "Today",
+        "Gradual"
+      ],
+      "site": [
+        "Epigastric",
+        "RUQ"
+      ],
+      "character": [
+        "Aching"
+      ],
+      "radiation": [
+        "No radiation"
+      ],
+      "associations": [
+        "Nausea",
+        "Vomiting"
+      ],
+      "timing": [
+        "Constant"
+      ],
+      "exacerbating": [
+        "Movement"
+      ],
+      "relieving": [
+        "Nothing"
+      ],
+      "severity": [
+        "Severe (7–9/10)"
+      ]
+    },
+    "symptoms": [
+      "epigastric pain",
+      "right upper quadrant pain",
+      "vomiting",
+      "headache",
+      "double vision"
+    ],
+    "negatives": [
+      "fever",
+      "jaundice",
+      "vaginal bleeding"
+    ],
+    "exam": {
+      "general": "BP 168/112, repeated 164/110. HR 96, RR 18, SpO2 98%. Facial and hand oedema.",
+      "abdomen": "Tender epigastrium and RUQ, no guarding; fundus 33 cm, uterus soft and non-tender.",
+      "neuro": "Brisk reflexes with 3 beats of ankle clonus."
+    },
+    "vitals": [
+      {
+        "minutesAgo": 10,
+        "heartRate": 96,
+        "systolicBp": 164,
+        "diastolicBp": 110,
+        "respiratoryRate": 18,
+        "temperatureC": 36.9,
+        "spo2": 98,
+        "avpu": "A",
+        "onSupplementalO2": false
+      }
+    ],
+    "labs": [
+      {
+        "analyte": "platelets",
+        "name": "Platelets",
+        "value": 72,
+        "unit": "×10⁹/L",
+        "minutesAgo": 30
+      },
+      {
+        "analyte": "alt",
+        "name": "ALT",
+        "value": 312,
+        "unit": "U/L",
+        "minutesAgo": 30
+      },
+      {
+        "analyte": "ast",
+        "name": "AST",
+        "value": 356,
+        "unit": "U/L",
+        "minutesAgo": 30
+      },
+      {
+        "analyte": "ldh",
+        "name": "LDH",
+        "value": 820,
+        "unit": "U/L",
+        "minutesAgo": 30
+      },
+      {
+        "analyte": "bilirubin",
+        "name": "Bilirubin",
+        "value": 28,
+        "unit": "µmol/L",
+        "minutesAgo": 30
+      },
+      {
+        "analyte": "haemoglobin",
+        "name": "Haemoglobin",
+        "value": 10.9,
+        "unit": "g/dL",
+        "minutesAgo": 30
+      },
+      {
+        "analyte": "creatinine",
+        "name": "Creatinine",
+        "value": 88,
+        "unit": "µmol/L",
+        "minutesAgo": 30
+      },
+      {
+        "analyte": "urinalysis",
+        "name": "Urine dipstick",
+        "resultText": "Protein 3+",
+        "minutesAgo": 30
+      },
+      {
+        "analyte": "lipase",
+        "name": "Lipase",
+        "value": 42,
+        "unit": "U/L",
+        "minutesAgo": 30
+      }
+    ],
+    "imaging": [
+      {
+        "name": "USS abdomen",
+        "modality": "US",
+        "region": "Abdomen",
+        "result": "Gallbladder thin-walled, no gallstones, CBD 4 mm. Liver echotexture normal, no subcapsular haematoma.",
+        "minutesAgo": 30
+      }
+    ],
+    "comorbidities": [
+      "Pregnancy (34 weeks, primigravida)"
+    ],
+    "surgicalHistory": [],
+    "medications": [
+      {
+        "drug": "Aspirin",
+        "dose": "75 mg",
+        "frequency": "OD",
+        "indication": "Pre-eclampsia prophylaxis (stopped last week)"
+      },
+      {
+        "drug": "Ferrous sulfate",
+        "dose": "200 mg",
+        "frequency": "OD",
+        "indication": "Pregnancy"
+      }
+    ],
+    "allergies": [],
+    "nkda": true,
+    "socialHistory": "Lawyer. Non-smoker.",
+    "confirmedDiagnosis": {
+      "name": "Severe pre-eclampsia with HELLP syndrome at 34 weeks",
+      "icd10": "O14.23",
+      "assessmentText": "Pre-eclampsia with severe features and HELLP (platelets 72, ALT 312, LDH 820) at 34 weeks — not biliary. Obstetric emergency: IV magnesium sulfate, labetalol/nifedipine for BP ≥ 160/110, CTG, delivery planning; no cholecystectomy."
+    },
+    "platform": {
+      "web": {
+        "ccTemplate": "Acute abdominal pain",
+        "socratesAnswers": {
+          "site": "Epigastric and right upper (RUQ)",
+          "onset": "Today",
+          "character": "Constant ache",
+          "associated": "Nausea, vomiting, headache, flashing lights, swelling",
+          "timing": "Constant",
+          "triggers": "Movement",
+          "relief": "Nothing",
+          "severity": "8/10"
+        },
+        "symptoms": [
+          "epigastric pain",
+          "right upper quadrant pain",
+          "vomiting",
+          "headache"
+        ],
+        "symptomDetails": {
+          "abdominal pain": [
+            "Epigastric",
+            "RUQ",
+            "6–24 hours",
+            "Constant",
+            "Severe (7–9)",
+            "Vomiting",
+            "Continuous"
+          ],
+          "headache": [
+            "Frontal",
+            "Pressure / band-like",
+            "Visual aura"
+          ]
+        },
+        "examFindings": {
+          "abdomen": [
+            "Tender RUQ",
+            "Epigastric tenderness"
+          ]
+        },
+        "durationDays": 0,
+        "painScore": 8
+      }
+    }
+  },
+  "expected": {
+    "differential": {
+      "mustNotMiss": [
+        {
+          "id": "mnm-preeclampsia-hellp",
+          "severity": "critical",
+          "guidelineRefs": [
+            "nice-ng133",
+            "acog-pb222-2020"
+          ],
+          "match": [
+            "eclampsia",
+            "hellp"
+          ]
+        }
+      ]
+    },
+    "safety": {
+      "emergencyLevel": {
+        "id": "level-emergency",
+        "severity": "critical",
+        "guidelineRefs": [
+          "nice-ng133",
+          "acog-pb222-2020"
+        ],
+        "atLeast": "emergency"
+      },
+      "redFlags": [
+        {
+          "id": "flag-pregnancy",
+          "severity": "critical",
+          "guidelineRefs": [
+            "nice-ng133"
+          ],
+          "match": [
+            "pregnan"
+          ]
+        },
+        {
+          "id": "flag-severe-hypertension",
+          "severity": "critical",
+          "guidelineRefs": [
+            "nice-ng133",
+            "acog-pb222-2020"
+          ],
+          "note": "BP 168/112 in pregnancy is severe hypertension (≥ 160/110) and needs treatment within the hour.",
+          "match": [
+            "re:(severe )?hypertens",
+            "pre-eclampsia",
+            "preeclampsia",
+            "blood pressure"
+          ]
+        }
+      ]
+    },
+    "investigations": {
+      "mustInclude": [
+        {
+          "id": "inv-urine-pcr",
+          "severity": "quality",
+          "guidelineRefs": [
+            "nice-ng133"
+          ],
+          "match": [
+            "protein:creatinine",
+            "protein creatinine",
+            "re:\\bupcr\\b",
+            "proteinuria"
+          ]
+        }
+      ]
+    },
+    "management": {
+      "mustInclude": [
+        {
+          "id": "mgmt-magnesium",
+          "severity": "critical",
+          "guidelineRefs": [
+            "nice-ng133",
+            "acog-pb222-2020"
+          ],
+          "note": "Seizure prophylaxis in severe pre-eclampsia/HELLP.",
+          "match": [
+            "magnesium"
+          ]
+        },
+        {
+          "id": "mgmt-antihypertensive",
+          "severity": "critical",
+          "guidelineRefs": [
+            "nice-ng133",
+            "acog-pb222-2020"
+          ],
+          "match": [
+            "labetalol",
+            "nifedipine",
+            "hydralazine"
+          ]
+        },
+        {
+          "id": "mgmt-obstetric-delivery",
+          "severity": "critical",
+          "guidelineRefs": [
+            "nice-ng133",
+            "acog-pb222-2020"
+          ],
+          "match": [
+            "obstetric",
+            "obstetrician",
+            "deliver",
+            "maternity"
+          ]
+        }
+      ],
+      "mustExclude": [
+        {
+          "id": "mgmt-no-cholecystectomy",
+          "severity": "critical",
+          "guidelineRefs": [
+            "acog-pb222-2020"
+          ],
+          "note": "Normal gallbladder; RUQ pain is hepatic (HELLP). A cholecystectomy plan is a wrong-procedure suggestion.",
+          "match": [
+            "laparoscopic cholecystectomy",
+            "lap chole",
+            "re:lap(\\.|aroscopic)? cholecystectomy",
+            "cholecystectomy"
+          ],
+          "unless": [
+            "not indicated",
+            "defer",
+            "elective",
+            "after recovery",
+            "once recovered"
+          ]
+        },
+        {
+          "id": "mgmt-no-ace-inhibitor-antenatal",
+          "severity": "critical",
+          "guidelineRefs": [
+            "nice-ng133"
+          ],
+          "note": "ACE inhibitors and ARBs are fetotoxic and not used in pregnancy.",
+          "match": [
+            "lisinopril",
+            "ramipril",
+            "enalapril",
+            "losartan",
+            "candesartan",
+            "ace inhibitor",
+            "ace-i"
+          ],
+          "unless": [
+            "avoid",
+            "contraindicated",
+            "postnatal",
+            "postpartum",
+            "not in pregnancy"
+          ]
+        },
+        {
+          "id": "mgmt-no-nsaid-after-20-weeks",
+          "severity": "critical",
+          "guidelineRefs": [
+            "fda-2020-nsaid",
+            "nice-ng133"
+          ],
+          "note": "NSAIDs are avoided at 34 weeks and with thrombocytopenia.",
+          "match": [
+            "nsaid",
+            "ibuprofen",
+            "diclofenac",
+            "naproxen",
+            "ketorolac",
+            "parecoxib",
+            "celecoxib"
+          ],
+          "unless": [
+            "re:(avoid|no|not|contraindicated|do not (give|use|prescribe))[^.;\\n]{0,20}(nsaid|ibuprofen|diclofenac|naproxen|ketorolac)",
+            "re:(nsaid|ibuprofen|diclofenac|naproxen|ketorolac)s?[^.;\\n]{0,30}(contraindicated|avoid|not in pregnan)"
+          ]
+        }
+      ]
+    }
+  },
+  "guideline": [
+    {
+      "id": "nice-ng133",
+      "name": "NICE NG133 — hypertension in pregnancy: diagnosis and management",
+      "year": 2019,
+      "section": "Pre-eclampsia with severe hypertension or features (e.g. severe headache, visual disturbance, epigastric/RUQ pain, low platelets, raised transaminases, HELLP): admit under obstetric care; antihypertensives labetalol, nifedipine or methyldopa (ACE inhibitors and ARBs are not used in pregnancy); IV magnesium sulfate in severe pre-eclampsia when birth is planned or eclampsia is a concern; postnatal pre-eclampsia is managed with enalapril, nifedipine/amlodipine or labetalol",
+      "citation": "National Institute for Health and Care Excellence. Hypertension in pregnancy: diagnosis and management. NICE guideline NG133, 2019 (updated 2023).",
+      "verified": false
+    },
+    {
+      "id": "acog-pb222-2020",
+      "name": "ACOG Practice Bulletin No. 222 — gestational hypertension and preeclampsia",
+      "year": 2020,
+      "section": "Severe features: SBP ≥ 160 or DBP ≥ 110, platelets < 100 × 10⁹/L, transaminases twice normal or severe persistent RUQ/epigastric pain, new cerebral or visual disturbance; HELLP syndrome; magnesium sulfate for seizure prophylaxis; acute-onset severe hypertension treated urgently (labetalol, hydralazine, nifedipine); delivery at ≥ 34 weeks with severe features or HELLP; postpartum preeclampsia may present up to 6 weeks after birth",
+      "citation": "American College of Obstetricians and Gynecologists. Gestational hypertension and preeclampsia: ACOG Practice Bulletin No. 222. Obstet Gynecol. 2020;135:e237–e260.",
+      "verified": false
+    },
+    {
+      "id": "fda-2020-nsaid",
+      "name": "FDA drug safety communication — NSAIDs at 20 weeks or later in pregnancy",
+      "year": 2020,
+      "section": "Avoid NSAIDs from 20 weeks of pregnancy (fetal renal dysfunction, oligohydramnios; ductal constriction later in pregnancy)",
+      "citation": "US Food and Drug Administration. FDA recommends avoiding use of NSAIDs in pregnancy at 20 weeks or later because they can result in low amniotic fluid. Drug Safety Communication, 15 October 2020.",
+      "verified": false
+    }
+  ],
+  "rationale": "HELLP syndrome and severe pre-eclampsia commonly present as epigastric/RUQ pain and are referred as biliary disease. The priority is recognition, seizure prophylaxis, urgent BP control with pregnancy-safe agents and obstetric delivery planning — not a cholecystectomy.",
+  "authoring": {
+    "author": "Claude (prevention/screening, obstetric-gynaecological mimics and paediatric surgery cluster)",
+    "date": "2026-09-25",
+    "notes": "Expectations need surgeon sign-off (reviewedBy). Every citation is verified: false. iOS outcomes are unverified (not run on Linux); triage after the first CI run."
+  }
+}

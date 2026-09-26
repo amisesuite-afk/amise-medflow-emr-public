@@ -1,0 +1,295 @@
+{
+  "schemaVersion": 1,
+  "id": "obs-postpartum-preeclampsia-epigastric",
+  "condition": "Postpartum pre-eclampsia presenting as epigastric pain",
+  "category": "other",
+  "permutationOf": "obs-hellp-ruq-pain-34wk",
+  "permutationLabel": "Day 6 after delivery, normotensive in pregnancy",
+  "summary": "29-year-old woman 6 days after an uncomplicated vaginal delivery with severe headache, blurred vision and epigastric pain; BP 166/108, proteinuria 2+, platelets 138, ALT 64. Postpartum pre-eclampsia with severe features.",
+  "tags": [
+    "mimic",
+    "postpartum",
+    "pre-eclampsia",
+    "do-not-miss"
+  ],
+  "inputs": {
+    "patient": {
+      "ageYears": 29,
+      "sex": "female",
+      "pregnancy": {
+        "status": "not-pregnant"
+      },
+      "heightCm": 170,
+      "weightKg": 74
+    },
+    "encounter": {
+      "setting": "emergency",
+      "visitType": "urgentReview",
+      "acuity": "urgent"
+    },
+    "chiefComplaint": "Upper abdominal pain and headache",
+    "hpi": "Six days after an uncomplicated vaginal delivery (BP normal throughout pregnancy). Since yesterday: epigastric pain, severe frontal headache not relieved by paracetamol, blurred vision, nausea. Breastfeeding. Seen at a health centre and given antacids.",
+    "socrates": {
+      "onset": [
+        "Yesterday",
+        "Gradual"
+      ],
+      "site": [
+        "Epigastric"
+      ],
+      "character": [
+        "Burning"
+      ],
+      "radiation": [
+        "No radiation"
+      ],
+      "associations": [
+        "Nausea"
+      ],
+      "timing": [
+        "Constant"
+      ],
+      "exacerbating": [
+        "Eating"
+      ],
+      "relieving": [
+        "Nothing"
+      ],
+      "severity": [
+        "Moderate (4–6/10)"
+      ]
+    },
+    "symptoms": [
+      "epigastric pain",
+      "headache",
+      "nausea",
+      "double vision"
+    ],
+    "negatives": [
+      "fever",
+      "vaginal bleeding",
+      "calf pain"
+    ],
+    "exam": {
+      "general": "BP 166/108, repeated 162/106. HR 88. Mild facial oedema.",
+      "abdomen": "Epigastric tenderness, soft, uterus involuting.",
+      "neuro": "Brisk reflexes, no clonus, no focal deficit."
+    },
+    "vitals": [
+      {
+        "minutesAgo": 10,
+        "heartRate": 88,
+        "systolicBp": 162,
+        "diastolicBp": 106,
+        "respiratoryRate": 16,
+        "temperatureC": 36.8,
+        "spo2": 99,
+        "avpu": "A",
+        "onSupplementalO2": false
+      }
+    ],
+    "labs": [
+      {
+        "analyte": "platelets",
+        "name": "Platelets",
+        "value": 138,
+        "unit": "×10⁹/L",
+        "minutesAgo": 30
+      },
+      {
+        "analyte": "alt",
+        "name": "ALT",
+        "value": 64,
+        "unit": "U/L",
+        "minutesAgo": 30
+      },
+      {
+        "analyte": "creatinine",
+        "name": "Creatinine",
+        "value": 72,
+        "unit": "µmol/L",
+        "minutesAgo": 30
+      },
+      {
+        "analyte": "urinalysis",
+        "name": "Urine dipstick",
+        "resultText": "Protein 2+",
+        "minutesAgo": 30
+      },
+      {
+        "analyte": "lipase",
+        "name": "Lipase",
+        "value": 30,
+        "unit": "U/L",
+        "minutesAgo": 30
+      }
+    ],
+    "imaging": [],
+    "comorbidities": [
+      "Postpartum day 6 (vaginal delivery)"
+    ],
+    "surgicalHistory": [],
+    "medications": [],
+    "allergies": [],
+    "nkda": true,
+    "socialHistory": "Primary teacher. Breastfeeding.",
+    "confirmedDiagnosis": {
+      "name": "Postpartum pre-eclampsia with severe features (day 6)",
+      "icd10": "O14.15",
+      "assessmentText": "Postpartum pre-eclampsia with severe features (BP 166/108, headache, visual disturbance, epigastric pain, proteinuria). Urgent obstetric review; antihypertensive (enalapril / nifedipine / labetalol, compatible with breastfeeding); consider magnesium sulfate."
+    },
+    "platform": {
+      "web": {
+        "ccTemplate": "Acute abdominal pain",
+        "socratesAnswers": {
+          "site": "Epigastric",
+          "onset": "Yesterday",
+          "character": "Burning",
+          "associated": "Nausea, headache, blurred vision",
+          "timing": "Constant",
+          "relief": "Antacids did not help",
+          "severity": "6/10"
+        },
+        "symptoms": [
+          "epigastric pain",
+          "headache",
+          "nausea"
+        ],
+        "symptomDetails": {
+          "headache": [
+            "Frontal",
+            "Pressure / band-like",
+            "Visual aura",
+            "Constant"
+          ]
+        },
+        "examFindings": {
+          "abdomen": [
+            "Epigastric tenderness"
+          ]
+        },
+        "durationDays": 1,
+        "painScore": 6
+      }
+    }
+  },
+  "expected": {
+    "differential": {
+      "mustNotMiss": [
+        {
+          "id": "mnm-preeclampsia",
+          "severity": "critical",
+          "guidelineRefs": [
+            "nice-ng133",
+            "acog-pb222-2020"
+          ],
+          "match": [
+            "eclampsia",
+            "hellp"
+          ]
+        }
+      ]
+    },
+    "safety": {
+      "emergencyLevel": {
+        "id": "level-at-least-urgent",
+        "severity": "critical",
+        "guidelineRefs": [
+          "nice-ng133",
+          "acog-pb222-2020"
+        ],
+        "atLeast": "urgent"
+      }
+    },
+    "management": {
+      "mustInclude": [
+        {
+          "id": "mgmt-antihypertensive",
+          "severity": "critical",
+          "guidelineRefs": [
+            "nice-ng133"
+          ],
+          "match": [
+            "labetalol",
+            "nifedipine",
+            "enalapril",
+            "amlodipine",
+            "antihypertensive"
+          ]
+        },
+        {
+          "id": "mgmt-obstetric",
+          "severity": "critical",
+          "guidelineRefs": [
+            "nice-ng133",
+            "acog-pb222-2020"
+          ],
+          "match": [
+            "obstetric",
+            "obstetrician",
+            "maternity",
+            "o&g"
+          ]
+        },
+        {
+          "id": "mgmt-magnesium",
+          "severity": "quality",
+          "guidelineRefs": [
+            "acog-pb222-2020"
+          ],
+          "note": "Consider for postpartum pre-eclampsia with severe features / neurological symptoms.",
+          "match": [
+            "magnesium"
+          ]
+        }
+      ],
+      "mustExclude": [
+        {
+          "id": "mgmt-no-cholecystectomy",
+          "severity": "critical",
+          "guidelineRefs": [
+            "acog-pb222-2020"
+          ],
+          "note": "No biliary disease: cholecystectomy would be a wrong-procedure suggestion.",
+          "match": [
+            "laparoscopic cholecystectomy",
+            "lap chole",
+            "re:lap(\\.|aroscopic)? cholecystectomy",
+            "cholecystectomy"
+          ],
+          "unless": [
+            "not indicated",
+            "defer",
+            "elective",
+            "after recovery",
+            "once recovered"
+          ]
+        }
+      ]
+    }
+  },
+  "guideline": [
+    {
+      "id": "nice-ng133",
+      "name": "NICE NG133 — hypertension in pregnancy: diagnosis and management",
+      "year": 2019,
+      "section": "Pre-eclampsia with severe hypertension or features (e.g. severe headache, visual disturbance, epigastric/RUQ pain, low platelets, raised transaminases, HELLP): admit under obstetric care; antihypertensives labetalol, nifedipine or methyldopa (ACE inhibitors and ARBs are not used in pregnancy); IV magnesium sulfate in severe pre-eclampsia when birth is planned or eclampsia is a concern; postnatal pre-eclampsia is managed with enalapril, nifedipine/amlodipine or labetalol",
+      "citation": "National Institute for Health and Care Excellence. Hypertension in pregnancy: diagnosis and management. NICE guideline NG133, 2019 (updated 2023).",
+      "verified": false
+    },
+    {
+      "id": "acog-pb222-2020",
+      "name": "ACOG Practice Bulletin No. 222 — gestational hypertension and preeclampsia",
+      "year": 2020,
+      "section": "Severe features: SBP ≥ 160 or DBP ≥ 110, platelets < 100 × 10⁹/L, transaminases twice normal or severe persistent RUQ/epigastric pain, new cerebral or visual disturbance; HELLP syndrome; magnesium sulfate for seizure prophylaxis; acute-onset severe hypertension treated urgently (labetalol, hydralazine, nifedipine); delivery at ≥ 34 weeks with severe features or HELLP; postpartum preeclampsia may present up to 6 weeks after birth",
+      "citation": "American College of Obstetricians and Gynecologists. Gestational hypertension and preeclampsia: ACOG Practice Bulletin No. 222. Obstet Gynecol. 2020;135:e237–e260.",
+      "verified": false
+    }
+  ],
+  "rationale": "Pre-eclampsia can first appear after delivery (up to 6 weeks). Once the patient is no longer pregnant, engines keyed on \"pregnancy\" lose the context; epigastric pain with headache, visual disturbance and severe hypertension must still be recognised.",
+  "authoring": {
+    "author": "Claude (prevention/screening, obstetric-gynaecological mimics and paediatric surgery cluster)",
+    "date": "2026-09-25",
+    "notes": "Expectations need surgeon sign-off (reviewedBy). Every citation is verified: false. iOS outcomes are unverified (not run on Linux); triage after the first CI run."
+  }
+}

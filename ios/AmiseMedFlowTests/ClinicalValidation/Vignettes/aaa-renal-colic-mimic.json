@@ -1,0 +1,282 @@
+{
+  "schemaVersion": 1,
+  "id": "aaa-renal-colic-mimic",
+  "condition": "Symptomatic / leaking abdominal aortic aneurysm (renal colic mimic)",
+  "category": "vascular",
+  "permutationOf": "raaa-shock",
+  "permutationLabel": "Renal colic mimic, relative hypotension, no known stones",
+  "summary": "67-year-old male smoker with first-ever left loin-to-groin pain, microscopic haematuria, BP 104/68 (usually 150s), HR 104, no previous stones.",
+  "tags": [
+    "aaa",
+    "mimic",
+    "renal-colic"
+  ],
+  "inputs": {
+    "patient": {
+      "ageYears": 67,
+      "sex": "male",
+      "pregnancy": {
+        "status": "not-applicable"
+      },
+      "heightCm": 178,
+      "weightKg": 98
+    },
+    "encounter": {
+      "setting": "emergency",
+      "visitType": "urgentReview",
+      "acuity": "urgent"
+    },
+    "chiefComplaint": "Left loin pain going to the groin",
+    "hpi": "Three hours of constant severe left loin pain radiating to the left groin, came on suddenly. Felt faint once. No previous kidney stones. Smoker, hypertension (usual BP around 150/90).",
+    "socrates": {
+      "onset": [
+        "Today",
+        "Sudden"
+      ],
+      "site": [
+        "Left loin"
+      ],
+      "character": [
+        "Sharp"
+      ],
+      "radiation": [
+        "Groin"
+      ],
+      "associations": [
+        "Haematuria"
+      ],
+      "timing": [
+        "Constant"
+      ],
+      "exacerbating": [
+        "Movement"
+      ],
+      "relieving": [
+        "Nothing"
+      ],
+      "severity": [
+        "Severe (7–9/10)"
+      ]
+    },
+    "symptoms": [
+      "loin pain",
+      "haematuria",
+      "near-syncope"
+    ],
+    "negatives": [
+      "fever",
+      "dysuria",
+      "previous stones"
+    ],
+    "exam": {
+      "general": "Sweaty, restless. BP 104/68, HR 104, RR 20, T 36.8°C.",
+      "abdomen": "Obese abdomen, vague fullness and tenderness in the left upper quadrant and left flank; aorta difficult to palpate. Renal angle tenderness left."
+    },
+    "vitals": [
+      {
+        "minutesAgo": 10,
+        "heartRate": 104,
+        "systolicBp": 104,
+        "diastolicBp": 68,
+        "respiratoryRate": 20,
+        "temperatureC": 36.8,
+        "spo2": 97,
+        "avpu": "A",
+        "onSupplementalO2": false
+      }
+    ],
+    "labs": [
+      {
+        "analyte": "urinalysis",
+        "name": "Urine dipstick",
+        "resultText": "Blood ++, no nitrites, no leucocytes",
+        "minutesAgo": 20
+      },
+      {
+        "analyte": "haemoglobin",
+        "name": "Haemoglobin",
+        "value": 12.2,
+        "unit": "g/dL",
+        "minutesAgo": 20
+      },
+      {
+        "analyte": "creatinine",
+        "name": "Creatinine",
+        "value": 104,
+        "unit": "µmol/L",
+        "minutesAgo": 20
+      }
+    ],
+    "imaging": [],
+    "comorbidities": [
+      "Hypertension"
+    ],
+    "surgicalHistory": [],
+    "medications": [
+      {
+        "drug": "Ramipril",
+        "dose": "10 mg",
+        "frequency": "OD",
+        "indication": "Hypertension"
+      }
+    ],
+    "allergies": [],
+    "nkda": true,
+    "socialHistory": "Smoker 40 pack-years.",
+    "confirmedDiagnosis": {
+      "name": "Suspected symptomatic (leaking) abdominal aortic aneurysm",
+      "icd10": "I71.3",
+      "paneDiseaseId": "aortic_aneurysm",
+      "assessmentText": "Loin-to-groin pain in a 67-year-old smoker with no stone history and relative hypotension: leaking abdominal aortic aneurysm must be excluded before renal colic is diagnosed. Bedside ultrasound of the aorta and CT angiography."
+    },
+    "platform": {
+      "web": {
+        "ccTemplate": "Acute abdominal pain",
+        "symptoms": [
+          "loin pain",
+          "haematuria",
+          "near-syncope"
+        ],
+        "examFindings": {
+          "general": [
+            "Diaphoretic",
+            "In distress"
+          ]
+        },
+        "paneAnswers": {
+          "loin_pain": true,
+          "radiation_to_groin": true,
+          "haematuria": true
+        },
+        "durationDays": 0,
+        "painScore": 8
+      }
+    }
+  },
+  "expected": {
+    "differential": {
+      "mustNotMiss": [
+        {
+          "id": "mnm-aaa",
+          "severity": "critical",
+          "match": [
+            "aneurysm",
+            "aaa"
+          ],
+          "guidelineRefs": [
+            "esvs-aaa-2024"
+          ],
+          "note": "New \"renal colic\" over 60 without a stone history: AAA must be on the list."
+        }
+      ]
+    },
+    "safety": {
+      "emergencyLevel": {
+        "id": "level-at-least-urgent",
+        "severity": "critical",
+        "atLeast": "urgent",
+        "guidelineRefs": [
+          "esvs-aaa-2024"
+        ]
+      }
+    },
+    "investigations": {
+      "mustInclude": [
+        {
+          "id": "inv-aorta-imaging",
+          "severity": "critical",
+          "match": [
+            "re:(ultrasound|uss|\\bus\\b|pocus)[^.;]{0,30}aort",
+            "ct angiogra",
+            "ct aort",
+            "aaa screen"
+          ],
+          "guidelineRefs": [
+            "esvs-aaa-2024"
+          ]
+        }
+      ]
+    },
+    "management": {
+      "mustInclude": [
+        {
+          "id": "mgmt-vascular",
+          "severity": "quality",
+          "match": [
+            "vascular surg",
+            "vascular team",
+            "vascular review",
+            "vascular referral",
+            "vascular service",
+            "vascular on-call",
+            "revascularis"
+          ],
+          "guidelineRefs": [
+            "esvs-aaa-2024"
+          ]
+        }
+      ],
+      "mustExclude": [
+        {
+          "id": "mgmt-no-colic-discharge",
+          "severity": "quality",
+          "match": [
+            "re:discharge[^.;]{0,40}(analgesi|nsaid|diclofenac)",
+            "re:(diclofenac|nsaid)[^.;]{0,40}discharge"
+          ],
+          "note": "Discharging with NSAIDs as renal colic is the classic fatal error."
+        },
+        {
+          "id": "mgmt-no-antithrombotic-plan",
+          "severity": "critical",
+          "match": [
+            "aspirin 300",
+            "ticagrelor",
+            "clopidogrel 300",
+            "fondaparinux",
+            "alteplase",
+            "thrombolysis",
+            "rivaroxaban",
+            "apixaban 10",
+            "doacs (preferred)"
+          ],
+          "sources": [
+            "ios.radiation",
+            "ios.soap",
+            "web.plan",
+            "web.protocol",
+            "web.managementPanel"
+          ],
+          "guidelineRefs": [
+            "esvs-aaa-2024"
+          ],
+          "note": "A PE or ACS antithrombotic/thrombolytic plan must never be attached to a haemorrhagic or non-thrombotic diagnosis. Reading the iOS source, DiagnosisRadiationEngine.radiate matches keywords by substring and would attach the ACS plan (\"mi\" inside \"abdominal\", \"limb\", \"haemodynamically\") or the PE plan (\"pe\" inside \"suspected\", \"penetrating\", \"superficial\") to this diagnosis — to be confirmed on the first iOS CI run."
+        }
+      ]
+    }
+  },
+  "guideline": [
+    {
+      "id": "esvs-aaa-2024",
+      "name": "ESVS 2024 clinical practice guidelines — abdominal aorto-iliac artery aneurysms",
+      "year": 2024,
+      "section": "Suspected rupture: immediate vascular surgical assessment and transfer to a vascular centre; permissive hypotension in the conscious patient; CT angiography only if the patient is stable enough; EVAR preferred when anatomy is suitable. Consider AAA in older patients presenting with flank/back pain mimicking renal colic",
+      "citation": "Wanhainen A, Van Herzeele I, Bastos Goncalves F, et al. European Society for Vascular Surgery (ESVS) 2024 Clinical Practice Guidelines on the Management of Abdominal Aorto-Iliac Artery Aneurysms. Eur J Vasc Endovasc Surg. 2024;67:192–331.",
+      "verified": false
+    },
+    {
+      "id": "nice-ng156",
+      "name": "NICE NG156 — Abdominal aortic aneurysm: diagnosis and management",
+      "year": 2020,
+      "section": "Suspected symptomatic or ruptured AAA: immediate discussion with the regional vascular service; imaging should not delay transfer of an unstable patient; permissive hypotension",
+      "citation": "National Institute for Health and Care Excellence. Abdominal aortic aneurysm: diagnosis and management (NG156). London: NICE; 2020.",
+      "verified": false
+    }
+  ],
+  "rationale": "Permutation: the atypical presentation. The engines see loin pain, groin radiation and haematuria (a renal colic pattern). ESVS: consider AAA in older patients with flank pain. Tests must-not-miss and imaging of the aorta.",
+  "authoring": {
+    "author": "Claude (soft tissue / vascular / trauma / burns cluster)",
+    "date": "2026-09-25",
+    "notes": "Expectations need surgeon sign-off (reviewedBy). Citations verified: false. iOS outcomes are unverified until the first CI run."
+  }
+}

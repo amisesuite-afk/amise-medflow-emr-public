@@ -1,0 +1,315 @@
+{
+  "schemaVersion": 1,
+  "id": "acutemed-acs-typical-chest-pain",
+  "condition": "Acute coronary syndrome (typical presentation)",
+  "category": "general-medicine",
+  "permutationOf": null,
+  "summary": "58-year-old male smoker with 45 minutes of central crushing chest pain radiating to the left arm and jaw, sweating and nausea, while waiting in clinic. ESC 2023: ECG within 10 minutes, hs-troponin, aspirin, emergency transfer.",
+  "tags": [
+    "acs",
+    "must-not-miss",
+    "emergency-redirect"
+  ],
+  "inputs": {
+    "patient": {
+      "ageYears": 58,
+      "sex": "male",
+      "pregnancy": {
+        "status": "not-applicable"
+      },
+      "heightCm": 176,
+      "weightKg": 88
+    },
+    "encounter": {
+      "setting": "outpatient",
+      "visitType": "urgentReview",
+      "acuity": "urgent"
+    },
+    "chiefComplaint": "Central chest pain",
+    "hpi": "Came for review of an umbilical hernia. In the waiting room developed central crushing chest pain 45 minutes ago, radiating to the left arm and jaw, with sweating and nausea. Pain at rest, 8/10, not eased by sitting still. Smokes 20 a day. Hypertension and high cholesterol. Father had a heart attack at 55.",
+    "socrates": {
+      "onset": [
+        "Today",
+        "Sudden"
+      ],
+      "site": [
+        "Retrosternal"
+      ],
+      "character": [
+        "Pressure"
+      ],
+      "radiation": [
+        "Left arm"
+      ],
+      "associations": [
+        "Diaphoresis",
+        "Nausea"
+      ],
+      "timing": [
+        "Constant"
+      ],
+      "exacerbating": [],
+      "relieving": [
+        "Nothing"
+      ],
+      "severity": [
+        "Severe (7–9/10)"
+      ]
+    },
+    "symptoms": [
+      "central chest pain",
+      "radiation to left arm and jaw",
+      "sweating",
+      "nausea"
+    ],
+    "negatives": [
+      "pleuritic pain",
+      "haemoptysis",
+      "fever",
+      "syncope"
+    ],
+    "exam": {
+      "general": "Pale, clammy and sweating, in obvious discomfort.",
+      "cardiovascular": "Pulse 96 regular, BP 148/90 both arms, heart sounds normal, no murmur.",
+      "respiratory": "Chest clear.",
+      "abdomen": "Soft, reducible umbilical hernia."
+    },
+    "vitals": [
+      {
+        "minutesAgo": 5,
+        "heartRate": 96,
+        "systolicBp": 148,
+        "diastolicBp": 90,
+        "respiratoryRate": 20,
+        "temperatureC": 36.8,
+        "spo2": 96,
+        "avpu": "A",
+        "onSupplementalO2": false
+      }
+    ],
+    "labs": [],
+    "imaging": [],
+    "comorbidities": [
+      "Hypertension",
+      "Hypercholesterolaemia",
+      "Umbilical hernia"
+    ],
+    "surgicalHistory": [],
+    "medications": [
+      {
+        "drug": "Amlodipine",
+        "dose": "5 mg",
+        "frequency": "OD",
+        "indication": "Hypertension"
+      },
+      {
+        "drug": "Atorvastatin",
+        "dose": "20 mg",
+        "frequency": "ON",
+        "indication": "Cholesterol"
+      }
+    ],
+    "allergies": [],
+    "nkda": true,
+    "socialHistory": "Smoker, 30 pack-years. Taxi driver.",
+    "confirmedDiagnosis": {
+      "name": "Suspected acute coronary syndrome",
+      "icd10": "I21.9",
+      "assessmentText": "Suspected acute coronary syndrome - possible STEMI. Emergency transfer."
+    },
+    "platform": {
+      "web": {
+        "ccTemplate": "Other / general surgical",
+        "symptoms": [
+          "chest pain",
+          "nausea"
+        ],
+        "symptomDetails": {
+          "chest pain": [
+            "Crushing / pressure",
+            "Left arm",
+            "Jaw",
+            "Sweating",
+            "Nausea"
+          ]
+        },
+        "examFindings": {
+          "general": [
+            "Pale",
+            "Diaphoretic"
+          ]
+        },
+        "durationDays": 0.03,
+        "painScore": 8
+      }
+    }
+  },
+  "expected": {
+    "differential": {
+      "mustRankTopK": [
+        {
+          "id": "dx-acs-top3",
+          "severity": "critical",
+          "match": [
+            "coronary",
+            "myocardial",
+            "re:\\bacs\\b",
+            "stemi",
+            "nstemi",
+            "infarct",
+            "icd:I21",
+            "icd:I20",
+            "icd:I24"
+          ],
+          "k": 3,
+          "guidelineRefs": [
+            "esc-acs-2023"
+          ]
+        }
+      ],
+      "mustNotMiss": [
+        {
+          "id": "mnm-acs-symptom-inference",
+          "severity": "quality",
+          "match": [
+            "coronary",
+            "myocardial",
+            "re:\\bacs\\b",
+            "stemi",
+            "nstemi",
+            "infarct",
+            "icd:I21",
+            "icd:I20",
+            "icd:I24"
+          ],
+          "source": "web.symptomInference",
+          "platforms": [
+            "web"
+          ],
+          "guidelineRefs": [
+            "esc-acs-2023"
+          ],
+          "note": "Secondary web view (HPI leading diagnosis)."
+        }
+      ]
+    },
+    "safety": {
+      "emergencyLevel": {
+        "id": "level-emergency",
+        "severity": "critical",
+        "atLeast": "emergency",
+        "guidelineRefs": [
+          "esc-acs-2023"
+        ],
+        "note": "Suspected ACS in an outpatient clinic: emergency services / ED now."
+      },
+      "mustAlarm": [
+        {
+          "id": "alarm-cardiac",
+          "severity": "critical",
+          "match": [
+            "cardiac",
+            "coronary",
+            "re:\\bacs\\b",
+            "myocardial",
+            "ecg",
+            "chest pain pathway"
+          ],
+          "guidelineRefs": [
+            "esc-acs-2023"
+          ]
+        }
+      ],
+      "redFlags": [
+        {
+          "id": "rf-chest-pain-pathway",
+          "severity": "quality",
+          "match": [
+            "chest pain pathway",
+            "possible cardiac event",
+            "acute coronary",
+            "re:\\bacs\\b"
+          ],
+          "guidelineRefs": [
+            "esc-acs-2023"
+          ]
+        }
+      ]
+    },
+    "investigations": {
+      "mustInclude": [
+        {
+          "id": "inv-ecg",
+          "severity": "critical",
+          "match": [
+            "ecg",
+            "electrocardiogram",
+            "re:12.lead",
+            "ekg"
+          ],
+          "guidelineRefs": [
+            "esc-acs-2023"
+          ]
+        },
+        {
+          "id": "inv-troponin",
+          "severity": "critical",
+          "match": [
+            "troponin"
+          ],
+          "guidelineRefs": [
+            "esc-acs-2023"
+          ]
+        }
+      ]
+    },
+    "management": {
+      "mustInclude": [
+        {
+          "id": "mgmt-aspirin",
+          "severity": "quality",
+          "match": [
+            "aspirin"
+          ],
+          "guidelineRefs": [
+            "esc-acs-2023"
+          ],
+          "note": "Aspirin loading dose unless contraindicated (ESC 2023, class I)."
+        },
+        {
+          "id": "mgmt-reperfusion",
+          "severity": "quality",
+          "match": [
+            "re:\\bpci\\b",
+            "reperfusion",
+            "cath lab",
+            "catheter lab",
+            "angiograph",
+            "thrombolys",
+            "cardiology"
+          ],
+          "guidelineRefs": [
+            "esc-acs-2023"
+          ],
+          "note": "Possible STEMI: immediate reperfusion pathway / cardiology."
+        }
+      ]
+    }
+  },
+  "guideline": [
+    {
+      "id": "esc-acs-2023",
+      "verified": false,
+      "name": "2023 ESC Guidelines for the management of acute coronary syndromes",
+      "year": 2023,
+      "section": "Section 3 (triage and diagnosis): 12-lead ECG within 10 minutes of first medical contact; hs-cTn 0 h/1 h (or 0 h/2 h) algorithm; atypical presentations (epigastric pain, dyspnoea, fatigue, nausea) more common in women, older people and people with diabetes; aspirin loading dose for all patients without contraindication; STEMI: immediate reperfusion strategy",
+      "citation": "Byrne RA, Rossello X, Coughlan JJ, et al. 2023 ESC Guidelines for the management of acute coronary syndromes. Eur Heart J. 2023;44:3720-3826."
+    }
+  ],
+  "rationale": "Base ACS case: classic history that every engine should recognise. PANE has no cardiac disease, so this tests whether the web consultation surfaces ACS anywhere, and whether the chest-pain words reach triage, alarms and investigations.",
+  "authoring": {
+    "author": "Claude (acute medicine cluster)",
+    "date": "2026-09-25",
+    "notes": "Expectations need surgeon sign-off (reviewedBy). Citations written from the guideline texts, not yet checked against the source (verified: false). iOS outcomes are unverified until the next CI run."
+  }
+}

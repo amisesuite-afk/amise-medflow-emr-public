@@ -34,26 +34,36 @@ ALTER TABLE appointment_requests ADD COLUMN IF NOT EXISTS reason text;
 -- triage_acuity     <-  triage_level
 --
 -- Only update rows where the new column is still NULL so this is re-runnable.
+--
+-- The four legacy columns exist only in production (appointment_requests was
+-- first created there by hand from artifacts/front-desk/supabase-schema.sql);
+-- no runner step creates them. Each back-fill therefore runs only when its
+-- source column exists, so a fresh database skips it (there is nothing to
+-- back-fill) and production behaves exactly as before.
 
-UPDATE appointment_requests
-  SET appointment_type = chief_complaint
-  WHERE appointment_type IS NULL
-    AND chief_complaint IS NOT NULL;
-
-UPDATE appointment_requests
-  SET location = preferred_site
-  WHERE (location IS NULL OR location = 'rodney_bay')
-    AND preferred_site IS NOT NULL;
-
-UPDATE appointment_requests
-  SET preferred_slot = preferred_date
-  WHERE preferred_slot IS NULL
-    AND preferred_date IS NOT NULL;
-
-UPDATE appointment_requests
-  SET triage_acuity = triage_level
-  WHERE triage_acuity IS NULL
-    AND triage_level IS NOT NULL;
+DO $guard$
+DECLARE
+  fill record;
+BEGIN
+  FOR fill IN
+    SELECT * FROM (VALUES
+      ('chief_complaint', 'UPDATE appointment_requests SET appointment_type = chief_complaint WHERE appointment_type IS NULL AND chief_complaint IS NOT NULL'),
+      ('preferred_site',  'UPDATE appointment_requests SET location = preferred_site WHERE (location IS NULL OR location = ''rodney_bay'') AND preferred_site IS NOT NULL'),
+      ('preferred_date',  'UPDATE appointment_requests SET preferred_slot = preferred_date WHERE preferred_slot IS NULL AND preferred_date IS NOT NULL'),
+      ('triage_level',    'UPDATE appointment_requests SET triage_acuity = triage_level WHERE triage_acuity IS NULL AND triage_level IS NOT NULL')
+    ) AS t(source_column, backfill)
+  LOOP
+    IF EXISTS (
+      SELECT 1 FROM information_schema.columns
+      WHERE table_schema = 'public' AND table_name = 'appointment_requests'
+        AND column_name = fill.source_column
+    ) THEN
+      EXECUTE fill.backfill;
+    ELSE
+      RAISE NOTICE 'appointment_requests.% missing: back-fill skipped', fill.source_column;
+    END IF;
+  END LOOP;
+END $guard$;
 
 -- ── Ensure service_role and authenticated have access to the new columns ────
 -- (Table-level GRANTs cover all columns, but re-state for safety.)

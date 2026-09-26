@@ -2,6 +2,7 @@ import { useState, useEffect, useCallback, useRef } from 'react';
 import { getApiOrigin } from '@/lib/api-origin';
 import { staffAuthHeaders } from '@/lib/staff-auth';
 import DocumentCapture from '@/components/DocumentCapture';
+import LabFeedInbox from '@/components/lab-feed/LabFeedInbox';
 
 const API_ORIGIN = getApiOrigin();
 function apiUrl(path: string) {
@@ -1086,17 +1087,42 @@ function ReceivedDocCard({
 
 // ─── Main tab ─────────────────────────────────────────────────────────────────
 
-type TabId = 'labs' | 'imaging' | 'received';
+type TabId = 'labs' | 'imaging' | 'received' | 'feed';
 type Filter = 'all' | 'critical';
 
+/** `?tab=feed` in the URL hash (the critical-result banner links there) opens the lab-feed tab. */
+function initialTab(): TabId {
+  try {
+    const fromBanner = sessionStorage.getItem('results_inbox_tab') === 'feed';
+    sessionStorage.removeItem('results_inbox_tab');
+    return /[?&]tab=feed\b/.test(window.location.hash) || fromBanner ? 'feed' : 'labs';
+  } catch {
+    return 'labs';
+  }
+}
+
 export default function ResultsInboxTab() {
+  const [feedCounts, setFeedCounts]       = useState({ results: 0, reconcile: 0, critical: 0 });
+  // Lab-feed counts for the tab badge (the tab itself loads the lists). Absent tables → zeros.
+  useEffect(() => {
+    let alive = true;
+    void (async () => {
+      try {
+        const res = await fetch(apiUrl('/api/lab-feed/alerts'), { headers: await staffAuthHeaders() });
+        if (!res.ok) return;
+        const d = await res.json() as { unreviewed?: number; toReconcile?: number; criticalUnreviewed?: number; criticalToReconcile?: number };
+        if (alive) setFeedCounts({ results: d.unreviewed ?? 0, reconcile: d.toReconcile ?? 0, critical: (d.criticalUnreviewed ?? 0) + (d.criticalToReconcile ?? 0) });
+      } catch { /* offline: the badge stays empty */ }
+    })();
+    return () => { alive = false; };
+  }, []);
   const [labResults, setLabResults]       = useState<LabResult[]>([]);
   const [imagingOrders, setImagingOrders] = useState<ImagingOrder[]>([]);
   const [receivedDocs, setReceivedDocs]   = useState<ReceivedDoc[]>([]);
   const [names, setNames]                 = useState<Map<string, string>>(new Map());
   const [loading, setLoading]             = useState(false);
   const [error, setError]                 = useState<string | null>(null);
-  const [activeTab, setActiveTab]         = useState<TabId>('labs');
+  const [activeTab, setActiveTab]         = useState<TabId>(initialTab);
   const [filter, setFilter]               = useState<Filter>('all');
   const [reviewing, setReviewing]         = useState<Set<string>>(new Set());
   const [notifying, setNotifying]         = useState<Set<string>>(new Set());
@@ -1307,6 +1333,7 @@ export default function ResultsInboxTab() {
           { id: 'received' as TabId, label: 'Received', count: receivedCount, accent: '#6366f1', critCount: receivedUrgentCount },
           { id: 'labs'     as TabId, label: 'Lab results', count: unreviewedLabCount, accent: '#0f172a', critCount: criticalLabCount },
           { id: 'imaging'  as TabId, label: 'Imaging', count: unreviewedImgCount, accent: '#0f172a', critCount: 0 },
+          { id: 'feed'     as TabId, label: 'Lab feed', count: feedCounts.results + feedCounts.reconcile, accent: '#b91c1c', critCount: feedCounts.critical },
         ]).map(({ id: t, label, count, accent, critCount }) => {
           const isActive = activeTab === t;
           return (
@@ -1357,7 +1384,9 @@ export default function ResultsInboxTab() {
       </div>
 
       {/* Content */}
-      {loading && (unreviewedLabCount + unreviewedImgCount + receivedCount) === 0 ? (
+      {activeTab === 'feed' ? (
+        <LabFeedInbox onCounts={setFeedCounts} />
+      ) : loading && (unreviewedLabCount + unreviewedImgCount + receivedCount) === 0 ? (
         <div style={{ textAlign: 'center', color: 'var(--muted)', padding: 40, fontSize: 13 }}>Loading…</div>
       ) : activeTab === 'received' ? (
         <>

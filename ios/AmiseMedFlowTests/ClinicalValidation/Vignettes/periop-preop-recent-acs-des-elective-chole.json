@@ -1,0 +1,299 @@
+{
+  "schemaVersion": 1,
+  "id": "periop-preop-recent-acs-des-elective-chole",
+  "condition": "Pre-operative assessment — drug-eluting stent 3 months after NSTEMI (elective surgery)",
+  "category": "other",
+  "permutationOf": "periop-preop-asa1-lap-chole",
+  "permutationLabel": "DES 3 months after NSTEMI on aspirin + ticagrelor",
+  "summary": "61-year-old man on aspirin and ticagrelor 3 months after NSTEMI treated with a drug-eluting stent, referred for elective laparoscopic cholecystectomy for recurrent biliary colic.",
+  "tags": [
+    "periop",
+    "preop",
+    "antiplatelet",
+    "recent-stent",
+    "dapt"
+  ],
+  "inputs": {
+    "patient": {
+      "ageYears": 61,
+      "sex": "male",
+      "pregnancy": {
+        "status": "not-applicable"
+      },
+      "heightCm": 178,
+      "weightKg": 86
+    },
+    "encounter": {
+      "setting": "outpatient",
+      "visitType": "surgeryElective",
+      "acuity": "routine"
+    },
+    "chiefComplaint": "Pre-operative assessment for planned gallbladder operation",
+    "hpi": "Four attacks of right upper quadrant colic in 6 months, none in the last 5 weeks, no jaundice or cholecystitis. NSTEMI 3 months ago treated with a drug-eluting stent to the circumflex artery; on aspirin and ticagrelor since. No angina since the stent. Asking to have the gallbladder removed as soon as possible.",
+    "symptoms": [
+      "biliary colic"
+    ],
+    "negatives": [
+      "jaundice",
+      "fever",
+      "chest pain",
+      "breathlessness"
+    ],
+    "exam": {
+      "general": "Well. HR 64, BP 128/80, RR 14, SpO2 98% on air, T 36.6°C.",
+      "abdomen": "Soft, non-tender.",
+      "cardiovascular": "Heart sounds normal.",
+      "respiratory": "Chest clear."
+    },
+    "vitals": [
+      {
+        "minutesAgo": 5,
+        "heartRate": 64,
+        "systolicBp": 128,
+        "diastolicBp": 80,
+        "respiratoryRate": 14,
+        "temperatureC": 36.6,
+        "spo2": 98,
+        "avpu": "A",
+        "onSupplementalO2": false
+      }
+    ],
+    "labs": [
+      {
+        "analyte": "haemoglobin",
+        "name": "Haemoglobin",
+        "value": 13.2,
+        "unit": "g/dL",
+        "minutesAgo": 10080
+      },
+      {
+        "analyte": "wbc",
+        "name": "WBC",
+        "value": 6.4,
+        "unit": "×10⁹/L",
+        "minutesAgo": 10080
+      },
+      {
+        "analyte": "platelets",
+        "name": "Platelets",
+        "value": 260,
+        "unit": "×10⁹/L",
+        "minutesAgo": 10080
+      },
+      {
+        "analyte": "bilirubin",
+        "name": "Bilirubin",
+        "value": 9,
+        "unit": "µmol/L",
+        "minutesAgo": 10080
+      },
+      {
+        "analyte": "alp",
+        "name": "ALP",
+        "value": 84,
+        "unit": "U/L",
+        "minutesAgo": 10080
+      },
+      {
+        "analyte": "alt",
+        "name": "ALT",
+        "value": 22,
+        "unit": "U/L",
+        "minutesAgo": 10080
+      }
+    ],
+    "imaging": [
+      {
+        "name": "USS abdomen",
+        "modality": "US",
+        "region": "Abdomen",
+        "result": "Multiple mobile gallstones, gallbladder wall 2 mm, no pericholecystic fluid. CBD 4 mm. Liver normal.",
+        "minutesAgo": 43200
+      }
+    ],
+    "comorbidities": [
+      "NSTEMI 3 months ago — drug-eluting stent",
+      "Hypertension",
+      "Hypercholesterolaemia"
+    ],
+    "surgicalHistory": [
+      "PCI with drug-eluting stent (circumflex) 3 months ago"
+    ],
+    "medications": [
+      {
+        "drug": "Aspirin",
+        "dose": "75 mg",
+        "frequency": "OD",
+        "indication": "ACS / stent"
+      },
+      {
+        "drug": "Ticagrelor",
+        "dose": "90 mg",
+        "frequency": "BD",
+        "indication": "ACS / stent (DAPT for 12 months)"
+      },
+      {
+        "drug": "Atorvastatin",
+        "dose": "80 mg",
+        "frequency": "OD",
+        "indication": "Secondary prevention"
+      },
+      {
+        "drug": "Bisoprolol",
+        "dose": "2.5 mg",
+        "frequency": "OD",
+        "indication": "Secondary prevention"
+      },
+      {
+        "drug": "Ramipril",
+        "dose": "5 mg",
+        "frequency": "OD",
+        "indication": "Secondary prevention"
+      }
+    ],
+    "allergies": [],
+    "nkda": true,
+    "socialHistory": "Ex-smoker. Taxi driver.",
+    "confirmedDiagnosis": {
+      "name": "Pre-operative assessment — symptomatic gallstones; DES 3 months after NSTEMI on dual antiplatelet therapy",
+      "icd10": "Z01.818",
+      "assessmentText": "Symptomatic cholelithiasis, currently quiescent. Drug-eluting stent 3 months after NSTEMI on aspirin + ticagrelor. Elective, not time-sensitive surgery."
+    },
+    "platform": {
+      "web": {
+        "ccTemplate": "Other / general surgical",
+        "symptoms": [
+          "biliary colic"
+        ],
+        "durationDays": 240,
+        "painScore": 0
+      }
+    }
+  },
+  "expected": {
+    "safety": {
+      "redFlags": [
+        {
+          "id": "flag-antiplatelet-stent",
+          "severity": "critical",
+          "match": [
+            "antiplatelet",
+            "ticagrelor",
+            "stent",
+            "dapt",
+            "dual antiplatelet"
+          ],
+          "guidelineRefs": [
+            "esc-ncs-2022"
+          ]
+        }
+      ],
+      "emergencyLevel": {
+        "id": "level-not-urgent",
+        "severity": "quality",
+        "atMost": "priority",
+        "guidelineRefs": [
+          "esc-ncs-2022"
+        ],
+        "proposedFix": "adaptiveTriage is a front-desk intake engine: its keyword red flags ('bleeding', 'breathless', 'collapse', 'jaundice', 'drain', 'procedure') fire on negated or historical mentions in a clinician's pre-operative note. Use negation handling and do not derive the consultation's emergency level from free-text keyword hits alone in a scheduled pre-operative/endoscopy encounter."
+      }
+    },
+    "management": {
+      "mustInclude": [
+        {
+          "id": "mgmt-defer-elective-surgery",
+          "severity": "critical",
+          "match": [
+            "re:(defer|delay|postpone)\\w*[^.;\\n]{0,40}(surgery|cholecystectomy|operation|procedure)",
+            "re:(surgery|cholecystectomy|operation)[^.;\\n]{0,30}(deferred|delayed|postponed)",
+            "12 months after"
+          ],
+          "guidelineRefs": [
+            "esc-ncs-2022",
+            "accp-2022"
+          ],
+          "note": "ESC 2022: delay elective non-cardiac surgery until 12 months after ACS (6 months after elective PCI); quiescent biliary colic is not time-sensitive."
+        },
+        {
+          "id": "mgmt-cardiology-liaison",
+          "severity": "critical",
+          "match": [
+            "cardiolog"
+          ],
+          "guidelineRefs": [
+            "esc-ncs-2022"
+          ],
+          "note": "Any interruption of P2Y12 inhibition early after a stent is a joint decision with the cardiologist (stent thrombosis risk)."
+        }
+      ],
+      "mustExclude": [
+        {
+          "id": "mgmt-no-stop-aspirin",
+          "severity": "critical",
+          "match": [
+            "re:(stop|withh|hold|omit|discontinu|suspend)\\w*[^.;\\n]{0,25}\\baspirin"
+          ],
+          "unless": [
+            "continue aspirin"
+          ],
+          "guidelineRefs": [
+            "esc-ncs-2022",
+            "accp-2022"
+          ]
+        },
+        {
+          "id": "mgmt-no-unsupervised-p2y12-stop",
+          "severity": "critical",
+          "match": [
+            "re:(stop|withh|hold|omit|discontinu|suspend)\\w*[^.;\\n]{0,30}(ticagrelor|clopidogrel|prasugrel|p2y12|antiplatelet)"
+          ],
+          "unless": [
+            "cardiolog"
+          ],
+          "guidelineRefs": [
+            "esc-ncs-2022"
+          ],
+          "note": "Stopping the P2Y12 inhibitor 3 months after ACS without cardiology input risks stent thrombosis."
+        },
+        {
+          "id": "mgmt-no-appendicectomy",
+          "severity": "critical",
+          "match": [
+            "appendicectomy",
+            "appendectomy"
+          ],
+          "unless": [
+            "not indicated",
+            "no role",
+            "exclude appendicitis"
+          ],
+          "note": "Not an appendix presentation: an appendicectomy operative plan (consent, theatre booking, post-operative orders) is a wrong-procedure suggestion."
+        }
+      ]
+    }
+  },
+  "guideline": [
+    {
+      "id": "esc-ncs-2022",
+      "name": "2022 ESC guidelines — cardiovascular assessment and management of patients undergoing non-cardiac surgery (with ESAIC)",
+      "year": 2022,
+      "section": "Clinical risk (RCRI), functional capacity (e.g. climbing two flights of stairs); ECG and NT-proBNP/BNP and troponin in patients with risk factors before intermediate/high-risk surgery; echocardiography in poor functional capacity, raised NT-proBNP or known HF; delay elective surgery until 6 months after elective PCI and 12 months after ACS; continue aspirin after PCI if bleeding risk allows; interrupt P2Y12 inhibitors only in agreement with the cardiologist; bridging not recommended for antiplatelet interruption",
+      "citation": "Halvorsen S, Mehilli J, Cassese S, et al. 2022 ESC Guidelines on cardiovascular assessment and management of patients undergoing non-cardiac surgery. Eur Heart J. 2022;43:3826–924.",
+      "verified": false
+    },
+    {
+      "id": "accp-2022",
+      "name": "ACCP guideline — perioperative management of antithrombotic therapy",
+      "year": 2022,
+      "section": "VKA: stop 5 days before surgery; in AF suggest against heparin bridging; suggest bridging for mechanical mitral valve; DOAC: interrupt 1 day before low/moderate bleed-risk and 2 days before high bleed-risk procedures, no heparin bridging, no pre-operative coagulation testing; aspirin: continue in patients with coronary stents; P2Y12 inhibitors: stop clopidogrel/ticagrelor 5 days and prasugrel 7 days before surgery; defer elective surgery after recent stent",
+      "citation": "Douketis JD, Spyropoulos AC, Murad MH, et al. Perioperative management of antithrombotic therapy: an American College of Chest Physicians clinical practice guideline. Chest. 2022;162:e207–43.",
+      "verified": false
+    }
+  ],
+  "rationale": "Permutation: recent coronary stent on DAPT. The index safety action is to defer elective surgery (12 months after ACS), keep aspirin, and involve cardiology before any P2Y12 interruption.",
+  "authoring": {
+    "author": "Claude (perioperative medicine cluster)",
+    "date": "2026-09-25",
+    "notes": "Expectations and citations need surgeon sign-off (reviewedBy). Citations verified: false. iOS outcomes not yet observed (unverified: ios) — triage after the next CI run."
+  }
+}

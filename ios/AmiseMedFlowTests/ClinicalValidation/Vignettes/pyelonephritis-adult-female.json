@@ -1,0 +1,347 @@
+{
+  "schemaVersion": 1,
+  "id": "pyelonephritis-adult-female",
+  "condition": "Acute pyelonephritis",
+  "category": "urology",
+  "permutationOf": null,
+  "permutationLabel": "Young woman, not pregnant, systemically unwell",
+  "summary": "29-year-old woman with 2 days of dysuria then right loin pain, fever 38.9 and rigors; nitrite-positive urine, WBC 16.1, CRP 128.",
+  "tags": [
+    "infection",
+    "renal"
+  ],
+  "inputs": {
+    "patient": {
+      "ageYears": 29,
+      "sex": "female",
+      "pregnancy": {
+        "status": "not-pregnant"
+      },
+      "heightCm": 166,
+      "weightKg": 63
+    },
+    "encounter": {
+      "setting": "emergency",
+      "visitType": "urgentReview",
+      "acuity": "urgent"
+    },
+    "chiefComplaint": "Right loin pain, fever and burning urine",
+    "hpi": "Two days of burning on passing urine and frequency, then right loin pain, fever and shaking chills since last night. Vomited twice. No vaginal discharge. Last period 10 days ago.",
+    "socrates": {
+      "onset": [
+        "Yesterday"
+      ],
+      "site": [
+        "Loin",
+        "Right side"
+      ],
+      "character": [
+        "Aching"
+      ],
+      "radiation": [
+        "No radiation"
+      ],
+      "associations": [
+        "Fever",
+        "Rigors",
+        "Dysuria",
+        "Vomiting"
+      ],
+      "timing": [
+        "Constant"
+      ],
+      "exacerbating": [
+        "Movement"
+      ],
+      "relieving": [
+        "Analgesics"
+      ],
+      "severity": [
+        "Moderate (4–6/10)"
+      ]
+    },
+    "symptoms": [
+      "loin pain",
+      "fever",
+      "rigors",
+      "dysuria",
+      "urinary frequency",
+      "vomiting"
+    ],
+    "negatives": [
+      "vaginal discharge",
+      "diarrhoea",
+      "haematuria"
+    ],
+    "exam": {
+      "general": "Flushed, looks unwell. Pulse 106/min, BP 118/72, RR 18, temperature 38.9°C, SpO2 99%.",
+      "abdomen": "Right renal angle tenderness; abdomen soft, mild right flank tenderness, no peritonism."
+    },
+    "vitals": [
+      {
+        "minutesAgo": 10,
+        "heartRate": 106,
+        "systolicBp": 118,
+        "diastolicBp": 72,
+        "respiratoryRate": 18,
+        "temperatureC": 38.9,
+        "spo2": 99,
+        "avpu": "A",
+        "onSupplementalO2": false,
+        "weightKg": 63
+      }
+    ],
+    "labs": [
+      {
+        "analyte": "urinalysis",
+        "name": "Urine dipstick",
+        "resultText": "Nitrite positive, leucocytes 3+, blood 1+",
+        "minutesAgo": 30
+      },
+      {
+        "analyte": "bhcg",
+        "name": "Urine hCG",
+        "resultText": "Negative",
+        "minutesAgo": 30
+      },
+      {
+        "analyte": "wbc",
+        "name": "WBC",
+        "value": 16.1,
+        "unit": "×10⁹/L",
+        "minutesAgo": 30
+      },
+      {
+        "analyte": "crp",
+        "name": "CRP",
+        "value": 128,
+        "unit": "mg/L",
+        "minutesAgo": 30
+      },
+      {
+        "analyte": "creatinine",
+        "name": "Creatinine",
+        "value": 82,
+        "unit": "µmol/L",
+        "minutesAgo": 30
+      },
+      {
+        "analyte": "lactate",
+        "name": "Lactate",
+        "value": 1.6,
+        "unit": "mmol/L",
+        "minutesAgo": 30
+      }
+    ],
+    "imaging": [],
+    "comorbidities": [],
+    "surgicalHistory": [],
+    "medications": [
+      {
+        "drug": "Combined oral contraceptive",
+        "dose": "1 tablet",
+        "frequency": "OD"
+      }
+    ],
+    "allergies": [],
+    "nkda": true,
+    "socialHistory": "Nurse. Non-smoker.",
+    "confirmedDiagnosis": {
+      "name": "Acute pyelonephritis (right)",
+      "icd10": "N10",
+      "assessmentText": "Acute right pyelonephritis, not pregnant, no sepsis high-risk criteria."
+    },
+    "platform": {
+      "web": {
+        "ccTemplate": "Acute abdominal pain",
+        "socratesAnswers": {
+          "onset": "Yesterday",
+          "site": "Right loin / flank",
+          "character": "Aching",
+          "associated": "Fever, rigors, dysuria, frequency, vomiting",
+          "timing": "Constant",
+          "triggers": "Movement",
+          "relief": "Paracetamol helps a little",
+          "severity": "6/10"
+        },
+        "symptoms": [
+          "loin pain",
+          "fever",
+          "rigors",
+          "dysuria",
+          "urinary frequency",
+          "vomiting"
+        ],
+        "durationDays": 2,
+        "painScore": 6
+      }
+    }
+  },
+  "expected": {
+    "differential": {
+      "mustRankTopK": [
+        {
+          "id": "dx-pyelonephritis-top3",
+          "severity": "critical",
+          "match": [
+            "pyelonephritis",
+            "urinary tract infection",
+            "re:\\buti\\b"
+          ],
+          "k": 3,
+          "guidelineRefs": [
+            "nice-ng111"
+          ]
+        }
+      ]
+    },
+    "safety": {
+      "emergencyLevel": {
+        "id": "level-urgent",
+        "severity": "quality",
+        "atLeast": "urgent",
+        "guidelineRefs": [
+          "nice-ng111"
+        ]
+      }
+    },
+    "investigations": {
+      "mustInclude": [
+        {
+          "id": "inv-urine-culture",
+          "severity": "critical",
+          "match": [
+            "msu",
+            "urine culture",
+            "c&s",
+            "mid-stream",
+            "midstream",
+            "csu",
+            "catheter specimen"
+          ],
+          "guidelineRefs": [
+            "nice-ng111"
+          ]
+        },
+        {
+          "id": "inv-blood-culture",
+          "severity": "quality",
+          "match": [
+            "blood culture"
+          ],
+          "guidelineRefs": [
+            "nice-ng51"
+          ]
+        }
+      ]
+    },
+    "management": {
+      "mustInclude": [
+        {
+          "id": "mgmt-antibiotic",
+          "severity": "critical",
+          "match": [
+            "cefalexin",
+            "co-amoxiclav",
+            "ciprofloxacin",
+            "ceftriaxone",
+            "cefuroxime",
+            "gentamicin",
+            "piperacillin"
+          ],
+          "guidelineRefs": [
+            "nice-ng111"
+          ],
+          "note": "Any antibiotic that treats upper-tract infection (broad-spectrum sepsis cover counts here)."
+        },
+        {
+          "id": "mgmt-ng111-antibiotic",
+          "severity": "quality",
+          "match": [
+            "cefalexin",
+            "co-amoxiclav",
+            "ciprofloxacin",
+            "ceftriaxone",
+            "cefuroxime",
+            "gentamicin"
+          ],
+          "guidelineRefs": [
+            "nice-ng111"
+          ],
+          "note": "An NG111 pyelonephritis choice rather than generic sepsis cover.",
+          "knownGapNote": "Web: The only antibiotic is pip-tazo from the SIRS and peritonism prompts; no NG111 choice.",
+          "proposedFix": "Pyelonephritis protocol with NG111 options."
+        }
+      ],
+      "mustExclude": [
+        {
+          "id": "mgmt-no-laparotomy",
+          "severity": "critical",
+          "match": [
+            "emergency laparotomy",
+            "re:\\blaparotomy\\b",
+            "bowel obstruction — operative plan"
+          ],
+          "guidelineRefs": [
+            "nice-ng111"
+          ],
+          "note": "No surgical abdomen in pyelonephritis."
+        },
+        {
+          "id": "mgmt-no-nitrofurantoin",
+          "severity": "critical",
+          "match": [
+            "nitrofurantoin"
+          ],
+          "unless": [
+            "lower uti",
+            "cystitis",
+            "prophylaxis",
+            "not for pyelo",
+            "avoid"
+          ],
+          "guidelineRefs": [
+            "nice-ng111"
+          ],
+          "note": "NICE NG111: nitrofurantoin does not reach adequate renal tissue levels."
+        },
+        {
+          "id": "mgmt-no-appendicectomy",
+          "severity": "critical",
+          "match": [
+            "re:laparoscopic append(ic)?ectomy",
+            "appendicectomy — consent",
+            "emergency laparoscopic appendicectomy"
+          ],
+          "guidelineRefs": [
+            "nice-ng111"
+          ]
+        }
+      ]
+    }
+  },
+  "guideline": [
+    {
+      "id": "nice-ng111",
+      "name": "NICE NG111 — Pyelonephritis (acute): antimicrobial prescribing",
+      "year": 2018,
+      "section": "Send midstream urine for culture; non-pregnant adults: cefalexin, co-amoxiclav (only with culture susceptibility), trimethoprim (only with culture susceptibility) or ciprofloxacin; pregnant: oral cefalexin, IV cefuroxime if severely unwell; refer to hospital if signs of sepsis; nitrofurantoin not used (inadequate renal tissue levels)",
+      "citation": "National Institute for Health and Care Excellence. Pyelonephritis (acute): antimicrobial prescribing. NICE guideline NG111. London: NICE; 2018.",
+      "verified": false
+    },
+    {
+      "id": "nice-ng51",
+      "name": "NICE NG51 — Suspected sepsis: recognition, diagnosis and early management",
+      "year": 2024,
+      "section": "High-risk criteria (new confusion, SBP ≤90, HR >130, RR ≥25, lactate); blood cultures and broad-spectrum IV antibiotics within 1 hour for high risk; IV fluid bolus; lactate; senior review; source control",
+      "citation": "National Institute for Health and Care Excellence. Suspected sepsis in people aged 16 or over: recognition, assessment and early management. NICE guideline NG51 (updated 2024). London: NICE.",
+      "verified": false
+    }
+  ],
+  "rationale": "NICE NG111: urine culture and an antibiotic that reaches renal tissue (not nitrofurantoin).",
+  "authoring": {
+    "author": "Claude (endocrine / renal / urology / neuro cluster)",
+    "date": "2026-09-25",
+    "notes": "Expectations need surgeon sign-off (reviewedBy). Every citation is verified: false. iOS outcomes not observed (Linux)."
+  }
+}

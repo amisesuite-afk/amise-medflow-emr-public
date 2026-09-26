@@ -5,6 +5,11 @@ on:
     branches: [main]
     paths:
       - 'ios/**'
+      # Shared clinical rules bundled into the app (project.yml folder reference "rules").
+      - 'clinical-content/rules/**'
+      - 'clinical-content/vademecum/**'
+      # Their schemas, bundled as "schemas" (approved-content channel).
+      - 'clinical-content/schemas/**'
       - '.github/workflows/ios.yml'
   workflow_dispatch:
     inputs:
@@ -37,7 +42,8 @@ jobs:
       - name: Select Xcode (latest — iOS 26 SDK required for App Store)
         uses: maxim-lobanov/setup-xcode@v1
         with:
-          xcode-version: 'latest'
+          # 'latest-stable', not 'latest': a beta Xcode build is rejected by App Store Connect (ITMS-90534).
+          xcode-version: 'latest-stable'
 
       # ── Dependencies ─────────────────────────────────────────────────────────
       - name: Install XcodeGen
@@ -49,6 +55,17 @@ jobs:
           ruby-version: '3.3'
           bundler-cache: true
           working-directory: ios
+
+      # ── Configuration.xcconfig (must exist before xcodegen: it is the target's configFile) ──
+      - name: Write Configuration.xcconfig
+        working-directory: ios
+        run: ./ci-write-xcconfig.sh
+        env:
+          DEVELOPER_TEAM_ID: ${{ secrets.DEVELOPER_TEAM_ID }}
+          SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
+          SUPABASE_ANON_KEY: ${{ secrets.SUPABASE_ANON_KEY }}
+          # Sentry crash reporting — without this secret TestFlight builds report nothing.
+          SENTRY_DSN: ${{ secrets.SENTRY_DSN }}
 
       # ── Xcode project generation ──────────────────────────────────────────
       - name: Generate Xcode project
@@ -89,6 +106,7 @@ jobs:
           # Supabase — public anon key (safe to store as secret for CI isolation)
           SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
           SUPABASE_ANON_KEY: ${{ secrets.SUPABASE_ANON_KEY }}
+          SENTRY_DSN: ${{ secrets.SENTRY_DSN }}
 
       # ── Upload IPA as artifact (optional download for ad-hoc sideload) ────
       - name: Upload IPA artifact

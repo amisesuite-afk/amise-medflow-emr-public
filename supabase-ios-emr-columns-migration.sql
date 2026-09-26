@@ -28,8 +28,11 @@ CREATE TABLE IF NOT EXISTS public.prescriptions (
 
 ALTER TABLE public.prescriptions ENABLE ROW LEVEL SECURITY;
 
-CREATE POLICY IF NOT EXISTS "staff access" ON public.prescriptions
-  FOR ALL TO authenticated USING (true) WITH CHECK (true);
+do $guard$ begin
+  CREATE POLICY "staff access" ON public.prescriptions
+    FOR ALL TO authenticated USING (true) WITH CHECK (true);
+exception when duplicate_object then null;
+end $guard$;
 
 GRANT SELECT, INSERT, UPDATE, DELETE ON TABLE public.prescriptions TO authenticated;
 GRANT SELECT, INSERT, UPDATE, DELETE ON TABLE public.prescriptions TO service_role;
@@ -49,8 +52,11 @@ CREATE TABLE IF NOT EXISTS public.patient_documents (
 
 ALTER TABLE public.patient_documents ENABLE ROW LEVEL SECURITY;
 
-CREATE POLICY IF NOT EXISTS "staff access" ON public.patient_documents
-  FOR ALL TO authenticated USING (true) WITH CHECK (true);
+do $guard$ begin
+  CREATE POLICY "staff access" ON public.patient_documents
+    FOR ALL TO authenticated USING (true) WITH CHECK (true);
+exception when duplicate_object then null;
+end $guard$;
 
 GRANT SELECT, INSERT, UPDATE, DELETE ON TABLE public.patient_documents TO authenticated;
 GRANT SELECT, INSERT, UPDATE, DELETE ON TABLE public.patient_documents TO service_role;

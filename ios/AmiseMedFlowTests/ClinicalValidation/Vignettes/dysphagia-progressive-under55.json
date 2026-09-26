@@ -1,0 +1,260 @@
+{
+  "schemaVersion": 1,
+  "id": "dysphagia-progressive-under55",
+  "condition": "Benign peptic oesophageal stricture (progressive dysphagia)",
+  "category": "upper-gi",
+  "permutationOf": "dysphagia-progressive-over55",
+  "permutationLabel": "Age 38, no weight loss (NG12 applies at any age)",
+  "summary": "38-year-old woman with long-standing heartburn and 2 months of progressive dysphagia to solids, no weight loss. NG12: dysphagia at any age → urgent OGD. (Final diagnosis: peptic stricture.)",
+  "tags": [
+    "dysphagia",
+    "cancer-red-flag",
+    "ng12",
+    "under-55"
+  ],
+  "inputs": {
+    "patient": {
+      "ageYears": 38,
+      "sex": "female",
+      "pregnancy": {
+        "status": "not-pregnant"
+      },
+      "heightCm": 164,
+      "weightKg": 82
+    },
+    "encounter": {
+      "setting": "outpatient",
+      "visitType": "newConsult",
+      "acuity": "priority"
+    },
+    "chiefComplaint": "Difficulty swallowing food",
+    "hpi": "Two months of solid food sticking low behind the breastbone, gradually getting worse; has to chew carefully and drink water with meals. Weight steady. Heartburn for ten years, buys antacids over the counter. Non-smoker.",
+    "socrates": {
+      "onset": [
+        "1–6 months ago",
+        "Gradual"
+      ],
+      "site": [
+        "Lower chest / epigastric"
+      ],
+      "character": [
+        "Pressure"
+      ],
+      "radiation": [
+        "No radiation"
+      ],
+      "associations": [
+        "Heartburn"
+      ],
+      "timing": [
+        "Progressive"
+      ],
+      "exacerbating": [
+        "Solids"
+      ],
+      "relieving": [
+        "Small sips of water"
+      ],
+      "severity": [
+        "Mild (1–3/10)"
+      ]
+    },
+    "symptoms": [
+      "progressive dysphagia",
+      "heartburn"
+    ],
+    "negatives": [
+      "weight loss",
+      "haematemesis",
+      "odynophagia"
+    ],
+    "exam": {
+      "general": "Well. BMI 30.",
+      "abdomen": "Soft, non-tender."
+    },
+    "vitals": [
+      {
+        "minutesAgo": 20,
+        "heartRate": 76,
+        "systolicBp": 124,
+        "diastolicBp": 78,
+        "respiratoryRate": 14,
+        "temperatureC": 36.7,
+        "spo2": 99,
+        "avpu": "A",
+        "onSupplementalO2": false
+      }
+    ],
+    "labs": [
+      {
+        "analyte": "haemoglobin",
+        "name": "Haemoglobin",
+        "value": 13.2,
+        "unit": "g/dL",
+        "minutesAgo": 60
+      }
+    ],
+    "imaging": [],
+    "comorbidities": [
+      "Gastro-oesophageal reflux disease",
+      "Obesity"
+    ],
+    "surgicalHistory": [],
+    "medications": [
+      {
+        "drug": "Gaviscon",
+        "dose": "10 mL",
+        "frequency": "PRN",
+        "indication": "Heartburn"
+      }
+    ],
+    "allergies": [],
+    "nkda": true,
+    "socialHistory": "Non-smoker. Alcohol occasional. Bank clerk.",
+    "confirmedDiagnosis": {
+      "name": "Progressive dysphagia — suspected peptic stricture",
+      "icd10": "K22.2",
+      "paneDiseaseId": "oesophageal_stricture",
+      "assessmentText": "Progressive solid dysphagia on a background of long-standing reflux, age 38 — likely peptic stricture but malignancy must be excluded: urgent OGD (NG12, any age)."
+    },
+    "platform": {
+      "web": {
+        "ccTemplate": "Dysphagia",
+        "symptoms": [
+          "dysphagia",
+          "heartburn"
+        ],
+        "symptomDetails": {
+          "dysphagia": [
+            "Solids only",
+            "Progressive",
+            "Heartburn"
+          ]
+        },
+        "examFindings": {},
+        "durationDays": 60,
+        "painScore": 1
+      }
+    }
+  },
+  "expected": {
+    "safety": {
+      "emergencyLevel": {
+        "id": "level-at-least-priority",
+        "severity": "critical",
+        "atLeast": "priority",
+        "guidelineRefs": [
+          "nice-ng12"
+        ],
+        "note": "Red flag, not an emergency: urgent (2-week) outpatient endoscopy. CLAUDE.md: red flags warrant expedited outpatient review, not ER redirect."
+      },
+      "redFlags": [
+        {
+          "id": "flag-dysphagia",
+          "severity": "critical",
+          "match": [
+            "dysphagia"
+          ],
+          "guidelineRefs": [
+            "nice-ng12"
+          ]
+        }
+      ]
+    },
+    "differential": {
+      "mustNotMiss": [
+        {
+          "id": "mnm-malignancy",
+          "severity": "quality",
+          "match": [
+            "carcinoma",
+            "malignan",
+            "cancer",
+            "icd:C15",
+            "icd:C16"
+          ],
+          "guidelineRefs": [
+            "nice-ng12"
+          ],
+          "note": "Cancer is less likely at 38 but NG12 still requires exclusion."
+        }
+      ],
+      "mustRankTopK": [
+        {
+          "id": "dx-stricture-or-gord-top3",
+          "severity": "quality",
+          "match": [
+            "stricture",
+            "gord",
+            "reflux",
+            "oesophag"
+          ],
+          "k": 3,
+          "guidelineRefs": [
+            "nice-cg184"
+          ]
+        }
+      ]
+    },
+    "investigations": {
+      "mustInclude": [
+        {
+          "id": "inv-ogd",
+          "severity": "critical",
+          "match": [
+            "re:\\bogd\\b",
+            "endoscop",
+            "gastroscop",
+            "oesophagogastroduodenoscopy"
+          ],
+          "guidelineRefs": [
+            "nice-ng12"
+          ]
+        }
+      ]
+    },
+    "management": {
+      "mustExclude": [
+        {
+          "id": "mgmt-no-age-gated-ogd",
+          "severity": "quality",
+          "match": [
+            "re:ogd[^.;\\n]{0,40}(age ?>|over) ?55",
+            "re:age ?>55[^.;\\n]{0,40}ogd"
+          ],
+          "unless": [
+            "dysphagia"
+          ],
+          "guidelineRefs": [
+            "nice-ng12"
+          ],
+          "note": "An \"OGD if age >55\" rule would exclude this patient; dysphagia qualifies at any age."
+        }
+      ]
+    }
+  },
+  "guideline": [
+    {
+      "id": "nice-ng12",
+      "name": "NICE NG12 — Suspected cancer: recognition and referral (oesophageal and stomach cancer)",
+      "year": 2015,
+      "section": "Offer urgent direct access upper GI endoscopy (within 2 weeks) to assess for oesophageal or stomach cancer in people with dysphagia (any age), or aged ≥55 with weight loss and any of upper abdominal pain, reflux or dyspepsia",
+      "citation": "National Institute for Health and Care Excellence. NICE guideline NG12. London: NICE; 2015 (last updated 2023).",
+      "verified": false
+    },
+    {
+      "id": "nice-cg184",
+      "name": "NICE CG184 — Gastro-oesophageal reflux disease and dyspepsia in adults: investigation and management",
+      "year": 2014,
+      "section": "Refer people with dysphagia under NG12; peptic stricture managed with PPI and dilatation after OGD",
+      "citation": "National Institute for Health and Care Excellence. Clinical guideline CG184. London: NICE; 2014 (last updated 2019).",
+      "verified": false
+    }
+  ],
+  "rationale": "Permutation below the age-55 line: NG12 makes dysphagia an urgent-OGD criterion at any age. Tests that engines do not gate the dysphagia red flag or the OGD on age.",
+  "authoring": {
+    "author": "Claude (upper-GI cluster)",
+    "date": "2026-09-25",
+    "notes": "Expectations need surgeon sign-off (reviewedBy). Citations written from the guideline texts, not yet checked against the source (verified: false)."
+  }
+}

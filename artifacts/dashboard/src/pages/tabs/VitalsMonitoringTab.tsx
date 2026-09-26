@@ -1,5 +1,6 @@
 import { useState, useMemo, useCallback } from 'react';
 import { saveVitalsRecord, saveLabPanel } from '@/lib/db';
+import News2ObservationFields from '@/components/News2ObservationFields';
 import {
   LineChart, Line, XAxis, YAxis, ReferenceLine,
   ResponsiveContainer, Tooltip, CartesianGrid,
@@ -86,7 +87,7 @@ const PROTOCOLS: Record<WardLevel, MonitoringProtocol> = {
 
 // ── Vital parameters for wheel entry ─────────────────────────────────────────
 interface VField {
-  key: keyof Omit<VitalRecord, 'id' | 'timestamp' | 'recordedBy' | 'ward' | 'notes'>;
+  key: keyof Omit<VitalRecord, 'id' | 'timestamp' | 'recordedBy' | 'ward' | 'notes' | 'avpu' | 'o2'>;
   label: string;
   unit: string;
   placeholder: string;
@@ -326,7 +327,8 @@ export default function VitalsMonitoringTab() {
   const [recTime, setRecTime] = useState(() => new Date().toISOString().slice(0, 16));
 
   async function handleRecord() {
-    const hasAny = VFIELDS.some(f => formVals[f.key]?.trim());
+    // NEWS2 consciousness (ACVPU) and air/O₂ are recorded alongside the numeric wheels.
+    const hasAny = VFIELDS.some(f => formVals[f.key]?.trim()) || !!formVals.avpu || !!formVals.o2;
     if (!hasAny) return;
     const rec: VitalRecord = {
       id: crypto.randomUUID(),
@@ -339,6 +341,8 @@ export default function VitalsMonitoringTab() {
       const v = formVals[f.key];
       if (v?.trim()) (rec as unknown as Record<string, string>)[f.key] = v;
     }
+    if (formVals.avpu) rec.avpu = formVals.avpu;
+    if (formVals.o2) rec.o2 = formVals.o2;
     ctx.setVitalRecords([...ctx.vitalRecords, rec]);
     setFormVals({});
     setRecNotes('');
@@ -543,6 +547,15 @@ export default function VitalsMonitoringTab() {
           </div>
         </div>
 
+        {/* NEWS2 consciousness + air/O₂ — saved to vitals.avpu / on_supplemental_o2 (Migration 91) */}
+        <div style={{ marginTop: 4 }}>
+          <News2ObservationFields
+            avpu={formVals.avpu ?? ''}
+            onSupplementalO2={formVals.o2 ?? ''}
+            onChange={(k, v) => setFormVals(p => ({ ...p, [k === 'avpu' ? 'avpu' : 'o2']: v }))}
+          />
+        </div>
+
         <div style={{ display: 'flex', justifyContent: 'flex-end', alignItems: 'center', gap: 10, marginTop: 8 }}>
           {vitalSaveStatus === 'saved' && <span style={{ fontSize: 11, color: '#16a34a', fontWeight: 600 }}>✓ Saved to patient record</span>}
           {vitalSaveStatus === 'saving' && <span style={{ fontSize: 11, color: C.muted }}>Saving…</span>}
@@ -585,7 +598,7 @@ export default function VitalsMonitoringTab() {
             <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: 11 }}>
               <thead>
                 <tr>
-                  {['Time', 'By', 'Ward', 'SBP/DBP', 'HR', 'Temp', 'SpO₂', 'RR', 'GCS', 'Pain', 'Urine', 'Notes', ''].map(h => (
+                  {['Time', 'By', 'Ward', 'SBP/DBP', 'HR', 'Temp', 'SpO₂', 'Air/O₂', 'RR', 'ACVPU', 'GCS', 'Pain', 'Urine', 'Notes', ''].map(h => (
                     <th key={h} style={{ padding: '4px 8px', textAlign: 'left', fontWeight: 700, color: C.muted, borderBottom: '1px solid #e5e7eb', whiteSpace: 'nowrap' }}>{h}</th>
                   ))}
                 </tr>
@@ -599,7 +612,8 @@ export default function VitalsMonitoringTab() {
                     {[
                       r.sbp ? `${r.sbp}${r.dbp ? '/' + r.dbp : ''}` : '—',
                       r.hr ?? '—', r.temp ?? '—', r.spo2 ?? '—',
-                      r.rr ?? '—', r.gcs ?? '—', r.pain ?? '—', r.urine ?? '—',
+                      r.o2 === 'o2' ? 'O₂' : r.o2 === 'air' ? 'Air' : '—',
+                      r.rr ?? '—', r.avpu ?? '—', r.gcs ?? '—', r.pain ?? '—', r.urine ?? '—',
                       r.notes ?? '—',
                     ].map((v, i) => (
                       <td key={i} style={{ padding: '4px 8px', fontWeight: v !== '—' ? 600 : 400, color: v !== '—' ? C.ink : '#d1d5db' }}>{v}</td>

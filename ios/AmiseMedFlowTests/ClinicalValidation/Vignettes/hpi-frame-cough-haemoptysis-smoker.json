@@ -1,0 +1,215 @@
+{
+  "schemaVersion": 1,
+  "id": "hpi-frame-cough-haemoptysis-smoker",
+  "condition": "Lung carcinoma (suspected)",
+  "category": "general-medicine",
+  "permutationOf": "hpi-frame-cough-chronic-acei",
+  "permutationLabel": "Smoker, haemoptysis and weight loss",
+  "summary": "64-year-old man, 45 pack-years: 6 weeks of cough with blood-streaked sputum and 6 kg weight loss. NICE NG12: urgent chest X-ray / suspected lung cancer pathway.",
+  "tags": [
+    "history-frame",
+    "cough",
+    "haemoptysis",
+    "cancer-red-flag",
+    "ng12"
+  ],
+  "inputs": {
+    "patient": {
+      "ageYears": 64,
+      "sex": "male",
+      "pregnancy": {
+        "status": "not-applicable"
+      },
+      "heightCm": 176,
+      "weightKg": 66
+    },
+    "encounter": {
+      "setting": "outpatient",
+      "visitType": "newConsult",
+      "acuity": "priority"
+    },
+    "chiefComplaint": "Cough with haemoptysis and weight loss",
+    "hpi": "Six weeks of cough, now productive, with streaks of blood in the sputum most mornings. Lost 6 kg without trying. Night sweats for two weeks. Hoarse for a month. Smokes 30 a day (45 pack-years). No fever.",
+    "symptoms": [
+      "cough",
+      "haemoptysis",
+      "weight loss",
+      "night sweats"
+    ],
+    "negatives": [
+      "fever",
+      "chest pain"
+    ],
+    "exam": {
+      "general": "Thin. Finger clubbing.",
+      "respiratory": "Reduced air entry right upper zone. No wheeze."
+    },
+    "vitals": [
+      {
+        "minutesAgo": 20,
+        "heartRate": 88,
+        "systolicBp": 128,
+        "diastolicBp": 78,
+        "respiratoryRate": 18,
+        "temperatureC": 36.7,
+        "spo2": 95,
+        "avpu": "A",
+        "onSupplementalO2": false
+      }
+    ],
+    "labs": [],
+    "imaging": [],
+    "comorbidities": [],
+    "surgicalHistory": [],
+    "medications": [],
+    "allergies": [],
+    "nkda": true,
+    "socialHistory": "Current smoker, 30/day, 45 pack-years. Retired construction worker.",
+    "confirmedDiagnosis": {
+      "name": "Suspected lung carcinoma",
+      "icd10": "R91.8",
+      "assessmentText": "Haemoptysis with weight loss in a heavy smoker: suspected lung cancer. Urgent chest X-ray and suspected-cancer referral."
+    },
+    "platform": {
+      "ios": {
+        "specialtyHint": "Respiratory",
+        "socratesSelections": {
+          "timing": [
+            ">3 weeks — subacute 3–8 weeks",
+            "Progressive"
+          ],
+          "character": [
+            "Productive cough"
+          ],
+          "associations": [
+            "Haemoptysis — streaks",
+            "Weight loss",
+            "Night sweats",
+            "Hoarseness"
+          ],
+          "history": [
+            "Current or ex-smoker"
+          ]
+        }
+      },
+      "web": {
+        "ccTemplate": "Cough with haemoptysis and weight loss",
+        "symptoms": [
+          "cough",
+          "haemoptysis",
+          "weight loss",
+          "night sweats"
+        ],
+        "symptomDetails": {
+          "weight loss": [
+            "5–10 kg",
+            "Unintentional",
+            "1–3 months"
+          ]
+        },
+        "socratesAnswers": {
+          "duration": "Subacute 3–8 weeks",
+          "cough_character": "Productive cough",
+          "haemoptysis": "Haemoptysis — streaks",
+          "cough_exposure": "Current or ex-smoker",
+          "cough_assoc": "Weight loss, Night sweats, Hoarseness",
+          "weight_amount": "5–10 kg"
+        },
+        "toxicHabits": [
+          "smoking"
+        ],
+        "durationDays": 42
+      }
+    }
+  },
+  "expected": {
+    "differential": {
+      "mustRankTopK": [
+        {
+          "id": "dx-lung-cancer-top3-ios",
+          "severity": "critical",
+          "source": "ios.bayes",
+          "match": [
+            "lung carcinoma",
+            "lung cancer",
+            "bronchial carcinoma",
+            "icd:C34"
+          ],
+          "k": 3,
+          "guidelineRefs": [
+            "nice-ng12"
+          ],
+          "note": "Cough frame chips: haemoptysis, weight loss, night sweats, productive, >3 weeks (cough pool)."
+        },
+        {
+          "id": "dx-lung-cancer-top3-picker",
+          "severity": "quality",
+          "source": "web.symptomInference",
+          "match": [
+            "lung carcinoma",
+            "lung cancer"
+          ],
+          "k": 3,
+          "guidelineRefs": [
+            "nice-ng12"
+          ]
+        },
+        {
+          "id": "dx-lung-cancer-top3-pane",
+          "severity": "quality",
+          "match": [
+            "lung carcinoma",
+            "lung cancer",
+            "bronchial carcinoma",
+            "icd:C34"
+          ],
+          "k": 3,
+          "guidelineRefs": [
+            "nice-ng12"
+          ],
+          "knownGap": [
+            "web"
+          ],
+          "knownGapNote": "pane-engine models no lung cancer: with haemoptysis, weight loss and smoking it ranks pneumonia, oesophageal carcinoma and COPD. The SmartSymptomPicker ranking lists lung carcinoma (see dx-lung-cancer-top3-picker)."
+        }
+      ]
+    },
+    "safety": {
+      "redFlags": [
+        {
+          "id": "flag-haemoptysis",
+          "severity": "quality",
+          "match": [
+            "haemoptysis",
+            "hemoptysis",
+            "cancer",
+            "malignan"
+          ],
+          "guidelineRefs": [
+            "nice-ng12"
+          ],
+          "knownGap": [
+            "ios"
+          ],
+          "knownGapNote": "iOS CI (run 36221770637): no red flag matched among 5 (ios.visitRisk, ios.allergyBanner, ios.triage)"
+        }
+      ]
+    }
+  },
+  "guideline": [
+    {
+      "id": "nice-ng12",
+      "name": "NICE NG12 — Suspected cancer: recognition and referral",
+      "year": 2015,
+      "section": "Lung (1.1), upper GI (1.2), pancreatic (1.2.2), lower GI (1.3) and breast (1.4) cancer referral criteria",
+      "citation": "National Institute for Health and Care Excellence. NICE guideline NG12. London: NICE; 2015 (last updated 2023).",
+      "verified": false
+    }
+  ],
+  "rationale": "Permutation of the chronic cough case: the same cough frame with haemoptysis, weight loss, night sweats and smoking. NG12 1.1: refer people aged 40 and over with unexplained haemoptysis on the suspected lung cancer pathway.",
+  "authoring": {
+    "author": "Claude (history-by-complaint)",
+    "date": "2026-09-26",
+    "notes": "History-frame permutation: the HPI chips are the frame's (HistoryFrameData.swift / history-frames). Expectations need surgeon sign-off (reviewedBy). Citations not yet checked against the source (verified: false)."
+  }
+}

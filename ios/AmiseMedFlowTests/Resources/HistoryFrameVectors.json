@@ -1,0 +1,2428 @@
+{
+ "about": "Chief complaint (+ the specialty group of an iOS CC chip) -> history frame. Run by lint:history-frames / history-frames.test.ts (web) and HistoryFrameTests.swift (iOS). Every complaint on either platform (CC chips, questionnaire categories, CC templates, SmartSymptomPicker symptoms) has a vector; expectedFrame was reviewed by hand (docs/clinical-validation/changes/history-by-complaint.md).",
+ "vectors": [
+  {
+   "complaint": "Abdominal pain",
+   "system": "General & GI Surgery",
+   "source": "ios.ccChip",
+   "expectedFrame": "pain.abdomen"
+  },
+  {
+   "complaint": "Nausea / Vomiting",
+   "system": "General & GI Surgery",
+   "source": "ios.ccChip",
+   "expectedFrame": "vomiting"
+  },
+  {
+   "complaint": "Hernia",
+   "system": "General & GI Surgery",
+   "source": "ios.ccChip",
+   "expectedFrame": "lump.hernia"
+  },
+  {
+   "complaint": "Reflux / Heartburn",
+   "system": "General & GI Surgery",
+   "source": "ios.ccChip",
+   "expectedFrame": "pain.chest"
+  },
+  {
+   "complaint": "Change in bowel habit",
+   "system": "General & GI Surgery",
+   "source": "ios.ccChip",
+   "expectedFrame": "bowel"
+  },
+  {
+   "complaint": "Rectal bleeding",
+   "system": "General & GI Surgery",
+   "source": "ios.ccChip",
+   "expectedFrame": "bleeding.rectal"
+  },
+  {
+   "complaint": "Anal pain",
+   "system": "General & GI Surgery",
+   "source": "ios.ccChip",
+   "expectedFrame": "pain.perineal"
+  },
+  {
+   "complaint": "Dysphagia",
+   "system": "General & GI Surgery",
+   "source": "ios.ccChip",
+   "expectedFrame": "dysphagia"
+  },
+  {
+   "complaint": "Bloating",
+   "system": "General & GI Surgery",
+   "source": "ios.ccChip",
+   "expectedFrame": "bowel"
+  },
+  {
+   "complaint": "Jaundice",
+   "system": "General & GI Surgery",
+   "source": "ios.ccChip",
+   "expectedFrame": "jaundice"
+  },
+  {
+   "complaint": "Upper GI bleed",
+   "system": "General & GI Surgery",
+   "source": "ios.ccChip",
+   "expectedFrame": "bleeding.upper_gi"
+  },
+  {
+   "complaint": "Bowel obstruction",
+   "system": "General & GI Surgery",
+   "source": "ios.ccChip",
+   "expectedFrame": "bowel"
+  },
+  {
+   "complaint": "Weight loss",
+   "system": "General & GI Surgery",
+   "source": "ios.ccChip",
+   "expectedFrame": "weight_loss"
+  },
+  {
+   "complaint": "Neck lump",
+   "system": "General & GI Surgery",
+   "source": "ios.ccChip",
+   "expectedFrame": "lump.neck"
+  },
+  {
+   "complaint": "Breast lump",
+   "system": "General & GI Surgery",
+   "source": "ios.ccChip",
+   "expectedFrame": "breast"
+  },
+  {
+   "complaint": "Skin lesion",
+   "system": "General & GI Surgery",
+   "source": "ios.ccChip",
+   "expectedFrame": "skin.lesion"
+  },
+  {
+   "complaint": "Wound / Post-op",
+   "system": "General & GI Surgery",
+   "source": "ios.ccChip",
+   "expectedFrame": "skin.wound"
+  },
+  {
+   "complaint": "ERCP / Biliary",
+   "system": "General & GI Surgery",
+   "source": "ios.ccChip",
+   "expectedFrame": "jaundice"
+  },
+  {
+   "complaint": "Chest pain",
+   "system": "Cardiovascular",
+   "source": "ios.ccChip",
+   "expectedFrame": "pain.chest"
+  },
+  {
+   "complaint": "Palpitations",
+   "system": "Cardiovascular",
+   "source": "ios.ccChip",
+   "expectedFrame": "palpitations"
+  },
+  {
+   "complaint": "Hypertension review",
+   "system": "Cardiovascular",
+   "source": "ios.ccChip",
+   "expectedFrame": "general"
+  },
+  {
+   "complaint": "Shortness of breath",
+   "system": "Cardiovascular",
+   "source": "ios.ccChip",
+   "expectedFrame": "dyspnoea"
+  },
+  {
+   "complaint": "Leg swelling / Oedema",
+   "system": "Cardiovascular",
+   "source": "ios.ccChip",
+   "expectedFrame": "lump.limb_swelling"
+  },
+  {
+   "complaint": "Syncope / Presyncope",
+   "system": "Cardiovascular",
+   "source": "ios.ccChip",
+   "expectedFrame": "syncope"
+  },
+  {
+   "complaint": "Stroke / TIA",
+   "system": "Cardiovascular",
+   "source": "ios.ccChip",
+   "expectedFrame": "neuro.weakness"
+  },
+  {
+   "complaint": "Peripheral arterial disease",
+   "system": "Cardiovascular",
+   "source": "ios.ccChip",
+   "expectedFrame": "pain.limb"
+  },
+  {
+   "complaint": "Cough",
+   "system": "Respiratory",
+   "source": "ios.ccChip",
+   "expectedFrame": "cough"
+  },
+  {
+   "complaint": "Wheeze / Asthma",
+   "system": "Respiratory",
+   "source": "ios.ccChip",
+   "expectedFrame": "dyspnoea"
+  },
+  {
+   "complaint": "Haemoptysis",
+   "system": "Respiratory",
+   "source": "ios.ccChip",
+   "expectedFrame": "cough"
+  },
+  {
+   "complaint": "Pleuritic chest pain",
+   "system": "Respiratory",
+   "source": "ios.ccChip",
+   "expectedFrame": "pain.chest"
+  },
+  {
+   "complaint": "Diabetes review",
+   "system": "Endocrine & Metabolic",
+   "source": "ios.ccChip",
+   "expectedFrame": "general"
+  },
+  {
+   "complaint": "Thyroid symptoms",
+   "system": "Endocrine & Metabolic",
+   "source": "ios.ccChip",
+   "expectedFrame": "general"
+  },
+  {
+   "complaint": "Adrenal symptoms",
+   "system": "Endocrine & Metabolic",
+   "source": "ios.ccChip",
+   "expectedFrame": "general"
+  },
+  {
+   "complaint": "Obesity / Weight management",
+   "system": "Endocrine & Metabolic",
+   "source": "ios.ccChip",
+   "expectedFrame": "general"
+  },
+  {
+   "complaint": "Hyperlipidaemia review",
+   "system": "Endocrine & Metabolic",
+   "source": "ios.ccChip",
+   "expectedFrame": "general"
+  },
+  {
+   "complaint": "Urinary symptoms",
+   "system": "Urology & Renal",
+   "source": "ios.ccChip",
+   "expectedFrame": "urinary"
+  },
+  {
+   "complaint": "Renal colic",
+   "system": "Urology & Renal",
+   "source": "ios.ccChip",
+   "expectedFrame": "pain.abdomen"
+  },
+  {
+   "complaint": "Haematuria",
+   "system": "Urology & Renal",
+   "source": "ios.ccChip",
+   "expectedFrame": "bleeding.urinary"
+  },
+  {
+   "complaint": "Urinary retention",
+   "system": "Urology & Renal",
+   "source": "ios.ccChip",
+   "expectedFrame": "urinary"
+  },
+  {
+   "complaint": "Scrotal / Testicular",
+   "system": "Urology & Renal",
+   "source": "ios.ccChip",
+   "expectedFrame": "lump.scrotal"
+  },
+  {
+   "complaint": "Joint pain",
+   "system": "Musculoskeletal",
+   "source": "ios.ccChip",
+   "expectedFrame": "pain.joint"
+  },
+  {
+   "complaint": "Back pain / Sciatica",
+   "system": "Musculoskeletal",
+   "source": "ios.ccChip",
+   "expectedFrame": "pain.back"
+  },
+  {
+   "complaint": "Limb swelling",
+   "system": "Musculoskeletal",
+   "source": "ios.ccChip",
+   "expectedFrame": "lump.limb_swelling"
+  },
+  {
+   "complaint": "Muscle weakness",
+   "system": "Musculoskeletal",
+   "source": "ios.ccChip",
+   "expectedFrame": "neuro.weakness"
+  },
+  {
+   "complaint": "Headache",
+   "system": "Neurology",
+   "source": "ios.ccChip",
+   "expectedFrame": "pain.head"
+  },
+  {
+   "complaint": "Dizziness / Vertigo",
+   "system": "Neurology",
+   "source": "ios.ccChip",
+   "expectedFrame": "neuro.dizziness"
+  },
+  {
+   "complaint": "Seizure",
+   "system": "Neurology",
+   "source": "ios.ccChip",
+   "expectedFrame": "general"
+  },
+  {
+   "complaint": "Memory / Cognitive",
+   "system": "Neurology",
+   "source": "ios.ccChip",
+   "expectedFrame": "general"
+  },
+  {
+   "complaint": "Numbness / Tingling",
+   "system": "Neurology",
+   "source": "ios.ccChip",
+   "expectedFrame": "neuro.numbness"
+  },
+  {
+   "complaint": "Fever / Infection",
+   "system": "Infectious & Tropical",
+   "source": "ios.ccChip",
+   "expectedFrame": "fever"
+  },
+  {
+   "complaint": "Dengue fever",
+   "system": "Infectious & Tropical",
+   "source": "ios.ccChip",
+   "expectedFrame": "fever"
+  },
+  {
+   "complaint": "Leptospirosis",
+   "system": "Infectious & Tropical",
+   "source": "ios.ccChip",
+   "expectedFrame": "fever"
+  },
+  {
+   "complaint": "Sepsis",
+   "system": "Infectious & Tropical",
+   "source": "ios.ccChip",
+   "expectedFrame": "fever"
+  },
+  {
+   "complaint": "HIV / Immunodeficiency",
+   "system": "Infectious & Tropical",
+   "source": "ios.ccChip",
+   "expectedFrame": "general"
+  },
+  {
+   "complaint": "Skin / Soft tissue infection",
+   "system": "Infectious & Tropical",
+   "source": "ios.ccChip",
+   "expectedFrame": "skin.wound",
+   "secondary": [
+    "fever"
+   ]
+  },
+  {
+   "complaint": "STI / Genital symptoms",
+   "system": "Infectious & Tropical",
+   "source": "ios.ccChip",
+   "expectedFrame": "general"
+  },
+  {
+   "complaint": "Anaemia / Fatigue",
+   "system": "Haematology & Oncology",
+   "source": "ios.ccChip",
+   "expectedFrame": "fatigue"
+  },
+  {
+   "complaint": "Lymphadenopathy",
+   "system": "Haematology & Oncology",
+   "source": "ios.ccChip",
+   "expectedFrame": "lump.neck"
+  },
+  {
+   "complaint": "Bruising / Bleeding",
+   "system": "Haematology & Oncology",
+   "source": "ios.ccChip",
+   "expectedFrame": "bleeding.general"
+  },
+  {
+   "complaint": "Cancer follow-up",
+   "system": "Haematology & Oncology",
+   "source": "ios.ccChip",
+   "expectedFrame": "general"
+  },
+  {
+   "complaint": "Pelvic pain",
+   "system": "Gynaecology & Obstetrics",
+   "source": "ios.ccChip",
+   "expectedFrame": "pain.abdomen"
+  },
+  {
+   "complaint": "Vaginal bleeding",
+   "system": "Gynaecology & Obstetrics",
+   "source": "ios.ccChip",
+   "expectedFrame": "bleeding.vaginal"
+  },
+  {
+   "complaint": "Amenorrhoea / Irregular periods",
+   "system": "Gynaecology & Obstetrics",
+   "source": "ios.ccChip",
+   "expectedFrame": "general"
+  },
+  {
+   "complaint": "Dysmenorrhoea",
+   "system": "Gynaecology & Obstetrics",
+   "source": "ios.ccChip",
+   "expectedFrame": "pain.abdomen"
+  },
+  {
+   "complaint": "Ovarian cyst symptoms",
+   "system": "Gynaecology & Obstetrics",
+   "source": "ios.ccChip",
+   "expectedFrame": "general"
+  },
+  {
+   "complaint": "Fibroid symptoms",
+   "system": "Gynaecology & Obstetrics",
+   "source": "ios.ccChip",
+   "expectedFrame": "general"
+  },
+  {
+   "complaint": "Vaginal discharge",
+   "system": "Gynaecology & Obstetrics",
+   "source": "ios.ccChip",
+   "expectedFrame": "general"
+  },
+  {
+   "complaint": "Menopausal symptoms",
+   "system": "Gynaecology & Obstetrics",
+   "source": "ios.ccChip",
+   "expectedFrame": "general"
+  },
+  {
+   "complaint": "PCOS review",
+   "system": "Gynaecology & Obstetrics",
+   "source": "ios.ccChip",
+   "expectedFrame": "general"
+  },
+  {
+   "complaint": "Pregnancy symptoms / Antenatal",
+   "system": "Gynaecology & Obstetrics",
+   "source": "ios.ccChip",
+   "expectedFrame": "general"
+  },
+  {
+   "complaint": "Postpartum review",
+   "system": "Gynaecology & Obstetrics",
+   "source": "ios.ccChip",
+   "expectedFrame": "general"
+  },
+  {
+   "complaint": "Fertility concerns",
+   "system": "Gynaecology & Obstetrics",
+   "source": "ios.ccChip",
+   "expectedFrame": "general"
+  },
+  {
+   "complaint": "Dyspareunia",
+   "system": "Gynaecology & Obstetrics",
+   "source": "ios.ccChip",
+   "expectedFrame": "pain.perineal"
+  },
+  {
+   "complaint": "Vulval symptoms",
+   "system": "Gynaecology & Obstetrics",
+   "source": "ios.ccChip",
+   "expectedFrame": "general"
+  },
+  {
+   "complaint": "Fever in child",
+   "system": "Paediatrics",
+   "source": "ios.ccChip",
+   "expectedFrame": "fever"
+  },
+  {
+   "complaint": "Child with rash",
+   "system": "Paediatrics",
+   "source": "ios.ccChip",
+   "expectedFrame": "skin.rash"
+  },
+  {
+   "complaint": "Respiratory distress — child",
+   "system": "Paediatrics",
+   "source": "ios.ccChip",
+   "expectedFrame": "dyspnoea"
+  },
+  {
+   "complaint": "Paediatric abdominal pain",
+   "system": "Paediatrics",
+   "source": "ios.ccChip",
+   "expectedFrame": "pain.abdomen"
+  },
+  {
+   "complaint": "Ear / Throat pain — child",
+   "system": "Paediatrics",
+   "source": "ios.ccChip",
+   "expectedFrame": "pain.neck"
+  },
+  {
+   "complaint": "Failure to thrive",
+   "system": "Paediatrics",
+   "source": "ios.ccChip",
+   "expectedFrame": "weight_loss"
+  },
+  {
+   "complaint": "Developmental concern",
+   "system": "Paediatrics",
+   "source": "ios.ccChip",
+   "expectedFrame": "general"
+  },
+  {
+   "complaint": "Recurrent infections — child",
+   "system": "Paediatrics",
+   "source": "ios.ccChip",
+   "expectedFrame": "fever"
+  },
+  {
+   "complaint": "Growth concern",
+   "system": "Paediatrics",
+   "source": "ios.ccChip",
+   "expectedFrame": "general"
+  },
+  {
+   "complaint": "Neonatal review",
+   "system": "Paediatrics",
+   "source": "ios.ccChip",
+   "expectedFrame": "general"
+  },
+  {
+   "complaint": "Immunisation review",
+   "system": "Paediatrics",
+   "source": "ios.ccChip",
+   "expectedFrame": "general"
+  },
+  {
+   "complaint": "Head injury / Trauma",
+   "system": "Neurosurgery",
+   "source": "ios.ccChip",
+   "expectedFrame": "general"
+  },
+  {
+   "complaint": "Severe headache",
+   "system": "Neurosurgery",
+   "source": "ios.ccChip",
+   "expectedFrame": "pain.head"
+  },
+  {
+   "complaint": "Weakness / Paralysis",
+   "system": "Neurosurgery",
+   "source": "ios.ccChip",
+   "expectedFrame": "neuro.weakness"
+  },
+  {
+   "complaint": "Spinal cord symptoms",
+   "system": "Neurosurgery",
+   "source": "ios.ccChip",
+   "expectedFrame": "general"
+  },
+  {
+   "complaint": "Brain tumour symptoms",
+   "system": "Neurosurgery",
+   "source": "ios.ccChip",
+   "expectedFrame": "general"
+  },
+  {
+   "complaint": "Hydrocephalus symptoms",
+   "system": "Neurosurgery",
+   "source": "ios.ccChip",
+   "expectedFrame": "general"
+  },
+  {
+   "complaint": "Post-neurosurgical review",
+   "system": "Neurosurgery",
+   "source": "ios.ccChip",
+   "expectedFrame": "general"
+  },
+  {
+   "complaint": "Vision changes / Diplopia",
+   "system": "Neurosurgery",
+   "source": "ios.ccChip",
+   "expectedFrame": "general"
+  },
+  {
+   "complaint": "Raised intracranial pressure",
+   "system": "Neurosurgery",
+   "source": "ios.ccChip",
+   "expectedFrame": "general"
+  },
+  {
+   "complaint": "Heart failure",
+   "system": "Cardiology",
+   "source": "ios.ccChip",
+   "expectedFrame": "dyspnoea"
+  },
+  {
+   "complaint": "Atrial fibrillation",
+   "system": "Cardiology",
+   "source": "ios.ccChip",
+   "expectedFrame": "palpitations"
+  },
+  {
+   "complaint": "Arrhythmia / Palpitations",
+   "system": "Cardiology",
+   "source": "ios.ccChip",
+   "expectedFrame": "palpitations"
+  },
+  {
+   "complaint": "Valvular heart disease",
+   "system": "Cardiology",
+   "source": "ios.ccChip",
+   "expectedFrame": "general"
+  },
+  {
+   "complaint": "Cardiomyopathy",
+   "system": "Cardiology",
+   "source": "ios.ccChip",
+   "expectedFrame": "general"
+  },
+  {
+   "complaint": "Cardiac risk assessment",
+   "system": "Cardiology",
+   "source": "ios.ccChip",
+   "expectedFrame": "general"
+  },
+  {
+   "complaint": "Pre-operative cardiac",
+   "system": "Cardiology",
+   "source": "ios.ccChip",
+   "expectedFrame": "general"
+  },
+  {
+   "complaint": "Lipid management",
+   "system": "Cardiology",
+   "source": "ios.ccChip",
+   "expectedFrame": "general"
+  },
+  {
+   "complaint": "Skin rash / Eczema",
+   "system": "Dermatology",
+   "source": "ios.ccChip",
+   "expectedFrame": "skin.rash"
+  },
+  {
+   "complaint": "Psoriasis",
+   "system": "Dermatology",
+   "source": "ios.ccChip",
+   "expectedFrame": "skin.rash"
+  },
+  {
+   "complaint": "Urticaria / Hives",
+   "system": "Dermatology",
+   "source": "ios.ccChip",
+   "expectedFrame": "skin.rash"
+  },
+  {
+   "complaint": "Skin infection / Cellulitis",
+   "system": "Dermatology",
+   "source": "ios.ccChip",
+   "expectedFrame": "skin.wound",
+   "secondary": [
+    "fever"
+   ]
+  },
+  {
+   "complaint": "Acne",
+   "system": "Dermatology",
+   "source": "ios.ccChip",
+   "expectedFrame": "skin.rash"
+  },
+  {
+   "complaint": "Hair loss / Alopecia",
+   "system": "Dermatology",
+   "source": "ios.ccChip",
+   "expectedFrame": "skin.rash"
+  },
+  {
+   "complaint": "Nail disorder",
+   "system": "Dermatology",
+   "source": "ios.ccChip",
+   "expectedFrame": "skin.rash"
+  },
+  {
+   "complaint": "Pigmentation change",
+   "system": "Dermatology",
+   "source": "ios.ccChip",
+   "expectedFrame": "skin.rash"
+  },
+  {
+   "complaint": "Pruritus (generalised itch)",
+   "system": "Dermatology",
+   "source": "ios.ccChip",
+   "expectedFrame": "skin.rash"
+  },
+  {
+   "complaint": "Blistering skin disease",
+   "system": "Dermatology",
+   "source": "ios.ccChip",
+   "expectedFrame": "skin.rash"
+  },
+  {
+   "complaint": "CKD / Renal disease",
+   "system": "Internal Medicine",
+   "source": "ios.ccChip",
+   "expectedFrame": "general"
+  },
+  {
+   "complaint": "Liver disease / Cirrhosis",
+   "system": "Internal Medicine",
+   "source": "ios.ccChip",
+   "expectedFrame": "general"
+  },
+  {
+   "complaint": "Autoimmune disease",
+   "system": "Internal Medicine",
+   "source": "ios.ccChip",
+   "expectedFrame": "general"
+  },
+  {
+   "complaint": "TB / Chronic infection",
+   "system": "Internal Medicine",
+   "source": "ios.ccChip",
+   "expectedFrame": "cough",
+   "secondary": [
+    "fever"
+   ]
+  },
+  {
+   "complaint": "HIV management",
+   "system": "Internal Medicine",
+   "source": "ios.ccChip",
+   "expectedFrame": "general"
+  },
+  {
+   "complaint": "Chronic respiratory disease",
+   "system": "Internal Medicine",
+   "source": "ios.ccChip",
+   "expectedFrame": "general"
+  },
+  {
+   "complaint": "Electrolyte disturbance",
+   "system": "Internal Medicine",
+   "source": "ios.ccChip",
+   "expectedFrame": "general"
+  },
+  {
+   "complaint": "Polymyalgia / Vasculitis",
+   "system": "Internal Medicine",
+   "source": "ios.ccChip",
+   "expectedFrame": "general"
+  },
+  {
+   "complaint": "Anaemia workup",
+   "system": "Internal Medicine",
+   "source": "ios.ccChip",
+   "expectedFrame": "fatigue"
+  },
+  {
+   "complaint": "Depression",
+   "system": "Psychiatry / Mental Health",
+   "source": "ios.ccChip",
+   "expectedFrame": "general"
+  },
+  {
+   "complaint": "Anxiety disorder",
+   "system": "Psychiatry / Mental Health",
+   "source": "ios.ccChip",
+   "expectedFrame": "general"
+  },
+  {
+   "complaint": "Psychosis",
+   "system": "Psychiatry / Mental Health",
+   "source": "ios.ccChip",
+   "expectedFrame": "general"
+  },
+  {
+   "complaint": "Substance misuse",
+   "system": "Psychiatry / Mental Health",
+   "source": "ios.ccChip",
+   "expectedFrame": "general"
+  },
+  {
+   "complaint": "Insomnia",
+   "system": "Psychiatry / Mental Health",
+   "source": "ios.ccChip",
+   "expectedFrame": "general"
+  },
+  {
+   "complaint": "Eating disorder",
+   "system": "Psychiatry / Mental Health",
+   "source": "ios.ccChip",
+   "expectedFrame": "general"
+  },
+  {
+   "complaint": "PTSD / Trauma",
+   "system": "Psychiatry / Mental Health",
+   "source": "ios.ccChip",
+   "expectedFrame": "general"
+  },
+  {
+   "complaint": "Mental health review",
+   "system": "Psychiatry / Mental Health",
+   "source": "ios.ccChip",
+   "expectedFrame": "general"
+  },
+  {
+   "complaint": "Follow-up",
+   "system": "Administrative",
+   "source": "ios.ccChip",
+   "expectedFrame": "general"
+  },
+  {
+   "complaint": "Screening",
+   "system": "Administrative",
+   "source": "ios.ccChip",
+   "expectedFrame": "general"
+  },
+  {
+   "complaint": "Pre-operative assessment",
+   "system": "Administrative",
+   "source": "ios.ccChip",
+   "expectedFrame": "general"
+  },
+  {
+   "complaint": "Other",
+   "system": "Administrative",
+   "source": "ios.ccChip",
+   "expectedFrame": "general"
+  },
+  {
+   "complaint": "Abdominal pain",
+   "source": "ios.questionnaire",
+   "expectedFrame": "pain.abdomen"
+  },
+  {
+   "complaint": "Jaundice / yellowing",
+   "source": "ios.questionnaire",
+   "expectedFrame": "jaundice"
+  },
+  {
+   "complaint": "Rectal bleeding",
+   "source": "ios.questionnaire",
+   "expectedFrame": "bleeding.rectal"
+  },
+  {
+   "complaint": "Change in bowel habit",
+   "source": "ios.questionnaire",
+   "expectedFrame": "bowel"
+  },
+  {
+   "complaint": "Difficulty swallowing",
+   "source": "ios.questionnaire",
+   "expectedFrame": "dysphagia"
+  },
+  {
+   "complaint": "Breast lump, pain or discharge",
+   "source": "ios.questionnaire",
+   "expectedFrame": "breast",
+   "secondary": [
+    "pain.breast"
+   ]
+  },
+  {
+   "complaint": "Neck lump or swelling",
+   "source": "ios.questionnaire",
+   "expectedFrame": "lump.neck"
+  },
+  {
+   "complaint": "Hernia / groin lump",
+   "source": "ios.questionnaire",
+   "expectedFrame": "lump.hernia"
+  },
+  {
+   "complaint": "Perianal / haemorrhoid symptoms",
+   "source": "ios.questionnaire",
+   "expectedFrame": "pain.perineal"
+  },
+  {
+   "complaint": "Unexplained weight loss",
+   "source": "ios.questionnaire",
+   "expectedFrame": "weight_loss"
+  },
+  {
+   "complaint": "Chest pain or tightness",
+   "source": "ios.questionnaire",
+   "expectedFrame": "pain.chest"
+  },
+  {
+   "complaint": "Shortness of breath",
+   "source": "ios.questionnaire",
+   "expectedFrame": "dyspnoea"
+  },
+  {
+   "complaint": "Urinary symptoms",
+   "source": "ios.questionnaire",
+   "expectedFrame": "urinary"
+  },
+  {
+   "complaint": "Fever / infection",
+   "source": "ios.questionnaire",
+   "expectedFrame": "fever"
+  },
+  {
+   "complaint": "Wound / surgical site problem",
+   "source": "ios.questionnaire",
+   "expectedFrame": "skin.wound"
+  },
+  {
+   "complaint": "Post-operative review",
+   "source": "ios.questionnaire",
+   "expectedFrame": "general"
+  },
+  {
+   "complaint": "Screening / routine review",
+   "source": "ios.questionnaire",
+   "expectedFrame": "general"
+  },
+  {
+   "complaint": "Other",
+   "source": "ios.questionnaire",
+   "expectedFrame": "general"
+  },
+  {
+   "complaint": "Acute abdominal pain",
+   "source": "web.ccTemplate",
+   "expectedFrame": "pain.abdomen"
+  },
+  {
+   "complaint": "Acute appendicitis",
+   "source": "web.ccTemplate",
+   "expectedFrame": "pain.abdomen"
+  },
+  {
+   "complaint": "Acute cholecystitis",
+   "source": "web.ccTemplate",
+   "expectedFrame": "pain.abdomen"
+  },
+  {
+   "complaint": "Bowel obstruction",
+   "source": "web.ccTemplate",
+   "expectedFrame": "bowel"
+  },
+  {
+   "complaint": "Perforated viscus",
+   "source": "web.ccTemplate",
+   "expectedFrame": "pain.abdomen"
+  },
+  {
+   "complaint": "Acute pancreatitis",
+   "source": "web.ccTemplate",
+   "expectedFrame": "pain.abdomen"
+  },
+  {
+   "complaint": "Strangulated / irreducible hernia",
+   "source": "web.ccTemplate",
+   "expectedFrame": "lump.hernia"
+  },
+  {
+   "complaint": "Upper GI bleed (haematemesis / melaena)",
+   "source": "web.ccTemplate",
+   "expectedFrame": "bleeding.upper_gi"
+  },
+  {
+   "complaint": "Mesenteric ischaemia",
+   "source": "web.ccTemplate",
+   "expectedFrame": "pain.abdomen"
+  },
+  {
+   "complaint": "Acute cholangitis",
+   "source": "web.ccTemplate",
+   "expectedFrame": "jaundice"
+  },
+  {
+   "complaint": "Biliary colic",
+   "source": "web.ccTemplate",
+   "expectedFrame": "pain.abdomen"
+  },
+  {
+   "complaint": "Obstructive jaundice",
+   "source": "web.ccTemplate",
+   "expectedFrame": "jaundice"
+  },
+  {
+   "complaint": "Pancreatic mass / malignancy",
+   "source": "web.ccTemplate",
+   "expectedFrame": "lump.abdominal"
+  },
+  {
+   "complaint": "Dysphagia",
+   "source": "web.ccTemplate",
+   "expectedFrame": "dysphagia"
+  },
+  {
+   "complaint": "GORD / heartburn",
+   "source": "web.ccTemplate",
+   "expectedFrame": "pain.chest"
+  },
+  {
+   "complaint": "Liver mass / hepatocellular carcinoma",
+   "source": "web.ccTemplate",
+   "expectedFrame": "lump.abdominal"
+  },
+  {
+   "complaint": "Colorectal malignancy",
+   "source": "web.ccTemplate",
+   "expectedFrame": "bowel"
+  },
+  {
+   "complaint": "Rectal bleeding",
+   "source": "web.ccTemplate",
+   "expectedFrame": "bleeding.rectal"
+  },
+  {
+   "complaint": "Change in bowel habit",
+   "source": "web.ccTemplate",
+   "expectedFrame": "bowel"
+  },
+  {
+   "complaint": "Diverticular disease / diverticulitis",
+   "source": "web.ccTemplate",
+   "expectedFrame": "pain.abdomen"
+  },
+  {
+   "complaint": "Inflammatory bowel disease (surgical)",
+   "source": "web.ccTemplate",
+   "expectedFrame": "bowel"
+  },
+  {
+   "complaint": "Inguinal / groin hernia",
+   "source": "web.ccTemplate",
+   "expectedFrame": "lump.hernia"
+  },
+  {
+   "complaint": "Umbilical / paraumbilical hernia",
+   "source": "web.ccTemplate",
+   "expectedFrame": "lump.hernia"
+  },
+  {
+   "complaint": "Incisional / ventral hernia",
+   "source": "web.ccTemplate",
+   "expectedFrame": "lump.hernia"
+  },
+  {
+   "complaint": "Breast lump",
+   "source": "web.ccTemplate",
+   "expectedFrame": "breast"
+  },
+  {
+   "complaint": "Thyroid nodule / goitre",
+   "source": "web.ccTemplate",
+   "expectedFrame": "lump.neck"
+  },
+  {
+   "complaint": "Neck lump",
+   "source": "web.ccTemplate",
+   "expectedFrame": "lump.neck"
+  },
+  {
+   "complaint": "Unexplained weight loss",
+   "source": "web.ccTemplate",
+   "expectedFrame": "weight_loss"
+  },
+  {
+   "complaint": "OGD (diagnostic upper endoscopy)",
+   "source": "web.ccTemplate",
+   "expectedFrame": "general"
+  },
+  {
+   "complaint": "Colonoscopy (diagnostic / surveillance)",
+   "source": "web.ccTemplate",
+   "expectedFrame": "general"
+  },
+  {
+   "complaint": "ERCP — choledocholithiasis",
+   "source": "web.ccTemplate",
+   "expectedFrame": "jaundice"
+  },
+  {
+   "complaint": "ERCP — biliary stricture",
+   "source": "web.ccTemplate",
+   "expectedFrame": "jaundice"
+  },
+  {
+   "complaint": "Barrett's oesophagus surveillance",
+   "source": "web.ccTemplate",
+   "expectedFrame": "general"
+  },
+  {
+   "complaint": "Haemorrhoids",
+   "source": "web.ccTemplate",
+   "expectedFrame": "pain.perineal"
+  },
+  {
+   "complaint": "Anal fissure",
+   "source": "web.ccTemplate",
+   "expectedFrame": "pain.perineal"
+  },
+  {
+   "complaint": "Perianal abscess / fistula",
+   "source": "web.ccTemplate",
+   "expectedFrame": "pain.perineal",
+   "secondary": [
+    "skin.wound"
+   ]
+  },
+  {
+   "complaint": "Pilonidal disease",
+   "source": "web.ccTemplate",
+   "expectedFrame": "skin.wound"
+  },
+  {
+   "complaint": "Varicose veins",
+   "source": "web.ccTemplate",
+   "expectedFrame": "lump.limb_swelling"
+  },
+  {
+   "complaint": "Skin lesion",
+   "source": "web.ccTemplate",
+   "expectedFrame": "skin.lesion"
+  },
+  {
+   "complaint": "Soft tissue mass",
+   "source": "web.ccTemplate",
+   "expectedFrame": "lump.soft_tissue"
+  },
+  {
+   "complaint": "Post-op wound concern",
+   "source": "web.ccTemplate",
+   "expectedFrame": "skin.wound"
+  },
+  {
+   "complaint": "Post-op follow-up (routine)",
+   "source": "web.ccTemplate",
+   "expectedFrame": "general"
+  },
+  {
+   "complaint": "Anastomotic leak / intra-abdominal collection",
+   "source": "web.ccTemplate",
+   "expectedFrame": "pain.abdomen"
+  },
+  {
+   "complaint": "Rectal prolapse",
+   "source": "web.ccTemplate",
+   "expectedFrame": "bowel"
+  },
+  {
+   "complaint": "Diabetic foot / infected foot",
+   "source": "web.ccTemplate",
+   "expectedFrame": "skin.wound"
+  },
+  {
+   "complaint": "Nausea / vomiting",
+   "source": "web.ccTemplate",
+   "expectedFrame": "vomiting"
+  },
+  {
+   "complaint": "Abdominal mass (incidental / new)",
+   "source": "web.ccTemplate",
+   "expectedFrame": "lump.abdominal"
+  },
+  {
+   "complaint": "Nipple discharge",
+   "source": "web.ccTemplate",
+   "expectedFrame": "breast"
+  },
+  {
+   "complaint": "Faecal incontinence",
+   "source": "web.ccTemplate",
+   "expectedFrame": "bowel"
+  },
+  {
+   "complaint": "Other / general surgical",
+   "source": "web.ccTemplate",
+   "expectedFrame": "general"
+  },
+  {
+   "complaint": "fever",
+   "source": "web.symptom",
+   "expectedFrame": "fever"
+  },
+  {
+   "complaint": "weight loss",
+   "source": "web.symptom",
+   "expectedFrame": "weight_loss"
+  },
+  {
+   "complaint": "weight gain",
+   "source": "web.symptom",
+   "expectedFrame": "general"
+  },
+  {
+   "complaint": "fatigue",
+   "source": "web.symptom",
+   "expectedFrame": "fatigue"
+  },
+  {
+   "complaint": "anorexia",
+   "source": "web.symptom",
+   "expectedFrame": "weight_loss"
+  },
+  {
+   "complaint": "night sweats",
+   "source": "web.symptom",
+   "expectedFrame": "fever"
+  },
+  {
+   "complaint": "malaise",
+   "source": "web.symptom",
+   "expectedFrame": "fatigue"
+  },
+  {
+   "complaint": "rigors",
+   "source": "web.symptom",
+   "expectedFrame": "fever"
+  },
+  {
+   "complaint": "drenching sweats",
+   "source": "web.symptom",
+   "expectedFrame": "fever"
+  },
+  {
+   "complaint": "generalised weakness",
+   "source": "web.symptom",
+   "expectedFrame": "fatigue"
+  },
+  {
+   "complaint": "loss of appetite",
+   "source": "web.symptom",
+   "expectedFrame": "weight_loss"
+  },
+  {
+   "complaint": "excessive thirst",
+   "source": "web.symptom",
+   "expectedFrame": "general"
+  },
+  {
+   "complaint": "excessive hunger",
+   "source": "web.symptom",
+   "expectedFrame": "general"
+  },
+  {
+   "complaint": "dehydration",
+   "source": "web.symptom",
+   "expectedFrame": "general"
+  },
+  {
+   "complaint": "headache",
+   "source": "web.symptom",
+   "expectedFrame": "pain.head"
+  },
+  {
+   "complaint": "migraine",
+   "source": "web.symptom",
+   "expectedFrame": "pain.head"
+  },
+  {
+   "complaint": "thunderclap headache",
+   "source": "web.symptom",
+   "expectedFrame": "pain.head"
+  },
+  {
+   "complaint": "dizziness",
+   "source": "web.symptom",
+   "expectedFrame": "neuro.dizziness"
+  },
+  {
+   "complaint": "vertigo",
+   "source": "web.symptom",
+   "expectedFrame": "neuro.dizziness"
+  },
+  {
+   "complaint": "syncope",
+   "source": "web.symptom",
+   "expectedFrame": "syncope"
+  },
+  {
+   "complaint": "pre-syncope",
+   "source": "web.symptom",
+   "expectedFrame": "syncope"
+  },
+  {
+   "complaint": "seizure",
+   "source": "web.symptom",
+   "expectedFrame": "general"
+  },
+  {
+   "complaint": "confusion",
+   "source": "web.symptom",
+   "expectedFrame": "general"
+  },
+  {
+   "complaint": "memory loss",
+   "source": "web.symptom",
+   "expectedFrame": "general"
+  },
+  {
+   "complaint": "word-finding difficulty",
+   "source": "web.symptom",
+   "expectedFrame": "general"
+  },
+  {
+   "complaint": "speech difficulty",
+   "source": "web.symptom",
+   "expectedFrame": "neuro.weakness"
+  },
+  {
+   "complaint": "facial weakness",
+   "source": "web.symptom",
+   "expectedFrame": "neuro.weakness"
+  },
+  {
+   "complaint": "limb weakness",
+   "source": "web.symptom",
+   "expectedFrame": "neuro.weakness"
+  },
+  {
+   "complaint": "numbness",
+   "source": "web.symptom",
+   "expectedFrame": "neuro.numbness"
+  },
+  {
+   "complaint": "tingling",
+   "source": "web.symptom",
+   "expectedFrame": "neuro.numbness"
+  },
+  {
+   "complaint": "loss of consciousness",
+   "source": "web.symptom",
+   "expectedFrame": "syncope"
+  },
+  {
+   "complaint": "blackout",
+   "source": "web.symptom",
+   "expectedFrame": "syncope"
+  },
+  {
+   "complaint": "double vision",
+   "source": "web.symptom",
+   "expectedFrame": "general"
+  },
+  {
+   "complaint": "visual loss",
+   "source": "web.symptom",
+   "expectedFrame": "general"
+  },
+  {
+   "complaint": "visual aura",
+   "source": "web.symptom",
+   "expectedFrame": "general"
+  },
+  {
+   "complaint": "photophobia",
+   "source": "web.symptom",
+   "expectedFrame": "general"
+  },
+  {
+   "complaint": "neck stiffness",
+   "source": "web.symptom",
+   "expectedFrame": "pain.neck"
+  },
+  {
+   "complaint": "unsteady gait",
+   "source": "web.symptom",
+   "expectedFrame": "neuro.dizziness"
+  },
+  {
+   "complaint": "tremor",
+   "source": "web.symptom",
+   "expectedFrame": "general"
+  },
+  {
+   "complaint": "sore throat",
+   "source": "web.symptom",
+   "expectedFrame": "pain.neck"
+  },
+  {
+   "complaint": "ear pain",
+   "source": "web.symptom",
+   "expectedFrame": "pain.neck"
+  },
+  {
+   "complaint": "tinnitus",
+   "source": "web.symptom",
+   "expectedFrame": "general"
+  },
+  {
+   "complaint": "hearing loss",
+   "source": "web.symptom",
+   "expectedFrame": "general"
+  },
+  {
+   "complaint": "nasal discharge",
+   "source": "web.symptom",
+   "expectedFrame": "general"
+  },
+  {
+   "complaint": "epistaxis",
+   "source": "web.symptom",
+   "expectedFrame": "bleeding.general"
+  },
+  {
+   "complaint": "hoarse voice",
+   "source": "web.symptom",
+   "expectedFrame": "general"
+  },
+  {
+   "complaint": "stridor",
+   "source": "web.symptom",
+   "expectedFrame": "dyspnoea"
+  },
+  {
+   "complaint": "neck swelling",
+   "source": "web.symptom",
+   "expectedFrame": "lump.neck"
+  },
+  {
+   "complaint": "neck pain",
+   "source": "web.symptom",
+   "expectedFrame": "pain.neck"
+  },
+  {
+   "complaint": "facial pain",
+   "source": "web.symptom",
+   "expectedFrame": "pain.head"
+  },
+  {
+   "complaint": "post-nasal drip",
+   "source": "web.symptom",
+   "expectedFrame": "general"
+  },
+  {
+   "complaint": "snoring",
+   "source": "web.symptom",
+   "expectedFrame": "general"
+  },
+  {
+   "complaint": "loss of smell",
+   "source": "web.symptom",
+   "expectedFrame": "general"
+  },
+  {
+   "complaint": "mouth ulcers",
+   "source": "web.symptom",
+   "expectedFrame": "general"
+  },
+  {
+   "complaint": "jaw pain",
+   "source": "web.symptom",
+   "expectedFrame": "pain.neck"
+  },
+  {
+   "complaint": "shortness of breath",
+   "source": "web.symptom",
+   "expectedFrame": "dyspnoea"
+  },
+  {
+   "complaint": "cough",
+   "source": "web.symptom",
+   "expectedFrame": "cough"
+  },
+  {
+   "complaint": "productive cough",
+   "source": "web.symptom",
+   "expectedFrame": "cough"
+  },
+  {
+   "complaint": "dry cough",
+   "source": "web.symptom",
+   "expectedFrame": "cough"
+  },
+  {
+   "complaint": "haemoptysis",
+   "source": "web.symptom",
+   "expectedFrame": "cough"
+  },
+  {
+   "complaint": "wheeze",
+   "source": "web.symptom",
+   "expectedFrame": "dyspnoea"
+  },
+  {
+   "complaint": "chest tightness",
+   "source": "web.symptom",
+   "expectedFrame": "pain.chest"
+  },
+  {
+   "complaint": "pleuritic chest pain",
+   "source": "web.symptom",
+   "expectedFrame": "pain.chest"
+  },
+  {
+   "complaint": "dyspnoea on exertion",
+   "source": "web.symptom",
+   "expectedFrame": "dyspnoea"
+  },
+  {
+   "complaint": "orthopnoea",
+   "source": "web.symptom",
+   "expectedFrame": "dyspnoea"
+  },
+  {
+   "complaint": "nocturnal dyspnoea",
+   "source": "web.symptom",
+   "expectedFrame": "dyspnoea"
+  },
+  {
+   "complaint": "sleep apnoea",
+   "source": "web.symptom",
+   "expectedFrame": "general"
+  },
+  {
+   "complaint": "chest pain",
+   "source": "web.symptom",
+   "expectedFrame": "pain.chest"
+  },
+  {
+   "complaint": "palpitations",
+   "source": "web.symptom",
+   "expectedFrame": "palpitations"
+  },
+  {
+   "complaint": "near-syncope",
+   "source": "web.symptom",
+   "expectedFrame": "syncope"
+  },
+  {
+   "complaint": "leg swelling",
+   "source": "web.symptom",
+   "expectedFrame": "lump.limb_swelling"
+  },
+  {
+   "complaint": "ankle oedema",
+   "source": "web.symptom",
+   "expectedFrame": "lump.limb_swelling"
+  },
+  {
+   "complaint": "bilateral leg oedema",
+   "source": "web.symptom",
+   "expectedFrame": "lump.limb_swelling"
+  },
+  {
+   "complaint": "claudication",
+   "source": "web.symptom",
+   "expectedFrame": "pain.limb"
+  },
+  {
+   "complaint": "rest pain",
+   "source": "web.symptom",
+   "expectedFrame": "pain.limb"
+  },
+  {
+   "complaint": "cold extremities",
+   "source": "web.symptom",
+   "expectedFrame": "pain.limb"
+  },
+  {
+   "complaint": "exertional chest tightness",
+   "source": "web.symptom",
+   "expectedFrame": "pain.chest"
+  },
+  {
+   "complaint": "abdominal pain",
+   "source": "web.symptom",
+   "expectedFrame": "pain.abdomen"
+  },
+  {
+   "complaint": "nausea",
+   "source": "web.symptom",
+   "expectedFrame": "vomiting"
+  },
+  {
+   "complaint": "vomiting",
+   "source": "web.symptom",
+   "expectedFrame": "vomiting"
+  },
+  {
+   "complaint": "haematemesis",
+   "source": "web.symptom",
+   "expectedFrame": "bleeding.upper_gi"
+  },
+  {
+   "complaint": "coffee-ground vomiting",
+   "source": "web.symptom",
+   "expectedFrame": "bleeding.upper_gi",
+   "secondary": [
+    "vomiting"
+   ]
+  },
+  {
+   "complaint": "dysphagia",
+   "source": "web.symptom",
+   "expectedFrame": "dysphagia"
+  },
+  {
+   "complaint": "odynophagia",
+   "source": "web.symptom",
+   "expectedFrame": "dysphagia"
+  },
+  {
+   "complaint": "heartburn",
+   "source": "web.symptom",
+   "expectedFrame": "pain.chest"
+  },
+  {
+   "complaint": "regurgitation",
+   "source": "web.symptom",
+   "expectedFrame": "dysphagia"
+  },
+  {
+   "complaint": "bloating",
+   "source": "web.symptom",
+   "expectedFrame": "bowel"
+  },
+  {
+   "complaint": "hiccups",
+   "source": "web.symptom",
+   "expectedFrame": "general"
+  },
+  {
+   "complaint": "epigastric pain",
+   "source": "web.symptom",
+   "expectedFrame": "pain.abdomen"
+  },
+  {
+   "complaint": "early satiety",
+   "source": "web.symptom",
+   "expectedFrame": "general"
+  },
+  {
+   "complaint": "indigestion",
+   "source": "web.symptom",
+   "expectedFrame": "pain.abdomen"
+  },
+  {
+   "complaint": "belching",
+   "source": "web.symptom",
+   "expectedFrame": "general"
+  },
+  {
+   "complaint": "rectal bleeding",
+   "source": "web.symptom",
+   "expectedFrame": "bleeding.rectal"
+  },
+  {
+   "complaint": "black stool",
+   "source": "web.symptom",
+   "expectedFrame": "bleeding.upper_gi"
+  },
+  {
+   "complaint": "melaena",
+   "source": "web.symptom",
+   "expectedFrame": "bleeding.upper_gi"
+  },
+  {
+   "complaint": "diarrhoea",
+   "source": "web.symptom",
+   "expectedFrame": "bowel"
+  },
+  {
+   "complaint": "constipation",
+   "source": "web.symptom",
+   "expectedFrame": "bowel"
+  },
+  {
+   "complaint": "change in bowel habit",
+   "source": "web.symptom",
+   "expectedFrame": "bowel"
+  },
+  {
+   "complaint": "tenesmus",
+   "source": "web.symptom",
+   "expectedFrame": "bowel"
+  },
+  {
+   "complaint": "mucus in stool",
+   "source": "web.symptom",
+   "expectedFrame": "bowel"
+  },
+  {
+   "complaint": "rectal pain",
+   "source": "web.symptom",
+   "expectedFrame": "pain.perineal"
+  },
+  {
+   "complaint": "incomplete evacuation",
+   "source": "web.symptom",
+   "expectedFrame": "bowel"
+  },
+  {
+   "complaint": "flatulence",
+   "source": "web.symptom",
+   "expectedFrame": "general"
+  },
+  {
+   "complaint": "faecal urgency",
+   "source": "web.symptom",
+   "expectedFrame": "bowel"
+  },
+  {
+   "complaint": "faecal incontinence",
+   "source": "web.symptom",
+   "expectedFrame": "bowel"
+  },
+  {
+   "complaint": "perianal pain",
+   "source": "web.symptom",
+   "expectedFrame": "pain.perineal"
+  },
+  {
+   "complaint": "anal discharge",
+   "source": "web.symptom",
+   "expectedFrame": "general"
+  },
+  {
+   "complaint": "jaundice",
+   "source": "web.symptom",
+   "expectedFrame": "jaundice"
+  },
+  {
+   "complaint": "dark urine",
+   "source": "web.symptom",
+   "expectedFrame": "jaundice",
+   "secondary": [
+    "urinary"
+   ]
+  },
+  {
+   "complaint": "pale stool",
+   "source": "web.symptom",
+   "expectedFrame": "jaundice"
+  },
+  {
+   "complaint": "pruritus",
+   "source": "web.symptom",
+   "expectedFrame": "skin.rash"
+  },
+  {
+   "complaint": "right upper quadrant pain",
+   "source": "web.symptom",
+   "expectedFrame": "pain.abdomen"
+  },
+  {
+   "complaint": "biliary colic",
+   "source": "web.symptom",
+   "expectedFrame": "pain.abdomen"
+  },
+  {
+   "complaint": "abdominal distension",
+   "source": "web.symptom",
+   "expectedFrame": "bowel"
+  },
+  {
+   "complaint": "breast lump",
+   "source": "web.symptom",
+   "expectedFrame": "breast"
+  },
+  {
+   "complaint": "breast pain",
+   "source": "web.symptom",
+   "expectedFrame": "pain.breast"
+  },
+  {
+   "complaint": "nipple discharge",
+   "source": "web.symptom",
+   "expectedFrame": "breast"
+  },
+  {
+   "complaint": "skin changes breast",
+   "source": "web.symptom",
+   "expectedFrame": "breast",
+   "secondary": [
+    "skin.lesion"
+   ]
+  },
+  {
+   "complaint": "breast swelling",
+   "source": "web.symptom",
+   "expectedFrame": "breast"
+  },
+  {
+   "complaint": "axillary lump",
+   "source": "web.symptom",
+   "expectedFrame": "breast"
+  },
+  {
+   "complaint": "breast asymmetry",
+   "source": "web.symptom",
+   "expectedFrame": "breast"
+  },
+  {
+   "complaint": "nipple inversion",
+   "source": "web.symptom",
+   "expectedFrame": "breast"
+  },
+  {
+   "complaint": "breast redness",
+   "source": "web.symptom",
+   "expectedFrame": "breast"
+  },
+  {
+   "complaint": "hernia",
+   "source": "web.symptom",
+   "expectedFrame": "lump.hernia"
+  },
+  {
+   "complaint": "groin swelling",
+   "source": "web.symptom",
+   "expectedFrame": "lump.hernia"
+  },
+  {
+   "complaint": "groin pain",
+   "source": "web.symptom",
+   "expectedFrame": "pain.abdomen"
+  },
+  {
+   "complaint": "umbilical swelling",
+   "source": "web.symptom",
+   "expectedFrame": "lump.hernia"
+  },
+  {
+   "complaint": "incisional swelling",
+   "source": "web.symptom",
+   "expectedFrame": "lump.hernia"
+  },
+  {
+   "complaint": "abdominal wall pain",
+   "source": "web.symptom",
+   "expectedFrame": "pain.abdomen"
+  },
+  {
+   "complaint": "lump in abdomen",
+   "source": "web.symptom",
+   "expectedFrame": "lump.abdominal"
+  },
+  {
+   "complaint": "scrotal swelling",
+   "source": "web.symptom",
+   "expectedFrame": "lump.scrotal"
+  },
+  {
+   "complaint": "wound discharge",
+   "source": "web.symptom",
+   "expectedFrame": "skin.wound"
+  },
+  {
+   "complaint": "wound dehiscence",
+   "source": "web.symptom",
+   "expectedFrame": "skin.wound"
+  },
+  {
+   "complaint": "fever after surgery",
+   "source": "web.symptom",
+   "expectedFrame": "fever"
+  },
+  {
+   "complaint": "wound pain",
+   "source": "web.symptom",
+   "expectedFrame": "skin.wound"
+  },
+  {
+   "complaint": "wound swelling",
+   "source": "web.symptom",
+   "expectedFrame": "skin.wound"
+  },
+  {
+   "complaint": "wound redness",
+   "source": "web.symptom",
+   "expectedFrame": "skin.wound"
+  },
+  {
+   "complaint": "suture problem",
+   "source": "web.symptom",
+   "expectedFrame": "general"
+  },
+  {
+   "complaint": "drain output change",
+   "source": "web.symptom",
+   "expectedFrame": "general"
+  },
+  {
+   "complaint": "post-op nausea",
+   "source": "web.symptom",
+   "expectedFrame": "vomiting"
+  },
+  {
+   "complaint": "post-op fever",
+   "source": "web.symptom",
+   "expectedFrame": "fever"
+  },
+  {
+   "complaint": "joint pain",
+   "source": "web.symptom",
+   "expectedFrame": "pain.joint"
+  },
+  {
+   "complaint": "back pain",
+   "source": "web.symptom",
+   "expectedFrame": "pain.back"
+  },
+  {
+   "complaint": "lower back pain",
+   "source": "web.symptom",
+   "expectedFrame": "pain.back"
+  },
+  {
+   "complaint": "shoulder pain",
+   "source": "web.symptom",
+   "expectedFrame": "pain.joint"
+  },
+  {
+   "complaint": "knee pain",
+   "source": "web.symptom",
+   "expectedFrame": "pain.joint"
+  },
+  {
+   "complaint": "hip pain",
+   "source": "web.symptom",
+   "expectedFrame": "pain.joint"
+  },
+  {
+   "complaint": "joint swelling",
+   "source": "web.symptom",
+   "expectedFrame": "pain.joint"
+  },
+  {
+   "complaint": "joint stiffness",
+   "source": "web.symptom",
+   "expectedFrame": "pain.joint"
+  },
+  {
+   "complaint": "morning stiffness",
+   "source": "web.symptom",
+   "expectedFrame": "pain.joint"
+  },
+  {
+   "complaint": "muscle pain",
+   "source": "web.symptom",
+   "expectedFrame": "pain.limb"
+  },
+  {
+   "complaint": "muscle weakness",
+   "source": "web.symptom",
+   "expectedFrame": "neuro.weakness"
+  },
+  {
+   "complaint": "limb pain",
+   "source": "web.symptom",
+   "expectedFrame": "pain.limb"
+  },
+  {
+   "complaint": "bone pain",
+   "source": "web.symptom",
+   "expectedFrame": "pain.limb"
+  },
+  {
+   "complaint": "ankle pain",
+   "source": "web.symptom",
+   "expectedFrame": "pain.joint"
+  },
+  {
+   "complaint": "wrist pain",
+   "source": "web.symptom",
+   "expectedFrame": "pain.joint"
+  },
+  {
+   "complaint": "elbow pain",
+   "source": "web.symptom",
+   "expectedFrame": "pain.joint"
+  },
+  {
+   "complaint": "dysuria",
+   "source": "web.symptom",
+   "expectedFrame": "urinary"
+  },
+  {
+   "complaint": "haematuria",
+   "source": "web.symptom",
+   "expectedFrame": "bleeding.urinary"
+  },
+  {
+   "complaint": "urinary frequency",
+   "source": "web.symptom",
+   "expectedFrame": "urinary"
+  },
+  {
+   "complaint": "nocturia",
+   "source": "web.symptom",
+   "expectedFrame": "urinary"
+  },
+  {
+   "complaint": "loin pain",
+   "source": "web.symptom",
+   "expectedFrame": "pain.abdomen"
+  },
+  {
+   "complaint": "urinary retention",
+   "source": "web.symptom",
+   "expectedFrame": "urinary"
+  },
+  {
+   "complaint": "poor urinary stream",
+   "source": "web.symptom",
+   "expectedFrame": "urinary"
+  },
+  {
+   "complaint": "hesitancy",
+   "source": "web.symptom",
+   "expectedFrame": "urinary"
+  },
+  {
+   "complaint": "incomplete bladder emptying",
+   "source": "web.symptom",
+   "expectedFrame": "urinary"
+  },
+  {
+   "complaint": "urinary incontinence",
+   "source": "web.symptom",
+   "expectedFrame": "urinary"
+  },
+  {
+   "complaint": "frothy urine",
+   "source": "web.symptom",
+   "expectedFrame": "urinary"
+  },
+  {
+   "complaint": "renal colic",
+   "source": "web.symptom",
+   "expectedFrame": "pain.abdomen"
+  },
+  {
+   "complaint": "suprapubic pain",
+   "source": "web.symptom",
+   "expectedFrame": "pain.abdomen"
+  },
+  {
+   "complaint": "penile discharge",
+   "source": "web.symptom",
+   "expectedFrame": "general"
+  },
+  {
+   "complaint": "pelvic pain",
+   "source": "web.symptom",
+   "expectedFrame": "pain.abdomen"
+  },
+  {
+   "complaint": "irregular periods",
+   "source": "web.symptom",
+   "expectedFrame": "general"
+  },
+  {
+   "complaint": "menorrhagia",
+   "source": "web.symptom",
+   "expectedFrame": "bleeding.vaginal"
+  },
+  {
+   "complaint": "dysmenorrhoea",
+   "source": "web.symptom",
+   "expectedFrame": "pain.abdomen"
+  },
+  {
+   "complaint": "post-coital bleeding",
+   "source": "web.symptom",
+   "expectedFrame": "bleeding.vaginal"
+  },
+  {
+   "complaint": "vaginal discharge",
+   "source": "web.symptom",
+   "expectedFrame": "general"
+  },
+  {
+   "complaint": "vaginal bleeding",
+   "source": "web.symptom",
+   "expectedFrame": "bleeding.vaginal"
+  },
+  {
+   "complaint": "intermenstrual bleeding",
+   "source": "web.symptom",
+   "expectedFrame": "bleeding.vaginal"
+  },
+  {
+   "complaint": "amenorrhoea",
+   "source": "web.symptom",
+   "expectedFrame": "general"
+  },
+  {
+   "complaint": "dyspareunia",
+   "source": "web.symptom",
+   "expectedFrame": "pain.perineal"
+  },
+  {
+   "complaint": "vulval pain",
+   "source": "web.symptom",
+   "expectedFrame": "pain.perineal"
+  },
+  {
+   "complaint": "pelvic pressure",
+   "source": "web.symptom",
+   "expectedFrame": "general"
+  },
+  {
+   "complaint": "diabetic foot infection",
+   "source": "web.symptom",
+   "expectedFrame": "skin.wound",
+   "secondary": [
+    "fever"
+   ]
+  },
+  {
+   "complaint": "foot ulcer",
+   "source": "web.symptom",
+   "expectedFrame": "skin.wound"
+  },
+  {
+   "complaint": "leg ulcer",
+   "source": "web.symptom",
+   "expectedFrame": "skin.wound"
+  },
+  {
+   "complaint": "numbness feet",
+   "source": "web.symptom",
+   "expectedFrame": "neuro.numbness"
+  },
+  {
+   "complaint": "tingling feet",
+   "source": "web.symptom",
+   "expectedFrame": "neuro.numbness"
+  },
+  {
+   "complaint": "cold foot",
+   "source": "web.symptom",
+   "expectedFrame": "pain.limb"
+  },
+  {
+   "complaint": "poor wound healing",
+   "source": "web.symptom",
+   "expectedFrame": "skin.wound"
+  },
+  {
+   "complaint": "polyuria",
+   "source": "web.symptom",
+   "expectedFrame": "general"
+  },
+  {
+   "complaint": "polydipsia",
+   "source": "web.symptom",
+   "expectedFrame": "general"
+  },
+  {
+   "complaint": "hypoglycaemia episode",
+   "source": "web.symptom",
+   "expectedFrame": "general"
+  },
+  {
+   "complaint": "blurred vision (diabetes)",
+   "source": "web.symptom",
+   "expectedFrame": "general"
+  },
+  {
+   "complaint": "erectile dysfunction",
+   "source": "web.symptom",
+   "expectedFrame": "general"
+  },
+  {
+   "complaint": "rash",
+   "source": "web.symptom",
+   "expectedFrame": "skin.rash"
+  },
+  {
+   "complaint": "skin lesion",
+   "source": "web.symptom",
+   "expectedFrame": "skin.lesion"
+  },
+  {
+   "complaint": "ulcer",
+   "source": "web.symptom",
+   "expectedFrame": "skin.wound"
+  },
+  {
+   "complaint": "bruising",
+   "source": "web.symptom",
+   "expectedFrame": "bleeding.general"
+  },
+  {
+   "complaint": "petechiae",
+   "source": "web.symptom",
+   "expectedFrame": "skin.rash"
+  },
+  {
+   "complaint": "purpura",
+   "source": "web.symptom",
+   "expectedFrame": "skin.rash"
+  },
+  {
+   "complaint": "hair loss",
+   "source": "web.symptom",
+   "expectedFrame": "skin.rash"
+  },
+  {
+   "complaint": "nail changes",
+   "source": "web.symptom",
+   "expectedFrame": "skin.rash"
+  },
+  {
+   "complaint": "cellulitis",
+   "source": "web.symptom",
+   "expectedFrame": "skin.wound"
+  },
+  {
+   "complaint": "abscess",
+   "source": "web.symptom",
+   "expectedFrame": "skin.wound"
+  },
+  {
+   "complaint": "cyst",
+   "source": "web.symptom",
+   "expectedFrame": "lump.soft_tissue"
+  },
+  {
+   "complaint": "lipoma",
+   "source": "web.symptom",
+   "expectedFrame": "lump.soft_tissue"
+  },
+  {
+   "complaint": "skin discolouration",
+   "source": "web.symptom",
+   "expectedFrame": "skin.rash"
+  },
+  {
+   "complaint": "eczema",
+   "source": "web.symptom",
+   "expectedFrame": "skin.rash"
+  },
+  {
+   "complaint": "psoriasis",
+   "source": "web.symptom",
+   "expectedFrame": "skin.rash"
+  },
+  {
+   "complaint": "pigmented lesion",
+   "source": "web.symptom",
+   "expectedFrame": "skin.lesion"
+  },
+  {
+   "complaint": "anxiety",
+   "source": "web.symptom",
+   "expectedFrame": "general"
+  },
+  {
+   "complaint": "depression",
+   "source": "web.symptom",
+   "expectedFrame": "general"
+  },
+  {
+   "complaint": "stress",
+   "source": "web.symptom",
+   "expectedFrame": "general"
+  },
+  {
+   "complaint": "insomnia",
+   "source": "web.symptom",
+   "expectedFrame": "general"
+  },
+  {
+   "complaint": "panic attacks",
+   "source": "web.symptom",
+   "expectedFrame": "general"
+  },
+  {
+   "complaint": "low mood",
+   "source": "web.symptom",
+   "expectedFrame": "general"
+  },
+  {
+   "complaint": "social withdrawal",
+   "source": "web.symptom",
+   "expectedFrame": "general"
+  },
+  {
+   "complaint": "poor concentration",
+   "source": "web.symptom",
+   "expectedFrame": "general"
+  },
+  {
+   "complaint": "fatigue (functional)",
+   "source": "web.symptom",
+   "expectedFrame": "fatigue"
+  },
+  {
+   "complaint": "unexplained symptoms",
+   "source": "web.symptom",
+   "expectedFrame": "general"
+  },
+  {
+   "complaint": "admin enquiry",
+   "source": "web.symptom",
+   "expectedFrame": "general"
+  },
+  {
+   "complaint": "follow-up",
+   "source": "web.symptom",
+   "expectedFrame": "general"
+  },
+  {
+   "complaint": "second opinion",
+   "source": "web.symptom",
+   "expectedFrame": "general"
+  },
+  {
+   "complaint": "pre-op assessment",
+   "source": "web.symptom",
+   "expectedFrame": "general"
+  },
+  {
+   "complaint": "results review",
+   "source": "web.symptom",
+   "expectedFrame": "general"
+  },
+  {
+   "complaint": "wound check",
+   "source": "web.symptom",
+   "expectedFrame": "skin.wound"
+  },
+  {
+   "complaint": "medication review",
+   "source": "web.symptom",
+   "expectedFrame": "general"
+  },
+  {
+   "complaint": "sick note",
+   "source": "web.symptom",
+   "expectedFrame": "general"
+  },
+  {
+   "complaint": "referral follow-up",
+   "source": "web.symptom",
+   "expectedFrame": "general"
+  },
+  {
+   "complaint": "post-op review",
+   "source": "web.symptom",
+   "expectedFrame": "general"
+  },
+  {
+   "complaint": "annual review",
+   "source": "web.symptom",
+   "expectedFrame": "general"
+  },
+  {
+   "complaint": "prescription renewal",
+   "source": "web.symptom",
+   "expectedFrame": "general"
+  },
+  {
+   "complaint": "insurance report",
+   "source": "web.symptom",
+   "expectedFrame": "general"
+  },
+  {
+   "complaint": "perianal lump",
+   "source": "web.symptom",
+   "expectedFrame": "lump.soft_tissue",
+   "secondary": [
+    "pain.perineal"
+   ]
+  },
+  {
+   "complaint": "rectal prolapse",
+   "source": "web.symptom",
+   "expectedFrame": "bowel"
+  },
+  {
+   "complaint": "pulsatile mass",
+   "source": "web.symptom",
+   "expectedFrame": "lump.abdominal"
+  },
+  {
+   "complaint": "lymphadenopathy",
+   "source": "web.symptom",
+   "expectedFrame": "lump.neck"
+  },
+  {
+   "complaint": "genital ulcer",
+   "source": "web.symptom",
+   "expectedFrame": "skin.wound"
+  },
+  {
+   "complaint": "penile swelling",
+   "source": "web.symptom",
+   "expectedFrame": "lump.scrotal"
+  },
+  {
+   "complaint": "inconsolable crying",
+   "source": "web.symptom",
+   "expectedFrame": "general"
+  },
+  {
+   "complaint": "poor feeding",
+   "source": "web.symptom",
+   "expectedFrame": "general"
+  },
+  {
+   "complaint": "failure to thrive",
+   "source": "web.symptom",
+   "expectedFrame": "weight_loss"
+  },
+  {
+   "complaint": "bilious vomiting",
+   "source": "web.symptom",
+   "expectedFrame": "vomiting"
+  },
+  {
+   "complaint": "neonatal jaundice",
+   "source": "web.symptom",
+   "expectedFrame": "jaundice"
+  },
+  {
+   "complaint": "non-blanching rash",
+   "source": "web.symptom",
+   "expectedFrame": "skin.rash"
+  },
+  {
+   "complaint": "strawberry tongue",
+   "source": "web.symptom",
+   "expectedFrame": "general"
+  },
+  {
+   "complaint": "limp",
+   "source": "web.symptom",
+   "expectedFrame": "general"
+  },
+  {
+   "complaint": "bow legs",
+   "source": "web.symptom",
+   "expectedFrame": "general"
+  },
+  {
+   "complaint": "delayed development",
+   "source": "web.symptom",
+   "expectedFrame": "general"
+  },
+  {
+   "complaint": "parental concern",
+   "source": "web.symptom",
+   "expectedFrame": "general"
+  }
+ ]
+}

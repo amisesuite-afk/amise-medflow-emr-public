@@ -1,0 +1,221 @@
+{
+  "schemaVersion": 1,
+  "id": "thyroid-post-op-hypocalcaemia",
+  "condition": "Symptomatic hypocalcaemia after total thyroidectomy",
+  "category": "breast-endocrine",
+  "permutationOf": null,
+  "summary": "44-year-old woman on day 1 after total thyroidectomy with perioral tingling, carpopedal spasm, positive Chvostek sign, adjusted calcium 1.78 mmol/L, PTH undetectable, QTc 490 ms. Symptomatic hypocalcaemia: IV calcium gluconate with cardiac monitoring, check/correct magnesium, oral calcium + alfacalcidol.",
+  "tags": [
+    "thyroid",
+    "post-op",
+    "metabolic"
+  ],
+  "inputs": {
+    "patient": {
+      "ageYears": 44,
+      "sex": "female",
+      "pregnancy": {
+        "status": "not-pregnant"
+      },
+      "heightCm": 166,
+      "weightKg": 64
+    },
+    "encounter": {
+      "setting": "inpatient",
+      "visitType": "wardReview",
+      "acuity": "urgent",
+      "isPostOp": true,
+      "postOpDays": 1
+    },
+    "chiefComplaint": "Tingling around the mouth and hand cramps after thyroid surgery",
+    "hpi": "Day 1 after total thyroidectomy with central neck dissection for papillary carcinoma. Since this morning tingling around the lips and in the fingertips, now painful cramping of both hands. Voice normal. Neck wound comfortable, no swelling.",
+    "symptoms": [
+      "perioral tingling",
+      "tingling",
+      "muscle cramps"
+    ],
+    "negatives": [
+      "neck swelling",
+      "stridor",
+      "voice change"
+    ],
+    "exam": {
+      "general": "Carpopedal spasm, Chvostek sign positive. Neck wound flat and dry.",
+      "neuro": "Trousseau sign positive."
+    },
+    "vitals": [
+      {
+        "minutesAgo": 15,
+        "heartRate": 88,
+        "systolicBp": 128,
+        "diastolicBp": 78,
+        "respiratoryRate": 16,
+        "temperatureC": 36.8,
+        "spo2": 98,
+        "avpu": "A",
+        "onSupplementalO2": false
+      }
+    ],
+    "labs": [
+      {
+        "analyte": "calcium",
+        "name": "Calcium (adjusted)",
+        "value": 1.78,
+        "unit": "mmol/L",
+        "minutesAgo": 60
+      },
+      {
+        "analyte": "pth",
+        "name": "PTH",
+        "value": 0.4,
+        "unit": "pmol/L",
+        "minutesAgo": 60
+      },
+      {
+        "analyte": "magnesium",
+        "name": "Magnesium",
+        "value": 0.62,
+        "unit": "mmol/L",
+        "minutesAgo": 60
+      },
+      {
+        "analyte": "ecg",
+        "name": "ECG",
+        "resultText": "Sinus rhythm 88/min, QTc 490 ms",
+        "minutesAgo": 30
+      }
+    ],
+    "imaging": [],
+    "comorbidities": [
+      "Papillary thyroid carcinoma"
+    ],
+    "surgicalHistory": [
+      "Total thyroidectomy and central neck dissection (yesterday)"
+    ],
+    "medications": [
+      {
+        "drug": "Levothyroxine",
+        "dose": "100 mcg",
+        "frequency": "OD",
+        "indication": "Post-thyroidectomy"
+      }
+    ],
+    "allergies": [],
+    "nkda": true,
+    "socialHistory": "",
+    "confirmedDiagnosis": {
+      "name": "Symptomatic post-surgical hypocalcaemia (hypoparathyroidism) after total thyroidectomy",
+      "icd10": "E89.2",
+      "assessmentText": "Symptomatic hypocalcaemia (adjusted Ca 1.78, PTH undetectable, prolonged QTc) on day 1 after total thyroidectomy — post-surgical hypoparathyroidism. IV calcium gluconate with cardiac monitoring, IV magnesium, then oral calcium and alfacalcidol; recheck calcium in 4–6 h."
+    },
+    "platform": {
+      "web": {
+        "ccTemplate": "Post-op follow-up (routine)",
+        "symptoms": [
+          "tingling",
+          "numbness",
+          "muscle pain"
+        ],
+        "durationDays": 0.3,
+        "painScore": 4
+      }
+    }
+  },
+  "expected": {
+    "safety": {
+      "emergencyLevel": {
+        "id": "level-at-least-urgent",
+        "severity": "critical",
+        "atLeast": "urgent",
+        "guidelineRefs": [
+          "sfe-hypocalcaemia-2016"
+        ],
+        "note": "Symptomatic hypocalcaemia with QT prolongation needs immediate treatment."
+      },
+      "redFlags": [
+        {
+          "id": "flag-hypocalcaemia",
+          "severity": "critical",
+          "match": [
+            "hypocalc",
+            "calcium",
+            "tetany"
+          ],
+          "guidelineRefs": [
+            "sfe-hypocalcaemia-2016"
+          ]
+        }
+      ]
+    },
+    "investigations": {
+      "mustInclude": [
+        {
+          "id": "inv-ecg",
+          "severity": "quality",
+          "match": [
+            "ecg",
+            "cardiac monitor"
+          ],
+          "guidelineRefs": [
+            "sfe-hypocalcaemia-2016"
+          ]
+        },
+        {
+          "id": "inv-magnesium",
+          "severity": "quality",
+          "match": [
+            "magnesium"
+          ],
+          "guidelineRefs": [
+            "sfe-hypocalcaemia-2016"
+          ]
+        }
+      ]
+    },
+    "management": {
+      "mustInclude": [
+        {
+          "id": "mgmt-iv-calcium",
+          "severity": "critical",
+          "match": [
+            "calcium gluconate",
+            "re:iv calcium"
+          ],
+          "guidelineRefs": [
+            "sfe-hypocalcaemia-2016"
+          ],
+          "note": "SfE: symptomatic or severe acute hypocalcaemia is treated with IV calcium gluconate under cardiac monitoring."
+        },
+        {
+          "id": "mgmt-oral-calcium-vitd",
+          "severity": "quality",
+          "match": [
+            "alfacalcidol",
+            "calcitriol",
+            "oral calcium",
+            "calcium carbonate"
+          ],
+          "guidelineRefs": [
+            "sfe-hypocalcaemia-2016"
+          ]
+        }
+      ]
+    }
+  },
+  "guideline": [
+    {
+      "id": "sfe-hypocalcaemia-2016",
+      "name": "Society for Endocrinology emergency guidance — acute hypocalcaemia in adults",
+      "year": 2016,
+      "section": "Symptomatic or severe hypocalcaemia: IV calcium gluconate with cardiac monitoring; check and correct magnesium; oral calcium and active vitamin D for post-surgical hypoparathyroidism",
+      "citation": "Turner J, Gittoes N, Selby P; Society for Endocrinology Clinical Committee. Society for Endocrinology Endocrine Emergency Guidance: Emergency management of acute hypocalcaemia in adult patients. Endocr Connect. 2016;5:G7–G8.",
+      "verified": false
+    }
+  ],
+  "rationale": "Post-operative metabolic emergency. The CC template \"Post-op follow-up (routine)\" is what a ward clinician would pick; the vitals are normal, so escalation must come from the symptoms and the calcium result.",
+  "authoring": {
+    "author": "Claude (hernia / breast / endocrine cluster)",
+    "date": "2026-09-25",
+    "notes": "Expectations need surgeon sign-off (reviewedBy). Citations verified: false."
+  }
+}

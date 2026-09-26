@@ -5,10 +5,16 @@ import UIKit
 
 // MARK: - Peer-to-peer sync (Multipeer Connectivity)
 //
-// Works over Bluetooth + WiFi with no internet. Devices running the same
-// signed-in account discover each other automatically and exchange
-// whichever records each side is missing or has newer. Safe to run
+// Works over Bluetooth + WiFi with no internet. Devices that have been paired once
+// (Settings → Nearby devices → Pair a device) and are signed in to the same account
+// exchange whichever records each side is missing or has newer. Safe to run
 // alongside Supabase sync.
+//
+// Admission and transport security (PeerSyncService+Pairing.swift, protocol in
+// PeerPairingCrypto.swift): one encrypted MCSession per peer; discovery info carries only a
+// random device id and a pairing-mode flag; every session runs a mutual HMAC challenge-response
+// with the Keychain pair secret, then the same-account check, before any manifest or record is
+// sent or read.
 //
 // Matching key: syncCode (a UUID string generated locally at record creation).
 // This lets offline-created records — ones that have never reached Supabase
@@ -33,89 +39,151 @@ final class PeerSyncService: NSObject, ObservableObject {
 
     @Published var nearbyCount    = 0   // devices found (may not be connected)
     @Published var connectedCount = 0   // devices actively exchanging data
+    @Published var isRunning      = false  // true while advertiser+browser are active
     @Published var lastPeerSyncAt: Date?
     @Published var peerSyncStatus: String = ""
     @Published var syncHistory: [PeerSyncEvent] = []   // last 20 sync events
 
-    private static let serviceType = "amise-medflow"   // ≤15 chars, alphanumeric+hyphen
+    // Pairing (PeerSyncService+Pairing.swift)
+    @Published var pairedDevices: [PairedPeerDevice] = []
+    @Published var pairingCode: String?            // shown on this device while pairing
+    @Published var pairingCodeExpiresAt: Date?
+    @Published var pairingStatus: String = ""
+    @Published var isPairingInProgress = false     // a code typed here is being used
+    @Published var unpairedDeviceNearby = false    // a device on this build that is not paired
+    @Published var legacyDeviceNearby = false      // a device still on a build without pairing
+    @Published var pairingMigrationPending = false // updated from a build without pairing, not yet paired
 
-    private let myPeer: MCPeerID
-    private var session:   MCSession?
-    private var advertiser: MCNearbyServiceAdvertiser?
-    private var browser:    MCNearbyServiceBrowser?
+    static let serviceType = "amise-medflow"   // ≤15 chars, alphanumeric+hyphen
+    private static let peerIDKey = "com.amise.medflow.mcPeerID"
 
-    private var modelContext: ModelContext?
-    private var emailHash: String = ""
-    private var storedEmail: String = ""
+    let myPeer: MCPeerID
+    /// This install's random id: the only identifier in discovery info.
+    let deviceId: String
+    /// One session per peer, so a peer that fails authentication can be disconnected alone.
+    var sessions: [MCPeerID: MCSession] = [:]
+    /// Handshake state per peer. Data flows only while `phase == .authenticated`.
+    var links: [MCPeerID: PeerLink] = [:]
+    var advertiser: MCNearbyServiceAdvertiser?
+    var browser:    MCNearbyServiceBrowser?
 
-    private var foundPeers: Set<MCPeerID> = []
-    private var receivedCount: [MCPeerID: Int] = [:]
-    private var sentCount:     [MCPeerID: Int] = [:]
+    var modelContext: ModelContext?
+    private(set) var storedEmail: String = ""
+
+    var discovered: [MCPeerID: PeerPairingCrypto.Discovered] = [:]   // devices on this build
+    var connectAttempts: [MCPeerID: Int] = [:]
+    var pairingCodeAttemptUsed = false   // one confirmation attempt per displayed code
+    var enteredCode: String?             // code typed on this device (the pairing initiator)
+    var pairingTarget: MCPeerID?         // the device this device is pairing with
+
+    var foundPeers: Set<MCPeerID> = []   // paired devices in range
+    var receivedCount: [MCPeerID: Int] = [:]
+    var sentCount:     [MCPeerID: Int] = [:]
 
     override init() {
-        myPeer = MCPeerID(displayName: UIDevice.current.name)
+        // An MCPeerID saved by an earlier launch means this install already used peer sync
+        // under the old (unpaired) scheme: the user is asked to pair once.
+        let existingInstall = UserDefaults.standard.data(forKey: Self.peerIDKey) != nil
+        myPeer = Self.loadOrCreatePeerID()
+        deviceId = PeerDeviceIdentity.loadOrCreate(existingInstall: existingInstall)
         super.init()
+        pairingMigrationPending = PeerDeviceIdentity.migrationPending
+        reloadPairedDevices()
+    }
+
+    // Persist the MCPeerID across launches — MPC uses the archived identity internally
+    // to track known peers. Recreating a new ID each launch looks like a different device
+    // to the framework and breaks discovery reliability.
+    private static func loadOrCreatePeerID() -> MCPeerID {
+        let key = peerIDKey
+        if let data = UserDefaults.standard.data(forKey: key),
+           let peer = try? NSKeyedUnarchiver.unarchivedObject(ofClass: MCPeerID.self, from: data) {
+            return peer
+        }
+        let peer = MCPeerID(displayName: UIDevice.current.name)
+        if let data = try? NSKeyedArchiver.archivedData(withRootObject: peer, requiringSecureCoding: true) {
+            UserDefaults.standard.set(data, forKey: key)
+        }
+        return peer
     }
 
     // MARK: - Lifecycle
 
     func start(context: ModelContext, email: String) {
-        guard session == nil else { return }
+        #if DEBUG
+        if UITestDemoMode.isActive { return }   // demo mode: no nearby-device sync
+        #endif
+        guard !isRunning else { return }
+        teardownTransport()
         modelContext = context
         storedEmail = email
-        emailHash = Self.stableHash(email.lowercased())
+        isRunning = true
+        reloadPairedDevices()
 
-        session = MCSession(peer: myPeer, securityIdentity: nil,
-                            encryptionPreference: .required)
-        session?.delegate = self
-
-        let info = ["h": emailHash]
-        advertiser = MCNearbyServiceAdvertiser(peer: myPeer,
-                                               discoveryInfo: info,
-                                               serviceType: Self.serviceType)
-        advertiser?.delegate = self
-        advertiser?.startAdvertisingPeer()
+        // Discovery info: random device id + pairing flag only (never the email or a hash of it).
+        readvertise()
 
         browser = MCNearbyServiceBrowser(peer: myPeer, serviceType: Self.serviceType)
         browser?.delegate = self
         browser?.startBrowsingForPeers()
 
-        peerSyncStatus = "Looking for nearby devices…"
+        peerSyncStatus = pairedDevices.isEmpty ? "" : "Looking for nearby devices…"
     }
 
     func stop() {
+        isRunning = false   // first, so clearPairingCode() does not start a new advertiser
+        teardownTransport()
+        if pairingCode != nil || enteredCode != nil {
+            pairingStatus = "Pairing stopped. Start again from Settings → Nearby devices."
+        }
+        clearPairingCode()
+        enteredCode = nil
+        pairingTarget = nil
+        isPairingInProgress = false
+        peerSyncStatus = ""
+    }
+
+    /// Stops advertising and browsing and disconnects every session.
+    private func teardownTransport() {
         advertiser?.stopAdvertisingPeer()
         browser?.stopBrowsingForPeers()
-        session?.disconnect()
-        session    = nil
+        advertiser?.delegate = nil
+        browser?.delegate    = nil
+        for peer in sessions.keys { recordHistory(for: peer) }
+        for sess in sessions.values { sess.disconnect() }
+        sessions.removeAll()
+        links.removeAll()
         advertiser = nil
         browser    = nil
+        discovered.removeAll()
+        connectAttempts.removeAll()
         foundPeers.removeAll()
         receivedCount.removeAll()
         sentCount.removeAll()
+        unpairedDeviceNearby = false
+        legacyDeviceNearby   = false
         nearbyCount    = 0
         connectedCount = 0
-        peerSyncStatus = ""
     }
 
     func signOut() {
         stop()
         storedEmail = ""
-        emailHash   = ""
     }
 
     // MARK: - Manual controls
 
     func syncNow() {
-        guard let sess = session else {
+        guard isRunning else {
             peerSyncStatus = "Proximity sync not running"
             return
         }
-        guard !sess.connectedPeers.isEmpty else {
-            peerSyncStatus = "No peers connected"
+        let peers = authenticatedPeers
+        guard !peers.isEmpty else {
+            peerSyncStatus = pairingPrompt ?? "No peers connected"
             return
         }
-        for peer in sess.connectedPeers { sendManifest(to: peer) }
+        for peer in peers { sendManifest(to: peer) }
         peerSyncStatus = "Sync triggered…"
     }
 
@@ -127,8 +195,9 @@ final class PeerSyncService: NSObject, ObservableObject {
 
     // MARK: - Send manifest on connect
 
-    private func sendManifest(to peer: MCPeerID) {
-        guard let ctx = modelContext, let sess = session else { return }
+    func sendManifest(to peer: MCPeerID) {
+        // Only to a peer that has passed the challenge-response and the same-account check.
+        guard let ctx = modelContext, isAuthenticated(peer), let sess = sessions[peer] else { return }
         Task {
             let manifest = await buildManifest(context: ctx)
             guard let data = try? JSONEncoder().encode(PeerMessage.manifest(manifest)) else { return }
@@ -138,650 +207,124 @@ final class PeerSyncService: NSObject, ObservableObject {
 
     // MARK: - Manifest builder (keyed by syncCode — includes offline records)
 
-    private func buildManifest(context: ModelContext) async -> PeerManifest {
-        // syncKey: syncCode if set, otherwise fall back to local id (legacy records)
-        let patients = (try? context.fetch(FetchDescriptor<Patient>()))?.reduce(into: [String:Double]()) { d, p in
-            d[p.syncCode.isEmpty ? p.id.uuidString : p.syncCode] = (p.syncedAt ?? .distantPast).timeIntervalSince1970
-        } ?? [:]
-
-        let notes = (try? context.fetch(FetchDescriptor<ClinicalNote>()))?.reduce(into: [String:Double]()) { d, n in
-            d[n.syncCode.isEmpty ? n.id.uuidString : n.syncCode] = (n.syncedAt ?? .distantPast).timeIntervalSince1970
-        } ?? [:]
-
-        let rxs = (try? context.fetch(FetchDescriptor<Prescription>()))?.reduce(into: [String:Double]()) { d, rx in
-            d[rx.syncCode.isEmpty ? rx.id.uuidString : rx.syncCode] = (rx.syncedAt ?? .distantPast).timeIntervalSince1970
-        } ?? [:]
-
-        let vitals = (try? context.fetch(FetchDescriptor<VitalsEntry>()))?.reduce(into: [String:Double]()) { d, v in
-            d[v.syncCode.isEmpty ? v.id.uuidString : v.syncCode] = (v.syncedAt ?? .distantPast).timeIntervalSince1970
-        } ?? [:]
-
-        let billing = (try? context.fetch(FetchDescriptor<BillingLineItem>()))?.reduce(into: [String:Double]()) { d, b in
-            d[b.syncCode.isEmpty ? b.id.uuidString : b.syncCode] = (b.syncedAt ?? .distantPast).timeIntervalSince1970
-        } ?? [:]
-
-        return PeerManifest(emailHash: emailHash,
-                            patients: patients, notes: notes,
-                            prescriptions: rxs, vitals: vitals,
-                            billingItems: billing)
+    /// syncKey: syncCode if set, otherwise the local id (legacy records).
+    private static func syncKey(_ syncCode: String, _ id: UUID) -> String {
+        syncCode.isEmpty ? id.uuidString : syncCode
     }
 
-    // MARK: - Process received manifest → send missing records
+    /// One record type's manifest maps: cloud sync times (for older builds) and stamps
+    /// (PeerVersion: max(updatedAt, syncedAt)).
+    private static func manifestMaps<T>(_ records: [T], key: (T) -> String,
+                                        updatedAt: (T) -> Date?, syncedAt: (T) -> Date?)
+        -> (synced: [String: Double], stamps: [String: Double]) {
+        var synced: [String: Double] = [:]
+        var stamps: [String: Double] = [:]
+        for record in records {
+            let k = key(record)
+            synced[k] = PeerVersion.epoch(syncedAt(record))
+            stamps[k] = PeerVersion.stamp(updatedAt: updatedAt(record), syncedAt: syncedAt(record))
+        }
+        return (synced, stamps)
+    }
 
-    private func handleManifest(_ manifest: PeerManifest, from peer: MCPeerID) {
-        guard manifest.emailHash == emailHash,
-              let ctx = modelContext, let sess = session else { return }
+    private func buildManifest(context: ModelContext) async -> PeerManifest {
+        let allPatients = (try? context.fetch(FetchDescriptor<Patient>())) ?? []
+        var patients = Self.manifestMaps(allPatients, key: { Self.syncKey($0.syncCode, $0.id) },
+                                         updatedAt: { $0.updatedAt }, syncedAt: { $0.syncedAt })
+        // Deleted on this device: listed with a far-future stamp, so no peer (this build or an
+        // older one) sends them again. A live record's own entry wins.
+        for id in PatientIdentityStore.deletedIds() where patients.synced[id] == nil {
+            patients.synced[id] = PeerVersion.deletedHere
+            patients.stamps[id] = PeerVersion.deletedHere
+        }
+
+        let notes = Self.manifestMaps((try? context.fetch(FetchDescriptor<ClinicalNote>())) ?? [],
+                                      key: { Self.syncKey($0.syncCode, $0.id) },
+                                      updatedAt: { $0.updatedAt }, syncedAt: { $0.syncedAt })
+        let rxs = Self.manifestMaps((try? context.fetch(FetchDescriptor<Prescription>())) ?? [],
+                                    key: { Self.syncKey($0.syncCode, $0.id) },
+                                    updatedAt: { $0.updatedAt }, syncedAt: { $0.syncedAt })
+        let vitals = Self.manifestMaps((try? context.fetch(FetchDescriptor<VitalsEntry>())) ?? [],
+                                       key: { Self.syncKey($0.syncCode, $0.id) },
+                                       updatedAt: { $0.updatedAt }, syncedAt: { $0.syncedAt })
+        let billing = Self.manifestMaps((try? context.fetch(FetchDescriptor<BillingLineItem>())) ?? [],
+                                        key: { Self.syncKey($0.syncCode, $0.id) },
+                                        updatedAt: { $0.updatedAt }, syncedAt: { $0.syncedAt })
+
+        // emailHash no longer gates anything (admission is PeerSyncService+Pairing.swift) and is
+        // sent empty; the field stays so the manifest shape is unchanged.
+        return PeerManifest(emailHash: "",
+                            patients: patients.synced, notes: notes.synced,
+                            prescriptions: rxs.synced, vitals: vitals.synced,
+                            billingItems: billing.synced,
+                            patientStamps: patients.stamps, noteStamps: notes.stamps,
+                            prescriptionStamps: rxs.stamps, vitalsStamps: vitals.stamps,
+                            billingStamps: billing.stamps)
+    }
+
+    // MARK: - Process received manifest → send missing or newer records
+
+    /// The records the peer does not have, or holds an older copy of (PeerVersion.shouldSend).
+    private static func toSend<T>(_ records: [T], key: (T) -> String,
+                                  updatedAt: (T) -> Date?, syncedAt: (T) -> Date?,
+                                  peerSynced: [String: Double], peerStamps: [String: Double]?) -> [T] {
+        records.filter { record in
+            let k = key(record)
+            return PeerVersion.shouldSend(
+                localStamp: PeerVersion.stamp(updatedAt: updatedAt(record), syncedAt: syncedAt(record)),
+                localSynced: PeerVersion.epoch(syncedAt(record)),
+                peerStamp: peerStamps?[k],
+                peerSynced: peerSynced[k],
+                peerSendsStamps: peerStamps != nil)
+        }
+    }
+
+    private func sendRecords(_ message: PeerMessage, count: Int, to peer: MCPeerID, over sess: MCSession) {
+        guard count > 0, let data = try? JSONEncoder().encode(message) else { return }
+        try? sess.send(data, toPeers: [peer], with: .reliable)
+        sentCount[peer, default: 0] += count
+    }
+
+    func handleManifest(_ manifest: PeerManifest, from peer: MCPeerID) {
+        guard isAuthenticated(peer),
+              let ctx = modelContext, let sess = sessions[peer] else { return }
 
         Task {
-            let allPatients = (try? ctx.fetch(FetchDescriptor<Patient>())) ?? []
-            let missingPatients = allPatients.filter { p in
-                let myCode   = p.syncCode.isEmpty ? p.id.uuidString : p.syncCode
-                let peerTime = manifest.patients[myCode] ?? 0
-                let myTime   = (p.syncedAt ?? .distantPast).timeIntervalSince1970
-                return myTime > peerTime
-            }.map(PeerPatient.init)
-            if !missingPatients.isEmpty,
-               let data = try? JSONEncoder().encode(PeerMessage.patients(missingPatients)) {
-                try? sess.send(data, toPeers: [peer], with: .reliable)
-                self.sentCount[peer, default: 0] += missingPatients.count
-            }
+            let patients = Self.toSend((try? ctx.fetch(FetchDescriptor<Patient>())) ?? [],
+                                       key: { Self.syncKey($0.syncCode, $0.id) },
+                                       updatedAt: { $0.updatedAt }, syncedAt: { $0.syncedAt },
+                                       peerSynced: manifest.patients,
+                                       peerStamps: manifest.patientStamps).map(PeerPatient.init)
+            self.sendRecords(.patients(patients), count: patients.count, to: peer, over: sess)
 
-            let allNotes = (try? ctx.fetch(FetchDescriptor<ClinicalNote>())) ?? []
-            let missingNotes = allNotes.filter { n in
-                let myCode   = n.syncCode.isEmpty ? n.id.uuidString : n.syncCode
-                let peerTime = manifest.notes[myCode] ?? 0
-                let myTime   = (n.syncedAt ?? .distantPast).timeIntervalSince1970
-                return myTime > peerTime
-            }.compactMap(PeerNote.init)
-            if !missingNotes.isEmpty,
-               let data = try? JSONEncoder().encode(PeerMessage.notes(missingNotes)) {
-                try? sess.send(data, toPeers: [peer], with: .reliable)
-                self.sentCount[peer, default: 0] += missingNotes.count
-            }
+            let notes = Self.toSend((try? ctx.fetch(FetchDescriptor<ClinicalNote>())) ?? [],
+                                    key: { Self.syncKey($0.syncCode, $0.id) },
+                                    updatedAt: { $0.updatedAt }, syncedAt: { $0.syncedAt },
+                                    peerSynced: manifest.notes,
+                                    peerStamps: manifest.noteStamps).compactMap(PeerNote.init)
+            self.sendRecords(.notes(notes), count: notes.count, to: peer, over: sess)
 
-            let allRxs = (try? ctx.fetch(FetchDescriptor<Prescription>())) ?? []
-            let missingRxs = allRxs.filter { rx in
-                let myCode   = rx.syncCode.isEmpty ? rx.id.uuidString : rx.syncCode
-                let peerTime = manifest.prescriptions[myCode] ?? 0
-                let myTime   = (rx.syncedAt ?? .distantPast).timeIntervalSince1970
-                return myTime > peerTime
-            }.map(PeerPrescription.init)
-            if !missingRxs.isEmpty,
-               let data = try? JSONEncoder().encode(PeerMessage.prescriptions(missingRxs)) {
-                try? sess.send(data, toPeers: [peer], with: .reliable)
-                self.sentCount[peer, default: 0] += missingRxs.count
-            }
+            let rxs = Self.toSend((try? ctx.fetch(FetchDescriptor<Prescription>())) ?? [],
+                                  key: { Self.syncKey($0.syncCode, $0.id) },
+                                  updatedAt: { $0.updatedAt }, syncedAt: { $0.syncedAt },
+                                  peerSynced: manifest.prescriptions,
+                                  peerStamps: manifest.prescriptionStamps).map(PeerPrescription.init)
+            self.sendRecords(.prescriptions(rxs), count: rxs.count, to: peer, over: sess)
 
-            let allVitals = (try? ctx.fetch(FetchDescriptor<VitalsEntry>())) ?? []
-            let missingVitals = allVitals.filter { v in
-                let myCode   = v.syncCode.isEmpty ? v.id.uuidString : v.syncCode
-                let peerTime = manifest.vitals[myCode] ?? 0
-                let myTime   = (v.syncedAt ?? .distantPast).timeIntervalSince1970
-                return myTime > peerTime
-            }.map(PeerVitals.init)
-            if !missingVitals.isEmpty,
-               let data = try? JSONEncoder().encode(PeerMessage.vitals(missingVitals)) {
-                try? sess.send(data, toPeers: [peer], with: .reliable)
-                self.sentCount[peer, default: 0] += missingVitals.count
-            }
+            let vitals = Self.toSend((try? ctx.fetch(FetchDescriptor<VitalsEntry>())) ?? [],
+                                     key: { Self.syncKey($0.syncCode, $0.id) },
+                                     updatedAt: { $0.updatedAt }, syncedAt: { $0.syncedAt },
+                                     peerSynced: manifest.vitals,
+                                     peerStamps: manifest.vitalsStamps).map(PeerVitals.init)
+            self.sendRecords(.vitals(vitals), count: vitals.count, to: peer, over: sess)
 
-            let allBilling = (try? ctx.fetch(FetchDescriptor<BillingLineItem>())) ?? []
-            let missingBilling = allBilling.filter { b in
-                let myCode   = b.syncCode.isEmpty ? b.id.uuidString : b.syncCode
-                let peerTime = manifest.billingItems[myCode] ?? 0
-                let myTime   = (b.syncedAt ?? .distantPast).timeIntervalSince1970
-                return myTime > peerTime
-            }.map(PeerBillingItem.init)
-            if !missingBilling.isEmpty,
-               let data = try? JSONEncoder().encode(PeerMessage.billingItems(missingBilling)) {
-                try? sess.send(data, toPeers: [peer], with: .reliable)
-                self.sentCount[peer, default: 0] += missingBilling.count
-            }
+            let billing = Self.toSend((try? ctx.fetch(FetchDescriptor<BillingLineItem>())) ?? [],
+                                      key: { Self.syncKey($0.syncCode, $0.id) },
+                                      updatedAt: { $0.updatedAt }, syncedAt: { $0.syncedAt },
+                                      peerSynced: manifest.billingItems,
+                                      peerStamps: manifest.billingStamps).map(PeerBillingItem.init)
+            self.sendRecords(.billingItems(billing), count: billing.count, to: peer, over: sess)
         }
     }
 
-    // MARK: - Apply received records
-
-    private func applyPatients(_ records: [PeerPatient], context: ModelContext) throws {
-        let existing = (try? context.fetch(FetchDescriptor<Patient>())) ?? []
-        let iso = ISO8601DateFormatter()
-        for rec in records {
-            // Match by syncCode first; fall back to remoteId for records synced before this feature
-            let patient = existing.first { $0.syncCode == rec.syncCode }
-                ?? existing.first { rid in rec.remoteId != nil && rid.remoteId == rec.remoteId }
-                ?? {
-                    let p = Patient(fullName: rec.fullName)
-                    context.insert(p)
-                    return p
-                }()
-
-            let peerTime = Date(timeIntervalSince1970: rec.syncedAt)
-            let myTime   = patient.syncedAt ?? .distantPast
-            let remoteIsNewer = peerTime > myTime
-
-            // Identity — always propagate syncCode; fill in remoteId if missing
-            patient.syncCode = rec.syncCode
-            if patient.remoteId == nil, let rid = rec.remoteId { patient.remoteId = rid }
-
-            // ── Administrative fields: remote wins when it is newer ──────────
-            if remoteIsNewer {
-                patient.fullName    = rec.fullName
-                patient.sex         = Sex(rawValue: (rec.sex ?? "").capitalized) ?? .unspecified
-                if let d = rec.dob  { patient.dateOfBirth = iso.date(from: d) }
-                patient.phone       = rec.phone
-                patient.email       = rec.email
-                patient.address     = rec.address
-                patient.mrn         = rec.mrn
-                patient.nokName     = rec.nokName
-                patient.nokRelation = rec.nokRelation
-                patient.nokPhone    = rec.nokPhone
-                patient.insuranceProvider = rec.insuranceProvider
-                patient.policyNumber      = rec.policyNumber
-                if let s = rec.setting  { patient.setting  = ClinicalSetting(rawValue: s.capitalized) ?? .outpatient }
-                if let l = rec.location { patient.location  = ClinicalLocation(rawValue: l) ?? .rodney_bay }
-                if let a = rec.acuity   { patient.acuity    = acuityFrom(a) }
-                if let h = rec.heightCm { patient.heightCm  = h }
-                if let w = rec.ward,        !w.isEmpty { patient.ward       = w }
-                if let b = rec.bedNumber,   !b.isEmpty { patient.bedNumber  = b }
-            }
-
-            // ── Clinical narrative: longer value wins regardless of timestamp ─
-            // Questionnaire data is multi-line structured text; booking stubs are
-            // short phrases. The longer string is reliably the more clinically
-            // informative source, so length is a safe proxy for richness.
-            patient.chiefComplaint     = peerMerge(patient.chiefComplaint,     rec.chiefComplaint)
-            patient.hpi                = peerMerge(patient.hpi,                rec.hpi)
-            patient.pmhNotes           = peerMerge(patient.pmhNotes,           rec.pmhNotes)
-            patient.familyHistoryNotes = peerMerge(patient.familyHistoryNotes, rec.familyHistoryNotes)
-            patient.allergiesJson      = peerMerge(patient.allergiesJson,      rec.allergiesJson)
-            patient.socialHistory      = peerMerge(patient.socialHistory,      rec.socialHistory)
-            patient.surgicalHistory    = peerMerge(patient.surgicalHistory,    rec.surgicalHistory)
-
-            // ── Doctor-assessed fields: non-empty on first fill; newer wins for updates ──
-            patient.assessmentText = mergeDoc(patient.assessmentText, rec.assessmentText, remoteIsNewer: remoteIsNewer)
-            patient.managementPlan = mergeDoc(patient.managementPlan, rec.managementPlan, remoteIsNewer: remoteIsNewer)
-            if let r = rec.workingDiagnosis, !r.isEmpty {
-                if (patient.workingDiagnosis ?? "").isEmpty || remoteIsNewer {
-                    patient.workingDiagnosis    = r
-                    patient.workingDiagnosisICD = rec.workingDiagnosisICD
-                }
-            }
-
-            // ── Exam findings: non-empty on first fill; newer wins for updates ─
-            patient.examGeneral = mergeDoc(patient.examGeneral, rec.examGeneral, remoteIsNewer: remoteIsNewer)
-            patient.examCVS     = mergeDoc(patient.examCVS,     rec.examCVS,     remoteIsNewer: remoteIsNewer)
-            patient.examResp    = mergeDoc(patient.examResp,    rec.examResp,    remoteIsNewer: remoteIsNewer)
-            patient.examAbdo    = mergeDoc(patient.examAbdo,    rec.examAbdo,    remoteIsNewer: remoteIsNewer)
-            patient.examNeuro   = mergeDoc(patient.examNeuro,   rec.examNeuro,   remoteIsNewer: remoteIsNewer)
-            patient.examMSK     = mergeDoc(patient.examMSK,     rec.examMSK,     remoteIsNewer: remoteIsNewer)
-            patient.examSkin    = mergeDoc(patient.examSkin,    rec.examSkin,    remoteIsNewer: remoteIsNewer)
-            patient.examOther   = mergeDoc(patient.examOther,   rec.examOther,   remoteIsNewer: remoteIsNewer)
-
-            patient.syncedAt    = max(myTime, peerTime)
-            patient.pendingSync = false
-        }
-        try context.save()
-    }
-
-    private func applyNotes(_ records: [PeerNote], context: ModelContext) throws {
-        let existing = (try? context.fetch(FetchDescriptor<ClinicalNote>())) ?? []
-        let allPatients = (try? context.fetch(FetchDescriptor<Patient>())) ?? []
-        for rec in records {
-            guard existing.first(where: { $0.syncCode == rec.syncCode }) == nil else { continue }
-            // Match patient by syncCode; fall back to remoteId
-            guard let patient = allPatients.first(where: { $0.syncCode == rec.patientSyncCode })
-                              ?? allPatients.first(where: { $0.remoteId == rec.patientSyncCode }) else { continue }
-            let noteType = NoteType(rawValue: rec.noteType) ?? .other
-            let note = ClinicalNote(noteType: noteType, patient: patient)
-            note.syncCode    = rec.syncCode
-            note.remoteId    = rec.remoteId
-            note.status      = NoteStatus(rawValue: rec.status) ?? .draft
-            note.freeText    = rec.content
-            note.syncedAt    = Date(timeIntervalSince1970: rec.syncedAt)
-            note.pendingSync = false
-            context.insert(note)
-        }
-        try context.save()
-    }
-
-    private func applyPrescriptions(_ records: [PeerPrescription], context: ModelContext) throws {
-        let existing = (try? context.fetch(FetchDescriptor<Prescription>())) ?? []
-        let allPatients = (try? context.fetch(FetchDescriptor<Patient>())) ?? []
-        for rec in records {
-            guard existing.first(where: { $0.syncCode == rec.syncCode }) == nil else { continue }
-            guard let patient = allPatients.first(where: { $0.syncCode == rec.patientSyncCode })
-                             ?? allPatients.first(where: { $0.remoteId == rec.patientSyncCode }) else { continue }
-            let rx = Prescription(drug: rec.drug,
-                                  dose: rec.dose ?? "",
-                                  route: rec.route ?? "Oral",
-                                  frequency: rec.frequency ?? "",
-                                  duration: rec.duration ?? "",
-                                  indication: rec.indication ?? "")
-            rx.syncCode     = rec.syncCode
-            rx.instructions = rec.instructions
-            rx.prescribedAt = Date(timeIntervalSince1970: rec.prescribedAt)
-            rx.patient      = patient
-            rx.remoteId     = rec.remoteId
-            rx.syncedAt     = Date(timeIntervalSince1970: rec.syncedAt)
-            rx.pendingSync  = false
-            context.insert(rx)
-        }
-        try context.save()
-    }
-
-    private func applyVitals(_ records: [PeerVitals], context: ModelContext) throws {
-        let existing = (try? context.fetch(FetchDescriptor<VitalsEntry>())) ?? []
-        let allPatients = (try? context.fetch(FetchDescriptor<Patient>())) ?? []
-        for rec in records {
-            guard existing.first(where: { $0.syncCode == rec.syncCode }) == nil else { continue }
-            guard let patient = allPatients.first(where: { $0.syncCode == rec.patientSyncCode })
-                             ?? allPatients.first(where: { $0.remoteId == rec.patientSyncCode }) else { continue }
-            let v = VitalsEntry(patient: patient,
-                                recordedAt: Date(timeIntervalSince1970: rec.recordedAt))
-            v.syncCode           = rec.syncCode
-            v.bpSystolic         = rec.bpSystolic
-            v.bpDiastolic        = rec.bpDiastolic
-            v.heartRate          = rec.heartRate
-            v.respiratoryRate    = rec.respiratoryRate
-            v.temperatureCelsius = rec.temperatureCelsius
-            v.spo2               = rec.spo2
-            v.weightKg           = rec.weightKg
-            v.glucoseMmol        = rec.glucoseMmol
-            v.avpu               = AVPU(rawValue: rec.avpu) ?? .alert
-            v.onSupplementalO2   = rec.onSupplementalO2
-            v.notes              = rec.notes
-            v.remoteId           = rec.remoteId
-            v.syncedAt           = Date(timeIntervalSince1970: rec.syncedAt)
-            v.pendingSync        = false
-            context.insert(v)
-        }
-        try context.save()
-    }
-
-    private func applyBillingItems(_ records: [PeerBillingItem], context: ModelContext) throws {
-        let existing = (try? context.fetch(FetchDescriptor<BillingLineItem>())) ?? []
-        let allPatients = (try? context.fetch(FetchDescriptor<Patient>())) ?? []
-        for rec in records {
-            guard existing.first(where: { $0.syncCode == rec.syncCode }) == nil else { continue }
-            guard let patient = allPatients.first(where: { $0.syncCode == rec.patientSyncCode })
-                             ?? allPatients.first(where: { $0.remoteId == rec.patientSyncCode }) else { continue }
-            let item = BillingLineItem(code: rec.cptCode,
-                                      description: rec.cptDescription,
-                                      category: rec.cptCategory)
-            item.syncCode    = rec.syncCode
-            item.units       = rec.units
-            item.amountXCD   = rec.amountXCD
-            item.modifier    = rec.modifier
-            item.note        = rec.note
-            item.addedAt     = Date(timeIntervalSince1970: rec.addedAt)
-            item.patient     = patient
-            item.remoteId    = rec.remoteId
-            item.syncedAt    = Date(timeIntervalSince1970: rec.syncedAt)
-            item.pendingSync = false
-            context.insert(item)
-        }
-        try context.save()
-    }
-
-    // MARK: - Helpers
-
-    // DJB2 — stable across devices/processes, unlike Swift's randomized hashValue
-    private static func stableHash(_ s: String) -> String {
-        var h: UInt64 = 5381
-        for byte in s.utf8 { h = h &* 33 &+ UInt64(byte) }
-        return String(h)
-    }
-
-    private func acuityFrom(_ s: String) -> Acuity {
-        switch s {
-        case "emergency": return .emergency
-        case "urgent":    return .urgent
-        case "priority":  return .priority
-        default:          return .routine
-        }
-    }
-
-    // Non-empty wins; on both-non-empty, keeps the longer (more structured) value.
-    // Used for questionnaire narrative fields where length correlates with clinical richness.
-    private func peerMerge(_ local: String?, _ remote: String?) -> String? {
-        let loc = (local ?? "").trimmingCharacters(in: .whitespacesAndNewlines)
-        let rem = (remote ?? "").trimmingCharacters(in: .whitespacesAndNewlines)
-        if loc.isEmpty && rem.isEmpty { return nil }
-        if loc.isEmpty { return rem }
-        if rem.isEmpty { return loc }
-        return loc.count >= rem.count ? loc : rem
-    }
-
-    // Non-empty wins on first fill; newer timestamp wins when both sides have content.
-    // Used for doctor-entered fields (assessment, exam) that may be revised on any device.
-    private func mergeDoc(_ local: String?, _ remote: String?, remoteIsNewer: Bool) -> String? {
-        let loc = (local ?? "").trimmingCharacters(in: .whitespacesAndNewlines)
-        let rem = (remote ?? "").trimmingCharacters(in: .whitespacesAndNewlines)
-        if rem.isEmpty { return local }   // Never overwrite existing content with empty
-        if loc.isEmpty { return rem }     // Fill from remote if local is empty
-        return remoteIsNewer ? rem : loc  // Both have content: newer device wins
-    }
-}
-
-// MARK: - MCNearbyServiceAdvertiserDelegate
-
-extension PeerSyncService: MCNearbyServiceAdvertiserDelegate {
-    nonisolated func advertiser(_ advertiser: MCNearbyServiceAdvertiser,
-                                 didReceiveInvitationFromPeer peer: MCPeerID,
-                                 withContext context: Data?,
-                                 invitationHandler: @escaping (Bool, MCSession?) -> Void) {
-        var peerHash: String? = nil
-        if let ctx = context, let str = String(data: ctx, encoding: .utf8) {
-            peerHash = str
-        }
-        Task { @MainActor in
-            let accept = peerHash == nil || peerHash == self.emailHash
-            invitationHandler(accept, self.session)
-        }
-    }
-
-    nonisolated func advertiser(_ advertiser: MCNearbyServiceAdvertiser,
-                                 didNotStartAdvertisingPeer error: Error) {
-        Task { @MainActor in
-            self.peerSyncStatus = "Proximity sync unavailable"
-        }
-    }
-}
-
-// MARK: - MCNearbyServiceBrowserDelegate
-
-extension PeerSyncService: MCNearbyServiceBrowserDelegate {
-    nonisolated func browser(_ browser: MCNearbyServiceBrowser,
-                              foundPeer peer: MCPeerID,
-                              withDiscoveryInfo info: [String: String]?) {
-        let peerHash = info?["h"]
-        Task { @MainActor in
-            guard peerHash == nil || peerHash == self.emailHash else { return }
-            guard let sess = self.session else { return }
-            guard !sess.connectedPeers.contains(peer) else { return }
-            self.foundPeers.insert(peer)
-            self.nearbyCount = self.foundPeers.count
-            let ctx = self.emailHash.data(using: .utf8)
-            browser.invitePeer(peer, to: sess, withContext: ctx, timeout: 30)
-            self.peerSyncStatus = "Connecting to \(peer.displayName)…"
-        }
-    }
-
-    nonisolated func browser(_ browser: MCNearbyServiceBrowser,
-                              lostPeer peer: MCPeerID) {
-        Task { @MainActor in
-            self.foundPeers.remove(peer)
-            self.nearbyCount = self.foundPeers.count
-            if self.connectedCount == 0 { self.peerSyncStatus = "Looking for nearby devices…" }
-        }
-    }
-
-    nonisolated func browser(_ browser: MCNearbyServiceBrowser,
-                              didNotStartBrowsingForPeers error: Error) {
-        Task { @MainActor in self.peerSyncStatus = "Proximity sync unavailable" }
-    }
-}
-
-// MARK: - MCSessionDelegate
-
-extension PeerSyncService: MCSessionDelegate {
-    nonisolated func session(_ session: MCSession,
-                              peer peerID: MCPeerID,
-                              didChange state: MCSessionState) {
-        Task { @MainActor in
-            self.connectedCount = session.connectedPeers.count
-            switch state {
-            case .connected:
-                self.peerSyncStatus = "Syncing with \(peerID.displayName)…"
-                self.sendManifest(to: peerID)
-            case .notConnected:
-                let rcvd = self.receivedCount.removeValue(forKey: peerID) ?? 0
-                let sent  = self.sentCount.removeValue(forKey: peerID) ?? 0
-                for (count, direction) in [(rcvd, PeerSyncEvent.Direction.received), (sent, .sent)] {
-                    guard count > 0 else { continue }
-                    let event = PeerSyncEvent(peerName: peerID.displayName,
-                                              recordCount: count,
-                                              direction: direction,
-                                              at: .now)
-                    self.syncHistory.insert(event, at: 0)
-                    if self.syncHistory.count > 20 {
-                        self.syncHistory = Array(self.syncHistory.prefix(20))
-                    }
-                }
-                if session.connectedPeers.isEmpty { self.peerSyncStatus = "Looking for nearby devices…" }
-            default: break
-            }
-        }
-    }
-
-    nonisolated func session(_ session: MCSession,
-                              didReceive data: Data,
-                              fromPeer peerID: MCPeerID) {
-        Task { @MainActor in
-            guard let ctx = self.modelContext else { return }
-            guard let message = try? JSONDecoder().decode(PeerMessage.self, from: data) else { return }
-
-            switch message {
-            case .manifest(let m):
-                self.handleManifest(m, from: peerID)
-
-            case .patients(let recs):
-                try? self.applyPatients(recs, context: ctx)
-                self.receivedCount[peerID, default: 0] += recs.count
-                self.lastPeerSyncAt = .now
-                self.peerSyncStatus = "Synced \(recs.count) patient\(recs.count == 1 ? "" : "s") from \(peerID.displayName)"
-
-            case .notes(let recs):
-                try? self.applyNotes(recs, context: ctx)
-                self.receivedCount[peerID, default: 0] += recs.count
-
-            case .prescriptions(let recs):
-                try? self.applyPrescriptions(recs, context: ctx)
-                self.receivedCount[peerID, default: 0] += recs.count
-
-            case .vitals(let recs):
-                try? self.applyVitals(recs, context: ctx)
-                self.receivedCount[peerID, default: 0] += recs.count
-
-            case .billingItems(let recs):
-                try? self.applyBillingItems(recs, context: ctx)
-                self.receivedCount[peerID, default: 0] += recs.count
-            }
-        }
-    }
-
-    nonisolated func session(_ session: MCSession, didReceive stream: InputStream,
-                              withName streamName: String, fromPeer peerID: MCPeerID) {}
-    nonisolated func session(_ session: MCSession, didStartReceivingResourceWithName resourceName: String,
-                              fromPeer peerID: MCPeerID, with progress: Progress) {}
-    nonisolated func session(_ session: MCSession, didFinishReceivingResourceWithName resourceName: String,
-                              fromPeer peerID: MCPeerID, at localURL: URL?, withError error: Error?) {}
-}
-
-// MARK: - Message protocol
-
-private indirect enum PeerMessage: Codable {
-    case manifest(PeerManifest)
-    case patients([PeerPatient])
-    case notes([PeerNote])
-    case prescriptions([PeerPrescription])
-    case vitals([PeerVitals])
-    case billingItems([PeerBillingItem])
-
-    private enum TypeKey: String, Codable {
-        case manifest, patients, notes, prescriptions, vitals, billingItems
-    }
-    private enum CodingKeys: String, CodingKey { case type, payload }
-
-    func encode(to encoder: Encoder) throws {
-        var c = encoder.container(keyedBy: CodingKeys.self)
-        switch self {
-        case .manifest(let v):      try c.encode(TypeKey.manifest, forKey: .type);      try c.encode(v, forKey: .payload)
-        case .patients(let v):      try c.encode(TypeKey.patients, forKey: .type);      try c.encode(v, forKey: .payload)
-        case .notes(let v):         try c.encode(TypeKey.notes, forKey: .type);         try c.encode(v, forKey: .payload)
-        case .prescriptions(let v): try c.encode(TypeKey.prescriptions, forKey: .type); try c.encode(v, forKey: .payload)
-        case .vitals(let v):        try c.encode(TypeKey.vitals, forKey: .type);        try c.encode(v, forKey: .payload)
-        case .billingItems(let v):  try c.encode(TypeKey.billingItems, forKey: .type);  try c.encode(v, forKey: .payload)
-        }
-    }
-
-    init(from decoder: Decoder) throws {
-        let c = try decoder.container(keyedBy: CodingKeys.self)
-        let type = try c.decode(TypeKey.self, forKey: .type)
-        switch type {
-        case .manifest:      self = .manifest(try c.decode(PeerManifest.self, forKey: .payload))
-        case .patients:      self = .patients(try c.decode([PeerPatient].self, forKey: .payload))
-        case .notes:         self = .notes(try c.decode([PeerNote].self, forKey: .payload))
-        case .prescriptions: self = .prescriptions(try c.decode([PeerPrescription].self, forKey: .payload))
-        case .vitals:        self = .vitals(try c.decode([PeerVitals].self, forKey: .payload))
-        case .billingItems:  self = .billingItems(try c.decode([PeerBillingItem].self, forKey: .payload))
-        }
-    }
-}
-
-// MARK: - Transfer data structs
-
-private struct PeerManifest: Codable {
-    let emailHash:     String
-    let patients:      [String: Double]   // syncCode → syncedAt epoch seconds
-    let notes:         [String: Double]
-    let prescriptions: [String: Double]
-    let vitals:        [String: Double]
-    let billingItems:  [String: Double]
-}
-
-private struct PeerPatient: Codable {
-    let syncCode: String       // stable offline sync ID
-    let remoteId: String?      // Supabase ID if cloud-synced
-    let fullName: String
-    let sex, dob, phone, email, address, mrn: String?
-    let nokName, nokRelation, nokPhone: String?
-    let pmhNotes, familyHistoryNotes: String?
-    let insuranceProvider, policyNumber: String?
-    let setting, location, acuity: String?
-    let chiefComplaint, hpi, assessmentText, managementPlan: String?
-    let workingDiagnosis, workingDiagnosisICD: String?
-    let allergiesJson, socialHistory, surgicalHistory: String?
-    let heightCm: Double?
-    let ward, bedNumber: String?
-    let examGeneral, examCVS, examResp, examAbdo: String?
-    let examNeuro, examMSK, examSkin, examOther: String?
-    let syncedAt: Double
-
-    init(_ p: Patient) {
-        let iso = ISO8601DateFormatter()
-        syncCode        = p.syncCode.isEmpty ? p.id.uuidString : p.syncCode
-        remoteId        = p.remoteId
-        fullName        = p.fullName
-        sex             = p.sex.rawValue.lowercased()
-        dob             = p.dateOfBirth.map { iso.string(from: $0) }
-        phone           = p.phone; email = p.email; address = p.address; mrn = p.mrn
-        nokName         = p.nokName; nokRelation = p.nokRelation; nokPhone = p.nokPhone
-        pmhNotes        = p.pmhNotes; familyHistoryNotes = p.familyHistoryNotes
-        insuranceProvider = p.insuranceProvider; policyNumber = p.policyNumber
-        setting         = p.setting.rawValue.lowercased()
-        location        = p.location.rawValue
-        acuity          = p.acuity.label.lowercased()
-        chiefComplaint  = p.chiefComplaint; hpi = p.hpi
-        assessmentText  = p.assessmentText; managementPlan = p.managementPlan
-        workingDiagnosis = p.workingDiagnosis; workingDiagnosisICD = p.workingDiagnosisICD
-        allergiesJson   = p.allergiesJson; socialHistory = p.socialHistory
-        surgicalHistory = p.surgicalHistory
-        heightCm        = p.heightCm; ward = p.ward; bedNumber = p.bedNumber
-        examGeneral     = p.examGeneral; examCVS = p.examCVS; examResp = p.examResp
-        examAbdo        = p.examAbdo; examNeuro = p.examNeuro; examMSK = p.examMSK
-        examSkin        = p.examSkin; examOther = p.examOther
-        syncedAt        = (p.syncedAt ?? .distantPast).timeIntervalSince1970
-    }
-}
-
-private struct PeerNote: Codable {
-    let syncCode, patientSyncCode: String
-    let remoteId: String?
-    let noteType, status, content: String
-    let syncedAt: Double
-
-    init?(_ n: ClinicalNote) {
-        guard let pid = n.patient?.syncCode, !pid.isEmpty else { return nil }
-        syncCode        = n.syncCode.isEmpty ? n.id.uuidString : n.syncCode
-        patientSyncCode = pid
-        remoteId        = n.remoteId
-        noteType        = n.noteType.rawValue
-        status          = n.status.rawValue
-        content         = n.contentForSync
-        syncedAt        = (n.syncedAt ?? .distantPast).timeIntervalSince1970
-    }
-}
-
-private struct PeerPrescription: Codable {
-    let syncCode, patientSyncCode, drug: String
-    let remoteId: String?
-    let dose, route, frequency, duration, indication, instructions: String?
-    let prescribedAt, syncedAt: Double
-
-    init(_ rx: Prescription) {
-        syncCode        = rx.syncCode.isEmpty ? rx.id.uuidString : rx.syncCode
-        patientSyncCode = rx.patient?.syncCode.isEmpty == false
-                          ? rx.patient!.syncCode : rx.patient?.id.uuidString ?? ""
-        remoteId        = rx.remoteId
-        drug            = rx.drug
-        dose            = rx.dose.isEmpty ? nil : rx.dose
-        route           = rx.route.isEmpty ? nil : rx.route
-        frequency       = rx.frequency.isEmpty ? nil : rx.frequency
-        duration        = rx.duration.isEmpty ? nil : rx.duration
-        indication      = rx.indication.isEmpty ? nil : rx.indication
-        instructions    = rx.instructions
-        prescribedAt    = rx.prescribedAt.timeIntervalSince1970
-        syncedAt        = (rx.syncedAt ?? .distantPast).timeIntervalSince1970
-    }
-}
-
-private struct PeerVitals: Codable {
-    let syncCode, patientSyncCode: String
-    let remoteId: String?
-    let recordedAt: Double
-    let bpSystolic, bpDiastolic, heartRate, respiratoryRate: Int?
-    let temperatureCelsius: Double?
-    let spo2: Int?
-    let weightKg, glucoseMmol: Double?
-    let avpu: String
-    let onSupplementalO2: Bool
-    let notes: String?
-    let syncedAt: Double
-
-    init(_ v: VitalsEntry) {
-        syncCode           = v.syncCode.isEmpty ? v.id.uuidString : v.syncCode
-        patientSyncCode    = v.patient?.syncCode.isEmpty == false
-                             ? v.patient!.syncCode : v.patient?.id.uuidString ?? ""
-        remoteId           = v.remoteId
-        recordedAt         = v.recordedAt.timeIntervalSince1970
-        bpSystolic         = v.bpSystolic; bpDiastolic = v.bpDiastolic
-        heartRate          = v.heartRate; respiratoryRate = v.respiratoryRate
-        temperatureCelsius = v.temperatureCelsius
-        spo2               = v.spo2; weightKg = v.weightKg; glucoseMmol = v.glucoseMmol
-        avpu               = v.avpu.rawValue; onSupplementalO2 = v.onSupplementalO2
-        notes              = v.notes
-        syncedAt           = (v.syncedAt ?? .distantPast).timeIntervalSince1970
-    }
-}
-
-private struct PeerBillingItem: Codable {
-    let syncCode, patientSyncCode: String
-    let remoteId: String?
-    let cptCode, cptDescription, cptCategory: String
-    let units: Int; let amountXCD: Double
-    let modifier, note: String
-    let addedAt, syncedAt: Double
-
-    init(_ b: BillingLineItem) {
-        syncCode           = b.syncCode.isEmpty ? b.id.uuidString : b.syncCode
-        patientSyncCode    = b.patient?.syncCode.isEmpty == false
-                             ? b.patient!.syncCode : b.patient?.id.uuidString ?? ""
-        remoteId           = b.remoteId
-        cptCode            = b.cptCode; cptDescription = b.cptDescription; cptCategory = b.cptCategory
-        units              = b.units; amountXCD = b.amountXCD
-        modifier           = b.modifier; note = b.note
-        addedAt            = b.addedAt.timeIntervalSince1970
-        syncedAt           = (b.syncedAt ?? .distantPast).timeIntervalSince1970
-    }
 }

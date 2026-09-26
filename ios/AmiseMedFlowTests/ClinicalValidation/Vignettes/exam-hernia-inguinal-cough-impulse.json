@@ -1,0 +1,117 @@
+{
+  "schemaVersion": 1,
+  "id": "exam-hernia-inguinal-cough-impulse",
+  "condition": "Uncomplicated inguinal hernia (cough impulse, reducible, above the tubercle)",
+  "category": "hernia",
+  "permutationOf": null,
+  "permutationLabel": "Cough impulse, reducible, above and medial to the tubercle",
+  "summary": "46-year-old man, 6 months of a left groin bulge on lifting; cough impulse, reduces completely, neck above and medial to the pubic tubercle.",
+  "tags": [
+    "evidence-exam",
+    "hernia",
+    "inguinal",
+    "cough-impulse"
+  ],
+  "inputs": {
+    "patient": {
+      "ageYears": 46,
+      "sex": "male"
+    },
+    "encounter": {
+      "setting": "outpatient",
+      "visitType": "newConsult",
+      "acuity": "priority"
+    },
+    "chiefComplaint": "Groin lump",
+    "hpi": "Left groin bulge for 6 months, comes out when lifting at work and goes back lying down. Dull ache at the end of the day.",
+    "symptoms": [
+      "groin swelling"
+    ],
+    "exam": {
+      "other": "Left groin swelling on standing."
+    },
+    "vitals": [
+      {
+        "minutesAgo": 10,
+        "heartRate": 70,
+        "systolicBp": 126,
+        "diastolicBp": 80,
+        "respiratoryRate": 14,
+        "temperatureC": 36.6,
+        "spo2": 99,
+        "avpu": "A",
+        "onSupplementalO2": false
+      }
+    ],
+    "labs": [],
+    "imaging": [],
+    "comorbidities": [],
+    "surgicalHistory": [],
+    "medications": [],
+    "allergies": [],
+    "nkda": true,
+    "socialHistory": "",
+    "examSigns": {
+      "cough_impulse": "present",
+      "reducible": "present",
+      "above_medial_tubercle": "present"
+    },
+    "platform": {
+      "web": {
+        "ccTemplate": "Inguinal / groin hernia",
+        "symptoms": [
+          "groin swelling"
+        ],
+        "durationDays": 180
+      }
+    }
+  },
+  "expected": {
+    "differential": {
+      "mustRankTopK": [
+        {
+          "id": "inguinal-top1",
+          "severity": "critical",
+          "match": [
+            "inguinal hernia",
+            "inguinal / femoral"
+          ],
+          "k": 1
+        }
+      ]
+    },
+    "reasoning": {
+      "mustInclude": [
+        {
+          "id": "cough-impulse-lr",
+          "severity": "quality",
+          "match": [
+            "re:Cough impulse present - LR 4\\.0"
+          ],
+          "sources": [
+            "web.reasoning.evidence"
+          ],
+          "platforms": [
+            "web"
+          ]
+        }
+      ]
+    }
+  },
+  "guideline": [
+    {
+      "id": "herniasurge-2018",
+      "name": "HerniaSurge Group. International guidelines for groin hernia management",
+      "year": 2018,
+      "section": "Diagnosis by examination",
+      "citation": "Hernia 2018;22:1-165",
+      "verified": false
+    }
+  ],
+  "rationale": "A reducible groin swelling with a cough impulse whose neck lies above and medial to the pubic tubercle is an uncomplicated inguinal hernia.",
+  "authoring": {
+    "author": "Claude (evidence-exam, 2026-09-26)",
+    "date": "2026-09-26",
+    "notes": "Exam-sign / decision-rule permutation. Likelihood ratios fromMemory; awaiting surgeon sign-off."
+  }
+}

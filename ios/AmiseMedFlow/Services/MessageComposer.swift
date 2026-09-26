@@ -75,13 +75,14 @@ enum AppointmentMessage {
         patientName: String,
         date: Date,
         type: String,
-        practicePhone: String = "+1 (758) 284-0557"
+        practicePhone: String = PracticeProfile.current.primaryPhone
     ) -> String {
+        let profile = PracticeProfile.current
         let dateStr = DateFormatter.ectLong.string(from: date)
         return """
         Dear \(patientName),
 
-        This is a confirmation of your appointment with Dr. Dawit Kabiye at Amise Medical Services.
+        This is a confirmation of your appointment with \(profile.displayShortClinicianName) at \(profile.practiceName).
 
         Appointment: \(type)
         Date & Time: \(dateStr) (Eastern Caribbean Time)
@@ -91,28 +92,36 @@ enum AppointmentMessage {
         To reschedule or cancel, contact us at \(practicePhone).
 
         Regards,
-        Amise Medical Services
+        \(profile.practiceName)
         """
     }
 
     static func smsBody(patientName: String, date: Date, type: String) -> String {
+        let profile = PracticeProfile.current
         let dateStr = DateFormatter.ectShort.string(from: date)
-        return "Amise Medical: Appt confirmed for \(patientName) — \(type) on \(dateStr) ECT. Call +1(758)284-0557 to reschedule."
+        return "\(profile.displayShortPracticeName): Appt confirmed for \(patientName) — \(type) on \(dateStr) ECT. Call \(profile.primaryPhoneCompact) to reschedule."
     }
 
     static func preConsultEmailBody(patientName: String, date: Date) -> String {
+        let profile = PracticeProfile.current
         let dateStr = DateFormatter.ectLong.string(from: date)
         return """
         Dear \(patientName),
 
-        You have an upcoming appointment with Dr. Dawit Kabiye on \(dateStr) (ECT).
+        You have an upcoming appointment with \(profile.displayShortClinicianName) on \(dateStr) (ECT).
 
         To help us prepare for your visit, please complete a brief pre-consultation questionnaire when you arrive at the front desk, or ask our staff for assistance.
 
         We look forward to seeing you.
 
-        Amise Medical Services
-        +1 (758) 284-0557
+        \(profile.practiceName)
+        \(profile.primaryPhone)
         """
+    }
+
+    /// Pre-visit questionnaire SMS sent from the front-desk pad.
+    static func preConsultSMSBody() -> String {
+        let profile = PracticeProfile.current
+        return "\(profile.displayShortPracticeName): Please complete your pre-visit questionnaire with our front desk staff. Call \(profile.primaryPhoneCompact) for info."
     }
 }

@@ -1,0 +1,260 @@
+{
+  "schemaVersion": 1,
+  "id": "hypoglycaemia-sulfonylurea-ckd-elderly",
+  "condition": "Hypoglycaemia (sulfonylurea, CKD)",
+  "category": "general-medicine",
+  "permutationOf": null,
+  "permutationLabel": "Elderly, CKD 4, gliclazide, poor intake",
+  "summary": "77-year-old man with CKD 4 on gliclazide 160 mg BD, poor intake after dental extraction, found sweaty and confused; capillary glucose 2.2.",
+  "tags": [
+    "diabetes",
+    "elderly",
+    "ckd",
+    "do-not-miss",
+    "metabolic"
+  ],
+  "inputs": {
+    "patient": {
+      "ageYears": 77,
+      "sex": "male",
+      "pregnancy": {
+        "status": "not-applicable"
+      },
+      "heightCm": 170,
+      "weightKg": 66
+    },
+    "encounter": {
+      "setting": "emergency",
+      "visitType": "urgentReview",
+      "acuity": "urgent"
+    },
+    "chiefComplaint": "Found confused and sweaty at home",
+    "hpi": "Type 2 diabetes on gliclazide 160 mg twice daily; chronic kidney disease stage 4. Two teeth extracted 3 days ago and eating very little since, but kept taking gliclazide. Daughter found him sweaty, confused and slurring his words this morning. No insulin.",
+    "symptoms": [
+      "confusion",
+      "drenching sweats",
+      "speech difficulty",
+      "hypoglycaemia episode"
+    ],
+    "negatives": [
+      "limb weakness",
+      "facial droop",
+      "fever",
+      "head injury"
+    ],
+    "exam": {
+      "general": "Sweaty, pale, confused, responds to voice. Pulse 96/min, BP 146/82, RR 16, temperature 36.4°C, SpO2 97%.",
+      "neuro": "GCS 13. Moving all four limbs equally, no facial asymmetry."
+    },
+    "vitals": [
+      {
+        "minutesAgo": 10,
+        "heartRate": 96,
+        "systolicBp": 146,
+        "diastolicBp": 82,
+        "respiratoryRate": 16,
+        "temperatureC": 36.4,
+        "spo2": 97,
+        "avpu": "V",
+        "onSupplementalO2": false,
+        "glucoseMmol": 2.2,
+        "weightKg": 66
+      }
+    ],
+    "labs": [
+      {
+        "analyte": "glucose",
+        "name": "Glucose",
+        "value": 2.2,
+        "unit": "mmol/L",
+        "minutesAgo": 30
+      },
+      {
+        "analyte": "creatinine",
+        "name": "Creatinine",
+        "value": 245,
+        "unit": "µmol/L",
+        "minutesAgo": 30
+      },
+      {
+        "analyte": "egfr",
+        "name": "eGFR",
+        "value": 22,
+        "unit": "mL/min/1.73m²",
+        "minutesAgo": 30
+      },
+      {
+        "analyte": "potassium",
+        "name": "Potassium",
+        "value": 5.2,
+        "unit": "mmol/L",
+        "minutesAgo": 30
+      },
+      {
+        "analyte": "sodium",
+        "name": "Sodium",
+        "value": 138,
+        "unit": "mmol/L",
+        "minutesAgo": 30
+      }
+    ],
+    "imaging": [],
+    "comorbidities": [
+      "Type 2 diabetes mellitus",
+      "Chronic kidney disease stage 4",
+      "Hypertension"
+    ],
+    "surgicalHistory": [],
+    "medications": [
+      {
+        "drug": "Gliclazide",
+        "dose": "160 mg",
+        "frequency": "BD",
+        "indication": "Type 2 diabetes"
+      },
+      {
+        "drug": "Amlodipine",
+        "dose": "10 mg",
+        "frequency": "OD",
+        "indication": "Hypertension"
+      }
+    ],
+    "allergies": [],
+    "nkda": true,
+    "socialHistory": "Retired farmer. Lives with daughter.",
+    "confirmedDiagnosis": {
+      "name": "Sulfonylurea-induced hypoglycaemia",
+      "icd10": "E16.0",
+      "assessmentText": "Severe hypoglycaemia (glucose 2.2) from gliclazide with poor intake and CKD 4; risk of prolonged/recurrent hypoglycaemia."
+    },
+    "platform": {
+      "web": {
+        "ccTemplate": "Other / general surgical",
+        "symptoms": [
+          "confusion",
+          "drenching sweats",
+          "speech difficulty",
+          "hypoglycaemia episode"
+        ],
+        "durationDays": 0.2
+      }
+    }
+  },
+  "expected": {
+    "differential": {
+      "mustNotMiss": [
+        {
+          "id": "mnm-hypoglycaemia",
+          "severity": "critical",
+          "match": [
+            "hypoglyc"
+          ],
+          "guidelineRefs": [
+            "jbds-hypo-2023"
+          ]
+        },
+        {
+          "id": "mnm-hypoglycaemia-symptom-engine",
+          "severity": "quality",
+          "platforms": [
+            "web"
+          ],
+          "match": [
+            "hypoglyc"
+          ],
+          "source": "web.symptomInference",
+          "guidelineRefs": [
+            "jbds-hypo-2023"
+          ]
+        }
+      ]
+    },
+    "safety": {
+      "emergencyLevel": {
+        "id": "level-emergency",
+        "severity": "critical",
+        "atLeast": "emergency",
+        "guidelineRefs": [
+          "jbds-hypo-2023"
+        ]
+      },
+      "mustAlarm": [
+        {
+          "id": "alarm-hypoglycaemia",
+          "severity": "critical",
+          "match": [
+            "hypoglyc"
+          ],
+          "guidelineRefs": [
+            "jbds-hypo-2023"
+          ]
+        }
+      ]
+    },
+    "management": {
+      "mustInclude": [
+        {
+          "id": "mgmt-treat-hypoglycaemia",
+          "severity": "critical",
+          "match": [
+            "iv glucose",
+            "glucose 10%",
+            "glucose 20%",
+            "10% glucose",
+            "20% glucose",
+            "dextrose",
+            "glucagon",
+            "quick-acting carbohydrate",
+            "fast-acting carbohydrate",
+            "oral glucose",
+            "glucose gel"
+          ],
+          "guidelineRefs": [
+            "jbds-hypo-2023"
+          ]
+        },
+        {
+          "id": "mgmt-prolonged-monitoring",
+          "severity": "critical",
+          "match": [
+            "re:(monitor|recheck|repeat|check)[^.;\\n]{0,40}(glucose|cbg|bm|capillary)",
+            "recurrent hypoglyc",
+            "prolonged hypoglyc"
+          ],
+          "guidelineRefs": [
+            "jbds-hypo-2023"
+          ],
+          "note": "Sulfonylurea hypoglycaemia recurs, especially with CKD: glucose monitoring for an extended period."
+        },
+        {
+          "id": "mgmt-review-sulfonylurea",
+          "severity": "quality",
+          "match": [
+            "re:(stop|hold|withhold|review|reduce|omit)[^.;\\n]{0,40}(gliclazide|sulfonylurea|sulphonylurea)"
+          ],
+          "guidelineRefs": [
+            "jbds-hypo-2023"
+          ],
+          "knownGapNote": "Web: Gliclazide is not mentioned in any output.",
+          "proposedFix": "Add a hypoglycaemia prompt (glucose <4.0 from vitals or labs): IV glucose / glucagon or oral carbohydrate, recheck in 10–15 min, prolonged monitoring for sulfonylureas, review the drug."
+        }
+      ]
+    }
+  },
+  "guideline": [
+    {
+      "id": "jbds-hypo-2023",
+      "name": "JBDS-IP — The hospital management of hypoglycaemia in adults with diabetes mellitus",
+      "year": 2023,
+      "section": "Hypoglycaemia <4.0 mmol/L; conscious and able to swallow: quick-acting carbohydrate, recheck in 10–15 min; unconscious, fitting or nil by mouth: IV glucose (10% or 20%) or IM glucagon; sulfonylurea-induced hypoglycaemia can be prolonged or recur — monitor and review the drug",
+      "citation": "Joint British Diabetes Societies for Inpatient Care. The hospital management of hypoglycaemia in adults with diabetes mellitus (JBDS-IP 01, revised edition; year to be confirmed).",
+      "verified": false
+    }
+  ],
+  "rationale": "Severe hypoglycaemia is an emergency; sulfonylurea hypoglycaemia in CKD is prolonged and recurs (JBDS-IP).",
+  "authoring": {
+    "author": "Claude (endocrine / renal / urology / neuro cluster)",
+    "date": "2026-09-25",
+    "notes": "Expectations need surgeon sign-off (reviewedBy). Every citation is verified: false. iOS outcomes not observed (Linux)."
+  }
+}

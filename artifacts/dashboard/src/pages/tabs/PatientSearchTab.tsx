@@ -1,7 +1,8 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { useAppContext } from '@/context/AppContext';
+import { SAVE_SECTION_LABEL } from '@/lib/autosave-guard';
 import { useToast } from '@/components/ToastProvider';
-import { listPatients, listPatientsBySite, getLatestEncounter, getLatestAppointmentType, getLatestClosedEncounter, loadPMH, loadEncounterData, createEncounter, getQuestionnaireIntake, type PatientListRow, type QuestionnaireIntakeData } from '@/lib/db';
+import { listPatients, listPatientsBySite, getLatestEncounter, getLatestAppointmentType, loadPMH, createEncounter, getQuestionnaireIntake, type PatientListRow, type QuestionnaireIntakeData } from '@/lib/db';
 import { SITE_LABELS, type SiteCode } from '@/lib/supabase';
 import { getApiOrigin } from '@/lib/api-origin';
 import { staffAuthHeaders } from '@/lib/staff-auth';
@@ -140,23 +141,14 @@ export default function PatientSearchTab() {
   const {
     setPatientName, setAge, setSex, setDob, setPhone,
     setPatientId, setEncounterId, setEncounterStatus, setEncounterClosedAt, setComorbidities, clearPatient,
-    setAssessment, setDifferentials, setIcdCodes, setPlan,
-    setAssessmentUpdatedAt, setPlanUpdatedAt,
-    setAllergies, setMedications, setPatientPhoto,
-    setSurgicalHistory, setSurgicalNotes, setRecentSurgeryDate, setToxicHabits,
-    setRosFindings, setProcedureData, procedureData, setTraumaData,
-    setHpiNotes, setPmhNotes, setFamilyHistoryNotes, setOrderedInvestigations,
-    setExamFindings, setExamNotes,
+    setAllergies, setSurgicalHistory, setToxicHabits,
+    setProcedureData, procedureData, setHpiNotes,
     setTopSection, setActiveSection,
     toggleSymptom, setFreeText, symptoms, freeText,
     setMedicationsText,
     comorbidities, surgicalHistory, toxicHabits,
-    setPriorEncounterSummary,
-    setWard, setDateAdmission, setDateDischarge, setAdmittingSurgeon,
-    setReferringPhysician, setNokName, setNokRelation, setNokTel,
-    setBloodGroup, setMrNumber,
-    setClinicalScores, setExtractedLabs,
     patientId, currentSite,
+    beginRecordLoad, endRecordLoad, loadRecordIntoContext,
   } = useAppContext();
   const { showToast } = useToast();
 
@@ -317,16 +309,34 @@ export default function PatientSearchTab() {
     if (p.sex) setSex(p.sex as Parameters<typeof setSex>[0]);
     if (p.phone) setPhone(p.phone);
     setPatientId(p.id);
+    // Autosave stays off from here until the record has loaded: the ids are set before the data
+    // arrives, and empty state against real ids would be written over the record.
+    const loadToken = beginRecordLoad();
 
     if (DEMO_MODE) {
+      endRecordLoad(loadToken);
       showToast(`Loaded: ${p.full_name ?? 'patient'} (demo mode).`, 'success');
       return;
     }
 
-    const [pmhResult, encResult] = await Promise.all([
-      loadPMH(p.id),
-      getLatestEncounter(p.id),
-    ]);
+    // Standing history and (with an id) the encounter. A section that could not be read is left
+    // empty and marked "not loaded" — shown with a retry, never saved back as empty.
+    async function loadInto(encId: string | null): Promise<string> {
+      const { failed } = await loadRecordIntoContext(loadToken, p.id, encId);
+      return failed.length
+        ? ` · could not load: ${failed.map(sec => SAVE_SECTION_LABEL[sec]).join(', ')} (not saved until reloaded or edited)`
+        : '';
+    }
+
+    let pmhResult: Awaited<ReturnType<typeof loadPMH>>;
+    let encResult: Awaited<ReturnType<typeof getLatestEncounter>>;
+    try {
+      [pmhResult, encResult] = await Promise.all([loadPMH(p.id), getLatestEncounter(p.id)]);
+    } catch (e) {
+      await loadInto(null);
+      showToast(`Loaded patient, but could not fetch the encounter: ${e instanceof Error ? e.message : 'error'}`, 'error');
+      return;
+    }
 
     if (pmhResult.error) {
       showToast(`Loaded patient, but could not fetch PMH: ${pmhResult.error}`, 'error');
@@ -335,10 +345,11 @@ export default function PatientSearchTab() {
     }
 
     if (encResult.error) {
-      showToast(`Loaded patient, but could not fetch encounter: ${encResult.error}`, 'error');
       setEncounterId(null);
       setEncounterStatus(null);
       setEncounterClosedAt(null);
+      const loadNote = await loadInto(null);
+      showToast(`Loaded patient, but could not fetch encounter: ${encResult.error}${loadNote}`, 'error');
     } else {
       setEncounterId(encResult.encounterId);
       setEncounterStatus(encResult.status);
@@ -347,66 +358,16 @@ export default function PatientSearchTab() {
         ? ` · ${pmhResult.conditions.length} PMH condition${pmhResult.conditions.length !== 1 ? 's' : ''} loaded`
         : '';
 
-      // Restores both encounter-scoped fields (assessment/plan/HPI/exam) and
-      // patient-scoped fields (surgical history, toxic habits, allergies,
-      // medications) — the latter load regardless of whether the encounter
-      // itself has any content yet, so they show up even on a brand-new
-      // encounter for a returning patient.
-      async function restoreFromEncounter(encId: string) {
-        const encData = await loadEncounterData(encId, p.id);
-        if (encData.error || !encData.data) return;
-        const d = encData.data;
-        if (d.assessment)    setAssessment(d.assessment);
-        if (d.differentials) setDifferentials(d.differentials);
-        if (d.icdCodes.length) setIcdCodes(d.icdCodes);
-        if (d.plan)          setPlan(d.plan);
-        // Unconditional (unlike the fields above) — null is a meaningful
-        // value here: it means no assessments/plans row exists yet for this
-        // encounter, which saveAssessment/savePlan's conflict check needs to
-        // know explicitly, not just inherit a stale value from a prior patient.
-        setAssessmentUpdatedAt(d.assessmentUpdatedAt);
-        setPlanUpdatedAt(d.planUpdatedAt);
-        if (d.allergens.length) setAllergies(d.allergens.join(', '));
-        if (d.medications.length) setMedications(d.medications);
-        if (d.surgicalHistory.length) setSurgicalHistory(d.surgicalHistory);
-        if (d.surgicalNotes) setSurgicalNotes(d.surgicalNotes);
-        if (d.recentSurgeryDate) setRecentSurgeryDate(d.recentSurgeryDate);
-        if (d.toxicHabits.length) setToxicHabits(d.toxicHabits);
-        if (Object.keys(d.rosFindings).length) setRosFindings(d.rosFindings as Record<string, import('@/context/AppContext').RosFinding>);
-        if (Object.keys(d.procedureData).length) setProcedureData(d.procedureData);
-        if (d.traumaData) setTraumaData(d.traumaData);
-        if (d.hpiNotes) setHpiNotes(d.hpiNotes);
-        if (Object.keys(d.examFindings).length) setExamFindings(d.examFindings);
-        if (Object.keys(d.examNotes).length) setExamNotes(d.examNotes);
-        if (d.pmhNotes) setPmhNotes(d.pmhNotes);
-        if (d.familyHistoryNotes) setFamilyHistoryNotes(d.familyHistoryNotes);
-        if (d.orderedInvestigations.length) setOrderedInvestigations(d.orderedInvestigations);
-        if (Object.keys(d.clinicalScores).length) setClinicalScores(d.clinicalScores);
-        if (Object.keys(d.extractedLabs).length) setExtractedLabs(d.extractedLabs);
-        if (d.inpatientDetails) {
-          const ip = d.inpatientDetails;
-          if (typeof ip.ward === 'string') setWard(ip.ward);
-          if (typeof ip.dateAdmission === 'string') setDateAdmission(ip.dateAdmission);
-          if (typeof ip.dateDischarge === 'string') setDateDischarge(ip.dateDischarge);
-          if (typeof ip.admittingSurgeon === 'string') setAdmittingSurgeon(ip.admittingSurgeon);
-          if (typeof ip.referringPhysician === 'string') setReferringPhysician(ip.referringPhysician);
-          if (typeof ip.nokName === 'string') setNokName(ip.nokName);
-          if (typeof ip.nokRelation === 'string') setNokRelation(ip.nokRelation);
-          if (typeof ip.nokTel === 'string') setNokTel(ip.nokTel);
-          if (typeof ip.bloodGroup === 'string') setBloodGroup(ip.bloodGroup);
-          if (typeof ip.mrNumber === 'string') setMrNumber(ip.mrNumber);
-        }
-      }
-
       if (encResult.encounterId) {
-        await restoreFromEncounter(encResult.encounterId);
+        const loadNote = await loadInto(encResult.encounterId);
         if (encResult.status === 'closed') {
           // Land on the summary screen so the reopen banner is immediately visible,
           // rather than dropping into a blank triage view with the data invisible.
-          showToast(`Loaded: ${p.full_name ?? 'patient'} — last encounter is closed${pmhSuffix}. Reopen to edit.`, 'info');
+          // A closed encounter is read-only: nothing is autosaved into it until it is reopened.
+          showToast(`Loaded: ${p.full_name ?? 'patient'} — last encounter is closed${pmhSuffix}${loadNote}. Reopen to edit.`, loadNote ? 'error' : 'info');
           setTopSection('finaldoc');
         } else {
-          showToast(`Loaded: ${p.full_name ?? 'patient'} — encounter open${pmhSuffix}.`, 'success');
+          showToast(`Loaded: ${p.full_name ?? 'patient'} — encounter open${pmhSuffix}${loadNote}.`, loadNote ? 'error' : 'success');
           const apptType = await getLatestAppointmentType(p.id);
           routeByAppointmentType(apptType);
         }
@@ -418,27 +379,22 @@ export default function PatientSearchTab() {
         // session, with no error or indication anything is wrong.
         const { encounter, error: createErr } = await createEncounter({ patient_id: p.id, site: currentSite });
         if (createErr || !encounter) {
-          showToast(`Loaded: ${p.full_name ?? 'patient'}, but could not open a new encounter: ${createErr ?? 'unknown error'}. Documentation will not save until this is resolved.`, 'error');
+          const loadNote = await loadInto(null);
+          showToast(`Loaded: ${p.full_name ?? 'patient'}, but could not open a new encounter: ${createErr ?? 'unknown error'}. Documentation will not save until this is resolved.${loadNote}`, 'error');
         } else {
           setEncounterId(encounter.id);
           setEncounterStatus('open');
           setEncounterClosedAt(null);
-          await restoreFromEncounter(encounter.id);
-          showToast(`Loaded: ${p.full_name ?? 'patient'} — new encounter opened${pmhSuffix}.`, 'success');
+          const loadNote = await loadInto(encounter.id);
+          showToast(`Loaded: ${p.full_name ?? 'patient'} — new encounter opened${pmhSuffix}${loadNote}.`, loadNote ? 'error' : 'success');
         }
         const apptType = await getLatestAppointmentType(p.id);
         routeByAppointmentType(apptType);
       }
     }
 
-    // Non-blocking: load most recent closed encounter for follow-up baseline strip.
-    // Capture the patient ID at call time so we can guard against a race where
-    // the user switches patients before this promise resolves.
-    const encPatientId = p.id;
-    void getLatestClosedEncounter(p.id).then(({ data }) => {
-      // Only apply if the user hasn't switched to a different patient in the meantime
-      if (patientId === encPatientId) setPriorEncounterSummary(data);
-    });
+    // The prior closed encounter (Ambient "Prior visit" strip) is loaded by AppContext for the
+    // loaded patient and encounter — no per-tab load here.
 
     // Check for questionnaire intake data (state already reset above, before async)
     const qData = await getQuestionnaireIntake(p.id);

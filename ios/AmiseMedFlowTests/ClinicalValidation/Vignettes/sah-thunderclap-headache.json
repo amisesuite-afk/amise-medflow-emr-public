@@ -1,0 +1,276 @@
+{
+  "schemaVersion": 1,
+  "id": "sah-thunderclap-headache",
+  "condition": "Subarachnoid haemorrhage",
+  "category": "other",
+  "permutationOf": null,
+  "permutationLabel": "Thunderclap headache with meningism, 4 h",
+  "summary": "46-year-old hypertensive smoker with sudden worst-ever occipital headache peaking within a minute, vomiting, neck stiffness and photophobia; GCS 15.",
+  "tags": [
+    "neuro",
+    "headache",
+    "do-not-miss"
+  ],
+  "inputs": {
+    "patient": {
+      "ageYears": 46,
+      "sex": "female",
+      "pregnancy": {
+        "status": "not-pregnant"
+      },
+      "heightCm": 168,
+      "weightKg": 70
+    },
+    "encounter": {
+      "setting": "emergency",
+      "visitType": "urgentReview",
+      "acuity": "emergency"
+    },
+    "chiefComplaint": "Sudden severe headache",
+    "hpi": "Four hours ago, while at the gym, sudden severe occipital headache \"like being hit with a bat\", the worst headache ever, reaching maximum within a minute. Vomited twice. Neck feels stiff, light hurts her eyes. No loss of consciousness. Smoker with hypertension.",
+    "socrates": {
+      "onset": [
+        "Today",
+        "Sudden"
+      ]
+    },
+    "symptoms": [
+      "thunderclap headache",
+      "headache",
+      "neck stiffness",
+      "vomiting",
+      "photophobia"
+    ],
+    "negatives": [
+      "fever",
+      "rash",
+      "limb weakness",
+      "head injury"
+    ],
+    "exam": {
+      "general": "Distressed, photophobic. Pulse 64/min, BP 176/94, RR 16, temperature 37.0°C, SpO2 98%.",
+      "neuro": "GCS 15, neck stiffness, no focal deficit, pupils equal and reactive."
+    },
+    "vitals": [
+      {
+        "minutesAgo": 10,
+        "heartRate": 64,
+        "systolicBp": 176,
+        "diastolicBp": 94,
+        "respiratoryRate": 16,
+        "temperatureC": 37.0,
+        "spo2": 98,
+        "avpu": "A",
+        "onSupplementalO2": false,
+        "weightKg": 70
+      }
+    ],
+    "labs": [],
+    "imaging": [],
+    "comorbidities": [
+      "Hypertension"
+    ],
+    "surgicalHistory": [],
+    "medications": [
+      {
+        "drug": "Lisinopril",
+        "dose": "10 mg",
+        "frequency": "OD",
+        "indication": "Hypertension"
+      }
+    ],
+    "allergies": [],
+    "nkda": true,
+    "socialHistory": "Smoker 15/day.",
+    "confirmedDiagnosis": {
+      "name": "Suspected subarachnoid haemorrhage (thunderclap headache)",
+      "icd10": "I60.9",
+      "assessmentText": "Thunderclap headache with meningism 4 h after onset: non-contrast CT head now; if negative, LP at 12 h or CTA; neurosurgery if confirmed."
+    },
+    "platform": {
+      "web": {
+        "ccTemplate": "Other / general surgical",
+        "symptoms": [
+          "thunderclap headache",
+          "headache",
+          "neck stiffness",
+          "vomiting",
+          "photophobia"
+        ],
+        "symptomDetails": {
+          "headache": [
+            "Occipital",
+            "Thunderclap (sudden worst-ever)",
+            "Nausea / vomiting",
+            "Photophobia",
+            "Neck stiffness",
+            "First / worst ever"
+          ]
+        },
+        "durationDays": 0.17,
+        "painScore": 10
+      }
+    }
+  },
+  "expected": {
+    "differential": {
+      "mustNotMiss": [
+        {
+          "id": "mnm-sah",
+          "severity": "critical",
+          "match": [
+            "subarachnoid",
+            "re:\\bsah\\b",
+            "intracranial haem"
+          ],
+          "guidelineRefs": [
+            "nice-ng228"
+          ]
+        },
+        {
+          "id": "mnm-sah-symptom-engine",
+          "severity": "quality",
+          "platforms": [
+            "web"
+          ],
+          "match": [
+            "subarachnoid",
+            "re:\\bsah\\b"
+          ],
+          "source": "web.symptomInference",
+          "guidelineRefs": [
+            "nice-ng228"
+          ]
+        }
+      ]
+    },
+    "safety": {
+      "emergencyLevel": {
+        "id": "level-emergency",
+        "severity": "critical",
+        "atLeast": "emergency",
+        "guidelineRefs": [
+          "nice-ng228"
+        ]
+      },
+      "mustAlarm": [
+        {
+          "id": "alarm-sah",
+          "severity": "critical",
+          "match": [
+            "subarachnoid",
+            "thunderclap",
+            "re:\\bsah\\b"
+          ],
+          "guidelineRefs": [
+            "nice-ng228"
+          ]
+        }
+      ]
+    },
+    "investigations": {
+      "mustInclude": [
+        {
+          "id": "inv-ct-head",
+          "severity": "critical",
+          "match": [
+            "ct head",
+            "ct brain",
+            "re:\\bct\\b[^.;\\n]{0,20}(head|brain)",
+            "non-contrast ct",
+            "mri brain",
+            "ct angiogra",
+            "cta"
+          ],
+          "guidelineRefs": [
+            "nice-ng228"
+          ]
+        },
+        {
+          "id": "inv-lp-if-ct-negative",
+          "severity": "quality",
+          "match": [
+            "lumbar puncture",
+            "re:\\blp\\b",
+            "xanthochromia"
+          ],
+          "guidelineRefs": [
+            "nice-ng228"
+          ]
+        }
+      ]
+    },
+    "management": {
+      "mustInclude": [
+        {
+          "id": "mgmt-neurosurgery",
+          "severity": "critical",
+          "match": [
+            "neurosurg"
+          ],
+          "guidelineRefs": [
+            "nice-ng228"
+          ]
+        },
+        {
+          "id": "mgmt-nimodipine",
+          "severity": "quality",
+          "match": [
+            "nimodipine"
+          ],
+          "guidelineRefs": [
+            "nice-ng228"
+          ],
+          "knownGapNote": "Web: No nimodipine.",
+          "proposedFix": "Add neurological safety prompts to clinical-inference.ts keyed on symptoms/HPI text (FAST → CT head + stroke team; thunderclap → CT head ± LP/CTA + neurosurgery; meningism/purpura → blood cultures + IV ceftriaxone now; saddle anaesthesia/retention → emergency MRI + spinal team; cancer + back pain/weakness → MRI whole spine + dexamethasone + MSCC coordinator)."
+        }
+      ],
+      "mustExclude": [
+        {
+          "id": "mgmt-no-antithrombotic",
+          "severity": "critical",
+          "match": [
+            "aspirin",
+            "clopidogrel",
+            "ticagrelor",
+            "enoxaparin",
+            "heparin",
+            "fondaparinux",
+            "rivaroxaban",
+            "apixaban",
+            "alteplase",
+            "thrombolys"
+          ],
+          "unless": [
+            "avoid",
+            "withhold",
+            "hold",
+            "not ",
+            "stop",
+            "reverse"
+          ],
+          "guidelineRefs": [
+            "nice-ng228"
+          ],
+          "note": "An antithrombotic plan in suspected SAH is dangerous."
+        }
+      ]
+    }
+  },
+  "guideline": [
+    {
+      "id": "nice-ng228",
+      "name": "NICE NG228 — Subarachnoid haemorrhage caused by a ruptured aneurysm: diagnosis and management",
+      "year": 2022,
+      "section": "Suspect SAH with thunderclap headache (sudden, severe, peaking within minutes); non-contrast CT head immediately; if CT is normal and done more than 6 h after onset, consider lumbar puncture at least 12 h after onset; if SAH confirmed: CT angiography and discussion with a neurosurgical centre; nimodipine",
+      "citation": "National Institute for Health and Care Excellence. Subarachnoid haemorrhage caused by a ruptured aneurysm: diagnosis and management. NICE guideline NG228. London: NICE; 2022.",
+      "verified": false
+    }
+  ],
+  "rationale": "NICE NG228: immediate non-contrast CT, LP ≥12 h after onset if CT is negative and done after 6 h, neurosurgical referral, nimodipine.",
+  "authoring": {
+    "author": "Claude (endocrine / renal / urology / neuro cluster)",
+    "date": "2026-09-25",
+    "notes": "Expectations need surgeon sign-off (reviewedBy). Every citation is verified: false. iOS outcomes not observed (Linux)."
+  }
+}

@@ -1,0 +1,463 @@
+{
+  "schemaVersion": 1,
+  "id": "ppu-elderly-steroids-masked",
+  "condition": "Perforated peptic ulcer",
+  "category": "upper-gi",
+  "permutationOf": "ppu-perforated-peptic-ulcer",
+  "permutationLabel": "Elderly on steroids + NSAIDs: signs masked, afebrile sepsis",
+  "summary": "81-year-old woman on prednisolone and naproxen, 26 h vague abdominal discomfort, new confusion, afebrile, HR 106, BP 96/58, RR 22, WBC 6.1, lactate 3.1, AKI; soft abdomen; CT pneumoperitoneum from a duodenal perforation.",
+  "tags": [
+    "acute-abdomen",
+    "perforation",
+    "elderly",
+    "steroids",
+    "sepsis"
+  ],
+  "inputs": {
+    "patient": {
+      "ageYears": 81,
+      "sex": "female",
+      "pregnancy": {
+        "status": "not-applicable"
+      },
+      "heightCm": 154,
+      "weightKg": 55
+    },
+    "encounter": {
+      "setting": "emergency",
+      "visitType": "urgentReview",
+      "acuity": "urgent"
+    },
+    "chiefComplaint": "Abdominal discomfort and new confusion",
+    "hpi": "Daughter reports 26 hours of 'indigestion' then vague discomfort across the abdomen; since this morning she is muddled and sleepy. Not eating. No vomiting. Takes prednisolone 15 mg daily for polymyalgia rheumatica and naproxen for knee pain.",
+    "socrates": {
+      "onset": [
+        "Yesterday"
+      ],
+      "site": [
+        "Epigastric",
+        "Diffuse"
+      ],
+      "character": [
+        "Dull",
+        "Aching"
+      ],
+      "radiation": [
+        "No radiation"
+      ],
+      "associations": [
+        "Anorexia"
+      ],
+      "timing": [
+        "Constant"
+      ],
+      "exacerbating": [],
+      "relieving": [
+        "Nothing"
+      ],
+      "severity": [
+        "Mild (1–3/10)"
+      ]
+    },
+    "symptoms": [
+      "abdominal pain",
+      "confusion",
+      "anorexia"
+    ],
+    "negatives": [
+      "vomiting",
+      "haematemesis",
+      "melaena"
+    ],
+    "exam": {
+      "general": "Drowsy but rousable, confused. Temperature 36.9°C, pulse 106/min, BP 96/58, RR 22, SpO2 93% on air.",
+      "abdomen": "Mildly distended with diffuse mild tenderness. No guarding, no rigidity (on long-term steroids)."
+    },
+    "vitals": [
+      {
+        "minutesAgo": 10,
+        "heartRate": 106,
+        "systolicBp": 96,
+        "diastolicBp": 58,
+        "respiratoryRate": 22,
+        "temperatureC": 36.9,
+        "spo2": 93,
+        "avpu": "C",
+        "onSupplementalO2": false
+      }
+    ],
+    "labs": [
+      {
+        "analyte": "wbc",
+        "name": "WBC",
+        "value": 6.1,
+        "unit": "×10⁹/L",
+        "minutesAgo": 30
+      },
+      {
+        "analyte": "crp",
+        "name": "CRP",
+        "value": 164,
+        "unit": "mg/L",
+        "minutesAgo": 30
+      },
+      {
+        "analyte": "lactate",
+        "name": "Lactate",
+        "value": 3.1,
+        "unit": "mmol/L",
+        "minutesAgo": 30
+      },
+      {
+        "analyte": "creatinine",
+        "name": "Creatinine",
+        "value": 186,
+        "unit": "µmol/L",
+        "minutesAgo": 30
+      },
+      {
+        "analyte": "urea",
+        "name": "Urea",
+        "value": 16.4,
+        "unit": "mmol/L",
+        "minutesAgo": 30
+      },
+      {
+        "analyte": "glucose",
+        "name": "Glucose",
+        "value": 11.8,
+        "unit": "mmol/L",
+        "minutesAgo": 30
+      }
+    ],
+    "imaging": [
+      {
+        "name": "CT abdomen/pelvis with IV contrast",
+        "modality": "CT",
+        "region": "Abdomen/pelvis",
+        "result": "Pneumoperitoneum with free fluid; defect in the anterior wall of the duodenal bulb consistent with a perforated duodenal ulcer.",
+        "minutesAgo": 20
+      }
+    ],
+    "comorbidities": [
+      "Polymyalgia rheumatica on long-term steroids",
+      "Chronic kidney disease stage 3b",
+      "COPD"
+    ],
+    "surgicalHistory": [],
+    "medications": [
+      {
+        "drug": "Prednisolone",
+        "dose": "15 mg",
+        "frequency": "OD",
+        "indication": "Polymyalgia rheumatica"
+      },
+      {
+        "drug": "Naproxen",
+        "dose": "500 mg",
+        "frequency": "BD",
+        "indication": "Osteoarthritis"
+      },
+      {
+        "drug": "Tiotropium",
+        "dose": "18 micrograms",
+        "frequency": "OD",
+        "indication": "COPD"
+      }
+    ],
+    "allergies": [],
+    "nkda": true,
+    "socialHistory": "Lives with daughter.",
+    "scoreForms": {
+      "qsofa": {
+        "alteredMentation": true,
+        "rrAtLeast22": true,
+        "sbpAtMost100": true,
+        "suspectedInfection": true
+      }
+    },
+    "confirmedDiagnosis": {
+      "name": "Perforated duodenal ulcer",
+      "icd10": "K26.5",
+      "paneDiseaseId": "peptic_ulcer",
+      "assessmentText": "Perforated duodenal ulcer in an 81-year-old on steroids and NSAIDs — peritonism masked, afebrile, WBC normal. Boey 3 (shock, major medical illness, perforation >24 h). Sepsis with AKI. Emergency surgery after resuscitation; steroid cover."
+    },
+    "platform": {
+      "web": {
+        "ccTemplate": "Acute abdominal pain",
+        "socratesAnswers": {
+          "site": "Epigastric, then generalised",
+          "onset": "26 hours ago, gradual",
+          "character": "Dull ache",
+          "associated": "Off food, confusion",
+          "timing": "Constant",
+          "relief": "Nothing",
+          "severity": "3/10"
+        },
+        "symptoms": [
+          "abdominal pain",
+          "confusion",
+          "anorexia"
+        ],
+        "symptomDetails": {
+          "abdominal pain": [
+            "Epigastric",
+            "Diffuse",
+            "1–3 days",
+            "Dull",
+            "Mild (1–3)",
+            "Anorexia",
+            "Continuous"
+          ]
+        },
+        "examFindings": {
+          "abdomen": [
+            "Distended",
+            "Diffuse tenderness"
+          ]
+        },
+        "paneAnswers": {
+          "nsaid_use": true
+        },
+        "durationDays": 1,
+        "painScore": 3
+      }
+    }
+  },
+  "expected": {
+    "differential": {
+      "mustRankTopK": [
+        {
+          "id": "dx-perforation-top3",
+          "severity": "critical",
+          "match": [
+            "perforat",
+            "peptic ulcer",
+            "ulcer"
+          ],
+          "k": 3,
+          "guidelineRefs": [
+            "wses-ppu-2020"
+          ]
+        }
+      ]
+    },
+    "safety": {
+      "emergencyLevel": {
+        "id": "level-emergency",
+        "severity": "critical",
+        "atLeast": "emergency",
+        "guidelineRefs": [
+          "wses-ppu-2020",
+          "ssc-2021"
+        ],
+        "knownGapNote": "iOS: ClinicalPathwayEngine reads only CC/PMH keywords; CC 'Abdominal discomfort and new confusion' gives 'routine'."
+      },
+      "mustAlarm": [
+        {
+          "id": "alarm-perforation",
+          "severity": "critical",
+          "match": [
+            "pneumoperitoneum",
+            "perforat",
+            "free air",
+            "free gas"
+          ],
+          "guidelineRefs": [
+            "wses-ppu-2020"
+          ]
+        },
+        {
+          "id": "alarm-sepsis",
+          "severity": "critical",
+          "match": [
+            "sepsis",
+            "septic"
+          ],
+          "guidelineRefs": [
+            "ssc-2021",
+            "sepsis-3"
+          ],
+          "note": "Afebrile with normal WBC, but qSOFA 3 (confusion, RR 22, SBP 96), lactate 3.1 and AKI with a known source: sepsis. Steroids and age remove fever and leucocytosis."
+        }
+      ],
+      "redFlags": [
+        {
+          "id": "flag-steroids-masking",
+          "severity": "quality",
+          "match": [
+            "steroid",
+            "prednisolone",
+            "immunosupp"
+          ],
+          "note": "Long-term steroids mask peritonism and fever; the flag should be visible."
+        }
+      ]
+    },
+    "scores": {
+      "recommended": [
+        {
+          "id": "score-rec-qsofa",
+          "severity": "quality",
+          "score": "qsofa",
+          "guidelineRefs": [
+            "sepsis-3"
+          ],
+          "knownGap": [
+            "ios"
+          ],
+          "knownGapNote": "iOS CI 2026-09-25 (run 36169134350, database mode): qsofa not recommended; recommended: (none)"
+        }
+      ],
+      "values": [
+        {
+          "id": "score-qsofa-calculator",
+          "severity": "quality",
+          "score": "qsofa",
+          "mode": "calculator",
+          "equals": 3,
+          "platforms": [
+            "ios"
+          ],
+          "guidelineRefs": [
+            "sepsis-3"
+          ]
+        },
+        {
+          "id": "score-qsofa-autofill",
+          "severity": "quality",
+          "score": "qsofa",
+          "mode": "autofill",
+          "equals": 3,
+          "platforms": [
+            "ios"
+          ],
+          "guidelineRefs": [
+            "sepsis-3"
+          ],
+          "note": "RR 22 and SBP 96 are recorded; Sepsis-3 thresholds are RR ≥22 and SBP ≤100.",
+          "knownGap": [
+            "ios"
+          ],
+          "knownGapNote": "iOS CI 2026-09-25 (run 36169134350, database mode): expected = 3; got ios.autofill.qsofa=2 (qSOFA 2/3 — qSOFA ≥2 — assess for sepsis / deterioration)"
+        }
+      ]
+    },
+    "investigations": {
+      "mustInclude": [
+        {
+          "id": "inv-blood-cultures",
+          "severity": "quality",
+          "match": [
+            "blood culture"
+          ],
+          "guidelineRefs": [
+            "ssc-2021"
+          ]
+        }
+      ]
+    },
+    "management": {
+      "mustInclude": [
+        {
+          "id": "mgmt-surgical-repair",
+          "severity": "critical",
+          "match": [
+            "omental patch",
+            "graham",
+            "laparoscopic repair",
+            "laparotomy",
+            "repair of perforat",
+            "patch repair"
+          ],
+          "guidelineRefs": [
+            "wses-ppu-2020"
+          ]
+        },
+        {
+          "id": "mgmt-antibiotics",
+          "severity": "critical",
+          "match": [
+            "antibiotic",
+            "co-amoxiclav",
+            "piperacillin",
+            "tazocin",
+            "cefuroxime",
+            "ceftriaxone",
+            "metronidazole",
+            "meropenem",
+            "pip-tazo"
+          ],
+          "guidelineRefs": [
+            "wses-ppu-2020",
+            "ssc-2021"
+          ]
+        },
+        {
+          "id": "mgmt-steroid-cover",
+          "severity": "quality",
+          "match": [
+            "hydrocortisone",
+            "stress dose",
+            "steroid cover"
+          ],
+          "note": "Peri-operative steroid cover for a patient on long-term prednisolone (adrenal suppression). Quality: not in the WSES PPU guideline."
+        },
+        {
+          "id": "mgmt-stop-nsaid",
+          "severity": "quality",
+          "match": [
+            "stop nsaid",
+            "stop nsaids",
+            "stop or switch",
+            "discontinue nsaid",
+            "avoid nsaid"
+          ],
+          "guidelineRefs": [
+            "wses-ppu-2020"
+          ]
+        }
+      ]
+    }
+  },
+  "guideline": [
+    {
+      "id": "wses-ppu-2020",
+      "name": "WSES guidelines — perforated and bleeding peptic ulcer",
+      "year": 2020,
+      "section": "CT/erect CXR for free air; early source control (laparoscopic or open repair / omental patch); broad-spectrum antibiotics; resuscitation; H. pylori testing and eradication; risk scores (Boey, PULP)",
+      "citation": "Tarasconi A, Coccolini F, Biffl WL, et al. Perforated and bleeding peptic ulcer: WSES guidelines. World J Emerg Surg. 2020;15:3.",
+      "verified": false
+    },
+    {
+      "id": "ssc-2021",
+      "name": "Surviving Sepsis Campaign — international guidelines for sepsis and septic shock 2021",
+      "year": 2021,
+      "section": "Screening (do not use qSOFA alone), antibiotics within 1 h of shock, blood cultures, lactate, 30 mL/kg crystalloid for hypoperfusion, vasopressors, source control",
+      "citation": "Evans L, Rhodes A, Alhazzani W, et al. Surviving Sepsis Campaign: international guidelines for management of sepsis and septic shock 2021. Crit Care Med. 2021;49:e1063–e1143.",
+      "verified": false
+    },
+    {
+      "id": "sepsis-3",
+      "name": "Third international consensus definitions for sepsis and septic shock (Sepsis-3)",
+      "year": 2016,
+      "section": "qSOFA: RR ≥22, altered mentation, SBP ≤100",
+      "citation": "Singer M, Deutschman CS, Seymour CW, et al. JAMA. 2016;315:801–10.",
+      "verified": false
+    },
+    {
+      "id": "boey-1987",
+      "name": "Boey score (perforated peptic ulcer)",
+      "year": 1987,
+      "section": "Major medical illness, pre-operative shock (SBP <100 mmHg), perforation >24 h: 0–3",
+      "citation": "Boey J, Choi SK, Poon A, Alagaratnam TT. Risk stratification in perforated duodenal ulcers. A prospective validation of predictive factors. Ann Surg. 1987;205:22–6.",
+      "verified": false
+    }
+  ],
+  "rationale": "Permutation: age and steroids. Steroids and age remove rigidity, fever and leucocytosis; the engines must still raise the perforation from imaging, recognise sepsis from qSOFA/lactate without fever, and plan surgery with steroid cover.",
+  "authoring": {
+    "author": "Claude (GI surgical emergencies cluster)",
+    "date": "2026-09-25",
+    "notes": "Expectations need surgeon sign-off (reviewedBy). Every citation is verified: false."
+  }
+}

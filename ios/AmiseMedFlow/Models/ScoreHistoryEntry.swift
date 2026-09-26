@@ -6,7 +6,8 @@ import Foundation
 @Model
 final class ScoreHistoryEntry {
     var id: UUID
-    var scoreName: String       // ActiveScore.rawValue
+    var scoreName: String       // ClinicalScore.systemName (display name, not ActiveScore.rawValue) —
+                                // resolve with ActiveScore(storedScoreName:)
     var abbreviation: String    // e.g. "MEWS 4", "NEWS2 7"
     var scoreValue: Double
     var maxScore: Double

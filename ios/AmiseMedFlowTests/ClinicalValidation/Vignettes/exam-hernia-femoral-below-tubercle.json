@@ -1,0 +1,122 @@
+{
+  "schemaVersion": 1,
+  "id": "exam-hernia-femoral-below-tubercle",
+  "condition": "Femoral hernia (lump below and lateral to the pubic tubercle)",
+  "category": "hernia",
+  "permutationOf": null,
+  "permutationLabel": "Groin lump below and lateral to the pubic tubercle",
+  "summary": "74-year-old woman with a small, firm right groin lump for 3 months; the neck lies below the inguinal ligament and lateral to the pubic tubercle.",
+  "tags": [
+    "evidence-exam",
+    "hernia",
+    "femoral",
+    "pubic-tubercle"
+  ],
+  "inputs": {
+    "patient": {
+      "ageYears": 74,
+      "sex": "female"
+    },
+    "encounter": {
+      "setting": "outpatient",
+      "visitType": "newConsult",
+      "acuity": "priority"
+    },
+    "chiefComplaint": "Lump in the right groin",
+    "hpi": "A small lump in the right groin for 3 months, sometimes aches after walking. Bowels normal, no vomiting.",
+    "symptoms": [
+      "groin swelling"
+    ],
+    "exam": {
+      "other": "Right groin: 2 cm firm swelling."
+    },
+    "vitals": [
+      {
+        "minutesAgo": 10,
+        "heartRate": 78,
+        "systolicBp": 142,
+        "diastolicBp": 80,
+        "respiratoryRate": 14,
+        "temperatureC": 36.7,
+        "spo2": 97,
+        "avpu": "A",
+        "onSupplementalO2": false
+      }
+    ],
+    "labs": [],
+    "imaging": [],
+    "comorbidities": [],
+    "surgicalHistory": [],
+    "medications": [],
+    "allergies": [],
+    "nkda": true,
+    "socialHistory": "",
+    "examSigns": {
+      "below_lateral_tubercle": "present",
+      "above_medial_tubercle": "absent"
+    },
+    "platform": {
+      "web": {
+        "ccTemplate": "Groin lump",
+        "symptoms": [
+          "groin swelling"
+        ],
+        "durationDays": 90
+      }
+    }
+  },
+  "expected": {
+    "differential": {
+      "mustRankTopK": [
+        {
+          "id": "femoral-top2",
+          "severity": "critical",
+          "match": [
+            "femoral hernia"
+          ],
+          "k": 2
+        }
+      ]
+    },
+    "reasoning": {
+      "mustInclude": [
+        {
+          "id": "tubercle-lr",
+          "severity": "quality",
+          "match": [
+            "re:below and lateral to the pubic tubercle present - LR 8"
+          ],
+          "sources": [
+            "web.reasoning.evidence"
+          ],
+          "platforms": [
+            "web"
+          ]
+        }
+      ]
+    }
+  },
+  "guideline": [
+    {
+      "id": "herniasurge-2018",
+      "name": "HerniaSurge Group. International guidelines for groin hernia management",
+      "year": 2018,
+      "section": "Femoral hernia: diagnosis and prompt repair",
+      "citation": "Hernia 2018;22:1-165",
+      "verified": false
+    },
+    {
+      "id": "mcgee-2022",
+      "name": "McGee S. Evidence-Based Physical Diagnosis, 5th ed.",
+      "year": 2022,
+      "section": "Abdominal pain and tenderness; hernia; lymphadenopathy; liver",
+      "verified": false
+    }
+  ],
+  "rationale": "The position of the neck relative to the pubic tubercle separates femoral from inguinal hernia; a femoral hernia in an older woman needs prompt repair.",
+  "authoring": {
+    "author": "Claude (evidence-exam, 2026-09-26)",
+    "date": "2026-09-26",
+    "notes": "Exam-sign / decision-rule permutation. Likelihood ratios fromMemory; awaiting surgeon sign-off."
+  }
+}

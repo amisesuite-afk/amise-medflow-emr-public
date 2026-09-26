@@ -1,0 +1,288 @@
+{
+  "schemaVersion": 1,
+  "id": "torsion-adult-mimicking-epididymitis",
+  "condition": "Testicular torsion (adult, epididymitis look-alike)",
+  "category": "urology",
+  "permutationOf": "mimic-testicular-torsion",
+  "permutationLabel": "Young sexually active adult: risk of labelling as epididymo-orchitis",
+  "summary": "23-year-old sexually active man woken by sudden left testicular pain 4 h ago, vomiting, high-riding horizontal testis, absent cremasteric reflex, clear urine.",
+  "tags": [
+    "mimic",
+    "do-not-miss",
+    "scrotal"
+  ],
+  "inputs": {
+    "patient": {
+      "ageYears": 23,
+      "sex": "male",
+      "pregnancy": {
+        "status": "not-applicable"
+      },
+      "heightCm": 182,
+      "weightKg": 75
+    },
+    "encounter": {
+      "setting": "emergency",
+      "visitType": "urgentReview",
+      "acuity": "urgent"
+    },
+    "chiefComplaint": "Painful swollen left testicle and scrotal pain",
+    "hpi": "Woke 4 hours ago with sudden severe left testicular pain; vomited once. Sexually active with a new partner last month. No dysuria, no urethral discharge, no fever, no trauma. Had two short similar episodes last year that settled on their own.",
+    "socrates": {
+      "onset": [
+        "Today",
+        "Sudden"
+      ],
+      "site": [
+        "Left scrotum"
+      ],
+      "character": [
+        "Sharp"
+      ],
+      "radiation": [
+        "Groin"
+      ],
+      "associations": [
+        "Nausea",
+        "Vomiting"
+      ],
+      "timing": [
+        "Constant"
+      ],
+      "exacerbating": [
+        "Straining / Valsalva"
+      ],
+      "relieving": [
+        "Nothing"
+      ],
+      "severity": [
+        "Severe (7–9/10)"
+      ]
+    },
+    "symptoms": [
+      "scrotal swelling",
+      "groin pain",
+      "vomiting",
+      "nausea"
+    ],
+    "negatives": [
+      "dysuria",
+      "urethral discharge",
+      "fever",
+      "trauma"
+    ],
+    "exam": {
+      "general": "In pain. Pulse 102/min, BP 132/78, RR 16, temperature 37.2°C.",
+      "abdomen": "Soft, non-tender.",
+      "other": "Genitalia: left testis high-riding with a horizontal lie, diffusely and exquisitely tender; elevation does not relieve pain (Prehn negative); absent left cremasteric reflex. Right testis normal."
+    },
+    "vitals": [
+      {
+        "minutesAgo": 10,
+        "heartRate": 102,
+        "systolicBp": 132,
+        "diastolicBp": 78,
+        "respiratoryRate": 16,
+        "temperatureC": 37.2,
+        "spo2": 99,
+        "avpu": "A",
+        "onSupplementalO2": false,
+        "weightKg": 75
+      }
+    ],
+    "labs": [
+      {
+        "analyte": "urinalysis",
+        "name": "Urine dipstick",
+        "resultText": "Negative (no leucocytes, no nitrite)",
+        "minutesAgo": 30
+      }
+    ],
+    "imaging": [],
+    "comorbidities": [],
+    "surgicalHistory": [],
+    "medications": [],
+    "allergies": [],
+    "nkda": true,
+    "socialHistory": "University student. New sexual partner last month.",
+    "confirmedDiagnosis": {
+      "name": "Left testicular torsion",
+      "icd10": "N44.00",
+      "paneDiseaseId": "testicular_torsion",
+      "assessmentText": "Left testicular torsion (4 h), not epididymo-orchitis: emergency scrotal exploration without imaging delay."
+    },
+    "platform": {
+      "web": {
+        "ccTemplate": "Other / general surgical",
+        "socratesAnswers": {
+          "site": "Left testicle (scrotal)",
+          "onset": "Sudden, woke him 4 hours ago",
+          "character": "Sharp, severe",
+          "radiation": "Left groin",
+          "associated": "Vomited once, nausea",
+          "timing": "Constant",
+          "relief": "Nothing",
+          "severity": "9/10"
+        },
+        "symptoms": [
+          "scrotal swelling",
+          "groin pain",
+          "vomiting",
+          "nausea"
+        ],
+        "durationDays": 0.17,
+        "painScore": 9
+      }
+    }
+  },
+  "expected": {
+    "differential": {
+      "mustRankTopK": [
+        {
+          "id": "dx-torsion-top3",
+          "severity": "critical",
+          "match": [
+            "torsion"
+          ],
+          "unless": [
+            "ovarian"
+          ],
+          "k": 3,
+          "guidelineRefs": [
+            "eau-paed-2024",
+            "iusti-eo-2016"
+          ]
+        },
+        {
+          "id": "dx-torsion-first",
+          "severity": "quality",
+          "match": [
+            "torsion"
+          ],
+          "unless": [
+            "ovarian"
+          ],
+          "k": 1,
+          "guidelineRefs": [
+            "eau-paed-2024",
+            "iusti-eo-2016"
+          ],
+          "note": "Sudden onset, horizontal lie, absent cremasteric reflex and a clear urine should put torsion above epididymo-orchitis."
+        }
+      ]
+    },
+    "safety": {
+      "emergencyLevel": {
+        "id": "level-emergency",
+        "severity": "critical",
+        "atLeast": "emergency",
+        "guidelineRefs": [
+          "eau-paed-2024",
+          "iusti-eo-2016"
+        ]
+      },
+      "mustAlarm": [
+        {
+          "id": "alarm-torsion",
+          "severity": "critical",
+          "match": [
+            "torsion"
+          ],
+          "unless": [
+            "ovarian"
+          ],
+          "guidelineRefs": [
+            "eau-paed-2024",
+            "iusti-eo-2016"
+          ]
+        }
+      ]
+    },
+    "management": {
+      "mustInclude": [
+        {
+          "id": "mgmt-scrotal-exploration",
+          "severity": "critical",
+          "match": [
+            "scrotal exploration",
+            "exploration",
+            "orchidopexy",
+            "detorsion",
+            "de-torsion"
+          ],
+          "guidelineRefs": [
+            "eau-paed-2024",
+            "iusti-eo-2016"
+          ]
+        },
+        {
+          "id": "mgmt-bilateral-fixation",
+          "severity": "quality",
+          "match": [
+            "bilateral",
+            "contralateral"
+          ],
+          "guidelineRefs": [
+            "eau-paed-2024"
+          ]
+        }
+      ],
+      "mustExclude": [
+        {
+          "id": "mgmt-no-epididymitis-plan",
+          "severity": "critical",
+          "match": [
+            "doxycycline",
+            "partner notification"
+          ],
+          "guidelineRefs": [
+            "iusti-eo-2016"
+          ],
+          "note": "An epididymo-orchitis antibiotic plan for a torsed testis loses the testis."
+        },
+        {
+          "id": "mgmt-no-doppler-delay",
+          "severity": "quality",
+          "match": [
+            "doppler"
+          ],
+          "unless": [
+            "only if",
+            "uncertain",
+            "do not delay",
+            "not delay",
+            "without delay",
+            "negligible"
+          ],
+          "guidelineRefs": [
+            "eau-paed-2024"
+          ]
+        }
+      ]
+    }
+  },
+  "guideline": [
+    {
+      "id": "eau-paed-2024",
+      "name": "EAU/ESPU Guidelines on Paediatric Urology — acute scrotum",
+      "year": 2024,
+      "section": "Testicular torsion is a clinical diagnosis; urgent surgical exploration; Doppler ultrasound must not delay surgery; explore when torsion cannot be excluded",
+      "citation": "Radmayr C, Bogaert G, Burgu B, et al. EAU Guidelines on Paediatric Urology. EAU Guidelines Office, Arnhem; 2024 edition. Section: Acute scrotum in children.",
+      "verified": false
+    },
+    {
+      "id": "iusti-eo-2016",
+      "name": "IUSTI/WHO European guideline on the management of epididymo-orchitis",
+      "year": 2016,
+      "section": "Exclude torsion (surgical exploration if in doubt); test for chlamydia and gonorrhoea (NAAT) and urine culture; likely STI: ceftriaxone plus doxycycline; enteric organisms likely: fluoroquinolone; scrotal support and analgesia; partner notification",
+      "citation": "Street EJ, Justice ED, Kopa Z, et al. The 2016 European guideline on the management of epididymo-orchitis. Int J STD AIDS. 2017;28:744–749.",
+      "verified": false
+    }
+  ],
+  "rationale": "A sexually active young man invites an epididymo-orchitis label. Sudden onset, absent cremasteric reflex and a negative dipstick mean torsion until explored (EAU; IUSTI: explore when torsion cannot be excluded).",
+  "authoring": {
+    "author": "Claude (endocrine / renal / urology / neuro cluster)",
+    "date": "2026-09-25",
+    "notes": "Expectations need surgeon sign-off (reviewedBy). Every citation is verified: false. iOS outcomes not observed (Linux)."
+  }
+}

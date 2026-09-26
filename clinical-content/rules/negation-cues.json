@@ -1,0 +1,67 @@
+{
+  "$schema": "../schemas/negation-cues.schema.json",
+  "$comment": "Negation cue lists of the negation-aware text matcher (a small NegEx-style check): pre-negation cues with their word windows, negating contractions, pseudo-negations, scope terminators and continuers, post-negation cues, 'not X' followers, copulas, fused negatives and the '-free' suffix. Data only: the rule stays twinned in lib/triage-engine/src/negation.ts and ios/AmiseMedFlow/Services/NegationMatcher.swift, which both read this one file (iOS through SharedClinicalContent), with the same test vectors (negation-parity.test.ts). Phrases handled in the rule itself (\"free of\", \"negative for\", \"-ve\", \"ruled out\", \"cannot be excluded\") are not listed here. Safety bias: when negation is uncertain the match is kept.",
+  "id": "negation-cues",
+  "version": "1.0.0",
+  "preCues": {
+    "no": 5, "not": 5, "nil": 5, "denies": 5, "denied": 5, "deny": 5, "denying": 5, "without": 5,
+    "never": 5, "neither": 5, "absence": 5,
+    "negative": 1, "neg": 1, "absent": 1,
+    "non": 0
+  },
+  "negatingContractions": [
+    "doesn't", "don't", "didn't", "isn't", "wasn't", "aren't", "weren't", "hasn't", "haven't",
+    "hadn't"
+  ],
+  "pseudoAfter": {
+    "no": [
+      "change", "changes", "increase", "improvement", "better", "relief", "doubt", "significant"
+    ],
+    "not": [
+      "only", "improving", "improved", "improve", "relieved", "settling", "settled", "responding",
+      "responded", "controlled", "certain", "sure", "clear", "excluded", "ruled", "necessarily"
+    ],
+    "without": [
+      "improvement", "relief", "response", "delay"
+    ],
+    "nil": [
+      "by"
+    ]
+  },
+  "pseudoAfterVerbNegation": [
+    "stopped", "stopping", "stop", "gone", "going", "settled", "settling", "eased", "easing", "better",
+    "improved", "improving", "resolved", "resolving", "subsided", "subsiding", "relieved",
+    "controlled", "responding", "responded", "know", "think", "remember", "sure", "certain"
+  ],
+  "verbNegationFillers": [
+    "yet", "really", "fully", "completely", "been", "had"
+  ],
+  "scopeTerminators": [
+    "but", "however", "although", "though", "except", "yet", "whereas", "while", "whilst", "apart",
+    "other", "besides", "despite", "and", "with", "which", "who", "has", "have", "had", "shows",
+    "showed", "showing", "reveals", "revealed", "demonstrates", "demonstrated", "plus", "then", "now",
+    "still", "because", "due", "reports", "reported", "complains", "complained", "presents",
+    "presented", "describes", "described"
+  ],
+  "scopeContinuers": [
+    "or", "nor"
+  ],
+  "postCues": [
+    "negative", "neg", "absent", "nil", "none", "excluded"
+  ],
+  "notFollowers": [
+    "present", "seen", "elicited", "demonstrated", "identified", "detected", "found", "palpable",
+    "felt", "noted", "evident", "visualised", "visualized", "appreciated"
+  ],
+  "copulas": [
+    "is", "was", "are", "were", "be", "been", "remains", "remained", "appears", "appeared"
+  ],
+  "fusedNegatives": [
+    "afebrile", "apyrexial", "apyrexic", "anicteric", "asymptomatic", "atraumatic", "nontender",
+    "nondistended", "nonpalpable", "impalpable", "irreducible", "painless"
+  ],
+  "hyphenFree": [
+    "free"
+  ],
+  "maxPreWindow": 6
+}

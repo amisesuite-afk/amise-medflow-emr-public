@@ -9,6 +9,7 @@ import { getAIProviderConfig, polishSoapWithOllama } from '@/lib/ai-provider';
 import CollapsibleCard from '@/components/CollapsibleCard';
 import { printDoc, saveBlobAsPDF } from './lib/pdfExport';
 import { escH as escHDoc, T, AMISE_LOGO_SVG } from './lib/docTemplate';
+import { supplementNoteLine } from '@/lib/supplement-catalogue';
 
 const API_ORIGIN = getApiOrigin();
 
@@ -413,6 +414,8 @@ export default function ProgressNotesTab() {
     if (ctx.durationDays) histParts.push(`Duration: ${ctx.durationDays} day(s).`);
     if (ctx.painScore) histParts.push(`Pain score: ${ctx.painScore}/10.`);
     if (ctx.isPostOp) histParts.push(`Post-operative${ctx.postOpDays ? ` (${ctx.postOpDays} days post-op)` : ''}.`);
+    // Herbs, teas, bush remedies & supplements — always stated, "not asked" included.
+    histParts.push(supplementNoteLine(ctx.supplementHistory));
     setIntervalHistory(histParts.join(' '));
 
     // O — Objective: pull latest vitals + exam findings

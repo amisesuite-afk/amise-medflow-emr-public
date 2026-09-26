@@ -1,0 +1,349 @@
+{
+  "schemaVersion": 1,
+  "id": "appendicitis-perforated-abscess",
+  "condition": "Acute appendicitis",
+  "category": "gi-emergency",
+  "permutationOf": "appendicitis-adult-typical",
+  "permutationLabel": "Complicated: perforated with 5.5 cm abscess",
+  "summary": "46-year-old man, 6 days of RIF pain with a tender mass, fever 38.3 °C, WBC 16, CRP 210; CT shows perforated appendicitis with a 5.5 cm pericaecal abscess. Haemodynamically stable.",
+  "tags": [
+    "acute-abdomen",
+    "complicated"
+  ],
+  "inputs": {
+    "patient": {
+      "ageYears": 46,
+      "sex": "male",
+      "pregnancy": {
+        "status": "not-applicable"
+      },
+      "heightCm": 176,
+      "weightKg": 84
+    },
+    "encounter": {
+      "setting": "emergency",
+      "visitType": "urgentReview",
+      "acuity": "urgent"
+    },
+    "chiefComplaint": "Right iliac fossa pain and swelling for 6 days",
+    "hpi": "6 days of right lower abdominal pain that began around the umbilicus. Treated at home with paracetamol. For 2 days he has felt a tender lump in the right lower abdomen, with fevers and sweats. Eating a little, no vomiting. Bowels opened normally. No urinary symptoms. No weight loss, no rectal bleeding.",
+    "socrates": {
+      "onset": [
+        "4–7 days ago"
+      ],
+      "site": [
+        "Periumbilical",
+        "RLQ"
+      ],
+      "character": [
+        "Dull",
+        "Aching"
+      ],
+      "radiation": [
+        "No radiation"
+      ],
+      "associations": [
+        "Fever",
+        "Rigors",
+        "Anorexia"
+      ],
+      "timing": [
+        "Constant"
+      ],
+      "exacerbating": [
+        "Movement"
+      ],
+      "relieving": [
+        "Analgesics"
+      ],
+      "severity": [
+        "Moderate (4–6/10)"
+      ]
+    },
+    "symptoms": [
+      "abdominal pain",
+      "right iliac fossa mass",
+      "fever",
+      "anorexia"
+    ],
+    "negatives": [
+      "vomiting",
+      "weight loss",
+      "rectal bleeding",
+      "dysuria"
+    ],
+    "exam": {
+      "general": "Alert. Temperature 38.3°C, pulse 98/min, BP 132/80.",
+      "abdomen": "Tender 6 cm mass in the right iliac fossa with localised guarding. Rest of the abdomen soft, no generalised peritonism. Bowel sounds present."
+    },
+    "vitals": [
+      {
+        "minutesAgo": 20,
+        "heartRate": 98,
+        "systolicBp": 132,
+        "diastolicBp": 80,
+        "respiratoryRate": 18,
+        "temperatureC": 38.3,
+        "spo2": 97,
+        "avpu": "A",
+        "onSupplementalO2": false
+      }
+    ],
+    "labs": [
+      {
+        "analyte": "wbc",
+        "name": "WBC",
+        "value": 16.0,
+        "unit": "×10⁹/L",
+        "minutesAgo": 30
+      },
+      {
+        "analyte": "neutrophilPct",
+        "name": "Neutrophils (%)",
+        "value": 84,
+        "unit": "%",
+        "minutesAgo": 30
+      },
+      {
+        "analyte": "crp",
+        "name": "CRP",
+        "value": 210,
+        "unit": "mg/L",
+        "minutesAgo": 30
+      },
+      {
+        "analyte": "creatinine",
+        "name": "Creatinine",
+        "value": 91,
+        "unit": "µmol/L",
+        "minutesAgo": 30
+      },
+      {
+        "analyte": "lactate",
+        "name": "Lactate",
+        "value": 1.4,
+        "unit": "mmol/L",
+        "minutesAgo": 30
+      }
+    ],
+    "imaging": [
+      {
+        "name": "CT abdomen/pelvis with IV contrast",
+        "modality": "CT",
+        "region": "Abdomen/pelvis",
+        "result": "Perforated appendicitis with a 5.5 × 4.8 cm rim-enhancing pericaecal abscess containing an appendicolith. No free intraperitoneal gas, no generalised free fluid. Caecal wall mildly thickened; no mass lesion seen.",
+        "minutesAgo": 15
+      }
+    ],
+    "comorbidities": [
+      "Hypertension"
+    ],
+    "surgicalHistory": [],
+    "medications": [
+      {
+        "drug": "Amlodipine",
+        "dose": "5 mg",
+        "frequency": "OD",
+        "indication": "Hypertension"
+      }
+    ],
+    "allergies": [],
+    "nkda": true,
+    "socialHistory": "Electrician. Non-smoker.",
+    "confirmedDiagnosis": {
+      "name": "Complicated appendicitis with periappendiceal abscess",
+      "icd10": "K35.33",
+      "paneDiseaseId": "appendix_mass",
+      "assessmentText": "Complicated (perforated) appendicitis with a 5.5 cm pericaecal abscess — non-operative management with IV antibiotics and CT-guided percutaneous drainage."
+    },
+    "platform": {
+      "web": {
+        "ccTemplate": "Acute abdominal pain",
+        "socratesAnswers": {
+          "site": "Right iliac fossa, started periumbilical",
+          "onset": "6 days ago, gradual",
+          "character": "Dull ache",
+          "associated": "Fever, sweats and rigors, anorexia, tender lump",
+          "timing": "Constant",
+          "triggers": "Movement",
+          "relief": "Paracetamol partly",
+          "severity": "5/10"
+        },
+        "symptoms": [
+          "abdominal pain",
+          "fever",
+          "anorexia",
+          "lump in abdomen"
+        ],
+        "symptomDetails": {
+          "abdominal pain": [
+            "RLQ",
+            "Periumbilical",
+            "> 3 days",
+            "Dull",
+            "Moderate (4–6)",
+            "Fever",
+            "Anorexia",
+            "Rigors",
+            "Continuous",
+            "Movement"
+          ]
+        },
+        "examFindings": {
+          "abdomen": [
+            "Tender RLQ",
+            "Guarding",
+            "Mass palpable"
+          ]
+        },
+        "durationDays": 6,
+        "painScore": 5
+      }
+    }
+  },
+  "expected": {
+    "differential": {
+      "mustRankTopK": [
+        {
+          "id": "dx-appendicitis-top3",
+          "severity": "critical",
+          "match": [
+            "appendic",
+            "appendix mass"
+          ],
+          "k": 3,
+          "guidelineRefs": [
+            "wses-2020"
+          ]
+        }
+      ]
+    },
+    "safety": {
+      "emergencyLevel": {
+        "id": "level-at-least-urgent",
+        "severity": "critical",
+        "atLeast": "urgent",
+        "guidelineRefs": [
+          "wses-2020"
+        ]
+      }
+    },
+    "investigations": {
+      "mustInclude": [
+        {
+          "id": "inv-ct",
+          "severity": "quality",
+          "match": [
+            "re:\\bct\\b[^.;\\n]{0,40}(abdo|pelvi)",
+            "computed tomography"
+          ],
+          "guidelineRefs": [
+            "wses-2020"
+          ]
+        },
+        {
+          "id": "inv-blood-cultures",
+          "severity": "quality",
+          "match": [
+            "blood culture"
+          ],
+          "guidelineRefs": [
+            "ssc-2021"
+          ]
+        }
+      ]
+    },
+    "management": {
+      "mustInclude": [
+        {
+          "id": "mgmt-antibiotics",
+          "severity": "critical",
+          "match": [
+            "antibiotic",
+            "co-amoxiclav",
+            "piperacillin",
+            "tazocin",
+            "cefuroxime",
+            "ceftriaxone",
+            "metronidazole",
+            "meropenem",
+            "pip-tazo"
+          ],
+          "guidelineRefs": [
+            "wses-2020"
+          ],
+          "note": "Complicated appendicitis with abscess always needs therapeutic antibiotics."
+        },
+        {
+          "id": "mgmt-percutaneous-drainage",
+          "severity": "quality",
+          "match": [
+            "percutaneous drain",
+            "ct-guided drain",
+            "image-guided drain",
+            "ct-guided percutaneous"
+          ],
+          "guidelineRefs": [
+            "wses-2020"
+          ],
+          "note": "WSES 2020: non-operative management with antibiotics and percutaneous drainage (if available) is reasonable for a periappendiceal abscess; laparoscopic surgery in experienced hands is an alternative. Quality because both are acceptable.",
+          "proposedFix": "When the confirmed ICD is K35.3x or the assessment names an abscess/phlegmon, use the appendix_mass protocol for the Plan tab instead of the converged PANE disease.",
+          "knownGap": [
+            "ios"
+          ],
+          "knownGapNote": "iOS CI 2026-09-25 (run 36169134350, database mode): no management item matched among 17 (ios.pipeline.decisions, ios.pipeline.actions, ios.radiation.plan, ios.radiation.followUp, ios.soap.plan)"
+        },
+        {
+          "id": "mgmt-interval-colon-evaluation",
+          "severity": "quality",
+          "match": [
+            "colonoscopy",
+            "interval ct",
+            "interval imaging"
+          ],
+          "guidelineRefs": [
+            "wses-2020"
+          ],
+          "note": "WSES 2020: after non-operative management in patients over 40, interval colonoscopy/imaging because of the neoplasm rate.",
+          "knownGap": [
+            "ios"
+          ],
+          "knownGapNote": "iOS CI 2026-09-25 (run 36169134350, database mode): no management item matched among 17 (ios.pipeline.decisions, ios.pipeline.actions, ios.radiation.plan, ios.radiation.followUp, ios.soap.plan)"
+        }
+      ]
+    },
+    "dxVariant": {
+      "id": "variant-abscess",
+      "severity": "quality",
+      "equals": "appendicitis_abscess",
+      "guidelineRefs": [
+        "wses-2020"
+      ],
+      "proposedFix": "Order the appendicitis variants from most to least specific (generalised peritonitis, abscess, phlegmon, localised peritonitis, uncomplicated) and remove the bare 'appendicitis' keyword from the uncomplicated variant (make it the fallback when no other variant matches)."
+    }
+  },
+  "guideline": [
+    {
+      "id": "wses-2020",
+      "name": "WSES Jerusalem guidelines — diagnosis and treatment of acute appendicitis (2020 update)",
+      "year": 2020,
+      "section": "Clinical scores (AIR/AAS over Alvarado), imaging by age/sex/pregnancy, antibiotic-first option, complicated appendicitis (abscess), antibiotic duration",
+      "citation": "Di Saverio S, Podda M, De Simone B, et al. Diagnosis and treatment of acute appendicitis: 2020 update of the WSES Jerusalem guidelines. World J Emerg Surg. 2020;15:27.",
+      "verified": false
+    },
+    {
+      "id": "ssc-2021",
+      "name": "Surviving Sepsis Campaign — international guidelines for sepsis and septic shock 2021",
+      "year": 2021,
+      "section": "Screening (do not use qSOFA alone), antibiotics within 1 h of shock, blood cultures, lactate, 30 mL/kg crystalloid for hypoperfusion, vasopressors, source control",
+      "citation": "Evans L, Rhodes A, Alhazzani W, et al. Surviving Sepsis Campaign: international guidelines for management of sepsis and septic shock 2021. Crit Care Med. 2021;49:e1063–e1143.",
+      "verified": false
+    }
+  ],
+  "rationale": "Permutation: late presentation with a periappendiceal abscess. Tests that the plan changes to antibiotics plus drainage (or experienced laparoscopic surgery), keeps interval colon evaluation for a patient over 40, and that the Plan-tab variant follows the assessment ('abscess') rather than defaulting to uncomplicated disease.",
+  "authoring": {
+    "author": "Claude (GI surgical emergencies cluster)",
+    "date": "2026-09-25",
+    "notes": "Expectations need surgeon sign-off (reviewedBy). Every citation is verified: false."
+  }
+}

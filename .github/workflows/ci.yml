@@ -39,11 +39,74 @@ jobs:
       - name: Lint RLS policy presence
         run: pnpm --filter @workspace/scripts run lint:rls-policies
 
+      # Applies every run-migrations.yml step to an empty in-process Postgres
+      # (PGlite), twice, with Supabase stand-ins. Catches forward references and
+      # non-idempotent steps. No database connection, no secrets; about 10s.
+      - name: Check migrations on a fresh database
+        run: pnpm --filter @workspace/scripts run check:migrations-fresh
+
       - name: Lint dx-variant clinical phases
         run: pnpm --filter @workspace/scripts run lint:dx-phases
 
+      - name: Lint patient prep instructions (hazard H-10)
+        run: pnpm --filter @workspace/scripts run lint:patient-instructions
+
       - name: Scan for navigation-lockout patterns (advisory)
         run: pnpm --filter @workspace/scripts run scan:nav-lockout
+
+      - name: Lint for third-party QR/chart services (token leak, S-4)
+        run: pnpm --filter @workspace/scripts run lint:no-external-qr
+
+      # Parses the web (TS) and iOS (Swift) interaction engines and fails if a rule pair,
+      # a term or a class member list exists on one platform only (hazard H-07).
+      - name: Lint drug-interaction parity, web vs iOS (H-07)
+        run: pnpm --filter @workspace/scripts run lint:interaction-parity
+
+      # Parses the iOS lab-report analyte catalogue (LabAnalyteCatalog.swift) and fails if a
+      # saved name, a synonym, a unit or a conversion factor differs from the TypeScript port
+      # the web dashboard imports reports with (lib/triage-engine/src/report-import).
+      - name: Lint lab report import parity, web vs iOS
+        run: pnpm --filter @workspace/scripts run lint:report-import-parity
+
+      # Parses the iOS read-only default reference ranges (LabReferenceRanges.swift) and fails if
+      # an analyte, unit, limit or critical limit differs from the web defaults
+      # (lib/triage-engine/src/reference-ranges.ts), or an analyte is not a catalogue saved name.
+      - name: Lint default reference-range parity, web vs iOS
+        run: pnpm --filter @workspace/scripts run lint:reference-range-parity
+      # Shared clinical rules (clinical-content/rules/*.json, read by web AND iOS): fails if a
+      # file does not validate against its JSON Schema (clinical-content/schemas/), is not
+      # registered with a json-key version stamp, is not bundled for iOS (project.yml folder
+      # reference, SharedClinicalContent.File), or if the Swift Codable structs / TypeScript types
+      # that read it disagree with the schema.
+      - name: Lint shared clinical content (schema + Swift/TS types)
+        run: pnpm --filter @workspace/scripts run lint:shared-content
+
+      # Disease-centred vademecum (clinical-content/vademecum/*.json, phase 1 SHADOW: nothing in
+      # production reads it): fails on a broken reference (finding, exam sign, rule band, analyte,
+      # PANE id, iOS candidate, decision, history frame), malformed criteria logic, or content
+      # marked reviewed. docs/VADEMECUM-PLAN.md.
+      - name: Lint vademecum references
+        run: pnpm --filter @workspace/scripts run lint:vademecum
+
+      # Checks clinical-content/registry.json: fails if a registered path is missing, a known
+      # clinical rule-set file is unregistered or a version stamp disagrees; prints (warns) the
+      # review-due list and whether DiagnosticDatabase.json decodes with the iOS Codable structs.
+      - name: Lint clinical guideline registry
+        run: pnpm --filter @workspace/scripts run lint:guideline-registry
+
+      # Rebuilds the clinical sign-off catalogue (every change log's "Needs sign-off" list and
+      # SURGEON-DECISIONS A–G and I, hashed per item) and fails if the committed
+      # artifacts/dashboard/src/data/clinical-signoff-catalogue.json differs. Fix: run
+      # `pnpm --filter @workspace/scripts run signoff:catalogue` and commit the JSON.
+      - name: Lint clinical sign-off catalogue (stale vs the sign-off lists)
+        run: pnpm --filter @workspace/scripts run lint:signoff-catalogue
+
+      # History frames (complaint -> history questions, web + iOS): fails on a complaint vector that
+      # changed frame, radiation outside a pain frame, a site outside its region, contradictory or
+      # duplicate chips, a chip that reaches no engine feature and is not listed record only, or a
+      # stale generated Swift twin. Fix: `pnpm --filter @workspace/scripts run gen:history-frames`.
+      - name: Lint history frames (chips match the complaint and reach the engines)
+        run: pnpm --filter @workspace/scripts run lint:history-frames
 
       - name: Build all packages
         env:
@@ -120,8 +183,10 @@ jobs:
             kill "$DEV_PID" 2>/dev/null || true
             exit 1
           fi
-          node e2e/emr-walkthrough.mjs
-          E2E_EXIT=$?
+          E2E_EXIT=0
+          node e2e/emr-walkthrough.mjs || E2E_EXIT=1
+          # Encounter history: a new / loaded encounter never receives another encounter's notes.
+          node e2e/encounter-switch.mjs || E2E_EXIT=1
           kill "$DEV_PID" 2>/dev/null || true
           exit $E2E_EXIT
 

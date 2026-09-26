@@ -1,0 +1,389 @@
+{
+  "schemaVersion": 1,
+  "id": "gyn-ruptured-haemorrhagic-cyst-apixaban",
+  "condition": "Ruptured haemorrhagic corpus luteum cyst on a DOAC",
+  "category": "other",
+  "permutationOf": "gyn-ovarian-torsion-dermoid",
+  "permutationLabel": "Haemoperitoneum from a corpus luteum cyst in a woman on apixaban",
+  "summary": "38-year-old woman on apixaban for DVT, sudden right pelvic pain on day 22 of her cycle, light-headed, HR 118, BP 96/60, Hb 9.4 (13.1 last month); urine hCG negative; US: haemorrhagic right ovarian cyst with free fluid in the pelvis and Morison's pouch.",
+  "tags": [
+    "gynaecology",
+    "anticoagulated",
+    "haemorrhage",
+    "mimic"
+  ],
+  "inputs": {
+    "patient": {
+      "ageYears": 38,
+      "sex": "female",
+      "pregnancy": {
+        "status": "not-pregnant"
+      },
+      "heightCm": 166,
+      "weightKg": 70
+    },
+    "encounter": {
+      "setting": "emergency",
+      "visitType": "urgentReview",
+      "acuity": "urgent"
+    },
+    "chiefComplaint": "Sudden right lower abdominal pain and feeling faint",
+    "hpi": "Sudden right lower abdominal and pelvic pain 6 hours ago during intercourse, day 22 of a regular cycle. Now light-headed on standing and has right shoulder-tip pain. On apixaban 5 mg twice daily for a DVT 4 months ago (after a leg fracture); last dose 3 hours ago. Urine hCG negative.",
+    "socrates": {
+      "onset": [
+        "Today",
+        "Sudden"
+      ],
+      "site": [
+        "RLQ",
+        "Suprapubic"
+      ],
+      "character": [
+        "Sharp"
+      ],
+      "radiation": [
+        "Right shoulder"
+      ],
+      "associations": [
+        "Nausea"
+      ],
+      "timing": [
+        "Constant"
+      ],
+      "exacerbating": [
+        "Movement",
+        "Lying flat"
+      ],
+      "relieving": [
+        "Nothing"
+      ],
+      "severity": [
+        "Severe (7–9/10)"
+      ]
+    },
+    "symptoms": [
+      "abdominal pain",
+      "pelvic pain",
+      "pre-syncope",
+      "shoulder tip pain"
+    ],
+    "negatives": [
+      "fever",
+      "vaginal bleeding"
+    ],
+    "exam": {
+      "general": "Pale, clammy. HR 118, BP 96/60, RR 20.",
+      "abdomen": "Tender right iliac fossa and suprapubic region with guarding; mild distension."
+    },
+    "vitals": [
+      {
+        "minutesAgo": 10,
+        "heartRate": 118,
+        "systolicBp": 96,
+        "diastolicBp": 60,
+        "respiratoryRate": 20,
+        "temperatureC": 36.8,
+        "spo2": 98,
+        "avpu": "A",
+        "onSupplementalO2": false
+      }
+    ],
+    "labs": [
+      {
+        "analyte": "bhcg",
+        "name": "Urine hCG",
+        "resultText": "Negative",
+        "minutesAgo": 40
+      },
+      {
+        "analyte": "haemoglobin",
+        "name": "Haemoglobin",
+        "value": 9.4,
+        "unit": "g/dL",
+        "minutesAgo": 30
+      },
+      {
+        "analyte": "platelets",
+        "name": "Platelets",
+        "value": 232,
+        "unit": "×10⁹/L",
+        "minutesAgo": 30
+      },
+      {
+        "analyte": "inr",
+        "name": "INR",
+        "value": 1.3,
+        "minutesAgo": 30
+      }
+    ],
+    "imaging": [
+      {
+        "name": "USS pelvis (transvaginal)",
+        "modality": "US",
+        "region": "Pelvis",
+        "result": "4 cm right ovarian cyst with reticular (lace-like) internal echoes consistent with a haemorrhagic corpus luteum; moderate echogenic free fluid in the pelvis extending to Morison's pouch (haemoperitoneum). Normal uterus, no intrauterine or adnexal pregnancy.",
+        "minutesAgo": 20
+      }
+    ],
+    "comorbidities": [
+      "Deep vein thrombosis (provoked, 4 months ago)"
+    ],
+    "surgicalHistory": [
+      "ORIF right tibia (4 months ago)"
+    ],
+    "medications": [
+      {
+        "drug": "Apixaban",
+        "dose": "5 mg",
+        "frequency": "BD",
+        "indication": "Deep vein thrombosis"
+      }
+    ],
+    "allergies": [],
+    "nkda": true,
+    "socialHistory": "Teacher. Non-smoker.",
+    "confirmedDiagnosis": {
+      "name": "Ruptured haemorrhagic right corpus luteum cyst with haemoperitoneum — on apixaban",
+      "icd10": "N83.201",
+      "paneDiseaseId": "ovarian_cyst",
+      "assessmentText": "Haemoperitoneum from a ruptured haemorrhagic corpus luteum cyst in a woman on apixaban, haemodynamically compromised. Resuscitate, crossmatch, withhold apixaban and consider reversal (andexanet / PCC) with haematology; gynaecology for laparoscopy if ongoing bleeding."
+    },
+    "platform": {
+      "web": {
+        "ccTemplate": "Acute abdominal pain",
+        "socratesAnswers": {
+          "site": "Right lower (RLQ) and pelvic",
+          "onset": "Sudden, 6 hours ago",
+          "character": "Sharp",
+          "radiation": "Right shoulder tip",
+          "associated": "Nausea, light-headed",
+          "timing": "Constant",
+          "triggers": "Movement, lying flat",
+          "relief": "Nothing",
+          "severity": "8/10"
+        },
+        "symptoms": [
+          "abdominal pain",
+          "pelvic pain",
+          "pre-syncope"
+        ],
+        "symptomDetails": {
+          "abdominal pain": [
+            "RLQ",
+            "Suprapubic",
+            "Sudden",
+            "< 6 hours",
+            "Sharp",
+            "Severe (7–9)",
+            "Shoulder tip",
+            "Nausea"
+          ],
+          "pelvic pain": [
+            "Constant",
+            "Shoulder tip pain"
+          ]
+        },
+        "examFindings": {
+          "abdomen": [
+            "Tender RLQ",
+            "Guarding"
+          ],
+          "cardiovascular": [
+            "Tachycardia"
+          ]
+        },
+        "paneAnswers": {
+          "adnexal_tenderness": true,
+          "pelvic_pain": true
+        },
+        "durationDays": 0,
+        "painScore": 8
+      }
+    }
+  },
+  "expected": {
+    "differential": {
+      "mustRankTopK": [
+        {
+          "id": "dx-ovarian-cyst-top3",
+          "severity": "quality",
+          "guidelineRefs": [
+            "acog-pb174-2016"
+          ],
+          "match": [
+            "ovarian cyst",
+            "corpus lute",
+            "haemorrhagic cyst"
+          ],
+          "k": 3
+        }
+      ]
+    },
+    "safety": {
+      "emergencyLevel": {
+        "id": "level-at-least-urgent",
+        "severity": "critical",
+        "guidelineRefs": [
+          "acc-bleeding-2020"
+        ],
+        "atLeast": "urgent"
+      },
+      "redFlags": [
+        {
+          "id": "flag-anticoagulant",
+          "severity": "critical",
+          "guidelineRefs": [
+            "acc-bleeding-2020"
+          ],
+          "note": "Active bleeding on a factor Xa inhibitor must be flagged.",
+          "match": [
+            "anticoag",
+            "apixaban",
+            "doac"
+          ]
+        }
+      ]
+    },
+    "investigations": {
+      "mustInclude": [
+        {
+          "id": "inv-crossmatch",
+          "severity": "critical",
+          "guidelineRefs": [
+            "acc-bleeding-2020"
+          ],
+          "match": [
+            "crossmatch",
+            "cross-match",
+            "group and",
+            "group & "
+          ]
+        }
+      ]
+    },
+    "management": {
+      "mustInclude": [
+        {
+          "id": "mgmt-anticoagulant-reversal",
+          "severity": "critical",
+          "guidelineRefs": [
+            "acc-bleeding-2020"
+          ],
+          "note": "Major bleeding on apixaban: consider reversal (andexanet alfa or 4-factor PCC) with haematology.",
+          "match": [
+            "andexanet",
+            "prothrombin complex",
+            "re:\\bpcc\\b",
+            "reversal",
+            "re:\\brevers(e|al|ing)\\b"
+          ]
+        },
+        {
+          "id": "mgmt-stop-apixaban",
+          "severity": "quality",
+          "guidelineRefs": [
+            "acc-bleeding-2020"
+          ],
+          "note": "Stop the anticoagulant. A peri-operative \"hold 48–72 h pre-op\" line counts here, although it is not written for active bleeding.",
+          "match": [
+            "re:(hold|stop|withhold|omit|suspend)[^\\n]{0,25}(anticoag|apixaban|doac)"
+          ]
+        },
+        {
+          "id": "mgmt-gynaecology",
+          "severity": "quality",
+          "guidelineRefs": [
+            "acog-pb174-2016"
+          ],
+          "match": [
+            "gynaecolog",
+            "gynecolog"
+          ],
+          "knownGap": [
+            "ios"
+          ],
+          "knownGapNote": "iOS CI 2026-09-25 (run 36169134350, database mode): no management item matched among 5 (ios.pipeline.decisions, ios.pipeline.actions, ios.soap.plan)"
+        }
+      ],
+      "mustExclude": [
+        {
+          "id": "mgmt-no-appendicectomy",
+          "severity": "critical",
+          "guidelineRefs": [
+            "acog-pb174-2016"
+          ],
+          "note": "Imaging shows a haemorrhagic ovarian cyst; an appendicectomy plan is a wrong-procedure suggestion.",
+          "match": [
+            "appendicectomy",
+            "appendectomy"
+          ],
+          "unless": [
+            "not indicated",
+            "no role",
+            "exclude appendicitis"
+          ]
+        },
+        {
+          "id": "mgmt-no-antithrombotic-plan",
+          "severity": "critical",
+          "guidelineRefs": [
+            "acc-bleeding-2020"
+          ],
+          "note": "An ACS, PE or AF antithrombotic/thrombolytic plan must never be attached to this diagnosis. Regression guard for DiagnosisRadiationEngine keyword matching: before 999f838 (word-boundary lookup) the first-substring match would have attached the pulmonary-embolism (DOAC, thrombolysis) plan to this diagnosis because \"pe\" is inside \"haemoperitoneum\". With word-boundary matching no radiation entry matches (simulated from the source), so iOS is expected to pass; to be confirmed on the first iOS CI run. For a woman bleeding on apixaban that would be the opposite of the correct action.",
+          "match": [
+            "aspirin 300",
+            "ticagrelor",
+            "clopidogrel 300",
+            "fondaparinux",
+            "alteplase",
+            "thrombolysis",
+            "rivaroxaban",
+            "apixaban 10",
+            "apixaban 5 mg bd",
+            "dabigatran",
+            "doacs (preferred)"
+          ],
+          "sources": [
+            "ios.radiation",
+            "ios.soap",
+            "web.plan",
+            "web.protocol",
+            "web.managementPanel"
+          ]
+        }
+      ]
+    }
+  },
+  "guideline": [
+    {
+      "id": "acog-pb174-2016",
+      "name": "ACOG Practice Bulletin No. 174 — evaluation and management of adnexal masses",
+      "year": 2016,
+      "section": "Pregnancy test in reproductive-age women with an adnexal mass and pain; transvaginal ultrasound; haemorrhagic corpus luteum cysts are usually managed conservatively unless haemodynamic compromise",
+      "citation": "American College of Obstetricians and Gynecologists. Evaluation and management of adnexal masses: Practice Bulletin No. 174. Obstet Gynecol. 2016;128:e210–e226.",
+      "verified": false
+    },
+    {
+      "id": "acc-bleeding-2020",
+      "name": "2020 ACC expert consensus decision pathway — management of bleeding in patients on oral anticoagulants",
+      "year": 2020,
+      "section": "Major bleeding on a factor Xa inhibitor: stop the anticoagulant, supportive care and transfusion, consider reversal (andexanet alfa or 4-factor PCC); source control",
+      "citation": "Tomaselli GF, Mahaffey KW, Cuker A, et al. 2020 ACC expert consensus decision pathway on management of bleeding in patients on oral anticoagulants. J Am Coll Cardiol. 2020;76:594–622.",
+      "verified": false
+    },
+    {
+      "id": "nice-ng126",
+      "name": "NICE NG126 — ectopic pregnancy and miscarriage: diagnosis and initial management",
+      "year": 2019,
+      "section": "Pregnancy test in every woman of reproductive age with abdominal/pelvic pain, even with contraception; transvaginal ultrasound; immediate referral to an early pregnancy assessment service / gynaecology when pregnancy test positive with pain; surgical management if ruptured",
+      "citation": "National Institute for Health and Care Excellence. Ectopic pregnancy and miscarriage: diagnosis and initial management. NICE guideline NG126, 2019 (updated 2023).",
+      "verified": false
+    }
+  ],
+  "rationale": "A corpus luteum haemorrhage is usually self-limiting, but on a DOAC it can cause shock. The anticoagulant must be recognised, stopped and possibly reversed, with blood available and gynaecology involved.",
+  "authoring": {
+    "author": "Claude (prevention/screening, obstetric-gynaecological mimics and paediatric surgery cluster)",
+    "date": "2026-09-25",
+    "notes": "Expectations need surgeon sign-off (reviewedBy). Every citation is verified: false. iOS outcomes are unverified (not run on Linux); triage after the first CI run."
+  }
+}

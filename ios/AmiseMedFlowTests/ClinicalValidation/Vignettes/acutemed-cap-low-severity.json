@@ -1,0 +1,280 @@
+{
+  "schemaVersion": 1,
+  "id": "acutemed-cap-low-severity",
+  "condition": "Community-acquired pneumonia (low severity, CURB65 0)",
+  "category": "general-medicine",
+  "permutationOf": null,
+  "summary": "38-year-old man with 3 days of productive cough, fever and right-sided pain on coughing; T 38.4, RR 20, SpO₂ 96 %, crackles and bronchial breathing at the right base. CURB65 0: community management with oral amoxicillin.",
+  "tags": [
+    "pneumonia",
+    "curb65",
+    "over-triage"
+  ],
+  "inputs": {
+    "patient": {
+      "ageYears": 38,
+      "sex": "male",
+      "pregnancy": {
+        "status": "not-applicable"
+      },
+      "heightCm": 180,
+      "weightKg": 82
+    },
+    "encounter": {
+      "setting": "outpatient",
+      "visitType": "urgentReview",
+      "acuity": "priority"
+    },
+    "chiefComplaint": "Cough and fever",
+    "hpi": "Three days of cough productive of green sputum, fevers and sweats, and a sharp pain at the right lower chest when he coughs. Eating and drinking. No breathlessness at rest. Booked for review after excision of a sebaceous cyst (wound healed). No recent travel.",
+    "symptoms": [
+      "productive cough",
+      "fever",
+      "right pleuritic pain on coughing"
+    ],
+    "negatives": [
+      "breathlessness at rest",
+      "haemoptysis",
+      "confusion",
+      "leg swelling",
+      "weight loss"
+    ],
+    "exam": {
+      "general": "Flushed, alert, speaking comfortably.",
+      "respiratory": "Crackles and bronchial breathing at the right base, dull to percussion.",
+      "cardiovascular": "HR 98 regular, BP 128/80.",
+      "skin": "Healed excision scar, back."
+    },
+    "vitals": [
+      {
+        "minutesAgo": 10,
+        "heartRate": 98,
+        "systolicBp": 128,
+        "diastolicBp": 80,
+        "respiratoryRate": 20,
+        "temperatureC": 38.4,
+        "spo2": 96,
+        "avpu": "A",
+        "onSupplementalO2": false
+      }
+    ],
+    "labs": [],
+    "imaging": [],
+    "comorbidities": [],
+    "surgicalHistory": [
+      "Excision of sebaceous cyst, back (3 weeks ago)"
+    ],
+    "medications": [],
+    "allergies": [],
+    "nkda": true,
+    "socialHistory": "Non-smoker. Mechanic.",
+    "confirmedDiagnosis": {
+      "name": "Community-acquired pneumonia (low severity)",
+      "icd10": "J18.9",
+      "assessmentText": "Right basal community-acquired pneumonia, CURB65 0 - low severity: oral amoxicillin, safety-net."
+    },
+    "platform": {
+      "web": {
+        "ccTemplate": "Other / general surgical",
+        "symptoms": [
+          "productive cough",
+          "fever",
+          "pleuritic chest pain"
+        ],
+        "examFindings": {
+          "respiratory": [
+            "Crackles (R)",
+            "Dull to percussion"
+          ]
+        },
+        "paneAnswers": {
+          "fever": true,
+          "pleuritic_chest_pain": true,
+          "mechanism_blunt": false,
+          "chest_wall_tenderness": false
+        },
+        "durationDays": 3,
+        "painScore": 3
+      }
+    }
+  },
+  "expected": {
+    "differential": {
+      "mustRankTopK": [
+        {
+          "id": "dx-pneumonia-top3",
+          "severity": "quality",
+          "match": [
+            "pneumonia",
+            "icd:J18",
+            "icd:J15",
+            "icd:J13",
+            "chest infection",
+            "lower respiratory tract infection"
+          ],
+          "k": 3,
+          "guidelineRefs": [
+            "nice-ng250"
+          ]
+        }
+      ],
+      "mustNotMiss": [
+        {
+          "id": "mnm-pneumonia",
+          "severity": "critical",
+          "match": [
+            "pneumonia",
+            "icd:J18",
+            "icd:J15",
+            "icd:J13",
+            "chest infection",
+            "lower respiratory tract infection"
+          ],
+          "guidelineRefs": [
+            "nice-ng250"
+          ]
+        },
+        {
+          "id": "mnm-pneumonia-symptom-inference",
+          "severity": "quality",
+          "match": [
+            "pneumonia",
+            "icd:J18",
+            "icd:J15",
+            "icd:J13",
+            "chest infection",
+            "lower respiratory tract infection"
+          ],
+          "source": "web.symptomInference",
+          "platforms": [
+            "web"
+          ],
+          "guidelineRefs": [
+            "nice-ng250"
+          ]
+        }
+      ]
+    },
+    "safety": {
+      "emergencyLevel": {
+        "id": "level-not-emergency",
+        "severity": "quality",
+        "atMost": "urgent",
+        "guidelineRefs": [
+          "nice-ng250",
+          "bts-cap-2009"
+        ],
+        "note": "CURB65 0: community management; an emergency redirect is over-triage.",
+        "knownGap": [
+          "web"
+        ],
+        "knownGapNote": "Web run 2026-09-25: web.triage: emergency (acuity=urgent, action=emergency_now, score=130); expected ≤ urgent. Triage reasons: Possible cardiac event; Systemic red flag symptom; Fever; Post-operative or recent-procedure concern; Post-op fever — source must be identified.",
+        "proposedFix": "Negation-aware red-flag scan; do not treat a healed wound 3 weeks after a minor excision as a post-operative concern; tier fever + normal physiology below emergency."
+      }
+    },
+    "scores": {
+      "recommended": [
+        {
+          "id": "score-rec-curb65",
+          "severity": "quality",
+          "score": "curb65",
+          "guidelineRefs": [
+            "bts-cap-2009",
+            "nice-ng250"
+          ]
+        }
+      ]
+    },
+    "investigations": {
+      "mustInclude": [
+        {
+          "id": "inv-cxr",
+          "severity": "quality",
+          "match": [
+            "re:\\bcxr\\b",
+            "chest x-ray",
+            "chest x ray",
+            "chest radiograph",
+            "re:\\bx-?ray\\b[^.;]{0,15}chest"
+          ],
+          "guidelineRefs": [
+            "nice-ng250"
+          ],
+          "note": "CXR is not mandatory in the community (NICE) but is reasonable when examined in clinic; quality only.",
+          "proposedFix": "Pneumonia protocol with CXR."
+        }
+      ]
+    },
+    "management": {
+      "mustInclude": [
+        {
+          "id": "mgmt-amoxicillin",
+          "severity": "quality",
+          "match": [
+            "amoxicillin"
+          ],
+          "unless": [
+            "co-amoxiclav"
+          ],
+          "guidelineRefs": [
+            "nice-ng250"
+          ],
+          "proposedFix": "lib/pane-engine: add a community-acquired pneumonia node (productive cough, fever, pleuritic pain, focal crackles/bronchial breathing, hypoxia) with a protocol (CURB65/CRB65 severity, CXR, amoxicillin for low severity, blood cultures + IV co-amoxiclav/clarithromycin for high severity) and map J18/J15."
+        }
+      ],
+      "mustExclude": [
+        {
+          "id": "mgmt-no-iv-broad-spectrum",
+          "severity": "quality",
+          "match": [
+            "piperacillin",
+            "meropenem",
+            "vancomycin",
+            "tazocin"
+          ],
+          "guidelineRefs": [
+            "nice-ng250"
+          ],
+          "note": "Low-severity CAP: oral amoxicillin; IV broad-spectrum cover is inappropriate."
+        },
+        {
+          "id": "mgmt-no-appendicectomy",
+          "severity": "critical",
+          "match": [
+            "re:laparoscopic append(ic)?ectomy",
+            "appendicectomy",
+            "appendectomy"
+          ],
+          "guidelineRefs": [
+            "nice-ng250"
+          ],
+          "note": "Wrong-procedure check (see HPB findings, gap 1)."
+        }
+      ]
+    }
+  },
+  "guideline": [
+    {
+      "id": "nice-ng250",
+      "verified": false,
+      "name": "NICE NG250 - Pneumonia: diagnosis and management",
+      "year": 2025,
+      "section": "Community-acquired pneumonia: severity assessment with clinical judgement and CRB65 (community) / CURB65 (hospital); low severity managed in the community with oral amoxicillin; higher severity: hospital assessment, microbiology, antibiotics within 4 hours of presentation (1 hour if sepsis suspected)",
+      "citation": "National Institute for Health and Care Excellence. Pneumonia: diagnosis and management (NG250). London: NICE; 2025 (replaces CG191 and NG138)."
+    },
+    {
+      "id": "bts-cap-2009",
+      "verified": false,
+      "name": "BTS guidelines for the management of community acquired pneumonia in adults: update 2009",
+      "year": 2009,
+      "section": "Severity assessment: CURB65 (confusion; urea >7 mmol/L; RR >=30/min; SBP <90 or DBP <=60 mmHg; age >=65); 0-1 low severity (home), 2 moderate (consider hospital), 3-5 high severity (hospital, assess for critical care); blood cultures for moderate and high severity",
+      "citation": "Lim WS, Baudouin SV, George RC, et al. Thorax. 2009;64(Suppl 3):iii1-55."
+    }
+  ],
+  "rationale": "Base CAP case. PANE has no pneumonia node; the web symptom inference does. Checks recognition, CURB65 suggestion, oral amoxicillin and over-triage/over-treatment.",
+  "authoring": {
+    "author": "Claude (acute medicine cluster)",
+    "date": "2026-09-25",
+    "notes": "Expectations need surgeon sign-off (reviewedBy). Citations written from the guideline texts, not yet checked against the source (verified: false). iOS outcomes are unverified until the next CI run."
+  }
+}

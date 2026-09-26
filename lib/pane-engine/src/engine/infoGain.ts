@@ -1,8 +1,9 @@
 import type { DiseaseNode, Feature, PaneState, RankedDiagnosis } from '../types.js';
 import { updatePosterior } from './bayes.js';
-import { CONVERGENCE_THRESHOLD, DEFAULT_SENSITIVITY, MAX_QUESTIONS } from '../constants.js';
+import { CONVERGENCE_THRESHOLD, MAX_QUESTIONS } from '../constants.js';
+import { featureLikelihood } from './likelihood.js';
 
-export { applyModifiers, SURGICAL_OPD_MODIFIERS } from './modifiers.js';
+export { applyModifiers, PRIOR_MODIFIERS, SURGICAL_OPD_MODIFIERS, PREGNANCY_POSSIBLE_MULTIPLIER, isApplicable } from './modifiers.js';
 export type { PriorModifier } from './modifiers.js';
 
 function entropy(posteriors: Record<string, number>): number {
@@ -13,12 +14,17 @@ function entropy(posteriors: Record<string, number>): number {
 
 function marginalPresent(state: PaneState, diseases: DiseaseNode[], featureId: string): number {
   return diseases.reduce((sum, d) => {
-    const sens = d.features[featureId] ?? DEFAULT_SENSITIVITY;
+    const sens = featureLikelihood(d, featureId);
     return sum + sens * (state.posteriors[d.id] ?? 0);
   }, 0);
 }
 
-function informationGain(
+/**
+ * Expected entropy reduction (nats) from observing `featureId`, over the diseases in `state`.
+ * Exported for the diagnostic-reasoning layer (best next discriminator between the leading
+ * diagnoses: call it with a state that holds only those diagnoses).
+ */
+export function informationGain(
   state: PaneState,
   diseases: DiseaseNode[],
   featureId: string,
@@ -44,7 +50,7 @@ export function nextBestQuestion(
   if (maxPosterior >= CONVERGENCE_THRESHOLD) return null;
   if (state.iteration >= MAX_QUESTIONS) return null;
 
-  const unanswered = features.filter(f => !(f.id in state.answered));
+  const unanswered = features.filter(f => !(f.id in state.answered) && f.askable !== false);
   if (unanswered.length === 0) return null;
 
   let best: Feature | null = null;
@@ -78,6 +84,8 @@ export function topDiagnoses(
   return diseases
     .filter(d => d.id !== '_other_')
     .map(d => ({ disease: d, probability: state.posteriors[d.id] ?? 0 }))
+    // A disease the patient is outside of (applicability → prior 0) is never listed.
+    .filter(r => r.probability > 0)
     .sort((a, b) => b.probability - a.probability)
     .slice(0, n);
 }

@@ -3,8 +3,9 @@ import type { ManagementProtocol } from '../types.js';
 export const endocrineProtocols: ManagementProtocol[] = [
   {
     diseaseId: 'thyroid_nodule_benign',
-    icd10Prefixes: ['D34'],
-    label: 'Benign Thyroid Nodule',
+    icd10Prefixes: ['D34', 'E04.1', 'E04.2', 'E04.9', 'D44.0'],
+    label: 'Thyroid Nodule / Goitre (benign or indeterminate cytology)',
+    guidelines: ['BTA 2014 guidelines for the management of thyroid cancer', 'ATA 2015 management guidelines for adult thyroid nodules and differentiated thyroid cancer', 'The Bethesda System for Reporting Thyroid Cytopathology', 'ACR TI-RADS (2017)'],
     keyPoints: [
       'Most thyroid nodules are benign; risk of malignancy ~5–15% in solitary nodules — ultrasound and FNAC are gold standard.',
       'TIRADS score guides FNAC indication; nodules <1 cm with benign features may be observed.',
@@ -15,6 +16,7 @@ export const endocrineProtocols: ManagementProtocol[] = [
       'Hoarseness, dysphagia, or stridor suggesting recurrent laryngeal nerve involvement',
       'Hard, irregular nodule with cervical lymphadenopathy',
       'FNAC result: suspicious or malignant (Bethesda IV–VI)',
+      'Stridor or a rapidly enlarging goitre compressing the trachea — airway emergency: senior anaesthetic and ENT / endocrine surgical review before anything else.',
     ],
     investigations: [
       { label: 'Thyroid function tests (TSH, fT4)', urgency: 'routine' },
@@ -22,9 +24,16 @@ export const endocrineProtocols: ManagementProtocol[] = [
       { label: 'FNAC if TIRADS ≥3 or nodule ≥1 cm', urgency: 'routine' },
       { label: 'Calcium, PTH (if parathyroid pathology suspected)', urgency: 'routine' },
       { label: 'Vocal cord assessment (indirect laryngoscopy) if hoarse', urgency: 'urgent' },
+      { label: 'CT neck and thorax — only if retrosternal extension or tracheal compression is suspected', urgency: 'urgent' },
     ],
     management: [
-      { phase: 'conservative', step: 'Ensure euthyroid state; no treatment required for benign FNAC (Bethesda II).' },
+      { phase: 'immediate', step: 'Stridor or tracheal compression: airway first — senior anaesthetic and ENT / endocrine surgical review, plan airway management before imaging or biopsy.' },
+      { phase: 'conservative', step: 'Plan by Bethesda category (ATA 2015; BTA 2014): I non-diagnostic — repeat FNA under ultrasound guidance (interval per local cytology advice); if repeatedly non-diagnostic, ultrasound surveillance or diagnostic hemithyroidectomy by ultrasound risk.' },
+      { phase: 'conservative', step: 'Bethesda II benign — no surgery for the nodule; ultrasound follow-up by ultrasound pattern; no treatment required unless compressive or growing.' },
+      { phase: 'conservative', step: 'Bethesda III (AUS/FLUS) — repeat FNA or molecular testing; if still indeterminate, surveillance or diagnostic hemithyroidectomy (lobectomy) by clinical/ultrasound risk and patient preference.' },
+      { phase: 'surgical', step: 'Bethesda IV (follicular neoplasm) — diagnostic hemithyroidectomy (lobectomy); molecular testing may be considered.' },
+      { phase: 'surgical', step: 'Bethesda V–VI (suspicious / malignant) — thyroid cancer MDT: lobectomy or total thyroidectomy by size and risk (see the thyroid carcinoma protocol).' },
+      { phase: 'conservative', step: 'Ensure euthyroid state before any surgery.' },
       { phase: 'conservative', step: 'Surveillance ultrasound at 12 months; repeat FNAC only if significant growth (>20% in two dimensions).' },
       { phase: 'conservative', step: 'Counsel patient regarding benign nature; advise return if new symptoms develop.' },
       { phase: 'surgical', step: 'Hemithyroidectomy if nodule >4 cm, compressive symptoms, or patient preference despite benign FNAC.' },
@@ -42,6 +51,8 @@ export const endocrineProtocols: ManagementProtocol[] = [
   {
     diseaseId: 'thyroid_carcinoma',
     icd10Prefixes: ['C73'],
+    cancer: true,
+    guidelines: ['BTA 2014 guidelines for the management of thyroid cancer', 'ATA 2015 differentiated thyroid cancer', 'ATA 2021 anaplastic thyroid cancer'],
     label: 'Thyroid Carcinoma',
     keyPoints: [
       'Papillary thyroid carcinoma is the most common type (~80%); generally excellent prognosis with 10-year survival >95% for low-risk disease.',
@@ -61,9 +72,11 @@ export const endocrineProtocols: ManagementProtocol[] = [
       { label: 'FNAC of primary nodule and suspicious lymph nodes', urgency: 'urgent' },
       { label: 'CT neck/chest (staging — if locally advanced or suspicious nodes)', urgency: 'urgent' },
       { label: 'RET proto-oncogene mutation (if medullary carcinoma)', urgency: 'routine' },
+      { label: 'Rapidly enlarging mass (suspected anaplastic carcinoma or lymphoma): urgent core biopsy (or open/incisional biopsy) for histology — FNA cytology is often insufficient (ATA 2021 anaplastic thyroid cancer)', urgency: 'urgent' },
       { label: 'Calcium, PTH (pre-operative baseline)', urgency: 'routine' },
     ],
     management: [
+      { phase: 'immediate', step: 'Stridor or rapidly enlarging mass: airway first — urgent senior anaesthetic and ENT / head-and-neck review (awake intubation or tracheostomy planning), CT neck and thorax; corticosteroids only after senior discussion (they can obscure a lymphoma diagnosis) (ATA 2021 anaplastic thyroid cancer).' },
       { phase: 'immediate', step: 'Confirm diagnosis with FNAC; stage with ultrasound and CT if locally advanced.' },
       { phase: 'surgical', step: 'Total thyroidectomy ± central compartment neck dissection (level VI) for papillary/follicular carcinoma.' },
       { phase: 'surgical', step: 'Lateral neck dissection (levels II–V) if lateral node involvement confirmed.' },

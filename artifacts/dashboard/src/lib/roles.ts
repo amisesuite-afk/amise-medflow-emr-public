@@ -29,6 +29,16 @@ export function roleIn(userRole: UserRole | undefined | null, ...allowed: UserRo
   return allowed.includes(userRole ?? 'front_desk');
 }
 
+/**
+ * patients.pathway_data_json (the herbs / supplements and lifestyle histories, shared with iOS
+ * PathwayData) is clinician-only under Migration 89: front desk gets 42501. Those cards are
+ * read-only for front desk, with this note.
+ */
+export function canRecordPathwayData(userRole: UserRole | undefined | null): boolean {
+  return hasRole(userRole, 'nurse');
+}
+export const PATHWAY_DATA_READ_ONLY_NOTE = 'Recorded by nurse or doctor';
+
 /** Minimum role required to access a consultation sub-section.
  *  hasRole() uses hierarchy: front_desk < nurse < doctor < admin.
  *  So minRole:'nurse' grants nurse, doctor, AND admin. */

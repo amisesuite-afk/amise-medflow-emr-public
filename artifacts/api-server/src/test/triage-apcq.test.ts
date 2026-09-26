@@ -9,6 +9,7 @@ import {
   getNextQuestion,
   isSessionSufficient,
   detectSpecialty,
+  complaintSymptomType,
   QUESTION_BANK,
   SPECIALTY_QUEUES,
   type SessionState,
@@ -207,5 +208,41 @@ describe('QUESTION_BANK', () => {
       expect(q.text.length).toBeGreaterThan(0);
       expect(typeof q.type).toBe('string');
     }
+  });
+});
+
+// ── Lump questions follow the history-frames symptom type ───────────────────────
+// "Lump or mass" used to get the breast questions ("How long have you noticed the breast lump…?").
+
+describe('lump or mass gets lump questions', () => {
+  const start = () => createSession({ sessionId: 'lump-1', templateKey: 'standard', mode: 'screening' });
+
+  it('classifies the options by symptom type', () => {
+    expect(complaintSymptomType('lump_or_mass')).toBe('lump');
+    expect(complaintSymptomType('breast_concern')).toBe('breast');
+    expect(complaintSymptomType('abdominal_pain')).toBe('pain');
+  });
+
+  it('queues the lump questions, not the breast or pain questions', () => {
+    const s = processAnswer(start(), { questionKey: 'chief_complaint', value: ['lump_or_mass'] });
+    expect(s.queuedKeys).toContain('lump_location');
+    expect(s.queuedKeys).toContain('lump_change');
+    for (const k of ['breast_lump_duration', 'nipple_discharge', 'hormone_use', 'pain_character', 'pain_radiation']) {
+      expect(s.queuedKeys).not.toContain(k);
+    }
+  });
+
+  it('a groin lump adds the hernia question; a breast lump the breast questions', () => {
+    const s = processAnswer(start(), { questionKey: 'chief_complaint', value: ['lump_or_mass'] });
+    expect(processAnswer(s, { questionKey: 'lump_location', value: ['groin'] }).queuedKeys).toContain('hernia_symptoms');
+    const b = processAnswer(s, { questionKey: 'lump_location', value: ['breast'] });
+    expect(b.queuedKeys).toContain('nipple_discharge');
+    expect(b.queuedKeys).not.toContain('hernia_symptoms');
+  });
+
+  it('a breast concern keeps the breast questions', () => {
+    const s = processAnswer(start(), { questionKey: 'chief_complaint', value: ['breast_concern'] });
+    expect(s.queuedKeys).toContain('breast_lump_duration');
+    expect(s.queuedKeys).not.toContain('lump_location');
   });
 });

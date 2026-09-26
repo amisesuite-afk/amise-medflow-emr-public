@@ -1,0 +1,381 @@
+{
+  "schemaVersion": 1,
+  "id": "hernia-femoral-richter-obstruction",
+  "condition": "Strangulated femoral (Richter) hernia with small bowel obstruction",
+  "category": "hernia",
+  "permutationOf": "hernia-femoral-elderly-woman",
+  "permutationLabel": "Presents as SBO (Richter), anticoagulated",
+  "summary": "82-year-old woman with 2 days of colicky pain, vomiting and distension, no previous abdominal surgery; a small tender lump below the right inguinal ligament is found only on careful examination. Must-not-miss cause of SBO in a \"virgin\" abdomen; emergency surgery.",
+  "tags": [
+    "emergency",
+    "sbo",
+    "femoral",
+    "elderly",
+    "female",
+    "anticoagulated"
+  ],
+  "inputs": {
+    "patient": {
+      "ageYears": 82,
+      "sex": "female",
+      "pregnancy": {
+        "status": "not-applicable"
+      },
+      "heightCm": 154,
+      "weightKg": 46
+    },
+    "encounter": {
+      "setting": "emergency",
+      "visitType": "urgentReview",
+      "acuity": "urgent"
+    },
+    "chiefComplaint": "Vomiting and colicky abdominal pain",
+    "hpi": "Two days of colicky central abdominal pain and vomiting, now brown-green. Abdomen bloated, last flatus yesterday. Never had abdominal surgery. Has not noticed any lump.",
+    "socrates": {
+      "onset": [
+        "2–3 days ago",
+        "Gradual"
+      ],
+      "site": [
+        "Periumbilical",
+        "Diffuse"
+      ],
+      "character": [
+        "Colicky"
+      ],
+      "radiation": [
+        "No radiation"
+      ],
+      "associations": [
+        "Vomiting",
+        "Nausea",
+        "Anorexia"
+      ],
+      "timing": [
+        "Intermittent",
+        "Worse over time"
+      ],
+      "exacerbating": [
+        "Eating"
+      ],
+      "relieving": [
+        "Vomiting"
+      ],
+      "severity": [
+        "Severe (7–9/10)"
+      ]
+    },
+    "symptoms": [
+      "abdominal pain",
+      "vomiting",
+      "abdominal distension",
+      "no flatus"
+    ],
+    "negatives": [
+      "previous abdominal surgery",
+      "rectal bleeding"
+    ],
+    "exam": {
+      "general": "Dry mucous membranes. Pulse 104, BP 108/64, temperature 37.6°C.",
+      "abdomen": "Distended, tympanic, tinkling bowel sounds, mild diffuse tenderness, no peritonism. No scars. Small (1.5 cm) tender, irreducible lump below the right inguinal ligament, lateral to the pubic tubercle. Rectum empty."
+    },
+    "vitals": [
+      {
+        "minutesAgo": 15,
+        "heartRate": 104,
+        "systolicBp": 108,
+        "diastolicBp": 64,
+        "respiratoryRate": 20,
+        "temperatureC": 37.6,
+        "spo2": 95,
+        "avpu": "A",
+        "onSupplementalO2": false
+      }
+    ],
+    "labs": [
+      {
+        "analyte": "wbc",
+        "name": "WBC",
+        "value": 13.4,
+        "unit": "×10⁹/L",
+        "minutesAgo": 60
+      },
+      {
+        "analyte": "crp",
+        "name": "CRP",
+        "value": 96,
+        "unit": "mg/L",
+        "minutesAgo": 60
+      },
+      {
+        "analyte": "lactate",
+        "name": "Lactate",
+        "value": 2.6,
+        "unit": "mmol/L",
+        "minutesAgo": 60
+      },
+      {
+        "analyte": "creatinine",
+        "name": "Creatinine",
+        "value": 131,
+        "unit": "µmol/L",
+        "minutesAgo": 60
+      },
+      {
+        "analyte": "sodium",
+        "name": "Sodium",
+        "value": 132,
+        "unit": "mmol/L",
+        "minutesAgo": 60
+      },
+      {
+        "analyte": "potassium",
+        "name": "Potassium",
+        "value": 3.2,
+        "unit": "mmol/L",
+        "minutesAgo": 60
+      }
+    ],
+    "imaging": [
+      {
+        "name": "Abdominal X-ray",
+        "modality": "XR",
+        "region": "Abdomen",
+        "result": "Multiple dilated small-bowel loops centrally; no gas in the colon.",
+        "minutesAgo": 60
+      }
+    ],
+    "comorbidities": [
+      "Atrial fibrillation"
+    ],
+    "surgicalHistory": [],
+    "medications": [
+      {
+        "drug": "Apixaban",
+        "dose": "2.5 mg",
+        "frequency": "BD",
+        "indication": "Atrial fibrillation"
+      }
+    ],
+    "allergies": [],
+    "nkda": true,
+    "socialHistory": "Lives with husband.",
+    "confirmedDiagnosis": {
+      "name": "Strangulated right femoral hernia (probable Richter type) with small bowel obstruction",
+      "icd10": "K41.40",
+      "paneDiseaseId": "femoral_hernia",
+      "assessmentText": "Strangulated right femoral hernia (probable Richter's) causing small bowel obstruction in a virgin abdomen. Resuscitate, NG decompression, CT if it will not delay theatre, emergency repair with bowel inspection."
+    },
+    "platform": {
+      "web": {
+        "ccTemplate": "Acute abdominal pain",
+        "symptoms": [
+          "abdominal pain",
+          "vomiting",
+          "abdominal distension",
+          "groin swelling"
+        ],
+        "symptomDetails": {
+          "abdominal pain": [
+            "Periumbilical",
+            "Diffuse",
+            "Colicky",
+            "1–3 days",
+            "Severe (7–9)",
+            "Vomiting",
+            "Distension",
+            "Constipation",
+            "Worsening over time"
+          ],
+          "vomiting": [
+            "Bile",
+            "Multiple episodes daily"
+          ]
+        },
+        "examFindings": {
+          "abdomen": [
+            "Distended",
+            "Bowel sounds hyperactive",
+            "Hernia present"
+          ]
+        },
+        "durationDays": 2,
+        "painScore": 7
+      }
+    }
+  },
+  "expected": {
+    "differential": {
+      "mustNotMiss": [
+        {
+          "id": "mnm-hernia-cause",
+          "severity": "critical",
+          "match": [
+            "hernia",
+            "icd:K41",
+            "icd:K40"
+          ],
+          "guidelineRefs": [
+            "wses-asbo-2017",
+            "wses-hernia-2017"
+          ],
+          "note": "SBO without previous surgery: an external hernia (femoral in elderly women) must be on the differential."
+        },
+        {
+          "id": "mnm-bowel-obstruction",
+          "severity": "quality",
+          "match": [
+            "obstruct",
+            "icd:K56"
+          ]
+        }
+      ]
+    },
+    "safety": {
+      "emergencyLevel": {
+        "id": "level-emergency",
+        "severity": "critical",
+        "atLeast": "emergency",
+        "guidelineRefs": [
+          "wses-hernia-2017"
+        ]
+      },
+      "mustAlarm": [
+        {
+          "id": "alarm-obstruction",
+          "severity": "critical",
+          "match": [
+            "obstruct",
+            "strangulat",
+            "emergency now"
+          ],
+          "guidelineRefs": [
+            "wses-asbo-2017"
+          ]
+        }
+      ],
+      "redFlags": [
+        {
+          "id": "flag-anticoagulant",
+          "severity": "quality",
+          "match": [
+            "anticoag",
+            "apixaban"
+          ],
+          "note": "DOAC before emergency surgery."
+        }
+      ]
+    },
+    "investigations": {
+      "mustInclude": [
+        {
+          "id": "inv-ct",
+          "severity": "quality",
+          "match": [
+            "re:\\bct\\b[^.;\\n]{0,40}pelvi",
+            "re:\\bct\\b[^.;\\n]{0,80}(obstruct|hernia|transition|closed.loop|swirl)",
+            "computed tomography"
+          ],
+          "guidelineRefs": [
+            "wses-asbo-2017"
+          ],
+          "note": "CT defines the cause and ischaemia, provided it does not delay surgery in obvious strangulation."
+        },
+        {
+          "id": "inv-lactate",
+          "severity": "quality",
+          "match": [
+            "lactate"
+          ],
+          "guidelineRefs": [
+            "wses-hernia-2017"
+          ]
+        }
+      ]
+    },
+    "management": {
+      "mustInclude": [
+        {
+          "id": "mgmt-emergency-surgery",
+          "severity": "critical",
+          "match": [
+            "re:emergency (theatre|surgery|surgical|repair|operat|laparotomy|exploration)",
+            "prompt surgery",
+            "re:urgent (surgery|surgical repair|operat|exploration)",
+            "return to theatre",
+            "re:emergency[^.]{0,30}(mcevedy|repair)"
+          ],
+          "guidelineRefs": [
+            "wses-hernia-2017"
+          ]
+        },
+        {
+          "id": "mgmt-ng-decompression",
+          "severity": "quality",
+          "match": [
+            "nasogastric",
+            "re:\\bng\\b",
+            "drip and suck"
+          ]
+        }
+      ],
+      "mustExclude": [
+        {
+          "id": "mgmt-no-conservative-sbo-trial",
+          "severity": "critical",
+          "match": [
+            "gastrografin",
+            "water-soluble contrast",
+            "re:conservative management[^.]{0,40}(72|48|24)"
+          ],
+          "unless": [
+            "not ",
+            "if adhesional",
+            "adhesive"
+          ],
+          "guidelineRefs": [
+            "wses-asbo-2017"
+          ],
+          "note": "A trial of non-operative (adhesional-SBO) management is wrong for a strangulated hernia."
+        }
+      ]
+    },
+    "dxVariant": {
+      "id": "variant-strangulated",
+      "severity": "critical",
+      "equals": "hernia_strangulated"
+    }
+  },
+  "guideline": [
+    {
+      "id": "wses-hernia-2017",
+      "name": "WSES guidelines — emergency repair of complicated abdominal wall hernias (2017 update)",
+      "year": 2017,
+      "section": "Diagnosis of strangulation (clinical signs, lactate, CPK, D-dimer, CT); timing of surgery; manual reduction only without strangulation; mesh in clean (CDC I) and clean-contaminated fields",
+      "citation": "Birindelli A, Sartelli M, Di Saverio S, et al. 2017 update of the WSES guidelines for emergency repair of complicated abdominal wall hernias. World J Emerg Surg. 2017;12:37.",
+      "verified": false
+    },
+    {
+      "id": "wses-asbo-2017",
+      "name": "Bologna guidelines — adhesive small bowel obstruction (WSES 2017 update)",
+      "year": 2018,
+      "section": "CT in suspected SBO; SBO in a patient without previous abdominal surgery (non-adhesive cause, e.g. hernia) needs a cause-specific diagnosis; signs of strangulation → surgery",
+      "citation": "ten Broek RPG, Krielen P, Di Saverio S, et al. Bologna guidelines for diagnosis and management of adhesive small bowel obstruction (ASBO): 2017 update of the evidence-based guidelines from the World Society of Emergency Surgery ASBO working group. World J Emerg Surg. 2018;13:24.",
+      "verified": false
+    },
+    {
+      "id": "herniasurge-2018",
+      "name": "HerniaSurge — International guidelines for groin hernia management",
+      "year": 2018,
+      "section": "Diagnosis (clinical examination, ultrasound for uncertain swellings); watchful waiting in minimally symptomatic men; mesh repair (Lichtenstein, TEP/TAPP); groin hernia in women; femoral hernia; emergency repair",
+      "citation": "HerniaSurge Group. International guidelines for groin hernia management. Hernia. 2018;22:1–165.",
+      "verified": false
+    }
+  ],
+  "rationale": "Permutation: dangerous presentation. The hernia is small and not the complaint; the CC is \"vomiting and colicky abdominal pain\". Tests that the obstruction is not treated as adhesional (no previous surgery) and that the plan is emergency surgery.",
+  "authoring": {
+    "author": "Claude (hernia / breast / endocrine cluster)",
+    "date": "2026-09-25",
+    "notes": "Expectations need surgeon sign-off (reviewedBy). Citations verified: false."
+  }
+}

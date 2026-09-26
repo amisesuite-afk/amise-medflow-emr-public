@@ -26,6 +26,7 @@ for core clinical work. AI features are **disabled** pending HIPAA BAA.
     ├── Services/                          ← business logic, sync, AI
     ├── Views/                             ← SwiftUI screens
     └── Resources/DiagnosticDatabase.json ← Bayesian pool/candidate/feature DB
+../clinical-content/rules/*.json            ← clinical rules shared with the web (bundled as "rules")
 ```
 
 Git remote: `origin` = `https://github.com/amisesuite-afk/amise-medflow-emr-public`
@@ -69,17 +70,106 @@ on `ContentView`, `@EnvironmentObject` in every view that needs it.
 
 **SyncService**: NWPathMonitor, syncs every 30s on WiFi, pauses on cellular.
 Pull/push for patients, notes, prescriptions, vitals. `syncIfAuthenticated()` on
-every foreground resume.
+every foreground resume. A patient column added by a not-yet-applied migration must not break
+the pull or push: select it with a fallback to the old column list and push it in its own
+request (see `SyncService+NEWS2Scale2.swift`, `patients.news2_spo2_scale2`, Migration 88; and
+`SyncService+AppointmentType.swift`, `patients.appointment_type`, Migration 97, a front-desk column).
+Pull protection: `sync()` pulls patients BEFORE pushing them, so a pull must never write over a
+record with `pendingSync == true` (it would revert an offline edit before it is pushed). Patients
+go through `PatientPullMerge.applyServerPatientRow` (only `remoteId`, an MRN the local copy lacks,
+and the Scale 2 flag apply to a pending patient); notes and operative plans skip pending rows;
+prescriptions/vitals/billing pulls update an existing non-pending row (by remoteId) when the
+server's values differ, and for prescriptions only when `updated_at` is newer than the local
+`updatedAt` (`ChildPullMerge`, `SyncService+ChildPullMerge.swift`; `patient_vitals` and
+`patient_billing_items` have no `updated_at`); the documents pull only inserts. A push clears
+`pendingSync` only when the server returns the written row (`.select("id")`) and `updatedAt` did
+not change during the request (`SyncPushConfirmation`). An UPDATE that RLS filters out returns no
+rows and no error: every update push calls `markRefusedIfUpdateNotApplied`, which selects the row
+by id and marks the record refused when it is still there (`SyncZeroRowUpdate`; a row that is gone
+stays pending, not refused). Tests: `AmiseMedFlowTests/PullProtectionTests.swift`,
+`SyncCompletenessTests.swift`.
+Prescription `route`: the applied schema (Migration 32) has a lowercase CHECK ('oral', 'iv', …,
+'other'); pushes send `PrescriptionRoute.serverValue` (unmappable or mixed routes → "other"),
+pulls show `display(fromServer:)`, and local labels ("Oral", "PO/IV") are kept (`sameRoute`).
+Remote ids (`Services/SyncRemoteIds.swift`): a patient created from a confirmed booking carries
+the placeholder `"appt:<appointment id>"`, which is not a row id. Every push sends a remoteId only
+through `SyncRemoteId.serverId(_:)` (UUID guard, row ids and `patient_id`); never compare with
+`hasPrefix("appt:")` by hand. `pushPendingPatients` gives a placeholder patient a real row once it
+has local work (its own edits or a pending child record): the booking's `patient_id`, else an
+MRN + name match, else an insert; `adoptServerId` replaces the placeholder and
+`AppointmentLinks` stops the appointment pull re-creating it.
+Notes, operative plans, prescriptions, vitals and billing items push an UPDATE when they have a
+server id and an INSERT otherwise; a tombstoned row is never updated. Prescription, VitalsEntry
+and BillingLineItem have `updatedAt` (optional) and `markEdited()`: call it on every edit of an
+existing record (BillingView's inline editor does). Payloads: `PrescriptionUpdateRow`,
+`VitalsUpdateRow` (cleared readings sent as null), `BillingItemUpdateRow`.
+Peer apply (`PeerApplyPending`): never clears `pendingSync`; a peer's unsent change (payload
+`pendingSync`) that changed the record here becomes pending here too, only when the record has a
+server row (idempotent update; inserts stay with the origin device). Child records already here
+take the peer's server id by syncCode. Tests: `AmiseMedFlowTests/SyncGapsTests.swift`.
+Resilience: `sync()` runs each step through `runSyncStep` (a failure sets `syncError`, later
+steps still run) and every push loop handles errors per record via `continueAfterPushFailure`
+(`SyncService+Refusals.swift`). A `42501` marks the record in `SyncRefusals` (kept locally, still
+pending, skipped until the next sign-in/launch; `syncNotice` shows "N changes not permitted for
+your role"); a transport error stops that loop. New push loops must follow the same pattern.
+Front desk (role confirmed via `isRoleConfirmed`) sends only `FrontDeskPatientColumns` in the
+patient UPDATE (`PatientUpdateRow`), mirroring Migration 89's column guard. Tests:
+`AmiseMedFlowTests/FrontDeskSyncTests.swift`.
+Outcomes loop (`SyncService+Outcomes.swift`, rules `OutcomeSync.swift`): `Encounter.predictionSnapshotJson`
+→ `prediction_snapshots` (insert once, `23505` adopts the existing row) and `finalDiagnosisJson` ⇄
+`diagnosis_outcomes` (retractions pushed before the new confirmed row; 0-row retraction read back by id;
+pull merges only encounters with nothing pending). Confirmed nurse / doctor / admin only; values go through
+`OutcomeSanitiser.swift` (twin of `@workspace/triage-engine/outcomes`, shared vectors
+`Resources/OutcomeSanitiserVectors.json`). Migration 94 missing → skipped quietly for six hours or until
+sign-in. Tests: `AmiseMedFlowTests/OutcomeSyncTests.swift`.
 
-**PeerSyncService**: MCSession, service type `"amise-medflow"`, matches peers by
-SHA-256 of email. Manifest-based (syncCode → syncedAt), longer text wins for
-clinical narrative, newer timestamp wins for admin fields.
+**PeerSyncService**: MultipeerConnectivity, service type `"amise-medflow"`, one MCSession per
+peer (`encryptionPreference: .required`). Admission (`PeerSyncService+Pairing.swift`, protocol
+comment in `PeerPairingCrypto.swift`, secrets in `PeerPairingStore.swift`):
+- Discovery info is only `d` (random per-install device id) and `p` (pairing mode). Never put the
+  email or any hash of it in discovery info, invitation context or a pre-auth message.
+- One-time pairing: Settings → Nearby devices → Pair a device shows a 6-digit code (2 min, one
+  attempt); the other device types it. Ephemeral Curve25519 + HKDF over Z ‖ code + HMAC
+  confirmations; the resulting 32-byte secret goes in the Keychain
+  (`AfterFirstUnlockThisDeviceOnly`) keyed by the peer's device id. "Forget" deletes it.
+- Every session: mutual HMAC-SHA256 challenge-response over fresh nonces, then the same-account
+  tag. Until `isAuthenticated(peer)`, nothing is sent and `didReceive` ignores everything except
+  `PeerHandshakeMessage`. New send paths must go through `sessions[peer]` and check
+  `isAuthenticated`. Failures drop that peer and are audited (`peer_auth_failed`, also
+  `peer_pair`, `peer_forget`).
+- Installs updated from the unpaired build see "Pair your iPad to resume nearby sync"
+  (`pairingPrompt`). Tests: `PeerPairingTests.swift`.
+
+Data sync is manifest-based: syncCode → stamp, `max(updatedAt, syncedAt)`
+(`PeerVersion`, `PeerSyncService+Versions.swift`), so records created or edited offline are sent;
+the old syncCode → syncedAt maps stay for older builds, and payloads carry an optional
+`updatedAt`. Longer text wins for clinical narrative, the newer copy wins for admin fields and
+child records (an unsent local edit loses only to a later edit), notes follow `mergeDoc` and a
+signed note is never reopened. After an apply the receiver's `syncedAt` adopts the peer's stamp
+(not sent again), or ends above it when its merged copy differs and must go back
+(`PeerVersion.sendsBack`, `PeerFingerprint`). Patients deleted here are listed with a far-future
+stamp. Tests: `SyncCompletenessTests.swift`, `SyncMergeTests.swift`.
 
 **NASBackupService**: WebDAV to Synology DSM (`amise-storage`, Tailscale IP
 `100.119.29.97`). DSM port 5005 HTTP / 5006 HTTPS. Credentials in Keychain via
 `KCHelper`; URL in `UserDefaults`. Creates `medflow-backups/<timestamp>/` with
 `patients.json`, `notes.json`, `prescriptions.json`, `vitals.json`,
 `manifest.json`. Works over Tailscale transparently.
+Documents and photos (`PatientDocument.localData`, stored inline in SwiftData; there is no
+separate patient photo) go to `documents/<doc id>.<ext>` plus `documents.json`
+(`DocumentsManifest`: code = `PatientDocument.id`, patient syncCode, name, type, size, SHA-256,
+`path` relative to `medflow-backups/`). Pure logic in `NASDocumentBackup.swift`, network and
+SwiftData in `NASBackupService+Documents.swift`, tests `NASDocumentsBackupTests.swift`.
+- One file at a time, each read in its own `ModelContext` so its data is released after upload.
+- An unchanged file (same SHA-256 and size as the last `documents.json`, and HEAD finds it) is not
+  uploaded again: the entry points at the earlier folder. Never delete older backup folders.
+- A WebDAV failure part-way: `documents.json` is written with `complete: false`, `backupError`
+  is set, `lastBackupAt` is not advanced, and Verify says "Backup INCOMPLETE".
+- Verify downloads every file (or 30 when over 150 MB) and checks the SHA-256.
+- Restore is additive: inserts missing documents (id restored from the code, linked by patient
+  syncCode), adds file data only to a record with none, and skips documents deleted here
+  (`NASDocumentBackup.recordDeletedDocument`, called from DocumentsView's delete).
+- Nothing on the NAS or the device is deleted or overwritten.
 
 **Tailnet** (console.tailscale.com):
 - `amise-storage` (NAS, Linux) → `100.119.29.97`
@@ -147,11 +237,88 @@ View extensions: `.amCard()` (card background + border + shadow),
 |---|---|
 | `SOAPDraftEngine` | Deterministic SOAP pre-fill. No network. Safe always. `SOAPDraftEngine.draft(patient:) -> SOAPDraft` with `.s/.o/.a/.p: String` |
 | `AIService` | **ALL methods throw `AIError.disabled`** — HIPAA BAA not in place. `clinicalContext(_ patient:) -> String` is the only working method (pure, local). Do NOT re-enable without BAA. |
-| `BayesianDecisionEngine` | Differential diagnosis from `DiagnosticDatabase.json`. 40 pools, 193 candidates, 1461 features. |
-| `ClinicalScoringEngine` | NEWS2, Alvarado, Glasgow Pancreatitis, Ranson, Tokyo, Rockall, Blatchford, Wells DVT/PE, ABCD², LRINEC, qSOFA |
+| `BayesianDiagnosisEngine` | Differential diagnosis. `DiagnosticDatabase.json` (v2.3.0, 29 presentations; exam-sign and decision-rule LRs come from the shared `clinical-content/rules/*.json`) decodes; the built-in lists (`+*Candidates.swift`) are the fallback if it ever fails. Settings → Diagnostics shows which one (`DiagnosticDatabaseInfo`). `BayesianDecisionEngine` = max-rule/utility decisions on top. Registry and plan: `clinical-content/registry.json`, `docs/CLINICAL-CONTENT-UPGRADES.md` |
+| `ClinicalScoringEngine` | NEWS2, Alvarado, Glasgow Pancreatitis, Ranson, Tokyo, Rockall, Blatchford, Wells DVT/PE, ABCD², LRINEC, qSOFA … and the decision rules of `clinical-content/rules/decision-rules.json` (`+DecisionRules*.swift`: STONE, Ottawa ankle/knee, Canadian CT head, NEXUS, Canadian C-spine, syncope rules; forms `ClinicalScoresView+DecisionRuleForms.swift`, "from record" pre-fill). A saved result goes on the Patient through `ScorePersistence.store` (the runner uses it too). `stone` is the local "Stone CT features" score, `stoneUreteric` the published STONE |
 | `BiometricAuthService` | Face ID / Touch ID app lock. `@StateObject bioAuth`, screen blurred when `bioAuth.isLocked` |
 | `MRNGenerator` | Auto-generates MRN on patient creation |
 | `SyncStatusBar` | Toolbar widget: cloud + antenna + drive icons → popover with all three tier statuses |
+
+## Diagnostic reasoning (Diagnosis step)
+
+`DiagnosticReasoningSection` (`Views/Consultation/DiagnosticReasoningCard.swift`) sits under the
+suggested differentials: for / against / missing / doesn't fit, best next discriminator,
+"Doesn't fit the working diagnosis" alerts (dismissible), diagnostic time-out, zebra check,
+longitudinal patterns. Deterministic; adds to the record only on a tap (assessment line or a
+Suggested investigation).
+- Core `DiagnosticReasoningCore.swift` (`enum DiagnosticReasoning`), `ZebraCheck.swift`,
+  `LongitudinalPatterns.swift` are twins of `lib/triage-engine/src/diagnostic-reasoning/*`: same
+  vectors (`AmiseMedFlowTests/Resources/DiagnosticReasoningVectors.json`,
+  `DiagnosticReasoningTests.swift`), and `scripts/src/diagnostic-reasoning-parity.test.ts` pins the
+  thresholds, cost terms and checklist to the TypeScript. Change both platforms together. The zebra
+  rules are not twinned: both read the shared `clinical-content/rules/zebra-rules.json` (see
+  "Shared clinical rules").
+- `DiagnosticReasoningAdapter.swift` reads `DiagnosisResult.firedFeatures` / `candidateFeatures`
+  (filled by `score()` / `topResults`; they record evidence and never change a weight). LRs are the
+  database's stated `likelihoodRatio` (`FiredFeature.statedLR`, `Candidate.Feature.likelihoodRatio`),
+  else exp(logLR / 5). The working diagnosis is looked up among every scored candidate: the first
+  result carries the rest of the ranked list (`DiagnosisResult.rankedBelow`, not displayed). One
+  evidence label = one finding; every candidate's `complaint` feature is one evidence group.
+- Shared adapter rules: `DiagnosticReasoningRules.swift` (`DiagnosisFamilies`,
+  `DiagnosticReasoning.adapterClosureAlerts`), twin of `families.ts` / `adapter-rules.ts`, reading
+  `clinical-content/rules/diagnostic-reasoning-rules.json` (the core thresholds stay compiled in
+  `DiagnosticReasoningCore.swift`, pinned by the parity test). Missing file → core rules only.
+- Clause-aware reading: `RecordClauses.swift` (twin of `record-clauses.ts`, vectors
+  `RecordClauseVectors.json`, `RecordClauseTests.swift`) is used by `termOccurrences` /
+  `termAffirmed` (negated lists, family history, lay guesses, "?queries") and by `ClinicalTextParser`
+  (a remedy that "did not help" is not relief; "at rest" / "rest pain" are not relief by rest).
+  Offsets are Unicode scalars (`NegationMatcher.Source.scalars`).
+- Clinval: the iOS runner emits `ios.reasoning`; `expected.reasoning` is graded by `ClinValGrader`.
+
+## Shared clinical rules (clinical-content/rules/*.json)
+
+Some clinical rule sets live once, as data, at the repository root in
+`clinical-content/rules/<name>.json`; the web imports the same files. Change the JSON, not a Swift
+copy (there is none).
+- Bundling: `project.yml` adds `../clinical-content/rules` to the app target as a **folder
+  reference** (`type: folder`, `buildPhase: resources`), so the app has `rules/<name>.json` and a
+  new file needs no per-file registration. Do not copy a rules file into `Resources/`.
+- Loading: `Services/SharedClinicalContent.swift`. `SharedClinicalContent.load(T.self, .file)`
+  decodes with the engine's own Codable struct and returns nil (logged) when the file is missing
+  or does not decode; the engine then shows nothing (never a guess, never a crash). Engines hold
+  it in a `static let` (`ZebraCheck.ruleFile`, `SupplementCatalogue.content`,
+  `LifestylePractices.content`, `TreatmentDecisions.content`) and expose computed `static var`s
+  with the old names.
+- Visibility: Settings → Diagnostics → "Shared clinical rules: N of M loaded", one row per file with
+  its version or the decode error (`SharedRulesDiagnosticsRows` in
+  `Views/ClinicalContentDiagnosticsRows.swift`, from `SharedClinicalContent.statuses()`).
+- Checks: `lint:shared-content` (web CI) validates each file against
+  `clinical-content/schemas/<name>.schema.json` and reads the Codable structs from source: every
+  stored property must be a schema property, non-optional ⇒ required, `String`/`Int`/`Double`/`Bool`,
+  arrays, `[String: T]` and `String` enums must match. Keep the structs plain (`let` properties, no
+  `CodingKeys` or custom `init(from:)`); the one exception is a small value type decoded by hand from
+  another JSON shape, declared in `customDecoded` (`TreatmentDecisions.Triple` from `[low, point, high]`). `AmiseMedFlowTests/SharedClinicalContentTests.swift` asserts
+  on the simulator that every file is bundled and decodes.
+- A new shared file: schema, a `SharedClinicalContent.File` case plus its `status(of:)` decode,
+  the `SHARED_CONTENT` entry in `scripts/src/shared-content.ts`, the registry entry. Plan and survey:
+  `docs/SHARED-CONTENT-PLAN.md`.
+
+## What's missing (every consultation step)
+
+`WhatsMissingRow` (`Views/Consultation/WhatsMissingRow.swift`) sits under the allergy status in
+`ConsultationView.baseContent`: the top gap and "+N" (sheet with the ranked list, top 5 then "More…").
+Actions jump to a step (`onTab`) or tool (`onTool`), or add a test as a `.suggested` investigation;
+nothing is ordered or recorded automatically; "Dismiss" is per consultation view.
+- Core `WhatsMissingCore.swift` (+`Fill`, +`Probe`) and rules `WhatsMissingRules.swift` are twins of
+  `lib/pane-engine/src/whats-missing/*`: one shared rules file
+  (`clinical-content/rules/whats-missing-rules.json`, through `SharedClinicalContent`), same vectors
+  (`AmiseMedFlowTests/WhatsMissing/whats-missing-vectors.json`, `WhatsMissingTests.swift`). Change both
+  platforms together and run `gen:whats-missing-vectors`.
+- Adapter `WhatsMissingPatient.swift` reads the Patient (prescriptions dated today count as planned).
+  The populators Alvarado, AIR, BISAP, Wells PE, Blatchford and CURB-65 call
+  `mergeRecord(&i, &f, patient:)` (`PatientScoreAutoPopulator+RecordFill.swift`): record-derived
+  fields are marked auto and drop out of the pending list. No formula changes.
+- The NG12 card (`SuspectedCancerSection`) no longer shows the ferritin check: the row carries it.
+- Clinval: the iOS runner emits `ios.missing`; `expected.missing` is graded by `ClinValGrader`.
 
 ## Ward round flow
 
@@ -162,6 +329,135 @@ Record" → `PatientDetailView`.
 Swipe actions: leading = Mark Reviewed (green), trailing = Discharge (teal) /
 Escalate (orange). Discharge flow: confirmation dialog → `DischargeFlowSheet`
 (pre-filled summary) or direct discharge.
+
+## Consultation pathways ("first door")
+
+`ConsultationView` opens on a visit pathway, which orders its steps (tab bar, Back/Next footer;
+other tabs under "More"):
+
+| Piece | File |
+|---|---|
+| `ConsultPathway` (7 pathways, `steps`, `recommend(for:)`, `from(VisitType)`) | `Services/ConsultPathway.swift` |
+| `VisitRiskAssessment` (risk snapshot flags) | `Services/VisitRiskAssessment.swift` |
+| First-door sheet, pathway cards, `RiskSnapshotCard` | `Views/Consultation/VisitPathwayPicker.swift` |
+| Step bar, footer, `tabFilled`, `pathwayProgress`, tab dispatch | `Views/Consultation/ConsultationView+TabBarDispatch.swift` |
+| Burns / Wellness / Ward review steps | `BurnsAssessmentView`, `WellnessScreeningView`, `WardReviewPanel` |
+| Stored data (`Patient.pathwayDataJson` → `PathwayData`) + `ScreeningEngine` | `Views/Consultation/PathwayData.swift` |
+
+- The first door auto-opens only when the encounter starts (status waiting/not checked in).
+  Choosing a pathway sets `patient.visitType` (keeps a more specific type, e.g. ERCP).
+- The step bar shows the visit type beside the pathway pill (`ConsultVisitTypeChip`,
+  `consult.visitType`, icon only on compact width). Changing it saves `patient.visitType` and, when
+  the pathway no longer fits, offers `ConsultPathway.suggestion(afterChangingTo:…)` under the step
+  bar (one tap; never switched automatically). The front-desk scheduler has the same choice as a
+  chip row (`VisitTypeChipRow`, `fd.scheduler.visitType`), saved with the appointment.
+- New `ConsultTab` cases need a `tabFilled` and a `tabContent` branch (both exhaustive switches).
+- `VisitType` raw values are persisted (SwiftData + Supabase `visit_type`): append cases, never
+  rename. `ClinicalPipelineOrchestrator.filteredAutoActions` switches exhaustively on it.
+- Codable form data stored as JSON must decode missing keys to defaults (see `PathwayData`)
+  and must decode dates with the same strategy it encodes (`.iso8601`). A mismatch makes the
+  whole form read back blank. (Trauma and OGD had this bug.)
+- `pathwayDataJson` syncs over peer sync (newer wins) and Supabase `patients.pathway_data_json`
+  (`SyncService+PathwayData.swift`, own requests that never fail the main sync; unpushed local
+  edits win; column added by `supabase-pathway-data-migration.sql`, Migration 86).
+- Unit tests: `AmiseMedFlowTests/ConsultPathwayTests.swift` (pathway, risk, burns, screening);
+  CI runs them in the "Unit tests (simulator)" job of `ios-build-check.yml`.
+
+## Bowel preparation (colonoscopy / flexible sigmoidoscopy)
+
+- Pure logic: `Services/BowelPrepProtocols.swift` — six regimens (magnesium-based default,
+  magnesium citrate, 2 L / 1 L PEG + ascorbate, 4 L PEG split, enema only), split-dose timing
+  engine (`BowelPrepScheduler`, explicit time zone), safety suggestions (`BowelPrepSafety`,
+  never blocking), per-regimen surgeon sign-off (`BowelPrepSignOff`, UserDefaults, lapses when
+  the wording fingerprint changes; refused while patient wording holds `[confirm]`).
+- Surgeon's rule: clear fluids until 2 h before; never nil by mouth from midnight.
+- UI: `Views/ProcedureForms/BowelPrepView.swift` (reached from ClinicalHubView procedure forms,
+  the top of ColonoscopyFormView, and the consultation Plan tab); sign-off in Settings →
+  Bowel Prep Protocols. Plan stored in `PathwayData.bowelPrep`. Tests: `BowelPrepTests.swift`.
+
+## Front-desk questionnaire: patient hand-over mode (privacy)
+
+The pre-consultation questionnaire (`AdaptiveQuestionnaireSheet`) is filled in by the patient on
+the front-desk iPad, so it must never expose another patient's data:
+- Present it only with `.patientHandoverPresentation(isPresented:patient:entryPoint:)`
+  (`Views/FrontDesk/PatientHandoverPresentation.swift`): full-screen cover on iPad, sheet with
+  interactive dismissal disabled on iPhone. Never `.sheet { AdaptiveQuestionnaireSheet(...) }`.
+- Leaving it ("Staff: exit", also on the post-submit thank-you screen) needs
+  `BiometricAuthService.verifyDeviceOwner(reason:)` (`.deviceOwnerAuthentication`; cancel = stay).
+  Walk-in answers are attached to a record only after staff exit (`WalkInAnswersAttachView`).
+- Patient lists for picking the questionnaire patient use `QuestionnairePatientSearch` (nothing
+  until 3+ name characters or an MRN, max 5). Tests: `AmiseMedFlowTests/QuestionnairePrivacyTests.swift`.
+- The other front-desk patient lists follow the same privacy rule (the screen can be seen across
+  the counter). Check-In (iPad `FDCheckInView`, iPhone `CompactFrontDeskView`) lists before any
+  search only today's patients, booked (`operationDate`) or checked in (`checkInTime`) today in
+  `TimeZone.ect` (`Services/FrontDeskTodayList.swift`), by name and time; everyone else only via
+  `QuestionnairePatientSearch`; acuity only on the selected row; search cleared on leaving the tab.
+  The scheduler picker (`AppointmentSchedulerView`) has no default list. Clinician lists are not
+  affected. Tests: `AmiseMedFlowTests/FrontDeskListsTests.swift` (midnight AST edge cases).
+- No photo library inside the questionnaire (camera only), no staff triage labels (acuity).
+- `PreConsultEntrySheet` is staff transcription of a paper form, not patient-facing.
+
+## Lab / imaging report import (on device, clinician-reviewed)
+
+Laboratory Services Ltd results and Tapion Hospital imaging reports (OKEU / St Jude's selectable)
+come in as PDF or pasted text and are parsed on the device only (PDFKit text; Vision OCR only on
+request for a scanned PDF). AIService is never used. Nothing is saved before the clinician taps Save.
+- Entry points: `ReportImportMenu` (Investigations tab, Documents), and PDFs shared from another app
+  (the "SLUlabservices" app, Files): `project.yml` declares `CFBundleDocumentTypes` com.adobe.pdf
+  (Viewer, Alternate) + `LSSupportsOpeningDocumentsInPlace = false`; `.incomingReportHandling`
+  (app root) stages the file via `.onOpenURL` (`IncomingReportInbox`: PDF header check, 25 MB limit,
+  Application Support/IncomingReports, complete protection, not backed up, Inbox copy deleted,
+  removed after 7 days). It shows nothing while locked, signed out or in patient hand-over
+  (`PatientHandoverState`, counted by `PatientHandoverPresentation`). Staff pick the patient with
+  `QuestionnairePatientSearch` (seeded with the report surname, never auto-selected).
+- Pure parts: `ReportHeaderParser` (name/DOB/accession/dates; day/month assumed, ambiguity kept;
+  `PatientIdentityMatcher`), `LabReportParser` + `LabRowNormaliser`, `LabAnalyteCatalog`,
+  `ImagingReportParser`, `ReportKindGuesser`, `PortalLink`, `IncomingReportStaging`,
+  `ReportImportBuilder`. Tests: `LabReportParserTests.swift`, `IncomingReportStagingTests.swift`.
+- Identity: any name/DOB/sex mismatch, missing DOB, a DOB that only matches read month/day, or two
+  names on one report needs the explicit "This report belongs to …" toggle.
+- Saving (`ReportImportSaver`): lab rows → `InvestigationEntry` (Blood, Resulted, orderedAt =
+  resultedAt = collection time, `result` starts with the value) under catalogue names chosen so
+  `latestLab(named:)` and `LabPanel` read each as its own analyte (the catalogue test enforces
+  this; `LabScoreKeywords` copies the populators' keyword lists — keep in step). Units
+  the scores assume (µmol/L creatinine, mmol/L urea/glucose, g/dL Hb, g/L albumin) are converted
+  only with an exact factor, original kept in the text; ambiguous/unexpected/missing units and
+  implausible values leave the row unticked. Imaging → one Imaging entry (Impression + Findings,
+  optional `portalURL` opened in Safari; never fetched, credential-bearing links refused). PDF →
+  `PatientDocument` ("Lab / Bloods" / "Imaging"). Audit `create lab_result` / `imaging_report` /
+  `document` with fixed labels only. Only nurse+ saves results; front desk may attach the PDF.
+- `InvestigationEntry` gained optional `source`, `accession`, `referenceRange`, `flag`,
+  `reportedAt`, `portalURL`, `documentId` (old JSON decodes). `latestLab` and `LabPanel` now skip
+  Imaging and Endoscopy entries (`InvCategory.holdsLabValues`): narrative reports are never lab values.
+- Lab name matching (`Services/LabNameMatch.swift`) is whole-word, never substring: `latestLab`,
+  `LabPanel.parse`, `LabScoreKeywords` and the Bayesian lab chips split the name into lowercase
+  words at spaces/punctuation ("+" kept, so "Ca++" ≠ "Ca") and need the keyword's words in a row
+  (a 4+ letter word also matches its plural). A name with another specimen word (urine, CSF,
+  fluid, drain …) or another-test word (`otherTestWords`: A1c/glycated/mean for Hb, direct for
+  bilirubin, dehydrogenase for lactate, ratio/clearance for albumin/creatinine …) is not read.
+  So "HbA1c"/"HBsAg" ≠ Hb, "CA 19-9" ≠ calcium, "PTH" ≠ PT/INR, "LDH" ≠ lactate, "Fasting
+  glucose" ≠ AST. New lab readers must use it. Tests: `LabKeywordMatchingTests.swift`.
+
+## On-device store safety (never lose data silently)
+
+`AmiseMedFlowApp.makeModelContainer()` opens the SwiftData store through `StoreRecovery.open`
+(`Services/StoreHealth.swift`): on disk → the same untouched file again → only if the file can be
+read, move it aside with its `-wal`/`-shm` (`default-moved-aside-<UTC stamp>.store`) and open a
+fresh store once → in-memory fallback. **Never delete or reset the store file.**
+- In-memory: `StoreHealth.isInMemoryFallback` is true, `.storeHealthBanner()` (root, login cover,
+  hand-over) shows a red banner that cannot be dismissed, and new patients / note signing are
+  refused (`StoreHealth.blocksNewClinicalData` + `.storeWriteBlockedAlert(isPresented:)`). A new
+  way to create a patient or sign a note needs the same guard.
+- Each failed step goes to `CrashReporting.captureStoreFailure` (error domain and code only).
+- Settings → Diagnostics (`StoreDiagnosticsRows`) shows the status, file size and moved-aside
+  copies. Tests: `AmiseMedFlowTests/StoreHealthTests.swift`.
+
+## SwiftData deleted-model crashes
+
+Reading any attribute of a deleted model after save (before `@Query` refreshes) crashes
+(Xcode stops in a `@_PersistedProperty` getter). Patient `@Query`s go through
+`queriedAllPatients.filter(\.isLive)`, so keep that pattern for new patient lists, and check
+`patient.isLive` after any `await` in sync loops.
 
 ## Swift/SwiftUI compile error patterns
 

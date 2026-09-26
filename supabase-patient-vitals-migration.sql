@@ -23,8 +23,11 @@ CREATE TABLE IF NOT EXISTS public.patient_vitals (
 
 ALTER TABLE public.patient_vitals ENABLE ROW LEVEL SECURITY;
 
-CREATE POLICY "staff access" ON public.patient_vitals
-  FOR ALL TO authenticated USING (true) WITH CHECK (true);
+do $guard$ begin
+  CREATE POLICY "staff access" ON public.patient_vitals
+    FOR ALL TO authenticated USING (true) WITH CHECK (true);
+exception when duplicate_object then null;
+end $guard$;
 
 GRANT SELECT, INSERT, UPDATE, DELETE ON TABLE public.patient_vitals TO authenticated;
 GRANT SELECT, INSERT, UPDATE, DELETE ON TABLE public.patient_vitals TO service_role;

@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { getServiceClient } from '@/lib/supabase';
-import { APPOINTMENT_TYPES } from '@/lib/scheduling';
+import { APPOINTMENT_TYPES, isAppointmentTypeKey } from '@/lib/scheduling';
+import { requireStaff } from '@/lib/staff-auth';
 
 export const runtime = 'nodejs';
 
@@ -78,8 +79,8 @@ function apptTypeAndLocation(payload: StaffBookingPayload): { appointment_type: 
   switch (payload.category) {
     case 'consult': {
       const key = payload.consult_type ?? 'new_consult';
-      const cfg = APPOINTMENT_TYPES[key];
-      return { appointment_type: key, location: cfg?.location ?? 'rodney_bay' };
+      const location = isAppointmentTypeKey(key) ? APPOINTMENT_TYPES[key].location : 'rodney_bay';
+      return { appointment_type: key, location };
     }
     case 'surgery':
       return { appointment_type: 'surgery_theatre', location: payload.surgery_location ?? 'tapion' };
@@ -106,6 +107,9 @@ function preferredSlot(payload: StaffBookingPayload): string | null {
 }
 
 export async function POST(req: NextRequest): Promise<NextResponse> {
+  const auth = await requireStaff(req);
+  if (auth.response) return auth.response;
+
   let payload: StaffBookingPayload;
   try {
     payload = (await req.json()) as StaffBookingPayload;

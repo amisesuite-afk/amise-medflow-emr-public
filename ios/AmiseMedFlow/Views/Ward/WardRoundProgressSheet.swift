@@ -12,17 +12,22 @@ struct WardRoundProgressSheet: View {
     @Bindable var patient: Patient
     let onMarkReviewed: (Patient) -> Void
 
-    @Environment(\.modelContext) private var context
-    @Environment(\.dismiss) private var dismiss
+    @Environment(\.modelContext) var context
+    @Environment(\.dismiss) var dismiss
 
-    @State private var subjective: String = ""
-    @State private var objective: String = ""
-    @State private var assessment: String = ""
-    @State private var plan: String = ""
-    @State private var activeField: SOAPField? = .subjective
-    @State private var showFullRecord = false
-    @State private var showVitals = false
-    @State private var signed = false
+    @State var subjective: String = ""
+    @State var objective: String = ""
+    @State var assessment: String = ""
+    @State var plan: String = ""
+    @State var activeField: SOAPField? = .subjective
+    @State var showFullRecord = false
+    @State var showVitals = false
+    @State var signed = false
+    @State var showStorageBlocked = false
+    /// Latest vitals and investigation flags as plain values. Every keystroke in the SOAP editors
+    /// re-renders this sheet; body used to re-sort all vitals 3-4 times, re-run the NEWS2 chart
+    /// for each NEWS2 value and decode the investigations JSON three times on each of them.
+    @State private var facts = WardProgressFacts()
 
     enum SOAPField: String, CaseIterable {
         case subjective = "S"
@@ -49,10 +54,6 @@ struct WardRoundProgressSheet: View {
         }
     }
 
-    private var latestVitals: VitalsEntry? {
-        patient.vitalsEntries.sorted { $0.recordedAt > $1.recordedAt }.first
-    }
-
     private var acuityColor: Color {
         switch patient.acuity {
         case .emergency: return AMColor.emergency
@@ -63,8 +64,8 @@ struct WardRoundProgressSheet: View {
     }
 
     private var news2Color: Color {
-        guard let v = latestVitals else { return .secondary }
-        switch v.news2Score {
+        guard let v = facts.latestVitals else { return .secondary }
+        switch v.news2.score {
         case 0...2:  return .green
         case 3...4:  return .orange
         case 5...6:  return Color(hex: "ea580c")
@@ -74,7 +75,43 @@ struct WardRoundProgressSheet: View {
 
     // MARK: - Body
 
+    /// Cheap change signal for `facts`: local edits bump updatedAt, sync stamps syncedAt, a new
+    /// vitals entry changes the count, and any investigation change changes the JSON.
+    private var factsKey: WardProgressFactsKey {
+        WardProgressFactsKey(updatedAt: patient.updatedAt,
+                             syncedAt: patient.syncedAt,
+                             vitalsCount: patient.vitalsEntries.count,
+                             investigationsJson: patient.investigationsJson)
+    }
+
+    private func refreshFacts() {
+        guard patient.isLive else { return }
+        let fresh = WardProgressFacts(patient: patient)
+        if fresh != facts { facts = fresh }
+    }
+
     var body: some View {
+        // Reading a deleted model's attributes crashes SwiftData (removed or merged by sync or
+        // duplicate clean-up while this sheet was open).
+        if patient.isLive {
+            liveBody
+        } else {
+            NavigationStack {
+                ContentUnavailableView(
+                    "Record no longer available",
+                    systemImage: "person.crop.circle.badge.xmark",
+                    description: Text("This patient record was removed or merged.")
+                )
+                .toolbar {
+                    ToolbarItem(placement: .cancellationAction) {
+                        Button("Close") { dismiss() }
+                    }
+                }
+            }
+        }
+    }
+
+    private var liveBody: some View {
         NavigationStack {
             List {
                 patientHeaderSection
@@ -85,14 +122,21 @@ struct WardRoundProgressSheet: View {
             .listStyle(.insetGrouped)
             .navigationTitle("Progress Note")
             .navigationBarTitleDisplayMode(.inline)
-            .onAppear { prefillSOAP() }
+            .onAppear {
+                CrashReporting.breadcrumb("Opened ward round progress note", category: "ward")
+                refreshFacts()
+                prefillSOAP()
+            }
+            .onChange(of: factsKey) { _, _ in refreshFacts() }
             .toolbar { toolbarContent }
-            .sheet(isPresented: $showFullRecord) {
-                PatientDetailView(patient: patient)
-            }
-            .sheet(isPresented: $showVitals) {
+            .patientRecordPresentation(item: Binding(
+                get: { showFullRecord ? patient : nil },
+                set: { if $0 == nil { showFullRecord = false } }))
+            .sheet(isPresented: $showVitals, onDismiss: refreshFacts) {
                 VitalsEntryView(patient: patient)
+                    .pageSizedSheet()
             }
+            .storeWriteBlockedAlert(isPresented: $showStorageBlocked)
         }
     }
 
@@ -168,6 +212,28 @@ struct WardRoundProgressSheet: View {
                             .italic()
                     }
                 }
+
+                // Critical lab / pending investigation alerts
+                if facts.hasCriticalLabs {
+                    HStack(spacing: 6) {
+                        Image(systemName: "flask.fill")
+                            .font(.caption2.weight(.bold))
+                            .foregroundStyle(.red)
+                        Text("Critical lab values — review before rounds")
+                            .font(.system(size: 11, weight: .semibold))
+                            .foregroundStyle(.red)
+                    }
+                } else if facts.resultedCount > 0 {
+                    let count = facts.resultedCount
+                    HStack(spacing: 6) {
+                        Image(systemName: "flask")
+                            .font(.caption2)
+                            .foregroundStyle(.teal)
+                        Text("\(count) investigation result\(count == 1 ? "" : "s") available")
+                            .font(.caption)
+                            .foregroundStyle(.teal)
+                    }
+                }
             }
             .padding(.vertical, 4)
         }
@@ -179,7 +245,7 @@ struct WardRoundProgressSheet: View {
             .tracking(0.5)
             .padding(.horizontal, 7)
             .padding(.vertical, 3)
-            .background(acuityColor.opacity(0.15))
+            .background { acuityColor.opacity(0.15) }
             .foregroundStyle(acuityColor)
             .clipShape(Capsule())
     }
@@ -188,11 +254,11 @@ struct WardRoundProgressSheet: View {
 
     @ViewBuilder
     private var vitalsSection: some View {
-        if let v = latestVitals, v.hasAnyValue {
+        if let v = facts.latestVitals {
             Section {
                 VStack(spacing: 8) {
                     HStack {
-                        news2Tile(score: v.news2Score, risk: v.news2Risk)
+                        news2Tile(score: v.news2.score, risk: v.news2.riskDisplay)
                         Spacer()
                         Button {
                             showVitals = true
@@ -204,18 +270,12 @@ struct WardRoundProgressSheet: View {
                         .buttonStyle(.plain)
                     }
 
-                    let grid: [(String, String)] = [
-                        v.bpString.map  { ("BP",     $0 + " mmHg") },
-                        v.heartRate.map { ("HR",     "\($0) bpm") },
-                        v.respiratoryRate.map { ("RR", "\($0)/min") },
-                        v.temperatureCelsius.map { ("Temp", String(format: "%.1f°C", $0)) },
-                        v.spo2.map { ("SpO₂", "\($0)%") }
-                    ].compactMap { $0 }
+                    let grid = v.chips
 
                     if !grid.isEmpty {
                         LazyVGrid(columns: Array(repeating: GridItem(.flexible(), spacing: 8), count: 3), spacing: 8) {
-                            ForEach(grid, id: \.0) { label, value in
-                                vitalsChip(label: label, value: value)
+                            ForEach(grid, id: \.label) { chip in
+                                vitalsChip(label: chip.label, value: chip.value)
                             }
                         }
                     }
@@ -230,7 +290,7 @@ struct WardRoundProgressSheet: View {
                 HStack {
                     Text("Observations").amSectionLabel()
                     Spacer()
-                    if v.news2HasRedFlag {
+                    if v.news2.hasRedFlag {
                         Label("RED FLAG", systemImage: "exclamationmark.triangle.fill")
                             .font(.system(size: 9, weight: .heavy))
                             .foregroundStyle(.red)
@@ -284,7 +344,7 @@ struct WardRoundProgressSheet: View {
         }
         .frame(maxWidth: .infinity)
         .padding(.vertical, 6)
-        .background(Color.secondary.opacity(0.08))
+        .background { Color.secondary.opacity(0.08) }
         .clipShape(RoundedRectangle(cornerRadius: 8))
     }
 
@@ -354,77 +414,53 @@ struct WardRoundProgressSheet: View {
         }
     }
 
-    // MARK: - Actions
+}
 
-    private var actionsSection: some View {
-        Section {
-            Button {
-                showFullRecord = true
-            } label: {
-                HStack {
-                    Image(systemName: "doc.richtext")
-                        .foregroundStyle(AMColor.accent)
-                    Text("Open Full Patient Record")
-                    Spacer()
-                    Image(systemName: "chevron.right")
-                        .font(.caption)
-                        .foregroundStyle(.secondary)
-                }
-            }
-        }
+// MARK: - Snapshot of what the sheet shows from vitals and investigations
+
+/// Change signal for `WardProgressFacts` (see `WardRoundProgressSheet.factsKey`).
+struct WardProgressFactsKey: Equatable {
+    let updatedAt: Date
+    let syncedAt: Date?
+    let vitalsCount: Int
+    let investigationsJson: String?
+}
+
+/// Latest vitals and investigation flags for the progress sheet, as plain values.
+struct WardProgressFacts: Equatable {
+    struct Chip: Equatable {
+        let label: String
+        let value: String
     }
 
-    // MARK: - Toolbar
-
-    @ToolbarContentBuilder
-    private var toolbarContent: some ToolbarContent {
-        ToolbarItem(placement: .cancellationAction) {
-            Button("Cancel") { dismiss() }
-                .foregroundStyle(.secondary)
-        }
-        ToolbarItem(placement: .confirmationAction) {
-            Button {
-                signAndReview()
-            } label: {
-                Label("Sign & Reviewed", systemImage: "signature")
-                    .font(.subheadline.weight(.semibold))
-            }
-            .foregroundStyle(AMColor.accent)
-            .disabled(isNoteEmpty)
-        }
+    struct LatestVitals: Equatable {
+        let news2: News2Snapshot
+        let chips: [Chip]
+        let recordedAt: Date
     }
 
-    // MARK: - Logic
+    /// The most recent vitals entry, when it holds any observation.
+    var latestVitals: LatestVitals? = nil
+    var hasCriticalLabs = false
+    /// Resulted investigations with a result recorded.
+    var resultedCount = 0
 
-    private var isNoteEmpty: Bool {
-        [subjective, objective, assessment, plan].allSatisfy {
-            $0.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty
+    init() {}
+
+    init(patient: Patient) {
+        if let v = ListPerf.newest(patient.vitalsEntries.filter(\.isLive), by: { $0.recordedAt }),
+           v.hasAnyValue {
+            let chips: [Chip] = [
+                v.bpString.map  { Chip(label: "BP",     value: $0 + " mmHg") },
+                v.heartRate.map { Chip(label: "HR",     value: "\($0) bpm") },
+                v.respiratoryRate.map { Chip(label: "RR", value: "\($0)/min") },
+                v.temperatureCelsius.map { Chip(label: "Temp", value: String(format: "%.1f°C", $0)) },
+                v.spo2.map { Chip(label: "SpO₂", value: "\($0)%") }
+            ].compactMap { $0 }
+            latestVitals = LatestVitals(news2: News2Snapshot(v), chips: chips, recordedAt: v.recordedAt)
         }
-    }
-
-    private func prefillSOAP() {
-        let draft = SOAPDraftEngine.draft(patient: patient)
-        // Only pre-fill fields that are still empty (don't overwrite any edits)
-        if subjective.isEmpty { subjective = draft.s }
-        if objective.isEmpty  { objective  = draft.o }
-        if assessment.isEmpty { assessment = draft.a }
-        if plan.isEmpty       { plan       = draft.p }
-    }
-
-    private func signAndReview() {
-        let note = ClinicalNote(noteType: .progress, patient: patient)
-        note.subjective  = subjective.isEmpty ? nil : subjective
-        note.objective   = objective.isEmpty  ? nil : objective
-        note.assessment  = assessment.isEmpty ? nil : assessment
-        note.plan        = plan.isEmpty       ? nil : plan
-        note.status      = .signed
-        note.updatedAt   = .now
-        note.pendingSync = true
-        context.insert(note)
-        patient.updatedAt   = .now
-        patient.pendingSync = true
-        signed = true
-        onMarkReviewed(patient)
-        dismiss()
+        let investigations = patient.investigations
+        hasCriticalLabs = LabPanel.parse(from: investigations).hasCriticalValues
+        resultedCount = investigations.filter { $0.status == .resulted && !$0.result.isEmpty }.count
     }
 }

@@ -33,17 +33,11 @@ function relativeTime(iso: string): string {
 
 export default function EncounterTimelineTab() {
   const {
-    patientId, encounterId,
-    setAssessment, setDifferentials, setIcdCodes, setPlan,
-    setAssessmentUpdatedAt, setPlanUpdatedAt,
-    setMedications, setMedicationsText, setAllergies,
-    setSurgicalHistory, setSurgicalNotes,
-    setToxicHabits, setHpiNotes, setPmhNotes, setFamilyHistoryNotes, setOrderedInvestigations,
-    setExamFindings, setExamNotes,
+    patientId, encounterId, beginEncounter, applyStoredEncounter,
     setActiveSection,
     referredBy, procedureData,
     setPatientName, setAge, setSex, setDob, setPhone, setPatientId, clearPatient,
-    setEncounterId, currentSite: siteCode,
+    currentSite: siteCode,
   } = useAppContext();
 
   // ── Patient search (shown when no patient loaded) ────────────────────────
@@ -109,16 +103,27 @@ export default function EncounterTimelineTab() {
   const [error, setError] = useState<string | null>(null);
   const [starting, setStarting] = useState(false);
 
+  // A new or stored encounter is opened with beginEncounter(), never setEncounterId() alone: the
+  // previous encounter's pending autosaves go to the previous encounter, and the other encounter
+  // starts from clean per-encounter state (lib/encounter-switch.ts).
   async function startEncounter() {
-    if (!patientId) return;
+    if (!patientId || starting) return;
+    const forPatient = patientId;
     setStarting(true);
-    const result = await createEncounter({ patient_id: patientId, site: siteCode ?? undefined });
+    setError(null);
+    const result = await createEncounter({ patient_id: forPatient, site: siteCode ?? undefined });
     setStarting(false);
     if (result.error || !result.encounter) {
       setError(result.error ?? 'Failed to create encounter');
       return;
     }
-    setEncounterId(result.encounter.id);
+    const switched = beginEncounter({
+      patientId: forPatient, encounterId: result.encounter.id, status: 'open', closedAt: null,
+    });
+    if (!switched.switched) {
+      setError('The patient changed while the new encounter was being created, so it was not opened here.');
+      return;
+    }
     void load();
   }
 
@@ -138,12 +143,18 @@ export default function EncounterTimelineTab() {
 
   useEffect(() => { void load(); }, [load]);
 
+  // "Load this encounter" used to copy the stored encounter's assessment, plan and medicines into
+  // the CURRENT encounter id (only the content changed), so autosave wrote them into the encounter
+  // being documented. It now switches the consultation to the loaded encounter, and only the
+  // loaded encounter's own content is shown — nothing of the previous one is kept.
   async function loadEncounter(enc: EncounterSummary) {
-    if (!patientId) return;
+    if (!patientId || loadingId) return;
+    const forPatient = patientId;
     setLoadingId(enc.id);
+    setError(null);
     let result: Awaited<ReturnType<typeof loadEncounterData>>;
     try {
-      result = await loadEncounterData(enc.id, patientId);
+      result = await loadEncounterData(enc.id, forPatient);
     } catch (err) {
       setLoadingId(null);
       setError(err instanceof Error ? err.message : 'Failed to load encounter');
@@ -155,25 +166,20 @@ export default function EncounterTimelineTab() {
       return;
     }
     const d = result.data;
-    setAssessment(d.assessment ?? '');
-    setDifferentials(d.differentials ?? '');
-    setIcdCodes(d.icdCodes ?? []);
-    setPlan(d.plan ?? '');
-    setAssessmentUpdatedAt(d.assessmentUpdatedAt ?? null);
-    setPlanUpdatedAt(d.planUpdatedAt ?? null);
-    setMedications(d.medications ?? []);
-    setMedicationsText('');
-    setAllergies(d.allergens?.join(', ') ?? '');
-    setSurgicalHistory(d.surgicalHistory ?? []);
-    setSurgicalNotes(d.surgicalNotes ?? '');
-    setToxicHabits(d.toxicHabits ?? []);
-    if (d.hpiNotes) setHpiNotes(d.hpiNotes);
-    if (Object.keys(d.examFindings).length) setExamFindings(d.examFindings);
-    if (Object.keys(d.examNotes).length) setExamNotes(d.examNotes);
-    if (d.pmhNotes) setPmhNotes(d.pmhNotes);
-    if (d.familyHistoryNotes) setFamilyHistoryNotes(d.familyHistoryNotes);
-    if (d.orderedInvestigations?.length) setOrderedInvestigations(d.orderedInvestigations);
+    // Only the loaded encounter's own sections are applied (standing history is the patient's
+    // and already loaded). A section that failed to load stays empty and "not loaded" — it is not
+    // autosaved as empty — and a closed encounter is read-only until reopened
+    // (applyStoredEncounter / lib/autosave-guard.ts).
+    const switched = beginEncounter(
+      { patientId: forPatient, encounterId: enc.id, status: enc.status ?? null, closedAt: null },
+      () => applyStoredEncounter(d),
+    );
+    if (!switched.switched) {
+      setError('The patient changed while the encounter was loading, so it was not opened here.');
+      return;
+    }
     setActiveSection('assessment');
+    void load();
   }
 
   if (!patientId) {

@@ -1,0 +1,108 @@
+{
+  "schemaVersion": 1,
+  "id": "reasoning-next-test-rif-pain-woman",
+  "condition": "Right iliac fossa pain in a woman of reproductive age: pregnancy test first",
+  "category": "gi-emergency",
+  "permutationOf": null,
+  "summary": "24-year-old woman with 18 hours of right iliac fossa pain; last period six weeks ago; pregnancy status not yet known.",
+  "tags": [
+    "diagnostic-reasoning"
+  ],
+  "inputs": {
+    "patient": {
+      "ageYears": 24,
+      "sex": "female",
+      "pregnancy": {
+        "status": "unknown"
+      }
+    },
+    "encounter": {
+      "setting": "emergency",
+      "visitType": "newConsult",
+      "acuity": "routine"
+    },
+    "chiefComplaint": "Right lower abdominal pain",
+    "hpi": "Right iliac fossa pain for 18 hours, with nausea. Last menstrual period six weeks ago. Sexually active.",
+    "socrates": {},
+    "symptoms": [],
+    "exam": {
+      "general": "Comfortable at rest.",
+      "abdomen": "Tender right iliac fossa, no guarding."
+    },
+    "vitals": [
+      {
+        "minutesAgo": 10,
+        "heartRate": 92,
+        "systolicBp": 118,
+        "diastolicBp": 72,
+        "respiratoryRate": 16,
+        "temperatureC": 37.1,
+        "spo2": 99,
+        "avpu": "A",
+        "onSupplementalO2": false
+      }
+    ],
+    "labs": [],
+    "imaging": [],
+    "comorbidities": [],
+    "surgicalHistory": [],
+    "medications": [],
+    "allergies": [],
+    "nkda": true,
+    "socialHistory": "",
+    "platform": {
+      "web": {
+        "ccTemplate": "Acute abdominal pain",
+        "symptoms": [
+          "Abdominal pain",
+          "Nausea"
+        ],
+        "socratesAnswers": {
+          "site": "Right iliac fossa",
+          "onset": "18 hours ago",
+          "lmp": "6 weeks ago"
+        }
+      }
+    }
+  },
+  "expected": {
+    "reasoning": {
+      "mustInclude": [
+        {
+          "id": "next-test-pregnancy",
+          "severity": "quality",
+          "match": [
+            "re:pregnan|hcg"
+          ],
+          "sources": [
+            "web.reasoning.discriminator",
+            "ios.reasoning.discriminator"
+          ],
+          "guidelineRefs": [
+            "nice-ng126"
+          ],
+          "note": "In a woman of reproductive age with lower abdominal pain, a pregnancy test comes before anything else (NICE NG126).",
+          "knownGap": [
+            "ios"
+          ],
+          "knownGapNote": "iOS CI 2026-09-25 (run 36200720842): no reasoning line matched among 3 (ios.reasoning.discriminator)"
+        }
+      ]
+    }
+  },
+  "guideline": [
+    {
+      "id": "nice-ng126",
+      "name": "Ectopic pregnancy and miscarriage: diagnosis and initial management",
+      "year": 2019,
+      "section": "1.2 Early pregnancy — pregnancy test",
+      "citation": "NICE NG126 (2019, updated 2023)"
+    }
+  ],
+  "rationale": "The discriminator between appendicitis, ectopic pregnancy and ovarian causes is a pregnancy test at the bedside.",
+  "authoring": {
+    "author": "Claude (diagnostic-reasoning branch)",
+    "date": "2026-09-25",
+    "notes": "Reasoning-layer vignette. iOS reasoning output is unverified here (Swift not built in this environment)."
+  }
+}

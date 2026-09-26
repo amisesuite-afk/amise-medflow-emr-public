@@ -83,8 +83,10 @@ import ErrorBoundary from '@/components/ErrorBoundary';
 import CommandPalette from '@/components/CommandPalette';
 import ProblemListStrip from '@/components/ProblemListStrip';
 import CriticalResultAlert from '@/components/CriticalResultAlert';
+import LabFeedCriticalBanner from '@/components/lab-feed/LabFeedCriticalBanner';
 import PreviousVisitStrip from '@/components/PreviousVisitStrip';
-import ClinicalWorkflowBar from '@/components/ClinicalWorkflowBar';
+import VisitContinuityPanel from '@/components/VisitContinuityPanel';
+import RecordLoadNotice from '@/components/RecordLoadNotice';
 import ClinicalPromptsStrip from '@/components/ClinicalPromptsStrip';
 import FollowUpQueueStrip from '@/components/FollowUpQueueStrip';
 import OpenTasksBanner from '@/components/OpenTasksBanner';
@@ -93,169 +95,22 @@ import PreVisitStatusBanner from '@/components/PreVisitStatusBanner';
 import PathwayConfidenceBanner from '@/components/PathwayConfidenceBanner';
 import AdmissionEscalationBanner from '@/components/AdmissionEscalationBanner';
 import PatientContextBanner from '@/components/PatientContextBanner';
+import WhatsMissingStrip from '@/components/WhatsMissingStrip';
 import EncounterPresenceBanner from '@/components/EncounterPresenceBanner';
 import SaveConflictBanner from '@/components/SaveConflictBanner';
 import NoPatientQuickstart from '@/components/NoPatientQuickstart';
 import PatientNotifyModal from '@/components/PatientNotifyModal';
 import ConsultationNav from '@/components/ConsultationNav';
 import AmbientConsultation from '@/components/AmbientConsultation';
+import EncounterSignOffDialog from '@/components/EncounterSignOffDialog';
+import { completionSnapshotFromApp } from '@/lib/outcomes-completion';
+import ConsultToolDrawer from '@/components/ConsultToolDrawer';
+import { availableTools, type ConsultToolId } from '@/lib/consult-steps';
 import { getMatrix } from '@/lib/cc-matrices';
+import { VISIT_TYPE_TABS } from '@/lib/visit-type-tabs';
+import { currentComplaintText } from '@/lib/visit-continuity-web';
 
 const API_ORIGIN = getApiOrigin();
-
-// Tabs shown and their display labels, ordered by clinical priority, per visit type.
-// Narrower lists = less noise; renamed labels = more signal.
-const VISIT_TYPE_TABS: Record<string, Array<{ id: Section; label: string }>> = {
-  new_consult: [
-    { id: 'hpi',               label: 'CC / HPI'      },
-    { id: 'pmh',               label: 'PMH'           },
-    { id: 'surgical',          label: 'Surgery'       },
-    { id: 'allergies',         label: 'Allergy'       },
-    { id: 'medications',       label: 'Meds'          },
-    { id: 'family_hx',         label: 'Family Hx'    },
-    { id: 'toxic',             label: 'Social'        },
-    { id: 'ros',               label: 'ROS'           },
-    { id: 'examination',       label: 'Exam'          },
-    { id: 'investigations',    label: 'Labs'          },
-    { id: 'radiology',         label: 'Imaging'       },
-    { id: 'assessment',        label: 'Assess'        },
-    { id: 'plan',              label: 'Plan'          },
-    { id: 'scales',            label: 'Scales'        },
-    { id: 'brief',             label: 'Overview'      },
-  ],
-  // ── Follow-up — SOAP: Subjective → Objective → Assessment → Plan ────────────
-  follow_up: [
-    { id: 'hpi',               label: 'S — Interval'  },
-    { id: 'examination',       label: 'O — Exam'      },
-    { id: 'investigations',    label: 'Labs'          },
-    { id: 'radiology',         label: 'Imaging'       },
-    { id: 'assessment',        label: 'A — Assess'    },
-    { id: 'plan',              label: 'P — Plan'      },
-    { id: 'scales',            label: 'Scales'        },
-    { id: 'brief',             label: 'Overview'      },
-  ],
-  // ── Pre-op assessment — fitness for surgery + consent ────────────────────────
-  pre_op: [
-    { id: 'hpi',               label: 'Indication'    },
-    { id: 'pmh',               label: 'PMH'           },
-    { id: 'surgical',          label: 'Prev Surgery'  },
-    { id: 'allergies',         label: 'Allergy'       },
-    { id: 'medications',       label: 'Meds'          },
-    { id: 'ros',               label: 'Systems'       },
-    { id: 'examination',       label: 'Exam'          },
-    { id: 'investigations',    label: 'Labs'          },
-    { id: 'radiology',         label: 'Imaging'       },
-    { id: 'scales',            label: 'Risk Scores'   },
-    { id: 'assessment',        label: 'Risk / ASA'    },
-    { id: 'plan',              label: 'Consent / Plan'},
-  ],
-  // ── Post-op review — Follow-up base + wound ───────────────────────────────────
-  post_op: [
-    { id: 'hpi',               label: 'S — Interval'  },
-    { id: 'wounds',            label: 'Wound'         },
-    { id: 'examination',       label: 'O — Exam'      },
-    { id: 'investigations',    label: 'Labs'          },
-    { id: 'assessment',        label: 'A — Assess'    },
-    { id: 'plan',              label: 'P — Plan'      },
-    { id: 'scales',            label: 'Scales'        },
-    { id: 'monitoring',        label: 'Vitals'        },
-  ],
-  // ── Day of surgery — procedural ────────────────────────────────────────────────
-  day_of_surgery: [
-    { id: 'who_checklist',     label: 'WHO'           },
-    { id: 'periop',            label: 'Periop'        },
-    { id: 'procedures',        label: 'Op Note'       },
-    { id: 'prescriptions',     label: 'Rx'            },
-    { id: 'monitoring',        label: 'Vitals'        },
-  ],
-  // ── Endoscopy visits — WHO + procedure focus ──────────────────────────────────
-  ercp: [
-    { id: 'who_checklist',     label: 'WHO'           },
-    { id: 'hpi',               label: 'Indication'    },
-    { id: 'pmh',               label: 'PMH'           },
-    { id: 'allergies',         label: 'Allergy'       },
-    { id: 'medications',       label: 'Meds'          },
-    { id: 'investigations',    label: 'Labs'          },
-    { id: 'radiology',         label: 'Imaging'       },
-    { id: 'procedures',        label: 'ERCP'          },
-    { id: 'assessment',        label: 'Assess'        },
-    { id: 'plan',              label: 'Plan'          },
-  ],
-  endoscopy_ogd: [
-    { id: 'who_checklist',     label: 'WHO'           },
-    { id: 'hpi',               label: 'Indication'    },
-    { id: 'pmh',               label: 'PMH'           },
-    { id: 'allergies',         label: 'Allergy'       },
-    { id: 'medications',       label: 'Meds'          },
-    { id: 'investigations',    label: 'Labs'          },
-    { id: 'procedures',        label: 'OGD'           },
-    { id: 'assessment',        label: 'Assess'        },
-    { id: 'plan',              label: 'Plan'          },
-  ],
-  endoscopy_col: [
-    { id: 'who_checklist',     label: 'WHO'           },
-    { id: 'hpi',               label: 'Indication'    },
-    { id: 'pmh',               label: 'PMH'           },
-    { id: 'allergies',         label: 'Allergy'       },
-    { id: 'medications',       label: 'Meds'          },
-    { id: 'investigations',    label: 'Labs'          },
-    { id: 'procedures',        label: 'Colonoscopy'   },
-    { id: 'assessment',        label: 'Assess'        },
-    { id: 'plan',              label: 'Plan'          },
-  ],
-  // ── Breast clinic — Initial visit base + breast-specific ────────────────────
-  breast: [
-    { id: 'hpi',               label: 'CC / Breast Hx'},
-    { id: 'pmh',               label: 'PMH'           },
-    { id: 'surgical',          label: 'Surgery'       },
-    { id: 'allergies',         label: 'Allergy'       },
-    { id: 'medications',       label: 'Meds'          },
-    { id: 'family_hx',         label: 'Family Hx'    },
-    { id: 'toxic',             label: 'Social'        },
-    { id: 'ros',               label: 'ROS'           },
-    { id: 'examination',       label: 'CBE'           },
-    { id: 'investigations',    label: 'Imaging'       },
-    { id: 'scales',            label: 'Scales'        },
-    { id: 'assessment',        label: 'Assess'        },
-    { id: 'plan',              label: 'Plan'          },
-  ],
-  // ── Telephone — SOAP lite ────────────────────────────────────────────────────
-  telephone: [
-    { id: 'hpi',               label: 'Presenting'    },
-    { id: 'assessment',        label: 'Assess'        },
-    { id: 'plan',              label: 'Plan'          },
-  ],
-  // ── Diabetic foot — Initial visit base + wound ───────────────────────────────
-  diabetic_foot: [
-    { id: 'hpi',               label: 'Foot Hx'       },
-    { id: 'pmh',               label: 'PMH'           },
-    { id: 'medications',       label: 'Meds'          },
-    { id: 'allergies',         label: 'Allergy'       },
-    { id: 'wounds',            label: 'Wound'         },
-    { id: 'ros',               label: 'Systems'       },
-    { id: 'examination',       label: 'Exam'          },
-    { id: 'investigations',    label: 'Labs'          },
-    { id: 'radiology',         label: 'Imaging'       },
-    { id: 'assessment',        label: 'Assess'        },
-    { id: 'plan',              label: 'Plan'          },
-  ],
-  // ── Urgent referral — Initial visit base + triage first ─────────────────────
-  urgent: [
-    { id: 'triage',            label: 'Triage'        },
-    { id: 'hpi',               label: 'CC / HPI'      },
-    { id: 'pmh',               label: 'PMH'           },
-    { id: 'surgical',          label: 'Surgery'       },
-    { id: 'allergies',         label: 'Allergy'       },
-    { id: 'medications',       label: 'Meds'          },
-    { id: 'ros',               label: 'ROS'           },
-    { id: 'examination',       label: 'Exam'          },
-    { id: 'investigations',    label: 'Labs'          },
-    { id: 'radiology',         label: 'Imaging'       },
-    { id: 'scales',            label: 'Scores'        },
-    { id: 'assessment',        label: 'Assess'        },
-    { id: 'plan',              label: 'Plan'          },
-  ],
-};
 
 // Where to land the cursor the instant the visit type panel completes
 const VISIT_TYPE_START: Partial<Record<string, Section>> = {
@@ -323,6 +178,7 @@ export default function HomePage() {
     lastSaveError,
     syncStatus,
     freeText,
+    procedureData,
     surgicalHistory, surgicalNotes,
     medications, medicationsText,
     allergies,
@@ -341,6 +197,7 @@ export default function HomePage() {
     progressNotes,
     mrNumber, setMrNumber,
     recentEncounters,
+    flushAutosaves,
   } = useAppContext();
 
   const [collapsed, setCollapsed] = useState(false);
@@ -354,10 +211,17 @@ export default function HomePage() {
   const [guidedMode, setGuidedMode] = useState(false);
   const [ambientMode, setAmbientMode] = useState(false);
   const [notifyOpen, setNotifyOpen] = useState(false);
+  // Scores / Vitals / Prescriptions / Notes / Tasks opened over the current step (Tools menu).
+  const [consultTool, setConsultTool] = useState<ConsultToolId | null>(null);
+  const closeConsultTool = useCallback(() => setConsultTool(null), []);
   const [notifyStatus, setNotifyStatus] = useState<{ ok: boolean; msg: string } | null>(null);
   const prevPatientIdRef = useRef<string | null>(null);
 
   const [completing, setCompleting] = useState(false);
+  // Outcomes loop: the engines' outputs are snapshotted (codes only) when the encounter closes.
+  const appCtx = useAppContext();
+  const appCtxRef = useRef(appCtx);
+  appCtxRef.current = appCtx;
   const [apiDown, setApiDown] = useState(false);
   // Timestamp until which the banner is suppressed after the user dismisses it.
   // Seeded from sessionStorage so a page refresh within the 5-min window keeps it hidden.
@@ -400,11 +264,20 @@ export default function HomePage() {
     if (!encounterId) { setTopSection('finaldoc'); return; }
     setCompleting(true);
     try {
+      // Edits typed in the last seconds are saved before the encounter closes — once it is
+      // closed, autosave no longer writes into it (lib/autosave-guard.ts).
+      await flushAutosaves();
       const authHeaders = await staffAuthHeaders();
       const res = await fetch(`${API_ORIGIN}/api/visit/complete/${encounterId}`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json', ...authHeaders as Record<string, string> },
-        body: JSON.stringify({ description: plan ?? undefined }),
+        // Today's chief complaint is stored on the closed encounter, so the next visit can tell a
+        // follow-up of this problem from a new complaint (VisitContinuityPanel).
+        body: JSON.stringify({
+          description: plan ?? undefined,
+          chiefComplaint: currentComplaintText({ procedureData, symptoms, freeText }) || undefined,
+          predictionSnapshot: completionSnapshotFromApp(appCtxRef.current, encounterId) ?? undefined,
+        }),
       });
       if (res.ok) {
         setEncounterStatus('closed');
@@ -413,7 +286,17 @@ export default function HomePage() {
     } catch { /* non-blocking — navigate regardless */ }
     setCompleting(false);
     setTopSection('finaldoc');
-  }, [encounterId, plan, setEncounterStatus, setEncounterClosedAt, setTopSection]);
+  }, [encounterId, plan, procedureData, symptoms, freeText, setEncounterStatus, setEncounterClosedAt, setTopSection]);
+
+  // Every "close / finish encounter" control opens the in-app sign-off dialog first (missing
+  // steps, allergy status, diagnosis); the encounter closes only on its explicit confirmation.
+  const [signOffOpen, setSignOffOpen] = useState(false);
+  const requestCompleteEncounter = useCallback(() => setSignOffOpen(true), []);
+  const cancelSignOff = useCallback(() => setSignOffOpen(false), []);
+  const confirmSignOff = useCallback(async () => {
+    await completeEncounter();
+    setSignOffOpen(false);
+  }, [completeEncounter]);
 
   const [reopening, setReopening] = useState(false);
   const [reopenError, setReopenError] = useState('');
@@ -523,8 +406,10 @@ export default function HomePage() {
 
     // Default: CC matrix or encounter-type bucket
     const matrix  = activeCcKey ? getMatrix(activeCcKey) : null;
+    // A chief-complaint pathway keeps Scores (UX review top-10 #10: it used to disappear once a
+    // complaint was chosen; ClinicalWorkflowBar shows it after Assessment).
     const allowed = matrix
-      ? new Set<Section>(matrix.sections)
+      ? new Set<Section>([...matrix.sections, 'scales'])
       : ENCOUNTER_TAB_SETS[encounterType];
     const all: { id: Section; label: string }[] = [
       { id: 'brief', label: 'Brief' },
@@ -559,6 +444,7 @@ export default function HomePage() {
         { id: 'radiology' as Section, label: 'Radiology' },
         { id: 'attachments' as Section, label: 'Attach' },
       ] : []),
+      { id: 'scales', label: 'Scores' },
       { id: 'progress', label: 'Notes' },
       { id: 'monitoring', label: 'Monitor' },
       { id: 'tasks', label: 'Tasks' },
@@ -688,6 +574,9 @@ export default function HomePage() {
     if (swipeRef.current) swipeRef.current.scrollTop = 0;
   }, [activeSection, topSection]);
 
+  // A tool panel belongs to the patient and the consultation it was opened in.
+  useEffect(() => { setConsultTool(null); }, [patientId, topSection]);
+
   // Reset to new consultation when patient or CC changes
   useEffect(() => { setHeaderVisitMode('new'); }, [patientId, activeCcKey]);
 
@@ -727,9 +616,15 @@ export default function HomePage() {
         transition: 'grid-template-columns 200ms ease, grid-template-rows 200ms ease',
       }}
     >
+      <EncounterSignOffDialog
+        open={signOffOpen}
+        completing={completing}
+        onCancel={cancelSignOff}
+        onConfirm={() => { void confirmSignOff(); }}
+      />
       <AppHeader
         completing={completing}
-        completeEncounter={completeEncounter}
+        completeEncounter={requestCompleteEncounter}
         showAiPanel={showAiPanel}
         setShowAiPanel={setShowAiPanel}
       />
@@ -815,19 +710,47 @@ export default function HomePage() {
           setNotifyStatus={setNotifyStatus}
         />
 
+        {/* What's missing — ranked gaps (safety → decision → score), one tap to the field or a
+            suggested test; nothing is ordered or recorded automatically. Self-hides when empty. */}
+        {topSection === 'consultation' && (!!patientId || !!patientName) && <WhatsMissingStrip />}
+
         {/* Concurrent-editing awareness — who else has this encounter open right now */}
         <EncounterPresenceBanner />
 
         {/* Concurrent-edit conflict — assessment/plan actually collided with another save */}
         <SaveConflictBanner />
 
+        {/* Critical result from the laboratory feed — doctors and admins, every page. The
+            Results Inbox stays reachable from the nav rail whether or not this shows. */}
+        {hasRole(userRole, 'doctor') && <LabFeedCriticalBanner onOpen={() => setTopSection('results_inbox')} />}
+
         {/* Critical result alerts — vitals / investigation thresholds */}
         {topSection === 'consultation' && <CriticalResultAlert />}
+
+        {/* Clinical prompts — emergency / safeguarding recognition, medication safety (NSAIDs in
+            pregnancy, β-hCG, anticoagulation), screening and follow-up suggestions from
+            clinical-inference.ts. Every action needs a clinician tap. Self-hides when empty.
+            (Imported but never rendered until 2026-09-26 — the clinval harness exercised
+            computeClinicalPrompts() directly, so the gap was invisible to the suite.) */}
+        {topSection === 'consultation' && (!!patientId || !!patientName) && <ClinicalPromptsStrip />}
 
         {/* Previous visit disclosure — brief of prior encounters (date, type, CC, diagnosis)
             for continuity of care. Self-hides for a genuinely new patient (no history) and
             never modifies the current encounter — reference only. */}
         {topSection === 'consultation' && <PreviousVisitStrip />}
+
+        {/* Returning patient: follow-up of the last problem or a new problem — flagged
+            automatically when the encounter starts (one-tap change), with what this visit
+            continues from and the standing history to review. Self-hides for a new patient. */}
+        {topSection === 'consultation' && (!!patientId || !!patientName) && <VisitContinuityPanel />}
+
+        {/* Autosave guard state: record still loading, sections that couldn't be loaded (retry),
+            closed encounter read-only (reopen). Self-hides when none applies. */}
+        <RecordLoadNotice
+          showReadOnly={topSection === 'consultation'}
+          onReopen={encounterStatus === 'closed' ? () => void editEncounter() : undefined}
+          reopening={reopening}
+        />
 
         {/* No-patient quickstart — inline name/age/sex entry */}
         <NoPatientQuickstart />
@@ -838,7 +761,7 @@ export default function HomePage() {
           <AmbientConsultation
             visitType={ctxVisitType ?? headerVisitMode}
             onDetailedMode={() => { setAmbientMode(false); setGuidedMode(true); }}
-            onFinalise={completeEncounter}
+            onFinalise={requestCompleteEncounter}
             compact={!ambientMode}
           />
         )}
@@ -849,17 +772,18 @@ export default function HomePage() {
         <ConsultationNav
           consultTabs={consultTabs}
           sectionCompletion={sectionCompletion}
-          completeEncounter={completeEncounter}
+          completeEncounter={requestCompleteEncounter}
           completing={completing}
           ambientMode={ambientMode}
           setAmbientMode={setAmbientMode}
           guidedMode={guidedMode}
           setGuidedMode={setGuidedMode}
           headerVisitMode={headerVisitMode}
+          tools={availableTools(authLoading || hasRole(userRole, 'doctor'))}
+          onOpenTool={setConsultTool}
         />
-
-        {/* Algorithm workflow guide — always visible when CC is active */}
-        {topSection === 'consultation' && !ambientMode && !!activeCcKey && <ClinicalWorkflowBar />}
+        {/* The chief-complaint pathway bar (ClinicalWorkflowBar) is rendered by ConsultationNav:
+            one block with the actions in its header, instead of a separate row (UX review M6). */}
 
         {/* Visit-type gate — physician fail-safe. Front desk is meant to capture visit
             type during check-in/triage; if that was skipped for any reason, the clinical
@@ -1029,6 +953,11 @@ export default function HomePage() {
       </main>
 
       {!consultAmbient && <FloatingActions />}
+
+      {/* Consultation tool panel — over the current step, never changes it */}
+      {topSection === 'consultation' && (
+        <ConsultToolDrawer tool={consultTool} onClose={closeConsultTool} />
+      )}
 
       {/* AI slide-in panel — triggered from header button */}
       {hasRole(userRole, 'doctor') && showAiPanel && (

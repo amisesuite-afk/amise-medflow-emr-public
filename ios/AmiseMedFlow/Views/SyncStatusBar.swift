@@ -24,6 +24,8 @@ struct SyncStatusBar: View {
     private var peerColor: Color {
         if peerSync.connectedCount > 0 { return .green }
         if peerSync.nearbyCount > 0    { return .orange }
+        if peerSync.pairingPrompt != nil { return .orange }        // needs a one-time pairing
+        if peerSync.isRunning          { return AMColor.accent }  // scanning, no peers yet
         return .secondary
     }
 
@@ -120,6 +122,8 @@ struct SyncStatusBar: View {
             parts.append("\(peerSync.connectedCount) device\(peerSync.connectedCount == 1 ? "" : "s") connected")
         } else if peerSync.nearbyCount > 0 {
             parts.append("\(peerSync.nearbyCount) nearby device\(peerSync.nearbyCount == 1 ? "" : "s")")
+        } else if let prompt = peerSync.pairingPrompt {
+            parts.append(prompt)
         } else {
             parts.append("No devices nearby")
         }
@@ -195,6 +199,13 @@ private struct SyncStatusPopover: View {
                                 .lineLimit(3)
                         }
 
+                        // Kept on this device; retried after the next sign-in.
+                        if let notice = sync.syncNotice {
+                            Label(notice, systemImage: "lock")
+                                .font(.caption)
+                                .foregroundStyle(.orange)
+                        }
+
                         Button {
                             Task { await sync.syncIfAuthenticated() }
                         } label: {
@@ -225,6 +236,16 @@ private struct SyncStatusPopover: View {
                         if let last = peerSync.lastPeerSyncAt {
                             Text("Last device sync \(last, style: .relative)")
                                 .font(.caption)
+                                .foregroundStyle(.secondary)
+                        }
+
+                        // One-time pairing needed (e.g. after updating from a build without it).
+                        if let prompt = peerSync.pairingPrompt {
+                            Label(prompt, systemImage: "link.badge.plus")
+                                .font(.caption.weight(.medium))
+                                .foregroundStyle(.orange)
+                            Text("Settings → Nearby devices → Pair a device")
+                                .font(.caption2)
                                 .foregroundStyle(.secondary)
                         }
 
@@ -356,6 +377,8 @@ private struct SyncStatusPopover: View {
     private var peerStatusColor: Color {
         if peerSync.connectedCount > 0 { return .green }
         if peerSync.nearbyCount > 0    { return .orange }
+        if peerSync.pairingPrompt != nil { return .orange }
+        if peerSync.isRunning          { return AMColor.accent }
         return .secondary
     }
 

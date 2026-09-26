@@ -3,7 +3,8 @@
   "compilerOptions": {
     "outDir": "dist",
     "rootDir": "..",
-    "types": ["node"]
+    "types": ["node"],
+    "resolveJsonModule": true
   },
-  "include": ["src", "../artifacts/dashboard/src/lib/dx-variants.ts", "../lib/pane-engine/src/vademecum/index.ts"]
+  "include": ["src", "../artifacts/dashboard/src/lib/dx-variants.ts", "../lib/pane-engine/src/vademecum/index.ts", "../artifacts/front-desk/lib/instructions.ts", "../artifacts/dashboard/src/lib/drug-interactions.ts", "../artifacts/dashboard/src/lib/drug-classes.ts", "../lib/triage-engine/src/report-import/catalog.ts"]
 }

@@ -22,8 +22,11 @@ CREATE TABLE IF NOT EXISTS public.calendar_event_cache (
 
 ALTER TABLE public.calendar_event_cache ENABLE ROW LEVEL SECURITY;
 
-CREATE POLICY "staff access" ON public.calendar_event_cache
-  FOR ALL TO authenticated USING (true) WITH CHECK (true);
+do $guard$ begin
+  CREATE POLICY "staff access" ON public.calendar_event_cache
+    FOR ALL TO authenticated USING (true) WITH CHECK (true);
+exception when duplicate_object then null;
+end $guard$;
 
 GRANT SELECT, INSERT, UPDATE, DELETE ON TABLE public.calendar_event_cache TO authenticated;
 GRANT SELECT, INSERT, UPDATE, DELETE ON TABLE public.calendar_event_cache TO service_role;

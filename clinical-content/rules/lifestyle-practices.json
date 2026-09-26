@@ -1,0 +1,241 @@
+{
+  "$schema": "../schemas/lifestyle-practices.schema.json",
+  "$comment": "Lifestyle practices (rule set lifestyle-practices, clinical-content/registry.json): labels of the stored values, thresholds, negation-aware match terms and regex patterns (ICU and JavaScript), prompt and plan-line wording and sources. The single source for web (lib/triage-engine/src/lifestyle-practices.ts) and iOS (LifestylePractices.swift, bundled folder \"rules\"); which finding raises which prompt or suggestion stays in code. Validated by lint:shared-content. From the practice owner's evidence briefing (Sept 2026); unreviewed (docs/clinical-validation/changes/lifestyle-practices.md). No text may tell anyone to take, hold, stop or adjust a named medicine (H-10).",
+  "id": "lifestyle-practices",
+  "version": "0.1.0",
+  "thresholds": {
+    "olderAdultAge": 65,
+    "shortSleepHours": 6,
+    "obesityBMI": 30
+  },
+  "labels": {
+    "fasting": {
+      "none": "None",
+      "ramadan": "Ramadan",
+      "orthodox_lent": "Orthodox or Lent fasting",
+      "daniel_fast": "Daniel Fast",
+      "time_restricted": "Time-restricted eating / intermittent fasting",
+      "other": "Other"
+    },
+    "fastingStatus": {
+      "current": "Currently fasting",
+      "planned": "Fast planned",
+      "not_currently": "Not currently fasting"
+    },
+    "therapies": {
+      "acupuncture": "Acupuncture",
+      "cupping": "Cupping",
+      "yoga": "Yoga",
+      "tai_chi": "Tai chi",
+      "mindfulness": "Mindfulness / meditation",
+      "slow_breathing": "Slow-breathing practice",
+      "detox_cleanse": "Detox or cleanse programmes",
+      "iv_vitamin_drips": "IV vitamin drips",
+      "other": "Other"
+    }
+  },
+  "patterns": {
+    "diabetes": [
+      "(?<!pre[- ])\\bdiabet(?:es|ic)\\b(?!\\s+insipidus)",
+      "\\bt[12]\\s?dm\\b",
+      "\\bn?iddm\\b",
+      "\\btype\\s*(?:1|2|i|ii)\\s*dm\\b"
+    ],
+    "insulin": [
+      "\\binsulins?\\b(?!\\s+resist)",
+      "\\b(?:glargine|detemir|degludec|lispro|glulisine|lantus|levemir|tresiba|toujeo|novorapid|humalog|apidra|humulin|novomix|mixtard|actrapid|insulatard|basaglar|fiasp)\\b",
+      "\\binsulin\\s+aspart\\b"
+    ],
+    "sulfonylurea": [
+      "\\b(?:gliclazide|glibenclamide|glyburide|glimepiride|glipizide|tolbutamide|chlorpropamide|diamicron|amaryl|daonil)\\b",
+      "\\bsulph?onylureas?\\b",
+      "\\bsulfonylureas?\\b"
+    ],
+    "depression": [
+      "(?<!\\bst[- ])(?<!respiratory )(?<!segment )\\bdepressi(?:on|ve)\\b",
+      "\\bmdd\\b"
+    ]
+  },
+  "terms": {
+    "falls": [
+      "falls",
+      "recurrent fall",
+      "mechanical fall",
+      "fall risk",
+      "history of fall",
+      "fear of falling",
+      "frailty",
+      "frail",
+      "unsteady",
+      "poor balance",
+      "balance problem",
+      "balance impairment"
+    ],
+    "backPain": [
+      "low back pain",
+      "lower back pain",
+      "back pain",
+      "backache",
+      "lumbago",
+      "lumbar pain"
+    ],
+    "neckPain": [
+      "neck pain",
+      "cervical spondylosis"
+    ],
+    "osteoarthritis": [
+      "osteoarthritis",
+      "osteoarthrosis",
+      "degenerative joint disease"
+    ],
+    "headache": [
+      "chronic headache",
+      "migraine",
+      "tension headache",
+      "tension-type headache"
+    ],
+    "anxiety": [
+      "anxiety",
+      "anxious",
+      "panic attack",
+      "panic disorder"
+    ],
+    "obesity": [
+      "obesity",
+      "obese"
+    ],
+    "hypertension": [
+      "hypertension",
+      "hypertensive",
+      "high blood pressure",
+      "htn"
+    ],
+    "lipid": [
+      "dyslipidaemia",
+      "dyslipidemia",
+      "hypercholesterolaemia",
+      "hypercholesterolemia",
+      "hyperlipidaemia",
+      "hyperlipidemia",
+      "high cholesterol"
+    ],
+    "cardiovascular": [
+      "ischaemic heart disease",
+      "ischemic heart disease",
+      "ihd",
+      "coronary artery disease",
+      "coronary heart disease",
+      "angina",
+      "myocardial infarction",
+      "heart attack",
+      "heart failure",
+      "stroke",
+      "metabolic syndrome",
+      "peripheral arterial disease",
+      "peripheral vascular disease"
+    ],
+    "cupping": [
+      "cupping",
+      "hijama"
+    ],
+    "detox": [
+      "detox",
+      "cleanse",
+      "colon cleanse",
+      "colonic",
+      "colonic irrigation"
+    ],
+    "ivDrip": [
+      "iv drip",
+      "iv vitamin",
+      "vitamin drip",
+      "drip therapy",
+      "nad drip",
+      "myers cocktail"
+    ]
+  },
+  "promptText": {
+    "fastingInsulin": "Fasting with insulin/sulfonylurea: risk of hypoglycaemia and dehydration — pre-fast risk stratification and medication review recommended (IDF-DAR 2021).",
+    "fastingDiabetes": "Fasting with diabetes: risk of hypoglycaemia and dehydration — pre-fast risk stratification recommended (IDF-DAR 2021).",
+    "fastingPeriop": "Religious fast overlaps the pre-operative fast — check hydration and glucose plan.",
+    "nightShiftSleep": "Night-shift work / short sleep is associated with metabolic, cardiovascular and mood disorders."
+  },
+  "promptSources": {
+    "idfDar": "IDF-DAR Diabetes and Ramadan: Practical Guidelines 2021 (cited in the practice evidence briefing, Sept 2026, §4)",
+    "briefingFasting": "Practice evidence briefing (Dr D. D. Kabiye, Sept 2026), §4 — Ramadan and Orthodox fasting",
+    "briefingSleep": "Practice evidence briefing (Dr D. D. Kabiye, Sept 2026), §4 and §8 — sleep, circadian timing and protected rest"
+  },
+  "sources": {
+    "taiChi": "Huang ZG et al. Tai Chi for fall prevention and balance improvement in older adults: systematic review and meta-analysis of RCTs. Front Public Health 2023 (24 RCTs; falls RR 0.76).",
+    "yoga": "Saper RB et al. Yoga, physical therapy, or education for chronic low back pain: a randomized noninferiority trial. Ann Intern Med 2017;167:85-94.",
+    "mbct": "Kuyken W et al. Efficacy of MBCT in prevention of depressive relapse: an individual patient data meta-analysis. JAMA Psychiatry 2016;73:565-74 (relapse HR 0.69).",
+    "slowBreathing": "Practice evidence briefing (Dr D. D. Kabiye, Sept 2026), §4 and §8 — slow breathing (no primary reference listed).",
+    "acupuncture": "Vickers AJ et al. Acupuncture for chronic pain: individual patient data meta-analysis. Arch Intern Med 2012; update J Pain 2018.",
+    "timeRestricted": "Liu D et al. Calorie restriction with or without time-restricted eating in weight loss. N Engl J Med 2022;386:1495-1504.",
+    "cuppingDetox": "Practice evidence briefing (Dr D. D. Kabiye, Sept 2026), §6 and §8 — cupping, detox teas, colon cleanses (no benefit).",
+    "ivDrips": "Practice evidence briefing (Dr D. D. Kabiye, Sept 2026), §6 — \"biohacking\" add-ons: IV vitamin drips (mixed)."
+  },
+  "planLines": {
+    "taiChi": "Non-drug: tai chi programme for balance and falls prevention (evidence: works — 24 RCTs, falls RR 0.76; Huang ZG et al. 2023).",
+    "yoga": "Non-drug: structured yoga programme for chronic non-specific low back pain (evidence: works — non-inferior to physical therapy; Saper RB et al., Ann Intern Med 2017).",
+    "mbct": "Referral option: mindfulness-based cognitive therapy (MBCT) for relapse prevention in recurrent depression (evidence: works — HR 0.69; Kuyken W et al., JAMA Psychiatry 2016).",
+    "slowBreathing": "Non-drug: slow breathing (about 6 breaths a minute) for short-term anxiety relief, e.g. before the procedure — not a treatment for high blood pressure (evidence: modest).",
+    "acupuncture": "Referral option: acupuncture for chronic pain (evidence: modest — small margin over sham; Vickers AJ et al., Arch Intern Med 2012).",
+    "timeRestricted": "Non-drug: time-restricted eating as an adherence strategy for weight management — weight loss similar to calorie restriction (evidence: modest; Liu D et al., NEJM 2022).",
+    "timeRestrictedDiabetesNote": "Diabetes on insulin/sulfonylurea: hypoglycaemia risk during fasting windows — pre-fast risk stratification and medication review recommended before starting (IDF-DAR 2021).",
+    "cupping": "Discussed cupping: no reliable evidence of benefit beyond placebo.",
+    "detox": "Discussed detox teas / colon cleanses: no reliable evidence of benefit; risks of dehydration, electrolyte disturbance and laxative dependence.",
+    "ivDrips": "Discussed IV vitamin drips: little outcome evidence outside a specific medical indication; risks of infection and fluid overload."
+  },
+  "suggestions": {
+    "tai-chi": {
+      "practice": "Tai chi",
+      "evidence": "Works"
+    },
+    "yoga": {
+      "practice": "Yoga",
+      "evidence": "Works"
+    },
+    "mbct": {
+      "practice": "Mindfulness-based cognitive therapy (MBCT)",
+      "evidence": "Works"
+    },
+    "slow-breathing": {
+      "practice": "Slow breathing (about 6 breaths a minute)",
+      "evidence": "Modest"
+    },
+    "acupuncture": {
+      "practice": "Acupuncture",
+      "evidence": "Modest"
+    },
+    "time-restricted-eating": {
+      "practice": "Time-restricted eating",
+      "evidence": "Modest"
+    },
+    "counsel-cupping": {
+      "practice": "Cupping",
+      "evidence": "No benefit shown"
+    },
+    "counsel-detox": {
+      "practice": "Detox teas and colon cleanses",
+      "evidence": "No benefit shown"
+    },
+    "counsel-iv-drips": {
+      "practice": "IV vitamin drips",
+      "evidence": "Mixed"
+    }
+  },
+  "reasons": {
+    "fallsOrFrailty": "falls or frailty recorded",
+    "postOperativeRehabilitation": "post-operative rehabilitation",
+    "backPain": "Low back pain recorded (evidence is for chronic non-specific low back pain)",
+    "depression": "Depression recorded (evidence is for relapse prevention in recurrent depression)",
+    "anxiety": "Anxiety recorded",
+    "anxietyProcedure": "Anxiety recorded; procedure booked",
+    "chronicPain": "Back or neck pain, osteoarthritis or chronic headache recorded (evidence is for chronic pain)",
+    "obesity": "Obesity recorded",
+    "cupping": "Cupping recorded",
+    "detox": "Detox or cleanse programme recorded",
+    "ivDrips": "IV vitamin drips recorded"
+  }
+}

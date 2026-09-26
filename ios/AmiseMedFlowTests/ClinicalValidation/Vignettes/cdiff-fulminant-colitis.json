@@ -1,0 +1,375 @@
+{
+  "schemaVersion": 1,
+  "id": "cdiff-fulminant-colitis",
+  "condition": "Fulminant Clostridioides difficile colitis",
+  "category": "gi-emergency",
+  "permutationOf": "infective-colitis-bloody-diarrhoea",
+  "permutationLabel": "Fulminant CDI (hypotension, ileus, WBC 32, lactate 3.2) after antibiotics",
+  "summary": "76-year-old care-home resident after a course of co-amoxiclav: profuse diarrhoea that has now slowed, distension, WBC 32, creatinine 210, lactate 3.2, hypotension. Fulminant CDI: oral (± rectal) vancomycin plus IV metronidazole, early surgical consultation, subtotal colectomy or loop ileostomy with colonic lavage if deteriorating.",
+  "tags": [
+    "mimic",
+    "c-difficile",
+    "must-not-miss",
+    "sepsis",
+    "elderly"
+  ],
+  "inputs": {
+    "patient": {
+      "ageYears": 76,
+      "sex": "female",
+      "pregnancy": {
+        "status": "not-applicable"
+      },
+      "heightCm": 155,
+      "weightKg": 52
+    },
+    "encounter": {
+      "setting": "emergency",
+      "visitType": "urgentReview",
+      "acuity": "emergency"
+    },
+    "chiefComplaint": "Diarrhoea, swollen abdomen and confusion",
+    "hpi": "Care-home resident. Finished a week of co-amoxiclav for a chest infection 5 days ago. Profuse watery diarrhoea for 4 days, now fewer stools but increasingly swollen, tender abdomen, drowsy and confused today. Staff report C. difficile on the unit.",
+    "socrates": {
+      "onset": [
+        "4–7 days ago"
+      ],
+      "site": [
+        "Diffuse"
+      ],
+      "character": [
+        "Cramping"
+      ],
+      "associations": [
+        "Fever",
+        "Change in bowel habit"
+      ],
+      "timing": [
+        "Progressive"
+      ],
+      "severity": [
+        "Severe (7–9/10)"
+      ]
+    },
+    "symptoms": [
+      "diarrhoea",
+      "abdominal distension",
+      "abdominal pain",
+      "fever",
+      "confusion"
+    ],
+    "negatives": [
+      "rectal bleeding"
+    ],
+    "exam": {
+      "general": "Drowsy, confused. T 38.6°C, HR 122, BP 84/50, RR 26.",
+      "abdomen": "Distended, tympanic, diffusely tender with guarding; bowel sounds quiet."
+    },
+    "vitals": [
+      {
+        "minutesAgo": 20,
+        "heartRate": 122,
+        "systolicBp": 84,
+        "diastolicBp": 50,
+        "respiratoryRate": 26,
+        "temperatureC": 38.6,
+        "spo2": 94,
+        "avpu": "V",
+        "onSupplementalO2": false
+      }
+    ],
+    "labs": [
+      {
+        "analyte": "wbc",
+        "name": "WBC",
+        "value": 32.4,
+        "unit": "×10⁹/L",
+        "minutesAgo": 60
+      },
+      {
+        "analyte": "creatinine",
+        "name": "Creatinine",
+        "value": 210,
+        "unit": "µmol/L",
+        "minutesAgo": 60
+      },
+      {
+        "analyte": "albumin",
+        "name": "Albumin",
+        "value": 21,
+        "unit": "g/L",
+        "minutesAgo": 60
+      },
+      {
+        "analyte": "lactate",
+        "name": "Lactate",
+        "value": 3.2,
+        "unit": "mmol/L",
+        "minutesAgo": 60
+      },
+      {
+        "analyte": "crp",
+        "name": "CRP",
+        "value": 240,
+        "unit": "mg/L",
+        "minutesAgo": 60
+      },
+      {
+        "analyte": "haemoglobin",
+        "name": "Haemoglobin",
+        "value": 11.0,
+        "unit": "g/dL",
+        "minutesAgo": 60
+      },
+      {
+        "analyte": "stoolCdiff",
+        "name": "C. difficile GDH / toxin",
+        "resultText": "GDH positive; toxin A/B EIA positive",
+        "minutesAgo": 120
+      }
+    ],
+    "imaging": [
+      {
+        "name": "CT abdomen/pelvis",
+        "modality": "CT",
+        "region": "Abdomen/pelvis",
+        "result": "Pancolitis with marked wall thickening, accordion sign, colonic dilatation to 7 cm, ascites. No free gas.",
+        "minutesAgo": 30
+      }
+    ],
+    "comorbidities": [
+      "Dementia",
+      "Chronic kidney disease stage 3",
+      "COPD"
+    ],
+    "surgicalHistory": [],
+    "medications": [
+      {
+        "drug": "Co-amoxiclav",
+        "dose": "625 mg",
+        "frequency": "TDS (completed 5 days ago)",
+        "indication": "Chest infection"
+      },
+      {
+        "drug": "Omeprazole",
+        "dose": "20 mg",
+        "frequency": "OD",
+        "indication": "Reflux"
+      }
+    ],
+    "allergies": [],
+    "nkda": true,
+    "socialHistory": "Care-home resident.",
+    "scoreForms": {
+      "qsofa": {
+        "alteredMentation": true,
+        "rrAtLeast22": true,
+        "sbpAtMost100": true,
+        "suspectedInfection": true
+      }
+    },
+    "confirmedDiagnosis": {
+      "name": "Fulminant Clostridioides difficile colitis",
+      "icd10": "A04.7",
+      "assessmentText": "Fulminant C. difficile colitis with septic shock, colonic dilatation and acute kidney injury. Oral and rectal vancomycin with IV metronidazole; resuscitation; urgent surgical review for subtotal colectomy or diverting loop ileostomy with colonic lavage."
+    },
+    "platform": {
+      "web": {
+        "ccTemplate": "Acute abdominal pain",
+        "symptoms": [
+          "diarrhoea",
+          "abdominal distension",
+          "abdominal pain",
+          "fever",
+          "confusion"
+        ],
+        "symptomDetails": {
+          "abdominal pain": [
+            "Diffuse",
+            "> 3 days",
+            "Cramping",
+            "Severe (7–9)",
+            "Diarrhoea",
+            "Distension",
+            "Fever",
+            "Worsening over time"
+          ]
+        },
+        "examFindings": {
+          "abdomen": [
+            "Distended",
+            "Diffuse tenderness",
+            "Guarding"
+          ]
+        },
+        "paneAnswers": {
+          "abdominal_distension": true,
+          "fever": true,
+          "guarding": true
+        },
+        "durationDays": 4,
+        "painScore": 7
+      }
+    }
+  },
+  "expected": {
+    "differential": {
+      "mustNotMiss": [
+        {
+          "id": "mnm-cdiff",
+          "severity": "critical",
+          "match": [
+            "difficile",
+            "c. diff",
+            "c diff",
+            "cdiff",
+            "cdi",
+            "pseudomembranous"
+          ],
+          "guidelineRefs": [
+            "idsa-cdi-2017",
+            "wses-cdi-2019"
+          ]
+        }
+      ]
+    },
+    "safety": {
+      "emergencyLevel": {
+        "id": "level-emergency",
+        "severity": "critical",
+        "atLeast": "emergency",
+        "guidelineRefs": [
+          "idsa-cdi-2017"
+        ]
+      },
+      "mustAlarm": [
+        {
+          "id": "alarm-sepsis",
+          "severity": "critical",
+          "match": [
+            "sepsis",
+            "hypotension",
+            "emergency",
+            "shock"
+          ],
+          "guidelineRefs": [
+            "idsa-cdi-2017"
+          ]
+        }
+      ]
+    },
+    "scores": {
+      "values": [
+        {
+          "id": "score-qsofa-calculator",
+          "severity": "quality",
+          "score": "qsofa",
+          "mode": "calculator",
+          "equals": 3,
+          "platforms": [
+            "ios"
+          ],
+          "guidelineRefs": [
+            "idsa-cdi-2017"
+          ]
+        }
+      ]
+    },
+    "management": {
+      "mustInclude": [
+        {
+          "id": "mgmt-vancomycin-metronidazole",
+          "severity": "critical",
+          "match": [
+            "oral vancomycin",
+            "re:vancomycin[^.;\\n]{0,40}(oral|\\bpo\\b|by mouth|enteral|rectal|\\bpr\\b|enema|\\bng\\b)",
+            "fidaxomicin"
+          ],
+          "guidelineRefs": [
+            "idsa-cdi-2017",
+            "wses-cdi-2019"
+          ],
+          "note": "IDSA/SHEA 2017: fulminant CDI → vancomycin 500 mg four times daily by mouth (plus rectal if ileus) with IV metronidazole.",
+          "proposedFix": "Add a C. difficile disease/protocol (triggers: recent antibiotics, hospital/care-home exposure, toxin-positive result): oral vancomycin or fidaxomicin; fulminant: oral/rectal vancomycin + IV metronidazole, surgical consultation (IDSA/SHEA 2017/2021, WSES 2019). Read a toxin-positive lab result."
+        },
+        {
+          "id": "mgmt-surgical-consult",
+          "severity": "critical",
+          "match": [
+            "colectomy",
+            "loop ileostomy",
+            "surgical review",
+            "surgical consult"
+          ],
+          "guidelineRefs": [
+            "idsa-cdi-2017",
+            "wses-cdi-2019"
+          ],
+          "proposedFix": "Add a C. difficile disease/protocol (triggers: recent antibiotics, hospital/care-home exposure, toxin-positive result): oral vancomycin or fidaxomicin; fulminant: oral/rectal vancomycin + IV metronidazole, surgical consultation (IDSA/SHEA 2017/2021, WSES 2019). Read a toxin-positive lab result."
+        }
+      ],
+      "mustExclude": [
+        {
+          "id": "mgmt-no-antimotility",
+          "severity": "critical",
+          "match": [
+            "loperamide",
+            "codeine",
+            "diphenoxylate",
+            "lomotil",
+            "ibuprofen",
+            "diclofenac",
+            "naproxen",
+            "nsaid",
+            "hyoscine",
+            "buscopan"
+          ],
+          "unless": [
+            "avoid",
+            "contraindicat",
+            "do not",
+            "stop",
+            "caution",
+            "hold",
+            "withhold"
+          ],
+          "sources": [
+            "web.plan",
+            "web.protocol.medications",
+            "web.clinicalPrompts",
+            "ios.radiation",
+            "ios.soap",
+            "ios.pipeline"
+          ],
+          "guidelineRefs": [
+            "idsa-cdi-2017"
+          ]
+        }
+      ]
+    }
+  },
+  "guideline": [
+    {
+      "id": "idsa-cdi-2017",
+      "name": "IDSA/SHEA clinical practice guidelines for Clostridium difficile infection (2017 update) — fulminant CDI",
+      "year": 2018,
+      "section": "Fulminant CDI (hypotension/shock, ileus, megacolon): oral/rectal vancomycin + IV metronidazole; surgical management (subtotal colectomy or diverting loop ileostomy with colonic lavage)",
+      "citation": "McDonald LC, Gerding DN, Johnson S, et al. Clinical practice guidelines for Clostridium difficile infection in adults and children: 2017 update by the IDSA and SHEA. Clin Infect Dis. 2018;66:e1–e48.",
+      "verified": false
+    },
+    {
+      "id": "wses-cdi-2019",
+      "name": "WSES guidelines — Clostridioides difficile infection in surgical patients (2019 update)",
+      "year": 2019,
+      "section": "Surgical patients: early surgical consultation in severe/complicated CDI; indications for colectomy",
+      "citation": "Sartelli M, Di Bella S, McFarland LV, et al. 2019 update of the WSES guidelines for management of Clostridioides (Clostridium) difficile infection in surgical patients. World J Emerg Surg. 2019;14:8.",
+      "verified": false
+    }
+  ],
+  "rationale": "Permutation: the must-not-miss infective colitis. The toxin result, CT and antibiotic history are recorded; CDI has no disease in PANE and no protocol, so this checks whether any engine reaches it.",
+  "authoring": {
+    "author": "Claude (colorectal/anorectal cluster)",
+    "date": "2026-09-25",
+    "notes": "Expectations need surgeon sign-off (reviewedBy). Citations verified: false until checked against the source."
+  }
+}

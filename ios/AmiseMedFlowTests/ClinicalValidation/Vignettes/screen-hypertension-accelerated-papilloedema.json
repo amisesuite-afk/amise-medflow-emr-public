@@ -1,0 +1,210 @@
+{
+  "schemaVersion": 1,
+  "id": "screen-hypertension-accelerated-papilloedema",
+  "condition": "Accelerated (malignant) hypertension",
+  "category": "general-medicine",
+  "permutationOf": "screen-hypertension-clinic-bp-confirm",
+  "permutationLabel": "BP 212/128 with headache, blurred vision and papilloedema",
+  "summary": "44-year-old woman seen in the surgical clinic before a planned hernia repair: 3 days of headache and blurred vision, BP 212/128, bilateral flame haemorrhages and papilloedema. NICE NG136: same-day specialist referral.",
+  "tags": [
+    "hypertension",
+    "emergency",
+    "pre-operative"
+  ],
+  "inputs": {
+    "patient": {
+      "ageYears": 44,
+      "sex": "female",
+      "pregnancy": {
+        "status": "not-pregnant"
+      },
+      "heightCm": 164,
+      "weightKg": 90
+    },
+    "encounter": {
+      "setting": "outpatient",
+      "visitType": "newConsult",
+      "acuity": "routine"
+    },
+    "chiefComplaint": "Pre-operative review for umbilical hernia — headache and blurred vision",
+    "hpi": "Attending for pre-operative review of a reducible umbilical hernia. Reports 3 days of severe headache and blurred vision; stopped her amlodipine 2 months ago because of ankle swelling. BP 212/128, repeated 208/126. Fundoscopy: bilateral flame haemorrhages, cotton-wool spots and swollen optic discs. No chest pain, no weakness. Pregnancy test negative.",
+    "symptoms": [
+      "headache",
+      "double vision"
+    ],
+    "negatives": [
+      "chest pain",
+      "focal weakness"
+    ],
+    "exam": {
+      "general": "Alert, GCS 15. BP 212/128, repeated 208/126. Pulse 88.",
+      "neuro": "Fundoscopy: bilateral papilloedema with flame haemorrhages and cotton-wool spots. No focal neurological deficit.",
+      "abdomen": "Reducible 2 cm umbilical hernia."
+    },
+    "vitals": [
+      {
+        "minutesAgo": 10,
+        "heartRate": 88,
+        "systolicBp": 208,
+        "diastolicBp": 126,
+        "respiratoryRate": 16,
+        "temperatureC": 36.7,
+        "spo2": 98,
+        "avpu": "A",
+        "onSupplementalO2": false
+      }
+    ],
+    "labs": [
+      {
+        "analyte": "bhcg",
+        "name": "Urine hCG",
+        "resultText": "Negative",
+        "minutesAgo": 20
+      },
+      {
+        "analyte": "urinalysis",
+        "name": "Urine dipstick",
+        "resultText": "Protein 2+, blood 1+",
+        "minutesAgo": 20
+      }
+    ],
+    "imaging": [],
+    "comorbidities": [
+      "Hypertension (not on treatment for 2 months)",
+      "Umbilical hernia"
+    ],
+    "surgicalHistory": [],
+    "medications": [],
+    "allergies": [],
+    "nkda": true,
+    "socialHistory": "Hairdresser. Non-smoker.",
+    "confirmedDiagnosis": {
+      "name": "Accelerated hypertension with papilloedema (hypertensive emergency)",
+      "icd10": "I16.1",
+      "assessmentText": "BP 212/128 with papilloedema and retinal haemorrhages: accelerated (malignant) hypertension — hypertensive emergency. Same-day medical admission for controlled BP reduction; elective hernia repair postponed."
+    },
+    "platform": {
+      "web": {
+        "ccTemplate": "Umbilical / paraumbilical hernia",
+        "symptoms": [
+          "headache",
+          "double vision"
+        ],
+        "symptomDetails": {
+          "headache": [
+            "Generalised",
+            "Pressure / band-like",
+            "Progressive worsening"
+          ]
+        },
+        "durationDays": 3
+      }
+    }
+  },
+  "expected": {
+    "safety": {
+      "emergencyLevel": {
+        "id": "level-urgent",
+        "severity": "critical",
+        "guidelineRefs": [
+          "nice-ng136"
+        ],
+        "note": "NG136: BP ≥ 180/120 with retinal haemorrhage or papilloedema — same-day specialist referral.",
+        "atLeast": "urgent"
+      },
+      "mustAlarm": [
+        {
+          "id": "alarm-hypertensive-emergency",
+          "severity": "critical",
+          "guidelineRefs": [
+            "nice-ng136"
+          ],
+          "match": [
+            "hypertens"
+          ]
+        }
+      ]
+    },
+    "management": {
+      "mustInclude": [
+        {
+          "id": "mgmt-same-day-admission",
+          "severity": "critical",
+          "guidelineRefs": [
+            "nice-ng136",
+            "acc-aha-2017"
+          ],
+          "match": [
+            "same-day",
+            "same day",
+            "admi",
+            "hypertensive emergency",
+            "emergency department"
+          ]
+        }
+      ],
+      "mustExclude": [
+        {
+          "id": "mgmt-no-proceed-with-surgery",
+          "severity": "quality",
+          "guidelineRefs": [
+            "nice-ng136"
+          ],
+          "note": "Elective surgery must be postponed; no hernia operative plan or consent while in a hypertensive emergency.",
+          "match": [
+            "re:hernia repair[^\\n]{0,40}(book|list|proceed|consent)",
+            "re:proceed with (elective )?surgery",
+            "re:consent:? hernia repair",
+            "tapp"
+          ],
+          "unless": [
+            "defer",
+            "postpone"
+          ]
+        }
+      ]
+    },
+    "investigations": {
+      "mustInclude": [
+        {
+          "id": "inv-renal-urine",
+          "severity": "quality",
+          "guidelineRefs": [
+            "nice-ng136"
+          ],
+          "match": [
+            "u&e",
+            "urea & electrolytes",
+            "creatinine",
+            "urinalysis",
+            "urine"
+          ]
+        }
+      ]
+    }
+  },
+  "guideline": [
+    {
+      "id": "nice-ng136",
+      "name": "NICE NG136 — hypertension in adults: diagnosis and management",
+      "year": 2019,
+      "section": "Clinic BP 140/90–180/120: offer ambulatory (or home) BP monitoring to confirm the diagnosis; assess cardiovascular risk and target organ damage (urine albumin:creatinine ratio, haematuria, HbA1c, U&E/eGFR, lipids, fundoscopy, ECG); ≥ 180/120 with retinal haemorrhage or papilloedema (accelerated hypertension) or life-threatening symptoms: same-day specialist referral",
+      "citation": "National Institute for Health and Care Excellence. Hypertension in adults: diagnosis and management. NICE guideline NG136, 2019 (updated 2023).",
+      "verified": false
+    },
+    {
+      "id": "acc-aha-2017",
+      "name": "2017 ACC/AHA guideline — prevention, detection, evaluation and management of high blood pressure in adults",
+      "year": 2017,
+      "section": "Out-of-office BP measurement (ABPM/HBPM) to confirm the diagnosis; hypertensive emergency: admission to an intensive care unit, controlled reduction of BP",
+      "citation": "Whelton PK, Carey RM, Aronow WS, et al. 2017 ACC/AHA/AAPA/ABC/ACPM/AGS/APhA/ASH/ASPC/NMA/PCNA guideline for the prevention, detection, evaluation, and management of high blood pressure in adults. Hypertension. 2018;71:e13–e115.",
+      "verified": false
+    }
+  ],
+  "rationale": "Accelerated hypertension (papilloedema, retinal haemorrhages) is a hypertensive emergency; NG136 requires same-day specialist referral, and elective surgery must stop.",
+  "authoring": {
+    "author": "Claude (prevention/screening, obstetric-gynaecological mimics and paediatric surgery cluster)",
+    "date": "2026-09-25",
+    "notes": "Expectations need surgeon sign-off (reviewedBy). Every citation is verified: false. iOS outcomes are unverified (not run on Linux); triage after the first CI run."
+  }
+}

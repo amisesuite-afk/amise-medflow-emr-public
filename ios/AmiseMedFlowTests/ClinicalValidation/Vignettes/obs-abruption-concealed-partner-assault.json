@@ -1,0 +1,389 @@
+{
+  "schemaVersion": 1,
+  "id": "obs-abruption-concealed-partner-assault",
+  "condition": "Concealed placental abruption after assault in pregnancy",
+  "category": "trauma-burns",
+  "permutationOf": "trauma-pregnancy-30wk-rtc",
+  "permutationLabel": "33 weeks, pushed by partner, concealed abruption (no vaginal bleeding), fetal bradycardia",
+  "summary": "26-year-old at 33 weeks, \"pushed by my partner\" against a kitchen counter 3 h ago: constant abdominal pain, hard tender uterus, no vaginal bleeding, fetal heart 100/min, HR 112, BP 104/68, fibrinogen 1.6. Concealed abruption with fetal compromise; intimate-partner violence.",
+  "tags": [
+    "trauma",
+    "pregnancy",
+    "abruption",
+    "safeguarding",
+    "domestic-violence"
+  ],
+  "inputs": {
+    "patient": {
+      "ageYears": 26,
+      "sex": "female",
+      "pregnancy": {
+        "status": "pregnant",
+        "gestationWeeks": 33
+      },
+      "heightCm": 158,
+      "weightKg": 68
+    },
+    "encounter": {
+      "setting": "emergency",
+      "visitType": "trauma",
+      "acuity": "urgent"
+    },
+    "chiefComplaint": "Abdominal pain after a fall, 33 weeks pregnant",
+    "hpi": "Initially said she slipped. On private questioning: pushed by her partner and fell against the kitchen counter 3 hours ago, striking her abdomen. Constant severe abdominal pain since, uterus \"hard\", baby moving less. No vaginal bleeding or fluid loss. Previous bruises seen at antenatal visits. Blood group A RhD positive.",
+    "socrates": {
+      "onset": [
+        "Today",
+        "Sudden"
+      ],
+      "site": [
+        "Diffuse",
+        "Suprapubic"
+      ],
+      "character": [
+        "Sharp"
+      ],
+      "radiation": [
+        "Back"
+      ],
+      "associations": [],
+      "timing": [
+        "Constant"
+      ],
+      "exacerbating": [
+        "Movement"
+      ],
+      "relieving": [
+        "Nothing"
+      ],
+      "severity": [
+        "Severe (7–9/10)"
+      ]
+    },
+    "symptoms": [
+      "abdominal pain",
+      "reduced fetal movements"
+    ],
+    "negatives": [
+      "vaginal bleeding",
+      "loss of consciousness"
+    ],
+    "exam": {
+      "general": "Anxious, pale. HR 112, BP 104/68 (booking 122/78), RR 20. Old and new bruises on both upper arms.",
+      "abdomen": "Bruise over the upper abdomen. Uterus woody-hard and tender throughout, larger than dates. Fetal heart 100/min on Doppler. No vaginal bleeding on inspection."
+    },
+    "vitals": [
+      {
+        "minutesAgo": 10,
+        "heartRate": 112,
+        "systolicBp": 104,
+        "diastolicBp": 68,
+        "respiratoryRate": 20,
+        "temperatureC": 36.9,
+        "spo2": 98,
+        "avpu": "A",
+        "onSupplementalO2": false
+      }
+    ],
+    "labs": [
+      {
+        "analyte": "haemoglobin",
+        "name": "Haemoglobin",
+        "value": 9.8,
+        "unit": "g/dL",
+        "minutesAgo": 30
+      },
+      {
+        "analyte": "platelets",
+        "name": "Platelets",
+        "value": 110,
+        "unit": "×10⁹/L",
+        "minutesAgo": 30
+      },
+      {
+        "analyte": "fibrinogen",
+        "name": "Fibrinogen",
+        "value": 1.6,
+        "unit": "g/L",
+        "minutesAgo": 30
+      },
+      {
+        "analyte": "bloodGroup",
+        "name": "Blood group",
+        "resultText": "A RhD positive",
+        "minutesAgo": 30
+      }
+    ],
+    "imaging": [],
+    "comorbidities": [
+      "Pregnancy (33 weeks)"
+    ],
+    "surgicalHistory": [],
+    "medications": [
+      {
+        "drug": "Folic acid / iron",
+        "dose": "1 tablet",
+        "frequency": "OD",
+        "indication": "Pregnancy"
+      }
+    ],
+    "allergies": [],
+    "nkda": true,
+    "socialHistory": "Unemployed. Lives with partner. Disclosed previous episodes of violence.",
+    "confirmedDiagnosis": {
+      "name": "Concealed placental abruption after abdominal trauma (partner assault) at 33 weeks",
+      "icd10": "O45.8X3",
+      "assessmentText": "Concealed placental abruption after blunt abdominal trauma from intimate-partner assault at 33 weeks: fetal bradycardia, early coagulopathy. Left lateral tilt, obstetric emergency team now, CTG, crossmatch and coagulation screen, anaesthetist; domestic-abuse safeguarding and safety plan."
+    },
+    "platform": {
+      "web": {
+        "ccTemplate": "Acute abdominal pain",
+        "symptoms": [
+          "abdominal pain",
+          "pelvic pain"
+        ],
+        "symptomDetails": {
+          "abdominal pain": [
+            "Diffuse",
+            "Sudden",
+            "< 6 hours",
+            "Constant",
+            "Severe (7–9)",
+            "Back"
+          ],
+          "pelvic pain": [
+            "Constant"
+          ]
+        },
+        "examFindings": {
+          "abdomen": [
+            "Diffuse tenderness"
+          ],
+          "cardiovascular": [
+            "Tachycardia"
+          ]
+        },
+        "paneAnswers": {
+          "mechanism_blunt": true,
+          "abdominal_tenderness": true
+        },
+        "durationDays": 0,
+        "painScore": 8
+      }
+    }
+  },
+  "expected": {
+    "differential": {
+      "mustNotMiss": [
+        {
+          "id": "mnm-abruption",
+          "severity": "critical",
+          "guidelineRefs": [
+            "rcog-gtg63-2011",
+            "atls-10-pregnancy"
+          ],
+          "match": [
+            "abruption"
+          ]
+        }
+      ]
+    },
+    "safety": {
+      "emergencyLevel": {
+        "id": "level-emergency",
+        "severity": "critical",
+        "guidelineRefs": [
+          "atls-10-pregnancy",
+          "rcog-gtg63-2011"
+        ],
+        "atLeast": "emergency"
+      },
+      "redFlags": [
+        {
+          "id": "flag-pregnancy",
+          "severity": "critical",
+          "guidelineRefs": [
+            "atls-10-pregnancy"
+          ],
+          "match": [
+            "pregnan"
+          ]
+        },
+        {
+          "id": "flag-domestic-abuse",
+          "severity": "critical",
+          "guidelineRefs": [
+            "nice-ph50-2014",
+            "atls-10-pregnancy"
+          ],
+          "note": "Disclosed intimate-partner violence in pregnancy: a safety issue for mother and baby.",
+          "match": [
+            "domestic",
+            "intimate partner",
+            "safeguard",
+            "abuse",
+            "violence"
+          ]
+        }
+      ]
+    },
+    "investigations": {
+      "mustInclude": [
+        {
+          "id": "inv-fetal-monitoring",
+          "severity": "critical",
+          "guidelineRefs": [
+            "atls-10-pregnancy",
+            "rcog-gtg63-2011"
+          ],
+          "match": [
+            "ctg",
+            "cardiotocograph",
+            "fetal monitor",
+            "fetal heart"
+          ]
+        },
+        {
+          "id": "inv-coagulation",
+          "severity": "quality",
+          "guidelineRefs": [
+            "rcog-gtg63-2011"
+          ],
+          "match": [
+            "fibrinogen",
+            "coagulation",
+            "clotting",
+            "coag screen"
+          ]
+        },
+        {
+          "id": "inv-crossmatch",
+          "severity": "quality",
+          "guidelineRefs": [
+            "rcog-gtg63-2011"
+          ],
+          "match": [
+            "crossmatch",
+            "cross-match",
+            "group and",
+            "group & "
+          ]
+        }
+      ]
+    },
+    "management": {
+      "mustInclude": [
+        {
+          "id": "mgmt-obstetric-team",
+          "severity": "critical",
+          "guidelineRefs": [
+            "atls-10-pregnancy",
+            "rcog-gtg63-2011"
+          ],
+          "match": [
+            "obstetric",
+            "obstetrician",
+            "maternity",
+            "o&g"
+          ]
+        },
+        {
+          "id": "mgmt-uterine-displacement",
+          "severity": "critical",
+          "guidelineRefs": [
+            "atls-10-pregnancy"
+          ],
+          "match": [
+            "left lateral",
+            "lateral tilt",
+            "uterine displacement",
+            "displace the uterus",
+            "wedge"
+          ]
+        },
+        {
+          "id": "mgmt-domestic-abuse-safety",
+          "severity": "critical",
+          "guidelineRefs": [
+            "nice-ph50-2014"
+          ],
+          "note": "NICE PH50: respond to disclosure with risk assessment, safety planning and referral.",
+          "match": [
+            "domestic",
+            "intimate partner",
+            "safeguard",
+            "safety plan",
+            "idva"
+          ]
+        }
+      ],
+      "mustExclude": [
+        {
+          "id": "mgmt-no-antithrombotic-plan",
+          "severity": "critical",
+          "guidelineRefs": [
+            "atls-10-pregnancy"
+          ],
+          "note": "An ACS, PE or AF antithrombotic/thrombolytic plan must never be attached to this diagnosis. Regression guard for DiagnosisRadiationEngine keyword matching: before 999f838 (word-boundary lookup) \"mi\" inside \"abdominal\" would have attached the ACS plan (aspirin 300 mg, ticagrelor, fondaparinux) to a placental abruption. With word-boundary matching no radiation entry matches (simulated from the source); to be confirmed on the first iOS CI run.",
+          "match": [
+            "aspirin 300",
+            "ticagrelor",
+            "clopidogrel 300",
+            "fondaparinux",
+            "alteplase",
+            "thrombolysis",
+            "rivaroxaban",
+            "apixaban 10",
+            "apixaban 5 mg bd",
+            "dabigatran",
+            "doacs (preferred)"
+          ],
+          "sources": [
+            "ios.radiation",
+            "ios.soap",
+            "web.plan",
+            "web.protocol",
+            "web.managementPanel"
+          ]
+        }
+      ]
+    },
+    "pathway": {
+      "id": "pathway-trauma",
+      "severity": "quality",
+      "equals": "trauma"
+    }
+  },
+  "guideline": [
+    {
+      "id": "atls-10-pregnancy",
+      "name": "ATLS 10th edition — trauma in pregnancy",
+      "year": 2018,
+      "section": "Chapter 12: resuscitate the mother first; manual uterine displacement / left lateral tilt after ~20 weeks; early obstetric consultation; cardiotocographic fetal monitoring after injury beyond viability; consider placental abruption (uterine tenderness, contractions, fetal distress, may be concealed); consider intimate partner violence",
+      "citation": "American College of Surgeons Committee on Trauma. ATLS Student Course Manual. 10th ed. Chicago: ACS; 2018. Chapter 12.",
+      "verified": false
+    },
+    {
+      "id": "rcog-gtg63-2011",
+      "name": "RCOG Green-top Guideline No. 63 — antepartum haemorrhage",
+      "year": 2011,
+      "section": "Placental abruption may be concealed (pain, tense tender uterus, fetal compromise without visible bleeding); maternal resuscitation; FBC, coagulation screen, crossmatch; CTG; delivery decisions by the obstetric team",
+      "citation": "Royal College of Obstetricians and Gynaecologists. Antepartum haemorrhage. Green-top Guideline No. 63. London: RCOG; 2011.",
+      "verified": false
+    },
+    {
+      "id": "nice-ph50-2014",
+      "name": "NICE PH50 — domestic violence and abuse: multi-agency working",
+      "year": 2014,
+      "section": "Staff trained to ask about domestic violence and abuse in a safe, private setting and to respond with risk assessment, safety planning and referral to specialist services; pregnancy is a period of increased risk",
+      "citation": "National Institute for Health and Care Excellence. Domestic violence and abuse: multi-agency working. Public health guideline PH50, 2014.",
+      "verified": false
+    }
+  ],
+  "rationale": "Abruption can be concealed: pain, a tense tender uterus and fetal compromise without visible bleeding. Intimate-partner violence often starts or escalates in pregnancy and must be asked about and acted on.",
+  "authoring": {
+    "author": "Claude (prevention/screening, obstetric-gynaecological mimics and paediatric surgery cluster)",
+    "date": "2026-09-25",
+    "notes": "Expectations need surgeon sign-off (reviewedBy). Every citation is verified: false. iOS outcomes are unverified (not run on Linux); triage after the first CI run."
+  }
+}

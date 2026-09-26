@@ -1,0 +1,259 @@
+{
+  "schemaVersion": 1,
+  "id": "mimic-testicular-torsion",
+  "condition": "Testicular torsion (GI emergency mimic)",
+  "category": "urology",
+  "permutationOf": null,
+  "permutationLabel": "Adolescent with lower abdominal pain and vomiting",
+  "summary": "14-year-old boy, sudden right lower abdominal pain and vomiting for 6 h; on examination a high-riding, horizontal, exquisitely tender right testis with absent cremasteric reflex.",
+  "tags": [
+    "mimic",
+    "paediatric",
+    "do-not-miss"
+  ],
+  "inputs": {
+    "patient": {
+      "ageYears": 14,
+      "sex": "male",
+      "pregnancy": {
+        "status": "not-applicable"
+      },
+      "heightCm": 165,
+      "weightKg": 52
+    },
+    "encounter": {
+      "setting": "emergency",
+      "visitType": "urgentReview",
+      "acuity": "urgent"
+    },
+    "chiefComplaint": "Right lower abdominal pain and vomiting",
+    "hpi": "Woke at 6 am with sudden pain in the right lower abdomen, vomited twice. Embarrassed; on direct questioning the pain started suddenly in the right testicle and spread to the lower abdomen. No trauma. No urinary symptoms. Onset 6 hours ago.",
+    "socrates": {
+      "onset": [
+        "Today",
+        "Sudden"
+      ],
+      "site": [
+        "RLQ",
+        "Groin"
+      ],
+      "character": [
+        "Sharp"
+      ],
+      "radiation": [
+        "Groin"
+      ],
+      "associations": [
+        "Nausea",
+        "Vomiting"
+      ],
+      "timing": [
+        "Constant"
+      ],
+      "exacerbating": [
+        "Movement"
+      ],
+      "relieving": [
+        "Nothing"
+      ],
+      "severity": [
+        "Severe (7–9/10)"
+      ]
+    },
+    "symptoms": [
+      "abdominal pain",
+      "testicular pain",
+      "vomiting",
+      "scrotal swelling"
+    ],
+    "negatives": [
+      "dysuria",
+      "fever",
+      "trauma"
+    ],
+    "exam": {
+      "general": "Distressed. Temperature 37.1°C, pulse 104/min, BP 124/72.",
+      "abdomen": "Soft, mild right iliac fossa tenderness, no guarding.",
+      "other": "Genitalia: right testis high-riding with a horizontal lie, exquisitely tender, right hemiscrotum mildly swollen; absent right cremasteric reflex. Left testis normal."
+    },
+    "vitals": [
+      {
+        "minutesAgo": 10,
+        "heartRate": 104,
+        "systolicBp": 124,
+        "diastolicBp": 72,
+        "respiratoryRate": 18,
+        "temperatureC": 37.1,
+        "spo2": 99,
+        "avpu": "A",
+        "onSupplementalO2": false
+      }
+    ],
+    "labs": [
+      {
+        "analyte": "urinalysis",
+        "name": "Urine dipstick",
+        "resultText": "Negative",
+        "minutesAgo": 20
+      }
+    ],
+    "imaging": [],
+    "comorbidities": [],
+    "surgicalHistory": [],
+    "medications": [],
+    "allergies": [],
+    "nkda": true,
+    "socialHistory": "School student.",
+    "confirmedDiagnosis": {
+      "name": "Right testicular torsion",
+      "icd10": "N44.00",
+      "paneDiseaseId": "testicular_torsion",
+      "assessmentText": "Right testicular torsion (6 hours) — emergency scrotal exploration now, without waiting for imaging; consent for orchidectomy and bilateral fixation."
+    },
+    "platform": {
+      "web": {
+        "ccTemplate": "Acute abdominal pain",
+        "socratesAnswers": {
+          "site": "Right lower abdomen (RLQ) and right testicle (scrotal)",
+          "onset": "Sudden, 6 hours ago, woke him",
+          "character": "Sharp",
+          "radiation": "Groin",
+          "associated": "Vomiting x2, nausea",
+          "timing": "Constant",
+          "triggers": "Movement",
+          "relief": "Nothing helps",
+          "severity": "8/10"
+        },
+        "symptoms": [
+          "abdominal pain",
+          "vomiting",
+          "scrotal swelling",
+          "groin pain"
+        ],
+        "symptomDetails": {
+          "abdominal pain": [
+            "RLQ",
+            "Sudden",
+            "< 6 hours",
+            "Sharp",
+            "Severe (7–9)",
+            "Groin",
+            "Vomiting",
+            "Nausea",
+            "Continuous"
+          ]
+        },
+        "examFindings": {
+          "abdomen": [
+            "Tender RLQ",
+            "Soft"
+          ]
+        },
+        "durationDays": 0.25,
+        "painScore": 8
+      }
+    }
+  },
+  "expected": {
+    "differential": {
+      "mustRankTopK": [
+        {
+          "id": "dx-torsion-top3",
+          "severity": "critical",
+          "match": [
+            "torsion"
+          ],
+          "unless": [
+            "ovarian"
+          ],
+          "k": 3,
+          "guidelineRefs": [
+            "eau-paed-2024"
+          ]
+        }
+      ]
+    },
+    "safety": {
+      "emergencyLevel": {
+        "id": "level-emergency",
+        "severity": "critical",
+        "atLeast": "emergency",
+        "guidelineRefs": [
+          "eau-paed-2024"
+        ],
+        "note": "Salvage falls sharply after 6 hours.",
+        "knownGapNote": "Web: adaptiveTriage: 'same_day_call' (score 35). No torsion/testicular rule; the scrotal-swelling chip does not raise acuity. iOS: ClinicalPathwayEngine reads only CC/PMH keywords; CC 'Right lower abdominal pain and vomiting' gives 'routine'.",
+        "proposedFix": "Add a triage red flag: male + sudden testicular/scrotal pain (or scrotal-swelling chip) → emergency."
+      },
+      "mustAlarm": [
+        {
+          "id": "alarm-torsion",
+          "severity": "critical",
+          "match": [
+            "torsion"
+          ],
+          "unless": [
+            "ovarian"
+          ],
+          "guidelineRefs": [
+            "eau-paed-2024"
+          ]
+        }
+      ]
+    },
+    "management": {
+      "mustInclude": [
+        {
+          "id": "mgmt-scrotal-exploration",
+          "severity": "critical",
+          "match": [
+            "scrotal exploration",
+            "exploration",
+            "orchidopexy",
+            "detorsion",
+            "de-torsion"
+          ],
+          "guidelineRefs": [
+            "eau-paed-2024"
+          ]
+        }
+      ],
+      "mustExclude": [
+        {
+          "id": "mgmt-no-doppler-delay",
+          "severity": "quality",
+          "match": [
+            "doppler"
+          ],
+          "unless": [
+            "only if",
+            "uncertain",
+            "do not delay",
+            "not delay",
+            "without delay"
+          ],
+          "guidelineRefs": [
+            "eau-paed-2024"
+          ],
+          "note": "Imaging must not delay exploration when torsion is clinically likely."
+        }
+      ]
+    }
+  },
+  "guideline": [
+    {
+      "id": "eau-paed-2024",
+      "name": "EAU guidelines on paediatric urology — acute scrotum / testicular torsion",
+      "year": 2024,
+      "section": "Torsion is a clinical diagnosis; urgent surgical exploration; Doppler only if it does not delay surgery",
+      "citation": "Radmayr C, Bogaert G, Burgu B, et al. EAU guidelines on paediatric urology. EAU Guidelines Office, Arnhem, 2024.",
+      "verified": false
+    }
+  ],
+  "rationale": "Dangerous mimic of appendicitis in a boy. The genital examination makes the diagnosis; exploration must not wait for imaging.",
+  "authoring": {
+    "author": "Claude (GI surgical emergencies cluster)",
+    "date": "2026-09-25",
+    "notes": "Expectations need surgeon sign-off (reviewedBy). Every citation is verified: false."
+  }
+}

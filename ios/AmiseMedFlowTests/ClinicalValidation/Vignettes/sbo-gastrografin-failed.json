@@ -1,0 +1,310 @@
+{
+  "schemaVersion": 1,
+  "id": "sbo-gastrografin-failed",
+  "condition": "Small bowel obstruction",
+  "category": "gi-emergency",
+  "permutationOf": "sbo-adhesive-base",
+  "permutationLabel": "Failed Gastrografin challenge (contrast not in colon at 24 h), day 3",
+  "summary": "71-year-old woman on day 3 of NOM for adhesive SBO; contrast has not reached the colon at 24 h, NG output 1.6 L/day, no flatus, no strangulation signs.",
+  "tags": [
+    "obstruction",
+    "ward-review",
+    "diabetes"
+  ],
+  "inputs": {
+    "patient": {
+      "ageYears": 71,
+      "sex": "female",
+      "pregnancy": {
+        "status": "not-applicable"
+      },
+      "heightCm": 158,
+      "weightKg": 64
+    },
+    "encounter": {
+      "setting": "inpatient",
+      "visitType": "wardReview",
+      "acuity": "urgent"
+    },
+    "chiefComplaint": "Ongoing vomiting and distension, day 3 of admission",
+    "hpi": "Admitted 3 days ago with adhesive small bowel obstruction (previous open right hemicolectomy). Managed with NG tube, IV fluids and nil by mouth. 100 mL Gastrografin given 30 hours ago: the 24-hour film shows contrast still in dilated small bowel, none in the colon. NG output 1.6 L in 24 h. No flatus. Pain colicky, not worse. No fever.",
+    "socrates": {
+      "onset": [
+        "2–3 days ago"
+      ],
+      "site": [
+        "Periumbilical"
+      ],
+      "character": [
+        "Colicky"
+      ],
+      "radiation": [
+        "No radiation"
+      ],
+      "associations": [
+        "Nausea",
+        "Vomiting"
+      ],
+      "timing": [
+        "Intermittent"
+      ],
+      "exacerbating": [],
+      "relieving": [
+        "Vomiting"
+      ],
+      "severity": [
+        "Moderate (4–6/10)"
+      ]
+    },
+    "symptoms": [
+      "abdominal pain",
+      "vomiting",
+      "abdominal distension",
+      "absolute constipation"
+    ],
+    "negatives": [
+      "fever"
+    ],
+    "exam": {
+      "general": "Temperature 37.3°C, pulse 92/min, BP 134/78.",
+      "abdomen": "Distended, tympanic, mild diffuse tenderness, no guarding or rebound. NG tube draining bilious fluid."
+    },
+    "vitals": [
+      {
+        "minutesAgo": 30,
+        "heartRate": 92,
+        "systolicBp": 134,
+        "diastolicBp": 78,
+        "respiratoryRate": 18,
+        "temperatureC": 37.3,
+        "spo2": 96,
+        "avpu": "A",
+        "onSupplementalO2": false
+      }
+    ],
+    "labs": [
+      {
+        "analyte": "wbc",
+        "name": "WBC",
+        "value": 10.6,
+        "unit": "×10⁹/L",
+        "minutesAgo": 30
+      },
+      {
+        "analyte": "crp",
+        "name": "CRP",
+        "value": 38,
+        "unit": "mg/L",
+        "minutesAgo": 30
+      },
+      {
+        "analyte": "lactate",
+        "name": "Lactate",
+        "value": 1.5,
+        "unit": "mmol/L",
+        "minutesAgo": 30
+      },
+      {
+        "analyte": "potassium",
+        "name": "Potassium",
+        "value": 3.6,
+        "unit": "mmol/L",
+        "minutesAgo": 30
+      },
+      {
+        "analyte": "creatinine",
+        "name": "Creatinine",
+        "value": 88,
+        "unit": "µmol/L",
+        "minutesAgo": 30
+      }
+    ],
+    "imaging": [
+      {
+        "name": "Abdominal X-ray 24 h after water-soluble contrast",
+        "modality": "XR",
+        "region": "Abdomen",
+        "result": "Contrast remains within dilated small bowel loops; no contrast has reached the colon at 24 hours.",
+        "minutesAgo": 360
+      }
+    ],
+    "comorbidities": [
+      "Type 2 diabetes mellitus",
+      "Hypertension"
+    ],
+    "surgicalHistory": [
+      "Open right hemicolectomy (colon cancer, 2019)"
+    ],
+    "medications": [
+      {
+        "drug": "Insulin glargine",
+        "dose": "18 units",
+        "frequency": "ON",
+        "indication": "Diabetes"
+      },
+      {
+        "drug": "Ramipril",
+        "dose": "5 mg",
+        "frequency": "OD",
+        "indication": "Hypertension"
+      }
+    ],
+    "allergies": [],
+    "nkda": true,
+    "socialHistory": "Lives alone, independent.",
+    "confirmedDiagnosis": {
+      "name": "Adhesive small bowel obstruction — failed non-operative management",
+      "icd10": "K56.50",
+      "paneDiseaseId": "adhesion_obstruction",
+      "assessmentText": "Adhesive small bowel obstruction, day 3 of non-operative management: water-soluble contrast has not reached the colon at 24 h and NG output remains high. Non-operative management has failed — surgery (laparoscopic or open adhesiolysis)."
+    },
+    "platform": {
+      "web": {
+        "ccTemplate": "Acute abdominal pain",
+        "socratesAnswers": {
+          "site": "Central (periumbilical)",
+          "onset": "3 days ago",
+          "character": "Colicky",
+          "associated": "Vomiting, distension, no flatus (constipation)",
+          "timing": "Intermittent / colicky",
+          "relief": "Vomiting",
+          "severity": "5/10"
+        },
+        "symptoms": [
+          "abdominal pain",
+          "vomiting",
+          "abdominal distension",
+          "constipation"
+        ],
+        "symptomDetails": {
+          "abdominal pain": [
+            "Periumbilical",
+            "> 3 days",
+            "Colicky",
+            "Moderate (4–6)",
+            "Vomiting",
+            "Distension",
+            "Constipation",
+            "Intermittent / colicky"
+          ]
+        },
+        "examFindings": {
+          "abdomen": [
+            "Distended",
+            "Diffuse tenderness"
+          ]
+        },
+        "paneAnswers": {
+          "previous_surgery": true
+        },
+        "durationDays": 3,
+        "painScore": 5
+      }
+    }
+  },
+  "expected": {
+    "safety": {
+      "emergencyLevel": {
+        "id": "level-at-least-urgent",
+        "severity": "critical",
+        "atLeast": "urgent",
+        "guidelineRefs": [
+          "wses-sbo-2018"
+        ]
+      }
+    },
+    "management": {
+      "mustInclude": [
+        {
+          "id": "mgmt-surgery",
+          "severity": "critical",
+          "match": [
+            "laparotomy",
+            "adhesiolysis",
+            "re:laparoscop[^\\n]{0,20}(adhesiolysis|exploration)",
+            "bowel resection",
+            "small bowel resection"
+          ],
+          "unless": [
+            "elective",
+            "recurrent adhesive",
+            "recurrence"
+          ],
+          "guidelineRefs": [
+            "wses-sbo-2018"
+          ],
+          "note": "Bologna: contrast not in the colon at 24 h predicts failure of NOM; NOM beyond 72 h without progress increases morbidity and mortality — operate."
+        },
+        {
+          "id": "mgmt-surgery-in-documented-plan",
+          "severity": "quality",
+          "match": [
+            "laparotomy",
+            "adhesiolysis",
+            "re:laparoscop[^\\n]{0,20}(adhesiolysis|exploration)",
+            "bowel resection",
+            "small bowel resection"
+          ],
+          "unless": [
+            "elective",
+            "recurrent adhesive",
+            "recurrence"
+          ],
+          "sources": [
+            "web.plan"
+          ],
+          "guidelineRefs": [
+            "wses-sbo-2018"
+          ],
+          "proposedFix": "Add a 'failed NOM' variant (contrast not in colon at 24 h, no resolution by 72 h) with immediate + surgical phases."
+        }
+      ],
+      "mustExclude": [
+        {
+          "id": "mgmt-no-repeat-contrast-challenge",
+          "severity": "quality",
+          "match": [
+            "re:gastrografin challenge at 24 ?h",
+            "re:water-soluble contrast (study|challenge) at 24"
+          ],
+          "sources": [
+            "web.plan"
+          ],
+          "guidelineRefs": [
+            "wses-sbo-2018"
+          ],
+          "note": "The challenge has been done and failed; repeating it delays surgery."
+        },
+        {
+          "id": "mgmt-no-appendicectomy-template",
+          "severity": "quality",
+          "match": [
+            "appendicectomy"
+          ],
+          "note": "An appendicectomy operative plan in an SBO patient can only come from the negated exam text ('no guarding or rebound')."
+        }
+      ]
+    },
+    "pathway": {
+      "id": "pathway-ward-review",
+      "severity": "quality",
+      "equals": "wardReview"
+    }
+  },
+  "guideline": [
+    {
+      "id": "wses-sbo-2018",
+      "name": "WSES Bologna guidelines — adhesive small bowel obstruction (2017 update)",
+      "year": 2018,
+      "section": "CT with IV contrast for strangulation signs; non-operative management (NGT, fluids) up to 72 h without strangulation; water-soluble contrast challenge (colon within 24 h predicts success); surgery for strangulation, peritonitis or failed NOM; virgin abdomen and hernia causes",
+      "citation": "ten Broek RPG, Krielen P, Di Saverio S, et al. Bologna guidelines for diagnosis and management of adhesive small bowel obstruction (ASBO): 2017 update of the evidence-based guidelines from the WSES ASBO working group. World J Emerg Surg. 2018;13:24.",
+      "verified": false
+    }
+  ],
+  "rationale": "Permutation: the water-soluble contrast challenge result. A failed challenge (no contrast in the colon at 24 h) and no progress by day 3 mean surgery (Bologna), so the plan must move from NOM to operation.",
+  "authoring": {
+    "author": "Claude (GI surgical emergencies cluster)",
+    "date": "2026-09-25",
+    "notes": "Expectations need surgeon sign-off (reviewedBy). Every citation is verified: false."
+  }
+}

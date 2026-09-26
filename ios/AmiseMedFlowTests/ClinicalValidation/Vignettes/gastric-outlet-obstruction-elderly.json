@@ -1,0 +1,333 @@
+{
+  "schemaVersion": 1,
+  "id": "gastric-outlet-obstruction-elderly",
+  "condition": "Gastric outlet obstruction",
+  "category": "upper-gi",
+  "permutationOf": null,
+  "summary": "69-year-old man with 3 weeks of large-volume vomiting of undigested food, succussion splash, 7 kg weight loss; K 2.9, Cl 86, bicarbonate 36 (hypochloraemic hypokalaemic alkalosis). NG decompression, IV saline with potassium, then OGD (malignancy vs peptic stricture).",
+  "tags": [
+    "gastric-outlet-obstruction",
+    "vomiting",
+    "cancer-red-flag",
+    "elderly"
+  ],
+  "inputs": {
+    "patient": {
+      "ageYears": 69,
+      "sex": "male",
+      "pregnancy": {
+        "status": "not-applicable"
+      },
+      "heightCm": 172,
+      "weightKg": 60
+    },
+    "encounter": {
+      "setting": "emergency",
+      "visitType": "urgentReview",
+      "acuity": "urgent"
+    },
+    "chiefComplaint": "Vomiting after every meal",
+    "hpi": "Three weeks of vomiting large amounts of undigested food eaten hours earlier, non-bilious, with upper abdominal fullness. Lost 7 kg. Years of indigestion treated with antacids. Now dizzy and passing little urine.",
+    "socrates": {
+      "onset": [
+        "1–4 weeks ago"
+      ],
+      "site": [
+        "Epigastric"
+      ],
+      "character": [
+        "Bloating"
+      ],
+      "radiation": [
+        "No radiation"
+      ],
+      "associations": [
+        "Vomiting",
+        "Weight loss",
+        "Anorexia"
+      ],
+      "timing": [
+        "Post-prandial",
+        "Worse over time"
+      ],
+      "exacerbating": [
+        "Eating"
+      ],
+      "relieving": [
+        "Vomiting"
+      ],
+      "severity": [
+        "Moderate (4–6/10)"
+      ]
+    },
+    "symptoms": [
+      "vomiting undigested food",
+      "epigastric fullness",
+      "weight loss"
+    ],
+    "negatives": [
+      "bilious vomiting",
+      "haematemesis",
+      "abdominal distension",
+      "constipation"
+    ],
+    "exam": {
+      "general": "Dry mucous membranes, thin. Pulse 104/min, BP 108/66.",
+      "abdomen": "Visible epigastric peristalsis, succussion splash. No peritonism. No palpable mass."
+    },
+    "vitals": [
+      {
+        "minutesAgo": 10,
+        "heartRate": 104,
+        "systolicBp": 108,
+        "diastolicBp": 66,
+        "respiratoryRate": 18,
+        "temperatureC": 36.8,
+        "spo2": 97,
+        "avpu": "A",
+        "onSupplementalO2": false
+      }
+    ],
+    "labs": [
+      {
+        "analyte": "sodium",
+        "name": "Sodium",
+        "value": 131,
+        "unit": "mmol/L",
+        "minutesAgo": 30
+      },
+      {
+        "analyte": "potassium",
+        "name": "Potassium",
+        "value": 2.9,
+        "unit": "mmol/L",
+        "minutesAgo": 30
+      },
+      {
+        "analyte": "chloride",
+        "name": "Chloride",
+        "value": 86,
+        "unit": "mmol/L",
+        "minutesAgo": 30
+      },
+      {
+        "analyte": "bicarbonate",
+        "name": "Bicarbonate",
+        "value": 36,
+        "unit": "mmol/L",
+        "minutesAgo": 30
+      },
+      {
+        "analyte": "urea",
+        "name": "Urea",
+        "value": 12.8,
+        "unit": "mmol/L",
+        "minutesAgo": 30
+      },
+      {
+        "analyte": "creatinine",
+        "name": "Creatinine",
+        "value": 128,
+        "unit": "µmol/L",
+        "minutesAgo": 30
+      },
+      {
+        "analyte": "haemoglobin",
+        "name": "Haemoglobin",
+        "value": 12.4,
+        "unit": "g/dL",
+        "minutesAgo": 30
+      },
+      {
+        "analyte": "albumin",
+        "name": "Albumin",
+        "value": 30,
+        "unit": "g/L",
+        "minutesAgo": 30
+      }
+    ],
+    "imaging": [],
+    "comorbidities": [
+      "Dyspepsia"
+    ],
+    "surgicalHistory": [],
+    "medications": [],
+    "allergies": [],
+    "nkda": true,
+    "socialHistory": "Ex-smoker. Retired labourer.",
+    "confirmedDiagnosis": {
+      "name": "Gastric outlet obstruction",
+      "icd10": "K31.1",
+      "paneDiseaseId": "gastric_outlet_obstruction",
+      "assessmentText": "Gastric outlet obstruction with hypochloraemic hypokalaemic metabolic alkalosis and AKI; malignant vs benign peptic stricture — OGD after resuscitation."
+    },
+    "platform": {
+      "web": {
+        "ccTemplate": "Nausea / vomiting",
+        "symptoms": [
+          "vomiting",
+          "epigastric pain",
+          "weight loss",
+          "early satiety"
+        ],
+        "symptomDetails": {
+          "vomiting": [
+            "Food",
+            "Projectile",
+            "After meals"
+          ],
+          "weight loss": [
+            "5–10 kg",
+            "Unintentional",
+            "< 1 month"
+          ]
+        },
+        "examFindings": {
+          "abdomen": [
+            "Succussion splash"
+          ]
+        },
+        "durationDays": 21,
+        "painScore": 3
+      }
+    }
+  },
+  "expected": {
+    "differential": {
+      "mustRankTopK": [
+        {
+          "id": "dx-goo-top3",
+          "severity": "critical",
+          "match": [
+            "outlet obstruction",
+            "pyloric",
+            "icd:K31.1"
+          ],
+          "k": 3,
+          "guidelineRefs": [
+            "nice-ng12"
+          ]
+        }
+      ],
+      "mustNotMiss": [
+        {
+          "id": "mnm-malignancy",
+          "severity": "quality",
+          "match": [
+            "carcinoma",
+            "malignan",
+            "cancer",
+            "icd:C15",
+            "icd:C16"
+          ],
+          "guidelineRefs": [
+            "nice-ng12"
+          ],
+          "knownGap": [
+            "ios"
+          ],
+          "knownGapNote": "iOS CI 2026-09-25 (run 36169134350, database mode): not in top 5 of ios.bayes: 1. Small Bowel Obstruction | 2. Acute Gastroenteritis | 3. Acute Pancreatitis | 4. Acute Appendicitis | 5. Acute Kidney Injury"
+        }
+      ]
+    },
+    "safety": {
+      "emergencyLevel": {
+        "id": "level-at-least-urgent",
+        "severity": "critical",
+        "atLeast": "urgent",
+        "guidelineRefs": [
+          "nice-ng12"
+        ],
+        "note": "Dehydration, K 2.9 and AKI need same-day admission (not a 2-week outpatient slot)."
+      },
+      "redFlags": [
+        {
+          "id": "flag-electrolytes",
+          "severity": "quality",
+          "match": [
+            "potassium",
+            "hypokal",
+            "alkalosis",
+            "electrolyte"
+          ],
+          "guidelineRefs": [
+            "nice-ng12"
+          ]
+        }
+      ]
+    },
+    "investigations": {
+      "mustInclude": [
+        {
+          "id": "inv-ogd",
+          "severity": "critical",
+          "match": [
+            "re:\\bogd\\b",
+            "endoscop",
+            "gastroscop",
+            "oesophagogastroduodenoscopy"
+          ],
+          "guidelineRefs": [
+            "nice-ng12"
+          ]
+        },
+        {
+          "id": "inv-ct",
+          "severity": "quality",
+          "match": [
+            "re:\\bct\\b"
+          ],
+          "guidelineRefs": [
+            "nice-ng12"
+          ]
+        }
+      ]
+    },
+    "management": {
+      "mustInclude": [
+        {
+          "id": "mgmt-ng-decompression",
+          "severity": "critical",
+          "match": [
+            "nasogastric",
+            "re:\\bng ?t\\b",
+            "ng tube",
+            "ngt"
+          ],
+          "guidelineRefs": [
+            "nice-ng12"
+          ],
+          "note": "Aspiration risk with a full stomach."
+        },
+        {
+          "id": "mgmt-iv-saline-potassium",
+          "severity": "critical",
+          "match": [
+            "kcl",
+            "potassium",
+            "re:(0\\.9%|normal) (sodium chloride|saline)"
+          ],
+          "guidelineRefs": [
+            "nice-ng12"
+          ]
+        }
+      ]
+    }
+  },
+  "guideline": [
+    {
+      "id": "nice-ng12",
+      "name": "NICE NG12 — Suspected cancer: recognition and referral (oesophageal and stomach cancer)",
+      "year": 2015,
+      "section": "Consider urgent direct-access OGD in people aged ≥55 with nausea or vomiting and weight loss, reflux, dyspepsia or upper abdominal pain",
+      "citation": "National Institute for Health and Care Excellence. NICE guideline NG12. London: NICE; 2015 (last updated 2023).",
+      "verified": false
+    }
+  ],
+  "rationale": "Gastric outlet obstruction is a surgical admission (decompression, electrolyte and volume repair) and a cancer red flag (vomiting with weight loss ≥55). No specific GOO guideline is cited for the resuscitation items; they are rated critical because the stated metabolic state (K 2.9, AKI, full stomach) makes their omission directly harmful.",
+  "authoring": {
+    "author": "Claude (upper-GI cluster)",
+    "date": "2026-09-25",
+    "notes": "Expectations need surgeon sign-off (reviewedBy). Citations written from the guideline texts, not yet checked against the source (verified: false)."
+  }
+}

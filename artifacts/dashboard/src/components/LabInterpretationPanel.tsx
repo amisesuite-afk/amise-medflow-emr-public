@@ -1,5 +1,7 @@
 import { useState, useMemo, useEffect } from 'react';
 import { useAppContext } from '@/context/AppContext';
+import { useReferenceRanges } from '@/hooks/useReferenceRanges';
+import { TUMOUR_MARKERS, tumourMarkerUpper } from '@/lib/tumour-markers';
 import CollapsibleCard from '@/components/CollapsibleCard';
 
 // ── Parsing helpers ────────────────────────────────────────────────────────────
@@ -137,15 +139,9 @@ function meldGrade(score: number): { label: string; color: string } {
 
 // ── Tumour marker interpretation ───────────────────────────────────────────────
 
-interface TmMarker { label: string; upper: number; unit: string; note: string }
-
-const TM_DEFS: TmMarker[] = [
-  { label: 'CEA',    upper: 5,   unit: 'ng/mL', note: 'Colorectal, gastric, lung, breast surveillance' },
-  { label: 'CA19-9', upper: 37,  unit: 'U/mL',  note: 'Pancreatic/biliary; non-specific if <1000' },
-  { label: 'AFP',    upper: 10,  unit: 'ng/mL',  note: 'HCC surveillance; germ cell tumour' },
-  { label: 'CA-125', upper: 35,  unit: 'U/mL',  note: 'Ovarian surveillance (female only)' },
-  { label: 'PSA',    upper: 4,   unit: 'ng/mL',  note: 'Prostate screening (male only)' },
-];
+// Upper limits come from the practice reference ranges (Settings → Reference ranges), else the
+// built-in defaults: lib/tumour-markers.ts tumourMarkerUpper().
+const TM_DEFS = TUMOUR_MARKERS;
 
 // ── Input state ────────────────────────────────────────────────────────────────
 
@@ -306,6 +302,7 @@ function Incomplete() {
 
 export default function LabInterpretationPanel() {
   const { investigationResults, orderedInvestigations, age, sex } = useAppContext();
+  const referenceRanges = useReferenceRanges();
   const [inputs, setInputs] = useState<Inputs>(EMPTY);
   const [autoApplied, setAutoApplied] = useState(false);
   const hasResults = orderedInvestigations.some(k => investigationResults[k] !== undefined);
@@ -365,8 +362,9 @@ export default function LabInterpretationPanel() {
     };
     const field = fieldMap[def.label];
     const val   = field ? parseFloat(inputs[field]) : NaN;
-    const elevated = !isNaN(val) && val > def.upper;
-    return { ...def, val, elevated, field };
+    const upper = tumourMarkerUpper(def, referenceRanges, { sex, ageYears: Number.isFinite(ageNum) ? ageNum : null });
+    const elevated = !isNaN(val) && upper !== null && val > upper;
+    return { ...def, upper, val, elevated, field };
   }).filter(r => !isNaN(r.val) && r.val > 0);
 
   if (!hasResults && Object.values(inputs).every(v => v === '')) {

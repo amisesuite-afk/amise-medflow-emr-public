@@ -1,4 +1,4 @@
-import { useMemo, useState, useEffect } from 'react';
+import { useMemo, useState } from 'react';
 import { useAppContext } from '@/context/AppContext';
 import CollapsibleCard from '@/components/CollapsibleCard';
 import NarrativeInput from '@/components/NarrativeInput';
@@ -7,8 +7,13 @@ import AnatomicalSketch from '@/components/AnatomicalSketch';
 import ExamPhotoPanel from '@/components/ExamPhotoPanel';
 import WoundAssessmentCard from '@/components/WoundAssessmentCard';
 import ExamGuidePanel from '@/components/ExamGuidePanel';
+import ExamSignsPanel from '@/components/ExamSignsPanel';
 import WheelPicker from '@/components/WheelPicker';
+import News2ObservationFields from '@/components/News2ObservationFields';
 import { computeRankedDifferentials } from '@/lib/symptom-inference';
+import { allNormalTargets, applyNormalTemplate, countDocumentedSystems, isSystemDocumented } from '@/lib/exam-documentation';
+import { complaintFrameIds, frameExamSystems } from '@/lib/exam-frames';
+import { currentComplaintText } from '@/lib/visit-continuity-web';
 
 // Systems always shown regardless of clinical context
 const CORE_SYSTEM_KEYS = new Set(['general', 'abdomen', 'cardiovascular', 'respiratory', 'extremities']);
@@ -371,11 +376,19 @@ export default function ExaminationTab() {
     return map;
   }, [leadingDxId]);
 
+  // The complaint's history frames (the history step's classifier) add the systems they call for:
+  // a cough the chest, a groin lump the genital / hernia examination (lib/exam-frames.ts).
+  const complaintText = currentComplaintText({ procedureData: ctx.procedureData as Record<string, unknown>, symptoms, freeText: ctx.freeText });
+  const frameSystems = useMemo(
+    () => frameExamSystems(complaintFrameIds(ctx.procedureData as Record<string, unknown>, complaintText)),
+    [ctx.procedureData, complaintText],
+  );
   const visibleSystemKeys = useMemo(() => {
     const keys = computeVisibleSystems(comorbidities, pmhNotes, surgicalHistory, symptoms, leadingDxId, recentSurgeryDate);
+    for (const k of frameSystems) keys.add(k);
     if (forceWound) keys.add('wound');
     return keys;
-  }, [comorbidities, pmhNotes, surgicalHistory, symptoms, leadingDxId, recentSurgeryDate, forceWound]);
+  }, [comorbidities, pmhNotes, surgicalHistory, symptoms, leadingDxId, recentSurgeryDate, forceWound, frameSystems]);
 
   const legacySetterMap: Record<string, (v: string) => void> = {
     general: ctx.setExamGeneral,
@@ -388,30 +401,9 @@ export default function ExaminationTab() {
     extremities: ctx.setExamExtremities,
   };
 
-  // Auto-populate ONLY the systems relevant to this patient's presentation with
-  // normalProse on first open. Systems outside visibleSystemKeys are "not examined"
-  // and intentionally left blank — they are excluded from the final report.
-  useEffect(() => {
-    const pendingNotes: Record<string, string> = {};
-    let hasChanges = false;
-    for (const system of EXAM_SYSTEMS) {
-      // Skip systems that aren't indicated for this patient — they're not examined
-      if (!visibleSystemKeys.has(system.key)) continue;
-      const hasNote = !!examNotes[system.key]?.trim();
-      const hasChips = (examFindings[system.key]?.length ?? 0) > 0;
-      if (!hasNote && !hasChips) {
-        pendingNotes[system.key] = system.normalProse;
-        const setter = legacySetterMap[system.key];
-        if (setter) setter(system.normalProse);
-        hasChanges = true;
-      }
-    }
-    if (hasChanges) {
-      setExamNotes({ ...examNotes, ...pendingNotes });
-    }
-  // Run once on mount — captures first-render visibleSystemKeys intentionally
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  // Every system starts "not examined". Normal templates are one-tap suggestions the clinician
+  // applies per system (◎ Normal) — never written on opening the Exam step (UX review C2).
+  // Encounters saved before this change keep whatever text they already hold.
 
   function syncLegacy(systemKey: string, chips: string[], note: string) {
     const setter = legacySetterMap[systemKey];
@@ -447,31 +439,33 @@ export default function ExaminationTab() {
   }
 
   function applyNormal(system: ExamSystem) {
-    // Fills the note with standard normal prose and clears chip selection.
-    const next = { ...examNotes, [system.key]: system.normalProse };
-    setExamNotes(next);
-    setExamFindings({ ...examFindings, [system.key]: [] });
+    // Explicit tap: fills THIS system's note with the normal template and clears its chips.
+    const next = applyNormalTemplate({ findings: examFindings, notes: examNotes }, system.key, system.normalProse);
+    setExamNotes(next.notes);
+    setExamFindings(next.findings);
     setExamOmit({ ...examOmit, [system.key]: false });
     syncLegacy(system.key, [], system.normalProse);
   }
 
   function applyAllNormal() {
-    const pendingNotes: Record<string, string> = { ...examNotes };
-    const pendingFindings: Record<string, string[]> = { ...examFindings };
-    for (const system of EXAM_SYSTEMS) {
-      if (examOmit[system.key]) continue;
-      const shown = showAllSystems ||
-        visibleSystemKeys.has(system.key) ||
-        (examFindings[system.key]?.length ?? 0) > 0 ||
-        !!examNotes[system.key]?.trim();
-      if (!shown) continue;
-      pendingNotes[system.key] = system.normalProse;
-      pendingFindings[system.key] = [];
-      const setter = legacySetterMap[system.key];
+    // Explicit "All normal" tap: the shown, not-omitted systems — never the wound (a wound
+    // template only when the clinician records a wound, with its own ◎ Normal).
+    const shownKeys = EXAM_SYSTEMS.filter(system =>
+      showAllSystems ||
+      visibleSystemKeys.has(system.key) ||
+      (examFindings[system.key]?.length ?? 0) > 0 ||
+      !!examNotes[system.key]?.trim(),
+    ).map(system => system.key);
+    let state = { findings: examFindings, notes: examNotes };
+    for (const key of allNormalTargets(shownKeys, examOmit)) {
+      const system = EXAM_SYSTEMS.find(x => x.key === key);
+      if (!system) continue;
+      state = applyNormalTemplate(state, key, system.normalProse);
+      const setter = legacySetterMap[key];
       if (setter) setter(system.normalProse);
     }
-    setExamNotes(pendingNotes);
-    setExamFindings(pendingFindings);
+    setExamNotes(state.notes);
+    setExamFindings(state.findings);
     setAllNormalApplied(true);
     setTimeout(() => setAllNormalApplied(false), 2000);
   }
@@ -494,9 +488,9 @@ export default function ExaminationTab() {
     [examFindings, examNotes, examOmit],
   );
 
-  const systemsWithData = EXAM_SYSTEMS.filter(s =>
-    !examOmit[s.key] && ((examFindings[s.key]?.length ?? 0) > 0 || (examNotes[s.key]?.trim()))
-  ).length;
+  const systemsWithData = countDocumentedSystems(
+    EXAM_SYSTEMS.map(x => x.key), { findings: examFindings, notes: examNotes }, examOmit,
+  );
 
   const omittedCount = EXAM_SYSTEMS.filter(s => examOmit[s.key]).length;
 
@@ -603,7 +597,7 @@ export default function ExaminationTab() {
               </>
             ) : (
               <p style={{ fontSize: 12, color: '#6b7280', fontStyle: 'italic', margin: 0 }}>
-                Use the ◎ Normal buttons or enter findings below to generate a clinical examination report. Systems left blank are omitted from the report.
+                No system examined yet. Enter findings below, or tap ◎ Normal on a system you examined and found normal. Systems left blank are not examined and are omitted from the report.
               </p>
             )}
           </div>
@@ -735,6 +729,15 @@ export default function ExaminationTab() {
                       </div>
                     </div>
                   </div>
+                  {/* NEWS2 consciousness + air/O₂ (Migration 91) */}
+                  <div style={{ marginTop: 8 }}>
+                    <News2ObservationFields
+                      compact
+                      avpu={vitals.avpu}
+                      onSupplementalO2={vitals.onSupplementalO2}
+                      onChange={updateVital}
+                    />
+                  </div>
                 </div>
               )}
             </div>
@@ -772,6 +775,7 @@ export default function ExaminationTab() {
           <button
             type="button"
             onClick={applyAllNormal}
+            title="Apply the normal template to every system shown (not the wound). Only after you have examined them."
             style={{
               padding: '7px 16px', borderRadius: 6,
               border: `1.5px solid ${allNormalApplied ? '#166534' : '#0d9488'}`,
@@ -782,9 +786,12 @@ export default function ExaminationTab() {
               minHeight: 36,
             }}
           >
-            {allNormalApplied ? '✓ All systems — Normal' : '◎ All Normal'}
+            {allNormalApplied ? '✓ Shown systems — Normal' : '◎ All Normal'}
           </button>
         </div>
+
+        {/* Evidence-based high-yield signs and decision rules (evidence-exam) */}
+        <ExamSignsPanel />
 
         {/* Hidden-systems summary + toggle */}
         {(() => {
@@ -891,7 +898,7 @@ export default function ExaminationTab() {
                       type="button"
                       onClick={() => applyNormal(system)}
                       disabled={isOmitted}
-                      title="Mark as normal"
+                      title={`Apply the normal ${system.label.toLowerCase()} template (suggestion — only this system)`}
                       style={{
                         padding: '5px 10px', borderRadius: 5, cursor: isOmitted ? 'not-allowed' : 'pointer',
                         border: `1px solid ${isNormal ? '#0d9488' : '#475569'}`,
@@ -906,6 +913,14 @@ export default function ExaminationTab() {
                   </div>
                   {!isOmitted && (
                     <div style={{ display: 'flex', flexWrap: 'wrap', gap: 4 }}>
+                      {!isSystemDocumented({ findings: examFindings, notes: examNotes }, system.key) && (
+                        <span style={{
+                          fontSize: 11, color: '#64748b', fontStyle: 'italic',
+                          padding: '2px 4px', whiteSpace: 'nowrap',
+                        }}>
+                          Not examined
+                        </span>
+                      )}
                       {isNormal && (
                         <span style={{
                           fontSize: 11, fontWeight: 700, color: '#0d9488',

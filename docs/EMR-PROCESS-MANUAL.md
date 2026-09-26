@@ -425,7 +425,8 @@ a no-op if the env var is unset (`if (!secret) return true`).
 | Token | Issued | Checked | Used for |
 |---|---|---|---|
 | Supabase staff JWT | `signInWithPassword()` | `requireStaffAuth()` (`Authorization: Bearer`) | Dashboard staff actions, admin CRUD |
-| `x-staff-token` / `CRON_SECRET` | Shared env secret | `requireStaffAuth()`, `requireCronSecret()` | Internal service-to-service + cron |
+| `x-staff-token` / `STAFF_MACHINE_TOKEN` | Shared env secret (falls back to `CRON_SECRET` while unset) | `requireStaffAuth()` | Internal service-to-service (front-desk → api-server) |
+| `x-cron-secret` / `CRON_SECRET` | Shared env secret | `requireCronSecret()` | Cron jobs |
 | `session_token` | `questionnaire.ts` | APCQ routes (see §5) | Anonymous patient questionnaire access |
 | Portal auth (`auth_user_id`, SMS-OTP) | `portal.ts` | `/api/patient/*` | Patient portal self-service |
 

@@ -1,4 +1,5 @@
 import type { ReactNode } from 'react';
+import StaffIdleTimeout from './StaffIdleTimeout';
 
 export const metadata = { title: 'Staff Scheduling — Amise MedFlow' };
 
@@ -28,7 +29,7 @@ export default function StaffLayout({ children }: { children: ReactNode }) {
           <span style={{ color: '#94a3b8', fontSize: 13, fontWeight: 500 }}>Staff Scheduling</span>
         </div>
         <a
-          href="/staff/login"
+          href="/staff/login?signout=1"
           style={{ fontSize: 12, color: '#64748b', textDecoration: 'none', padding: '4px 10px',
                    borderRadius: 6, border: '1px solid #1e293b' }}
         >
@@ -38,6 +39,7 @@ export default function StaffLayout({ children }: { children: ReactNode }) {
       <main style={{ padding: '28px 24px', maxWidth: 900, margin: '0 auto' }}>
         {children}
       </main>
+      <StaffIdleTimeout />
     </div>
   );
 }

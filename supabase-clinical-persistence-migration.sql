@@ -279,84 +279,180 @@ end $$;
 -- ─────────────────────────────────────────────────────────────
 
 -- ── surgical_history ──
-create policy "staff_select_surgical_history" on surgical_history
-  for select using (true);
-create policy "staff_insert_surgical_history" on surgical_history
-  for insert with check (true);
-create policy "staff_update_surgical_history" on surgical_history
-  for update using (true);
-create policy "staff_delete_surgical_history" on surgical_history
-  for delete using (true);
+do $guard$ begin
+  create policy "staff_select_surgical_history" on surgical_history
+    for select using (true);
+exception when duplicate_object then null;
+end $guard$;
+do $guard$ begin
+  create policy "staff_insert_surgical_history" on surgical_history
+    for insert with check (true);
+exception when duplicate_object then null;
+end $guard$;
+do $guard$ begin
+  create policy "staff_update_surgical_history" on surgical_history
+    for update using (true);
+exception when duplicate_object then null;
+end $guard$;
+do $guard$ begin
+  create policy "staff_delete_surgical_history" on surgical_history
+    for delete using (true);
+exception when duplicate_object then null;
+end $guard$;
 
 -- ── toxic_habits ──
-create policy "staff_select_toxic_habits" on toxic_habits
-  for select using (true);
-create policy "staff_insert_toxic_habits" on toxic_habits
-  for insert with check (true);
-create policy "staff_update_toxic_habits" on toxic_habits
-  for update using (true);
-create policy "staff_delete_toxic_habits" on toxic_habits
-  for delete using (true);
+do $guard$ begin
+  create policy "staff_select_toxic_habits" on toxic_habits
+    for select using (true);
+exception when duplicate_object then null;
+end $guard$;
+do $guard$ begin
+  create policy "staff_insert_toxic_habits" on toxic_habits
+    for insert with check (true);
+exception when duplicate_object then null;
+end $guard$;
+do $guard$ begin
+  create policy "staff_update_toxic_habits" on toxic_habits
+    for update using (true);
+exception when duplicate_object then null;
+end $guard$;
+do $guard$ begin
+  create policy "staff_delete_toxic_habits" on toxic_habits
+    for delete using (true);
+exception when duplicate_object then null;
+end $guard$;
 
 -- ── ros_findings ──
-create policy "staff_select_ros_findings" on ros_findings
-  for select using (true);
-create policy "staff_insert_ros_findings" on ros_findings
-  for insert with check (true);
-create policy "staff_update_ros_findings" on ros_findings
-  for update using (true);
-create policy "staff_delete_ros_findings" on ros_findings
-  for delete using (true);
+do $guard$ begin
+  create policy "staff_select_ros_findings" on ros_findings
+    for select using (true);
+exception when duplicate_object then null;
+end $guard$;
+do $guard$ begin
+  create policy "staff_insert_ros_findings" on ros_findings
+    for insert with check (true);
+exception when duplicate_object then null;
+end $guard$;
+do $guard$ begin
+  create policy "staff_update_ros_findings" on ros_findings
+    for update using (true);
+exception when duplicate_object then null;
+end $guard$;
+do $guard$ begin
+  create policy "staff_delete_ros_findings" on ros_findings
+    for delete using (true);
+exception when duplicate_object then null;
+end $guard$;
 
 -- ── scales_scores ──
-create policy "staff_select_scales_scores" on scales_scores
-  for select using (true);
-create policy "staff_insert_scales_scores" on scales_scores
-  for insert with check (true);
-create policy "staff_update_scales_scores" on scales_scores
-  for update using (true);
-create policy "staff_delete_scales_scores" on scales_scores
-  for delete using (true);
+do $guard$ begin
+  create policy "staff_select_scales_scores" on scales_scores
+    for select using (true);
+exception when duplicate_object then null;
+end $guard$;
+do $guard$ begin
+  create policy "staff_insert_scales_scores" on scales_scores
+    for insert with check (true);
+exception when duplicate_object then null;
+end $guard$;
+do $guard$ begin
+  create policy "staff_update_scales_scores" on scales_scores
+    for update using (true);
+exception when duplicate_object then null;
+end $guard$;
+do $guard$ begin
+  create policy "staff_delete_scales_scores" on scales_scores
+    for delete using (true);
+exception when duplicate_object then null;
+end $guard$;
 
 -- ── dashboard_prescriptions ──
-create policy "staff_select_dashboard_prescriptions" on dashboard_prescriptions
-  for select using (true);
-create policy "staff_insert_dashboard_prescriptions" on dashboard_prescriptions
-  for insert with check (true);
-create policy "staff_update_dashboard_prescriptions" on dashboard_prescriptions
-  for update using (true);
-create policy "staff_delete_dashboard_prescriptions" on dashboard_prescriptions
-  for delete using (true);
+do $guard$ begin
+  create policy "staff_select_dashboard_prescriptions" on dashboard_prescriptions
+    for select using (true);
+exception when duplicate_object then null;
+end $guard$;
+do $guard$ begin
+  create policy "staff_insert_dashboard_prescriptions" on dashboard_prescriptions
+    for insert with check (true);
+exception when duplicate_object then null;
+end $guard$;
+do $guard$ begin
+  create policy "staff_update_dashboard_prescriptions" on dashboard_prescriptions
+    for update using (true);
+exception when duplicate_object then null;
+end $guard$;
+do $guard$ begin
+  create policy "staff_delete_dashboard_prescriptions" on dashboard_prescriptions
+    for delete using (true);
+exception when duplicate_object then null;
+end $guard$;
 
 -- ── operative_notes ──
-create policy "staff_select_operative_notes" on operative_notes
-  for select using (true);
-create policy "staff_insert_operative_notes" on operative_notes
-  for insert with check (true);
-create policy "staff_update_operative_notes" on operative_notes
-  for update using (true);
-create policy "staff_delete_operative_notes" on operative_notes
-  for delete using (true);
+do $guard$ begin
+  create policy "staff_select_operative_notes" on operative_notes
+    for select using (true);
+exception when duplicate_object then null;
+end $guard$;
+do $guard$ begin
+  create policy "staff_insert_operative_notes" on operative_notes
+    for insert with check (true);
+exception when duplicate_object then null;
+end $guard$;
+do $guard$ begin
+  create policy "staff_update_operative_notes" on operative_notes
+    for update using (true);
+exception when duplicate_object then null;
+end $guard$;
+do $guard$ begin
+  create policy "staff_delete_operative_notes" on operative_notes
+    for delete using (true);
+exception when duplicate_object then null;
+end $guard$;
 
 -- ── trauma_records ──
-create policy "staff_select_trauma_records" on trauma_records
-  for select using (true);
-create policy "staff_insert_trauma_records" on trauma_records
-  for insert with check (true);
-create policy "staff_update_trauma_records" on trauma_records
-  for update using (true);
-create policy "staff_delete_trauma_records" on trauma_records
-  for delete using (true);
+do $guard$ begin
+  create policy "staff_select_trauma_records" on trauma_records
+    for select using (true);
+exception when duplicate_object then null;
+end $guard$;
+do $guard$ begin
+  create policy "staff_insert_trauma_records" on trauma_records
+    for insert with check (true);
+exception when duplicate_object then null;
+end $guard$;
+do $guard$ begin
+  create policy "staff_update_trauma_records" on trauma_records
+    for update using (true);
+exception when duplicate_object then null;
+end $guard$;
+do $guard$ begin
+  create policy "staff_delete_trauma_records" on trauma_records
+    for delete using (true);
+exception when duplicate_object then null;
+end $guard$;
 
 -- ── clinical_attachments ──
-create policy "staff_select_clinical_attachments" on clinical_attachments
-  for select using (true);
-create policy "staff_insert_clinical_attachments" on clinical_attachments
-  for insert with check (true);
-create policy "staff_update_clinical_attachments" on clinical_attachments
-  for update using (true);
-create policy "staff_delete_clinical_attachments" on clinical_attachments
-  for delete using (true);
+do $guard$ begin
+  create policy "staff_select_clinical_attachments" on clinical_attachments
+    for select using (true);
+exception when duplicate_object then null;
+end $guard$;
+do $guard$ begin
+  create policy "staff_insert_clinical_attachments" on clinical_attachments
+    for insert with check (true);
+exception when duplicate_object then null;
+end $guard$;
+do $guard$ begin
+  create policy "staff_update_clinical_attachments" on clinical_attachments
+    for update using (true);
+exception when duplicate_object then null;
+end $guard$;
+do $guard$ begin
+  create policy "staff_delete_clinical_attachments" on clinical_attachments
+    for delete using (true);
+exception when duplicate_object then null;
+end $guard$;
 
 -- ─────────────────────────────────────────────────────────────
 -- INDEXES

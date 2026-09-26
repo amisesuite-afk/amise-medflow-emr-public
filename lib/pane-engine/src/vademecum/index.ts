@@ -13,6 +13,16 @@ import './specialties/upperGI.js';
 import './specialties/skinSoftTissue.js';
 import './specialties/urology.js';
 import './specialties/postOpWounds.js';
+// Pane model 1.0.0: non-surgical specialties, so the differential is condition-neutral.
+import './specialties/cardiovascular.js';
+import './specialties/respiratory.js';
+import './specialties/acuteMedicine.js';
+import './specialties/metabolic.js';
+import './specialties/neurology.js';
+import './specialties/obstetrics.js';
+import './specialties/paediatrics.js';
+// Evidence-exam 1.0.0: examination signs and decision-rule bands (after every disease module).
+import '../evidence/register.js';
 
 import { getRegisteredDiseases, getRegisteredFeatures } from './registry.js';
 

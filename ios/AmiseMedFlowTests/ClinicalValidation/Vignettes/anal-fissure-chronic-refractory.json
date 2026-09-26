@@ -1,0 +1,183 @@
+{
+  "schemaVersion": 1,
+  "id": "anal-fissure-chronic-refractory",
+  "condition": "Anal fissure — chronic, refractory to topical therapy",
+  "category": "anorectal",
+  "permutationOf": "anal-fissure-acute-posterior",
+  "permutationLabel": "Chronic (> 8 weeks), failed diltiazem; female, two vaginal deliveries",
+  "summary": "42-year-old woman with a chronic posterior fissure despite 8 weeks of topical diltiazem; two vaginal deliveries. ASCRS 2023: botulinum toxin or lateral internal sphincterotomy; in women after vaginal delivery, assess continence risk (botulinum first, or anal physiology/EAUS before LIS).",
+  "tags": [
+    "anorectal",
+    "fissure",
+    "chronic",
+    "continence-risk"
+  ],
+  "inputs": {
+    "patient": {
+      "ageYears": 42,
+      "sex": "female",
+      "pregnancy": {
+        "status": "not-pregnant"
+      },
+      "heightCm": 160,
+      "weightKg": 66
+    },
+    "encounter": {
+      "setting": "outpatient",
+      "visitType": "followUp",
+      "acuity": "routine"
+    },
+    "chiefComplaint": "Ongoing pain on opening bowels",
+    "hpi": "Four months of pain on defaecation and bright red blood on wiping. Eight weeks of topical diltiazem 2% twice daily plus fibre with only partial relief. Two vaginal deliveries (forceps once). Continent.",
+    "socrates": {
+      "onset": [
+        "1–6 months ago"
+      ],
+      "site": [
+        "Anal canal",
+        "Posterior midline"
+      ],
+      "character": [
+        "Sharp"
+      ],
+      "associations": [
+        "Pain on defaecation",
+        "Rectal bleeding"
+      ],
+      "exacerbating": [
+        "Defaecation"
+      ],
+      "timing": [
+        "Episodic"
+      ],
+      "severity": [
+        "Moderate (4–6/10)"
+      ]
+    },
+    "symptoms": [
+      "rectal pain",
+      "rectal bleeding"
+    ],
+    "negatives": [
+      "weight loss",
+      "change in bowel habit"
+    ],
+    "exam": {
+      "general": "Well.",
+      "abdomen": "Soft.",
+      "other": "Perianal: chronic posterior midline fissure with exposed internal sphincter fibres, sentinel tag and hypertrophied papilla."
+    },
+    "vitals": [
+      {
+        "minutesAgo": 20,
+        "heartRate": 70,
+        "systolicBp": 122,
+        "diastolicBp": 76,
+        "respiratoryRate": 14,
+        "temperatureC": 36.6,
+        "spo2": 99,
+        "avpu": "A",
+        "onSupplementalO2": false
+      }
+    ],
+    "comorbidities": [],
+    "surgicalHistory": [],
+    "allergies": [],
+    "nkda": true,
+    "socialHistory": "Teacher.",
+    "medications": [
+      {
+        "drug": "Diltiazem 2% cream",
+        "frequency": "BD topical",
+        "indication": "Anal fissure"
+      },
+      {
+        "drug": "Ispaghula husk",
+        "frequency": "BD",
+        "indication": "Stool softening"
+      }
+    ],
+    "confirmedDiagnosis": {
+      "name": "Chronic anal fissure refractory to topical diltiazem",
+      "icd10": "K60.1",
+      "paneDiseaseId": "anal_fissure",
+      "assessmentText": "Chronic posterior anal fissure, refractory to 8 weeks of topical diltiazem. Botulinum toxin versus lateral internal sphincterotomy; continence risk after vaginal deliveries."
+    },
+    "platform": {
+      "web": {
+        "ccTemplate": "Other / general surgical",
+        "symptoms": [
+          "rectal pain",
+          "rectal bleeding"
+        ],
+        "examFindings": {
+          "perineal": [
+            "Fissure",
+            "Skin tags"
+          ],
+          "anal": [
+            "Fissure"
+          ]
+        },
+        "paneAnswers": {
+          "anal_pain": true,
+          "pr_bleeding": true
+        },
+        "durationDays": 120,
+        "painScore": 5
+      }
+    }
+  },
+  "expected": {
+    "management": {
+      "mustInclude": [
+        {
+          "id": "mgmt-botox-or-lis",
+          "severity": "quality",
+          "match": [
+            "botulinum",
+            "botox",
+            "sphincterotomy"
+          ],
+          "guidelineRefs": [
+            "ascrs-fissure-2023"
+          ]
+        },
+        {
+          "id": "mgmt-continence-assessment",
+          "severity": "quality",
+          "match": [
+            "manometry",
+            "endoanal ultrasound",
+            "continence",
+            "incontinence"
+          ],
+          "guidelineRefs": [
+            "ascrs-fissure-2023"
+          ],
+          "note": "Women with previous vaginal deliveries may have occult sphincter defects; LIS carries an incontinence risk.",
+          "knownGap": [
+            "ios"
+          ],
+          "knownGapNote": "iOS CI 2026-09-25 (run 36169134350, database mode): no management item matched among 12 (ios.pipeline.actions, ios.radiation.plan, ios.radiation.followUp, ios.soap.plan)"
+        }
+      ]
+    }
+  },
+  "guideline": [
+    {
+      "id": "ascrs-fissure-2023",
+      "name": "ASCRS clinical practice guidelines — management of anal fissures",
+      "year": 2023,
+      "section": "Chronic fissure after failed topical therapy: botulinum toxin or lateral internal sphincterotomy; tailor to continence risk",
+      "citation": "Davids JS, Hawkins AT, Bhama AR, et al. The American Society of Colon and Rectal Surgeons clinical practice guidelines for the management of anal fissures. Dis Colon Rectum. 2023;66:190–199.",
+      "verified": false
+    }
+  ],
+  "rationale": "Permutation: chronicity and failed first-line treatment; continence risk. Quality only.",
+  "authoring": {
+    "author": "Claude (colorectal/anorectal cluster)",
+    "date": "2026-09-25",
+    "notes": "Expectations need surgeon sign-off (reviewedBy). Citations verified: false until checked against the source."
+  }
+}

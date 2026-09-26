@@ -1,0 +1,272 @@
+{
+  "schemaVersion": 1,
+  "id": "eoe-young-atopic-recurrent-bolus",
+  "condition": "Eosinophilic oesophagitis",
+  "category": "upper-gi",
+  "permutationOf": "food-bolus-complete-obstruction",
+  "permutationLabel": "Young atopic man, recurrent impaction (resolved) — eosinophilic oesophagitis",
+  "summary": "23-year-old man with asthma and eczema: years of intermittent solid-food sticking and three self-resolving bolus episodes; eating slowly. BSG 2022: OGD with ≥6 biopsies from at least two levels; EoE must be on the differential.",
+  "tags": [
+    "dysphagia",
+    "eoe",
+    "young",
+    "atopy"
+  ],
+  "inputs": {
+    "patient": {
+      "ageYears": 23,
+      "sex": "male",
+      "pregnancy": {
+        "status": "not-applicable"
+      },
+      "heightCm": 183,
+      "weightKg": 76
+    },
+    "encounter": {
+      "setting": "outpatient",
+      "visitType": "newConsult",
+      "acuity": "routine"
+    },
+    "chiefComplaint": "Food sticking when swallowing",
+    "hpi": "Since his teens, meat and bread intermittently stick in the chest; he chews carefully and drinks a lot with meals. Three episodes where food got completely stuck for an hour and then passed. Currently swallowing normally. Asthma and eczema; hay fever. Weight steady. Heartburn rarely.",
+    "socrates": {
+      "onset": [
+        "Over a year"
+      ],
+      "site": [
+        "Lower chest / epigastric"
+      ],
+      "character": [
+        "Pressure"
+      ],
+      "radiation": [
+        "No radiation"
+      ],
+      "associations": [],
+      "timing": [
+        "Intermittent",
+        "Episodic"
+      ],
+      "exacerbating": [
+        "Solids"
+      ],
+      "relieving": [
+        "Small sips of water"
+      ],
+      "severity": [
+        "Mild (1–3/10)"
+      ]
+    },
+    "symptoms": [
+      "intermittent dysphagia",
+      "food sticking"
+    ],
+    "negatives": [
+      "weight loss",
+      "haematemesis",
+      "odynophagia"
+    ],
+    "exam": {
+      "general": "Well. Flexural eczema.",
+      "abdomen": "Soft, non-tender."
+    },
+    "vitals": [
+      {
+        "minutesAgo": 20,
+        "heartRate": 70,
+        "systolicBp": 122,
+        "diastolicBp": 74,
+        "respiratoryRate": 14,
+        "temperatureC": 36.6,
+        "spo2": 99,
+        "avpu": "A",
+        "onSupplementalO2": false
+      }
+    ],
+    "labs": [
+      {
+        "analyte": "haemoglobin",
+        "name": "Haemoglobin",
+        "value": 14.9,
+        "unit": "g/dL",
+        "minutesAgo": 1440
+      }
+    ],
+    "imaging": [],
+    "comorbidities": [
+      "Asthma",
+      "Atopic eczema",
+      "Allergic rhinitis"
+    ],
+    "surgicalHistory": [],
+    "medications": [
+      {
+        "drug": "Beclometasone inhaler",
+        "dose": "200 mcg",
+        "frequency": "BD",
+        "indication": "Asthma"
+      }
+    ],
+    "allergies": [],
+    "nkda": true,
+    "socialHistory": "Student. Non-smoker.",
+    "confirmedDiagnosis": {
+      "name": "Suspected eosinophilic oesophagitis",
+      "icd10": "K20.0",
+      "assessmentText": "Intermittent solid-food dysphagia with recurrent bolus impaction in a young atopic man — suspected eosinophilic oesophagitis. OGD with oesophageal biopsies."
+    },
+    "platform": {
+      "web": {
+        "ccTemplate": "Dysphagia",
+        "symptoms": [
+          "dysphagia"
+        ],
+        "symptomDetails": {
+          "dysphagia": [
+            "Solids only",
+            "Intermittent"
+          ]
+        },
+        "examFindings": {},
+        "durationDays": 1800,
+        "painScore": 0
+      }
+    }
+  },
+  "expected": {
+    "differential": {
+      "mustNotMiss": [
+        {
+          "id": "mnm-eoe",
+          "severity": "quality",
+          "match": [
+            "eosinophil",
+            "icd:K20.0"
+          ],
+          "guidelineRefs": [
+            "bsg-eoe-2022"
+          ],
+          "knownGap": [
+            "web",
+            "ios"
+          ],
+          "knownGapNote": "No eosinophilic oesophagitis disease in PANE or symptom inference (only a key point in the oesophageal_stricture protocol). | iOS CI 2026-09-25 (run 36169134350, database mode): not in top 5 of ios.bayes: 1. Gastro-oesophageal Reflux Disease | 2. Oesophageal / Gastric Carcinoma | 3. Upper GI Bleeding (Peptic Ulcer) | 4. Oesophageal Web / Plummer-Vinson Syndrome | 5. Acute Coronary Syndrome",
+          "proposedFix": "Add an EoE node (young, atopy, intermittent solid dysphagia, bolus episodes) and a K20.0 protocol (≥6 biopsies from ≥2 levels; PPI / budesonide / diet; dilatation)."
+        }
+      ]
+    },
+    "safety": {
+      "emergencyLevel": {
+        "id": "level-priority-not-emergency",
+        "severity": "quality",
+        "atLeast": "priority",
+        "atMost": "urgent",
+        "guidelineRefs": [
+          "nice-ng12"
+        ],
+        "note": "Dysphagia at any age → urgent OGD (NG12), but not an emergency when swallowing now.",
+        "knownGap": [
+          "web"
+        ],
+        "knownGapNote": "Emergency now: \"Systemic red flag symptom\" and \"Dysphagia\" red flags plus a 2-week-wait cancer screen labelled \"colorectal\" (cancer-screening.ts operator-precedence bug; see findings).",
+        "proposedFix": "cancer-screening.ts: parenthesise the colorectal cancerType condition (c.met && (… || … )); dysphagia should give priority, not emergency_now, when the patient is swallowing."
+      },
+      "redFlags": [
+        {
+          "id": "flag-dysphagia",
+          "severity": "critical",
+          "match": [
+            "dysphagia"
+          ],
+          "guidelineRefs": [
+            "nice-ng12"
+          ]
+        }
+      ]
+    },
+    "investigations": {
+      "mustInclude": [
+        {
+          "id": "inv-ogd",
+          "severity": "critical",
+          "match": [
+            "re:\\bogd\\b",
+            "endoscop",
+            "gastroscop",
+            "oesophagogastroduodenoscopy"
+          ],
+          "guidelineRefs": [
+            "bsg-eoe-2022",
+            "nice-ng12"
+          ]
+        },
+        {
+          "id": "inv-oesophageal-biopsies",
+          "severity": "critical",
+          "match": [
+            "biops"
+          ],
+          "guidelineRefs": [
+            "bsg-eoe-2022"
+          ],
+          "note": "EoE is a histological diagnosis; a normal-looking oesophagus without biopsies misses it."
+        },
+        {
+          "id": "inv-six-biopsies-two-levels",
+          "severity": "quality",
+          "match": [
+            "re:(six|6|≥ ?6)[^.;\\n]{0,20}biops",
+            "two levels",
+            "proximal and distal"
+          ],
+          "guidelineRefs": [
+            "bsg-eoe-2022"
+          ]
+        }
+      ]
+    },
+    "management": {
+      "mustInclude": [
+        {
+          "id": "mgmt-eoe-treatment-options",
+          "severity": "quality",
+          "match": [
+            "budesonide",
+            "fluticasone",
+            "topical steroid",
+            "dietary elimination",
+            "elimination diet",
+            "ppi"
+          ],
+          "guidelineRefs": [
+            "bsg-eoe-2022"
+          ]
+        }
+      ]
+    }
+  },
+  "guideline": [
+    {
+      "id": "bsg-eoe-2022",
+      "name": "BSG/BSPGHAN joint consensus guidelines — diagnosis and management of eosinophilic oesophagitis in children and adults",
+      "year": 2022,
+      "section": "Suspect EoE in dysphagia or food bolus obstruction, especially young atopic men; OGD with at least 6 biopsies from at least two oesophageal levels; first-line PPI, topical steroid (orodispersible budesonide) or dietary therapy; dilatation for strictures",
+      "citation": "Dhar A, Haboubi HN, Attwood SE, et al. Gut. 2022;71:1459–1487.",
+      "verified": false
+    },
+    {
+      "id": "nice-ng12",
+      "name": "NICE NG12 — Suspected cancer: recognition and referral (oesophageal and stomach cancer)",
+      "year": 2015,
+      "section": "Dysphagia at any age: urgent direct-access OGD",
+      "citation": "National Institute for Health and Care Excellence. NICE guideline NG12. London: NICE; 2015 (last updated 2023).",
+      "verified": false
+    }
+  ],
+  "rationale": "Young/atopic permutation of the food-bolus case. The key safety-relevant output is that biopsies are taken at OGD (EoE is missed when the oesophagus is only looked at). PANE has no EoE node, so this also measures coverage.",
+  "authoring": {
+    "author": "Claude (upper-GI cluster)",
+    "date": "2026-09-25",
+    "notes": "Expectations need surgeon sign-off (reviewedBy). Citations written from the guideline texts, not yet checked against the source (verified: false)."
+  }
+}

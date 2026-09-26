@@ -1,0 +1,271 @@
+{
+  "schemaVersion": 1,
+  "id": "acutemed-sepsis-asplenic-opsi",
+  "condition": "Overwhelming post-splenectomy infection",
+  "category": "general-medicine",
+  "permutationOf": "acutemed-sepsis-afebrile-elderly-urinary",
+  "permutationLabel": "Asplenic (post-splenectomy), septic shock",
+  "summary": "42-year-old man, splenectomy 6 years ago after trauma and not on prophylaxis: 12 hours of fever, rigors, myalgia and vomiting; T 39.2, HR 124, BP 92/56, mottled with a petechial rash on the legs.",
+  "tags": [
+    "sepsis",
+    "asplenia",
+    "post-surgical",
+    "purpura"
+  ],
+  "inputs": {
+    "patient": {
+      "ageYears": 42,
+      "sex": "male",
+      "pregnancy": {
+        "status": "not-applicable"
+      },
+      "heightCm": 182,
+      "weightKg": 86
+    },
+    "encounter": {
+      "setting": "outpatient",
+      "visitType": "urgentReview",
+      "acuity": "urgent"
+    },
+    "chiefComplaint": "Fever, shivering and a rash",
+    "hpi": "Splenectomy 6 years ago for a ruptured spleen after a motorbike accident. Stopped his penicillin prophylaxis years ago; vaccination status unknown. Twelve hours of high fevers, rigors, aching muscles and vomiting; this afternoon noticed purple spots on his legs.",
+    "symptoms": [
+      "fever",
+      "rigors",
+      "myalgia",
+      "vomiting",
+      "purpuric rash"
+    ],
+    "negatives": [
+      "neck stiffness",
+      "headache",
+      "cough",
+      "dysuria"
+    ],
+    "exam": {
+      "general": "Unwell, mottled knees, cool peripheries.",
+      "skin": "Non-blanching petechiae over both shins.",
+      "cardiovascular": "HR 124, BP 92/56, CRT 4 s.",
+      "respiratory": "Chest clear, RR 26.",
+      "abdomen": "Healed midline laparotomy scar, soft, non-tender."
+    },
+    "vitals": [
+      {
+        "minutesAgo": 5,
+        "heartRate": 124,
+        "systolicBp": 92,
+        "diastolicBp": 56,
+        "respiratoryRate": 26,
+        "temperatureC": 39.2,
+        "spo2": 95,
+        "avpu": "A",
+        "onSupplementalO2": false
+      }
+    ],
+    "labs": [],
+    "imaging": [],
+    "comorbidities": [
+      "Asplenia (post-traumatic splenectomy)"
+    ],
+    "surgicalHistory": [
+      "Emergency splenectomy 2020 (trauma)"
+    ],
+    "medications": [],
+    "allergies": [],
+    "nkda": true,
+    "socialHistory": "Smoker. Construction worker.",
+    "confirmedDiagnosis": {
+      "name": "Suspected overwhelming post-splenectomy infection (septic shock)",
+      "icd10": "A41.9",
+      "assessmentText": "Septic shock with purpura in an asplenic patient - overwhelming post-splenectomy infection: immediate IV antibiotics, emergency transfer."
+    },
+    "platform": {
+      "web": {
+        "ccTemplate": "Other / general surgical",
+        "symptoms": [
+          "fever",
+          "rigors",
+          "muscle pain",
+          "vomiting",
+          "rash",
+          "petechiae"
+        ],
+        "symptomDetails": {
+          "rash": [
+            "Limbs",
+            "Purpuric (non-blanching)",
+            "Fever"
+          ]
+        },
+        "examFindings": {
+          "general": [
+            "In distress"
+          ],
+          "cardiovascular": [
+            "Tachycardia",
+            "Capillary refill > 2s"
+          ]
+        },
+        "paneAnswers": {
+          "fever": true,
+          "rigors": true,
+          "nausea_vomiting": true
+        },
+        "durationDays": 0.5,
+        "painScore": 4
+      }
+    }
+  },
+  "expected": {
+    "differential": {
+      "mustNotMiss": [
+        {
+          "id": "mnm-sepsis",
+          "severity": "critical",
+          "match": [
+            "sepsis",
+            "septic",
+            "icd:A41",
+            "icd:A40",
+            "meningococc",
+            "post-splenectomy"
+          ],
+          "guidelineRefs": [
+            "bcsh-asplenia-2011",
+            "ssc-2021"
+          ]
+        }
+      ]
+    },
+    "safety": {
+      "emergencyLevel": {
+        "id": "level-emergency",
+        "severity": "critical",
+        "atLeast": "emergency",
+        "guidelineRefs": [
+          "bcsh-asplenia-2011",
+          "ssc-2021"
+        ]
+      },
+      "mustAlarm": [
+        {
+          "id": "alarm-sepsis",
+          "severity": "critical",
+          "match": [
+            "sepsis",
+            "septic",
+            "icd:A41",
+            "icd:A40"
+          ],
+          "guidelineRefs": [
+            "ssc-2021"
+          ]
+        }
+      ],
+      "redFlags": [
+        {
+          "id": "rf-asplenia",
+          "severity": "quality",
+          "match": [
+            "splenectomy",
+            "asplen",
+            "opsi",
+            "post-splenectomy"
+          ],
+          "guidelineRefs": [
+            "bcsh-asplenia-2011"
+          ]
+        }
+      ]
+    },
+    "investigations": {
+      "mustInclude": [
+        {
+          "id": "inv-blood-cultures",
+          "severity": "quality",
+          "match": [
+            "blood culture"
+          ],
+          "guidelineRefs": [
+            "ssc-2021"
+          ]
+        }
+      ]
+    },
+    "management": {
+      "mustInclude": [
+        {
+          "id": "mgmt-antibiotics",
+          "severity": "critical",
+          "match": [
+            "antibiotic",
+            "antimicrobial",
+            "piperacillin",
+            "tazobactam",
+            "co-amoxiclav",
+            "amoxicillin",
+            "ceftriaxone",
+            "cefotaxime",
+            "meropenem",
+            "clarithromycin",
+            "doxycycline",
+            "gentamicin",
+            "cefuroxime",
+            "benzylpenicillin"
+          ],
+          "unless": [
+            "before antibiotic",
+            "before first antibiotic",
+            "at induction",
+            "prophyla"
+          ],
+          "guidelineRefs": [
+            "bcsh-asplenia-2011",
+            "ssc-2021"
+          ]
+        },
+        {
+          "id": "mgmt-iv-fluids",
+          "severity": "quality",
+          "match": [
+            "iv fluid",
+            "intravenous fluid",
+            "hartmann",
+            "crystalloid",
+            "sodium chloride 0.9",
+            "0.9% saline",
+            "fluid resuscitation",
+            "fluid challenge"
+          ],
+          "guidelineRefs": [
+            "ssc-2021"
+          ]
+        }
+      ]
+    }
+  },
+  "guideline": [
+    {
+      "id": "bcsh-asplenia-2011",
+      "verified": false,
+      "name": "BCSH - Review of guidelines for the prevention and treatment of infection in patients with an absent or dysfunctional spleen",
+      "year": 2011,
+      "section": "Overwhelming post-splenectomy infection: febrile asplenic patients need urgent assessment and immediate empirical antibiotics; patients should carry a standby antibiotic supply and an alert card",
+      "citation": "Davies JM, Lewis MPN, Wimperis J, et al. Br J Haematol. 2011;155:308-17."
+    },
+    {
+      "id": "ssc-2021",
+      "verified": false,
+      "name": "Surviving Sepsis Campaign: international guidelines for management of sepsis and septic shock 2021",
+      "year": 2021,
+      "section": "Screening: recommend against qSOFA alone compared with SIRS, NEWS or MEWS; antimicrobials within 1 h for possible septic shock or high likelihood of sepsis; blood cultures before antimicrobials; lactate measurement; 30 mL/kg IV crystalloid within 3 h for sepsis-induced hypoperfusion or septic shock; noradrenaline first-line vasopressor, MAP target 65 mmHg",
+      "citation": "Evans L, Rhodes A, Alhazzani W, et al. Crit Care Med. 2021;49:e1063-e1143."
+    }
+  ],
+  "rationale": "Surgical permutation: a late complication of our own operation. Fever, shock and purpura in an asplenic patient must be treated immediately; no engine should wait for a source.",
+  "authoring": {
+    "author": "Claude (acute medicine cluster)",
+    "date": "2026-09-25",
+    "notes": "Expectations need surgeon sign-off (reviewedBy). Citations written from the guideline texts, not yet checked against the source (verified: false). iOS outcomes are unverified until the next CI run."
+  }
+}

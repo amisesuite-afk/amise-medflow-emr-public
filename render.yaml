@@ -28,6 +28,17 @@ services:
         value: UNCONFIGURED_RODNEY_BAY@group.calendar.google.com
       - key: CALENDAR_ID_TAPION_ERCP
         value: UNCONFIGURED_TAPION_ERCP@group.calendar.google.com
+      # Machine secret for the x-staff-token header (front-desk → api-server).
+      # No value here: set it in the Render dashboard, and the same value in the
+      # front-desk Vercel project. While unset the api-server falls back to
+      # CRON_SECRET and logs a warning.
+      - key: STAFF_MACHINE_TOKEN
+        sync: false
+      # Laboratory results feed (docs/LAB-FEED.md): "labid:secret" pairs, comma-separated,
+      # secrets >= 32 characters. No value here: set it in the Render dashboard at go-live.
+      # While unset, POST /api/lab-feed/inbound answers 503 (feed off).
+      - key: LAB_FEED_SECRETS
+        sync: false
       # ── Cron job URLs (set in Render dashboard → Cron Jobs, or use
       #    an external cron service like cron-job.org to POST to these) ──
       # POST /api/cron/reminders         — every 30 min (48h SMS + 24h email + post-visit)
@@ -49,6 +60,7 @@ services:
       # SUPABASE_URL            = https://nornhfzfrlmfzaqmrzzp.supabase.co
       # SUPABASE_SERVICE_ROLE_KEY = …
       # ANTHROPIC_API_KEY       = sk-ant-…
+      # DISABLE_AI              = true   (optional AI kill switch — stops every Anthropic/Whisper call)
       # GOOGLE_OAUTH_CLIENT_ID  = …
       # GOOGLE_OAUTH_CLIENT_SECRET = …
       # GOOGLE_OAUTH_REFRESH_TOKEN = …
@@ -56,7 +68,8 @@ services:
       # TWILIO_ACCOUNT_SID      = …
       # TWILIO_AUTH_TOKEN        = …
       # TWILIO_FROM_NUMBER       = +1758…
-      # CRON_SECRET              = (any strong random string)
+      # CRON_SECRET              = (any strong random string; cron jobs only)
+      # STAFF_MACHINE_TOKEN      = (a different strong random string; see envVars above)
       # DOCTOR_NOTIFY_EMAIL      = amisesuite@gmail.com
       # STAFF_NOTIFY_EMAIL       = amisesuite@gmail.com
       #
@@ -64,5 +77,8 @@ services:
       # PORTAL_URL    = https://front-desk-amisesuite-afks-projects.vercel.app
       # DASHBOARD_URL = https://dashboard-lemon-gamma-44.vercel.app
       #
-      # When a custom domain is configured, update PORTAL_URL to:
-      # PORTAL_URL = https://amisemedical.com
+      # Both accept a comma-separated list (lib/site-urls.ts). CORS allows every
+      # entry; links sent to patients (SMS, WhatsApp, portal invites) use the
+      # FIRST PORTAL_URL entry only — put the primary domain first. Once the
+      # custom domains are live (docs/DOMAINS.md):
+      # PORTAL_URL = https://amisemedical.com,https://www.amisemedical.com,https://amisesuite.com,https://www.amisesuite.com,https://front-desk-amisesuite-afks-projects.vercel.app

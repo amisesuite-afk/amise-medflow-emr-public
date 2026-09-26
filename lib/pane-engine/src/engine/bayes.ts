@@ -1,5 +1,10 @@
 import type { DiseaseNode, PaneState } from '../types.js';
-import { DEFAULT_SENSITIVITY } from '../constants.js';
+import { featureLikelihood } from './likelihood.js';
+import { groupedLikelihood } from './evidenceGroups.js';
+
+function isEvidenceFeatureId(featureId: string): boolean {
+  return featureId.startsWith('sign_') || featureId.startsWith('rule_');
+}
 
 function normalize(raw: Record<string, number>): Record<string, number> {
   const total = Object.values(raw).reduce((sum, p) => sum + p, 0);
@@ -7,9 +12,6 @@ function normalize(raw: Record<string, number>): Record<string, number> {
   return Object.fromEntries(Object.entries(raw).map(([k, v]) => [k, v / total]));
 }
 
-function sensitivity(disease: DiseaseNode, featureId: string): number {
-  return disease.features[featureId] ?? DEFAULT_SENSITIVITY;
-}
 
 /**
  * Return initial PaneState with posteriors set to normalised priors.
@@ -25,8 +27,9 @@ export function initPaneState(diseases: DiseaseNode[]): PaneState {
  *
  * P(D_i | F) ∝ P(F | D_i) × P(D_i)
  *
- * Where P(F=1 | D_i) = sensitivity for disease D_i,
- * and   P(F=0 | D_i) = 1 - sensitivity.
+ * Where P(F=1 | D_i) = featureLikelihood(D_i, F) (likelihood.ts: the disease's own value, a
+ * derived umbrella/onset value, or the feature's neutral background rate),
+ * and   P(F=0 | D_i) = 1 - P(F=1 | D_i).
  */
 export function updatePosterior(
   state: PaneState,
@@ -34,11 +37,15 @@ export function updatePosterior(
   featureId: string,
   observed: boolean,
 ): PaneState {
+  // An examination sign or decision-rule band counts once, however many times it is supplied.
+  if (isEvidenceFeatureId(featureId) && state.answered[featureId] === observed) return state;
   const raw: Record<string, number> = {};
   for (const d of diseases) {
     const prior = state.posteriors[d.id] ?? 0;
-    const sens = sensitivity(d, featureId);
-    const likelihood = observed ? sens : 1 - sens;
+    // A decision rule and its components count once (engine/evidenceGroups.ts).
+    const grouped = groupedLikelihood(state.answered, d, featureId, observed);
+    const sens = featureLikelihood(d, featureId);
+    const likelihood = grouped ?? (observed ? sens : 1 - sens);
     raw[d.id] = prior * likelihood;
   }
   return {

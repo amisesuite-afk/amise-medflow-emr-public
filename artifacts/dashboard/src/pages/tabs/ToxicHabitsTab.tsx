@@ -1,6 +1,7 @@
 import { useAppContext } from '@/context/AppContext';
 import CollapsibleCard from '@/components/CollapsibleCard';
 import ChipGroup from '@/components/ChipGroup';
+import LifestyleHistoryCard from '@/components/LifestyleHistoryCard';
 
 const TOXIC_OPTIONS = [
   'Current smoker', 'Ex-smoker (< 10 years)', 'Ex-smoker (> 10 years)',
@@ -50,6 +51,8 @@ export default function ToxicHabitsTab() {
           </p>
         )}
       </CollapsibleCard>
+
+      <LifestyleHistoryCard />
     </div>
   );
 }

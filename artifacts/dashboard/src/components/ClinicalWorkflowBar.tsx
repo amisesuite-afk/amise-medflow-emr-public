@@ -1,178 +1,171 @@
-import { useMemo } from 'react';
+import { useEffect, useMemo, useRef, useState, type ReactNode } from 'react';
 import { useAppContext, type Section } from '@/context/AppContext';
 import { getMatrix } from '@/lib/cc-matrices';
+import { computeSectionDone, SECTION_LABELS } from '@/lib/workflow-completion';
+import { countedSteps, groupByPhase, phaseDone, workflowSteps } from '@/lib/consult-steps';
 
-const SECTION_LABELS: Partial<Record<Section, string>> = {
-  triage: 'Triage', hpi: 'HPI', pmh: 'PMH', surgical: 'Surgical Hx',
-  medications: 'Meds', allergies: 'Allergies', family_hx: 'Family Hx',
-  toxic: 'Social', ros: 'ROS', examination: 'Exam', wounds: 'Wounds',
-  investigations: 'Labs', blood_gas: 'ABG', radiology: 'Imaging',
-  attachments: 'Files', assessment: 'Assessment', plan: 'Plan',
-  procedures: 'Procedure', prescriptions: 'RX', dosing: 'Dosing',
-  fluid_nutrition: 'Fluids', referring_providers: 'Referrals',
-  progress: 'Notes', monitoring: 'Monitor', tasks: 'Tasks',
-};
 
 const SECTION_ICONS: Partial<Record<Section, string>> = {
   triage: '⚡', hpi: '📝', pmh: '🏥', surgical: '⚕️',
   medications: '💊', allergies: '⚠️', family_hx: '👨‍👩‍👧', toxic: '🚬',
   ros: '📋', examination: '🩺', wounds: '🩹',
   investigations: '🧪', blood_gas: '💨', radiology: '📡', attachments: '📎',
-  assessment: '🎯', plan: '📄', procedures: '✂️',
+  assessment: '🎯', scales: '📊', plan: '📄', procedures: '✂️',
   prescriptions: '💊', dosing: '💉', fluid_nutrition: '💧',
   referring_providers: '↗', progress: '📒', monitoring: '📊', tasks: '✓',
 };
 
-export default function ClinicalWorkflowBar() {
-  const {
-    activeCcKey, activeSection, setActiveSection,
-    symptoms, freeText, vitals,
-    hpiNotes, comorbidities,
-    surgicalHistory, surgicalNotes,
-    medications, medicationsText, allergies,
-    familyHistory, familyHistoryNotes,
-    toxicHabits, occupation, rosFindings,
-    examGeneral, examCardio, examResp, examAbdomen,
-    examNeuro, examExtremities, examBreast, examWound,
-    orderedInvestigations, radiologyRequests, attachments,
-    assessment, plan, progressNotes,
-  } = useAppContext();
+const LABEL = (s: Section) => (s === 'scales' ? 'Scores' : SECTION_LABELS[s] ?? s);
+
+interface Props {
+  /** Sections this user may open (the consultation tab list); others are not shown as pills. */
+  allowed?: ReadonlySet<Section>;
+  /** Left of the header row (← previous step). */
+  leading?: ReactNode;
+  /** Right of the header row (Tools, Dictate, Ambient, Next, Summary). */
+  actions?: ReactNode;
+}
+
+/**
+ * The one consultation navigation bar for a chief-complaint pathway (UX review M6):
+ * header row = pathway name, n/N done, progress, and the actions that used to be a separate row;
+ * pill row = the steps, grouped under their phase (History · Exam · Investigations · Assessment ·
+ * Plan) — the separate phase breadcrumb is gone. Scores is a step (it used to disappear once a
+ * complaint was chosen); Notes / Monitor / Tasks are in the Tools menu. Sticky, solid background,
+ * ≥44 px pills on touch screens, arrows when steps are scrolled out of view.
+ */
+export default function ClinicalWorkflowBar({ allowed, leading, actions }: Props) {
+  const ctx = useAppContext();
+  const { activeCcKey, activeSection, setActiveSection } = ctx;
+
+  // ✓ only for content the clinician recorded — suggestions never count (lib/workflow-completion.ts).
+  // Computed before the early return so the hook order is stable.
+  const done = useMemo(() => computeSectionDone(ctx), [ctx]);
 
   const matrix = activeCcKey ? getMatrix(activeCcKey) : undefined;
-  if (!matrix) return null;
+  const steps = useMemo(
+    () => (matrix ? workflowSteps(matrix.sections).filter(s => !allowed || allowed.has(s)) : []),
+    [matrix, allowed],
+  );
 
-  const steps = matrix.sections;
-
-  const done = useMemo<Partial<Record<Section, boolean>>>(() => {
-    const hasVitals = Object.values(vitals).some(v => v.trim());
-    const hasExam = !!(examGeneral || examCardio || examResp || examAbdomen || examNeuro || examExtremities || examBreast || examWound);
-    const hasRos = Object.values(rosFindings).some(f => f.status !== 'not-asked' || f.details.length > 0 || f.notes);
-    return {
-      triage:       symptoms.length > 0 || !!freeText.trim() || hasVitals,
-      hpi:          !!hpiNotes.trim(),
-      pmh:          comorbidities.length > 0,
-      surgical:     surgicalHistory.length > 0 || !!surgicalNotes.trim(),
-      medications:  medications.length > 0 || !!medicationsText.trim(),
-      allergies:    !!allergies.trim(),
-      family_hx:    familyHistory.length > 0 || !!familyHistoryNotes.trim(),
-      toxic:        toxicHabits.length > 0 || !!occupation.trim(),
-      ros:          hasRos,
-      examination:  hasExam,
-      investigations: orderedInvestigations.length > 0,
-      radiology:    radiologyRequests.length > 0,
-      attachments:  attachments.length > 0,
-      assessment:   !!assessment.trim(),
-      plan:         !!plan.trim(),
-      progress:     progressNotes.length > 0,
+  const rowRef = useRef<HTMLDivElement>(null);
+  const [canLeft, setCanLeft] = useState(false);
+  const [canRight, setCanRight] = useState(false);
+  useEffect(() => {
+    const row = rowRef.current;
+    if (!row) return;
+    const sync = () => {
+      setCanLeft(row.scrollLeft > 1);
+      setCanRight(row.scrollLeft + row.clientWidth < row.scrollWidth - 1);
     };
-  }, [symptoms, freeText, vitals, hpiNotes, comorbidities, surgicalHistory, surgicalNotes,
-    medications, medicationsText, allergies, familyHistory, familyHistoryNotes, toxicHabits,
-    occupation, rosFindings, examGeneral, examCardio, examResp, examAbdomen, examNeuro,
-    examExtremities, examBreast, examWound, orderedInvestigations, radiologyRequests,
-    attachments, assessment, plan, progressNotes]);
+    sync();
+    row.addEventListener('scroll', sync, { passive: true });
+    const ro = typeof ResizeObserver !== 'undefined' ? new ResizeObserver(sync) : null;
+    ro?.observe(row);
+    return () => { row.removeEventListener('scroll', sync); ro?.disconnect(); };
+  }, [steps]);
+  // Keep the active step in view.
+  useEffect(() => {
+    const row = rowRef.current;
+    const el = row?.querySelector<HTMLElement>(`[data-step="${activeSection}"]`);
+    if (!row || !el) return;
+    const target = el.offsetLeft - (row.clientWidth - el.offsetWidth) / 2;
+    row.scrollLeft = Math.max(0, Math.min(target, row.scrollWidth - row.clientWidth));
+  }, [activeSection, steps]);
 
-  const completedCount = steps.filter(s => done[s]).length;
-  const totalCount = steps.length;
+  if (!matrix) {
+    // No pathway template: keep the actions (they must never disappear with the bar).
+    return (leading || actions) ? (
+      <div className="wf-bar">
+        <div className="wf-head">{leading}<div className="wf-actions">{actions}</div></div>
+      </div>
+    ) : null;
+  }
+
+  const counted = countedSteps(steps);
+  const completedCount = counted.filter(s => done[s]).length;
+  const totalCount = counted.length;
+  const groups = groupByPhase(steps);
+  const hiddenRight = canRight ? steps.filter(s => {
+    const row = rowRef.current;
+    const el = row?.querySelector<HTMLElement>(`[data-step="${s}"]`);
+    return !!row && !!el && el.offsetLeft + el.offsetWidth > row.scrollLeft + row.clientWidth;
+  }).length : 0;
 
   return (
-    <div style={{
-      background: 'var(--bg, #fff)',
-      borderBottom: '1px solid #e5e7eb',
-      padding: '6px 12px 8px',
-    }}>
-      {/* Header row */}
-      <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 6 }}>
-        <span style={{
-          fontSize: 10, fontWeight: 700, textTransform: 'uppercase',
-          letterSpacing: '0.07em', color: '#6b7280',
-        }}>
+    <div className="wf-bar" data-testid="clinical-workflow-bar">
+      {/* Header row: pathway, progress, actions */}
+      <div className="wf-head">
+        {leading}
+        <span style={{ fontSize: 11, fontWeight: 800, textTransform: 'uppercase', letterSpacing: '0.07em', color: '#475569' }}>
           {matrix.icon} {matrix.name}
         </span>
         <span style={{
-          fontSize: 10, fontWeight: 600,
-          color: completedCount === totalCount ? '#16a34a' : '#0b8278',
+          fontSize: 11, fontWeight: 700,
+          color: completedCount === totalCount ? '#15803d' : '#0b8278',
           background: completedCount === totalCount ? '#f0fdf4' : '#f0fdfa',
-          padding: '1px 7px', borderRadius: 10,
+          padding: '1px 8px', borderRadius: 10,
         }}>
-          {completedCount}/{totalCount} done
+          {completedCount}/{totalCount} documented
         </span>
-        {completedCount === totalCount && (
-          <span style={{ fontSize: 10, color: '#16a34a', fontWeight: 600 }}>✓ Complete</span>
-        )}
-        {/* Progress bar */}
-        <div style={{ flex: 1, height: 3, background: '#e5e7eb', borderRadius: 4, overflow: 'hidden', minWidth: 40, maxWidth: 120 }}>
+        <div aria-hidden="true" style={{ flex: '1 1 60px', maxWidth: 120, height: 3, background: '#e5e7eb', borderRadius: 4, overflow: 'hidden', minWidth: 0 }}>
           <div style={{
             height: '100%',
-            width: `${Math.round((completedCount / totalCount) * 100)}%`,
+            width: `${totalCount ? Math.round((completedCount / totalCount) * 100) : 0}%`,
             background: completedCount === totalCount ? '#16a34a' : '#0b8278',
-            borderRadius: 4,
-            transition: 'width .3s ease',
+            borderRadius: 4, transition: 'width .3s ease',
           }} />
         </div>
+        {/* The actions wrap together, right-aligned, when the row is too narrow (iPad portrait). */}
+        <div className="wf-actions">{actions}</div>
       </div>
 
-      {/* Step pills */}
-      <div style={{
-        display: 'flex', gap: 4, overflowX: 'auto',
-        scrollbarWidth: 'none', paddingBottom: 2,
-      }}>
-        {steps.map((section, idx) => {
-          const isActive = section === activeSection;
-          const isDone = !!done[section];
-
-          const bg = isActive
-            ? '#0b8278'
-            : isDone
-              ? '#dcfce7'
-              : '#f3f4f6';
-          const color = isActive
-            ? '#fff'
-            : isDone
-              ? '#15803d'
-              : '#374151';
-          const border = isActive
-            ? '1px solid #0b8278'
-            : isDone
-              ? '1px solid #bbf7d0'
-              : '1px solid #e5e7eb';
-
-          return (
-            <button
-              key={section}
-              type="button"
-              onClick={() => setActiveSection(section)}
-              title={SECTION_LABELS[section] ?? section}
-              style={{
-                display: 'flex', alignItems: 'center', gap: 3,
-                padding: '3px 8px',
-                background: bg, color, border,
-                borderRadius: 20, cursor: 'pointer',
-                fontSize: 11, fontWeight: isActive ? 700 : 500,
-                whiteSpace: 'nowrap', flexShrink: 0,
-                transition: 'background .15s, color .15s',
-                lineHeight: 1.4,
-              }}
-            >
-              {isDone && !isActive && (
-                <span style={{ fontSize: 9, lineHeight: 1 }}>✓</span>
-              )}
-              {!isDone && !isActive && (
-                <span style={{
-                  fontSize: 9, color: '#9ca3af',
-                  fontWeight: 700, lineHeight: 1,
-                }}>
-                  {idx + 1}
+      {/* Step pills, grouped by phase */}
+      <div className="wf-steps-wrap">
+        {canLeft && (
+          <button type="button" className="wf-scroll wf-scroll--left" aria-label="Show earlier steps"
+            onClick={() => { const r = rowRef.current; if (r) r.scrollLeft -= 200; }}>‹</button>
+        )}
+        <div ref={rowRef} className="wf-steps" role="tablist" aria-label="Consultation steps">
+          {groups.map(group => {
+            const groupDone = phaseDone(group, done);
+            return (
+              <div key={`${group.phase}-${group.steps[0]}`} className="wf-group" role="group" aria-label={group.label}>
+                <span className="wf-phase" aria-hidden="true">
+                  {groupDone ? '✓ ' : ''}{group.label}
                 </span>
-              )}
-              {isActive && (
-                <span style={{ fontSize: 10, lineHeight: 1 }}>
-                  {SECTION_ICONS[section] ?? '●'}
-                </span>
-              )}
-              <span>{SECTION_LABELS[section] ?? section}</span>
-            </button>
-          );
-        })}
+                {group.steps.map(section => {
+                  const isActive = section === activeSection;
+                  const isDone = !!done[section];
+                  const idx = steps.indexOf(section);
+                  return (
+                    <button
+                      key={section}
+                      type="button"
+                      role="tab"
+                      aria-selected={isActive}
+                      data-step={section}
+                      onClick={() => setActiveSection(section)}
+                      title={LABEL(section)}
+                      className={`wf-pill${isActive ? ' wf-pill--active' : isDone ? ' wf-pill--done' : ''}`}
+                    >
+                      {isDone && !isActive && <span style={{ fontSize: 10, lineHeight: 1 }}>✓</span>}
+                      {!isDone && !isActive && <span className="wf-pill__n">{idx + 1}</span>}
+                      {isActive && <span style={{ fontSize: 11, lineHeight: 1 }}>{SECTION_ICONS[section] ?? '●'}</span>}
+                      <span>{LABEL(section)}</span>
+                    </button>
+                  );
+                })}
+              </div>
+            );
+          })}
+        </div>
+        {canRight && (
+          <button type="button" className="wf-scroll wf-scroll--right" aria-label={`Show ${hiddenRight || 'more'} more steps`}
+            onClick={() => { const r = rowRef.current; if (r) r.scrollLeft += 200; }}>
+            {hiddenRight > 0 ? `+${hiddenRight} ›` : '›'}
+          </button>
+        )}
       </div>
     </div>
   );

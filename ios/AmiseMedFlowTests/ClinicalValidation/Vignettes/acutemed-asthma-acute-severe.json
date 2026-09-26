@@ -1,0 +1,266 @@
+{
+  "schemaVersion": 1,
+  "id": "acutemed-asthma-acute-severe",
+  "condition": "Acute severe asthma",
+  "category": "general-medicine",
+  "permutationOf": null,
+  "summary": "26-year-old woman with known asthma: 2 days of worsening wheeze after a cold, unable to complete sentences; RR 28, HR 118, SpO₂ 94 %, PEF 180 L/min (43 % of best). BTS/SIGN acute severe asthma.",
+  "tags": [
+    "asthma",
+    "respiratory",
+    "emergency-redirect"
+  ],
+  "inputs": {
+    "patient": {
+      "ageYears": 26,
+      "sex": "female",
+      "pregnancy": {
+        "status": "not-pregnant"
+      },
+      "heightCm": 165,
+      "weightKg": 60
+    },
+    "encounter": {
+      "setting": "outpatient",
+      "visitType": "urgentReview",
+      "acuity": "priority"
+    },
+    "chiefComplaint": "Wheeze and tight chest",
+    "hpi": "Known asthma since childhood, one previous admission, no ICU. Two days of a cold, then worsening wheeze and chest tightness; using her salbutamol inhaler every hour without relief. Cannot finish sentences. Attending to book excision of a pilonidal sinus. Best PEF 420 L/min.",
+    "symptoms": [
+      "wheeze",
+      "chest tightness",
+      "breathlessness",
+      "cannot complete sentences"
+    ],
+    "negatives": [
+      "fever",
+      "chest pain",
+      "haemoptysis",
+      "leg swelling"
+    ],
+    "exam": {
+      "general": "Sitting forward, using accessory muscles, speaking in phrases.",
+      "respiratory": "Widespread polyphonic expiratory wheeze, good air entry, RR 28.",
+      "cardiovascular": "HR 118, BP 118/74."
+    },
+    "vitals": [
+      {
+        "minutesAgo": 5,
+        "heartRate": 118,
+        "systolicBp": 118,
+        "diastolicBp": 74,
+        "respiratoryRate": 28,
+        "temperatureC": 37.2,
+        "spo2": 94,
+        "avpu": "A",
+        "onSupplementalO2": false
+      }
+    ],
+    "labs": [
+      {
+        "analyte": "pef",
+        "name": "Peak expiratory flow",
+        "value": 180,
+        "unit": "L/min",
+        "minutesAgo": 5
+      }
+    ],
+    "imaging": [],
+    "comorbidities": [
+      "Asthma",
+      "Pilonidal sinus"
+    ],
+    "surgicalHistory": [],
+    "medications": [
+      {
+        "drug": "Salbutamol inhaler",
+        "dose": "100 micrograms",
+        "frequency": "PRN"
+      },
+      {
+        "drug": "Beclometasone/formoterol inhaler",
+        "dose": "100/6",
+        "frequency": "BD"
+      }
+    ],
+    "allergies": [],
+    "nkda": true,
+    "socialHistory": "Non-smoker.",
+    "confirmedDiagnosis": {
+      "name": "Acute severe asthma",
+      "icd10": "J45.901",
+      "assessmentText": "Acute severe asthma (PEF 43% of best, RR 28, HR 118, cannot complete sentences): oxygen, back-to-back nebulised salbutamol and ipratropium, prednisolone, emergency transfer."
+    },
+    "platform": {
+      "web": {
+        "ccTemplate": "Other / general surgical",
+        "symptoms": [
+          "wheeze",
+          "chest tightness",
+          "shortness of breath"
+        ],
+        "symptomDetails": {
+          "shortness of breath": [
+            "At rest",
+            "Wheeze"
+          ]
+        },
+        "examFindings": {
+          "respiratory": [
+            "Wheeze"
+          ],
+          "cardiovascular": [
+            "Tachycardia"
+          ],
+          "general": [
+            "In distress"
+          ]
+        },
+        "durationDays": 2,
+        "painScore": 0
+      }
+    }
+  },
+  "expected": {
+    "differential": {
+      "mustRankTopK": [
+        {
+          "id": "dx-asthma-top3",
+          "severity": "critical",
+          "match": [
+            "asthma",
+            "icd:J45",
+            "icd:J46",
+            "reactive airway"
+          ],
+          "k": 3,
+          "guidelineRefs": [
+            "sign158-2019"
+          ]
+        }
+      ],
+      "mustNotMiss": [
+        {
+          "id": "mnm-asthma-symptom-inference",
+          "severity": "quality",
+          "match": [
+            "asthma",
+            "icd:J45",
+            "icd:J46",
+            "reactive airway"
+          ],
+          "source": "web.symptomInference",
+          "platforms": [
+            "web"
+          ],
+          "guidelineRefs": [
+            "sign158-2019"
+          ]
+        }
+      ]
+    },
+    "safety": {
+      "emergencyLevel": {
+        "id": "level-emergency",
+        "severity": "critical",
+        "atLeast": "emergency",
+        "guidelineRefs": [
+          "sign158-2019",
+          "gina-2024"
+        ]
+      }
+    },
+    "management": {
+      "mustInclude": [
+        {
+          "id": "mgmt-bronchodilator",
+          "severity": "critical",
+          "match": [
+            "salbutamol",
+            "bronchodilator",
+            "beta-2 agonist",
+            "β2",
+            "beta2",
+            "albuterol",
+            "nebulis"
+          ],
+          "guidelineRefs": [
+            "sign158-2019"
+          ],
+          "note": "High-dose inhaled beta2 agonist is first-line."
+        },
+        {
+          "id": "mgmt-steroid",
+          "severity": "quality",
+          "match": [
+            "prednisolone",
+            "hydrocortisone",
+            "corticosteroid",
+            "steroid",
+            "methylprednisolone"
+          ],
+          "guidelineRefs": [
+            "sign158-2019"
+          ]
+        },
+        {
+          "id": "mgmt-ipratropium",
+          "severity": "quality",
+          "match": [
+            "ipratropium"
+          ],
+          "guidelineRefs": [
+            "sign158-2019"
+          ],
+          "proposedFix": "Asthma protocol (BTS/SIGN 158)."
+        },
+        {
+          "id": "mgmt-oxygen",
+          "severity": "quality",
+          "match": [
+            "oxygen",
+            "re:\\bo2\\b",
+            "o₂"
+          ],
+          "guidelineRefs": [
+            "sign158-2019",
+            "bts-o2-2017"
+          ]
+        }
+      ]
+    }
+  },
+  "guideline": [
+    {
+      "id": "sign158-2019",
+      "verified": false,
+      "name": "BTS/SIGN 158 - British guideline on the management of asthma",
+      "year": 2019,
+      "section": "Section 9 acute asthma in adults: acute severe = PEF 33-50% best/predicted, RR >=25/min, HR >=110/min or inability to complete sentences; life-threatening = PEF <33%, SpO2 <92%, silent chest, cyanosis, poor respiratory effort, arrhythmia, exhaustion, altered consciousness, hypotension; oxygen to SpO2 94-98%, high-dose inhaled beta2 agonist, ipratropium in severe/life-threatening, prednisolone 40-50 mg, IV magnesium sulphate for severe asthma not responding; Section 12 pregnancy: treat as in non-pregnant patients, do not withhold steroids, fetal monitoring in acute severe asthma",
+      "citation": "British Thoracic Society / Scottish Intercollegiate Guidelines Network. SIGN 158. Edinburgh: SIGN; 2019."
+    },
+    {
+      "id": "gina-2024",
+      "verified": false,
+      "name": "Global Initiative for Asthma (GINA) - Global strategy for asthma management and prevention",
+      "year": 2024,
+      "section": "Management of worsening asthma and exacerbations: assess severity; SABA (+ ipratropium in severe), controlled oxygen, systemic corticosteroids; transfer to acute care if features of severe or life-threatening exacerbation",
+      "citation": "Global Initiative for Asthma. GINA report 2024. www.ginasthma.org."
+    },
+    {
+      "id": "bts-o2-2017",
+      "verified": false,
+      "name": "BTS guideline for oxygen use in healthcare and emergency settings",
+      "year": 2017,
+      "section": "Target SpO2 94-98% for most acutely ill patients; 88-92% for patients at risk of hypercapnic respiratory failure (e.g. COPD) pending blood gases",
+      "citation": "O'Driscoll BR, Howard LS, Earis J, Mak V. Thorax. 2017;72(Suppl 1):ii1-90."
+    }
+  ],
+  "rationale": "Base asthma case: two acute severe features (PEF 33-50%, RR >=25, HR >=110, inability to complete sentences) are present. PANE has no asthma node.",
+  "authoring": {
+    "author": "Claude (acute medicine cluster)",
+    "date": "2026-09-25",
+    "notes": "Expectations need surgeon sign-off (reviewedBy). Citations written from the guideline texts, not yet checked against the source (verified: false). iOS outcomes are unverified until the next CI run."
+  }
+}

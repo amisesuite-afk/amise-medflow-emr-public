@@ -8,6 +8,7 @@ import { readFileSync, writeFileSync } from 'fs';
 import { join } from 'path';
 import { logger } from '../lib/logger.js';
 import { logAudit } from '../lib/audit.js';
+import { outboundBlocked } from '../lib/outbound.js';
 
 // Resolves correctly in both ts-node (src/routes/) and esbuild bundle (dist/)
 const CACHE_PATH = join(process.cwd(), 'src/data/calendar-cache.json');
@@ -263,6 +264,13 @@ router.post('/api/scheduling/book-followup', requireAuth, async (req, res) => {
   // Validate ISO date format
   if (!/^\d{4}-\d{2}-\d{2}$/.test(followUpDate)) {
     res.status(400).json({ error: 'followUpDate must be YYYY-MM-DD' });
+    return;
+  }
+
+  // Calendar writes obey the MODE gate. Fail visibly rather than pretend the
+  // follow-up was booked.
+  if (outboundBlocked('calendar', { op: 'book-followup' })) {
+    res.status(503).json({ error: 'Calendar writes are disabled while the server is in MODE=dry_run — the follow-up was not booked.' });
     return;
   }
 

@@ -1,0 +1,244 @@
+{
+  "schemaVersion": 1,
+  "id": "acutemed-asthma-life-threatening",
+  "condition": "Life-threatening asthma",
+  "category": "general-medicine",
+  "permutationOf": "acutemed-asthma-acute-severe",
+  "permutationLabel": "Life-threatening (silent chest)",
+  "summary": "19-year-old man with a silent chest, exhaustion and drowsiness: SpO₂ 90 %, HR 132, BP 104/62, PEF unrecordable. BTS/SIGN life-threatening features: critical care, magnesium.",
+  "tags": [
+    "asthma",
+    "life-threatening",
+    "critical-care"
+  ],
+  "inputs": {
+    "patient": {
+      "ageYears": 19,
+      "sex": "male",
+      "pregnancy": {
+        "status": "not-applicable"
+      },
+      "heightCm": 178,
+      "weightKg": 70
+    },
+    "encounter": {
+      "setting": "outpatient",
+      "visitType": "urgentReview",
+      "acuity": "emergency"
+    },
+    "chiefComplaint": "Cannot breathe",
+    "hpi": "Brought in by his mother from the waiting room. Brittle asthma with a previous ICU admission. Worsening since last night despite repeated inhaler use. Now too breathless to talk, getting drowsy.",
+    "symptoms": [
+      "severe breathlessness",
+      "exhaustion",
+      "drowsiness"
+    ],
+    "negatives": [
+      "chest pain",
+      "fever",
+      "trauma"
+    ],
+    "exam": {
+      "general": "Exhausted, drowsy, cyanosed lips, unable to speak.",
+      "respiratory": "Silent chest, poor respiratory effort, RR 30.",
+      "cardiovascular": "HR 132, BP 104/62."
+    },
+    "vitals": [
+      {
+        "minutesAgo": 2,
+        "heartRate": 132,
+        "systolicBp": 104,
+        "diastolicBp": 62,
+        "respiratoryRate": 30,
+        "temperatureC": 37.0,
+        "spo2": 90,
+        "avpu": "V",
+        "onSupplementalO2": false
+      }
+    ],
+    "labs": [
+      {
+        "analyte": "pef",
+        "name": "Peak expiratory flow",
+        "resultText": "Unable to perform",
+        "minutesAgo": 2
+      }
+    ],
+    "imaging": [],
+    "comorbidities": [
+      "Brittle asthma (previous ICU admission)"
+    ],
+    "surgicalHistory": [],
+    "medications": [
+      {
+        "drug": "Salbutamol inhaler",
+        "dose": "100 micrograms",
+        "frequency": "PRN"
+      },
+      {
+        "drug": "Fluticasone/salmeterol inhaler",
+        "dose": "250/50",
+        "frequency": "BD"
+      }
+    ],
+    "allergies": [],
+    "nkda": true,
+    "socialHistory": "Student.",
+    "confirmedDiagnosis": {
+      "name": "Life-threatening asthma",
+      "icd10": "J45.902",
+      "assessmentText": "Life-threatening asthma (silent chest, SpO2 90%, exhaustion, drowsy): 999, oxygen, nebulised salbutamol and ipratropium, IV magnesium, critical care."
+    },
+    "platform": {
+      "web": {
+        "ccTemplate": "Other / general surgical",
+        "symptoms": [
+          "shortness of breath",
+          "wheeze",
+          "confusion"
+        ],
+        "symptomDetails": {
+          "shortness of breath": [
+            "Sudden",
+            "At rest",
+            "Wheeze"
+          ]
+        },
+        "examFindings": {
+          "respiratory": [
+            "Reduced breath sounds (L)",
+            "Reduced breath sounds (R)"
+          ],
+          "general": [
+            "Cyanosed",
+            "In distress",
+            "GCS < 15"
+          ],
+          "cardiovascular": [
+            "Tachycardia"
+          ]
+        },
+        "durationDays": 1,
+        "painScore": 0
+      }
+    }
+  },
+  "expected": {
+    "differential": {
+      "mustNotMiss": [
+        {
+          "id": "mnm-asthma",
+          "severity": "critical",
+          "match": [
+            "asthma",
+            "icd:J45",
+            "icd:J46",
+            "reactive airway"
+          ],
+          "guidelineRefs": [
+            "sign158-2019"
+          ]
+        }
+      ]
+    },
+    "safety": {
+      "emergencyLevel": {
+        "id": "level-emergency",
+        "severity": "critical",
+        "atLeast": "emergency",
+        "guidelineRefs": [
+          "sign158-2019"
+        ]
+      },
+      "mustAlarm": [
+        {
+          "id": "alarm-hypoxia",
+          "severity": "critical",
+          "match": [
+            "hypox",
+            "spo₂",
+            "spo2",
+            "oxygen",
+            "saturation"
+          ],
+          "guidelineRefs": [
+            "sign158-2019"
+          ]
+        }
+      ]
+    },
+    "management": {
+      "mustInclude": [
+        {
+          "id": "mgmt-bronchodilator",
+          "severity": "critical",
+          "match": [
+            "salbutamol",
+            "bronchodilator",
+            "beta-2 agonist",
+            "β2",
+            "beta2",
+            "albuterol",
+            "nebulis"
+          ],
+          "guidelineRefs": [
+            "sign158-2019"
+          ]
+        },
+        {
+          "id": "mgmt-critical-care",
+          "severity": "quality",
+          "match": [
+            "re:\\bicu\\b",
+            "re:\\bitu\\b",
+            "re:\\bhdu\\b",
+            "intensive care",
+            "critical care",
+            "high dependency",
+            "anaesthetist",
+            "intubat"
+          ],
+          "guidelineRefs": [
+            "sign158-2019"
+          ],
+          "proposedFix": "Asthma protocol with the life-threatening branch (critical care / anaesthetist)."
+        },
+        {
+          "id": "mgmt-magnesium",
+          "severity": "quality",
+          "match": [
+            "magnesium"
+          ],
+          "guidelineRefs": [
+            "sign158-2019"
+          ],
+          "proposedFix": "Asthma protocol: IV magnesium sulphate in acute severe/life-threatening asthma."
+        }
+      ]
+    }
+  },
+  "guideline": [
+    {
+      "id": "sign158-2019",
+      "verified": false,
+      "name": "BTS/SIGN 158 - British guideline on the management of asthma",
+      "year": 2019,
+      "section": "Section 9 acute asthma in adults: acute severe = PEF 33-50% best/predicted, RR >=25/min, HR >=110/min or inability to complete sentences; life-threatening = PEF <33%, SpO2 <92%, silent chest, cyanosis, poor respiratory effort, arrhythmia, exhaustion, altered consciousness, hypotension; oxygen to SpO2 94-98%, high-dose inhaled beta2 agonist, ipratropium in severe/life-threatening, prednisolone 40-50 mg, IV magnesium sulphate for severe asthma not responding; Section 12 pregnancy: treat as in non-pregnant patients, do not withhold steroids, fetal monitoring in acute severe asthma",
+      "citation": "British Thoracic Society / Scottish Intercollegiate Guidelines Network. SIGN 158. Edinburgh: SIGN; 2019."
+    },
+    {
+      "id": "gina-2024",
+      "verified": false,
+      "name": "Global Initiative for Asthma (GINA) - Global strategy for asthma management and prevention",
+      "year": 2024,
+      "section": "Management of worsening asthma and exacerbations: assess severity; SABA (+ ipratropium in severe), controlled oxygen, systemic corticosteroids; transfer to acute care if features of severe or life-threatening exacerbation",
+      "citation": "Global Initiative for Asthma. GINA report 2024. www.ginasthma.org."
+    }
+  ],
+  "rationale": "Severity permutation: a silent chest can fool wheeze-keyed engines (no wheeze recorded). Life-threatening features need critical-care involvement.",
+  "authoring": {
+    "author": "Claude (acute medicine cluster)",
+    "date": "2026-09-25",
+    "notes": "Expectations need surgeon sign-off (reviewedBy). Citations written from the guideline texts, not yet checked against the source (verified: false). iOS outcomes are unverified until the next CI run."
+  }
+}

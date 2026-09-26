@@ -1,0 +1,150 @@
+{
+  "schemaVersion": 1,
+  "id": "missing-cholecystitis-no-wbc",
+  "condition": "Acute calculous cholecystitis without bloods",
+  "category": "hpb",
+  "permutationOf": null,
+  "permutationLabel": "What's missing — top item",
+  "summary": "52-year-old man with confirmed acute cholecystitis on ultrasound; no WBC or CRP on file.",
+  "tags": [
+    "whats-missing"
+  ],
+  "inputs": {
+    "patient": {
+      "ageYears": 52,
+      "sex": "male",
+      "heightCm": 176,
+      "weightKg": 84
+    },
+    "encounter": {
+      "setting": "emergency",
+      "visitType": "urgentReview",
+      "acuity": "urgent"
+    },
+    "chiefComplaint": "Right upper quadrant pain",
+    "hpi": "Two days of constant right upper quadrant pain after a fatty meal with nausea. Known gallstones.",
+    "exam": {
+      "general": "Temperature 38.3°C.",
+      "abdomen": "Tender right upper quadrant, Murphy's sign positive."
+    },
+    "vitals": [
+      {
+        "minutesAgo": 15,
+        "heartRate": 98,
+        "systolicBp": 128,
+        "diastolicBp": 78,
+        "respiratoryRate": 16,
+        "temperatureC": 38.3,
+        "spo2": 98,
+        "avpu": "A",
+        "onSupplementalO2": false
+      }
+    ],
+    "labs": [
+      {
+        "analyte": "creatinine",
+        "name": "Creatinine",
+        "value": 78,
+        "unit": "µmol/L",
+        "minutesAgo": 30
+      },
+      {
+        "analyte": "egfr",
+        "name": "eGFR",
+        "value": 92,
+        "unit": "mL/min/1.73m²",
+        "minutesAgo": 30
+      }
+    ],
+    "imaging": [
+      {
+        "name": "USS abdomen",
+        "modality": "US",
+        "region": "Abdomen",
+        "minutesAgo": 20,
+        "result": "Thick-walled gallbladder (5 mm) with gallstones and pericholecystic fluid. CBD 5 mm."
+      }
+    ],
+    "comorbidities": [],
+    "surgicalHistory": [],
+    "medications": [],
+    "allergies": [],
+    "nkda": true,
+    "supplements": "none",
+    "scoreForms": {
+      "asa": {
+        "total": 1
+      }
+    },
+    "confirmedDiagnosis": {
+      "name": "Acute calculous cholecystitis",
+      "icd10": "K81.0",
+      "paneDiseaseId": "cholecystitis",
+      "assessmentText": "Acute calculous cholecystitis — early laparoscopic cholecystectomy planned."
+    },
+    "platform": {
+      "web": {
+        "ccTemplate": "Acute abdominal pain",
+        "symptoms": [
+          "abdominal pain",
+          "right upper quadrant pain",
+          "nausea",
+          "fever"
+        ]
+      }
+    }
+  },
+  "expected": {
+    "missing": {
+      "top": {
+        "id": "missing-top-fbc-tg18",
+        "severity": "quality",
+        "match": [
+          "full blood count: wbc"
+        ],
+        "guidelineRefs": [
+          "tg18-dx-cholecystitis"
+        ],
+        "note": "TG18 needs the WBC (and CRP) to diagnose and grade; the value is not in the record, so it is listed rather than pre-filled."
+      },
+      "mustInclude": [
+        {
+          "id": "missing-crp-listed",
+          "severity": "quality",
+          "match": [
+            "crp not on file"
+          ],
+          "guidelineRefs": [
+            "tg18-dx-cholecystitis"
+          ]
+        }
+      ],
+      "mustExclude": [
+        {
+          "id": "missing-no-imaging-item",
+          "severity": "quality",
+          "match": [
+            "no ultrasound report"
+          ],
+          "note": "The ultrasound report is on file."
+        }
+      ]
+    }
+  },
+  "guideline": [
+    {
+      "id": "tg18-dx-cholecystitis",
+      "name": "Tokyo Guidelines 2018 — diagnostic criteria and severity grading of acute cholecystitis",
+      "year": 2018,
+      "section": "Systemic signs (fever, raised CRP, raised WBC) and imaging; Grade II: WBC > 18,000/mm³",
+      "citation": "Yokoe M, Hata J, Takada T, et al. J Hepatobiliary Pancreat Sci. 2018;25:41–54.",
+      "verified": false
+    }
+  ],
+  "rationale": "Owner's example: cholecystitis without a WBC — the TG18 input first.",
+  "authoring": {
+    "author": "Claude (whats-missing)",
+    "date": "2026-09-26",
+    "notes": "What's missing strip vignette. Expectations need surgeon sign-off (reviewedBy)."
+  }
+}

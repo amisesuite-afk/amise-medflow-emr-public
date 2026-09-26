@@ -1,0 +1,146 @@
+{
+  "schemaVersion": 1,
+  "id": "entry-imaging-thick-walled-gallbladder",
+  "condition": "Thick-walled gallbladder on ultrasound (gallbladder cancer must not be missed)",
+  "category": "hpb",
+  "permutationOf": null,
+  "summary": "68-year-old woman whose ultrasound for weight loss shows gallstones with gallbladder wall thickening and a focal fundal mural mass.",
+  "tags": [
+    "entry:imaging",
+    "vademecum-pilot"
+  ],
+  "inputs": {
+    "patient": {
+      "ageYears": 68,
+      "sex": "female",
+      "pregnancy": {
+        "status": "not-applicable"
+      },
+      "heightCm": 170,
+      "weightKg": 72
+    },
+    "encounter": {
+      "setting": "outpatient",
+      "visitType": "newConsult",
+      "acuity": "priority"
+    },
+    "chiefComplaint": "Ultrasound report: thick-walled gallbladder",
+    "hpi": "Referred with an ultrasound report. Four kilograms of weight loss over three months and some upper abdominal discomfort after meals. No jaundice, no fever, no vomiting.",
+    "socrates": {},
+    "symptoms": [
+      "weight loss",
+      "postprandial discomfort"
+    ],
+    "negatives": [
+      "jaundice",
+      "fever",
+      "vomiting"
+    ],
+    "exam": {
+      "general": "Well, thin.",
+      "abdomen": "Soft. Mild right upper quadrant tenderness, no mass, Murphy's sign negative."
+    },
+    "vitals": [
+      {
+        "minutesAgo": 20,
+        "heartRate": 78,
+        "systolicBp": 128,
+        "diastolicBp": 74,
+        "respiratoryRate": 14,
+        "temperatureC": 36.7,
+        "spo2": 98,
+        "avpu": "A",
+        "onSupplementalO2": false
+      }
+    ],
+    "labs": [
+      {
+        "analyte": "wbc",
+        "name": "WBC",
+        "value": 7.2,
+        "unit": "×10⁹/L",
+        "minutesAgo": 60
+      },
+      {
+        "analyte": "crp",
+        "name": "CRP",
+        "value": 6,
+        "unit": "mg/L",
+        "minutesAgo": 60
+      },
+      {
+        "analyte": "bilirubin",
+        "name": "Bilirubin",
+        "value": 12,
+        "unit": "µmol/L",
+        "minutesAgo": 60
+      },
+      {
+        "analyte": "alp",
+        "name": "ALP",
+        "value": 140,
+        "unit": "U/L",
+        "minutesAgo": 60
+      },
+      {
+        "analyte": "alt",
+        "name": "ALT",
+        "value": 30,
+        "unit": "U/L",
+        "minutesAgo": 60
+      }
+    ],
+    "imaging": [
+      {
+        "name": "USS abdomen",
+        "modality": "US",
+        "region": "Abdomen",
+        "minutesAgo": 20160,
+        "result": "Gallstones. Gallbladder wall thickening (7 mm) with a focal 14 mm mural mass at the fundus. No pericholecystic fluid. CBD 5 mm. Liver normal."
+      }
+    ],
+    "comorbidities": [],
+    "surgicalHistory": [],
+    "medications": [],
+    "allergies": [],
+    "nkda": true,
+    "socialHistory": "Retired teacher. Non-smoker."
+  },
+  "expected": {
+    "differential": {
+      "mustNotMiss": [
+        {
+          "id": "mnm-gallbladder-cancer",
+          "severity": "critical",
+          "match": [
+            "gallbladder carcinoma",
+            "gallbladder cancer",
+            "carcinoma of the gallbladder"
+          ],
+          "note": "Focal mural thickening with weight loss: gallbladder cancer until proven otherwise (ESGAR 2022 polyp and wall-thickening guidance).",
+          "knownGap": [
+            "web",
+            "ios"
+          ],
+          "knownGapNote": "Web PANE (2026-09-26): top 3 are biliary colic, cholecystitis and CBD stones; the focal mural mass in the ultrasound report is not read. The vademecum shadow keeps gallbladder carcinoma on the list from the wall-thickening entry finding. | iOS CI (run 36246636651): not in top 5 of ios.bayes: 1. Acute Cholecystitis | 2. Biliary Colic | 3. Non-Alcoholic Fatty Liver Disease (NAFLD/NASH) | 4. Ascending Cholangitis | 5. Acalculous Cholecystitis"
+        }
+      ]
+    }
+  },
+  "guideline": [
+    {
+      "id": "esgar-2022",
+      "name": "Management and follow-up of gallbladder polyps (ESGAR, EAES, EFISDS, ESGE)",
+      "year": 2022,
+      "section": "Focal wall thickening or a polyp ≥ 10 mm: cholecystectomy / staging for suspected malignancy",
+      "citation": "Foley KG et al. Eur Radiol 2022;32:3358-68.",
+      "verified": false
+    }
+  ],
+  "rationale": "Entry point: an imaging report. The loop starts from wall thickening, keeps the can't-miss cancer on the list and asks for weight loss and the ALP.",
+  "authoring": {
+    "author": "Claude (vademecum phase 1, entry-point pilot)",
+    "date": "2026-09-26",
+    "notes": "Starts from a result (laboratory, imaging or pathology), not a complaint. Written for the vademecum shadow (clinval:web --engine vademecum); not verified on iOS; clinical sign-off pending (docs/clinical-validation/changes/vademecum-phase1.md)."
+  }
+}

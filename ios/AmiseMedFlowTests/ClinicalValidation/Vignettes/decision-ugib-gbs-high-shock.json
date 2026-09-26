@@ -1,0 +1,173 @@
+{
+  "schemaVersion": 1,
+  "id": "decision-ugib-gbs-high-shock",
+  "condition": "Upper GI bleeding — Glasgow-Blatchford 14 with shock",
+  "category": "upper-gi",
+  "permutationOf": "decision-ugib-gbs-low-outpatient",
+  "permutationLabel": "GBS 14 with shock",
+  "summary": "71-year-old with haematemesis and melaena, hypotensive, Hb 64 g/L, Glasgow-Blatchford 14: admit and endoscopy within 24 h, within 12 h after resuscitation for persisting instability; restrictive transfusion threshold met.",
+  "tags": [
+    "decision-support",
+    "risk-band",
+    "result-action"
+  ],
+  "inputs": {
+    "patient": {
+      "ageYears": 71,
+      "sex": "male",
+      "pregnancy": {
+        "status": "not-applicable"
+      },
+      "heightCm": 178,
+      "weightKg": 80
+    },
+    "encounter": {
+      "setting": "emergency",
+      "visitType": "urgentReview",
+      "acuity": "urgent"
+    },
+    "chiefComplaint": "Vomiting blood",
+    "hpi": "Coffee-ground vomiting and black stools for a day, dizzy on standing. Takes ibuprofen for knee pain.",
+    "exam": {
+      "general": "Alert.",
+      "abdomen": "Soft, mild epigastric tenderness."
+    },
+    "vitals": [
+      {
+        "minutesAgo": 10,
+        "heartRate": 118,
+        "systolicBp": 86,
+        "diastolicBp": 50,
+        "respiratoryRate": 22,
+        "temperatureC": 36.4,
+        "spo2": 96,
+        "avpu": "A",
+        "onSupplementalO2": false
+      }
+    ],
+    "labs": [
+      {
+        "analyte": "haemoglobin",
+        "name": "Haemoglobin",
+        "value": 6.4,
+        "unit": "g/dL",
+        "minutesAgo": 60
+      },
+      {
+        "analyte": "urea",
+        "name": "Urea",
+        "value": 18.2,
+        "unit": "mmol/L",
+        "minutesAgo": 60
+      },
+      {
+        "analyte": "egfr",
+        "name": "eGFR",
+        "value": 70,
+        "unit": "mL/min/1.73m2",
+        "minutesAgo": 60
+      }
+    ],
+    "nkda": true,
+    "scoreForms": {
+      "glasgow-blatchford": {
+        "total": 14
+      }
+    },
+    "confirmedDiagnosis": {
+      "name": "Upper GI bleeding (suspected peptic ulcer)",
+      "icd10": "K92.2",
+      "paneDiseaseId": "upper_gi_bleed",
+      "assessmentText": "Acute upper GI bleed with haemodynamic instability."
+    },
+    "platform": {
+      "web": {
+        "ccTemplate": "Haematemesis",
+        "symptoms": [
+          "Vomiting blood"
+        ]
+      }
+    }
+  },
+  "expected": {
+    "management": {
+      "mustInclude": [
+        {
+          "id": "decision-admit-endoscopy-24h",
+          "severity": "critical",
+          "match": [
+            "re:rank 1: admission and endoscopy within 24 h[^;]*- treat"
+          ],
+          "sources": [
+            "web.decisions",
+            "ios.decisions"
+          ],
+          "guidelineRefs": [
+            "nice-cg141",
+            "esge-2021"
+          ]
+        },
+        {
+          "id": "decision-endoscopy-12h-in-shock",
+          "severity": "critical",
+          "match": [
+            "re:endoscopy within 12 h \\(after resuscitation\\) - treat"
+          ],
+          "sources": [
+            "web.decisions",
+            "ios.decisions"
+          ],
+          "guidelineRefs": [
+            "esge-2021"
+          ]
+        },
+        {
+          "id": "decision-hb-below-70",
+          "severity": "critical",
+          "match": [
+            "re:result action - haemoglobin 64 g/l: haemoglobin < 70"
+          ],
+          "sources": [
+            "web.decisions",
+            "ios.decisions"
+          ],
+          "guidelineRefs": [
+            "nice-ng24"
+          ]
+        }
+      ]
+    }
+  },
+  "guideline": [
+    {
+      "id": "nice-cg141",
+      "name": "NICE CG141 acute upper GI bleeding",
+      "year": 2012,
+      "section": "Glasgow-Blatchford; early discharge; timing of endoscopy",
+      "citation": "NICE CG141 (2012, updated 2016).",
+      "verified": false
+    },
+    {
+      "id": "esge-2021",
+      "name": "ESGE guideline — non-variceal upper GI haemorrhage (2021)",
+      "year": 2021,
+      "section": "Risk stratification; timing of endoscopy; transfusion threshold",
+      "citation": "Gralnek IM et al. Endoscopy 2021;53:300-332.",
+      "verified": false
+    },
+    {
+      "id": "nice-ng24",
+      "name": "NICE NG24 blood transfusion",
+      "year": 2015,
+      "section": "Restrictive red cell thresholds",
+      "citation": "NICE NG24 (2015).",
+      "verified": false
+    }
+  ],
+  "rationale": "High Glasgow-Blatchford with haemodynamic instability: resuscitate, endoscopy within 24 h and within 12 h if instability persists (ESGE 2021); restrictive transfusion at Hb < 70 g/L (NICE NG24; Villanueva 2013).",
+  "authoring": {
+    "author": "Claude (bayes-treatment branch)",
+    "date": "2026-09-25",
+    "notes": "Decision-support vignette (web.decisions / ios.decisions). Expectations test the band and ranking of the decision layer, whose numbers await surgeon sign-off (docs/clinical-validation/changes/bayes-treatment.md)."
+  }
+}

@@ -24,6 +24,7 @@ export const colorectalProtocols: ManagementProtocol[] = [
       { phase: 'conservative', step: 'Rubber band ligation (Grade I–II) — outpatient procedure.' },
       { phase: 'surgical', step: 'Haemorrhoidectomy: Milligan-Morgan or Ferguson (Grade III–IV).' },
       { phase: 'surgical', step: 'HALO-RAR (haemorrhoidal artery ligation) — lower pain, suitable Grade II–III.' },
+      { phase: 'surgical', step: 'Thrombosed external haemorrhoid within 72 h of onset: excision under local anaesthetic gives faster relief; after 72 h, conservative care (ASCRS 2018).' },
       { phase: 'followup', step: 'Review at 4–6 weeks; encourage dietary compliance.' },
     ],
     medications: [
@@ -37,8 +38,9 @@ export const colorectalProtocols: ManagementProtocol[] = [
   },
   {
     diseaseId: 'anal_fissure',
-    icd10Prefixes: ['K60'],
+    icd10Prefixes: ['K60.0', 'K60.1', 'K60.2'],
     label: 'Anal Fissure',
+    guidelines: ['ASCRS 2023 clinical practice guideline: anal fissures'],
     keyPoints: [
       'Posterior midline fissure in 90% — lateral fissure suggests Crohn\'s, TB, or syphilis.',
       'Internal anal sphincter spasm perpetuates the fissure; treatment targets sphincter relaxation.',
@@ -50,17 +52,18 @@ export const colorectalProtocols: ManagementProtocol[] = [
     ],
     investigations: [
       { label: 'Clinical examination (proctoscopy after topical anaesthetic)', urgency: 'routine' },
-      { label: 'Anal manometry if internal sphincterotomy planned', urgency: 'routine' },
+      { label: 'EUA with biopsy (plus HIV, syphilis and TB testing; consider Crohn\'s) for atypical — lateral, multiple, painless or non-healing — fissures', urgency: 'urgent', conditional: 'Atypical or non-healing fissure' },
+      { label: 'Anal manometry / endoanal ultrasound if sphincter surgery is considered in a patient at risk of incontinence', urgency: 'routine' },
     ],
     management: [
       { phase: 'conservative', step: 'GTN 0.2% topical BD for 8 weeks or diltiazem 2% BD (less headaches).' },
       { phase: 'conservative', step: 'High-fibre diet, stool softeners (lactulose / docusate), sitz baths.' },
       { phase: 'surgical', step: 'Botulinum toxin injection into internal sphincter (if GTN/diltiazem fails).' },
-      { phase: 'surgical', step: 'Lateral internal sphincterotomy (LIS) — highly effective but 1–2% incontinence risk.' },
+      { phase: 'surgical', step: 'Lateral internal sphincterotomy (LIS) — only for a typical chronic midline fissure after failed medical therapy; not for atypical fissures until a secondary cause is excluded; caution in women and after obstetric injury (1–2% incontinence risk — ASCRS 2023).' },
       { phase: 'followup', step: 'Review at 8 weeks; repeat course if partial response.' },
     ],
     medications: [
-      { drugName: 'Glyceryl trinitrate 0.2% ointment', dose: 'Pea-sized amount', frequency: 'BD (twice daily)', route: 'Topical', duration: '8 weeks', indication: 'Chemical sphincterotomy — first-line', phase: 'maintenance' },
+      { drugName: 'Glyceryl trinitrate 0.2% ointment', dose: 'Pea-sized amount', frequency: 'BD (twice daily)', route: 'Topical', duration: '8 weeks', indication: 'Chemical sphincter relaxation — first-line for typical fissures', phase: 'maintenance' },
       { drugName: 'Diltiazem 2% cream', dose: 'Pea-sized amount', frequency: 'BD (twice daily)', route: 'Topical', duration: '8 weeks', indication: 'Better tolerated alternative to GTN', phase: 'maintenance', alternativeTo: 'GTN 0.2%' },
       { drugName: 'Botulinum toxin type A', dose: '20 units', frequency: 'Single injection', route: 'Injection (internal anal sphincter)', indication: 'Second-line if topical therapy fails', phase: 'immediate' },
       { drugName: 'Lactulose', dose: '15–30 mL', frequency: 'BD (twice daily)', route: 'PO (oral)', indication: 'Stool softener', phase: 'discharge' },
@@ -73,7 +76,7 @@ export const colorectalProtocols: ManagementProtocol[] = [
     icd10Prefixes: ['K61'],
     label: 'Perianal Abscess / Fistula',
     keyPoints: [
-      'Cryptoglandular origin in 90% — incision and drainage is the treatment.',
+      'Cryptoglandular origin in 90% — incision and drainage is the treatment; antibiotics are not routinely needed after drainage, only for surrounding cellulitis, systemic sepsis, diabetes or immunosuppression (ASCRS 2022).',
       'Park\'s classification defines fistula tract anatomy (inter-, trans-, supra-, extra-sphincteric).',
       'MRI pelvis is gold standard for complex fistula — defines relationship to sphincter.',
     ],
@@ -87,7 +90,8 @@ export const colorectalProtocols: ManagementProtocol[] = [
       { label: 'Pus C&S', urgency: 'urgent' },
     ],
     management: [
-      { phase: 'surgical', step: 'Incision and drainage under GA — cruciate or elliptical incision, pack wound.' },
+      { phase: 'surgical', step: 'Examination under anaesthesia (EUA) and incision and drainage in theatre — cruciate or elliptical incision, pack wound.' },
+      { phase: 'surgical', step: 'If necrotising infection is suspected (crepitus, spreading erythema or necrosis, pain out of proportion, systemic toxicity, SGLT2 inhibitor): urgent surgical exploration and radical debridement — Fournier\'s gangrene pathway.' },
       { phase: 'surgical', step: 'Lay-open simple fistula-in-ano (low intersphincteric/transsphincteric) at same sitting if clearly identified.' },
       { phase: 'surgical', step: 'Complex fistula: seton placement (loose or cutting) or advancement flap.' },
       { phase: 'conservative', step: 'Crohn\'s fistula: infliximab + long-term seton; fistula plug or advancement flap.' },
@@ -97,7 +101,7 @@ export const colorectalProtocols: ManagementProtocol[] = [
       { drugName: 'Piperacillin-tazobactam', dose: '4.5 g', frequency: 'TDS (three times daily)', route: 'IV (intravenous)', indication: 'Sepsis / horseshoe abscess / immunocompromised', phase: 'immediate' },
       { drugName: 'Morphine sulfate', dose: '2.5–5 mg', frequency: 'Q4H (every 4 hours)', route: 'IV (intravenous)', indication: 'Pre-procedure analgesia', phase: 'immediate' },
       { drugName: 'Co-amoxiclav', dose: '625 mg', frequency: 'TDS (three times daily)', route: 'PO (oral)', duration: '5–7 days', indication: 'Surrounding cellulitis post-I&D', phase: 'discharge' },
-      { drugName: 'Metronidazole', dose: '400 mg', frequency: 'TDS (three times daily)', route: 'PO (oral)', duration: '5–7 days', indication: 'Anaerobic cover for fistula tract', phase: 'discharge' },
+      { drugName: 'Metronidazole', dose: '400 mg', frequency: 'TDS (three times daily)', route: 'PO (oral)', duration: '5–7 days', indication: 'Anaerobic cover — only if surrounding cellulitis, sepsis, diabetes or immunosuppression (ASCRS 2022)', phase: 'discharge' },
       { drugName: 'Infliximab', dose: '5 mg/kg', frequency: 'At weeks 0, 2, 6', route: 'IV (intravenous)', indication: 'Crohn\'s fistula — biologic therapy', phase: 'maintenance' },
       { drugName: 'Paracetamol', dose: '1 g', frequency: 'QDS (four times daily)', route: 'PO (oral)', indication: 'Analgesia', phase: 'discharge' },
     ],
@@ -107,6 +111,7 @@ export const colorectalProtocols: ManagementProtocol[] = [
     diseaseId: 'crohns_disease',
     icd10Prefixes: ['K50'],
     label: 'Crohn\'s Disease',
+    guidelines: ['ECCO 2020 Crohn\'s disease medical treatment', 'ECCO-ESCP 2020 surgical treatment of Crohn\'s disease'],
     keyPoints: [
       'Transmural inflammation can affect any segment from mouth to anus; skip lesions are characteristic.',
       'Harvey-Bradshaw Index or CDAI quantifies disease activity.',
@@ -121,11 +126,14 @@ export const colorectalProtocols: ManagementProtocol[] = [
       { label: 'FBC, CRP, albumin, B12, iron studies', urgency: 'urgent' },
       { label: 'Faecal calprotectin (disease activity)', urgency: 'routine' },
       { label: 'MRI enterography (small bowel, fistula, abscess)', urgency: 'urgent' },
+      { label: 'MRI pelvis (perianal fistula / abscess)', urgency: 'urgent', category: 'imaging-mri', conditional: 'Perianal Crohn\'s disease (ECCO-ESGAR 2019 imaging guideline)' },
       { label: 'Colonoscopy + ileoscopy + biopsies', urgency: 'urgent' },
       { label: 'CT if perforation / abscess suspected', urgency: 'urgent' },
     ],
     management: [
-      { phase: 'conservative', step: 'Mild-moderate: budesonide (ileal) or prednisolone 40 mg OD tapering.' },
+      { phase: 'immediate', step: 'Intra-abdominal abscess: IV antibiotics and image-guided (percutaneous) drainage first; avoid starting or escalating steroids until sepsis is controlled; then planned ileocaecal resection (ECCO-ESCP 2020).' },
+      { phase: 'surgical', step: 'Perianal Crohn\'s abscess or complex fistula: EUA, drainage of sepsis and loose seton placement, then anti-TNF therapy (ECCO 2020).' },
+      { phase: 'conservative', step: 'Mild-moderate (no abscess or sepsis): budesonide (ileal) or prednisolone 40 mg OD tapering.' },
       { phase: 'conservative', step: 'Maintenance: azathioprine or 6-mercaptopurine ± infliximab / adalimumab (biologic).' },
       { phase: 'conservative', step: 'Nutritional support: elemental / polymeric enteral nutrition (equal to steroids in children).' },
       { phase: 'surgical', step: 'Ileocolic resection for terminal ileal disease refractory to medical therapy.' },
@@ -133,9 +141,9 @@ export const colorectalProtocols: ManagementProtocol[] = [
       { phase: 'followup', step: 'Post-operative colonoscopy at 6–12 months; anti-TNF to prevent recurrence.' },
     ],
     medications: [
-      { drugName: 'Prednisolone', dose: '40 mg', frequency: 'OD (once daily) tapering', route: 'PO (oral)', duration: '4–8 weeks', indication: 'Acute flare induction', phase: 'immediate' },
-      { drugName: 'Budesonide', dose: '9 mg', frequency: 'OD (once daily)', route: 'PO (oral)', duration: '8 weeks', indication: 'Ileal disease flare — less systemic side effects', phase: 'immediate', alternativeTo: 'Prednisolone' },
-      { drugName: 'Hydrocortisone', dose: '100 mg', frequency: 'QDS (four times daily)', route: 'IV (intravenous)', indication: 'Acute severe Crohn\'s colitis (admitted)', phase: 'immediate' },
+      { drugName: 'Prednisolone', dose: '40 mg', frequency: 'OD (once daily) tapering', route: 'PO (oral)', duration: '4–8 weeks', indication: 'Acute flare induction — avoid until any abscess or sepsis is drained', phase: 'immediate' },
+      { drugName: 'Budesonide', dose: '9 mg', frequency: 'OD (once daily)', route: 'PO (oral)', duration: '8 weeks', indication: 'Ileal disease flare — avoid until any abscess or sepsis is drained', phase: 'immediate', alternativeTo: 'Prednisolone' },
+      { drugName: 'Hydrocortisone', dose: '100 mg', frequency: 'QDS (four times daily)', route: 'IV (intravenous)', indication: 'Acute severe Crohn\'s colitis (admitted) — avoid until any abscess is drained', phase: 'immediate' },
       { drugName: 'Infliximab', dose: '5 mg/kg', frequency: 'At weeks 0, 2, 6 then every 8 weeks', route: 'IV (intravenous)', indication: 'Moderate-severe Crohn\'s — anti-TNF biologic', phase: 'immediate' },
       { drugName: 'Adalimumab', dose: '160 mg week 0, 80 mg week 2, then 40 mg', frequency: 'Every 2 weeks (maintenance)', route: 'SC (subcutaneous)', indication: 'Anti-TNF alternative to infliximab', phase: 'maintenance', alternativeTo: 'Infliximab' },
       { drugName: 'Ustekinumab', dose: '260–520 mg IV once then 90 mg SC', frequency: 'Every 8–12 weeks (maintenance)', route: 'IV then SC (subcutaneous)', indication: 'IL-12/23 inhibitor for moderate-severe Crohn\'s', phase: 'immediate' },
@@ -152,9 +160,10 @@ export const colorectalProtocols: ManagementProtocol[] = [
     diseaseId: 'ulcerative_colitis',
     icd10Prefixes: ['K51'],
     label: 'Ulcerative Colitis',
+    guidelines: ['BSG 2019 consensus guidelines on the management of IBD in adults', 'Truelove & Witts 1955 (acute severe UC criteria)', 'NICE NG199 (2021) C. difficile'],
     keyPoints: [
       'Extends proximally from rectum in a continuous pattern — pancolitis in 20%.',
-      'Truelove-Witts criteria classify acute severe UC: HR >90, temp >37.8°C, WBC >10.5, >6 stools/day.',
+      'Truelove & Witts: acute severe UC = ≥ 6 bloody stools/day plus any of HR > 90, temperature > 37.8 °C, Hb < 10.5 g/dL, ESR > 30 mm/h (or CRP > 30).',
       'Colectomy is curative; risk of colonic dysplasia increases after 10 years of extensive disease.',
     ],
     redFlags: [
@@ -166,13 +175,18 @@ export const colorectalProtocols: ManagementProtocol[] = [
       { label: 'FBC, CRP, albumin, LFTs', urgency: 'urgent' },
       { label: 'AXR (colonic diameter, mucosal islands)', urgency: 'urgent' },
       { label: 'Stool C&S + C. difficile toxin', urgency: 'urgent' },
-      { label: 'Flexible sigmoidoscopy / colonoscopy + biopsies', urgency: 'urgent' },
+      { label: 'Unprepared flexible sigmoidoscopy with biopsies (including CMV) — full colonoscopy is contraindicated in acute severe colitis or toxic megacolon (BSG 2019)', urgency: 'urgent' },
+      { label: 'CMV testing on colonic biopsies (immunohistochemistry / PCR) in steroid-refractory colitis', urgency: 'urgent', conditional: 'Steroid-refractory acute severe UC' },
       { label: 'CT colon if perforation or toxic megacolon suspected', urgency: 'stat' },
     ],
     management: [
       { phase: 'conservative', step: 'Mild proctitis / left-sided: mesalazine suppositories or enema.' },
       { phase: 'conservative', step: 'Moderate-severe: oral prednisolone + mesalazine; step-up to azathioprine / biologic (infliximab, vedolizumab).' },
-      { phase: 'immediate', step: 'Acute severe: IV hydrocortisone, VTE prophylaxis, IV fluids, NBM.' },
+      { phase: 'immediate', step: 'Acute severe: IV hydrocortisone 100 mg four times daily (or methylprednisolone), LMWH VTE prophylaxis, IV fluids; avoid antimotility agents, opioids, NSAIDs and anticholinergics (toxic megacolon risk) — BSG 2019.' },
+      { phase: 'immediate', step: 'Joint gastroenterology and colorectal surgical review from admission; day-3 assessment (Oxford / Travis criteria): non-response → rescue therapy (infliximab or ciclosporin) or colectomy (BSG 2019).' },
+      { phase: 'immediate', step: 'Toxic megacolon (colonic dilatation > 5.5–6 cm with systemic toxicity): no colonoscopy; urgent colorectal surgical review — low threshold for emergency subtotal colectomy.' },
+      { phase: 'conservative', step: 'CMV colitis in steroid-refractory disease: IV ganciclovir (antiviral) with virology advice.' },
+      { phase: 'conservative', step: 'C. difficile with a UC flare: treat C. difficile with oral vancomycin (NICE NG199) before escalating immunosuppression.' },
       { phase: 'surgical', step: 'Emergency: subtotal colectomy + end ileostomy (Hartmann\'s pouch).' },
       { phase: 'surgical', step: 'Elective curative: proctocolectomy + ileal pouch-anal anastomosis (IPAA).' },
       { phase: 'followup', step: 'Surveillance colonoscopy from year 10 (pancolitis) or year 15 (left-sided), 3–5 yearly.' },
@@ -195,6 +209,8 @@ export const colorectalProtocols: ManagementProtocol[] = [
     diseaseId: 'rectal_carcinoma',
     icd10Prefixes: ['C20'],
     label: 'Rectal Carcinoma',
+    cancer: true,
+    guidelines: ['NICE NG151 (2020) colorectal cancer', 'ESMO 2017 rectal cancer'],
     keyPoints: [
       'MRI rectum defines CRM involvement — positive CRM is the key driver of neoadjuvant therapy.',
       'Total mesorectal excision (TME) is the standard surgical technique — nerve-sparing reduces sexual/urinary morbidity.',
@@ -235,6 +251,7 @@ export const colorectalProtocols: ManagementProtocol[] = [
     diseaseId: 'ischaemic_colitis',
     icd10Prefixes: ['K55'],
     label: 'Ischaemic Colitis',
+    guidelines: ['ACG 2015 clinical guideline: colon ischaemia'],
     keyPoints: [
       'Watershed areas (splenic flexure, sigmoid) most vulnerable due to collateral supply.',
       'Triggered by hypotension, vascular disease, post-aortic surgery, or thromboembolism.',
@@ -251,8 +268,8 @@ export const colorectalProtocols: ManagementProtocol[] = [
       { label: 'AXR (pneumatosis coli, free air)', urgency: 'urgent' },
     ],
     management: [
-      { phase: 'immediate', step: 'IV fluids, NBM, broad-spectrum IV antibiotics (piperacillin-tazobactam).' },
-      { phase: 'conservative', step: 'Optimise cardiovascular status; review and adjust vasopressors / anticoagulants.' },
+      { phase: 'immediate', step: 'IV fluids and bowel rest; antibiotics for moderate or severe disease (ACG 2015).' },
+      { phase: 'conservative', step: 'Optimise cardiovascular status; review vasoconstrictive drugs. No therapeutic anticoagulation for non-occlusive colonic ischaemia (ACG 2015) — isolated right-colon ischaemia needs CT angiography to exclude acute mesenteric ischaemia.' },
       { phase: 'surgical', step: 'Gangrenous / perforated colon: emergency colectomy + end colostomy.' },
       { phase: 'followup', step: 'Colonoscopy at 4–6 weeks (confirm resolution or stricture formation).' },
     ],
@@ -261,7 +278,6 @@ export const colorectalProtocols: ManagementProtocol[] = [
       { drugName: 'Metronidazole', dose: '500 mg', frequency: 'TDS (three times daily)', route: 'IV (intravenous)', indication: 'Anaerobic cover', phase: 'immediate' },
       { drugName: 'Hartmann\'s solution', dose: '1 L', frequency: 'Over 4–6 h', route: 'IV (intravenous)', indication: 'IV fluid resuscitation', phase: 'immediate' },
       { drugName: 'Morphine sulfate', dose: '2.5–5 mg', frequency: 'Q4H (every 4 hours)', route: 'IV (intravenous)', indication: 'Analgesia — use cautiously (can mask peritonism)', phase: 'immediate' },
-      { drugName: 'Heparin', dose: 'Weight-based per local protocol', frequency: 'Continuous infusion', route: 'IV (intravenous)', indication: 'Mesenteric vein thrombosis — anticoagulation', phase: 'immediate' },
       { drugName: 'Omeprazole', dose: '40 mg', frequency: 'OD (once daily)', route: 'IV (intravenous)', indication: 'Stress ulcer prophylaxis', phase: 'immediate' },
       { drugName: 'Aspirin', dose: '75 mg', frequency: 'OD (once daily)', route: 'PO (oral)', indication: 'Antiplatelet if arterial cause confirmed — review after recovery', phase: 'maintenance' },
     ],
@@ -333,7 +349,7 @@ export const colorectalProtocols: ManagementProtocol[] = [
   },
   {
     diseaseId: 'appendix_mass',
-    icd10Prefixes: ['K35.3'],
+    icd10Prefixes: ['K35.33'],
     label: 'Appendix Mass / Phlegmon',
     keyPoints: [
       'Delayed presentation >72 h — walled-off appendix mass (phlegmon or abscess).',
@@ -386,6 +402,7 @@ export const herniaProtocols: ManagementProtocol[] = [
       { label: 'Clinical diagnosis', urgency: 'routine' },
       { label: 'USS if diagnosis unclear', urgency: 'routine' },
       { label: 'FBC, U&E if emergency', urgency: 'urgent' },
+      { label: 'CT abdomen/pelvis if obstruction or strangulation is suspected — only if it will not delay surgery', urgency: 'urgent', category: 'imaging-ct', conditional: 'Emergency presentation (WSES 2017 emergency repair of complicated abdominal wall hernias)' },
     ],
     management: [
       { phase: 'surgical', step: 'Elective: mesh plug repair (Lockwood) or laparoscopic TEP.' },
@@ -405,6 +422,7 @@ export const herniaProtocols: ManagementProtocol[] = [
     diseaseId: 'umbilical_hernia',
     icd10Prefixes: ['K42'],
     label: 'Umbilical Hernia',
+    guidelines: ['EHS/AHS 2020 guidelines for umbilical and epigastric hernia', 'WSES 2017 emergency hernia repair'],
     keyPoints: [
       'In adults, repair is recommended even if asymptomatic due to strangulation risk.',
       'Para-umbilical hernias (through linea alba adjacent to umbilicus) are distinct but managed similarly.',
@@ -412,6 +430,7 @@ export const herniaProtocols: ManagementProtocol[] = [
     ],
     redFlags: [
       'Irreducible or tender — strangulation risk; emergency repair.',
+      'Ascites (cirrhosis) with thinning, ulcerated or leaking skin over the hernia — risk of rupture; urgent surgical and hepatology review.',
     ],
     investigations: [
       { label: 'Clinical diagnosis', urgency: 'routine' },
@@ -420,6 +439,9 @@ export const herniaProtocols: ManagementProtocol[] = [
     management: [
       { phase: 'surgical', step: 'Elective open: Mayo repair or mesh repair (sublay / onlay) depending on defect size.' },
       { phase: 'surgical', step: 'Laparoscopic IPOM (intra-peritoneal on-lay mesh) for large defects.' },
+      { phase: 'surgical', step: 'Emergency repair if strangulation is suspected (tender, irreducible, skin change, raised lactate) — WSES 2017.' },
+      { phase: 'conservative', step: 'Before elective repair: stop smoking and optimise weight and diabetes control (EHS/AHS 2020).' },
+      { phase: 'conservative', step: 'Cirrhosis with ascites: control ascites first (diuretics, paracentesis or TIPS with hepatology) and plan elective repair once controlled; emergency repair for rupture or strangulation; not suitable for routine ambulatory surgery (EHS/AHS 2020).' },
       { phase: 'followup', step: 'Review at 2 weeks; wound check and lifting restrictions.' },
     ],
     medications: [
@@ -536,7 +558,7 @@ export const herniaProtocols: ManagementProtocol[] = [
   },
   {
     diseaseId: 'internal_hernia',
-    icd10Prefixes: ['K56.2'],
+    icd10Prefixes: [],
     label: 'Internal Hernia',
     keyPoints: [
       'Increasingly seen post-Roux-en-Y gastric bypass (Petersen\'s hernia) — intermittent, may have normal CT.',
@@ -590,7 +612,7 @@ export const herniaProtocols: ManagementProtocol[] = [
   },
   {
     diseaseId: 'obturator_hernia',
-    icd10Prefixes: ['K45.8'],
+    icd10Prefixes: ['K45'],
     label: 'Obturator Hernia',
     keyPoints: [
       'Rare; classically thin, elderly women — bowel protrudes through obturator foramen.',
@@ -648,10 +670,12 @@ export const breastProtocols: ManagementProtocol[] = [
     diseaseId: 'invasive_ductal_carcinoma',
     icd10Prefixes: ['C50'],
     label: 'Invasive Ductal Carcinoma',
+    cancer: true,
+    guidelines: ['NCCN Breast Cancer (2024) — inflammatory breast cancer', 'NICE NG101 (2018) early and locally advanced breast cancer'],
     keyPoints: [
       'Triple assessment mandatory: clinical exam + imaging + core biopsy (B5b).',
       'Tumour grade (Nottingham), ER/PR/HER2 receptor status guide systemic therapy.',
-      'Sentinel lymph node biopsy (SLNB) is standard axillary staging for clinically node-negative disease.',
+      'Sentinel lymph node biopsy (SLNB) is standard axillary staging for clinically node-negative early breast cancer — not for inflammatory breast cancer (NCCN 2024).',
     ],
     redFlags: [
       'Inflammatory breast cancer (skin erythema, peau d\'orange, no palpable mass) — urgent biopsy.',
@@ -665,7 +689,8 @@ export const breastProtocols: ManagementProtocol[] = [
       { label: 'Bone scan (if bone pain)', urgency: 'routine' },
     ],
     management: [
-      { phase: 'surgical', step: 'Wide local excision (breast-conserving) + SLNB or axillary clearance.' },
+      { phase: 'surgical', step: 'Early operable cancer, after histology and MDT: wide local excision (breast-conserving) + SLNB or axillary clearance — not for inflammatory breast cancer.' },
+      { phase: 'conservative', step: 'Inflammatory breast cancer (T4d: erythema, oedema/peau d\'orange over ≥ 1/3 of the breast): neoadjuvant systemic therapy first, then modified radical mastectomy with axillary node dissection and post-mastectomy radiotherapy; breast-conserving surgery and sentinel node biopsy are not recommended (NCCN).' },
       { phase: 'surgical', step: 'Mastectomy ± immediate reconstruction if large tumour, multifocal, or BRCA carrier.' },
       { phase: 'conservative', step: 'Radiotherapy post-conservative surgery; post-mastectomy RT if T3/T4 or ≥4 nodes.' },
       { phase: 'conservative', step: 'Hormone therapy: tamoxifen (premenopausal) or aromatase inhibitor (postmenopausal) × 5–10 years.' },
@@ -785,7 +810,7 @@ export const breastProtocols: ManagementProtocol[] = [
     ],
     redFlags: ['Rapid growth or large (>5 cm) phyllodes — higher malignant potential; HPB/sarcoma MDT.'],
     investigations: [
-      { label: 'USS + mammography', urgency: 'urgent' },
+      { label: 'Breast ultrasound (first line under 40); mammography as well if age 40 or over', urgency: 'urgent' },
       { label: 'Core biopsy (may underestimate grade)', urgency: 'urgent' },
       { label: 'CT chest if malignant (pulmonary metastases)', urgency: 'urgent' },
     ],
@@ -823,6 +848,7 @@ export const breastProtocols: ManagementProtocol[] = [
       { phase: 'surgical', step: 'Open I&D for large (>5 cm) or multiloculated abscesses under GA.' },
       { phase: 'conservative', step: 'IV flucloxacillin / co-amoxiclav; continue breastfeeding if lactational.' },
       { phase: 'followup', step: 'USS at 1 week; mammography at 3 months (exclude underlying carcinoma).' },
+      { phase: 'followup', step: 'Non-lactational periareolar abscess (periductal mastitis): smoking cessation — smoking is the main driver of recurrence.' },
     ],
     medications: [
       { drugName: 'Flucloxacillin', dose: '2 g', frequency: 'QDS (four times daily)', route: 'IV (intravenous)', indication: 'Severe breast abscess with systemic sepsis', phase: 'immediate' },
@@ -874,7 +900,7 @@ export const breastProtocols: ManagementProtocol[] = [
       { label: 'MRI if papilloma not identified on USS', urgency: 'routine' },
     ],
     management: [
-      { phase: 'conservative', step: 'Duct ectasia: reassurance; evening primrose oil; avoid nipple manipulation.' },
+      { phase: 'conservative', step: 'Bilateral multi-duct non-bloody discharge after normal imaging (duct ectasia): reassurance; avoid nipple manipulation. Single-duct or bloody discharge is not managed by reassurance — imaging and specialist review first.' },
       { phase: 'surgical', step: 'Microdochectomy for papilloma — excision of affected duct via periareolar incision.' },
       { phase: 'surgical', step: 'Major duct excision (Hadfield procedure) for bilateral / multiduct ectasia causing troublesome discharge.' },
       { phase: 'followup', step: 'Histology review; USS at 6 months post-op.' },

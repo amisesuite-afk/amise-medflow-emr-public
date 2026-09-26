@@ -1,0 +1,151 @@
+{
+  "schemaVersion": 1,
+  "id": "decision-pe-wells-unlikely-test",
+  "condition": "Suspected pulmonary embolism — Wells unlikely",
+  "category": "vascular",
+  "permutationOf": null,
+  "summary": "Pleuritic chest pain with Wells PE 3 (PE unlikely): D-dimer first; anticoagulation band is test further; no thrombolysis.",
+  "tags": [
+    "decision-support",
+    "test-band",
+    "pretest"
+  ],
+  "inputs": {
+    "patient": {
+      "ageYears": 40,
+      "sex": "female",
+      "pregnancy": {
+        "status": "not-pregnant"
+      },
+      "heightCm": 168,
+      "weightKg": 70
+    },
+    "encounter": {
+      "setting": "outpatient",
+      "visitType": "urgentReview",
+      "acuity": "priority"
+    },
+    "chiefComplaint": "Pleuritic chest pain",
+    "hpi": "One day of right-sided pleuritic chest pain after a long-haul flight 10 days ago. No haemoptysis, no leg swelling. Pregnancy test negative. Not on hormonal contraception.",
+    "exam": {
+      "general": "Well.",
+      "respiratory": "Clear chest.",
+      "msk": "Calves soft, non-tender, no swelling."
+    },
+    "vitals": [
+      {
+        "minutesAgo": 10,
+        "heartRate": 102,
+        "systolicBp": 126,
+        "diastolicBp": 78,
+        "respiratoryRate": 18,
+        "temperatureC": 37.1,
+        "spo2": 97,
+        "avpu": "A",
+        "onSupplementalO2": false
+      }
+    ],
+    "labs": [
+      {
+        "analyte": "egfr",
+        "name": "eGFR",
+        "value": 95,
+        "unit": "mL/min/1.73m2",
+        "minutesAgo": 60
+      }
+    ],
+    "nkda": true,
+    "scoreForms": {
+      "wells-pe": {
+        "total": 3
+      },
+      "has-bled": {
+        "total": 0
+      }
+    },
+    "platform": {
+      "web": {
+        "ccTemplate": "Chest pain",
+        "symptoms": [
+          "Chest pain",
+          "Shortness of breath"
+        ]
+      }
+    }
+  },
+  "expected": {
+    "management": {
+      "mustInclude": [
+        {
+          "id": "decision-wells-unlikely-d-dimer",
+          "severity": "critical",
+          "match": [
+            "re:score action - wells pe 3: pe unlikely - .*d-dimer"
+          ],
+          "sources": [
+            "web.decisions",
+            "ios.decisions"
+          ],
+          "guidelineRefs": [
+            "nice-ng158"
+          ]
+        },
+        {
+          "id": "decision-anticoagulation-test-further",
+          "severity": "critical",
+          "match": [
+            "re:rank 1: therapeutic anticoagulation - test further"
+          ],
+          "sources": [
+            "web.decisions",
+            "ios.decisions"
+          ],
+          "guidelineRefs": [
+            "esc-pe-2019",
+            "nice-ng158"
+          ]
+        }
+      ],
+      "mustExclude": [
+        {
+          "id": "decision-no-thrombolysis",
+          "severity": "critical",
+          "match": [
+            "re:systemic thrombolysis - treat"
+          ],
+          "sources": [
+            "web.decisions",
+            "ios.decisions"
+          ],
+          "guidelineRefs": [
+            "esc-pe-2019"
+          ]
+        }
+      ]
+    }
+  },
+  "guideline": [
+    {
+      "id": "esc-pe-2019",
+      "name": "ESC guidelines — acute pulmonary embolism",
+      "year": 2019,
+      "section": "Diagnostic strategy; reperfusion; contraindications to fibrinolysis",
+      "citation": "Konstantinides SV et al. Eur Heart J 2020;41:543-603.",
+      "verified": false
+    },
+    {
+      "id": "nice-ng158",
+      "name": "NICE NG158 venous thromboembolic diseases",
+      "year": 2020,
+      "section": "Two-level Wells; D-dimer; interim anticoagulation",
+      "citation": "NICE NG158 (2020).",
+      "verified": false
+    }
+  ],
+  "rationale": "Two-level Wells <= 4: PE unlikely (pre-test probability about 12%) — D-dimer first, imaging if positive (NICE NG158; ESC 2019). Thrombolysis is only for high-risk (haemodynamically unstable) PE.",
+  "authoring": {
+    "author": "Claude (bayes-treatment branch)",
+    "date": "2026-09-25",
+    "notes": "Decision-support vignette (web.decisions / ios.decisions). Expectations test the band and ranking of the decision layer, whose numbers await surgeon sign-off (docs/clinical-validation/changes/bayes-treatment.md)."
+  }
+}

@@ -1,0 +1,209 @@
+{
+  "schemaVersion": 1,
+  "id": "sah-late-presentation-day5",
+  "condition": "Subarachnoid haemorrhage (late presentation)",
+  "category": "other",
+  "permutationOf": "sah-thunderclap-headache",
+  "permutationLabel": "Late presentation (day 5) at a surgical follow-up clinic",
+  "summary": "52-year-old man at his post-hernia-repair review mentions a sudden worst-ever headache while lifting 5 days ago, now a milder persistent headache and neck ache.",
+  "tags": [
+    "neuro",
+    "headache",
+    "do-not-miss",
+    "outpatient"
+  ],
+  "inputs": {
+    "patient": {
+      "ageYears": 52,
+      "sex": "male",
+      "pregnancy": {
+        "status": "not-applicable"
+      },
+      "heightCm": 180,
+      "weightKg": 88
+    },
+    "encounter": {
+      "setting": "outpatient",
+      "visitType": "followUp",
+      "acuity": "routine"
+    },
+    "chiefComplaint": "Headache for five days since a sudden onset",
+    "hpi": "At his post-operative hernia review he mentions that 5 days ago, while lifting a heavy box, he had a sudden severe headache, the worst of his life, that peaked within seconds; he lay down for 2 days. Now a milder persistent headache and aching neck. Took paracetamol. Did not seek help.",
+    "socrates": {
+      "onset": [
+        "4–7 days ago",
+        "Sudden"
+      ]
+    },
+    "symptoms": [
+      "headache",
+      "neck pain",
+      "thunderclap headache"
+    ],
+    "negatives": [
+      "fever",
+      "rash",
+      "limb weakness",
+      "visual loss"
+    ],
+    "exam": {
+      "general": "Well. Pulse 72/min, BP 158/92, temperature 36.8°C.",
+      "neuro": "GCS 15, no focal deficit, mild neck stiffness at extremes.",
+      "abdomen": "Right inguinal hernia repair wound healed."
+    },
+    "vitals": [
+      {
+        "minutesAgo": 10,
+        "heartRate": 72,
+        "systolicBp": 158,
+        "diastolicBp": 92,
+        "respiratoryRate": 14,
+        "temperatureC": 36.8,
+        "spo2": 98,
+        "avpu": "A",
+        "onSupplementalO2": false,
+        "weightKg": 88
+      }
+    ],
+    "labs": [],
+    "imaging": [],
+    "comorbidities": [
+      "Hypertension (untreated)"
+    ],
+    "surgicalHistory": [
+      "Open right inguinal hernia repair 3 weeks ago"
+    ],
+    "medications": [
+      {
+        "drug": "Paracetamol",
+        "dose": "1 g",
+        "frequency": "QDS PRN",
+        "indication": "Headache"
+      }
+    ],
+    "allergies": [],
+    "nkda": true,
+    "socialHistory": "Warehouse manager.",
+    "confirmedDiagnosis": {
+      "name": "Suspected subarachnoid haemorrhage (sentinel headache, late presentation)",
+      "icd10": "I60.9",
+      "assessmentText": "Thunderclap headache 5 days ago with persisting headache and neck ache: same-day referral for CT head and further investigation (CTA / LP) for SAH."
+    },
+    "platform": {
+      "web": {
+        "ccTemplate": "Other / general surgical",
+        "symptoms": [
+          "headache",
+          "neck pain",
+          "thunderclap headache"
+        ],
+        "symptomDetails": {
+          "headache": [
+            "Occipital",
+            "Thunderclap (sudden worst-ever)",
+            "First / worst ever",
+            "Constant"
+          ]
+        },
+        "durationDays": 5,
+        "painScore": 4
+      }
+    }
+  },
+  "expected": {
+    "differential": {
+      "mustNotMiss": [
+        {
+          "id": "mnm-sah",
+          "severity": "critical",
+          "match": [
+            "subarachnoid",
+            "re:\\bsah\\b",
+            "intracranial haem"
+          ],
+          "guidelineRefs": [
+            "nice-ng228"
+          ]
+        }
+      ]
+    },
+    "safety": {
+      "emergencyLevel": {
+        "id": "level-urgent",
+        "severity": "critical",
+        "atLeast": "urgent",
+        "guidelineRefs": [
+          "nice-ng228"
+        ],
+        "note": "Five days on, still a same-day investigation: a sentinel bleed precedes a larger one."
+      },
+      "mustAlarm": [
+        {
+          "id": "alarm-sah",
+          "severity": "critical",
+          "match": [
+            "subarachnoid",
+            "thunderclap",
+            "re:\\bsah\\b"
+          ],
+          "guidelineRefs": [
+            "nice-ng228"
+          ]
+        }
+      ]
+    },
+    "investigations": {
+      "mustInclude": [
+        {
+          "id": "inv-ct-cta-or-lp",
+          "severity": "critical",
+          "match": [
+            "ct head",
+            "ct brain",
+            "re:\\bct\\b[^.;\\n]{0,20}(head|brain)",
+            "non-contrast ct",
+            "mri brain",
+            "ct angiogra",
+            "cta",
+            "lumbar puncture",
+            "xanthochromia"
+          ],
+          "guidelineRefs": [
+            "nice-ng228"
+          ]
+        }
+      ]
+    },
+    "management": {
+      "mustExclude": [
+        {
+          "id": "mgmt-no-migraine-label",
+          "severity": "quality",
+          "match": [
+            "triptan",
+            "sumatriptan"
+          ],
+          "guidelineRefs": [
+            "nice-ng228"
+          ]
+        }
+      ]
+    }
+  },
+  "guideline": [
+    {
+      "id": "nice-ng228",
+      "name": "NICE NG228 — Subarachnoid haemorrhage caused by a ruptured aneurysm: diagnosis and management",
+      "year": 2022,
+      "section": "Suspect SAH with thunderclap headache (sudden, severe, peaking within minutes); non-contrast CT head immediately; if CT is normal and done more than 6 h after onset, consider lumbar puncture at least 12 h after onset; if SAH confirmed: CT angiography and discussion with a neurosurgical centre; nimodipine",
+      "citation": "National Institute for Health and Care Excellence. Subarachnoid haemorrhage caused by a ruptured aneurysm: diagnosis and management. NICE guideline NG228. London: NICE; 2022.",
+      "verified": false
+    }
+  ],
+  "rationale": "A thunderclap headache days ago still needs investigation today (NICE NG228). The setting (surgical clinic, routine booking) tests whether the engines escalate.",
+  "authoring": {
+    "author": "Claude (endocrine / renal / urology / neuro cluster)",
+    "date": "2026-09-25",
+    "notes": "Expectations need surgeon sign-off (reviewedBy). Every citation is verified: false. iOS outcomes not observed (Linux)."
+  }
+}

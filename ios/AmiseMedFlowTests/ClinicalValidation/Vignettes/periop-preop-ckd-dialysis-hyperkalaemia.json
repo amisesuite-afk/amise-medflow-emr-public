@@ -1,0 +1,328 @@
+{
+  "schemaVersion": 1,
+  "id": "periop-preop-ckd-dialysis-hyperkalaemia",
+  "condition": "Pre-operative assessment — end-stage renal failure on haemodialysis with hyperkalaemia",
+  "category": "other",
+  "permutationOf": "periop-preop-asa1-lap-chole",
+  "permutationLabel": "ESRF on haemodialysis, K⁺ 6.2",
+  "summary": "58-year-old woman on haemodialysis (Mon/Wed/Fri) listed for laparoscopic cholecystectomy; pre-operative potassium 6.2 mmol/L on a non-dialysis day.",
+  "tags": [
+    "periop",
+    "preop",
+    "ckd",
+    "dialysis",
+    "hyperkalaemia"
+  ],
+  "inputs": {
+    "patient": {
+      "ageYears": 58,
+      "sex": "female",
+      "pregnancy": {
+        "status": "not-applicable"
+      },
+      "heightCm": 160,
+      "weightKg": 70
+    },
+    "encounter": {
+      "setting": "outpatient",
+      "visitType": "surgeryElective",
+      "acuity": "routine"
+    },
+    "chiefComplaint": "Pre-operative assessment for planned gallbladder operation",
+    "hpi": "Symptomatic gallstones, listed for laparoscopic cholecystectomy. End-stage renal failure (hypertensive nephropathy) on haemodialysis Monday/Wednesday/Friday via a left radiocephalic fistula. Passes about 200 mL urine a day. Pre-assessment bloods taken on Sunday. Walks a mile on the flat.",
+    "symptoms": [
+      "biliary colic"
+    ],
+    "negatives": [
+      "jaundice",
+      "fever",
+      "chest pain",
+      "breathlessness"
+    ],
+    "exam": {
+      "general": "Well. HR 76, BP 156/88, RR 16, SpO2 97% on air, T 36.5°C. Left forearm AV fistula with good thrill.",
+      "abdomen": "Soft, non-tender.",
+      "cardiovascular": "Heart sounds normal.",
+      "respiratory": "Chest clear."
+    },
+    "vitals": [
+      {
+        "minutesAgo": 5,
+        "heartRate": 76,
+        "systolicBp": 156,
+        "diastolicBp": 88,
+        "respiratoryRate": 16,
+        "temperatureC": 36.5,
+        "spo2": 97,
+        "avpu": "A",
+        "onSupplementalO2": false
+      }
+    ],
+    "labs": [
+      {
+        "analyte": "haemoglobin",
+        "name": "Haemoglobin",
+        "value": 10.1,
+        "unit": "g/dL",
+        "minutesAgo": 1440
+      },
+      {
+        "analyte": "platelets",
+        "name": "Platelets",
+        "value": 210,
+        "unit": "×10⁹/L",
+        "minutesAgo": 1440
+      },
+      {
+        "analyte": "creatinine",
+        "name": "Creatinine",
+        "value": 720,
+        "unit": "µmol/L",
+        "minutesAgo": 1440
+      },
+      {
+        "analyte": "urea",
+        "name": "Urea",
+        "value": 24.1,
+        "unit": "mmol/L",
+        "minutesAgo": 1440
+      },
+      {
+        "analyte": "potassium",
+        "name": "Potassium",
+        "value": 6.2,
+        "unit": "mmol/L",
+        "minutesAgo": 1440
+      },
+      {
+        "analyte": "sodium",
+        "name": "Sodium",
+        "value": 136,
+        "unit": "mmol/L",
+        "minutesAgo": 1440
+      },
+      {
+        "analyte": "bilirubin",
+        "name": "Bilirubin",
+        "value": 8,
+        "unit": "µmol/L",
+        "minutesAgo": 1440
+      },
+      {
+        "analyte": "alp",
+        "name": "ALP",
+        "value": 102,
+        "unit": "U/L",
+        "minutesAgo": 1440
+      }
+    ],
+    "imaging": [
+      {
+        "name": "USS abdomen",
+        "modality": "US",
+        "region": "Abdomen",
+        "result": "Multiple mobile gallstones, gallbladder wall 2 mm, no pericholecystic fluid. CBD 4 mm. Liver normal.",
+        "minutesAgo": 43200
+      }
+    ],
+    "comorbidities": [
+      "End-stage renal failure on haemodialysis",
+      "Hypertension",
+      "Renal anaemia"
+    ],
+    "surgicalHistory": [
+      "Left radiocephalic AV fistula 2021"
+    ],
+    "medications": [
+      {
+        "drug": "Amlodipine",
+        "dose": "10 mg",
+        "frequency": "OD",
+        "indication": "Hypertension"
+      },
+      {
+        "drug": "Sevelamer",
+        "dose": "800 mg",
+        "frequency": "TDS",
+        "indication": "Phosphate binder"
+      },
+      {
+        "drug": "Epoetin",
+        "dose": "weekly",
+        "frequency": "with dialysis",
+        "indication": "Renal anaemia"
+      },
+      {
+        "drug": "Alfacalcidol",
+        "dose": "0.25 micrograms",
+        "frequency": "OD",
+        "indication": "Renal bone disease"
+      }
+    ],
+    "allergies": [],
+    "nkda": true,
+    "socialHistory": "Non-smoker. Retired teacher.",
+    "confirmedDiagnosis": {
+      "name": "Pre-operative assessment — symptomatic gallstones; ESRF on haemodialysis, K⁺ 6.2",
+      "icd10": "Z01.818",
+      "assessmentText": "Symptomatic cholelithiasis. End-stage renal failure on HD (Mon/Wed/Fri). Potassium 6.2 mmol/L on a non-dialysis day. ASA III."
+    },
+    "platform": {
+      "web": {
+        "ccTemplate": "Other / general surgical",
+        "symptoms": [
+          "biliary colic"
+        ],
+        "durationDays": 240,
+        "painScore": 0
+      }
+    }
+  },
+  "expected": {
+    "safety": {
+      "redFlags": [
+        {
+          "id": "flag-hyperkalaemia",
+          "severity": "critical",
+          "match": [
+            "hyperkal",
+            "potassium",
+            "k⁺",
+            "k+"
+          ],
+          "guidelineRefs": [
+            "ukka-hyperk-2020"
+          ]
+        }
+      ]
+    },
+    "scores": {
+      "recommended": [
+        {
+          "id": "score-rec-rcri",
+          "severity": "quality",
+          "score": "rcri",
+          "guidelineRefs": [
+            "rcri-1999"
+          ]
+        }
+      ]
+    },
+    "management": {
+      "mustInclude": [
+        {
+          "id": "mgmt-correct-k-before-surgery",
+          "severity": "critical",
+          "match": [
+            "re:(defer|postpone|delay)\\w*[^.;\\n]{0,60}(potassium|k⁺|k\\+|surgery)",
+            "re:k⁺?\\s*must be\\s*<"
+          ],
+          "guidelineRefs": [
+            "ukka-hyperk-2020"
+          ],
+          "note": "Potassium 6.2 mmol/L must be corrected (dialysis) before anaesthesia."
+        },
+        {
+          "id": "mgmt-dialysis-timing",
+          "severity": "quality",
+          "match": [
+            "dialys"
+          ],
+          "guidelineRefs": [
+            "ukka-hyperk-2020"
+          ],
+          "note": "Dialysis patients: dialysis is the definitive treatment of hyperkalaemia; schedule dialysis before surgery.",
+          "proposedFix": "In the hyperkalaemia and pre-op prompts, when the PMH contains dialysis/ESRF: 'arrange dialysis before surgery (usually the day before) and recheck K⁺'."
+        }
+      ],
+      "mustExclude": [
+        {
+          "id": "mgmt-no-unadjusted-lmwh",
+          "severity": "quality",
+          "match": [
+            "re:enoxaparin\\s*40\\s*mg"
+          ],
+          "unless": [
+            "re:enoxaparin[^.;\\n]{0,60}(renal|egfr|crcl|dialys|dose-adjust)"
+          ],
+          "guidelineRefs": [
+            "nice-ng89"
+          ],
+          "note": "NICE NG89: in renal failure use LMWH or UFH with dose adjustment for renal function."
+        },
+        {
+          "id": "mgmt-no-nsaid",
+          "severity": "quality",
+          "match": [
+            "ibuprofen",
+            "diclofenac",
+            "naproxen",
+            "ketorolac"
+          ],
+          "unless": [
+            "re:(ibuprofen|diclofenac|naproxen|ketorolac)[^.;\\n]{0,30}\\(if egfr normal",
+            "re:(avoid|hold|stop|withh)\\w*[^.;\\n]{0,20}(nsaid|ibuprofen|diclofenac)"
+          ],
+          "guidelineRefs": [
+            "nice-ng203"
+          ],
+          "note": "NSAIDs harm residual renal function in dialysis patients. The lap chole template qualifies ibuprofen \"(if eGFR normal)\", which counts as qualified."
+        },
+        {
+          "id": "mgmt-no-appendicectomy",
+          "severity": "critical",
+          "match": [
+            "appendicectomy",
+            "appendectomy"
+          ],
+          "unless": [
+            "not indicated",
+            "no role",
+            "exclude appendicitis"
+          ],
+          "note": "Not an appendix presentation: an appendicectomy operative plan (consent, theatre booking, post-operative orders) is a wrong-procedure suggestion."
+        }
+      ]
+    }
+  },
+  "guideline": [
+    {
+      "id": "ukka-hyperk-2020",
+      "name": "UK Kidney Association — clinical practice guideline: treatment of acute hyperkalaemia in adults",
+      "year": 2020,
+      "section": "Mild 5.5–5.9, moderate 6.0–6.4, severe ≥6.5 mmol/L; insulin-glucose for K⁺ ≥6.0 mmol/L; ECG; treat the cause; dialysis for refractory hyperkalaemia or in dialysis patients",
+      "citation": "UK Kidney Association. Treatment of acute hyperkalaemia in adults. 2020 (updated 2023).",
+      "verified": false
+    },
+    {
+      "id": "rcri-1999",
+      "name": "Revised Cardiac Risk Index (Lee)",
+      "year": 1999,
+      "section": "High-risk surgery (intraperitoneal, intrathoracic, suprainguinal vascular), ischaemic heart disease, heart failure, cerebrovascular disease, insulin-treated diabetes, creatinine >2 mg/dL (177 µmol/L)",
+      "citation": "Lee TH, Marcantonio ER, Mangione CM, et al. Circulation. 1999;100:1043–9.",
+      "verified": false
+    },
+    {
+      "id": "nice-ng89",
+      "name": "NICE NG89 — Venous thromboembolism in over 16s: reducing the risk of hospital-acquired DVT or PE",
+      "year": 2018,
+      "section": "Assess VTE and bleeding risk; abdominal surgery with VTE risk above bleeding risk: pharmacological prophylaxis (LMWH) for at least 7 days; extended to 28 days after major cancer surgery in the abdomen/pelvis; mechanical prophylaxis (anti-embolism stockings or IPC) when pharmacological prophylaxis is contraindicated by bleeding risk; reassess within 24 h and when the clinical situation changes",
+      "citation": "National Institute for Health and Care Excellence. VTE in over 16s (NG89). London: NICE; 2018 (updated 2019).",
+      "verified": false
+    },
+    {
+      "id": "nice-ng203",
+      "name": "NICE NG203 — Chronic kidney disease: assessment and management",
+      "year": 2021,
+      "section": "Avoid long-term NSAIDs in CKD; adjust drug doses for renal function",
+      "citation": "National Institute for Health and Care Excellence. Chronic kidney disease (NG203). London: NICE; 2021.",
+      "verified": false
+    }
+  ],
+  "rationale": "Permutation: CKD 5 on dialysis. Tests recognition of pre-operative hyperkalaemia, deferral until corrected, dialysis timing and renal-safe VTE prophylaxis and analgesia.",
+  "authoring": {
+    "author": "Claude (perioperative medicine cluster)",
+    "date": "2026-09-25",
+    "notes": "Expectations and citations need surgeon sign-off (reviewedBy). Citations verified: false. iOS outcomes not yet observed (unverified: ios) — triage after the next CI run."
+  }
+}

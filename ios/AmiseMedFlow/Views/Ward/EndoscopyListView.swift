@@ -2,7 +2,10 @@ import SwiftUI
 import SwiftData
 
 struct EndoscopyListView: View {
-    @Query(sort: \Patient.createdAt) private var allPatients: [Patient]
+    @Query(sort: \Patient.createdAt) private var queriedAllPatients: [Patient]
+    // Deleted/detached records are dropped before any view reads them (SwiftData
+    // crashes when a body touches a deleted model before @Query refreshes).
+    private var allPatients: [Patient] { queriedAllPatients.filter(\.isLive) }
     @Environment(\.modelContext) private var context
 
     @State private var showAdd = false
@@ -66,7 +69,7 @@ struct EndoscopyListView: View {
                             }
                             .swipeActions(edge: .trailing, allowsFullSwipe: false) {
                                 Button(role: .destructive) {
-                                    context.delete(patient)
+                                    context.deletePatient(patient)
                                 } label: {
                                     Label("Remove", systemImage: "trash")
                                 }
@@ -115,9 +118,7 @@ struct EndoscopyListView: View {
             .sheet(isPresented: $showAdd) {
                 AddPatientView(initialSetting: .endoscopy)
             }
-            .sheet(item: $selectedPatient) { p in
-                PatientDetailView(patient: p)
-            }
+            .patientRecordPresentation(item: $selectedPatient)
         }
     }
 
@@ -125,7 +126,7 @@ struct EndoscopyListView: View {
         let today = Date.now.formatted(date: .abbreviated, time: .shortened)
         var lines: [String] = []
         lines.append("ENDOSCOPY LIST — \(today)")
-        lines.append("Amise Medical Services · Dr Dawit Daniel Kabiye MD DM")
+        lines.append("\(PracticeProfile.current.practiceName) · \(PracticeProfile.current.clinicianSignature)")
         lines.append(String(repeating: "═", count: 48))
         lines.append("")
 
@@ -146,9 +147,9 @@ struct EndoscopyListView: View {
             lines.append("Procedure: \(scope)")
             if let dx = patient.workingDiagnosis { lines.append("Indication: \(dx)") }
 
-            let allergies = patient.allergies
+            let allergies = patient.recordedAllergies
             if allergies.isEmpty {
-                lines.append("Allergies: NKDA")
+                lines.append("Allergies: \(patient.noAllergyStatusText)")
             } else {
                 lines.append("Allergies: " + allergies.map { "\($0.name) (\($0.severity))" }.joined(separator: ", "))
             }
@@ -161,6 +162,13 @@ struct EndoscopyListView: View {
                     lines.append("⚠ ANTICOAG/ANTIPLATELET: " + anticoags.map { $0.displayLine }.joined(separator: "; "))
                 }
                 lines.append("Medications: " + patient.prescriptions.map { $0.displayLine }.joined(separator: "; "))
+            }
+
+            // Include resulted investigation findings (Hb, INR, prior scope reports)
+            let scopeResults = patient.investigations.filter { $0.status == .resulted && !$0.result.isEmpty }
+            if !scopeResults.isEmpty {
+                let summary = scopeResults.prefix(4).map { "\($0.name): \($0.result)" }.joined(separator: "; ")
+                lines.append("Results: \(summary)")
             }
 
             lines.append(String(repeating: "─", count: 48))
@@ -206,7 +214,7 @@ struct EndoscopyRow: View {
     private var news2Label: (score: Int, color: Color, risk: String)? {
         guard let v = patient.vitalsEntries.sorted(by: { $0.recordedAt > $1.recordedAt }).first,
               v.hasAnyValue else { return nil }
-        return (v.news2Score, Color(hex: v.news2Color), v.news2Risk)
+        return (v.news2Score, Color(hex: v.news2Color), v.news2RiskDisplay)
     }
 
     private var asaColor: Color {
@@ -217,7 +225,13 @@ struct EndoscopyRow: View {
         }
     }
 
+    // Rows are built lazily; a patient deleted meanwhile must not be read (SwiftData crash).
     var body: some View {
+        if patient.isLive { liveBody }
+    }
+
+    @ViewBuilder
+    private var liveBody: some View {
         HStack(spacing: 0) {
             Rectangle()
                 .fill(Color(hex: "0891B2"))
@@ -309,6 +323,16 @@ struct EndoscopyRow: View {
                             .background((patient.preOpInstructionsSent ? Color.green : Color.orange).opacity(0.1), in: Capsule())
                         }
                         .buttonStyle(.plain)
+
+                        // Critical lab indicator for scope list
+                        let critLabs = LabPanel.parse(from: patient.investigations)
+                        if critLabs.hasCriticalValues {
+                            Image(systemName: "flask.fill")
+                                .font(.system(size: 9, weight: .bold)).foregroundStyle(.red)
+                        } else if patient.investigations.contains(where: { $0.status == .ordered || $0.status == .pending }) {
+                            Image(systemName: "clock.badge.exclamationmark")
+                                .font(.system(size: 9)).foregroundStyle(.orange)
+                        }
 
                         if patient.hasCriticalAllergy {
                             Image(systemName: "exclamationmark.shield.fill")

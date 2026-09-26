@@ -1,0 +1,226 @@
+{
+  "schemaVersion": 1,
+  "id": "groin-mimic-testicular-torsion",
+  "condition": "Testicular torsion presenting as groin pain",
+  "category": "hernia",
+  "permutationOf": null,
+  "summary": "14-year-old boy with 3 hours of sudden severe right groin and scrotal pain and vomiting, high-riding tender testis, absent cremasteric reflex. Torsion until proven otherwise: emergency scrotal exploration; ultrasound must not delay theatre.",
+  "tags": [
+    "groin-mimic",
+    "must-not-miss",
+    "paediatric",
+    "urology"
+  ],
+  "inputs": {
+    "patient": {
+      "ageYears": 14,
+      "sex": "male",
+      "pregnancy": {
+        "status": "not-applicable"
+      },
+      "heightCm": 165,
+      "weightKg": 52
+    },
+    "encounter": {
+      "setting": "emergency",
+      "visitType": "urgentReview",
+      "acuity": "urgent"
+    },
+    "chiefComplaint": "Sudden pain in the right groin and testicle",
+    "hpi": "Woke 3 hours ago with sudden severe pain in the right groin going down into the right testicle. Vomited twice. No trauma. No urinary symptoms. Mother thought it was a hernia.",
+    "socrates": {
+      "onset": [
+        "Today",
+        "Sudden"
+      ],
+      "site": [
+        "Right scrotum",
+        "Right inguinal"
+      ],
+      "character": [
+        "Tender"
+      ],
+      "radiation": [
+        "No radiation"
+      ],
+      "associations": [],
+      "timing": [
+        "Constant"
+      ],
+      "exacerbating": [
+        "None"
+      ],
+      "relieving": [
+        "Nothing"
+      ],
+      "severity": [
+        "Severe (7–9/10)"
+      ]
+    },
+    "symptoms": [
+      "groin pain",
+      "scrotal swelling",
+      "testicular pain",
+      "vomiting"
+    ],
+    "negatives": [
+      "trauma",
+      "dysuria",
+      "fever"
+    ],
+    "exam": {
+      "general": "Distressed. Pulse 104, temperature 36.9°C.",
+      "abdomen": "Soft, non-tender. Hernial orifices clear.",
+      "msk": "Genitalia: right testis high-riding with horizontal lie, exquisitely tender, mildly swollen scrotum; absent right cremasteric reflex. Left testis normal."
+    },
+    "vitals": [
+      {
+        "minutesAgo": 15,
+        "heartRate": 104,
+        "systolicBp": 128,
+        "diastolicBp": 72,
+        "respiratoryRate": 18,
+        "temperatureC": 36.9,
+        "spo2": 99,
+        "avpu": "A",
+        "onSupplementalO2": false
+      }
+    ],
+    "labs": [
+      {
+        "analyte": "urinalysis",
+        "name": "Urine dipstick",
+        "resultText": "Negative for leucocytes and nitrites",
+        "minutesAgo": 60
+      }
+    ],
+    "imaging": [],
+    "comorbidities": [],
+    "surgicalHistory": [],
+    "medications": [],
+    "allergies": [],
+    "nkda": true,
+    "socialHistory": "School pupil.",
+    "confirmedDiagnosis": {
+      "name": "Right testicular torsion (clinical diagnosis)",
+      "icd10": "N44.00",
+      "paneDiseaseId": "testicular_torsion",
+      "assessmentText": "Right testicular torsion until proven otherwise — 3 h, high-riding testis, absent cremasteric reflex. Emergency scrotal exploration and bilateral fixation; do not delay for ultrasound."
+    },
+    "platform": {
+      "web": {
+        "ccTemplate": "Inguinal / groin hernia",
+        "symptoms": [
+          "groin pain",
+          "scrotal swelling",
+          "vomiting"
+        ],
+        "examFindings": {
+          "genital": [
+            "Testicular tenderness",
+            "Scrotal swelling"
+          ]
+        },
+        "durationDays": 0.1,
+        "painScore": 9
+      }
+    }
+  },
+  "expected": {
+    "differential": {
+      "mustNotMiss": [
+        {
+          "id": "mnm-torsion",
+          "severity": "critical",
+          "match": [
+            "torsion",
+            "icd:N44"
+          ],
+          "guidelineRefs": [
+            "eau-paed-2024"
+          ]
+        }
+      ],
+      "mustRankTopK": [
+        {
+          "id": "dx-torsion-top3",
+          "severity": "critical",
+          "match": [
+            "torsion",
+            "icd:N44"
+          ],
+          "k": 3,
+          "guidelineRefs": [
+            "eau-paed-2024"
+          ]
+        }
+      ]
+    },
+    "safety": {
+      "emergencyLevel": {
+        "id": "level-emergency",
+        "severity": "critical",
+        "atLeast": "emergency",
+        "guidelineRefs": [
+          "eau-paed-2024"
+        ]
+      },
+      "mustAlarm": [
+        {
+          "id": "alarm-torsion",
+          "severity": "critical",
+          "match": [
+            "torsion"
+          ],
+          "guidelineRefs": [
+            "eau-paed-2024"
+          ]
+        }
+      ]
+    },
+    "management": {
+      "mustInclude": [
+        {
+          "id": "mgmt-exploration",
+          "severity": "critical",
+          "match": [
+            "scrotal exploration",
+            "explor"
+          ],
+          "guidelineRefs": [
+            "eau-paed-2024"
+          ]
+        }
+      ],
+      "mustExclude": [
+        {
+          "id": "mgmt-no-hernia-repair",
+          "severity": "critical",
+          "match": [
+            "hernia repair",
+            "lichtenstein",
+            "re:\\b(tep|tapp)\\b",
+            "herniorrhaphy"
+          ],
+          "note": "The mother's label (\"hernia\") and the groin template must not produce a hernia plan."
+        }
+      ]
+    }
+  },
+  "guideline": [
+    {
+      "id": "eau-paed-2024",
+      "name": "EAU/ESPU Guidelines on Paediatric Urology — acute scrotum",
+      "year": 2024,
+      "section": "Testicular torsion: clinical diagnosis, Doppler ultrasound must not delay surgery, urgent scrotal exploration",
+      "citation": "Radmayr C, Bogaert G, Burgu B, et al. EAU Guidelines on Paediatric Urology. EAU Guidelines Office, Arnhem; 2024 edition. Section: Acute scrotum in children.",
+      "verified": false
+    }
+  ],
+  "rationale": "Groin mimic with a 6-hour salvage window. The presenting words are \"groin\" and the only groin CC template is the hernia one; the scrotal findings are recorded where the web prompt engine reads them (extremities exam) and as chips.",
+  "authoring": {
+    "author": "Claude (hernia / breast / endocrine cluster)",
+    "date": "2026-09-25",
+    "notes": "Expectations need surgeon sign-off (reviewedBy). Citations verified: false."
+  }
+}

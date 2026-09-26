@@ -2,8 +2,11 @@ import type { Metadata } from 'next';
 import Link from 'next/link';
 import { AmsiseLogo } from './components/AmsiseLogo';
 import { MobileNavMenu } from './components/MobileNavMenu';
+import { siteUrl } from '@/lib/site';
+import { hasApprovedArticles } from '@/content/health-info';
 
 export const metadata: Metadata = {
+  alternates: { canonical: '/' },
   title: 'Amise Medical Services — Expert Surgical & Endoscopy Care, Saint Lucia',
   description:
     'Amise Medical Services — expert surgical and endoscopy care in Saint Lucia, led by Dr Dawit Daniel Kabiye, MD, DM. Colonoscopy, ERCP, hernia repair, breast clinic, thyroid surgery, diabetic foot care and more.',
@@ -889,6 +892,9 @@ function Footer() {
           <div style={{ fontSize: 10, fontWeight: 700, color: '#0d9488', textTransform: 'uppercase', letterSpacing: '0.1em', marginBottom: 10 }}>Patient Resources</div>
           <div style={{ display: 'flex', flexDirection: 'column', gap: 7 }}>
             <Link href="/guidance" style={{ fontSize: 13, color: '#94a3b8', textDecoration: 'none' }}>Health Guidance &amp; Screening</Link>
+            {hasApprovedArticles() && (
+              <Link href="/health-information" style={{ fontSize: 13, color: '#94a3b8', textDecoration: 'none' }}>Health Information</Link>
+            )}
             <Link href="/pathway" style={{ fontSize: 13, color: '#94a3b8', textDecoration: 'none' }}>Care Pathways</Link>
             <Link href="/book" style={{ fontSize: 13, color: '#94a3b8', textDecoration: 'none' }}>Book an Appointment</Link>
           </div>
@@ -926,7 +932,7 @@ const jsonLd = {
   '@type': 'MedicalBusiness',
   name: 'Amise Medical Services',
   description: 'Expert surgical and endoscopy care in Saint Lucia, led by Dr Dawit Daniel Kabiye, MD, DM.',
-  url: 'https://amisemedical.com',
+  url: siteUrl(),
   telephone: ['+17582840557', '+17587207111'],
   email: 'amisesuite@gmail.com',
   address: [

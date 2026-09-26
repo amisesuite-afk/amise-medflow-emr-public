@@ -1,0 +1,366 @@
+{
+  "schemaVersion": 1,
+  "id": "lgib-unstable-cta-first",
+  "condition": "Acute lower gastrointestinal bleeding — haemodynamically unstable",
+  "category": "gi-emergency",
+  "permutationOf": "lgib-oakland-low-risk-discharge",
+  "permutationLabel": "Unstable (shock index > 1 after resuscitation), elderly",
+  "summary": "74-year-old man with three large maroon and fresh bloody stools, pre-syncope, HR 118 and SBP 88 after 1 L of crystalloid (shock index 1.3), Hb 8.4. BSG 2019: CT angiography first, then catheter angiography/embolisation; consider an upper GI source.",
+  "tags": [
+    "lgib",
+    "shock",
+    "must-not-miss"
+  ],
+  "inputs": {
+    "patient": {
+      "ageYears": 74,
+      "sex": "male",
+      "pregnancy": {
+        "status": "not-applicable"
+      },
+      "heightCm": 172,
+      "weightKg": 80
+    },
+    "encounter": {
+      "setting": "emergency",
+      "visitType": "urgentReview",
+      "acuity": "emergency"
+    },
+    "chiefComplaint": "Passing large amounts of blood from the back passage",
+    "hpi": "Three large maroon and fresh bloody stools in the last 4 hours; felt faint on the toilet. No haematemesis, no black stools before today. No abdominal pain. Known sigmoid diverticular disease on a colonoscopy 5 years ago. Hypertension on amlodipine. No anticoagulants, no antiplatelets, no NSAIDs. No liver disease; drinks 4 units a week.",
+    "socrates": {
+      "onset": [
+        "Today",
+        "Sudden"
+      ],
+      "associations": [
+        "Rectal bleeding"
+      ],
+      "timing": [
+        "Episodic"
+      ],
+      "severity": [
+        "Moderate (4–6/10)"
+      ]
+    },
+    "symptoms": [
+      "rectal bleeding",
+      "pre-syncope"
+    ],
+    "negatives": [
+      "haematemesis",
+      "abdominal pain",
+      "anticoagulant use"
+    ],
+    "exam": {
+      "general": "Pale, clammy, alert. HR 118/min, BP 88/52 after 1 L crystalloid. Capillary refill 4 s.",
+      "abdomen": "Soft, non-tender, no peritonism, no masses.",
+      "other": "PR: fresh and maroon blood, no palpable mass."
+    },
+    "vitals": [
+      {
+        "minutesAgo": 60,
+        "heartRate": 108,
+        "systolicBp": 96,
+        "diastolicBp": 58,
+        "respiratoryRate": 20,
+        "temperatureC": 36.5,
+        "spo2": 97,
+        "avpu": "A",
+        "onSupplementalO2": false
+      },
+      {
+        "minutesAgo": 5,
+        "heartRate": 118,
+        "systolicBp": 88,
+        "diastolicBp": 52,
+        "respiratoryRate": 22,
+        "temperatureC": 36.4,
+        "spo2": 96,
+        "avpu": "A",
+        "onSupplementalO2": false
+      }
+    ],
+    "labs": [
+      {
+        "analyte": "haemoglobin",
+        "name": "Haemoglobin",
+        "value": 8.4,
+        "unit": "g/dL",
+        "minutesAgo": 60
+      },
+      {
+        "analyte": "wbc",
+        "name": "WBC",
+        "value": 9.1,
+        "unit": "×10⁹/L",
+        "minutesAgo": 60
+      },
+      {
+        "analyte": "platelets",
+        "name": "Platelets",
+        "value": 210,
+        "unit": "×10⁹/L",
+        "minutesAgo": 60
+      },
+      {
+        "analyte": "urea",
+        "name": "Urea",
+        "value": 7.2,
+        "unit": "mmol/L",
+        "minutesAgo": 60
+      },
+      {
+        "analyte": "creatinine",
+        "name": "Creatinine",
+        "value": 104,
+        "unit": "µmol/L",
+        "minutesAgo": 60
+      },
+      {
+        "analyte": "inr",
+        "name": "INR",
+        "value": 1.1,
+        "minutesAgo": 60
+      },
+      {
+        "analyte": "lactate",
+        "name": "Lactate",
+        "value": 3.1,
+        "unit": "mmol/L",
+        "minutesAgo": 60
+      }
+    ],
+    "comorbidities": [
+      "Hypertension",
+      "Diverticular disease"
+    ],
+    "surgicalHistory": [],
+    "medications": [
+      {
+        "drug": "Amlodipine",
+        "dose": "5 mg",
+        "frequency": "OD",
+        "indication": "Hypertension"
+      }
+    ],
+    "allergies": [],
+    "nkda": true,
+    "socialHistory": "Retired fisherman. Ex-smoker.",
+    "confirmedDiagnosis": {
+      "name": "Acute lower GI bleed — haemodynamically unstable",
+      "icd10": "K92.2",
+      "assessmentText": "Major acute lower GI bleed with haemodynamic instability (shock index > 1 after resuscitation). Probable diverticular source; upper GI source not yet excluded."
+    },
+    "platform": {
+      "web": {
+        "ccTemplate": "Rectal bleeding",
+        "symptoms": [
+          "rectal bleeding",
+          "pre-syncope"
+        ],
+        "symptomDetails": {
+          "rectal bleeding": [
+            "Dark red",
+            "Fresh red",
+            "Massive"
+          ]
+        },
+        "examFindings": {
+          "abdomen": [
+            "Soft",
+            "PR: blood"
+          ],
+          "cardiovascular": [
+            "Tachycardia",
+            "Capillary refill > 2s"
+          ],
+          "anal": [
+            "Blood on glove"
+          ]
+        },
+        "paneAnswers": {
+          "pr_bleeding": true,
+          "haemodynamic_instability": true
+        },
+        "durationDays": 0.2,
+        "painScore": 0
+      }
+    }
+  },
+  "expected": {
+    "safety": {
+      "emergencyLevel": {
+        "id": "level-emergency",
+        "severity": "critical",
+        "atLeast": "emergency",
+        "guidelineRefs": [
+          "bsg-lgib-2019"
+        ]
+      },
+      "mustAlarm": [
+        {
+          "id": "alarm-instability",
+          "severity": "critical",
+          "match": [
+            "hypotension",
+            "haemodynamic",
+            "shock",
+            "emergency"
+          ],
+          "guidelineRefs": [
+            "bsg-lgib-2019"
+          ]
+        }
+      ]
+    },
+    "scores": {
+      "recommended": [
+        {
+          "id": "score-rec-shock-index",
+          "severity": "quality",
+          "score": "web:shockIndex",
+          "platforms": [
+            "web"
+          ],
+          "guidelineRefs": [
+            "bsg-lgib-2019"
+          ],
+          "note": "BSG 2019 defines instability as shock index > 1 after initial resuscitation.",
+          "knownGap": [
+            "web"
+          ],
+          "knownGapNote": "No shock-index output on web; BSG 2019 defines instability by shock index > 1."
+        }
+      ]
+    },
+    "investigations": {
+      "mustInclude": [
+        {
+          "id": "inv-cta-first",
+          "severity": "critical",
+          "match": [
+            "ct angiogra",
+            "re:\\bcta\\b",
+            "re:\\bct\\b[^.;\\n]{0,30}angiogra",
+            "ct mesenteric angio"
+          ],
+          "guidelineRefs": [
+            "bsg-lgib-2019",
+            "acg-lgib-2023"
+          ],
+          "note": "BSG 2019: in unstable patients, CT angiography is the first investigation, followed by catheter angiography/embolisation within 60 minutes if positive. ACG 2023: CTA as the initial test in ongoing haemodynamically significant bleeding."
+        },
+        {
+          "id": "inv-upper-source",
+          "severity": "quality",
+          "match": [
+            "ogd",
+            "gastroscopy",
+            "upper gi endoscopy",
+            "upper endoscopy",
+            "oesophagogastroduodenoscopy"
+          ],
+          "guidelineRefs": [
+            "bsg-lgib-2019"
+          ],
+          "note": "BSG 2019: consider an upper GI source (OGD) in unstable haematochezia, especially if CTA is negative.",
+          "knownGap": [
+            "ios"
+          ],
+          "knownGapNote": "iOS CI 2026-09-25 (run 36169134350, database mode): no investigation matched among 8 (ios.pipeline.decisions, ios.radiation)"
+        },
+        {
+          "id": "inv-group-crossmatch",
+          "severity": "quality",
+          "match": [
+            "group",
+            "crossmatch",
+            "cross-match"
+          ],
+          "guidelineRefs": [
+            "bsg-lgib-2019"
+          ]
+        }
+      ]
+    },
+    "management": {
+      "mustInclude": [
+        {
+          "id": "mgmt-resuscitation",
+          "severity": "critical",
+          "match": [
+            "resuscitat",
+            "large-bore",
+            "transfus",
+            "red cell"
+          ],
+          "guidelineRefs": [
+            "bsg-lgib-2019"
+          ]
+        },
+        {
+          "id": "mgmt-embolisation",
+          "severity": "quality",
+          "match": [
+            "emboli",
+            "interventional radiology",
+            "catheter angiograph",
+            "mesenteric angiograph"
+          ],
+          "guidelineRefs": [
+            "bsg-lgib-2019"
+          ]
+        }
+      ],
+      "mustExclude": [
+        {
+          "id": "mgmt-no-terlipressin",
+          "severity": "critical",
+          "match": [
+            "terlipressin",
+            "variceal band",
+            "sengstaken"
+          ],
+          "sources": [
+            "web.plan",
+            "web.protocol.medications",
+            "web.clinicalPrompts",
+            "ios.radiation",
+            "ios.soap",
+            "ios.pipeline"
+          ],
+          "guidelineRefs": [
+            "bsg-lgib-2019"
+          ],
+          "note": "No cirrhosis or varices: a variceal (upper GI) plan is wrong for this lower GI bleed, and terlipressin causes ischaemia in patients with vascular disease.",
+          "proposedFix": "Remove K92 from the upper_gi_bleed protocol/dx-variant ICD prefixes (or require upper-GI words) and route lower GI bleeding to its own protocol."
+        }
+      ]
+    }
+  },
+  "guideline": [
+    {
+      "id": "bsg-lgib-2019",
+      "name": "BSG guideline — diagnosis and management of acute lower gastrointestinal bleeding",
+      "year": 2019,
+      "section": "Unstable bleeding (shock index > 1): CT angiography first; catheter angiography and embolisation if positive; OGD if no source; restrictive transfusion",
+      "citation": "Oakland K, Chadwick G, East JE, et al. Diagnosis and management of acute lower gastrointestinal bleeding: guidelines from the British Society of Gastroenterology. Gut. 2019;68:776–789.",
+      "verified": false
+    },
+    {
+      "id": "acg-lgib-2023",
+      "name": "ACG clinical guideline — management of patients with acute lower gastrointestinal bleeding (update)",
+      "year": 2023,
+      "section": "CTA as the initial diagnostic test in patients with ongoing haemodynamically significant haematochezia",
+      "citation": "Sengupta N, Feuerstein JD, Jairath V, et al. Management of patients with acute lower gastrointestinal bleeding: an updated ACG guideline. Am J Gastroenterol. 2023;118:208–231.",
+      "verified": false
+    }
+  ],
+  "rationale": "Permutation of the low-risk case: age and haemodynamic instability. The confirmed-diagnosis ICD (K92.2, GI haemorrhage unspecified) is what the surgeon would pick for a lower GI bleed; it exercises how the web plan chooses a protocol when there is no lower-GI-bleed protocol or dx variant.",
+  "authoring": {
+    "author": "Claude (colorectal/anorectal cluster)",
+    "date": "2026-09-25",
+    "notes": "Expectations need surgeon sign-off (reviewedBy). Citations verified: false until checked against the source."
+  }
+}

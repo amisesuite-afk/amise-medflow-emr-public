@@ -1,0 +1,369 @@
+{
+  "schemaVersion": 1,
+  "id": "burns-adult-flame-27pct",
+  "condition": "Major thermal burn (flame), adult",
+  "category": "trauma-burns",
+  "permutationOf": null,
+  "summary": "40-year-old man, 80 kg, petrol flash-flame in open air 2 h ago: 27 % TBSA (anterior trunk 18 %, right arm 9 %) mixed deep partial and full thickness; no inhalation features; HR 118, BP 128/76. Parkland 8,640 mL/24 h, 4,320 mL in the first 8 h from the burn.",
+  "tags": [
+    "burns",
+    "parkland",
+    "rule-of-nines"
+  ],
+  "inputs": {
+    "patient": {
+      "ageYears": 40,
+      "sex": "male",
+      "pregnancy": {
+        "status": "not-applicable"
+      },
+      "heightCm": 178,
+      "weightKg": 80
+    },
+    "encounter": {
+      "setting": "emergency",
+      "visitType": "burns",
+      "acuity": "emergency"
+    },
+    "chiefComplaint": "Burns to chest and arm from petrol fire",
+    "hpi": "Lighting a garden bonfire with petrol 2 hours ago (outdoors), flash of flame caught his shirt. Cooled under a hose for 20 minutes by neighbours. No enclosed space, no hoarseness, no cough. Tetanus last 15 years ago.",
+    "socrates": {
+      "onset": [
+        "Today",
+        "Sudden"
+      ],
+      "site": [
+        "Chest",
+        "Arm"
+      ],
+      "character": [
+        "Burning"
+      ],
+      "radiation": [
+        "No radiation"
+      ],
+      "associations": [],
+      "timing": [
+        "Constant"
+      ],
+      "exacerbating": [
+        "Movement"
+      ],
+      "relieving": [
+        "Nothing"
+      ],
+      "severity": [
+        "Severe (7–9/10)"
+      ]
+    },
+    "symptoms": [
+      "burn",
+      "pain"
+    ],
+    "negatives": [
+      "hoarse voice",
+      "cough",
+      "stridor",
+      "shortness of breath"
+    ],
+    "exam": {
+      "general": "Alert, in pain. HR 118, BP 128/76, RR 22, SpO2 97% on air, T 36.4°C. Weight 80 kg.",
+      "skin": "Flame burns: entire anterior trunk (18%) and whole right arm (9%) — 27% TBSA by rule of nines. Mixed deep partial-thickness (blistered, mottled, slow capillary refill) and full-thickness (white, leathery, insensate, ~10% TBSA) areas. Face, neck, hands and perineum spared. Not circumferential. No singed nasal hairs, no soot in the mouth."
+    },
+    "vitals": [
+      {
+        "minutesAgo": 5,
+        "heartRate": 118,
+        "systolicBp": 128,
+        "diastolicBp": 76,
+        "respiratoryRate": 22,
+        "temperatureC": 36.4,
+        "spo2": 97,
+        "avpu": "A",
+        "onSupplementalO2": false,
+        "weightKg": 80
+      }
+    ],
+    "labs": [
+      {
+        "analyte": "haemoglobin",
+        "name": "Haemoglobin",
+        "value": 16.2,
+        "unit": "g/dL",
+        "minutesAgo": 20
+      },
+      {
+        "analyte": "creatinine",
+        "name": "Creatinine",
+        "value": 92,
+        "unit": "µmol/L",
+        "minutesAgo": 20
+      }
+    ],
+    "imaging": [],
+    "comorbidities": [],
+    "surgicalHistory": [],
+    "medications": [],
+    "allergies": [],
+    "nkda": true,
+    "socialHistory": "Mechanic. Smoker.",
+    "confirmedDiagnosis": {
+      "name": "Flame burns 27% TBSA (deep partial and full thickness)",
+      "icd10": "T31.21",
+      "paneDiseaseId": "thermal_burn_major",
+      "assessmentText": "Major flame burn, 27% TBSA (rule of nines), ~10% full thickness, no inhalation injury. Formal fluid resuscitation — Parkland 4 mL × 80 kg × 27% = 8,640 mL over 24 h, half in the first 8 h from the time of burn, titrated to urine output 0.5 mL/kg/h; urinary catheter; burns centre referral."
+    },
+    "platform": {
+      "ios": {
+        "specialtyHint": "burns"
+      },
+      "web": {
+        "ccTemplate": "Other / general surgical",
+        "symptoms": [
+          "wound pain",
+          "skin lesion"
+        ],
+        "examFindings": {
+          "skin": [
+            "Lesion present"
+          ],
+          "cardiovascular": [
+            "Tachycardia"
+          ]
+        },
+        "paneAnswers": {
+          "burn_wound": true,
+          "tbsa_significant": true,
+          "blistering": true,
+          "inhalation_injury": false,
+          "singed_eyebrows": false
+        },
+        "durationDays": 0,
+        "painScore": 8
+      }
+    }
+  },
+  "expected": {
+    "differential": {
+      "mustRankTopK": [
+        {
+          "id": "dx-major-burn-top3",
+          "severity": "quality",
+          "match": [
+            "burn"
+          ],
+          "k": 3,
+          "guidelineRefs": [
+            "atls-10-burns"
+          ],
+          "knownGap": [
+            "ios"
+          ],
+          "knownGapNote": "iOS CI 2026-09-25 (run 36169134350, database mode): not in top 3 of ios.bayes: 1. Gastro-oesophageal Reflux Disease | 2. Community-Acquired Pneumonia | 3. Atrial Fibrillation | 4. Necrotising Soft Tissue Infection (Necrotising Fasciitis) | 5. Acute Limb Ischaemia"
+        }
+      ]
+    },
+    "safety": {
+      "emergencyLevel": {
+        "id": "level-emergency",
+        "severity": "critical",
+        "atLeast": "emergency",
+        "guidelineRefs": [
+          "atls-10-burns",
+          "aba-referral"
+        ]
+      },
+      "redFlags": [
+        {
+          "id": "flag-major-burn",
+          "severity": "quality",
+          "match": [
+            "tbsa",
+            "major burn",
+            "full thickness",
+            "full-thickness"
+          ]
+        }
+      ]
+    },
+    "investigations": {
+      "mustInclude": [
+        {
+          "id": "inv-tbsa-assessment",
+          "severity": "quality",
+          "match": [
+            "rule of nines",
+            "lund",
+            "tbsa"
+          ],
+          "guidelineRefs": [
+            "atls-10-burns"
+          ]
+        }
+      ]
+    },
+    "management": {
+      "mustInclude": [
+        {
+          "id": "mgmt-formal-fluids",
+          "severity": "critical",
+          "match": [
+            "parkland",
+            "re:\\d\\s?ml\\s?[x×]\\s?(kg|weight)",
+            "re:ml/kg/%\\s?tbsa",
+            "fluid resuscitation",
+            "formal fluid"
+          ],
+          "guidelineRefs": [
+            "burns-fluid-threshold",
+            "aba-fluid-2008"
+          ],
+          "proposedFix": "Register burns protocols by TBSA band (T31.0–T31.9 / T32 for corrosions), with the formal-fluid threshold by age (adult ≥15%, child ≥10% per the practice standard), and add burn chips/CC template so PANE and triage can see a burn."
+        },
+        {
+          "id": "mgmt-from-time-of-burn",
+          "severity": "quality",
+          "match": [
+            "time of burn",
+            "time of injury",
+            "from injury",
+            "from the burn"
+          ],
+          "guidelineRefs": [
+            "burns-fluid-threshold",
+            "atls-10-burns"
+          ],
+          "proposedFix": "Register burns protocols by TBSA band (T31.0–T31.9 / T32 for corrosions), with the formal-fluid threshold by age (adult ≥15%, child ≥10% per the practice standard), and add burn chips/CC template so PANE and triage can see a burn."
+        },
+        {
+          "id": "mgmt-urine-output-titration",
+          "severity": "quality",
+          "match": [
+            "urine output",
+            "re:\\buo\\b",
+            "urinary catheter"
+          ],
+          "guidelineRefs": [
+            "aba-fluid-2008",
+            "atls-10-burns"
+          ],
+          "proposedFix": "Register burns protocols by TBSA band (T31.0–T31.9 / T32 for corrosions), with the formal-fluid threshold by age (adult ≥15%, child ≥10% per the practice standard), and add burn chips/CC template so PANE and triage can see a burn."
+        },
+        {
+          "id": "mgmt-burns-referral",
+          "severity": "critical",
+          "match": [
+            "burns unit",
+            "burn unit",
+            "burns centre",
+            "burn centre",
+            "burn center",
+            "burns service",
+            "burn service",
+            "burns specialist",
+            "regional burns",
+            "plastic surg"
+          ],
+          "guidelineRefs": [
+            "aba-referral",
+            "nnbc-2012"
+          ]
+        },
+        {
+          "id": "mgmt-tetanus",
+          "severity": "quality",
+          "match": [
+            "tetanus"
+          ],
+          "guidelineRefs": [
+            "atls-10-burns"
+          ],
+          "proposedFix": "Register burns protocols by TBSA band (T31.0–T31.9 / T32 for corrosions), with the formal-fluid threshold by age (adult ≥15%, child ≥10% per the practice standard), and add burn chips/CC template so PANE and triage can see a burn."
+        }
+      ],
+      "mustExclude": [
+        {
+          "id": "mgmt-no-oral-fluids-only",
+          "severity": "quality",
+          "match": [
+            "oral fluids may suffice",
+            "managed with oral fluids"
+          ],
+          "guidelineRefs": [
+            "burns-fluid-threshold"
+          ]
+        },
+        {
+          "id": "mgmt-no-unrelated-plan",
+          "severity": "quality",
+          "match": [
+            "isoniazid",
+            "tuberculosis",
+            "rifampicin"
+          ],
+          "sources": [
+            "ios.radiation",
+            "ios.soap",
+            "web.plan",
+            "web.protocol",
+            "web.managementPanel"
+          ],
+          "note": "Reading the iOS source, \"tb\" inside \"TBSA\" would attach the pulmonary tuberculosis plan to a burn diagnosis — to be confirmed on the first iOS CI run."
+        }
+      ]
+    },
+    "pathway": {
+      "id": "pathway-burns",
+      "severity": "quality",
+      "equals": "burns"
+    }
+  },
+  "guideline": [
+    {
+      "id": "atls-10-burns",
+      "name": "ATLS 10th edition — thermal injuries",
+      "year": 2018,
+      "section": "Chapter 9: stop the burning process; early airway control for inhalation injury (hoarseness, stridor, carbonaceous sputum, singed facial hair, enclosed-space fire); 100% oxygen and carboxyhaemoglobin for suspected CO; TBSA by rule of nines (adults) or Lund–Browder (children); fluid resuscitation titrated to urine output (adult 0.5 mL/kg/h, child ≤30 kg 1 mL/kg/h, high-voltage electrical injury with pigmented urine 1–1.5 mL/kg/h); children also need maintenance glucose-containing fluid; escharotomy for circumferential full-thickness burns; chemical burns — remove agent and irrigate with copious water; electrical — ECG and cardiac monitoring, rhabdomyolysis, compartment syndrome",
+      "citation": "American College of Surgeons Committee on Trauma. ATLS Student Course Manual. 10th ed. Chicago: ACS; 2018. Chapter 9. (Lund–Browder chart: Lund CC, Browder NC. The estimation of areas of burns. Surg Gynecol Obstet. 1944;79:352–8.)",
+      "verified": false
+    },
+    {
+      "id": "aba-fluid-2008",
+      "name": "ABA practice guideline — burn shock resuscitation",
+      "year": 2008,
+      "section": "Formal resuscitation of large burns: crystalloid 2–4 mL/kg/%TBSA over the first 24 h from the time of burn, titrated to urine output (adults 0.5 mL/kg/h); avoid over-resuscitation",
+      "citation": "Pham TN, Cancio LC, Gibran NS. American Burn Association practice guidelines burn shock resuscitation. J Burn Care Res. 2008;29:257–66.",
+      "verified": false
+    },
+    {
+      "id": "burns-fluid-threshold",
+      "name": "Formal burn fluid resuscitation threshold (UK practice standard adopted in the practice brief)",
+      "year": 2026,
+      "section": "Formal IV fluid resuscitation only for burns ≥15% TBSA in adults and ≥10% in children, by the Parkland formula (4 mL/kg/%TBSA crystalloid over 24 h); half of the 24 h volume in the first 8 h from the time of burn, adjusted to urine output. The source statement (BBA / NNBC / local burns network) and the ≥ vs > wording are to be identified and verified by the surgeon",
+      "citation": "Amise Medical Services clinical-validation brief, 2026-09-25 (threshold to be traced to its published source). Parkland formula: Baxter CR, Shires T. Physiological response to crystalloid resuscitation of severe burns. Ann N Y Acad Sci. 1968;150:874–94.",
+      "verified": false
+    },
+    {
+      "id": "aba-referral",
+      "name": "American Burn Association — burn centre referral criteria",
+      "year": 2006,
+      "section": "Refer: partial-thickness burns >10% TBSA; burns involving face, hands, feet, genitalia, perineum or major joints; full-thickness burns in any age group; electrical burns (including lightning); chemical burns; inhalation injury; burns with pre-existing medical disorders or concomitant trauma; burned children in hospitals without qualified personnel; patients needing special social or rehabilitative support (including suspected abuse). (2022 ABA update to be checked)",
+      "citation": "American Burn Association / American College of Surgeons Committee on Trauma. Guidelines for the operation of burn centers — burn center referral criteria. In: Resources for Optimal Care of the Injured Patient. Chicago: ACS; 2006.",
+      "verified": false
+    },
+    {
+      "id": "nnbc-2012",
+      "name": "National Network for Burn Care (British Burn Association) — National Burn Care Referral Guidance",
+      "year": 2012,
+      "section": "Referral to a specialised burn service by size (children and adults, partial thickness or more), all full-thickness and circumferential burns, special areas (face, hands, feet, genitalia, perineum, major joints), chemical, electrical, friction and cold injuries, inhalation injury, suspected non-accidental injury, and burns not healed in 2 weeks (thresholds to be checked against the source)",
+      "citation": "National Network for Burn Care. National Burn Care Referral Guidance. Version 1. London: NNBC; 2012.",
+      "verified": false
+    }
+  ],
+  "rationale": "Base burns case: adult, 27 % TBSA by rule of nines, above the formal resuscitation threshold, no inhalation injury. Tests formal fluid resuscitation (Parkland timed from the burn, titrated to urine output), burns-centre referral, tetanus and emergency level. ICD T31.21 (20–29 % TBSA, 10–19 % full thickness) tests the ICD route: the major-burn protocol is registered for T31.3–T31.9 (≥30 %) only. No web symptom chip exists for a burn, so the nearest chips are used.",
+  "authoring": {
+    "author": "Claude (soft tissue / vascular / trauma / burns cluster)",
+    "date": "2026-09-25",
+    "notes": "Expectations need surgeon sign-off (reviewedBy). Citations verified: false. iOS outcomes are unverified until the first CI run."
+  }
+}

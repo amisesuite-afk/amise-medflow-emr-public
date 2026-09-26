@@ -1,0 +1,362 @@
+{
+  "schemaVersion": 1,
+  "id": "periop-postop-ileus",
+  "condition": "Prolonged post-operative ileus (day 4)",
+  "category": "gi-emergency",
+  "permutationOf": null,
+  "summary": "69-year-old woman, day 4 after open right hemicolectomy: vomiting, distension, no flatus for 48 h, afebrile, no peritonism, K 3.1, Mg 0.58, CRP falling; morphine PCA running.",
+  "tags": [
+    "periop",
+    "postop",
+    "ileus",
+    "colorectal"
+  ],
+  "inputs": {
+    "patient": {
+      "ageYears": 69,
+      "sex": "female",
+      "pregnancy": {
+        "status": "not-applicable"
+      },
+      "heightCm": 161,
+      "weightKg": 70
+    },
+    "encounter": {
+      "setting": "inpatient",
+      "visitType": "wardReview",
+      "acuity": "priority",
+      "isPostOp": true,
+      "postOpDays": 4
+    },
+    "chiefComplaint": "Vomiting and bloating after bowel operation",
+    "hpi": "Day 4 after open right hemicolectomy (converted from laparoscopic) for caecal cancer. Nausea, three vomits today, hiccups, bloated; no flatus or stool for 48 hours. Morphine PCA still running. No fever, no rigors. Pain around the wound only.",
+    "socrates": {
+      "onset": [
+        "2–3 days ago",
+        "Gradual"
+      ],
+      "site": [
+        "Diffuse"
+      ],
+      "character": [
+        "Bloating"
+      ],
+      "radiation": [
+        "No radiation"
+      ],
+      "associations": [
+        "Nausea",
+        "Vomiting"
+      ],
+      "timing": [
+        "Constant"
+      ],
+      "exacerbating": [
+        "Eating"
+      ],
+      "relieving": [
+        "Vomiting"
+      ],
+      "severity": [
+        "Mild (1–3/10)"
+      ]
+    },
+    "symptoms": [
+      "vomiting",
+      "abdominal distension",
+      "constipation",
+      "hiccups"
+    ],
+    "negatives": [
+      "fever",
+      "rigors"
+    ],
+    "exam": {
+      "general": "Comfortable at rest. HR 92, BP 128/76, RR 16, SpO2 96% on air, T 37.1°C.",
+      "abdomen": "Distended, tympanic, mildly tender around the wound, no peritonism. Bowel sounds quiet. Wound clean."
+    },
+    "vitals": [
+      {
+        "minutesAgo": 5,
+        "heartRate": 92,
+        "systolicBp": 128,
+        "diastolicBp": 76,
+        "respiratoryRate": 16,
+        "temperatureC": 37.1,
+        "spo2": 96,
+        "avpu": "A",
+        "onSupplementalO2": false
+      }
+    ],
+    "labs": [
+      {
+        "analyte": "potassium",
+        "name": "Potassium",
+        "value": 3.1,
+        "unit": "mmol/L",
+        "minutesAgo": 60
+      },
+      {
+        "analyte": "magnesium",
+        "name": "Magnesium",
+        "value": 0.58,
+        "unit": "mmol/L",
+        "minutesAgo": 60
+      },
+      {
+        "analyte": "sodium",
+        "name": "Sodium",
+        "value": 135,
+        "unit": "mmol/L",
+        "minutesAgo": 60
+      },
+      {
+        "analyte": "crp",
+        "name": "CRP",
+        "value": 96,
+        "unit": "mg/L",
+        "minutesAgo": 60
+      },
+      {
+        "analyte": "wbc",
+        "name": "WBC",
+        "value": 9.8,
+        "unit": "×10⁹/L",
+        "minutesAgo": 60
+      },
+      {
+        "analyte": "creatinine",
+        "name": "Creatinine",
+        "value": 74,
+        "unit": "µmol/L",
+        "minutesAgo": 60
+      }
+    ],
+    "imaging": [],
+    "comorbidities": [
+      "Caecal adenocarcinoma (resected)",
+      "Hypertension"
+    ],
+    "surgicalHistory": [
+      "Open right hemicolectomy (day 4)"
+    ],
+    "medications": [
+      {
+        "drug": "Morphine PCA",
+        "dose": "1 mg bolus",
+        "frequency": "PRN",
+        "indication": "Analgesia"
+      },
+      {
+        "drug": "Enoxaparin",
+        "dose": "40 mg",
+        "frequency": "OD",
+        "indication": "VTE prophylaxis"
+      },
+      {
+        "drug": "Paracetamol",
+        "dose": "1 g",
+        "frequency": "QDS",
+        "indication": "Analgesia"
+      }
+    ],
+    "allergies": [],
+    "nkda": true,
+    "socialHistory": "Non-smoker.",
+    "confirmedDiagnosis": {
+      "name": "Prolonged post-operative ileus — day 4 after right hemicolectomy",
+      "icd10": "K56.7",
+      "paneDiseaseId": "ileus_postop",
+      "assessmentText": "Prolonged post-operative ileus (day 4) with hypokalaemia and hypomagnesaemia on opioid PCA; no signs of leak, CRP falling. NG decompression, correct K and Mg, reduce opioids, mobilise; CT if not settling or any sepsis."
+    },
+    "platform": {
+      "web": {
+        "ccTemplate": "Nausea / vomiting",
+        "symptoms": [
+          "vomiting",
+          "abdominal distension",
+          "constipation",
+          "hiccups"
+        ],
+        "durationDays": 2,
+        "painScore": 2,
+        "paneAnswers": {
+          "previous_surgery": true,
+          "abdominal_distension": true,
+          "nausea_vomiting": true,
+          "absolute_constipation": true,
+          "absent_bowel_sounds": true,
+          "postop_fever": false
+        }
+      }
+    }
+  },
+  "expected": {
+    "differential": {
+      "mustRankTopK": [
+        {
+          "id": "dx-ileus-top3",
+          "severity": "quality",
+          "match": [
+            "ileus"
+          ],
+          "k": 3,
+          "guidelineRefs": [
+            "vather-poi-2013"
+          ],
+          "knownGap": [
+            "ios"
+          ],
+          "knownGapNote": "iOS CI 2026-09-25 (run 36169134350, database mode): not in top 3 of ios.bayes: 1. Small Bowel Obstruction | 2. Surgical Site Infection | 3. Functional dyspepsia | 4. Anastomotic Leak | 5. Acute Kidney Injury"
+        }
+      ],
+      "mustNotMiss": [
+        {
+          "id": "mnm-leak-or-obstruction",
+          "severity": "quality",
+          "match": [
+            "anastomotic",
+            "leak",
+            "obstruction",
+            "adhesi"
+          ],
+          "guidelineRefs": [
+            "eras-colorectal-2019"
+          ]
+        }
+      ]
+    },
+    "investigations": {
+      "mustInclude": [
+        {
+          "id": "inv-electrolytes",
+          "severity": "quality",
+          "match": [
+            "potassium",
+            "magnesium",
+            "u&e",
+            "electrolyte"
+          ],
+          "guidelineRefs": [
+            "eras-colorectal-2019"
+          ]
+        },
+        {
+          "id": "inv-ct-if-not-resolving",
+          "severity": "quality",
+          "match": [
+            "re:\\bct\\b[^.;\\n]{0,40}(abdo|pelvi)",
+            "computed tomography"
+          ],
+          "guidelineRefs": [
+            "eras-colorectal-2019"
+          ],
+          "note": "CT when ileus does not settle or there are signs of sepsis, to exclude leak or mechanical obstruction."
+        }
+      ]
+    },
+    "management": {
+      "mustInclude": [
+        {
+          "id": "mgmt-ng-decompression",
+          "severity": "quality",
+          "match": [
+            "nasogastric",
+            "ng tube",
+            "ngt",
+            "ng decompression"
+          ],
+          "guidelineRefs": [
+            "eras-colorectal-2019"
+          ]
+        },
+        {
+          "id": "mgmt-reduce-opioids",
+          "severity": "quality",
+          "match": [
+            "opioid",
+            "opiate"
+          ],
+          "guidelineRefs": [
+            "eras-colorectal-2019"
+          ],
+          "knownGap": [
+            "ios"
+          ],
+          "knownGapNote": "iOS CI 2026-09-25 (run 36169134350, database mode): no management item matched among 6 (ios.pipeline.decisions, ios.pipeline.actions, ios.soap.plan)"
+        },
+        {
+          "id": "mgmt-correct-electrolytes",
+          "severity": "quality",
+          "match": [
+            "potassium",
+            "magnesium",
+            "kcl"
+          ],
+          "guidelineRefs": [
+            "eras-colorectal-2019"
+          ],
+          "knownGap": [
+            "ios"
+          ],
+          "knownGapNote": "iOS CI 2026-09-25 (run 36169134350, database mode): no management item matched among 6 (ios.pipeline.decisions, ios.pipeline.actions, ios.soap.plan)"
+        }
+      ],
+      "mustExclude": [
+        {
+          "id": "mgmt-no-emergency-laparotomy",
+          "severity": "critical",
+          "match": [
+            "emergency laparotomy"
+          ],
+          "unless": [
+            "hinchey",
+            "grade c",
+            "if peritonitis",
+            "if generalised peritonitis"
+          ],
+          "note": "No generalised peritonitis or perforation: an emergency-laparotomy consent line is a wrong-procedure suggestion.",
+          "proposedFix": "Negation-aware matching (NegEx-style) in clinical-inference.ts exam()/hasRadResult() and triage rules.ts (see findings/hpb.md gap 1); gate operative-plan cascades on the working diagnosis."
+        },
+        {
+          "id": "mgmt-no-appendicectomy",
+          "severity": "critical",
+          "match": [
+            "appendicectomy",
+            "appendectomy"
+          ],
+          "unless": [
+            "not indicated",
+            "no role",
+            "exclude appendicitis"
+          ],
+          "note": "Not an appendix presentation: an appendicectomy operative plan (consent, theatre booking, post-operative orders) is a wrong-procedure suggestion."
+        }
+      ]
+    }
+  },
+  "guideline": [
+    {
+      "id": "vather-poi-2013",
+      "name": "Definition of postoperative ileus (systematic review and consensus)",
+      "year": 2013,
+      "section": "Prolonged post-operative ileus: two or more of nausea/vomiting, inability to tolerate oral diet over 24 h, absence of flatus over 24 h, distension, radiological confirmation, on or after day 4 without prior resolution",
+      "citation": "Vather R, Trivedi S, Bissett I. J Gastrointest Surg. 2013;17:962–72.",
+      "verified": false
+    },
+    {
+      "id": "eras-colorectal-2019",
+      "name": "ERAS Society guidelines — elective colorectal surgery",
+      "year": 2019,
+      "section": "Opioid-sparing multimodal analgesia, avoidance of fluid overload, early oral intake, no routine nasogastric tube; prolonged ileus should prompt a search for a cause",
+      "citation": "Gustafsson UO, Scott MJ, Hubner M, et al. World J Surg. 2019;43:659–95.",
+      "verified": false
+    }
+  ],
+  "rationale": "Base prolonged post-operative ileus. Tests diagnosis, keeping leak/obstruction in view, electrolytes, NG decompression, opioid reduction and CT when not settling.",
+  "authoring": {
+    "author": "Claude (perioperative medicine cluster)",
+    "date": "2026-09-25",
+    "notes": "Expectations and citations need surgeon sign-off (reviewedBy). Citations verified: false. iOS outcomes not yet observed (unverified: ios) — triage after the next CI run."
+  }
+}

@@ -1,0 +1,47 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://amise.local/clinical-content/schemas/zebra-rules.schema.json",
+  "title": "Zebra check rules (diagnostic-reasoning-zebras)",
+  "description": "Rare but real conditions that explain an unusual combination of findings. Read by lib/triage-engine/src/diagnostic-reasoning/zebra-rules.ts (web) and ZebraCheck.swift (iOS, ZebraCheck.RuleFile). A rule matches when every `all` group has an affirmed term, at least `atLeast.count` of `atLeast.groups` have one, and no `none` term is affirmed (negation-aware, at word starts).",
+  "type": "object",
+  "required": ["id", "version", "rules"],
+  "additionalProperties": false,
+  "properties": {
+    "$schema": { "type": "string" },
+    "$comment": { "type": "string" },
+    "id": { "const": "diagnostic-reasoning-zebras" },
+    "version": { "$ref": "#/$defs/semver" },
+    "rules": { "type": "array", "minItems": 1, "items": { "$ref": "#/$defs/rule" } }
+  },
+  "$defs": {
+    "semver": { "type": "string", "pattern": "^\\d+\\.\\d+\\.\\d+$" },
+    "term": { "type": "string", "minLength": 1, "pattern": "^[^A-Z]*$" },
+    "termGroup": { "type": "array", "minItems": 1, "items": { "$ref": "#/$defs/term" } },
+    "atLeast": {
+      "type": "object",
+      "required": ["count", "groups"],
+      "additionalProperties": false,
+      "properties": {
+        "count": { "type": "integer", "minimum": 1 },
+        "groups": { "type": "array", "minItems": 1, "items": { "$ref": "#/$defs/termGroup" } }
+      }
+    },
+    "rule": {
+      "type": "object",
+      "required": ["id", "condition", "icd10", "paneId", "explains", "all", "atLeast", "none", "link", "citation"],
+      "additionalProperties": false,
+      "properties": {
+        "id": { "type": "string", "pattern": "^[a-z0-9]+(-[a-z0-9]+)*$" },
+        "condition": { "type": "string", "minLength": 1 },
+        "icd10": { "type": "string", "pattern": "^[A-Z][0-9]{2}(\\.[0-9A-Z]{1,4})?$" },
+        "paneId": { "type": ["string", "null"], "description": "pane-engine disease id when the web model has a node for it (flags 'already in the differential')." },
+        "explains": { "type": "string", "minLength": 1 },
+        "all": { "type": "array", "items": { "$ref": "#/$defs/termGroup" } },
+        "atLeast": { "oneOf": [{ "type": "null" }, { "$ref": "#/$defs/atLeast" }] },
+        "none": { "type": "array", "items": { "$ref": "#/$defs/term" } },
+        "link": { "type": ["string", "null"], "enum": ["supplements", null], "description": "Consultation module to open for it, or null." },
+        "citation": { "type": "string", "minLength": 1 }
+      }
+    }
+  }
+}

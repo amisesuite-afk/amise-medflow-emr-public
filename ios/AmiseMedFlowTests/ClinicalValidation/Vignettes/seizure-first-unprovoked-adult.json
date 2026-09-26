@@ -1,0 +1,234 @@
+{
+  "schemaVersion": 1,
+  "id": "seizure-first-unprovoked-adult",
+  "condition": "First unprovoked seizure",
+  "category": "other",
+  "permutationOf": null,
+  "permutationLabel": "Young woman, recovered, drives",
+  "summary": "28-year-old woman with a witnessed 2-minute generalised tonic-clonic seizure, tongue bite and incontinence, now fully recovered; glucose, sodium and calcium normal.",
+  "tags": [
+    "neuro",
+    "seizure"
+  ],
+  "inputs": {
+    "patient": {
+      "ageYears": 28,
+      "sex": "female",
+      "pregnancy": {
+        "status": "not-pregnant"
+      },
+      "heightCm": 167,
+      "weightKg": 64
+    },
+    "encounter": {
+      "setting": "emergency",
+      "visitType": "urgentReview",
+      "acuity": "urgent"
+    },
+    "chiefComplaint": "Collapse with jerking at work",
+    "hpi": "Colleagues saw her go stiff and then shake all four limbs for about 2 minutes at her desk 90 minutes ago; bitten tongue, wet herself, confused for 20 minutes afterwards. Now back to normal. No previous episodes, no alcohol or drugs, no head injury. Drives to work.",
+    "symptoms": [
+      "seizure",
+      "loss of consciousness",
+      "confusion"
+    ],
+    "negatives": [
+      "headache",
+      "fever",
+      "chest pain",
+      "palpitations"
+    ],
+    "exam": {
+      "general": "Alert, orientated. Lateral tongue bite. Pulse 82/min regular, BP 124/76, temperature 36.9°C.",
+      "neuro": "GCS 15, no focal deficit."
+    },
+    "vitals": [
+      {
+        "minutesAgo": 10,
+        "heartRate": 82,
+        "systolicBp": 124,
+        "diastolicBp": 76,
+        "respiratoryRate": 14,
+        "temperatureC": 36.9,
+        "spo2": 99,
+        "avpu": "A",
+        "onSupplementalO2": false,
+        "glucoseMmol": 5.4,
+        "weightKg": 64
+      }
+    ],
+    "labs": [
+      {
+        "analyte": "glucose",
+        "name": "Glucose",
+        "value": 5.4,
+        "unit": "mmol/L",
+        "minutesAgo": 40
+      },
+      {
+        "analyte": "sodium",
+        "name": "Sodium",
+        "value": 139,
+        "unit": "mmol/L",
+        "minutesAgo": 30
+      },
+      {
+        "analyte": "calcium",
+        "name": "Adjusted calcium",
+        "value": 2.34,
+        "unit": "mmol/L",
+        "minutesAgo": 30
+      },
+      {
+        "analyte": "bhcg",
+        "name": "Urine hCG",
+        "resultText": "Negative",
+        "minutesAgo": 30
+      }
+    ],
+    "imaging": [],
+    "comorbidities": [],
+    "surgicalHistory": [],
+    "medications": [],
+    "allergies": [],
+    "nkda": true,
+    "socialHistory": "Accountant. Drives. No alcohol excess, no drugs.",
+    "confirmedDiagnosis": {
+      "name": "First unprovoked generalised tonic-clonic seizure",
+      "icd10": "R56.9",
+      "assessmentText": "First generalised tonic-clonic seizure, recovered: ECG, bloods, first-seizure specialist referral within 2 weeks, driving and safety advice."
+    },
+    "platform": {
+      "web": {
+        "ccTemplate": "Other / general surgical",
+        "symptoms": [
+          "seizure",
+          "loss of consciousness",
+          "confusion"
+        ],
+        "durationDays": 0.06
+      }
+    }
+  },
+  "expected": {
+    "differential": {
+      "mustNotMiss": [
+        {
+          "id": "mnm-seizure",
+          "severity": "critical",
+          "match": [
+            "seizure",
+            "epilep",
+            "convuls"
+          ],
+          "guidelineRefs": [
+            "nice-ng217"
+          ]
+        },
+        {
+          "id": "mnm-seizure-symptom-engine",
+          "severity": "quality",
+          "platforms": [
+            "web"
+          ],
+          "match": [
+            "seizure",
+            "epilep"
+          ],
+          "source": "web.symptomInference",
+          "guidelineRefs": [
+            "nice-ng217"
+          ]
+        }
+      ]
+    },
+    "safety": {
+      "emergencyLevel": {
+        "id": "level-priority",
+        "severity": "quality",
+        "atLeast": "priority",
+        "guidelineRefs": [
+          "nice-ng217"
+        ]
+      }
+    },
+    "management": {
+      "mustInclude": [
+        {
+          "id": "mgmt-ecg",
+          "severity": "critical",
+          "match": [
+            "ecg",
+            "electrocardiogram"
+          ],
+          "guidelineRefs": [
+            "nice-ng217"
+          ],
+          "note": "NICE NG217: 12-lead ECG in adults with a suspected seizure (cardiac causes). Graded as management because the web prompts add ECGs as plan lines."
+        },
+        {
+          "id": "mgmt-first-seizure-referral",
+          "severity": "critical",
+          "match": [
+            "neurolog",
+            "first seizure",
+            "first fit",
+            "epilepsy specialist",
+            "epilepsy service"
+          ],
+          "guidelineRefs": [
+            "nice-ng217"
+          ]
+        },
+        {
+          "id": "mgmt-driving-safety-advice",
+          "severity": "critical",
+          "match": [
+            "driv",
+            "dvla"
+          ],
+          "guidelineRefs": [
+            "nice-ng217"
+          ],
+          "note": "Driving and safety advice is a patient- and public-safety item."
+        }
+      ],
+      "mustExclude": [
+        {
+          "id": "mgmt-no-aed-before-specialist",
+          "severity": "quality",
+          "match": [
+            "levetiracetam",
+            "valproate",
+            "lamotrigine",
+            "carbamazepine"
+          ],
+          "unless": [
+            "specialist",
+            "after"
+          ],
+          "guidelineRefs": [
+            "nice-ng217"
+          ],
+          "note": "Antiseizure medicine is a specialist decision after a first seizure; valproate in a woman of childbearing potential needs particular care."
+        }
+      ]
+    }
+  },
+  "guideline": [
+    {
+      "id": "nice-ng217",
+      "name": "NICE NG217 — Epilepsies in children, young people and adults",
+      "year": 2022,
+      "section": "After a first suspected seizure: urgent referral to a specialist (seen within 2 weeks); 12-lead ECG in adults; blood glucose; advice on driving and safety (DVLA), and on what to do if another seizure happens; status epilepticus: benzodiazepine (buccal midazolam or IV lorazepam)",
+      "citation": "National Institute for Health and Care Excellence. Epilepsies in children, young people and adults. NICE guideline NG217. London: NICE; 2022.",
+      "verified": false
+    }
+  ],
+  "rationale": "NICE NG217: ECG, specialist referral within 2 weeks, driving and safety advice.",
+  "authoring": {
+    "author": "Claude (endocrine / renal / urology / neuro cluster)",
+    "date": "2026-09-25",
+    "notes": "Expectations need surgeon sign-off (reviewedBy). Every citation is verified: false. iOS outcomes not observed (Linux)."
+  }
+}

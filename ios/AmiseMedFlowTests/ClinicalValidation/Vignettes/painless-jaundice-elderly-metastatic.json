@@ -1,0 +1,364 @@
+{
+  "schemaVersion": 1,
+  "id": "painless-jaundice-elderly-metastatic",
+  "condition": "Pancreatic head carcinoma (malignant obstructive jaundice)",
+  "category": "hpb",
+  "permutationOf": "painless-jaundice-pancreatic-head",
+  "permutationLabel": "Elderly (84), frail (CFS 6), metastatic on CT — palliative biliary drainage, not resection",
+  "summary": "84-year-old frail woman (CFS 6) with painless jaundice, severe pruritus and weight loss; CT: 4 cm pancreatic head mass encasing the SMA with multiple liver metastases; bilirubin 310.",
+  "tags": [
+    "jaundice",
+    "malignancy",
+    "elderly",
+    "palliative"
+  ],
+  "inputs": {
+    "patient": {
+      "ageYears": 84,
+      "sex": "female",
+      "pregnancy": {
+        "status": "not-applicable"
+      },
+      "heightCm": 152,
+      "weightKg": 45
+    },
+    "encounter": {
+      "setting": "inpatient",
+      "visitType": "wardReview",
+      "acuity": "priority"
+    },
+    "chiefComplaint": "Painless jaundice and severe itching",
+    "hpi": "Two months of weight loss and poor appetite, jaundice for three weeks with severe itching keeping her awake. Housebound, needs help with washing and dressing (Clinical Frailty Scale 6). Lives with her daughter. CT done yesterday.",
+    "socrates": {
+      "onset": [
+        "1–4 weeks ago"
+      ],
+      "site": [
+        "Epigastric"
+      ],
+      "character": [
+        "Dull"
+      ],
+      "radiation": [
+        "Back"
+      ],
+      "associations": [
+        "Jaundice",
+        "Weight loss",
+        "Anorexia"
+      ],
+      "timing": [
+        "Progressive"
+      ],
+      "exacerbating": [],
+      "relieving": [
+        "Nothing"
+      ],
+      "severity": [
+        "Mild (1–3/10)"
+      ]
+    },
+    "symptoms": [
+      "jaundice",
+      "pruritus",
+      "weight loss",
+      "loss of appetite"
+    ],
+    "negatives": [
+      "fever"
+    ],
+    "exam": {
+      "general": "Frail, cachectic, deeply jaundiced with excoriations. Afebrile.",
+      "abdomen": "Palpable non-tender gallbladder. Hepatomegaly with an irregular edge."
+    },
+    "vitals": [
+      {
+        "minutesAgo": 20,
+        "heartRate": 84,
+        "systolicBp": 118,
+        "diastolicBp": 66,
+        "respiratoryRate": 16,
+        "temperatureC": 36.6,
+        "spo2": 96,
+        "avpu": "A",
+        "onSupplementalO2": false
+      }
+    ],
+    "labs": [
+      {
+        "analyte": "bilirubin",
+        "name": "Bilirubin",
+        "value": 310,
+        "unit": "µmol/L",
+        "minutesAgo": 40
+      },
+      {
+        "analyte": "alp",
+        "name": "ALP",
+        "value": 820,
+        "unit": "U/L",
+        "minutesAgo": 40
+      },
+      {
+        "analyte": "alt",
+        "name": "ALT",
+        "value": 160,
+        "unit": "U/L",
+        "minutesAgo": 40
+      },
+      {
+        "analyte": "inr",
+        "name": "INR",
+        "value": 1.4,
+        "unit": "",
+        "minutesAgo": 40
+      },
+      {
+        "analyte": "albumin",
+        "name": "Albumin",
+        "value": 26,
+        "unit": "g/L",
+        "minutesAgo": 40
+      },
+      {
+        "analyte": "ca199",
+        "name": "CA 19-9",
+        "value": 2400,
+        "unit": "U/mL",
+        "minutesAgo": 40
+      },
+      {
+        "analyte": "creatinine",
+        "name": "Creatinine",
+        "value": 90,
+        "unit": "µmol/L",
+        "minutesAgo": 40
+      },
+      {
+        "analyte": "wbc",
+        "name": "WBC",
+        "value": 8.2,
+        "unit": "×10⁹/L",
+        "minutesAgo": 40
+      }
+    ],
+    "imaging": [
+      {
+        "name": "CT pancreas protocol (chest/abdomen/pelvis)",
+        "modality": "CT",
+        "region": "Chest/abdomen/pelvis",
+        "minutesAgo": 1440,
+        "result": "4 cm hypodense pancreatic head mass encasing the superior mesenteric artery (>180°) with double-duct dilatation; multiple liver metastases (largest 3 cm); no lung metastases."
+      }
+    ],
+    "comorbidities": [
+      "Frailty (CFS 6)",
+      "Hypertension",
+      "Osteoarthritis"
+    ],
+    "medications": [
+      {
+        "drug": "Amlodipine",
+        "dose": "5 mg",
+        "frequency": "OD",
+        "indication": "Hypertension"
+      }
+    ],
+    "allergies": [],
+    "nkda": true,
+    "socialHistory": "Lives with daughter. Housebound.",
+    "confirmedDiagnosis": {
+      "name": "Metastatic pancreatic head carcinoma with malignant biliary obstruction",
+      "icd10": "C25.0",
+      "paneDiseaseId": "pancreatic_carcinoma",
+      "assessmentText": "Metastatic (liver) pancreatic head carcinoma, SMA encasement — unresectable. Malignant distal biliary obstruction with severe pruritus. Frail (CFS 6)."
+    },
+    "platform": {
+      "web": {
+        "ccTemplate": "Obstructive jaundice",
+        "symptoms": [
+          "jaundice",
+          "pruritus",
+          "weight loss",
+          "loss of appetite"
+        ],
+        "symptomDetails": {
+          "jaundice": [
+            "Pruritus",
+            "Weight loss"
+          ]
+        },
+        "examFindings": {
+          "general": [
+            "Jaundiced",
+            "Cachectic"
+          ],
+          "abdomen": [
+            "Mass palpable",
+            "Hepatomegaly"
+          ]
+        },
+        "paneAnswers": {
+          "weight_loss": true,
+          "jaundice": true,
+          "pruritus": true
+        },
+        "durationDays": 21,
+        "painScore": 2
+      }
+    }
+  },
+  "expected": {
+    "differential": {
+      "mustRankTopK": [
+        {
+          "id": "dx-pancreatic-cancer-top3",
+          "severity": "critical",
+          "match": [
+            "pancreatic carcinoma",
+            "pancreatic cancer",
+            "pancreatic adenocarcinoma",
+            "periampullary",
+            "re:pancrea\\w*[^,]{0,20}(carcinoma|cancer|malignan|neoplas|tumou?r|adenocarcinoma)"
+          ],
+          "k": 3,
+          "guidelineRefs": [
+            "esmo-2023-pancreas"
+          ]
+        }
+      ]
+    },
+    "safety": {
+      "redFlags": [
+        {
+          "id": "flag-frailty",
+          "severity": "quality",
+          "match": [
+            "frail",
+            "cfs",
+            "elderly",
+            "performance status",
+            "ecog"
+          ],
+          "proposedFix": "clinical-inference.ts or VisitRisk equivalent: flag frailty (CFS ≥5, housebound, age ≥80) against operative templates."
+        }
+      ]
+    },
+    "management": {
+      "mustInclude": [
+        {
+          "id": "mgmt-palliative-biliary-drainage",
+          "severity": "quality",
+          "match": [
+            "metal stent",
+            "sems",
+            "self-expanding",
+            "biliary stent",
+            "stenting",
+            "biliary drainage"
+          ],
+          "guidelineRefs": [
+            "esge-2018-stenting",
+            "nice-ng85"
+          ],
+          "note": "SEMS for palliation of malignant distal biliary obstruction (jaundice, pruritus, cholangitis risk). Quality because best supportive care without drainage is a valid shared decision in a frail patient."
+        },
+        {
+          "id": "mgmt-palliative-care",
+          "severity": "quality",
+          "match": [
+            "palliative",
+            "supportive care",
+            "end of life",
+            "hospice"
+          ],
+          "guidelineRefs": [
+            "esmo-2023-pancreas"
+          ]
+        },
+        {
+          "id": "mgmt-mdt",
+          "severity": "quality",
+          "match": [
+            "mdt",
+            "multidisciplinary",
+            "hpb"
+          ],
+          "guidelineRefs": [
+            "nice-ng85"
+          ]
+        }
+      ],
+      "mustExclude": [
+        {
+          "id": "mgmt-no-resection",
+          "severity": "critical",
+          "match": [
+            "whipple",
+            "pancreaticoduodenectomy",
+            "pancreatectomy"
+          ],
+          "unless": [
+            "resectable",
+            "if ",
+            "borderline",
+            "not a candidate",
+            "not suitable",
+            "unresectable"
+          ],
+          "guidelineRefs": [
+            "esmo-2023-pancreas",
+            "nice-ng85"
+          ],
+          "note": "Metastatic, SMA-encased disease in a frail 84-year-old: resection is not an option; an unconditional Whipple line is a harmful plan."
+        },
+        {
+          "id": "mgmt-no-appendicectomy",
+          "severity": "critical",
+          "match": [
+            "appendicectomy",
+            "appendectomy"
+          ],
+          "unless": [
+            "not indicated",
+            "no role",
+            "exclude appendicitis"
+          ],
+          "note": "Not an appendix presentation: an appendicectomy operative plan (consent, theatre booking, post-operative orders) is a wrong-procedure suggestion."
+        }
+      ]
+    }
+  },
+  "guideline": [
+    {
+      "id": "esmo-2023-pancreas",
+      "name": "ESMO Clinical Practice Guideline — pancreatic cancer",
+      "year": 2023,
+      "section": "Staging with pancreas-protocol CT (chest/abdomen/pelvis); CA 19-9; MDT resectability assessment; best supportive care and palliation in metastatic disease",
+      "citation": "Conroy T, Pfeiffer P, Vilgrain V, et al. Ann Oncol. 2023;34:987–1002.",
+      "verified": false
+    },
+    {
+      "id": "nice-ng85",
+      "name": "NICE NG85 — Pancreatic cancer in adults: diagnosis and management",
+      "year": 2018,
+      "section": "Pancreatic-protocol CT for obstructive jaundice with suspected pancreatic cancer; EUS with tissue sampling if unclear; specialist pancreatic MDT; pre-operative biliary drainage only when surgery is delayed, for cholangitis, or before neoadjuvant therapy; SEMS for palliative biliary drainage",
+      "citation": "National Institute for Health and Care Excellence. NICE guideline NG85, February 2018.",
+      "verified": false
+    },
+    {
+      "id": "esge-2018-stenting",
+      "name": "ESGE Clinical Guideline — endoscopic biliary stenting: indications, choice of stents and results",
+      "year": 2018,
+      "section": "Self-expanding metal stents for palliation of malignant extrahepatic biliary obstruction; routine pre-operative drainage not recommended",
+      "citation": "Dumonceau JM, Tringali A, Papanikolaou IS, et al. Endoscopy. 2018;50:910–930.",
+      "verified": false
+    }
+  ],
+  "rationale": "Permutation: elderly, frail, metastatic. Staging is done; guideline-concordant care is palliative biliary drainage (SEMS), symptom control and palliative care. Tests that resection is not proposed unconditionally.",
+  "authoring": {
+    "author": "Claude (HPB cluster)",
+    "date": "2026-09-25",
+    "notes": "Expectations and citations need surgeon sign-off (reviewedBy). iOS outcomes not yet observed (unverified: ios) — triage after the first CI run."
+  }
+}

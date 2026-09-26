@@ -1,0 +1,245 @@
+{
+  "schemaVersion": 1,
+  "id": "rectal-prolapse-incarcerated",
+  "condition": "Incarcerated full-thickness rectal prolapse",
+  "category": "anorectal",
+  "permutationOf": null,
+  "summary": "79-year-old frail woman with a full-thickness rectal prolapse that has been out and irreducible for 6 hours, oedematous with a dusky segment. Emergency: attempt reduction (sedation, sugar/osmotic), emergency perineal rectosigmoidectomy (Altemeier) if non-viable or irreducible.",
+  "tags": [
+    "anorectal",
+    "prolapse",
+    "emergency",
+    "elderly"
+  ],
+  "inputs": {
+    "patient": {
+      "ageYears": 79,
+      "sex": "female",
+      "pregnancy": {
+        "status": "not-applicable"
+      },
+      "heightCm": 152,
+      "weightKg": 50
+    },
+    "encounter": {
+      "setting": "emergency",
+      "visitType": "urgentReview",
+      "acuity": "urgent"
+    },
+    "chiefComplaint": "Bowel coming out of the back passage and will not go back",
+    "hpi": "Known rectal prolapse for 2 years, usually reduces after bowel motions. Since this morning (6 h) it has stayed out and she cannot push it back; very painful, some bleeding. Constipated. Lives in a care home; walks with a frame. Heart failure.",
+    "socrates": {
+      "onset": [
+        "Today"
+      ],
+      "site": [
+        "Anal canal",
+        "Perianal"
+      ],
+      "associations": [
+        "Rectal bleeding"
+      ],
+      "timing": [
+        "Constant"
+      ],
+      "severity": [
+        "Severe (7–9/10)"
+      ]
+    },
+    "symptoms": [
+      "rectal prolapse",
+      "perianal pain",
+      "rectal bleeding"
+    ],
+    "negatives": [
+      "vomiting"
+    ],
+    "exam": {
+      "general": "Frail, distressed. HR 102, BP 108/64, T 37.4°C.",
+      "abdomen": "Soft, mildly distended, non-tender.",
+      "other": "10 cm full-thickness rectal prolapse (concentric folds), oedematous, with a dusky, dark segment anteriorly; not reducible with gentle pressure."
+    },
+    "vitals": [
+      {
+        "minutesAgo": 20,
+        "heartRate": 102,
+        "systolicBp": 108,
+        "diastolicBp": 64,
+        "respiratoryRate": 18,
+        "temperatureC": 37.4,
+        "spo2": 95,
+        "avpu": "A",
+        "onSupplementalO2": false
+      }
+    ],
+    "labs": [
+      {
+        "analyte": "haemoglobin",
+        "name": "Haemoglobin",
+        "value": 11.4,
+        "unit": "g/dL",
+        "minutesAgo": 60
+      },
+      {
+        "analyte": "wbc",
+        "name": "WBC",
+        "value": 13.8,
+        "unit": "×10⁹/L",
+        "minutesAgo": 60
+      },
+      {
+        "analyte": "crp",
+        "name": "CRP",
+        "value": 48,
+        "unit": "mg/L",
+        "minutesAgo": 60
+      },
+      {
+        "analyte": "lactate",
+        "name": "Lactate",
+        "value": 2.1,
+        "unit": "mmol/L",
+        "minutesAgo": 60
+      },
+      {
+        "analyte": "creatinine",
+        "name": "Creatinine",
+        "value": 112,
+        "unit": "µmol/L",
+        "minutesAgo": 60
+      }
+    ],
+    "comorbidities": [
+      "Heart failure",
+      "Frailty",
+      "Chronic constipation"
+    ],
+    "surgicalHistory": [],
+    "medications": [
+      {
+        "drug": "Furosemide",
+        "dose": "40 mg",
+        "frequency": "OD",
+        "indication": "Heart failure"
+      },
+      {
+        "drug": "Bisoprolol",
+        "dose": "2.5 mg",
+        "frequency": "OD",
+        "indication": "Heart failure"
+      }
+    ],
+    "allergies": [],
+    "nkda": true,
+    "socialHistory": "Care home resident.",
+    "confirmedDiagnosis": {
+      "name": "Incarcerated full-thickness rectal prolapse, possible strangulation",
+      "icd10": "K62.3",
+      "paneDiseaseId": "rectal_prolapse",
+      "assessmentText": "Incarcerated full-thickness rectal prolapse with a dusky segment in a frail 79-year-old. Emergency reduction attempt; perineal rectosigmoidectomy if non-viable or irreducible."
+    },
+    "platform": {
+      "web": {
+        "ccTemplate": "Other / general surgical",
+        "symptoms": [
+          "rectal prolapse",
+          "perianal pain",
+          "rectal bleeding"
+        ],
+        "examFindings": {
+          "anal": [
+            "Prolapse"
+          ]
+        },
+        "paneAnswers": {
+          "prolapse_pr": true,
+          "anal_pain": true
+        },
+        "durationDays": 0.25,
+        "painScore": 8
+      }
+    }
+  },
+  "expected": {
+    "differential": {
+      "mustRankTopK": [
+        {
+          "id": "dx-prolapse-top3",
+          "severity": "quality",
+          "match": [
+            "prolapse"
+          ],
+          "k": 3,
+          "guidelineRefs": [
+            "ascrs-prolapse-2017"
+          ],
+          "knownGap": [
+            "ios"
+          ],
+          "knownGapNote": "iOS CI 2026-09-25 (run 36169134350, database mode): not in top 3 of ios.bayes: 1. Fournier's Gangrene | 2. Perianal Abscess | 3. Skin Abscess | 4. Femoral Hernia | 5. Non-Occlusive Mesenteric Ischaemia (NOMI)"
+        }
+      ]
+    },
+    "safety": {
+      "emergencyLevel": {
+        "id": "level-emergency",
+        "severity": "critical",
+        "atLeast": "urgent",
+        "guidelineRefs": [
+          "ascrs-prolapse-2017"
+        ],
+        "note": "Incarcerated prolapse with a dusky segment: strangulation must be assumed; same-day surgical care."
+      },
+      "redFlags": [
+        {
+          "id": "flag-strangulation",
+          "severity": "critical",
+          "match": [
+            "irreducible",
+            "strangulat",
+            "incarcerat",
+            "non-viable",
+            "gangren"
+          ],
+          "guidelineRefs": [
+            "ascrs-prolapse-2017"
+          ]
+        }
+      ]
+    },
+    "management": {
+      "mustInclude": [
+        {
+          "id": "mgmt-emergency-perineal",
+          "severity": "critical",
+          "match": [
+            "reduction",
+            "altemeier",
+            "perineal rectosigmoidectomy",
+            "perineal proctosigmoidectomy",
+            "emergency"
+          ],
+          "guidelineRefs": [
+            "ascrs-prolapse-2017"
+          ]
+        }
+      ]
+    }
+  },
+  "guideline": [
+    {
+      "id": "ascrs-prolapse-2017",
+      "name": "ASCRS clinical practice guidelines — treatment of rectal prolapse",
+      "year": 2017,
+      "section": "Incarcerated or strangulated prolapse: reduction if viable; perineal rectosigmoidectomy for non-viable bowel; perineal procedures favoured in frail patients",
+      "citation": "Bordeianou L, Paquette I, Johnson E, et al. Clinical practice guidelines for the treatment of rectal prolapse. Dis Colon Rectum. 2017;60:1121–1131.",
+      "verified": false
+    }
+  ],
+  "rationale": "Base prolapse case, chosen as the dangerous variant (incarceration/strangulation). The web presentation chip \"rectal prolapse\" is a symptom chip; the template is generic.",
+  "authoring": {
+    "author": "Claude (colorectal/anorectal cluster)",
+    "date": "2026-09-25",
+    "notes": "Expectations need surgeon sign-off (reviewedBy). Citations verified: false until checked against the source."
+  }
+}

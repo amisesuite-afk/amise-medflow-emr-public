@@ -1,0 +1,351 @@
+{
+  "schemaVersion": 1,
+  "id": "ami-venous-thrombosis-ocp",
+  "condition": "Acute mesenteric ischaemia",
+  "category": "vascular",
+  "permutationOf": "ami-embolic-af",
+  "permutationLabel": "Mesenteric venous thrombosis, young woman on the combined pill",
+  "summary": "36-year-old smoker on the combined oral contraceptive, 5 days of progressive central pain, nausea, loose stools; CT: SMV thrombosis with jejunal wall thickening, no infarction.",
+  "tags": [
+    "acute-abdomen",
+    "vascular",
+    "do-not-miss"
+  ],
+  "inputs": {
+    "patient": {
+      "ageYears": 36,
+      "sex": "female",
+      "pregnancy": {
+        "status": "not-pregnant"
+      },
+      "heightCm": 168,
+      "weightKg": 72
+    },
+    "encounter": {
+      "setting": "emergency",
+      "visitType": "urgentReview",
+      "acuity": "urgent"
+    },
+    "chiefComplaint": "Abdominal pain for five days",
+    "hpi": "5 days of colicky then constant central abdominal pain, worse after eating, with nausea, anorexia and loose stools. On the combined oral contraceptive pill for 10 years; smoker. No previous clots. Urine pregnancy test negative today.",
+    "socrates": {
+      "onset": [
+        "4–7 days ago",
+        "Gradual"
+      ],
+      "site": [
+        "Periumbilical"
+      ],
+      "character": [
+        "Colicky",
+        "Dull"
+      ],
+      "radiation": [
+        "No radiation"
+      ],
+      "associations": [
+        "Nausea",
+        "Anorexia",
+        "Change in bowel habit"
+      ],
+      "timing": [
+        "Constant",
+        "Progressive",
+        "Post-prandial"
+      ],
+      "exacerbating": [
+        "Eating"
+      ],
+      "relieving": [
+        "Nothing"
+      ],
+      "severity": [
+        "Moderate (4–6/10)"
+      ]
+    },
+    "symptoms": [
+      "abdominal pain",
+      "nausea",
+      "anorexia",
+      "diarrhoea"
+    ],
+    "negatives": [
+      "fever",
+      "vaginal bleeding",
+      "rectal bleeding"
+    ],
+    "exam": {
+      "general": "Temperature 37.6°C, pulse 104/min, BP 118/72.",
+      "abdomen": "Mild diffuse tenderness centrally, no guarding or peritonism. Bowel sounds present."
+    },
+    "vitals": [
+      {
+        "minutesAgo": 20,
+        "heartRate": 104,
+        "systolicBp": 118,
+        "diastolicBp": 72,
+        "respiratoryRate": 18,
+        "temperatureC": 37.6,
+        "spo2": 98,
+        "avpu": "A",
+        "onSupplementalO2": false
+      }
+    ],
+    "labs": [
+      {
+        "analyte": "wbc",
+        "name": "WBC",
+        "value": 13.4,
+        "unit": "×10⁹/L",
+        "minutesAgo": 30
+      },
+      {
+        "analyte": "crp",
+        "name": "CRP",
+        "value": 64,
+        "unit": "mg/L",
+        "minutesAgo": 30
+      },
+      {
+        "analyte": "lactate",
+        "name": "Lactate",
+        "value": 1.9,
+        "unit": "mmol/L",
+        "minutesAgo": 30
+      },
+      {
+        "analyte": "ddimer",
+        "name": "D-dimer",
+        "value": 3800,
+        "unit": "ng/mL FEU",
+        "minutesAgo": 30
+      },
+      {
+        "analyte": "bhcg",
+        "name": "Urine hCG",
+        "resultText": "Urine hCG negative",
+        "minutesAgo": 60
+      }
+    ],
+    "imaging": [
+      {
+        "name": "CT abdomen/pelvis with IV contrast (portal venous phase)",
+        "modality": "CT",
+        "region": "Abdomen/pelvis",
+        "result": "Occlusive thrombus in the superior mesenteric vein extending to the portal confluence. Jejunal wall thickening with preserved enhancement; small-volume ascites. No pneumatosis.",
+        "minutesAgo": 20
+      }
+    ],
+    "comorbidities": [],
+    "surgicalHistory": [],
+    "medications": [
+      {
+        "drug": "Combined oral contraceptive (ethinylestradiol/levonorgestrel)",
+        "dose": "1 tablet",
+        "frequency": "OD",
+        "indication": "Contraception"
+      }
+    ],
+    "allergies": [],
+    "nkda": true,
+    "socialHistory": "Hairdresser. Smoker 15/day.",
+    "confirmedDiagnosis": {
+      "name": "Mesenteric venous thrombosis",
+      "icd10": "K55.0",
+      "assessmentText": "Acute superior mesenteric vein thrombosis (combined oral contraceptive, smoker) without bowel infarction or peritonitis — immediate therapeutic anticoagulation; stop the COCP; thrombophilia work-up."
+    },
+    "platform": {
+      "web": {
+        "ccTemplate": "Acute abdominal pain",
+        "socratesAnswers": {
+          "site": "Central (periumbilical)",
+          "onset": "5 days ago, gradual",
+          "character": "Colicky, now constant dull",
+          "associated": "Nausea, anorexia, loose stools",
+          "timing": "Constant, worse after meals (postprandial)",
+          "triggers": "Eating",
+          "relief": "Nothing",
+          "severity": "6/10",
+          "lmp": "2 weeks ago; urine hCG negative"
+        },
+        "symptoms": [
+          "abdominal pain",
+          "nausea",
+          "anorexia",
+          "diarrhoea"
+        ],
+        "symptomDetails": {
+          "abdominal pain": [
+            "Periumbilical",
+            "> 3 days",
+            "Gradual",
+            "Colicky",
+            "Constant",
+            "Moderate (4–6)",
+            "Nausea",
+            "Anorexia",
+            "Diarrhoea",
+            "Post-meal",
+            "Worsening over time"
+          ]
+        },
+        "examFindings": {
+          "abdomen": [
+            "Diffuse tenderness",
+            "Soft"
+          ]
+        },
+        "durationDays": 5,
+        "painScore": 6
+      }
+    }
+  },
+  "expected": {
+    "differential": {
+      "mustNotMiss": [
+        {
+          "id": "mnm-mesenteric",
+          "severity": "critical",
+          "match": [
+            "mesenteric isch",
+            "mesenteric ischem",
+            "acute mesenteric",
+            "mesenteric infarct",
+            "mesenteric thrombo",
+            "mesenteric vein",
+            "mesenteric venous"
+          ],
+          "guidelineRefs": [
+            "esvs-2017"
+          ]
+        }
+      ]
+    },
+    "safety": {
+      "emergencyLevel": {
+        "id": "level-at-least-urgent",
+        "severity": "critical",
+        "atLeast": "urgent",
+        "guidelineRefs": [
+          "esvs-2017"
+        ],
+        "knownGapNote": "Web: adaptiveTriage: 'priority_24_48h' (score 20); the only reasons are 'Pregnancy mentioned' (from 'pregnancy test negative') and pain score. iOS: ClinicalPathwayEngine reads only CC/PMH keywords; CC 'Abdominal pain for five days' gives 'routine'.",
+        "proposedFix": "Let triage read resulted imaging (thrombosis, ischaemia) and D-dimer; do not treat 'pregnancy test negative' as a pregnancy mention (negation)."
+      }
+    },
+    "investigations": {
+      "mustInclude": [
+        {
+          "id": "inv-pregnancy-test",
+          "severity": "critical",
+          "match": [
+            "hcg",
+            "pregnancy test"
+          ],
+          "guidelineRefs": [
+            "nice-ng126"
+          ]
+        },
+        {
+          "id": "inv-thrombophilia",
+          "severity": "quality",
+          "match": [
+            "thrombophilia",
+            "antiphospholipid",
+            "jak2"
+          ],
+          "guidelineRefs": [
+            "esvs-2017"
+          ],
+          "knownGapNote": "Web: No thrombophilia work-up."
+        }
+      ]
+    },
+    "management": {
+      "mustInclude": [
+        {
+          "id": "mgmt-anticoagulation",
+          "severity": "critical",
+          "match": [
+            "heparin",
+            "anticoagula"
+          ],
+          "unless": [
+            "hold",
+            "stop",
+            "reverse",
+            "reversal",
+            "withhold",
+            "omit",
+            "adjust"
+          ],
+          "guidelineRefs": [
+            "esvs-2017"
+          ],
+          "note": "ESVS 2017: immediate therapeutic anticoagulation for mesenteric venous thrombosis."
+        },
+        {
+          "id": "mgmt-stop-cocp",
+          "severity": "quality",
+          "match": [
+            "stop the combined",
+            "stop combined oral",
+            "stop the cocp",
+            "stop cocp",
+            "discontinue oestrogen",
+            "stop oestrogen",
+            "stop the oral contraceptive"
+          ],
+          "guidelineRefs": [
+            "esvs-2017"
+          ]
+        }
+      ],
+      "mustExclude": [
+        {
+          "id": "mgmt-no-laparotomy-without-peritonitis",
+          "severity": "quality",
+          "match": [
+            "re:emergency (laparotomy|colectomy|resection)"
+          ],
+          "unless": [
+            "if",
+            "peritonitis",
+            "infarct",
+            "gangren",
+            "perforat",
+            "failure"
+          ],
+          "guidelineRefs": [
+            "esvs-2017"
+          ],
+          "note": "Without peritonitis or infarction, MVT is treated with anticoagulation; resection is reserved for non-viable bowel."
+        }
+      ]
+    }
+  },
+  "guideline": [
+    {
+      "id": "esvs-2017",
+      "name": "ESVS clinical practice guidelines — diseases of the mesenteric arteries and veins",
+      "year": 2017,
+      "section": "Acute mesenteric ischaemia: suspicion (pain out of proportion, AF), lactate not sensitive/specific enough to exclude, immediate CT angiography, heparin, revascularisation, resection of non-viable bowel; mesenteric venous thrombosis: anticoagulation",
+      "citation": "Björck M, Koelemay M, Acosta S, et al. Management of the diseases of mesenteric arteries and veins: clinical practice guidelines of the European Society of Vascular Surgery (ESVS). Eur J Vasc Endovasc Surg. 2017;53:460–510.",
+      "verified": false
+    },
+    {
+      "id": "nice-ng126",
+      "name": "NICE NG126 — ectopic pregnancy and miscarriage: diagnosis and initial management",
+      "year": 2019,
+      "section": "Pregnancy test in every woman of reproductive age with abdominal pain; transvaginal ultrasound; immediate referral if haemodynamically unstable; surgical management of ruptured ectopic; anti-D",
+      "citation": "National Institute for Health and Care Excellence. Ectopic pregnancy and miscarriage: diagnosis and initial management. NICE guideline NG126, 2019 (updated 2023).",
+      "verified": false
+    }
+  ],
+  "rationale": "Permutation: venous rather than arterial mechanism, young woman. Tests recognition, the pregnancy test, immediate anticoagulation and stopping the oestrogen, without a default laparotomy plan.",
+  "authoring": {
+    "author": "Claude (GI surgical emergencies cluster)",
+    "date": "2026-09-25",
+    "notes": "Expectations need surgeon sign-off (reviewedBy). Every citation is verified: false."
+  }
+}

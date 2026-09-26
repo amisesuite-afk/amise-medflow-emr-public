@@ -15,7 +15,7 @@
  * Imported once for its module-level registerExecutor() side effects (see
  * the import in AppContext.tsx) — nothing here needs to be called directly.
  */
-import { registerExecutor, type OutboxEntry } from './sync-outbox';
+import { OutboxRefusalError, registerExecutor, type OutboxEntry } from './sync-outbox';
 import {
   saveAssessment, savePlan, syncMedicationList, syncAllergyList,
   saveExamFindings, syncSurgicalHistory, syncToxicHabits, syncRosFindings,
@@ -23,6 +23,10 @@ import {
   savePmhNotes, syncInvestigationOrders, updateEncounterType,
   saveInpatientDetails, saveClinicalScores,
 } from './db';
+import { saveLifestyleHistory } from './lifestyle-history-db';
+import { parseLifestyleHistory } from '@workspace/triage-engine/lifestyle-practices';
+import { saveSupplementHistory } from './supplement-store';
+import { normaliseSupplementHistory } from './supplement-catalogue';
 
 function payloadOf<T>(entry: OutboxEntry): T {
   return entry.payload as unknown as T;
@@ -50,6 +54,15 @@ registerExecutor('plan', async (entry) => {
 registerExecutor('medications', async (entry) => {
   const p = payloadOf<{ patientId: string; encounterId: string; chipMeds: string[]; freeText: string }>(entry);
   const { error } = await syncMedicationList(p.patientId, p.encounterId, p.chipMeds, p.freeText);
+  if (error) throw new Error(error);
+});
+
+registerExecutor('supplements', async (entry) => {
+  const p = payloadOf<{ patientId: string; history: unknown }>(entry);
+  const { error, refused } = await saveSupplementHistory(p.patientId, normaliseSupplementHistory(p.history));
+  // Migration 89: pathway_data_json is clinician-only. A role refusal (42501) never succeeds on
+  // retry, so the outbox drops the entry and shows a notice instead of retrying forever.
+  if (refused) throw new OutboxRefusalError(error ?? 'permission denied');
   if (error) throw new Error(error);
 });
 
@@ -146,4 +159,15 @@ registerExecutor('clinical_scores', async (entry) => {
     extractedLabs: Record<string, number | null>;
   }>(entry);
   await saveClinicalScores(p.encounterId, p.clinicalScores, p.extractedLabs);
+});
+
+// Lifestyle history (patients.pathway_data_json → lifestyle). A missing column resolves with
+// available: false and no error, so the entry drains instead of retrying forever; the edit is
+// still in the encounter cache (lifestyle-history-db.ts). A role refusal (Migration 89, 42501)
+// is permanent: dropped with a notice, like the supplements entry above.
+registerExecutor('lifestyle_history', async (entry) => {
+  const p = payloadOf<{ patientId: string; lifestyle: unknown }>(entry);
+  const { error, refused } = await saveLifestyleHistory(p.patientId, parseLifestyleHistory(p.lifestyle));
+  if (refused) throw new OutboxRefusalError(error ?? 'permission denied');
+  if (error) throw new Error(error);
 });

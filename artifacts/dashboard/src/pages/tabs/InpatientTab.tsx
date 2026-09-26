@@ -4,6 +4,7 @@ import { useAppContext, type ProgressNote } from '@/context/AppContext';
 import IcdPicker from '@/components/IcdPicker';
 import AllergyMedAlert from '@/components/AllergyMedAlert';
 import DrugInteractionAlert from '@/components/DrugInteractionAlert';
+import { supplementInteractionEntries } from '@/lib/supplement-catalogue';
 import AiInteractionCheck from '@/components/AiInteractionCheck';
 import { searchFormulary, type FormularyDrug } from '@/lib/prescription-formulary';
 import {
@@ -1086,6 +1087,7 @@ export default function InpatientTab() {
           <DrugInteractionAlert
             medications={[...ctx.medications, ...medications.map(m => m.name).filter(Boolean)]}
             medicationsText={ctx.medicationsText}
+            supplements={supplementInteractionEntries(ctx.supplementHistory)}
           />
           <AiInteractionCheck
             drugs={[

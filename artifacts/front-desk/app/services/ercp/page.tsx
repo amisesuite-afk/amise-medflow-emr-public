@@ -3,6 +3,7 @@ import Link from 'next/link';
 import { WA_TAPION, WA_RODNEY, PHONE_TAPION, PHONE_RODNEY, WaSvg } from '@/app/components/shared';
 
 export const metadata: Metadata = {
+  alternates: { canonical: '/services/ercp' },
   title: 'ERCP & Biliary Services — Advanced Bile Duct Procedures',
   description: 'Expert ERCP and biliary procedures in Saint Lucia — gallstones, bile duct stenting, sphincterotomy, and cholangitis treatment by Dr Dawit Daniel Kabiye, MD, DM at Tapion Hospital.',
 };
@@ -61,7 +62,7 @@ export default function ErpcPage() {
               <div style={{ fontSize: 13, fontWeight: 700, color: '#065f46', marginBottom: 14 }}>ERCP at a Glance</div>
               {[
                 ['Duration', '45–90 minutes'],
-                ['Anaesthesia', 'Deep sedation or general anaesthesia'],
+                ['Anaesthesia', 'General anaesthesia, at Tapion Hospital'],
                 ['Hospital stay', 'Usually same-day; overnight if complex'],
                 ['Recovery', '1–3 days rest at home'],
                 ['Success rate', '> 90% for bile duct stones'],

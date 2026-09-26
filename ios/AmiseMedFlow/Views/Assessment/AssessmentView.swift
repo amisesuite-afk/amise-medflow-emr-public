@@ -16,6 +16,7 @@ struct AssessmentView: View {
     var body: some View {
         List {
             diagnosisSection
+            investigationSummarySection
             bayesianSection
             if let result = triageResult { resultSection(result) }
             assessmentTextSection
@@ -115,6 +116,72 @@ struct AssessmentView: View {
         }
     }
 
+    // MARK: - Investigation summary
+
+    @ViewBuilder
+    private var investigationSummarySection: some View {
+        let labs = LabPanel.parse(from: patient.investigations)
+        let resulted = patient.investigations.filter { $0.status == .resulted }
+        let pending = patient.investigations.filter { $0.status == .ordered || $0.status == .pending }
+
+        if !resulted.isEmpty || !pending.isEmpty {
+            Section {
+                if labs.hasCriticalValues {
+                    HStack(spacing: 6) {
+                        Image(systemName: "exclamationmark.triangle.fill").foregroundStyle(.red)
+                        Text("Critical lab values — see patient overview")
+                            .font(.subheadline.weight(.semibold))
+                            .foregroundStyle(.red)
+                    }
+                }
+
+                if !resulted.isEmpty {
+                    let labTokens: [String] = [
+                        labs.haemoglobin.map { String(format: "Hb %.1f", $0.value) },
+                        labs.wbc.map { String(format: "WBC %.1f", $0.value) },
+                        labs.platelets.map { "Plt \(Int($0.value))" },
+                        labs.sodium.map { "Na \(Int($0.value))" },
+                        labs.potassium.map { String(format: "K %.1f", $0.value) },
+                        labs.creatinine.map { "Cr \(Int($0.value))" },
+                        labs.inr.map { String(format: "INR %.1f", $0.value) },
+                        labs.bilirubin.map { "Bili \(Int($0.value))" },
+                        labs.lactate.map { String(format: "Lac %.1f", $0.value) }
+                    ].compactMap { $0 }
+
+                    if !labTokens.isEmpty {
+                        Text(labTokens.joined(separator: "  ·  "))
+                            .font(.system(.caption, design: .monospaced))
+                            .foregroundStyle(labs.hasCriticalValues ? .red : .primary)
+                    }
+
+                    let nonLab = resulted.filter { $0.category != .blood && !$0.result.isEmpty }
+                    ForEach(Array(nonLab.prefix(3))) { inv in
+                        HStack(alignment: .top) {
+                            Text(inv.name).font(.caption.weight(.medium))
+                            Spacer()
+                            Text(inv.result).font(.caption).foregroundStyle(.secondary).lineLimit(2)
+                        }
+                    }
+                }
+
+                if !pending.isEmpty {
+                    HStack(spacing: 4) {
+                        Image(systemName: "clock").foregroundStyle(.orange)
+                        Text("\(pending.count) investigation\(pending.count == 1 ? "" : "s") pending")
+                            .font(.caption)
+                            .foregroundStyle(.orange)
+                        Text("— \(pending.prefix(3).map { $0.name }.joined(separator: ", "))")
+                            .font(.caption)
+                            .foregroundStyle(.secondary)
+                            .lineLimit(1)
+                    }
+                }
+            } header: {
+                Text("Investigations")
+            }
+        }
+    }
+
     // MARK: - Bayesian engine
 
     @ViewBuilder
@@ -122,10 +189,8 @@ struct AssessmentView: View {
         Section("Clinical Pathway Engine") {
             Button {
                 isAssessing = true
-                let result = ClinicalPathwayEngine.assess(
-                    chiefComplaint: patient.chiefComplaint ?? "",
-                    pmh: patient.pmhNotes ?? ""
-                )
+                // Highest of CC keywords, vitals, BP, labs, ECG, alarms and diagnosis.
+                let result = ClinicalAcuityEngine.assess(patient: patient).triageResult
                 triageResult = result
                 // Auto-suggest acuity — surgeon always confirms
                 if result.suggestedAcuity < patient.acuity {
@@ -157,7 +222,7 @@ struct AssessmentView: View {
     private func resultSection(_ result: TriageResult) -> some View {
         Section("Pathway Result — \(result.pathway)") {
             HStack {
-                AcuityPip(acuity: result.suggestedAcuity)
+                AcuityPip(acuity: result.suggestedAcuity).accessibilityHidden(true)
                 Text(result.suggestedAcuity.label)
                     .font(.subheadline.weight(.semibold))
                 Spacer()

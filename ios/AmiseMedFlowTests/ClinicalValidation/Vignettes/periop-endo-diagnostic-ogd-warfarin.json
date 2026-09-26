@@ -1,0 +1,253 @@
+{
+  "schemaVersion": 1,
+  "id": "periop-endo-diagnostic-ogd-warfarin",
+  "condition": "Endoscopy antithrombotic management — warfarin continued for diagnostic OGD ± biopsy",
+  "category": "other",
+  "permutationOf": "periop-endo-polypectomy-clopidogrel",
+  "permutationLabel": "Warfarin, diagnostic OGD ± biopsy (low-risk procedure)",
+  "summary": "74-year-old woman on warfarin for AF (INR 2.3) booked for diagnostic gastroscopy ± biopsy for PPI-refractory dyspepsia (low bleeding-risk procedure).",
+  "tags": [
+    "periop",
+    "endoscopy",
+    "anticoagulated",
+    "warfarin",
+    "bsg-esge"
+  ],
+  "inputs": {
+    "patient": {
+      "ageYears": 74,
+      "sex": "female",
+      "pregnancy": {
+        "status": "not-applicable"
+      },
+      "heightCm": 160,
+      "weightKg": 64
+    },
+    "encounter": {
+      "setting": "endoscopy",
+      "visitType": "ogd",
+      "acuity": "routine"
+    },
+    "chiefComplaint": "Booked for a camera test of the stomach — takes warfarin",
+    "hpi": "Three months of upper abdominal discomfort and reflux not settling on omeprazole. No weight loss, dysphagia, vomiting or melaena. Booked for diagnostic gastroscopy ± biopsies. Atrial fibrillation on warfarin (target 2–3), no previous stroke, no valve disease.",
+    "symptoms": [
+      "epigastric pain",
+      "heartburn"
+    ],
+    "negatives": [
+      "weight loss",
+      "dysphagia",
+      "melaena",
+      "vomiting"
+    ],
+    "exam": {
+      "general": "Well. Irregular pulse 76, BP 132/78, RR 14, SpO2 97% on air, T 36.5°C.",
+      "abdomen": "Soft, mild epigastric tenderness, no mass."
+    },
+    "vitals": [
+      {
+        "minutesAgo": 5,
+        "heartRate": 76,
+        "systolicBp": 132,
+        "diastolicBp": 78,
+        "respiratoryRate": 14,
+        "temperatureC": 36.5,
+        "spo2": 97,
+        "avpu": "A",
+        "onSupplementalO2": false
+      }
+    ],
+    "labs": [
+      {
+        "analyte": "haemoglobin",
+        "name": "Haemoglobin",
+        "value": 12.9,
+        "unit": "g/dL",
+        "minutesAgo": 4320
+      },
+      {
+        "analyte": "platelets",
+        "name": "Platelets",
+        "value": 230,
+        "unit": "×10⁹/L",
+        "minutesAgo": 4320
+      },
+      {
+        "analyte": "inr",
+        "name": "INR",
+        "value": 2.3,
+        "unit": "",
+        "minutesAgo": 4320
+      }
+    ],
+    "imaging": [],
+    "comorbidities": [
+      "Atrial fibrillation",
+      "Hypertension"
+    ],
+    "surgicalHistory": [],
+    "medications": [
+      {
+        "drug": "Warfarin",
+        "dose": "as per INR",
+        "frequency": "OD",
+        "indication": "Atrial fibrillation"
+      },
+      {
+        "drug": "Omeprazole",
+        "dose": "20 mg",
+        "frequency": "OD",
+        "indication": "Dyspepsia"
+      },
+      {
+        "drug": "Bisoprolol",
+        "dose": "2.5 mg",
+        "frequency": "OD",
+        "indication": "Rate control"
+      }
+    ],
+    "allergies": [],
+    "nkda": true,
+    "socialHistory": "Ex-smoker. Retired.",
+    "confirmedDiagnosis": {
+      "name": "PPI-refractory dyspepsia — diagnostic OGD ± biopsy; on warfarin for AF",
+      "icd10": "K30",
+      "assessmentText": "Dyspepsia not responding to PPI, no alarm features. Diagnostic OGD ± biopsy (low bleeding-risk). AF on warfarin, INR 2.3 — continue warfarin."
+    },
+    "platform": {
+      "web": {
+        "ccTemplate": "OGD (diagnostic upper endoscopy)",
+        "symptoms": [
+          "epigastric pain",
+          "heartburn"
+        ],
+        "durationDays": 90,
+        "painScore": 2
+      }
+    }
+  },
+  "expected": {
+    "safety": {
+      "redFlags": [
+        {
+          "id": "flag-anticoagulant",
+          "severity": "critical",
+          "match": [
+            "anticoag",
+            "warfarin"
+          ],
+          "guidelineRefs": [
+            "bsg-esge-2021-anticoag"
+          ]
+        }
+      ]
+    },
+    "investigations": {
+      "mustInclude": [
+        {
+          "id": "inv-inr",
+          "severity": "quality",
+          "match": [
+            "inr",
+            "prothrombin"
+          ],
+          "guidelineRefs": [
+            "bsg-esge-2021-anticoag"
+          ],
+          "note": "Check the INR is within the therapeutic range in the week before."
+        }
+      ]
+    },
+    "management": {
+      "mustInclude": [
+        {
+          "id": "mgmt-continue-warfarin",
+          "severity": "quality",
+          "match": [
+            "continue warfarin",
+            "re:warfarin[^.;\\n]{0,30}continu"
+          ],
+          "guidelineRefs": [
+            "bsg-esge-2021-anticoag"
+          ]
+        }
+      ],
+      "mustExclude": [
+        {
+          "id": "mgmt-no-bridging",
+          "severity": "critical",
+          "match": [
+            "re:bridg\\w*[^.;\\n]{0,15}\\b(with|using)\\s+(lmwh|heparin|enoxaparin|dalteparin|tinzaparin)",
+            "re:warfarin\\s*[-—–:,]*\\s*bridge"
+          ],
+          "unless": [
+            "no bridging",
+            "bridging not",
+            "not routinely bridge",
+            "without bridging",
+            "mechanical valve",
+            "mechanical heart valve"
+          ],
+          "guidelineRefs": [
+            "bsg-esge-2021-anticoag",
+            "bridge-2015"
+          ],
+          "note": "Low-risk procedure: warfarin continued; bridging is both unnecessary and a bleeding risk."
+        },
+        {
+          "id": "mgmt-no-inr-reversal",
+          "severity": "critical",
+          "match": [
+            "vitamin k",
+            "phytomenadione",
+            "prothrombin complex",
+            "pcc"
+          ],
+          "unless": [
+            "if bleeding",
+            "major bleed",
+            "life-threatening"
+          ],
+          "guidelineRefs": [
+            "bsg-esge-2021-anticoag"
+          ],
+          "note": "Reversing a therapeutic INR for a diagnostic gastroscopy exposes the patient to thromboembolism for no benefit."
+        },
+        {
+          "id": "mgmt-no-deferral-for-inr",
+          "severity": "quality",
+          "match": [
+            "re:(hold|defer|postpone)\\w*[^.;\\n]{0,30}(surgery|procedure|endoscopy)[^.;\\n]{0,30}inr"
+          ],
+          "guidelineRefs": [
+            "bsg-esge-2021-anticoag"
+          ]
+        }
+      ]
+    }
+  },
+  "guideline": [
+    {
+      "id": "bsg-esge-2021-anticoag",
+      "name": "BSG/ESGE guideline — endoscopy in patients on antiplatelet or anticoagulant therapy (2021 update)",
+      "year": 2021,
+      "section": "Low-risk procedures (diagnostic ± biopsy): continue P2Y12 inhibitors and warfarin (INR in the week before, within therapeutic range), omit the morning DOAC dose. High-risk procedures (polypectomy, EMR, ERCP with sphincterotomy): P2Y12 inhibitor stopped 7 days before when thrombotic risk is low; high thrombotic risk (coronary stents) — continue aspirin and liaise with the cardiologist about stopping the P2Y12 inhibitor; warfarin stopped 5 days before (INR <1.5), bridging only for high thrombotic risk; DOAC stopped before the procedure (interval by drug and renal function), no bridging",
+      "citation": "Veitch AM, Radaelli F, Alikhan R, et al. Gut. 2021;70:1611–28.",
+      "verified": false
+    },
+    {
+      "id": "bridge-2015",
+      "name": "BRIDGE trial — perioperative bridging anticoagulation in AF",
+      "year": 2015,
+      "section": "Forgoing bridging was non-inferior for arterial thromboembolism and reduced major bleeding in patients with AF interrupting warfarin",
+      "citation": "Douketis JD, Spyropoulos AC, Kaatz S, et al. N Engl J Med. 2015;373:823–33.",
+      "verified": false
+    }
+  ],
+  "rationale": "Permutation: low bleeding-risk procedure on warfarin. The right answer is to continue warfarin (INR within range). Tests over-management: bridging, reversal or deferral.",
+  "authoring": {
+    "author": "Claude (perioperative medicine cluster)",
+    "date": "2026-09-25",
+    "notes": "Expectations and citations need surgeon sign-off (reviewedBy). Citations verified: false. iOS outcomes not yet observed (unverified: ios) — triage after the next CI run."
+  }
+}

@@ -1,0 +1,228 @@
+{
+  "schemaVersion": 1,
+  "id": "tia-transient-weakness-dysarthria",
+  "condition": "Transient ischaemic attack",
+  "category": "other",
+  "permutationOf": "stroke-acute-fast-positive",
+  "permutationLabel": "Resolved symptoms, found at a pre-operative visit",
+  "summary": "61-year-old smoker with hypertension and diabetes; 40 minutes of left arm weakness and slurred speech 3 h ago, now resolved, at a pre-op hernia assessment.",
+  "tags": [
+    "neuro",
+    "tia",
+    "pre-operative"
+  ],
+  "inputs": {
+    "patient": {
+      "ageYears": 61,
+      "sex": "male",
+      "pregnancy": {
+        "status": "not-applicable"
+      },
+      "heightCm": 177,
+      "weightKg": 92
+    },
+    "encounter": {
+      "setting": "outpatient",
+      "visitType": "urgentReview",
+      "acuity": "urgent"
+    },
+    "chiefComplaint": "Arm weakness and slurred speech that went away",
+    "hpi": "Three hours ago sudden weakness of the left arm and slurred speech lasting about 40 minutes, now completely resolved. Attending a pre-operative hernia assessment. Smoker, hypertension and type 2 diabetes. No headache.",
+    "socrates": {
+      "onset": [
+        "Today",
+        "Sudden"
+      ]
+    },
+    "symptoms": [
+      "limb weakness",
+      "speech difficulty"
+    ],
+    "negatives": [
+      "headache",
+      "visual loss",
+      "chest pain"
+    ],
+    "exam": {
+      "general": "Well. Pulse 78/min regular, BP 152/88, RR 14, temperature 36.6°C.",
+      "neuro": "Normal neurological examination now. Capillary glucose 5.9.",
+      "cardiovascular": "Regular rhythm, no carotid bruit."
+    },
+    "vitals": [
+      {
+        "minutesAgo": 10,
+        "heartRate": 78,
+        "systolicBp": 152,
+        "diastolicBp": 88,
+        "respiratoryRate": 14,
+        "temperatureC": 36.6,
+        "spo2": 98,
+        "avpu": "A",
+        "onSupplementalO2": false,
+        "glucoseMmol": 5.9,
+        "weightKg": 92
+      }
+    ],
+    "labs": [
+      {
+        "analyte": "glucose",
+        "name": "Glucose",
+        "value": 5.9,
+        "unit": "mmol/L",
+        "minutesAgo": 5
+      }
+    ],
+    "imaging": [],
+    "comorbidities": [
+      "Hypertension",
+      "Type 2 diabetes mellitus",
+      "Left inguinal hernia (awaiting repair)"
+    ],
+    "surgicalHistory": [],
+    "medications": [
+      {
+        "drug": "Metformin",
+        "dose": "1 g",
+        "frequency": "BD",
+        "indication": "Type 2 diabetes"
+      },
+      {
+        "drug": "Amlodipine",
+        "dose": "5 mg",
+        "frequency": "OD",
+        "indication": "Hypertension"
+      }
+    ],
+    "allergies": [],
+    "nkda": true,
+    "socialHistory": "Smoker 20/day. Bus driver.",
+    "confirmedDiagnosis": {
+      "name": "Transient ischaemic attack",
+      "icd10": "G45.9",
+      "assessmentText": "Suspected TIA (left arm weakness and dysarthria for 40 minutes, resolved): aspirin 300 mg now and specialist assessment within 24 hours; postpone elective hernia repair."
+    },
+    "platform": {
+      "web": {
+        "ccTemplate": "Other / general surgical",
+        "symptoms": [
+          "limb weakness",
+          "speech difficulty"
+        ],
+        "durationDays": 0.1
+      }
+    }
+  },
+  "expected": {
+    "differential": {
+      "mustNotMiss": [
+        {
+          "id": "mnm-tia",
+          "severity": "critical",
+          "match": [
+            "stroke",
+            "cerebrovascular",
+            "re:\\btia\\b",
+            "re:\\bcva\\b",
+            "cerebral infarct",
+            "transient ischaemic"
+          ],
+          "guidelineRefs": [
+            "nice-ng128"
+          ]
+        }
+      ]
+    },
+    "safety": {
+      "emergencyLevel": {
+        "id": "level-urgent",
+        "severity": "critical",
+        "atLeast": "urgent",
+        "guidelineRefs": [
+          "nice-ng128"
+        ],
+        "note": "NICE NG128: specialist assessment within 24 h of onset."
+      }
+    },
+    "investigations": {
+      "mustInclude": [
+        {
+          "id": "inv-vascular-imaging",
+          "severity": "quality",
+          "match": [
+            "carotid",
+            "duplex",
+            "doppler",
+            "ct angiogra",
+            "re:\\bmri\\b"
+          ],
+          "guidelineRefs": [
+            "nice-ng128"
+          ],
+          "knownGapNote": "Web: No carotid imaging.",
+          "proposedFix": "Add neurological safety prompts to clinical-inference.ts keyed on symptoms/HPI text (FAST → CT head + stroke team; thunderclap → CT head ± LP/CTA + neurosurgery; meningism/purpura → blood cultures + IV ceftriaxone now; saddle anaesthesia/retention → emergency MRI + spinal team; cancer + back pain/weakness → MRI whole spine + dexamethasone + MSCC coordinator)."
+        }
+      ]
+    },
+    "management": {
+      "mustInclude": [
+        {
+          "id": "mgmt-aspirin-300",
+          "severity": "critical",
+          "match": [
+            "re:aspirin[^.;\\n]{0,20}300",
+            "antiplatelet"
+          ],
+          "guidelineRefs": [
+            "nice-ng128"
+          ]
+        },
+        {
+          "id": "mgmt-specialist-24h",
+          "severity": "critical",
+          "match": [
+            "re:(within|in) 24 ?h",
+            "tia clinic",
+            "stroke specialist",
+            "neurolog",
+            "stroke team"
+          ],
+          "guidelineRefs": [
+            "nice-ng128"
+          ]
+        },
+        {
+          "id": "mgmt-defer-elective-surgery",
+          "severity": "quality",
+          "match": [
+            "re:(defer|postpone|delay)[^.;\\n]{0,40}(surgery|repair|operation)"
+          ],
+          "guidelineRefs": [
+            "nice-ng128"
+          ],
+          "note": "Surgeon-relevant: elective hernia repair postponed after a TIA.",
+          "knownGapNote": "Web: The pending hernia repair is not deferred (no TIA rule). | iOS CI 2026-09-25 (run 36169134350, database mode): no management item matched among 27 (ios.pipeline.actions, ios.radiation.plan, ios.radiation.referral, ios.radiation.followUp, ios.soap.plan)",
+          "proposedFix": "Add neurological safety prompts to clinical-inference.ts keyed on symptoms/HPI text (FAST → CT head + stroke team; thunderclap → CT head ± LP/CTA + neurosurgery; meningism/purpura → blood cultures + IV ceftriaxone now; saddle anaesthesia/retention → emergency MRI + spinal team; cancer + back pain/weakness → MRI whole spine + dexamethasone + MSCC coordinator).",
+          "knownGap": [
+            "ios"
+          ]
+        }
+      ]
+    }
+  },
+  "guideline": [
+    {
+      "id": "nice-ng128",
+      "name": "NICE NG128 — Stroke and transient ischaemic attack in over 16s: diagnosis and initial management",
+      "year": 2019,
+      "section": "1.1 Rapid recognition (FAST); exclude hypoglycaemia as the cause of sudden-onset neurological symptoms; suspected TIA: aspirin 300 mg immediately unless contraindicated and specialist assessment within 24 h; do not use scoring systems (ABCD2) to assess TIA risk; 1.2 imaging: non-enhanced CT immediately if thrombolysis/thrombectomy indicated, on anticoagulants or bleeding tendency; thrombolysis with alteplase within 4.5 h; thrombectomy; aspirin 300 mg after haemorrhage excluded; admit to a stroke unit",
+      "citation": "National Institute for Health and Care Excellence. Stroke and transient ischaemic attack in over 16s: diagnosis and initial management. NICE guideline NG128. London: NICE; 2019 (updated 2022).",
+      "verified": false
+    }
+  ],
+  "rationale": "NICE NG128: aspirin 300 mg immediately and specialist assessment within 24 h (no ABCD2 scoring).",
+  "authoring": {
+    "author": "Claude (endocrine / renal / urology / neuro cluster)",
+    "date": "2026-09-25",
+    "notes": "Expectations need surgeon sign-off (reviewedBy). Every citation is verified: false. iOS outcomes not observed (Linux)."
+  }
+}

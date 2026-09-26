@@ -1,6 +1,7 @@
 import Link from 'next/link';
 import { AmsiseLogo } from './AmsiseLogo';
 import { MobileNavMenu } from './MobileNavMenu';
+import { hasApprovedArticles } from '@/content/health-info';
 
 export const WA_TAPION     = 'https://wa.me/17582840557';
 export const WA_RODNEY     = 'https://wa.me/17587207111';
@@ -104,6 +105,9 @@ export function SiteFooter() {
           <div style={{ fontSize: 10, fontWeight: 700, color: '#0d9488', textTransform: 'uppercase', letterSpacing: '0.1em', marginBottom: 10 }}>Patient Resources</div>
           <div style={{ display: 'flex', flexDirection: 'column', gap: 7 }}>
             <Link href="/guidance" style={{ fontSize: 13, color: '#94a3b8', textDecoration: 'none' }}>Health Guidance &amp; Screening</Link>
+            {hasApprovedArticles() && (
+              <Link href="/health-information" style={{ fontSize: 13, color: '#94a3b8', textDecoration: 'none' }}>Health Information</Link>
+            )}
             <Link href="/pathway" style={{ fontSize: 13, color: '#94a3b8', textDecoration: 'none' }}>Care Pathways</Link>
             <Link href="/book" style={{ fontSize: 13, color: '#94a3b8', textDecoration: 'none' }}>Book an Appointment</Link>
           </div>

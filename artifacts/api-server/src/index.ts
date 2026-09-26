@@ -2,17 +2,16 @@ import * as Sentry from "@sentry/node";
 import app from "./app";
 import { logger } from "./lib/logger";
 import { sb } from "./lib/supabase";
+import { buildSentryOptions } from "./lib/sentry";
 
 // MODE gates all outbound actions (email, SMS, calendar writes) — always
 // start with dry_run.
 const mode = process.env.MODE || 'dry_run';
 
 if (process.env.SENTRY_DSN) {
-  Sentry.init({
-    dsn: process.env.SENTRY_DSN,
-    environment: mode,
-    tracesSampleRate: 0.2,
-  });
+  // PHI-safe: no default PII, no request data, no console/HTTP breadcrumbs,
+  // tracing off, beforeSend scrubbing — see lib/sentry.ts (compliance G-6).
+  Sentry.init(buildSentryOptions(process.env.SENTRY_DSN, mode));
 }
 
 // Fail fast — missing secrets cause silent 500s that are hard to diagnose.

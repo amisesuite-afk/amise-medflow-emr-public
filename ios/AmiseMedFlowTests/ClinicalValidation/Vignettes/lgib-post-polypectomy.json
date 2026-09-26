@@ -1,0 +1,266 @@
+{
+  "schemaVersion": 1,
+  "id": "lgib-post-polypectomy",
+  "condition": "Delayed post-polypectomy bleeding",
+  "category": "colorectal",
+  "permutationOf": "lgib-oakland-low-risk-discharge",
+  "permutationLabel": "Day 6 after EMR, clopidogrel restarted",
+  "summary": "66-year-old man 6 days after endoscopic mucosal resection of a 30 mm ascending colon polyp, clopidogrel restarted on day 2, now with four episodes of fresh and maroon blood, HR 98, Hb 11.2 (baseline 13.8). Needs admission and repeat colonoscopy with endoscopic haemostasis (clips).",
+  "tags": [
+    "lgib",
+    "post-procedure",
+    "antiplatelet"
+  ],
+  "inputs": {
+    "patient": {
+      "ageYears": 66,
+      "sex": "male",
+      "pregnancy": {
+        "status": "not-applicable"
+      },
+      "heightCm": 178,
+      "weightKg": 88
+    },
+    "encounter": {
+      "setting": "emergency",
+      "visitType": "urgentReview",
+      "acuity": "urgent",
+      "isPostOp": true,
+      "postOpDays": 6
+    },
+    "chiefComplaint": "Bleeding from the back passage after a colonoscopy",
+    "hpi": "Six days after endoscopic mucosal resection (EMR) of a 30 mm flat polyp in the ascending colon. Clopidogrel restarted on day 2 as advised. Since this morning four episodes of fresh and maroon blood per rectum, lightheaded on standing. No abdominal pain, no fever.",
+    "socrates": {
+      "onset": [
+        "Today"
+      ],
+      "associations": [
+        "Rectal bleeding"
+      ],
+      "timing": [
+        "Episodic"
+      ],
+      "severity": [
+        "Mild (1–3/10)"
+      ]
+    },
+    "symptoms": [
+      "rectal bleeding"
+    ],
+    "negatives": [
+      "abdominal pain",
+      "fever"
+    ],
+    "exam": {
+      "general": "Alert, pale. HR 98, BP 128/74, postural drop 18 mmHg.",
+      "abdomen": "Soft, non-tender, no peritonism.",
+      "other": "PR: fresh and maroon blood."
+    },
+    "vitals": [
+      {
+        "minutesAgo": 20,
+        "heartRate": 98,
+        "systolicBp": 128,
+        "diastolicBp": 74,
+        "respiratoryRate": 18,
+        "temperatureC": 36.8,
+        "spo2": 98,
+        "avpu": "A",
+        "onSupplementalO2": false
+      }
+    ],
+    "labs": [
+      {
+        "analyte": "haemoglobin",
+        "name": "Haemoglobin",
+        "value": 11.2,
+        "unit": "g/dL",
+        "minutesAgo": 60
+      },
+      {
+        "analyte": "wbc",
+        "name": "WBC",
+        "value": 8.0,
+        "unit": "×10⁹/L",
+        "minutesAgo": 60
+      },
+      {
+        "analyte": "platelets",
+        "name": "Platelets",
+        "value": 240,
+        "unit": "×10⁹/L",
+        "minutesAgo": 60
+      },
+      {
+        "analyte": "urea",
+        "name": "Urea",
+        "value": 7.0,
+        "unit": "mmol/L",
+        "minutesAgo": 60
+      },
+      {
+        "analyte": "creatinine",
+        "name": "Creatinine",
+        "value": 90,
+        "unit": "µmol/L",
+        "minutesAgo": 60
+      },
+      {
+        "analyte": "inr",
+        "name": "INR",
+        "value": 1.0,
+        "minutesAgo": 60
+      }
+    ],
+    "comorbidities": [
+      "Ischaemic heart disease",
+      "Type 2 diabetes mellitus"
+    ],
+    "surgicalHistory": [
+      "Endoscopic mucosal resection, 30 mm ascending colon polyp (6 days ago)",
+      "Coronary stent (2021)"
+    ],
+    "medications": [
+      {
+        "drug": "Clopidogrel",
+        "dose": "75 mg",
+        "frequency": "OD",
+        "indication": "Coronary stent"
+      },
+      {
+        "drug": "Metformin",
+        "dose": "1 g",
+        "frequency": "BD",
+        "indication": "Type 2 diabetes"
+      }
+    ],
+    "allergies": [],
+    "nkda": true,
+    "socialHistory": "Accountant. Non-smoker.",
+    "confirmedDiagnosis": {
+      "name": "Delayed post-polypectomy bleeding (day 6 after EMR)",
+      "icd10": "K91.840",
+      "assessmentText": "Delayed post-polypectomy haemorrhage 6 days after EMR of a 30 mm ascending colon polyp, on clopidogrel. Stable but ongoing bleeding."
+    },
+    "platform": {
+      "web": {
+        "ccTemplate": "Rectal bleeding",
+        "symptoms": [
+          "rectal bleeding",
+          "post-op review"
+        ],
+        "symptomDetails": {
+          "rectal bleeding": [
+            "Fresh red",
+            "Dark red"
+          ]
+        },
+        "examFindings": {
+          "abdomen": [
+            "Soft",
+            "PR: blood"
+          ]
+        },
+        "paneAnswers": {
+          "pr_bleeding": true
+        },
+        "durationDays": 0.5,
+        "painScore": 0
+      }
+    }
+  },
+  "expected": {
+    "safety": {
+      "emergencyLevel": {
+        "id": "level-admit",
+        "severity": "critical",
+        "atLeast": "urgent",
+        "guidelineRefs": [
+          "bsg-lgib-2019",
+          "esge-polypectomy-2017"
+        ]
+      },
+      "redFlags": [
+        {
+          "id": "flag-antiplatelet",
+          "severity": "quality",
+          "match": [
+            "clopidogrel",
+            "antiplatelet"
+          ],
+          "guidelineRefs": [
+            "bsg-lgib-2019"
+          ]
+        }
+      ]
+    },
+    "management": {
+      "mustInclude": [
+        {
+          "id": "mgmt-repeat-colonoscopy",
+          "severity": "critical",
+          "match": [
+            "re:(urgent|repeat|relook|re-look|early|emergency)[^.;\\n]{0,30}colonoscop",
+            "re:colonoscop[^.;\\n]{0,40}(within 24|urgent|haemostasis|hemostasis|clip)"
+          ],
+          "guidelineRefs": [
+            "esge-polypectomy-2017",
+            "bsg-lgib-2019"
+          ],
+          "note": "Early repeat colonoscopy to treat the post-polypectomy site (not a routine/screening colonoscopy)."
+        },
+        {
+          "id": "mgmt-endoscopic-haemostasis",
+          "severity": "quality",
+          "match": [
+            "clip",
+            "endoscopic haemostasis",
+            "endoscopic hemostasis",
+            "endoscopic therapy"
+          ],
+          "guidelineRefs": [
+            "esge-polypectomy-2017"
+          ],
+          "note": "ESGE 2017: delayed post-polypectomy bleeding with ongoing bleeding → colonoscopy and endoscopic haemostasis (clips; thermal coagulation).",
+          "proposedFix": "Add a post-polypectomy bleed rule (post-procedure + rectal bleeding): repeat colonoscopy with endoscopic haemostasis (ESGE)."
+        },
+        {
+          "id": "mgmt-antiplatelet-plan",
+          "severity": "quality",
+          "match": [
+            "clopidogrel",
+            "antiplatelet"
+          ],
+          "guidelineRefs": [
+            "bsg-lgib-2019"
+          ],
+          "note": "Temporary interruption of clopidogrel decided with cardiology (recent-ish coronary stent)."
+        }
+      ]
+    }
+  },
+  "guideline": [
+    {
+      "id": "bsg-lgib-2019",
+      "name": "BSG guideline — diagnosis and management of acute lower gastrointestinal bleeding",
+      "year": 2019,
+      "section": "Stable bleeding requiring admission; antiplatelet management",
+      "citation": "Oakland K, Chadwick G, East JE, et al. Diagnosis and management of acute lower gastrointestinal bleeding: guidelines from the British Society of Gastroenterology. Gut. 2019;68:776–789.",
+      "verified": false
+    },
+    {
+      "id": "esge-polypectomy-2017",
+      "name": "ESGE guideline — colorectal polypectomy and endoscopic mucosal resection",
+      "year": 2017,
+      "section": "Delayed post-polypectomy bleeding: colonoscopy with endoscopic haemostasis; resumption of antithrombotics",
+      "citation": "Ferlitsch M, Moss A, Hassan C, et al. Colorectal polypectomy and endoscopic mucosal resection (EMR): European Society of Gastrointestinal Endoscopy (ESGE) Clinical Guideline. Endoscopy. 2017;49:270–297.",
+      "verified": false
+    }
+  ],
+  "rationale": "Permutation: post-procedural bleed on an antiplatelet. There is no post-polypectomy bleeding protocol; this checks the plan still sends the patient back for endoscopic therapy rather than treating it as undifferentiated rectal bleeding.",
+  "authoring": {
+    "author": "Claude (colorectal/anorectal cluster)",
+    "date": "2026-09-25",
+    "notes": "Expectations need surgeon sign-off (reviewedBy). Citations verified: false until checked against the source."
+  }
+}

@@ -1,0 +1,353 @@
+{
+  "schemaVersion": 1,
+  "id": "periop-postop-anastomotic-leak-day5",
+  "condition": "Anastomotic leak after anterior resection (day 5)",
+  "category": "gi-emergency",
+  "permutationOf": "periop-postop-fever-day1-early",
+  "permutationLabel": "Day 5 anastomotic leak with sepsis",
+  "summary": "64-year-old man, day 5 after laparoscopic anterior resection without a defunctioning stoma: fever 38.7°C, HR 118, lower abdominal guarding, WBC 17.8, CRP 286 and rising.",
+  "tags": [
+    "periop",
+    "postop",
+    "anastomotic-leak",
+    "sepsis",
+    "colorectal"
+  ],
+  "inputs": {
+    "patient": {
+      "ageYears": 64,
+      "sex": "male",
+      "pregnancy": {
+        "status": "not-applicable"
+      },
+      "heightCm": 176,
+      "weightKg": 84
+    },
+    "encounter": {
+      "setting": "inpatient",
+      "visitType": "wardReview",
+      "acuity": "urgent",
+      "isPostOp": true,
+      "postOpDays": 5
+    },
+    "chiefComplaint": "Worsening abdominal pain and fever after bowel operation",
+    "hpi": "Day 5 after laparoscopic anterior resection for upper rectal cancer, no defunctioning stoma. Was eating on day 2; since yesterday increasing lower abdominal pain, off food, feels hot and shivery. Passed a small amount of blood-stained fluid per rectum.",
+    "socrates": {
+      "onset": [
+        "Yesterday",
+        "Gradual"
+      ],
+      "site": [
+        "Suprapubic",
+        "Diffuse"
+      ],
+      "character": [
+        "Sharp"
+      ],
+      "radiation": [
+        "No radiation"
+      ],
+      "associations": [
+        "Fever",
+        "Rigors",
+        "Anorexia",
+        "Nausea"
+      ],
+      "timing": [
+        "Worse over time"
+      ],
+      "exacerbating": [
+        "Movement",
+        "Coughing"
+      ],
+      "relieving": [
+        "Nothing"
+      ],
+      "severity": [
+        "Severe (7–9/10)"
+      ]
+    },
+    "symptoms": [
+      "abdominal pain",
+      "fever",
+      "rigors",
+      "anorexia"
+    ],
+    "negatives": [
+      "chest pain",
+      "cough"
+    ],
+    "exam": {
+      "general": "Flushed, unwell. HR 118, BP 102/64, RR 24, SpO2 94% on air, T 38.7°C.",
+      "abdomen": "Distended, tender lower abdomen with guarding. Port sites clean."
+    },
+    "vitals": [
+      {
+        "minutesAgo": 5,
+        "heartRate": 118,
+        "systolicBp": 102,
+        "diastolicBp": 64,
+        "respiratoryRate": 24,
+        "temperatureC": 38.7,
+        "spo2": 94,
+        "avpu": "A",
+        "onSupplementalO2": false
+      }
+    ],
+    "labs": [
+      {
+        "analyte": "wbc",
+        "name": "WBC",
+        "value": 17.8,
+        "unit": "×10⁹/L",
+        "minutesAgo": 30
+      },
+      {
+        "analyte": "crp",
+        "name": "CRP",
+        "value": 286,
+        "unit": "mg/L",
+        "minutesAgo": 30
+      },
+      {
+        "analyte": "lactate",
+        "name": "Lactate",
+        "value": 2.9,
+        "unit": "mmol/L",
+        "minutesAgo": 30
+      },
+      {
+        "analyte": "creatinine",
+        "name": "Creatinine",
+        "value": 124,
+        "unit": "µmol/L",
+        "minutesAgo": 30
+      },
+      {
+        "analyte": "haemoglobin",
+        "name": "Haemoglobin",
+        "value": 11.9,
+        "unit": "g/dL",
+        "minutesAgo": 30
+      }
+    ],
+    "imaging": [],
+    "comorbidities": [
+      "Upper rectal adenocarcinoma (resected)"
+    ],
+    "surgicalHistory": [
+      "Laparoscopic anterior resection (day 5)"
+    ],
+    "medications": [
+      {
+        "drug": "Enoxaparin",
+        "dose": "40 mg",
+        "frequency": "OD",
+        "indication": "VTE prophylaxis"
+      },
+      {
+        "drug": "Paracetamol",
+        "dose": "1 g",
+        "frequency": "QDS",
+        "indication": "Analgesia"
+      }
+    ],
+    "allergies": [],
+    "nkda": true,
+    "socialHistory": "Non-smoker.",
+    "confirmedDiagnosis": {
+      "name": "Suspected anastomotic leak — day 5 after anterior resection",
+      "icd10": "K91.89",
+      "paneDiseaseId": "anastomotic_leak",
+      "assessmentText": "Suspected anastomotic leak day 5 with sepsis (fever, tachycardia, lower abdominal peritonism, CRP rising). Sepsis bundle, CT with rectal contrast, senior review for relaparotomy vs drainage."
+    },
+    "platform": {
+      "web": {
+        "ccTemplate": "Acute abdominal pain",
+        "symptoms": [
+          "abdominal pain",
+          "fever",
+          "rigors",
+          "anorexia"
+        ],
+        "durationDays": 1,
+        "painScore": 7,
+        "paneAnswers": {
+          "previous_surgery": true,
+          "postop_fever": true,
+          "abdominal_tenderness": true,
+          "guarding": true,
+          "elevated_wbc": true
+        }
+      }
+    }
+  },
+  "expected": {
+    "differential": {
+      "mustRankTopK": [
+        {
+          "id": "dx-leak-top3",
+          "severity": "critical",
+          "match": [
+            "anastomotic",
+            "leak"
+          ],
+          "k": 3,
+          "guidelineRefs": [
+            "isrec-2010"
+          ]
+        }
+      ]
+    },
+    "safety": {
+      "emergencyLevel": {
+        "id": "level-at-least-urgent",
+        "severity": "critical",
+        "atLeast": "urgent",
+        "guidelineRefs": [
+          "ssc-2021"
+        ]
+      },
+      "mustAlarm": [
+        {
+          "id": "alarm-sepsis",
+          "severity": "critical",
+          "match": [
+            "sepsis",
+            "septic",
+            "fever"
+          ],
+          "guidelineRefs": [
+            "ssc-2021"
+          ]
+        }
+      ]
+    },
+    "scores": {
+      "recommended": [
+        {
+          "id": "score-rec-qsofa",
+          "severity": "quality",
+          "score": "qsofa",
+          "guidelineRefs": [
+            "ssc-2021"
+          ],
+          "knownGap": [
+            "ios"
+          ],
+          "knownGapNote": "iOS CI 2026-09-25 (run 36169134350, database mode): qsofa not recommended; recommended: caprini, news2, mews"
+        }
+      ]
+    },
+    "investigations": {
+      "mustInclude": [
+        {
+          "id": "inv-ct",
+          "severity": "critical",
+          "match": [
+            "re:\\bct\\b[^.;\\n]{0,40}(abdo|pelvi)",
+            "computed tomography"
+          ],
+          "guidelineRefs": [
+            "wses-iai-2017",
+            "isrec-2010"
+          ]
+        }
+      ]
+    },
+    "management": {
+      "mustInclude": [
+        {
+          "id": "mgmt-antibiotics",
+          "severity": "critical",
+          "match": [
+            "antibiotic",
+            "piperacillin",
+            "pip-tazo",
+            "meropenem",
+            "co-amoxiclav",
+            "amoxiclav",
+            "ceftriaxone",
+            "cefuroxime",
+            "metronidazole",
+            "gentamicin",
+            "tazocin"
+          ],
+          "guidelineRefs": [
+            "ssc-2021",
+            "wses-iai-2017"
+          ]
+        },
+        {
+          "id": "mgmt-source-control",
+          "severity": "quality",
+          "match": [
+            "laparotomy",
+            "return to theatre",
+            "re-look",
+            "relaparotomy",
+            "drainage",
+            "drain"
+          ],
+          "guidelineRefs": [
+            "isrec-2010",
+            "wses-iai-2017"
+          ]
+        }
+      ],
+      "mustExclude": [
+        {
+          "id": "mgmt-no-appendicectomy",
+          "severity": "critical",
+          "match": [
+            "appendicectomy",
+            "appendectomy"
+          ],
+          "unless": [
+            "not indicated",
+            "no role",
+            "exclude appendicitis"
+          ],
+          "note": "Not an appendix presentation: an appendicectomy operative plan (consent, theatre booking, post-operative orders) is a wrong-procedure suggestion."
+        }
+      ]
+    },
+    "pathway": {
+      "id": "pathway-ward-review",
+      "severity": "quality",
+      "equals": "wardReview"
+    }
+  },
+  "guideline": [
+    {
+      "id": "isrec-2010",
+      "name": "ISREC definition and grading of anastomotic leakage after anterior resection",
+      "year": 2010,
+      "section": "Grade A: no change in management; Grade B: active intervention without relaparotomy (antibiotics, radiological drainage); Grade C: relaparotomy",
+      "citation": "Rahbari NN, Weitz J, Hohenberger W, et al. Surgery. 2010;147:339–51.",
+      "verified": false
+    },
+    {
+      "id": "wses-iai-2017",
+      "name": "WSES guidelines — management of intra-abdominal infections",
+      "year": 2017,
+      "section": "Early source control; CT for diagnosis; percutaneous drainage for accessible collections; relaparotomy for diffuse peritonitis; empirical antibiotics by severity and local resistance",
+      "citation": "Sartelli M, Chichom-Mefire A, Labricciosa FM, et al. World J Emerg Surg. 2017;12:29.",
+      "verified": false
+    },
+    {
+      "id": "ssc-2021",
+      "name": "Surviving Sepsis Campaign — international guidelines 2021",
+      "year": 2021,
+      "section": "Antimicrobials within 1 h for possible septic shock or high likelihood of sepsis; source control as soon as practical; measure lactate; admit to ICU when needed",
+      "citation": "Evans L, Rhodes A, Alhazzani W, et al. Crit Care Med. 2021;49:e1063–143.",
+      "verified": false
+    }
+  ],
+  "rationale": "Permutation: the typical leak presentation (day 5, sepsis, peritonism). Tests diagnosis, level, sepsis alarm, CT, antibiotics and source control.",
+  "authoring": {
+    "author": "Claude (perioperative medicine cluster)",
+    "date": "2026-09-25",
+    "notes": "Expectations and citations need surgeon sign-off (reviewedBy). Citations verified: false. iOS outcomes not yet observed (unverified: ios) — triage after the next CI run."
+  }
+}

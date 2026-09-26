@@ -1,0 +1,184 @@
+{
+  "schemaVersion": 1,
+  "id": "decision-vte-caprini-high-doac",
+  "condition": "VTE prophylaxis and bridging — Caprini 8 on apixaban (colon cancer resection)",
+  "category": "colorectal",
+  "permutationOf": null,
+  "summary": "72-year-old on apixaban for AF, planned right hemicolectomy for colon cancer, Caprini 8: prophylactic LMWH is not for this patient (therapeutic anticoagulation plan) and there is no bridging with a DOAC.",
+  "tags": [
+    "decision-support",
+    "vte",
+    "anticoagulation",
+    "personalisation"
+  ],
+  "inputs": {
+    "patient": {
+      "ageYears": 72,
+      "sex": "female",
+      "pregnancy": {
+        "status": "not-applicable"
+      },
+      "heightCm": 160,
+      "weightKg": 70
+    },
+    "encounter": {
+      "setting": "outpatient",
+      "visitType": "newConsult",
+      "acuity": "priority"
+    },
+    "chiefComplaint": "Pre-operative assessment for bowel cancer surgery",
+    "hpi": "Right colon adenocarcinoma found on colonoscopy for iron-deficiency anaemia. Atrial fibrillation on apixaban. Walks a mile.",
+    "exam": {
+      "general": "Well.",
+      "abdomen": "Soft, non-tender; no mass."
+    },
+    "vitals": [
+      {
+        "minutesAgo": 10,
+        "heartRate": 78,
+        "systolicBp": 138,
+        "diastolicBp": 82,
+        "respiratoryRate": 14,
+        "temperatureC": 36.6,
+        "spo2": 97,
+        "avpu": "A",
+        "onSupplementalO2": false
+      }
+    ],
+    "labs": [
+      {
+        "analyte": "haemoglobin",
+        "name": "Haemoglobin",
+        "value": 10.9,
+        "unit": "g/dL",
+        "minutesAgo": 60
+      },
+      {
+        "analyte": "egfr",
+        "name": "eGFR",
+        "value": 64,
+        "unit": "mL/min/1.73m2",
+        "minutesAgo": 60
+      }
+    ],
+    "comorbidities": [
+      "Atrial fibrillation",
+      "Colon cancer"
+    ],
+    "medications": [
+      {
+        "drug": "Apixaban",
+        "dose": "5 mg",
+        "frequency": "BD",
+        "indication": "Atrial fibrillation"
+      }
+    ],
+    "nkda": true,
+    "scoreForms": {
+      "caprini": {
+        "total": 8
+      },
+      "has-bled": {
+        "total": 2
+      },
+      "asa": {
+        "total": 2
+      }
+    },
+    "confirmedDiagnosis": {
+      "name": "Adenocarcinoma of the ascending colon",
+      "icd10": "C18.2",
+      "assessmentText": "Right colon adenocarcinoma — planned laparoscopic right hemicolectomy."
+    },
+    "platform": {
+      "web": {
+        "ccTemplate": "Pre-operative assessment",
+        "symptoms": []
+      }
+    }
+  },
+  "expected": {
+    "safety": {
+      "redFlags": [
+        {
+          "id": "decision-no-prophylactic-lmwh-on-doac",
+          "severity": "critical",
+          "match": [
+            "re:not for this patient: pharmacological prophylaxis"
+          ],
+          "sources": [
+            "web.decisions.notForPatient",
+            "ios.decisions.notForPatient"
+          ],
+          "guidelineRefs": [
+            "nice-ng89"
+          ]
+        },
+        {
+          "id": "decision-no-bridging-doac",
+          "severity": "critical",
+          "match": [
+            "re:not for this patient: bridging with therapeutic-dose lmwh - .*pause"
+          ],
+          "sources": [
+            "web.decisions.notForPatient",
+            "ios.decisions.notForPatient"
+          ],
+          "guidelineRefs": [
+            "pause-2019"
+          ]
+        }
+      ]
+    },
+    "management": {
+      "mustInclude": [
+        {
+          "id": "decision-mechanical-prophylaxis",
+          "severity": "quality",
+          "match": [
+            "re:rank 1: mechanical prophylaxis[^;]*- treat"
+          ],
+          "sources": [
+            "web.decisions",
+            "ios.decisions"
+          ],
+          "guidelineRefs": [
+            "nice-ng89"
+          ]
+        }
+      ]
+    }
+  },
+  "guideline": [
+    {
+      "id": "nice-ng89",
+      "name": "NICE NG89 VTE prophylaxis in over 16s",
+      "year": 2018,
+      "section": "Surgical patients",
+      "citation": "NICE NG89 (2018).",
+      "verified": false
+    },
+    {
+      "id": "pause-2019",
+      "name": "PAUSE study",
+      "year": 2019,
+      "section": "Peri-operative DOAC interruption without bridging",
+      "citation": "Douketis JD et al. JAMA Intern Med 2019;179:1469-1478.",
+      "verified": false
+    },
+    {
+      "id": "accp-2022",
+      "name": "ACCP perioperative antithrombotic guideline",
+      "year": 2022,
+      "section": "Bridging: mechanical valves, recent VTE",
+      "citation": "Douketis JD et al. Chest 2022;162:e207-e243.",
+      "verified": false
+    }
+  ],
+  "rationale": "A patient on therapeutic anticoagulation does not need prophylactic LMWH while anticoagulated; DOACs are interrupted and restarted without bridging (PAUSE 2019; ACCP 2022). Mechanical prophylaxis covers the interruption.",
+  "authoring": {
+    "author": "Claude (bayes-treatment branch)",
+    "date": "2026-09-25",
+    "notes": "Decision-support vignette (web.decisions / ios.decisions). Expectations test the band and ranking of the decision layer, whose numbers await surgeon sign-off (docs/clinical-validation/changes/bayes-treatment.md)."
+  }
+}

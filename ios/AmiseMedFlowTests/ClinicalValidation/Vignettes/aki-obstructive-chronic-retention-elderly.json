@@ -1,0 +1,326 @@
+{
+  "schemaVersion": 1,
+  "id": "aki-obstructive-chronic-retention-elderly",
+  "condition": "Obstructive AKI from high-pressure chronic retention",
+  "category": "urology",
+  "permutationOf": "aki-prerenal-diarrhoea-acei-nsaid",
+  "permutationLabel": "Elderly man, painless chronic retention, AKI stage 3",
+  "summary": "83-year-old man with dribbling incontinence, confusion and a painless bladder to the umbilicus; 1.6 L, bilateral hydronephrosis, creatinine 486, K 6.2.",
+  "tags": [
+    "aki",
+    "elderly",
+    "retention",
+    "renal"
+  ],
+  "inputs": {
+    "patient": {
+      "ageYears": 83,
+      "sex": "male",
+      "pregnancy": {
+        "status": "not-applicable"
+      },
+      "heightCm": 168,
+      "weightKg": 70
+    },
+    "encounter": {
+      "setting": "emergency",
+      "visitType": "urgentReview",
+      "acuity": "urgent"
+    },
+    "chiefComplaint": "Wetting the bed and confusion",
+    "hpi": "Three weeks of dribbling incontinence and new bed-wetting at night, poor stream for years. Family noticed confusion and a swollen lower abdomen. Takes amitriptyline for neuropathic pain. No pain.",
+    "symptoms": [
+      "urinary incontinence",
+      "poor urinary stream",
+      "confusion",
+      "abdominal distension",
+      "incomplete bladder emptying"
+    ],
+    "negatives": [
+      "suprapubic pain",
+      "fever",
+      "haematuria"
+    ],
+    "exam": {
+      "general": "Mildly confused, euvolaemic. Pulse 92/min, BP 168/92, RR 20, temperature 36.7°C.",
+      "abdomen": "Painless, dull, distended bladder palpable to the umbilicus. PR: smooth, enlarged benign-feeling prostate."
+    },
+    "vitals": [
+      {
+        "minutesAgo": 10,
+        "heartRate": 92,
+        "systolicBp": 168,
+        "diastolicBp": 92,
+        "respiratoryRate": 20,
+        "temperatureC": 36.7,
+        "spo2": 96,
+        "avpu": "C",
+        "onSupplementalO2": false,
+        "weightKg": 70
+      }
+    ],
+    "labs": [
+      {
+        "analyte": "creatinine",
+        "name": "Creatinine",
+        "value": 486,
+        "unit": "µmol/L",
+        "minutesAgo": 30
+      },
+      {
+        "analyte": "urea",
+        "name": "Urea",
+        "value": 34.1,
+        "unit": "mmol/L",
+        "minutesAgo": 30
+      },
+      {
+        "analyte": "potassium",
+        "name": "Potassium",
+        "value": 6.2,
+        "unit": "mmol/L",
+        "minutesAgo": 30
+      },
+      {
+        "analyte": "bicarbonate",
+        "name": "Bicarbonate",
+        "value": 16,
+        "unit": "mmol/L",
+        "minutesAgo": 30
+      },
+      {
+        "analyte": "sodium",
+        "name": "Sodium",
+        "value": 133,
+        "unit": "mmol/L",
+        "minutesAgo": 30
+      },
+      {
+        "analyte": "haemoglobin",
+        "name": "Haemoglobin",
+        "value": 11.2,
+        "unit": "g/dL",
+        "minutesAgo": 30
+      }
+    ],
+    "imaging": [
+      {
+        "name": "USS renal tract",
+        "modality": "US",
+        "result": "Bladder volume 1.6 L; bilateral moderate hydronephrosis; normal renal size.",
+        "minutesAgo": 30,
+        "region": "Renal tract"
+      }
+    ],
+    "comorbidities": [
+      "Lower urinary tract symptoms (untreated)",
+      "Peripheral neuropathy",
+      "Baseline creatinine 110 µmol/L"
+    ],
+    "surgicalHistory": [],
+    "medications": [
+      {
+        "drug": "Amitriptyline",
+        "dose": "25 mg",
+        "frequency": "ON",
+        "indication": "Neuropathic pain"
+      }
+    ],
+    "allergies": [],
+    "nkda": true,
+    "socialHistory": "Lives with wife.",
+    "confirmedDiagnosis": {
+      "name": "High-pressure chronic urinary retention with obstructive AKI stage 3",
+      "icd10": "N13.8",
+      "assessmentText": "High-pressure chronic retention (1.6 L, bilateral hydronephrosis) with AKI stage 3 (creatinine 486) and potassium 6.2."
+    },
+    "platform": {
+      "web": {
+        "ccTemplate": "Other / general surgical",
+        "symptoms": [
+          "urinary incontinence",
+          "poor urinary stream",
+          "confusion",
+          "abdominal distension",
+          "incomplete bladder emptying"
+        ],
+        "durationDays": 21
+      }
+    }
+  },
+  "expected": {
+    "differential": {
+      "mustNotMiss": [
+        {
+          "id": "mnm-retention",
+          "severity": "critical",
+          "match": [
+            "retention",
+            "obstructive uropathy",
+            "hydronephrosis",
+            "bladder outlet"
+          ],
+          "guidelineRefs": [
+            "nice-ng148",
+            "kdigo-aki-2012",
+            "eau-luts-2024",
+            "nice-cg97"
+          ]
+        }
+      ]
+    },
+    "safety": {
+      "emergencyLevel": {
+        "id": "level-urgent",
+        "severity": "critical",
+        "atLeast": "urgent",
+        "guidelineRefs": [
+          "nice-ng148",
+          "kdigo-aki-2012",
+          "eau-luts-2024",
+          "nice-cg97"
+        ]
+      },
+      "mustAlarm": [
+        {
+          "id": "alarm-aki",
+          "severity": "critical",
+          "match": [
+            "acute kidney",
+            "aki",
+            "renal impairment",
+            "creatinine"
+          ],
+          "guidelineRefs": [
+            "nice-ng148",
+            "kdigo-aki-2012"
+          ]
+        }
+      ],
+      "redFlags": [
+        {
+          "id": "flag-hyperkalaemia",
+          "severity": "quality",
+          "match": [
+            "hyperkal",
+            "potassium"
+          ],
+          "guidelineRefs": [
+            "nice-ng148"
+          ]
+        }
+      ]
+    },
+    "management": {
+      "mustInclude": [
+        {
+          "id": "mgmt-catheterise",
+          "severity": "critical",
+          "match": [
+            "catheter",
+            "catheteris"
+          ],
+          "guidelineRefs": [
+            "nice-ng148",
+            "eau-luts-2024"
+          ]
+        },
+        {
+          "id": "mgmt-post-obstructive-diuresis",
+          "severity": "critical",
+          "match": [
+            "post-obstructive diuresis",
+            "postobstructive diuresis",
+            "post obstructive diuresis"
+          ],
+          "guidelineRefs": [
+            "nice-cg97",
+            "eau-luts-2024"
+          ],
+          "note": "After decompressing high-pressure chronic retention, diuresis can cause hypovolaemia and electrolyte loss."
+        },
+        {
+          "id": "mgmt-urology",
+          "severity": "quality",
+          "match": [
+            "urolog"
+          ],
+          "guidelineRefs": [
+            "nice-ng148"
+          ],
+          "knownGapNote": "Web: Nephrology only; no urology referral.",
+          "proposedFix": "As mgmt-catheterise."
+        },
+        {
+          "id": "mgmt-stop-anticholinergic",
+          "severity": "quality",
+          "match": [
+            "re:(stop|review|hold)[^.;\\n]{0,40}(amitriptyline|anticholinergic)"
+          ],
+          "guidelineRefs": [
+            "eau-luts-2024"
+          ],
+          "knownGapNote": "Web: Amitriptyline is not recognised as a retention precipitant. | iOS CI 2026-09-25 (run 36169134350, database mode): no management item matched among 27 (ios.pipeline.actions, ios.radiation.plan, ios.radiation.referral, ios.radiation.followUp, ios.soap.plan)",
+          "proposedFix": "Add anticholinergic drugs to a retention precipitant check.",
+          "knownGap": [
+            "ios"
+          ]
+        }
+      ],
+      "mustExclude": [
+        {
+          "id": "mgmt-no-early-twoc",
+          "severity": "quality",
+          "match": [
+            "re:twoc[^.;\\n]{0,20}(48|72)",
+            "trial without catheter at 48"
+          ],
+          "guidelineRefs": [
+            "nice-cg97"
+          ],
+          "note": "High-pressure chronic retention: catheter until urological assessment; an early TWOC risks recurrent obstructive AKI (surgeon to confirm)."
+        }
+      ]
+    }
+  },
+  "guideline": [
+    {
+      "id": "nice-ng148",
+      "name": "NICE NG148 — Acute kidney injury: prevention, detection and management",
+      "year": 2019,
+      "section": "Detection (creatinine against baseline); urinalysis for all with AKI; ultrasound of the urinary tract within 24 h when obstruction is suspected (immediately if pyonephrosis suspected); stop/withhold nephrotoxic drugs (NSAIDs, ACE inhibitors, ARBs, diuretics) and review metformin; refer to urology immediately for pyonephrosis, obstructed solitary kidney, bilateral upper tract obstruction or complications of obstruction; nephrology referral criteria",
+      "citation": "National Institute for Health and Care Excellence. Acute kidney injury: prevention, detection and management. NICE guideline NG148. London: NICE; 2019.",
+      "verified": false
+    },
+    {
+      "id": "kdigo-aki-2012",
+      "name": "KDIGO Clinical Practice Guideline for Acute Kidney Injury",
+      "year": 2012,
+      "section": "2.1 Definition and staging (creatinine rise ≥26.5 µmol/L in 48 h or ≥1.5× baseline in 7 days, or urine output <0.5 mL/kg/h for 6 h; stage by creatinine ratio/urine output); 3.1 fluids and haemodynamic management; discontinue nephrotoxic agents; evaluate cause",
+      "citation": "Kidney Disease: Improving Global Outcomes (KDIGO) Acute Kidney Injury Work Group. KDIGO Clinical Practice Guideline for Acute Kidney Injury. Kidney Int Suppl. 2012;2:1–138.",
+      "verified": false
+    },
+    {
+      "id": "eau-luts-2024",
+      "name": "EAU Guidelines on the management of non-neurogenic male LUTS (acute urinary retention)",
+      "year": 2024,
+      "section": "Acute urinary retention: bladder decompression by urethral (or suprapubic) catheter; alpha-blocker before trial without catheter; renal function; identify precipitants (anticholinergics, constipation)",
+      "citation": "Gravas S, Gacci M, Gratzke C, et al. EAU Guidelines on Management of Non-Neurogenic Male LUTS. EAU Guidelines Office, Arnhem; 2024 edition.",
+      "verified": false
+    },
+    {
+      "id": "nice-cg97",
+      "name": "NICE CG97 — Lower urinary tract symptoms in men: management",
+      "year": 2010,
+      "section": "Acute urinary retention: offer an alpha blocker before catheter removal; chronic retention with renal impairment (high-pressure chronic retention): catheterise and refer to urology before bladder outflow surgery",
+      "citation": "National Institute for Health and Care Excellence. Lower urinary tract symptoms in men: management. Clinical guideline CG97. London: NICE; 2010 (updated 2015).",
+      "verified": false
+    }
+  ],
+  "rationale": "Obstruction is the reversible AKI cause a surgeon must find. NICE NG148 / CG97: catheterise, watch for post-obstructive diuresis, urology.",
+  "authoring": {
+    "author": "Claude (endocrine / renal / urology / neuro cluster)",
+    "date": "2026-09-25",
+    "notes": "Expectations need surgeon sign-off (reviewedBy). Every citation is verified: false. iOS outcomes not observed (Linux)."
+  }
+}

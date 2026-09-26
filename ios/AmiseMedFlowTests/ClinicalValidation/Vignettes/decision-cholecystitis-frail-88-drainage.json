@@ -1,0 +1,231 @@
+{
+  "schemaVersion": 1,
+  "id": "decision-cholecystitis-frail-88-drainage",
+  "condition": "Acute cholecystitis — frail 88-year-old",
+  "category": "hpb",
+  "permutationOf": null,
+  "summary": "Frail 88-year-old (Clinical Frailty Scale 7, ASA IV, eGFR 28) with ultrasound-confirmed acute calculous cholecystitis: the decision layer ranks gallbladder drainage above early laparoscopic cholecystectomy.",
+  "tags": [
+    "decision-support",
+    "frailty",
+    "personalisation"
+  ],
+  "inputs": {
+    "patient": {
+      "ageYears": 88,
+      "sex": "female",
+      "pregnancy": {
+        "status": "not-applicable"
+      },
+      "heightCm": 162,
+      "weightKg": 64
+    },
+    "encounter": {
+      "setting": "emergency",
+      "visitType": "urgentReview",
+      "acuity": "urgent"
+    },
+    "chiefComplaint": "Right upper abdominal pain",
+    "hpi": "Two days of constant right upper quadrant pain after a fatty meal, radiating to the right shoulder tip, with nausea and one vomit. Fever overnight. Lives in a care home, mobilises with a frame, dependent for personal care. Hypertension, chronic kidney disease, heart failure.",
+    "exam": {
+      "general": "Unwell, flushed.",
+      "abdomen": "Tender right upper quadrant with a positive Murphy's sign; no generalised peritonism; no palpable mass."
+    },
+    "vitals": [
+      {
+        "minutesAgo": 10,
+        "heartRate": 104,
+        "systolicBp": 128,
+        "diastolicBp": 76,
+        "respiratoryRate": 20,
+        "temperatureC": 38.4,
+        "spo2": 96,
+        "avpu": "A",
+        "onSupplementalO2": false
+      }
+    ],
+    "labs": [
+      {
+        "analyte": "wbc",
+        "name": "WBC",
+        "value": 16.2,
+        "unit": "x10^9/L",
+        "minutesAgo": 60
+      },
+      {
+        "analyte": "crp",
+        "name": "CRP",
+        "value": 180,
+        "unit": "mg/L",
+        "minutesAgo": 60
+      },
+      {
+        "analyte": "bilirubin",
+        "name": "Bilirubin",
+        "value": 18,
+        "unit": "µmol/L",
+        "minutesAgo": 60
+      },
+      {
+        "analyte": "egfr",
+        "name": "eGFR",
+        "value": 28,
+        "unit": "mL/min/1.73m2",
+        "minutesAgo": 60
+      },
+      {
+        "analyte": "creatinine",
+        "name": "Creatinine",
+        "value": 160,
+        "unit": "µmol/L",
+        "minutesAgo": 60
+      }
+    ],
+    "imaging": [
+      {
+        "name": "USS abdomen",
+        "modality": "US",
+        "region": "abdomen",
+        "result": "Gallstones with a thickened 6 mm gallbladder wall, pericholecystic fluid and a sonographic Murphy's sign. CBD 5 mm.",
+        "minutesAgo": 30
+      }
+    ],
+    "comorbidities": [
+      "Hypertension",
+      "Chronic kidney disease stage 4",
+      "Heart failure"
+    ],
+    "medications": [
+      {
+        "drug": "Bisoprolol",
+        "dose": "2.5 mg"
+      }
+    ],
+    "nkda": true,
+    "scoreForms": {
+      "cfs": {
+        "total": 7
+      },
+      "asa": {
+        "total": 4
+      }
+    },
+    "confirmedDiagnosis": {
+      "name": "Acute calculous cholecystitis",
+      "icd10": "K81.0",
+      "paneDiseaseId": "cholecystitis",
+      "assessmentText": "Acute calculous cholecystitis, TG18 grade II, in a frail 88-year-old (CFS 7, ASA IV)."
+    },
+    "platform": {
+      "web": {
+        "ccTemplate": "Acute abdominal pain",
+        "symptoms": [
+          "Abdominal pain",
+          "Nausea",
+          "Fever"
+        ]
+      }
+    }
+  },
+  "expected": {
+    "management": {
+      "mustInclude": [
+        {
+          "id": "decision-drainage-ranked-first",
+          "severity": "critical",
+          "match": [
+            "re:rank 1: percutaneous cholecystostomy[^;]*- treat"
+          ],
+          "sources": [
+            "web.decisions",
+            "ios.decisions"
+          ],
+          "guidelineRefs": [
+            "tg18",
+            "cpoc-2021"
+          ],
+          "note": "TG18: poor performance status / high CCI or ASA → drainage; frailty raises operative harm."
+        },
+        {
+          "id": "decision-lc-not-advised",
+          "severity": "critical",
+          "match": [
+            "re:observe rather than early laparoscopic cholecystectomy"
+          ],
+          "sources": [
+            "web.decisions",
+            "ios.decisions"
+          ],
+          "guidelineRefs": [
+            "tg18",
+            "chocolate"
+          ],
+          "note": "Early LC is not advised for this patient at the point estimate."
+        },
+        {
+          "id": "decision-frailty-named",
+          "severity": "quality",
+          "match": [
+            "re:frailty cfs 7[^)]*raised the harm of early laparoscopic cholecystectomy"
+          ],
+          "sources": [
+            "web.decisions",
+            "ios.decisions"
+          ],
+          "guidelineRefs": [
+            "cpoc-2021"
+          ],
+          "note": "The 2-3 parameters that moved the decision are named."
+        }
+      ],
+      "mustExclude": [
+        {
+          "id": "decision-no-early-lc-first",
+          "severity": "critical",
+          "match": [
+            "re:rank 1: early laparoscopic cholecystectomy"
+          ],
+          "sources": [
+            "web.decisions",
+            "ios.decisions"
+          ],
+          "guidelineRefs": [
+            "tg18"
+          ]
+        }
+      ]
+    }
+  },
+  "guideline": [
+    {
+      "id": "tg18",
+      "name": "Tokyo Guidelines 2018 — flowchart for the management of acute cholecystitis",
+      "year": 2018,
+      "section": "Grade I-III management; fitness (CCI, ASA)",
+      "citation": "Okamoto K et al. J Hepatobiliary Pancreat Sci 2018;25:55-72.",
+      "verified": false
+    },
+    {
+      "id": "chocolate",
+      "name": "CHOCOLATE randomised trial",
+      "year": 2018,
+      "section": "LC vs percutaneous drainage in high-risk patients",
+      "citation": "Loozen CS et al. BMJ 2018;363:k3965.",
+      "verified": false
+    },
+    {
+      "id": "cpoc-2021",
+      "name": "CPOC/BGS perioperative care for people living with frailty",
+      "year": 2021,
+      "section": "Emergency surgery; shared decision-making",
+      "citation": "Centre for Perioperative Care 2021.",
+      "verified": false
+    }
+  ],
+  "rationale": "TG18 recommends early cholecystectomy only for patients fit for surgery (CCI and ASA); for the frail and those with severe comorbidity, gallbladder drainage and antibiotics. CHOCOLATE favoured LC in moderately high-risk patients (APACHE-II 7-14), not in the frail with severe comorbidity.",
+  "authoring": {
+    "author": "Claude (bayes-treatment branch)",
+    "date": "2026-09-25",
+    "notes": "Decision-support vignette (web.decisions / ios.decisions). Expectations test the band and ranking of the decision layer, whose numbers await surgeon sign-off (docs/clinical-validation/changes/bayes-treatment.md)."
+  }
+}

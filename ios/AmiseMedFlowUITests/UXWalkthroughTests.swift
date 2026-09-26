@@ -1,0 +1,599 @@
+// UXWalkthroughTests.swift
+// Automated UI walkthrough for the surgeon's usability review. Each test launches the app in
+// DEBUG demo mode (-UITestDemoMode: synthetic in-memory patients, no sign-in, no Face ID, no
+// sync, no Sentry — see AmiseMedFlow/Services/UITestDemoMode.swift), runs one flow, screenshots
+// every step and records taps / text entries / scrolls / screens (UXRecorder).
+//
+// Flows (same on iPhone and iPad; the iPad opens the consultation from the record's single
+// "Consultation" section, the iPhone from the record's quick actions):
+//   a1 Today → patient → consultation → "First visit" pathway → visit-type chip in the step bar
+//      (consult.visitType) → steps 1–11 (typing in CC, HPI, exam, diagnosis search)
+//   a2 Today → patient → consultation → "First visit" → Plan step (type the plan) → Tools →
+//      Scores (compute + save one, over the step) → Vitals, Prescriptions → Save snapshot →
+//      Complete → review sheet (attest) → Complete visit. iPhone: the navigation bar holds
+//      Complete only; Tools and Save snapshot are in the step bar's More menu (Save snapshot
+//      also on the last step, next to the explanation).
+//   (a used to be one test; split so each half finishes well inside its time allowance and
+//   writes its own metrics even if the other half fails.)
+//   b  Add a new patient (and check it shows on Today under "Added today")
+//   c  Record vitals
+//   d  Add a prescription that interacts with warfarin → interaction alert
+//   e  Front desk: the scheduler's visit-type chips (Schedule → + → Cancel; iPhone: Schedule is
+//      under the tab bar's More), then the hand-over questionnaire start screen (front-desk role;
+//      iPhone: the Check-In row's "Questionnaire" action)
+//
+// Run: ios/UIWalkthrough/run.sh (local) or .github/workflows/ios-ui-walkthrough.yml (CI).
+// Never calls AI features (AIService); nothing here touches real data or the network.
+
+import XCTest
+
+final class UXWalkthroughTests: XCTestCase, UXIssueReporting {
+
+    /// Last XCTest issue recorded in this test (written into the metrics of an interrupted flow).
+    private(set) var lastIssueDescription: String?
+
+    override func record(_ issue: XCTIssue) {
+        lastIssueDescription = issue.compactDescription
+        super.record(issue)
+    }
+
+    /// The "First visit" pathway steps (ConsultPathway.firstVisit.steps), as ConsultTab case names.
+    private static let firstVisitSteps: [(tab: String, label: String)] = [
+        ("risk", "Risk"), ("cc", "CC"), ("hpi", "HPI"), ("pmh", "PMH"), ("pshx", "PSHx"),
+        ("meds", "Meds"), ("allergies", "Allergies"), ("social", "Social"), ("exam", "Exam"),
+        ("investigations", "Ix"), ("diagnosis", "Diagnosis"), ("plan", "Plan"),
+    ]
+
+    override func setUpWithError() throws {
+        // Keep going after an XCTest-internal failure so the metrics and screenshots still land.
+        continueAfterFailure = true
+    }
+
+    @MainActor
+    private func launch(role: String = "doctor") -> XCUIApplication {
+        XCUIDevice.shared.orientation = .portrait
+        let app = XCUIApplication()
+        app.launchArguments = ["-UITestDemoMode", "-UITestDemoRole", role]
+        app.launch()
+        return app
+    }
+
+    // MARK: - a. Consultation
+
+    /// Today → Avery → consultation → "First visit" pathway, with the identity / allergy notes.
+    @MainActor
+    private func openFirstVisitConsultation(_ ux: UXRecorder) throws {
+        let row = ux.element("today.patientRow", labelContains: "Avery Sample")
+        try ux.waitFor(row, "Today: Avery Sample")
+        ux.screen("Today")
+        try ux.tap(row, "Today row: Avery Sample")
+        ux.screen("Patient record")
+
+        if UXRecorder.isPad {
+            // One consultation entry in the section bar (UX review M4).
+            try ux.tap(ux.element("patient.section.consultation"), "Section bar: Consultation")
+        } else {
+            try ux.tap(ux.element("patient.quick.Consultation"), "Quick action: Consultation")
+        }
+
+        let firstVisit = ux.element("pathway.card.firstVisit")
+        try ux.waitFor(firstVisit, "Visit pathway picker (first door)")
+        ux.screen("Visit pathway picker")
+        try ux.tap(firstVisit, "Pathway: First visit")
+
+        try ux.waitFor(ux.element("consult.step.risk"), "Consultation step bar")
+        ux.note("Allergy banner visible in the consultation: "
+                + (ux.element("consult.allergyBanner").exists ? "yes (real allergy)"
+                   : ux.element("consult.allergyNKDA").exists ? "no — neutral NKDA line"
+                   : ux.element("consult.allergyNotRecorded").exists ? "no — allergies not recorded" : "NO"))
+        // Patient identity on the consultation (UX review M1): header on iPhone and the iPad
+        // full-screen consultation; inside the iPad record the record header shows it.
+        let identity = ux.element("consult.patientHeader").exists
+            ? "yes (consultation header)"
+            : ux.element("patient.header.identity").exists
+                ? "yes (record header directly above the consultation)" : "NO"
+        ux.note("Patient identity on the consultation screen: " + identity)
+    }
+
+    /// a1: the history-to-diagnosis half of the consultation.
+    @MainActor
+    func testA1_ConsultationSteps() throws {
+        executionTimeAllowance = 15 * 60
+        let app = launch()
+        let ux = UXRecorder(app: app, flow: "a1_consultation_steps",
+                            title: "Today → patient → consultation (First visit) → steps 1–11: CC, HPI, exam, diagnosis",
+                            testCase: self)
+        ux.run {
+            try openFirstVisitConsultation(ux)
+            try checkVisitTypeChip(ux)
+            try walkFirstVisitSteps(ux, through: "diagnosis")
+        }
+    }
+
+    /// The patient's visit type beside the pathway pill, on both devices (one-tap menu).
+    @MainActor
+    private func checkVisitTypeChip(_ ux: UXRecorder) throws {
+        let chip = ux.element("consult.visitType")
+        try ux.waitFor(chip, "Step bar: visit type chip (consult.visitType)", timeout: 5)
+        ux.note("Visit type chip in the step bar: yes (\(ux.label(of: chip) ?? "no label"))")
+    }
+
+    /// a2: plan, the Tools menu, save and the review-and-complete sheet.
+    @MainActor
+    func testA2_ConsultationPlanToolsComplete() throws {
+        executionTimeAllowance = 15 * 60
+        let app = launch()
+        let ux = UXRecorder(app: app, flow: "a2_consultation_complete",
+                            title: "Consultation (First visit) → Plan → Tools: score, vitals, Rx → save snapshot → review & complete",
+                            testCase: self)
+        ux.run {
+            try openFirstVisitConsultation(ux)
+            try ux.tap(ux.element("consult.step.plan"), "Step bar → Plan")
+            try walkFirstVisitSteps(ux, from: "plan")
+            try computeScore(ux)
+            probeOtherTools(ux)
+            try saveAndComplete(ux)
+            if UXRecorder.isPad { probeSingleConsultationEntry(ux) }
+        }
+    }
+
+    /// Walks the "First visit" steps from `from` through `through` (tab names), inclusive.
+    @MainActor
+    private func walkFirstVisitSteps(_ ux: UXRecorder, from: String = "risk", through: String = "plan") throws {
+        let steps = Self.firstVisitSteps
+        guard let first = steps.firstIndex(where: { $0.tab == from }),
+              let last = steps.firstIndex(where: { $0.tab == through }) else { return }
+        for (i, step) in steps.enumerated() where i >= first && i <= last {
+            let stepButton = ux.element("consult.step.\(step.tab)")
+            if !ux.isSelectedSoon(stepButton) {
+                ux.note("Step \(step.label) was not active after advancing; tapped it in the step bar")
+                try ux.tap(stepButton, "Step bar → \(step.label) (recovery)")
+            }
+
+            switch step.tab {
+            case "cc":
+                try ux.type("Right upper quadrant pain for 3 days",
+                            into: ux.element("consult.cc.field"), "CC: type chief complaint")
+            case "hpi":
+                let editor = ux.element("consult.hpi.editor")
+                try ux.scrollTo(editor, "HPI text editor")
+                try ux.type("3 days of constant RUQ pain radiating to the right shoulder, worse after fatty food, "
+                            + "with nausea. No jaundice. No fever at home.",
+                            into: editor, "HPI: type history")
+            case "exam":
+                try ux.type("Alert, comfortable at rest. Not jaundiced.",
+                            into: ux.element("consult.exam.General appearance"), "Exam: general appearance")
+                try ux.type("Tender RUQ, Murphy's sign positive, no guarding.",
+                            into: ux.element("consult.exam.Abdomen"), "Exam: abdomen")
+            case "diagnosis":
+                // The working-diagnosis search is the first section of the step (UX review M11).
+                let search = ux.element("consult.dx.search")
+                try ux.scrollTo(search, "ICD-10 search field", upwards: true)
+                try ux.type("cholecystitis", into: search, "Diagnosis: search ICD-10")
+                try ux.tap(ux.element("consult.dx.suggestion"), "Diagnosis: pick first ICD-10 match")
+            case "plan":
+                let editor = ux.element("consult.plan.editor")
+                try ux.scrollTo(editor, "Plan text editor")
+                try ux.type("Ultrasound abdomen, FBC, LFTs, CRP. Analgesia and antiemetic. "
+                            + "Review with results; discuss laparoscopic cholecystectomy.",
+                            into: editor, "Plan: type management plan")
+            default:
+                break
+            }
+
+            ux.screen("Consultation step \(i + 1) - \(step.label)")
+            if i < last { try advance(ux, to: steps[i + 1]) }
+        }
+    }
+
+    /// Next in the step footer; while the keyboard is up the footer is hidden and the keyboard
+    /// toolbar's "Next" does the same (UX review M11); else the step bar (all one tap).
+    @MainActor
+    private func advance(_ ux: UXRecorder, to next: (tab: String, label: String)) throws {
+        let footerNext = ux.element("consult.next")
+        let keyboardNext = ux.element("consult.keyboard.next")
+        if ux.isHittableSafely(footerNext) {
+            try ux.tap(footerNext, "Next → \(next.label)")
+        } else if ux.isHittableSafely(keyboardNext) {
+            try ux.tap(keyboardNext, "Keyboard toolbar: Next → \(next.label)")
+        } else {
+            try ux.tap(ux.element("consult.step.\(next.tab)"), "Step bar → \(next.label) (footer hidden by keyboard)")
+        }
+    }
+
+    /// Opens a tool over the current step: the toolbar's Tools menu on iPad; on iPhone the
+    /// navigation bar keeps Complete only, and the tools are in the step bar's More menu.
+    @MainActor
+    private func openTool(_ ux: UXRecorder, _ tool: String, label: String) throws {
+        // Run 36207742746 (iPad): the keyboard was still up from typing the plan and the Tools
+        // menu's items were present but not tappable. Put it away first, as a user would.
+        if !ux.hideKeyboard() { ux.note("Keyboard still shown before Tools → \(label)") }
+        let (menu, menuWhat, itemId, itemWhat) = UXRecorder.isPad || ux.element("consult.tools").exists
+            ? ("consult.tools", "Tools menu", "consult.tools.\(tool)", "Tools: \(label)")
+            : ("consult.more", "More menu", "consult.more.\(tool)", "More → Tools: \(label)")
+        try ux.tap(ux.element(menu), menuWhat)
+        // The menu item by identifier, never the iPad section-bar button with the same label.
+        var item = ux.menuItem(identifier: itemId, label: label)
+        if !ux.isHittableSafely(item) {
+            // Still animating in, or covered: give it a moment, then reopen the menu once.
+            RunLoop.current.run(until: Date().addingTimeInterval(0.6))
+            if !ux.isHittableSafely(item) {
+                ux.note("\(itemWhat) was not tappable when the menu opened; menu reopened once")
+                ux.dismissTransientOverlays()
+                ux.hideKeyboard()
+                RunLoop.current.run(until: Date().addingTimeInterval(0.4))
+                // Reopen only if the menu closed; tapping Tools on an open menu would close it.
+                if !ux.element(itemId).exists { try ux.tap(ux.element(menu), "\(menuWhat) (again)") }
+                item = ux.menuItem(identifier: itemId, label: label)
+            }
+        }
+        try ux.tap(item, itemWhat)
+        // The tool is a sheet over the step, with Done (iPhone and iPad alike).
+        try ux.waitFor(ux.element("consult.tools.done"), "Tools sheet (Done)", timeout: 6)
+    }
+
+    @MainActor
+    private func computeScore(_ ux: UXRecorder) throws {
+        // Scores open over the current step from the consultation's Tools menu, on both devices
+        // (UX review: before, the iPhone had to leave the consultation and reopen it).
+        try openTool(ux, "scores", label: "Clinical Scores")
+        ux.note("Patient identity in the Tools sheet: "
+                + (ux.element("consult.tools.patient").waitForExistence(timeout: 3) ? "yes" : "NO"))
+        try ux.waitFor(ux.element("scores.monitor.news2"), "Clinical Scores screen")
+        ux.screen("Clinical scores")
+
+        let suggested = ux.element(identifierPrefix: "scores.card.")
+        var usedNEWS2 = false
+        if suggested.waitForExistence(timeout: 3) {
+            ux.note("Diagnosis-driven score chosen: \(ux.label(of: suggested) ?? "?")")
+            try ux.tap(suggested, "Score: first diagnosis-driven suggestion")
+        } else {
+            ux.note("No diagnosis-driven score offered; NEWS2 used")
+            try ux.tap(ux.element("scores.monitor.news2"), "Score: NEWS2")
+            usedNEWS2 = true
+        }
+        if !usedNEWS2 && !ux.element("scores.result").waitForExistence(timeout: 5) {
+            ux.note("The suggested score showed no result without further input; NEWS2 used instead")
+            ux.snapshot("Suggested score form (no result yet)")
+            try ux.tap(ux.button(labeled: "Back to patient scores"), "Back to patient scores")
+            try ux.tap(ux.element("scores.monitor.news2"), "Score: NEWS2")
+        }
+        try ux.waitFor(ux.element("scores.result"), "Score result card")
+        ux.screen("Score form and result")
+
+        let save = ux.element("scores.saveToAssessment")
+        try ux.scrollTo(save, "Save score to Assessment")
+        try ux.tap(save, "Save score to Assessment")
+        ux.snapshot("Score saved to Assessment")
+
+        try ux.tap(ux.element("consult.tools.done"), "Done (back to the consultation)")
+        try ux.waitFor(ux.element("consult.complete"), "Consultation toolbar (Complete)")
+        ux.note("Consultation step after closing Scores: "
+                + (ux.isSelectedSoon(ux.element("consult.step.plan"), timeout: 3) ? "still Plan (kept)" : "NOT Plan"))
+        ux.screen("Consultation (back on the same step)")
+    }
+
+    /// Vitals and Prescriptions are in the same Tools menu (checked for the report; not counted).
+    @MainActor
+    private func probeOtherTools(_ ux: UXRecorder) {
+        ux.uncounted {
+            for (tool, label, marker) in [("vitals", "Vitals", "vitals.record"),
+                                          ("prescriptions", "Prescriptions", "rx.add")] {
+                do {
+                    try openTool(ux, tool, label: label)
+                    let shown = ux.element(marker).waitForExistence(timeout: 3)
+                        || ux.element("vitals.add").exists
+                    ux.note("Tools → \(label) from inside the consultation: " + (shown ? "opens over the step" : "NOT shown"))
+                    ux.snapshot("Tools - \(label)")
+                    try ux.tap(ux.element("consult.tools.done"), "Done")
+                } catch {
+                    ux.note("Tools → \(label): \(error)")
+                }
+            }
+        }
+    }
+
+    @MainActor
+    private func saveAndComplete(_ ux: UXRecorder) throws {
+        ux.note("On-screen Save snapshot / Complete explanation on the last step: "
+                + (ux.element("consult.actionsExplanation").exists ? "yes" : "no"))
+        // Run 36205324814 (iPhone): with Save snapshot and Tools beside it, Complete was folded
+        // into the navigation bar's "…" overflow. Now the iPhone bar holds Complete only.
+        ux.note("Complete visible in the navigation bar"
+                + (ux.app.keyboards.firstMatch.exists ? " with the keyboard up: " : " (keyboard away): ")
+                + (ux.isHittableSafely(ux.element("consult.complete")) ? "yes" : "NO"))
+        // The plan editor is multi-line (Return adds a line): put the keyboard away with the
+        // keyboard toolbar's Done, as a user would before reaching for the bar.
+        if !ux.hideKeyboard() { ux.note("Keyboard still shown after Done") }
+        let toolbarSave = ux.element("consult.saveVisit")
+        let lastStepSave = ux.element("consult.actions.saveVisit")
+        if ux.isHittableSafely(toolbarSave) {
+            try ux.tap(toolbarSave, "Save snapshot")
+        } else if lastStepSave.exists {
+            // iPhone: next to the explanation on the last step (above the step's content).
+            try ux.tap(lastStepSave, "Save snapshot (last step)")
+        } else {
+            try ux.tap(ux.element("consult.more"), "More menu")
+            try ux.tap(ux.menuItem(identifier: "consult.more.saveVisit", label: "Save snapshot"),
+                       "More → Save snapshot")
+        }
+        try ux.tapDialogButton("Save Visit")
+        ux.snapshot("Visit snapshot saved")
+        try ux.tap(ux.element("consult.complete"), "Complete")
+        // Review and complete (UX review M8): missing steps, unedited auto-content, attestation.
+        let attest = ux.element("consult.completeSheet.attest")
+        // Run 36207742746 (iPhone): the attestation row is further down a lazily built list and
+        // does not exist until it is scrolled to, so wait on what is always built: the patient
+        // row at the top of the list, or the sheet's "Back to visit" in its navigation bar. (No
+        // identifier on the List itself: on a container it can replace the rows' own ones.)
+        let sheetPatient = ux.element("consult.completeSheet.patient")
+        let sheetBack = ux.element("consult.completeSheet.cancel")
+        let sheetDeadline = Date().addingTimeInterval(10)
+        while !sheetPatient.exists && !sheetBack.exists && Date() < sheetDeadline {
+            RunLoop.current.run(until: Date().addingTimeInterval(0.25))
+        }
+        try ux.waitFor(sheetPatient.exists ? sheetPatient : sheetBack, "Review and complete sheet", timeout: 1)
+        ux.screen("Review and complete")
+        let missing = ux.element("consult.completeSheet.missing")
+        if let text = ux.label(of: missing) { ux.note("Review sheet, not yet documented: \(text)") }
+        ux.note("Review sheet lists unedited app-filled content: "
+                + (ux.element("consult.completeSheet.unconfirmed").exists ? "yes" : "none"))
+        let confirm = ux.element("consult.completeSheet.confirm")
+        if let enabled = ux.isEnabled(confirm) {
+            ux.note("Complete visit enabled before the attestation: " + (enabled ? "YES" : "no"))
+        }
+        try ux.scrollTo(attest, "Attestation")
+        try ux.tap(attest, "Tick: I have reviewed this record")
+        try ux.scrollTo(confirm, "Complete visit")
+        try ux.tap(confirm, "Complete visit")
+        ux.screen("Encounter complete")
+    }
+
+    /// iPad: the record's section bar has one Consultation entry, no per-step items (UX review M4).
+    /// (Checked for the report; not counted.)
+    @MainActor
+    private func probeSingleConsultationEntry(_ ux: UXRecorder) {
+        let perStep = ["cc", "hpi", "exam", "plan"].filter { ux.element("patient.section.\($0)").exists }
+        ux.note("Probe (iPad): section bar consultation entries: "
+                + (ux.element("patient.section.consultation").exists ? "one \"Consultation\"" : "none")
+                + (perStep.isEmpty ? ", no per-step items" : ", per-step items still present: \(perStep.joined(separator: ", "))"))
+        ux.note("Probe (iPad): header Save Visit present: "
+                + (ux.element("patient.saveVisit").exists ? "YES (two save buttons)" : "no (one save model)"))
+        ux.note("Probe (iPad): header safety strip: "
+                + (ux.element("patient.header.safety").exists ? "yes" : "NO"))
+        ux.snapshot("Probe - section bar")
+    }
+
+    // MARK: - b. Add a new patient
+
+    @MainActor
+    func testB_AddPatient() throws {
+        let app = launch()
+        let ux = UXRecorder(app: app, flow: "b_add_patient",
+                            title: "Today → + → name + chief complaint → Add", testCase: self)
+        ux.run {
+            let add = ux.element("today.addPatient")
+            try ux.waitFor(add, "Today: Add patient")
+            ux.screen("Today")
+            try ux.tap(add, "Add patient (+)")
+            let name = ux.element("addPatient.name")
+            try ux.waitFor(name, "New Patient form")
+            ux.screen("New patient form")
+            try ux.type("Taylor Newpatient", into: name, "Full name")
+            // The keyboard covers the chips below (run 36181523764, iPhone): put it away first.
+            ux.dismissKeyboard()
+            let chip = ux.button(labeled: "RUQ pain")
+            try ux.scrollTo(chip, "Chief complaint quick chip")
+            try ux.tap(chip, "Chief complaint chip: RUQ pain")
+            ux.snapshot("New patient form (filled)")
+            try ux.tap(ux.element("addPatient.save"), "Add")
+
+            try ux.uncounted {
+                let onToday = ux.element("today.patientRow", labelContains: "Taylor Newpatient")
+                // Rows are built lazily: on the shorter iPhone screen a row below the fold does
+                // not exist until the list scrolls to it (run 36195058935 said "NO" there).
+                var shown = onToday.waitForExistence(timeout: 3)
+                if !shown {
+                    try? ux.scrollTo(onToday, "New patient on Today")
+                    shown = onToday.exists
+                }
+                ux.note("New outpatient without a date shows on Today: "
+                        + (shown ? "yes (Added today)" : "NO (only under Patients)"))
+                ux.snapshot("Today after adding")
+                try ux.openTab("Patients")
+                let row = ux.element("patients.row", labelContains: "Taylor Newpatient")
+                try ux.scrollTo(row, "New patient in the Patients list")
+                ux.screen("Patients list with the new patient")
+            }
+        }
+    }
+
+    // MARK: - c. Record vitals
+
+    @MainActor
+    func testC_RecordVitals() throws {
+        let app = launch()
+        let ux = UXRecorder(app: app, flow: "c_record_vitals",
+                            title: "Today → clinic patient → Vitals → record BP/HR/RR/T/SpO2 → Save",
+                            testCase: self)
+        ux.run {
+            let row = ux.element("today.patientRow", labelContains: "Casey Specimen")
+            try ux.waitFor(row, "Today: Casey Specimen")
+            ux.screen("Today")
+            try ux.tap(row, "Today row: Casey Specimen")
+            ux.screen("Patient record")
+            if UXRecorder.isPad {
+                try ux.tap(ux.element("patient.section.vitals"), "Section bar: Vitals")
+            } else {
+                try ux.openTab("Vitals")
+            }
+            let record = ux.element("vitals.record")
+            try ux.waitFor(record, "Vitals (none recorded)")
+            ux.screen("Vitals")
+            try ux.tap(record, "Record Vitals")
+            try ux.waitFor(ux.element("vitals.bpSystolic"), "Record Vitals form")
+            ux.screen("Record vitals form")
+
+            try ux.type("128", into: ux.element("vitals.bpSystolic"), "Systolic BP")
+            try ux.type("82", into: ux.element("vitals.bpDiastolic"), "Diastolic BP")
+            try ux.type("76", into: ux.element("vitals.heartRate"), "Heart rate")
+            // The live NEWS2 preview sits at the top of the form: capture it while it is on screen
+            // (scrolling the sheet back up could dismiss it).
+            let preview = ux.element("vitals.news2Preview")
+            ux.note("Live NEWS2 preview after BP and HR: " + (ux.label(of: preview) ?? "not shown"))
+            ux.snapshot("Live NEWS2 preview")
+            try ux.type("16", into: ux.element("vitals.respiratoryRate"), "Respiratory rate")
+            try ux.type("36.9", into: ux.element("vitals.temperature"), "Temperature")
+            try ux.type("98", into: ux.element("vitals.spo2"), "SpO2")
+            ux.snapshot("Vitals entered")
+
+            try ux.tap(ux.element("vitals.save"), "Save")
+            try ux.waitFor(ux.element("vitals.add"), "Vitals history")
+            ux.screen("Vitals history")
+        }
+    }
+
+    /// iPhone record quick action, by identifier. The record sheet is still settling when it first
+    /// appears (the safety strip lays out, a menu may be open): close any menu or popover, wait for
+    /// the header, tap, and tap once more if the screen did not change (run 36195058935: the tap
+    /// on Prescriptions left the record on screen).
+    @MainActor
+    private func openQuickAction(_ ux: UXRecorder, _ identifier: String, _ what: String,
+                                 expecting marker: String) throws {
+        ux.dismissTransientOverlays()
+        _ = ux.element("patient.header.safety").waitForExistence(timeout: 5)
+        let action = ux.app.buttons.matching(identifier: identifier).firstMatch
+        let target = action.waitForExistence(timeout: 5) ? action : ux.element(identifier)
+        try ux.tap(target, what)
+        if !ux.element(marker).waitForExistence(timeout: 6) {
+            ux.note("\(what): the first tap did not open it; closed any overlay and tapped again")
+            ux.dismissTransientOverlays()
+            try ux.tap(target, "\(what) (again)")
+        }
+    }
+
+    // MARK: - d. Prescription with interaction alert
+
+    @MainActor
+    func testD_PrescriptionInteraction() throws {
+        let app = launch()
+        let ux = UXRecorder(app: app, flow: "d_prescription",
+                            title: "Today → ward patient on warfarin → Prescriptions → add ibuprofen → interaction alert",
+                            testCase: self)
+        ux.run {
+            let row = ux.element("today.patientRow", labelContains: "Morgan Example")
+            try ux.waitFor(row, "Today: Morgan Example")
+            ux.screen("Today")
+            try ux.tap(row, "Today row: Morgan Example")
+            ux.screen("Patient record")
+            if UXRecorder.isPad {
+                try ux.tap(ux.element("patient.section.prescriptions"), "Section bar: Rx")
+            } else {
+                try openQuickAction(ux, "patient.quick.Prescriptions", "Quick action: Prescriptions",
+                                    expecting: "rx.add")
+            }
+            let add = ux.element("rx.add")
+            try ux.waitFor(add, "Prescriptions")
+            ux.screen("Prescriptions")
+            try ux.tap(add, "Add prescription (+)")
+            let search = ux.element("rx.drugSearch")
+            try ux.waitFor(search, "Add Prescription form")
+            ux.screen("Add prescription form")
+
+            try ux.type("Ibuprofen", into: search, "Drug search")
+            ux.snapshot("Drug typed")
+            try ux.tap(ux.element("rx.drugSuggestion", labelContains: "Ibuprofen"), "Pick Ibuprofen (formulary)")
+
+            let live = ux.element("rx.liveInteraction")
+            try ux.scrollTo(live, "Interaction warning while prescribing")
+            ux.note("Warning while prescribing: \(ux.label(of: live) ?? "?")")
+            ux.screen("Add prescription - interaction warning")
+
+            try ux.tap(ux.element("rx.save"), "Add")
+            let alert = ux.element("rx.interactionAlert")
+            try ux.waitFor(alert, "Interaction alert on the prescription list")
+            ux.note("Alert on the list: \(ux.label(of: alert) ?? "?")")
+            ux.screen("Prescriptions - interaction alert")
+        }
+    }
+
+    // MARK: - e. Front desk hand-over questionnaire
+
+    @MainActor
+    func testE_FrontDeskHandover() throws {
+        let app = launch(role: "front_desk")
+        let ux = UXRecorder(app: app, flow: "e_frontdesk_handover",
+                            title: "Front desk → Schedule: visit type → Questionnaire → find patient → hand-over start screen",
+                            testCase: self)
+        ux.run {
+            if UXRecorder.isPad {
+                let questionnaireTab = ux.element("fd.tab.Questionnaire")
+                try ux.waitFor(questionnaireTab, "Front desk sidebar")
+                ux.screen("Front desk - Check-In")
+                try checkSchedulerVisitType(ux)
+                try ux.tap(questionnaireTab, "Sidebar: Questionnaire")
+                let search = ux.element("fd.questionnaire.search")
+                try ux.waitFor(search, "Questionnaire tab")
+                ux.screen("Front desk - Questionnaire")
+                try ux.type("Ave", into: search, "Find patient (3+ letters)")
+                let result = ux.element("fd.questionnaire.result", labelContains: "Avery")
+                try ux.waitFor(result, "Search result")
+                ux.snapshot("Search result")
+                try ux.tap(result, "Pick patient → hand the iPad over")
+                try ux.waitFor(ux.element(identifier: "questionnaire.staffExit", orLabel: "Staff: exit"),
+                               "Hand-over questionnaire")
+                ux.screen("Hand-over questionnaire - start")
+            } else {
+                let search = app.textFields.firstMatch
+                try ux.waitFor(search, "Front desk Check-In")
+                ux.screen("Front desk (iPhone) - Check-In")
+                try checkSchedulerVisitType(ux)
+                try ux.tap(app.tabBars.buttons["Check-In"], "Tab: Check-In (back)")
+                try ux.type("Ave", into: search, "Find patient (3+ letters)")
+                ux.snapshot("Search result")
+                // The Check-In row's own "Questionnaire" action (UX review m3), as on the iPad.
+                let action = ux.element("fd.checkin.questionnaire", labelContains: "Avery")
+                try ux.tap(action.exists ? action : ux.element("fd.checkin.questionnaire"),
+                           "Row action: Questionnaire → hand the phone over")
+                try ux.waitFor(ux.element(identifier: "questionnaire.staffExit", orLabel: "Staff: exit"),
+                               "Hand-over questionnaire")
+                ux.screen("Hand-over questionnaire - start")
+            }
+        }
+    }
+
+    /// The scheduler (Schedule → +) shows the visit-type chips, New Consult chosen when no patient
+    /// is picked yet; Cancel leaves without booking. Checked for the report; not counted. iPad:
+    /// the sidebar's Schedule tab (a missing chip row fails the flow). iPhone: Schedule is under
+    /// the tab bar's More; if the + button cannot be reached there, that is noted instead.
+    @MainActor
+    private func checkSchedulerVisitType(_ ux: UXRecorder) throws {
+        try ux.uncounted {
+            if UXRecorder.isPad {
+                try ux.tap(ux.element("fd.tab.Schedule"), "Sidebar: Schedule")
+            } else {
+                let tab = ux.app.tabBars.buttons["Schedule"]
+                if tab.waitForExistence(timeout: 2) {
+                    try ux.tap(tab, "Tab: Schedule")
+                } else {
+                    try ux.tap(ux.app.tabBars.buttons["More"], "Tab: More")
+                    try ux.tap(ux.app.cells.staticTexts["Schedule"], "More → Schedule")
+                }
+                if !ux.element("schedule.add").waitForExistence(timeout: 5) {
+                    ux.note("Scheduler visit type: not checked on iPhone (Schedule + not reachable)")
+                    ux.snapshot("Schedule (iPhone) - no + button")
+                    return
+                }
+            }
+            try ux.tap(ux.element("schedule.add"), "Schedule: + (new appointment)")
+            try ux.waitFor(ux.element("fd.scheduler.visitType"), "Scheduler: visit type chips")
+            let selected = ux.app.descendants(matching: .any)
+                .matching(NSPredicate(format: "identifier BEGINSWITH %@ AND selected == true",
+                                      "fd.scheduler.visitType."))
+                .firstMatch
+            ux.note("Scheduler shows the visit type: yes (chosen: \(ux.label(of: selected) ?? "none"))")
+            ux.snapshot("Scheduler - visit type")
+            try ux.tap(ux.element("fd.scheduler.cancel"), "Scheduler: Cancel")
+        }
+    }
+}

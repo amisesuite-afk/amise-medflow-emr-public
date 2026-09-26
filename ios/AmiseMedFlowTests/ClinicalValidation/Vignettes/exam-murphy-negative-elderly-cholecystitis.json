@@ -1,0 +1,156 @@
+{
+  "schemaVersion": 1,
+  "id": "exam-murphy-negative-elderly-cholecystitis",
+  "condition": "Acute cholecystitis with Murphy's sign absent (elderly, diabetic)",
+  "category": "hpb",
+  "permutationOf": "cholecystitis-elderly-diabetic-atypical",
+  "permutationLabel": "Murphy's sign examined and absent",
+  "summary": "79-year-old man with diabetes, two days of vague right upper quadrant discomfort, vomiting and fever; Murphy's sign absent on examination. Cholecystitis stays in the differential (LR- 0.5 only halves the odds).",
+  "tags": [
+    "evidence-exam",
+    "murphy",
+    "negative-sign",
+    "elderly"
+  ],
+  "inputs": {
+    "patient": {
+      "ageYears": 79,
+      "sex": "male"
+    },
+    "encounter": {
+      "setting": "emergency",
+      "visitType": "urgentReview",
+      "acuity": "urgent"
+    },
+    "chiefComplaint": "Upper abdominal pain and vomiting",
+    "hpi": "Two days of right upper quadrant and epigastric discomfort, vomiting, off food, fever at home. Diabetic on metformin.",
+    "symptoms": [
+      "right upper quadrant pain",
+      "vomiting",
+      "fever",
+      "anorexia"
+    ],
+    "exam": {
+      "abdomen": "Mild right upper quadrant tenderness."
+    },
+    "vitals": [
+      {
+        "minutesAgo": 10,
+        "heartRate": 102,
+        "systolicBp": 132,
+        "diastolicBp": 74,
+        "respiratoryRate": 20,
+        "temperatureC": 38.4,
+        "spo2": 96,
+        "avpu": "A",
+        "onSupplementalO2": false
+      }
+    ],
+    "labs": [
+      {
+        "analyte": "wbc",
+        "name": "WBC",
+        "value": 15.8,
+        "unit": "x10^9/L",
+        "minutesAgo": 60
+      },
+      {
+        "analyte": "crp",
+        "name": "CRP",
+        "value": 140,
+        "unit": "mg/L",
+        "minutesAgo": 60
+      }
+    ],
+    "imaging": [
+      {
+        "name": "USS abdomen",
+        "modality": "US",
+        "result": "Gallstones with a thick-walled (5 mm) gallbladder and pericholecystic fluid.",
+        "minutesAgo": 30
+      }
+    ],
+    "comorbidities": [
+      "Type 2 diabetes"
+    ],
+    "surgicalHistory": [],
+    "medications": [
+      {
+        "drug": "Metformin"
+      }
+    ],
+    "allergies": [],
+    "nkda": true,
+    "socialHistory": "",
+    "examSigns": {
+      "murphy": "absent"
+    },
+    "platform": {
+      "web": {
+        "ccTemplate": "Acute abdominal pain",
+        "symptoms": [
+          "right upper quadrant pain",
+          "vomiting",
+          "fever",
+          "anorexia"
+        ],
+        "durationDays": 2
+      }
+    }
+  },
+  "expected": {
+    "differential": {
+      "mustRankTopK": [
+        {
+          "id": "cholecystitis-still-top3",
+          "severity": "critical",
+          "match": [
+            "cholecyst"
+          ],
+          "k": 3,
+          "note": "Murphy's sign is less sensitive in the elderly and diabetic; its absence must not remove cholecystitis."
+        }
+      ]
+    },
+    "reasoning": {
+      "mustInclude": [
+        {
+          "id": "murphy-absent-lr",
+          "severity": "quality",
+          "match": [
+            "re:Murphy's sign absent \\(examined\\) - LR 0\\.50"
+          ],
+          "sources": [
+            "web.reasoning.evidence"
+          ],
+          "platforms": [
+            "web"
+          ]
+        }
+      ]
+    }
+  },
+  "guideline": [
+    {
+      "id": "trowbridge-2003",
+      "name": "Trowbridge RL et al. Does this patient have acute cholecystitis? (JAMA Rational Clinical Examination)",
+      "year": 2003,
+      "section": "Murphy's sign LR+ 2.8, LR- 0.5",
+      "citation": "JAMA 2003;289:80-6",
+      "verified": false
+    },
+    {
+      "id": "tg18-chole",
+      "name": "Tokyo Guidelines 2018: acute cholecystitis diagnostic criteria",
+      "year": 2018,
+      "section": "Diagnostic criteria (local signs: Murphy's sign)",
+      "verified": false
+    }
+  ],
+  "rationale": "An examined, absent Murphy's sign has LR- 0.5: it lowers but cannot exclude cholecystitis, particularly in older diabetic patients where the sign is often absent.",
+  "authoring": {
+    "author": "Claude (evidence-exam, 2026-09-26)",
+    "date": "2026-09-26",
+    "notes": "Exam-sign / decision-rule permutation. Likelihood ratios fromMemory; awaiting surgeon sign-off."
+  }
+}

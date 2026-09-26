@@ -39,11 +39,14 @@ comment on column confirmed_appointments.post_visit_followup_sent is
 -- RLS
 alter table confirmed_appointments enable row level security;
 
-create policy "staff_manage_confirmed_appointments"
-  on confirmed_appointments for all
-  to authenticated
-  using (true)
-  with check (true);
+do $guard$ begin
+  create policy "staff_manage_confirmed_appointments"
+    on confirmed_appointments for all
+    to authenticated
+    using (true)
+    with check (true);
+exception when duplicate_object then null;
+end $guard$;
 
 -- Grants
 grant select, insert, update, delete on confirmed_appointments to authenticated;

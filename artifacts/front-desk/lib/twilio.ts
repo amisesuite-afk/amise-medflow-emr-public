@@ -1,6 +1,7 @@
 import twilio from 'twilio';
 import type { ConversationThread } from '@/types';
 import { FORBIDDEN_PATTERNS } from './constants';
+import { outboundBlocked } from './outbound';
 
 let _client: ReturnType<typeof twilio> | null = null;
 
@@ -38,9 +39,9 @@ function safeBody(text: string): string {
 // referral/create's nurse-alert sends already do.
 export async function sendWhatsApp(to: string, body: string): Promise<void> {
   const safe = safeBody(body);
-  const mode = process.env.MODE ?? 'dry_run';
 
-  if (mode === 'dry_run') {
+  // Fail closed: unset / misspelt MODE is dry_run (lib/outbound.ts, G-17).
+  if (outboundBlocked('whatsapp')) {
     console.log(`[DRY RUN] WhatsApp → ${to}:\n${safe}\n`);
     return;
   }
@@ -59,9 +60,9 @@ export async function sendWhatsApp(to: string, body: string): Promise<void> {
 
 export async function sendSms(to: string, body: string): Promise<void> {
   const safe = safeBody(body);
-  const mode = process.env.MODE ?? 'dry_run';
 
-  if (mode === 'dry_run') {
+  // Fail closed: unset / misspelt MODE is dry_run (lib/outbound.ts, G-17).
+  if (outboundBlocked('sms')) {
     console.log(`[DRY RUN] SMS → ${to}:\n${safe}\n`);
     return;
   }
@@ -83,6 +84,9 @@ export function validateTwilioSignature(
   params: Record<string, string>,
   signature: string,
 ): boolean {
+  // Inbound check, so "fail closed" means the opposite of the send gate:
+  // signature checking is skipped ONLY when MODE is literally `dry_run`. An
+  // unset or misspelt MODE still validates — deliberately NOT getMode().
   if (process.env.MODE === 'dry_run') return true;
   return twilio.validateRequest(
     process.env.TWILIO_AUTH_TOKEN!,

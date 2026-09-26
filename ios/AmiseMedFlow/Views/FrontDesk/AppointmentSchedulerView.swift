@@ -46,8 +46,10 @@ private let durations: [(label: String, seconds: TimeInterval)] = [
 struct AppointmentSchedulerView: View {
     @Environment(\.dismiss) private var dismiss
     @Environment(\.modelContext) private var context
-    @Query(sort: \Patient.createdAt, order: .reverse) private var allPatients: [Patient]
-
+    @Query(sort: \Patient.createdAt, order: .reverse) private var queriedAllPatients: [Patient]
+    // Deleted/detached records are dropped before any view reads them (SwiftData
+    // crashes when a body touches a deleted model before @Query refreshes).
+    private var allPatients: [Patient] { queriedAllPatients.filter(\.isLive) }
     @EnvironmentObject private var calendarService: CalendarService
     @EnvironmentObject private var sync: SyncService
 
@@ -58,6 +60,8 @@ struct AppointmentSchedulerView: View {
     @State private var selectedPatient: Patient?
     @State private var patientSearch = ""
     @State private var apptType: ApptType = .followUp
+    /// Saved to `patient.visitType`: the patient's current type once one is chosen, else New Consult.
+    @State private var visitType: VisitType = .newConsult
     @State private var apptDate = Calendar.ect.date(byAdding: .day, value: 1, to: Calendar.ect.startOfDay(for: .now)) ?? .now
     @State private var customDuration: TimeInterval = 1800
     @State private var usesCustomDuration = false
@@ -80,6 +84,8 @@ struct AppointmentSchedulerView: View {
     @State private var isSaving = false
     @State private var savedError: String?
     @State private var savedEvent: EKEvent?
+    /// The booking was saved to the patient's record (it is, before the calendar write).
+    @State private var recordSaved = false
 
     private var effectiveDuration: TimeInterval {
         usesCustomDuration ? customDuration : apptType.ekDuration
@@ -87,32 +93,33 @@ struct AppointmentSchedulerView: View {
 
     /// Maps appointment type to the corresponding clinical setting so the
     /// patient record is updated when a procedure or endoscopy is scheduled.
-    private var impliedSetting: ClinicalSetting? {
-        switch apptType {
-        case .procedure:  return .theatre
-        case .endoscopy:  return .endoscopy
-        default:          return nil
-        }
-    }
+    private var impliedSetting: ClinicalSetting? { apptType.impliedSetting }
 
+    // Privacy (surgeon's requirement): the scheduler is opened at the front desk, whose screen can
+    // be seen across the counter, so there is no default patient list. Names appear only after a
+    // real search: 3+ letters of the name or an MRN, at most 5 matches (QuestionnairePatientSearch).
     private var filteredPatients: [Patient] {
-        let q = patientSearch.trimmingCharacters(in: .whitespaces).lowercased()
-        if q.isEmpty { return Array(allPatients.prefix(20)) }
-        return allPatients.filter {
-            $0.fullName.lowercased().contains(q) ||
-            ($0.mrn?.lowercased().contains(q) ?? false) ||
-            ($0.phone?.contains(q) ?? false)
-        }.prefix(20).map { $0 }
+        QuestionnairePatientSearch.matches(query: patientSearch, in: allPatients)
     }
 
-    private var canSave: Bool { selectedPatient != nil }
+    private var trimmedPatientSearch: String { QuestionnairePatientSearch.normalized(patientSearch) }
+
+    private var patientSearchHint: String {
+        QuestionnairePatientSearch.isNameSearch(trimmedPatientSearch)
+            ? "No match. Check the spelling or use the MRN."
+            : "Type at least \(QuestionnairePatientSearch.minimumNameLength) letters of the name, or the MRN."
+    }
+
+    private var canSave: Bool { selectedPatient?.isLive == true }
 
     // MARK: Body
 
     var body: some View {
         NavigationStack {
             Form {
+                calendarErrorSection
                 patientSection
+                visitTypeSection
                 appointmentSection
                 calendarSection
                 outboundSection
@@ -123,18 +130,20 @@ struct AppointmentSchedulerView: View {
             .toolbar {
                 ToolbarItem(placement: .cancellationAction) {
                     Button("Cancel") { dismiss() }
+                        .accessibilityIdentifier("fd.scheduler.cancel")
                 }
                 ToolbarItem(placement: .confirmationAction) {
                     Button("Save") { Task { await save() } }
                         .disabled(!canSave || isSaving)
                         .fontWeight(.semibold)
+                        .accessibilityIdentifier("fd.scheduler.save")
                 }
             }
             .sheet(isPresented: $showMailComposer) {
                 if let p = selectedPatient, let email = p.email, !email.isEmpty {
                     MailComposer(
                         to: [email],
-                        subject: "Appointment Confirmation — Amise Medical",
+                        subject: "Appointment Confirmation — \(PracticeProfile.current.displayShortPracticeName)",
                         body: AppointmentMessage.emailBody(
                             patientName: p.fullName,
                             date: apptDate,
@@ -157,15 +166,24 @@ struct AppointmentSchedulerView: View {
                     )
                 }
             }
-            .sheet(isPresented: $showQuestionnaire) {
-                AdaptiveQuestionnaireSheet(patient: selectedPatient)
-            }
+            // Patient hand-over mode: full screen on iPad, staff-only exit.
+            .patientHandoverPresentation(isPresented: $showQuestionnaire,
+                                         patient: selectedPatient,
+                                         entryPoint: .scheduler)
             .sheet(isPresented: $showAddPatient) {
                 AddPatientView(
                     initialSetting: impliedSetting ?? .outpatient,
                     initialProcedure: apptType == .procedure || apptType == .endoscopy ? apptType.rawValue : "",
-                    operationDate: apptDate
+                    operationDate: apptDate,
+                    initialVisitType: visitType
                 )
+            }
+            .onAppear {
+                // Opened from a patient card: start with that patient, so staff never need to
+                // search for someone already on screen.
+                if selectedPatient == nil, let p = initialPatient, p.isLive {
+                    select(p)
+                }
             }
         }
     }
@@ -173,8 +191,8 @@ struct AppointmentSchedulerView: View {
     // MARK: - Sections
 
     private var patientSection: some View {
-        Section("Patient") {
-            if let p = selectedPatient {
+        Section {
+            if let p = selectedPatient, p.isLive {
                 HStack {
                     VStack(alignment: .leading, spacing: 2) {
                         Text(p.fullName).fontWeight(.semibold)
@@ -188,27 +206,24 @@ struct AppointmentSchedulerView: View {
                         .font(.caption).foregroundStyle(AMColor.accent)
                 }
             } else {
-                TextField("Search name, MRN, phone…", text: $patientSearch)
+                TextField("Name (3+ letters) or MRN…", text: $patientSearch)
                     .autocorrectionDisabled()
+
+                if !trimmedPatientSearch.isEmpty && filteredPatients.isEmpty {
+                    Text(patientSearchHint)
+                        .font(.caption)
+                        .foregroundStyle(.secondary)
+                }
 
                 if !filteredPatients.isEmpty {
                     ForEach(filteredPatients) { patient in
                         Button {
-                            selectedPatient = patient
-                            patientSearch = ""
+                            select(patient)
                         } label: {
-                            HStack {
-                                AcuityPip(acuity: patient.acuity)
-                                VStack(alignment: .leading, spacing: 1) {
-                                    Text(patient.fullName).foregroundStyle(.primary)
-                                    HStack(spacing: 4) {
-                                        if let mrn = patient.mrn {
-                                            Text("MRN \(mrn)").font(.caption2).foregroundStyle(.secondary)
-                                        }
-                                        if let age = patient.ageDisplay {
-                                            Text(age).font(.caption2).foregroundStyle(.secondary)
-                                        }
-                                    }
+                            VStack(alignment: .leading, spacing: 1) {
+                                Text(patient.fullName).foregroundStyle(.primary)
+                                if let mrn = patient.mrn, !mrn.isEmpty {
+                                    Text("MRN \(mrn)").font(.caption2).foregroundStyle(.secondary)
                                 }
                             }
                         }
@@ -222,6 +237,34 @@ struct AppointmentSchedulerView: View {
                     Label("Register New Patient", systemImage: "person.badge.plus")
                         .foregroundStyle(AMColor.accent)
                 }
+            }
+        } header: {
+            Text("Patient")
+        } footer: {
+            if selectedPatient?.isLive != true {
+                Text("For privacy, no patient list is shown. At most \(QuestionnairePatientSearch.maxResults) matches appear.")
+            }
+        }
+    }
+
+    /// A chosen patient brings their current visit type (New Consult when none is recorded).
+    private func select(_ patient: Patient) {
+        selectedPatient = patient
+        patientSearch = ""
+        visitType = patient.visitType ?? .newConsult
+    }
+
+    private var visitTypeSection: some View {
+        Section {
+            VisitTypeChipRow(selection: $visitType, identifier: "fd.scheduler.visitType") { vt in
+                // The booking type follows (duration, theatre / scope list); staff can change it.
+                if let suggested = ApptType.suggested(for: vt) { apptType = suggested }
+            }
+        } header: {
+            Text("Visit Type")
+        } footer: {
+            if let p = selectedPatient, p.isLive, p.visitType != visitType {
+                Text("Saved to the record with the appointment (now: \(p.visitType?.rawValue ?? "not set")).")
             }
         }
     }
@@ -257,6 +300,12 @@ struct AppointmentSchedulerView: View {
         }
     }
 
+    private var calendarAccountHint: String {
+        let email = PracticeProfile.current.email
+        let account = email.isEmpty ? "your practice Google account" : email
+        return "Events sync to Google Calendar when \(account) is added in iOS Settings → Calendar → Accounts."
+    }
+
     private var calendarSection: some View {
         Section {
             let cals = calendarService.availableCalendars()
@@ -277,7 +326,7 @@ struct AppointmentSchedulerView: View {
         } header: {
             Text("Google Calendar")
         } footer: {
-            Text("Events sync to Google Calendar when amisesuite@gmail.com is added in iOS Settings → Calendar → Accounts.")
+            Text(calendarAccountHint)
                 .font(.caption2)
         }
     }
@@ -311,16 +360,71 @@ struct AppointmentSchedulerView: View {
         }
     }
 
+    // MARK: - Calendar error
+
+    /// Shown when the calendar write failed (e.g. calendar access denied): the error, that the
+    /// record was saved anyway, and a retry. It used to be recorded in `savedError` and never shown,
+    /// so Save silently did nothing.
+    @ViewBuilder
+    private var calendarErrorSection: some View {
+        if let error = savedError {
+            Section {
+                Label(error, systemImage: "exclamationmark.triangle.fill")
+                    .foregroundStyle(.red)
+                    .accessibilityIdentifier("fd.scheduler.calendarError")
+                if recordSaved {
+                    Text("The visit type and appointment were saved to the patient's record. The calendar entry was not made.")
+                        .font(.caption)
+                        .foregroundStyle(.secondary)
+                }
+                Button {
+                    Task { await save() }
+                } label: {
+                    Label("Retry Calendar", systemImage: "arrow.clockwise")
+                }
+                .disabled(isSaving || selectedPatient?.isLive != true)
+                .accessibilityIdentifier("fd.scheduler.retryCalendar")
+                if recordSaved {
+                    Button("Done Without Calendar") {
+                        guard let p = selectedPatient, p.isLive else { dismiss(); return }
+                        Task { await finish(patient: p, eventId: nil) }
+                    }
+                    .disabled(isSaving)
+                    .accessibilityIdentifier("fd.scheduler.doneWithoutCalendar")
+                }
+            } header: {
+                Text("Calendar Not Updated")
+            }
+        }
+    }
+
     // MARK: - Save
 
+    /// Saves the booking to the patient's record first (on the device, synced like any edit), then
+    /// writes the practice calendar. A calendar failure is shown with a retry; the record is kept.
     private func save() async {
-        guard let patient = selectedPatient else { return }
+        guard let patient = selectedPatient, patient.isLive else { return }
         isSaving = true
         savedError = nil
 
+        // 1. The record: visit type, booking type, and for a procedure / endoscopy the setting and
+        //    date, whatever happens to the calendar.
+        let change = ApptType.applyBooking(apptType, visitType: visitType, date: apptDate, to: patient)
+        if change.visitTypeChanged {
+            AuditLog.record("update", "patient", patient: patient,
+                            details: ["field": "visit_type", "to": visitType.rawValue])
+        }
+        if change.appointmentTypeChanged {
+            AuditLog.record("update", "patient", patient: patient,
+                            details: ["field": "appointment_type", "to": apptType.rawValue])
+        }
+        if change.edited { try? context.save() }
+        recordSaved = true
+
+        // 2. The practice calendar (staff only): booking type and visit type in the title.
         do {
             let event = try await calendarService.createTheatreBooking(
-                procedure: apptType.rawValue,
+                procedure: ApptType.eventLabel(apptType, visitType: visitType),
                 patientName: patient.fullName,
                 date: apptDate,
                 duration: effectiveDuration,
@@ -328,44 +432,38 @@ struct AppointmentSchedulerView: View {
                 calendar: selectedCalendar
             )
             savedEvent = event
-
-            // Update patient record so they appear in the correct clinical list
-            if let setting = impliedSetting {
-                patient.setting = setting
-                patient.operationDate = apptDate
-                if patient.appointmentType == nil || patient.appointmentType?.isEmpty == true {
-                    patient.appointmentType = apptType.rawValue
-                }
-                patient.updatedAt = .now
-                patient.pendingSync = true
-                try? context.save()
-            }
-
-            if scheduleReminder {
-                let notifService = NotificationService()
-                await notifService.requestPermission()
-                await notifService.scheduleReminders(
-                    id: event.eventIdentifier ?? UUID().uuidString,
-                    patientName: patient.fullName,
-                    date: apptDate,
-                    type: apptType.rawValue
-                )
-            }
-
-            isSaving = false
-
-            if sendEmail && MailComposer.canSendMail && patient.email?.isEmpty == false {
-                showMailComposer = true
-            } else if sendSMS && SMSComposer.canSendText && patient.phone?.isEmpty == false {
-                showSMSComposer = true
-            } else if openQuestionnaire {
-                showQuestionnaire = true
-            } else {
-                dismiss()
-            }
+            // The record may have been removed or merged by sync during the calendar request.
+            guard patient.isLive else { isSaving = false; dismiss(); return }
+            await finish(patient: patient, eventId: event.eventIdentifier)
         } catch {
             savedError = error.localizedDescription
             isSaving = false
+        }
+    }
+
+    /// Reminders and the chosen follow-on (email, SMS, questionnaire), then close.
+    private func finish(patient: Patient, eventId: String?) async {
+        isSaving = true
+        if scheduleReminder {
+            let notifService = NotificationService()
+            await notifService.requestPermission()
+            await notifService.scheduleReminders(
+                id: eventId ?? UUID().uuidString,
+                patientName: patient.fullName,
+                date: apptDate,
+                type: apptType.rawValue
+            )
+        }
+        isSaving = false
+
+        if sendEmail && MailComposer.canSendMail && patient.email?.isEmpty == false {
+            showMailComposer = true
+        } else if sendSMS && SMSComposer.canSendText && patient.phone?.isEmpty == false {
+            showSMSComposer = true
+        } else if openQuestionnaire {
+            showQuestionnaire = true
+        } else {
+            dismiss()
         }
     }
 }

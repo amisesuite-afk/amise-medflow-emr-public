@@ -1,0 +1,330 @@
+{
+  "schemaVersion": 1,
+  "id": "paed-hsp-abdominal-pain",
+  "condition": "IgA vasculitis (Henoch–Schönlein purpura) with abdominal pain",
+  "category": "other",
+  "permutationOf": null,
+  "permutationLabel": "6-year-old, purpura, arthralgia, colicky pain and nephritis (base case)",
+  "summary": "6-year-old boy (21 kg) a week after a sore throat: palpable purpura on buttocks and legs, painful swollen ankles, 2 days of colicky periumbilical pain with one dark-blood stool; urine blood 2+, protein 1+. Risk of intussusception and nephritis; not an appendicectomy.",
+  "tags": [
+    "paediatric",
+    "vasculitis",
+    "mimic"
+  ],
+  "inputs": {
+    "patient": {
+      "ageYears": 6,
+      "sex": "male",
+      "heightCm": 117,
+      "weightKg": 21
+    },
+    "encounter": {
+      "setting": "emergency",
+      "visitType": "urgentReview",
+      "acuity": "urgent"
+    },
+    "chiefComplaint": "Tummy pain and a rash on the legs",
+    "hpi": "Sore throat 1 week ago. Four days ago a raised red-purple rash appeared on his buttocks and legs, then painful swollen ankles. Two days of colicky pain around the belly button, vomited once, one stool with dark blood this morning. No fever now.",
+    "socrates": {
+      "onset": [
+        "2–3 days ago"
+      ],
+      "site": [
+        "Periumbilical"
+      ],
+      "character": [
+        "Colicky"
+      ],
+      "radiation": [
+        "No radiation"
+      ],
+      "associations": [
+        "Vomiting",
+        "Rectal bleeding"
+      ],
+      "timing": [
+        "Intermittent"
+      ],
+      "exacerbating": [
+        "Eating"
+      ],
+      "relieving": [
+        "Nothing"
+      ],
+      "severity": [
+        "Moderate (4–6/10)"
+      ]
+    },
+    "symptoms": [
+      "abdominal pain",
+      "purpura",
+      "joint pain",
+      "rectal bleeding"
+    ],
+    "negatives": [
+      "fever",
+      "headache"
+    ],
+    "exam": {
+      "general": "Well-perfused. T 37.1, HR 104, BP 104/66.",
+      "skin": "Palpable non-blanching purpura over buttocks, posterior thighs and lower legs; no truncal rash.",
+      "abdomen": "Soft, mild periumbilical tenderness, no mass, no guarding.",
+      "msk": "Both ankles swollen and tender, full range."
+    },
+    "vitals": [
+      {
+        "minutesAgo": 10,
+        "heartRate": 104,
+        "systolicBp": 104,
+        "diastolicBp": 66,
+        "respiratoryRate": 22,
+        "temperatureC": 37.1,
+        "spo2": 99,
+        "avpu": "A",
+        "onSupplementalO2": false,
+        "weightKg": 21
+      }
+    ],
+    "labs": [
+      {
+        "analyte": "urinalysis",
+        "name": "Urine dipstick",
+        "resultText": "Blood 2+, protein 1+",
+        "minutesAgo": 30
+      },
+      {
+        "analyte": "platelets",
+        "name": "Platelets",
+        "value": 356,
+        "unit": "×10⁹/L",
+        "minutesAgo": 30
+      },
+      {
+        "analyte": "wbc",
+        "name": "WBC",
+        "value": 11.4,
+        "unit": "×10⁹/L",
+        "minutesAgo": 30
+      },
+      {
+        "analyte": "creatinine",
+        "name": "Creatinine",
+        "value": 38,
+        "unit": "µmol/L",
+        "minutesAgo": 30
+      },
+      {
+        "analyte": "crp",
+        "name": "CRP",
+        "value": 14,
+        "unit": "mg/L",
+        "minutesAgo": 30
+      }
+    ],
+    "imaging": [],
+    "comorbidities": [],
+    "surgicalHistory": [],
+    "medications": [],
+    "allergies": [],
+    "nkda": true,
+    "socialHistory": "Primary school; immunisations up to date.",
+    "confirmedDiagnosis": {
+      "name": "IgA vasculitis (Henoch–Schönlein purpura) with gastrointestinal and renal involvement",
+      "icd10": "D69.0",
+      "assessmentText": "IgA vasculitis (palpable purpura, arthritis, abdominal pain, haematuria/proteinuria; normal platelets). Abdominal ultrasound to exclude intussusception; urine protein:creatinine ratio and BP; paediatric team; urinalysis follow-up for nephritis."
+    },
+    "platform": {
+      "web": {
+        "ccTemplate": "Acute abdominal pain",
+        "socratesAnswers": {
+          "site": "Around the belly button (periumbilical)",
+          "onset": "2 days",
+          "character": "Colicky",
+          "associated": "Vomiting once, blood in stool, rash, joint pain",
+          "timing": "Comes and goes",
+          "severity": "5/10"
+        },
+        "symptoms": [
+          "abdominal pain",
+          "purpura",
+          "joint pain",
+          "rectal bleeding",
+          "haematuria"
+        ],
+        "symptomDetails": {
+          "abdominal pain": [
+            "Periumbilical",
+            "1–3 days",
+            "Colicky",
+            "Moderate (4–6)",
+            "PR bleeding",
+            "Intermittent / colicky"
+          ],
+          "rash": [
+            "Limbs",
+            "Purpuric (non-blanching)",
+            "Joint pain",
+            "Recent illness"
+          ]
+        },
+        "durationDays": 2,
+        "painScore": 5
+      }
+    }
+  },
+  "expected": {
+    "differential": {
+      "mustNotMiss": [
+        {
+          "id": "mnm-igav",
+          "severity": "quality",
+          "guidelineRefs": [
+            "eular-printo-2010"
+          ],
+          "match": [
+            "henoch",
+            "hsp",
+            "iga vasculitis",
+            "vasculitis"
+          ],
+          "knownGap": [
+            "ios"
+          ],
+          "knownGapNote": "iOS CI 2026-09-25 (run 36169134350, database mode): not in top 5 of ios.bayes: 1. Renal / Ureteric Colic | 2. Acute Appendicitis | 3. Acute Gastroenteritis | 4. Small Bowel Obstruction | 5. Acute Pancreatitis"
+        }
+      ],
+      "mustRankTopK": [
+        {
+          "id": "dx-hsp-symptom-engine",
+          "severity": "quality",
+          "platforms": [
+            "web"
+          ],
+          "match": [
+            "henoch",
+            "vasculitis"
+          ],
+          "k": 3,
+          "source": "web.symptomInference"
+        }
+      ]
+    },
+    "investigations": {
+      "mustInclude": [
+        {
+          "id": "inv-ultrasound-intussusception",
+          "severity": "critical",
+          "guidelineRefs": [
+            "share-igav-2019"
+          ],
+          "note": "Colicky pain with blood per rectum in IgA vasculitis: exclude (usually ileo-ileal) intussusception.",
+          "match": [
+            "re:(ultrasound|uss|\\bus\\b)[^\\n]{0,40}(abdo|intussus)",
+            "uss abdomen",
+            "abdominal ultrasound"
+          ]
+        },
+        {
+          "id": "inv-urine-protein-bp",
+          "severity": "quality",
+          "guidelineRefs": [
+            "share-igav-2019"
+          ],
+          "match": [
+            "protein:creatinine",
+            "protein creatinine",
+            "urinalysis",
+            "urine dipstick",
+            "blood pressure"
+          ]
+        }
+      ]
+    },
+    "management": {
+      "mustExclude": [
+        {
+          "id": "mgmt-no-adult-fixed-doses",
+          "severity": "critical",
+          "note": "Weight 21 kg. Paracetamol 1 g, ibuprofen 400 mg, piperacillin-tazobactam 4.5 g, co-amoxiclav 1.2 g, meropenem 1 g, morphine 2.5–5 mg, ondansetron 4 mg and fixed 1 L, 1–2 L or 500 mL fluid volumes are adult fixed doses; a child needs weight-based (mg/kg, mL/kg) dosing. Prescribing accuracy is a patient-safety issue, so critical.",
+          "match": [
+            "re:paracetamol 1 ?g",
+            "re:ibuprofen 400 ?mg",
+            "re:4\\.5 ?g",
+            "re:co-amoxiclav[^\\n]{0,20}1\\.2 ?g",
+            "re:amoxiclav 1\\.2 ?g",
+            "re:meropenem 1 ?g",
+            "re:morphine (sulfate )?(2\\.5|5) ?mg",
+            "re:hartmann'?s (1 ?l|1[–-]2 ?l|500 ?ml)",
+            "re:fluid challenge 500 ?ml",
+            "re:ondansetron 4 ?mg"
+          ],
+          "unless": [
+            "mg/kg",
+            "ml/kg",
+            "adult",
+            ">50 kg",
+            "over 50 kg",
+            "age ≥ 12",
+            "microgram/kg"
+          ]
+        },
+        {
+          "id": "mgmt-no-appendicectomy",
+          "severity": "critical",
+          "guidelineRefs": [
+            "share-igav-2019"
+          ],
+          "note": "Abdominal pain of IgA vasculitis: an appendicectomy plan is a wrong-procedure suggestion.",
+          "match": [
+            "appendicectomy",
+            "appendectomy"
+          ],
+          "unless": [
+            "not indicated",
+            "no role",
+            "exclude appendicitis"
+          ]
+        },
+        {
+          "id": "mgmt-no-laparotomy",
+          "severity": "critical",
+          "guidelineRefs": [
+            "share-igav-2019"
+          ],
+          "match": [
+            "re:(emergency )?laparotomy"
+          ],
+          "unless": [
+            "if ",
+            "perforation",
+            "failed"
+          ]
+        }
+      ]
+    }
+  },
+  "guideline": [
+    {
+      "id": "share-igav-2019",
+      "name": "SHARE initiative — European consensus recommendations for IgA vasculitis (Henoch–Schönlein purpura)",
+      "year": 2019,
+      "section": "Urinalysis and blood pressure at presentation and during follow-up (nephritis); abdominal ultrasound for severe abdominal pain to exclude intussusception; corticosteroids may be considered for severe abdominal pain",
+      "citation": "Ozen S, Marks SD, Brogan P, et al. European consensus-based recommendations for diagnosis and treatment of immunoglobulin A vasculitis — the SHARE initiative. Rheumatology (Oxford). 2019;58:1607–1616.",
+      "verified": false
+    },
+    {
+      "id": "eular-printo-2010",
+      "name": "EULAR/PRINTO/PRES classification criteria — Henoch–Schönlein purpura",
+      "year": 2010,
+      "section": "Purpura or petechiae (lower-limb predominance) plus ≥ 1 of: abdominal pain, histopathology with IgA deposition, arthritis/arthralgia, renal involvement",
+      "citation": "Ozen S, Pistorio A, Iusan SM, et al. EULAR/PRINTO/PRES criteria for Henoch–Schönlein purpura, childhood polyarteritis nodosa, childhood Wegener granulomatosis and childhood Takayasu arteritis. Ann Rheum Dis. 2010;69:798–806.",
+      "verified": false
+    }
+  ],
+  "rationale": "Abdominal pain can precede or accompany the rash of IgA vasculitis; the surgical questions are intussusception (ultrasound) and avoiding a negative laparotomy, while the long-term risk is nephritis (urinalysis and BP).",
+  "authoring": {
+    "author": "Claude (prevention/screening, obstetric-gynaecological mimics and paediatric surgery cluster)",
+    "date": "2026-09-25",
+    "notes": "Expectations need surgeon sign-off (reviewedBy). Every citation is verified: false. iOS outcomes are unverified (not run on Linux); triage after the first CI run."
+  }
+}

@@ -1,0 +1,438 @@
+{
+  "schemaVersion": 1,
+  "id": "trauma-blunt-polytrauma-class3-shock",
+  "condition": "Blunt polytrauma with haemorrhagic shock (ATLS class III)",
+  "category": "trauma-burns",
+  "permutationOf": null,
+  "summary": "34-year-old motorcyclist hit by a car 40 min ago: GCS 13, RR 30, SpO₂ 92 % on oxygen, BP 88/50, HR 132, positive FAST (LUQ and Morison's pouch), pelvic tenderness, base deficit −8, lactate 5.2.",
+  "tags": [
+    "trauma",
+    "polytrauma",
+    "shock",
+    "fast",
+    "atls"
+  ],
+  "inputs": {
+    "patient": {
+      "ageYears": 34,
+      "sex": "male",
+      "pregnancy": {
+        "status": "not-applicable"
+      },
+      "heightCm": 180,
+      "weightKg": 82
+    },
+    "encounter": {
+      "setting": "emergency",
+      "visitType": "trauma",
+      "acuity": "emergency"
+    },
+    "chiefComplaint": "Motorcycle road traffic collision",
+    "hpi": "Motorcyclist, estimated 60 km/h, struck by a car 40 minutes ago and thrown several metres. Helmet on. Brief loss of consciousness at scene per paramedics. Complains of left-sided chest, abdominal and pelvic pain.",
+    "socrates": {
+      "onset": [
+        "Today",
+        "Sudden"
+      ],
+      "site": [
+        "LUQ",
+        "Diffuse"
+      ],
+      "character": [
+        "Sharp"
+      ],
+      "radiation": [
+        "Left shoulder"
+      ],
+      "associations": [],
+      "timing": [
+        "Constant"
+      ],
+      "exacerbating": [
+        "Movement",
+        "Deep breathing"
+      ],
+      "relieving": [
+        "Nothing"
+      ],
+      "severity": [
+        "Severe (7–9/10)"
+      ]
+    },
+    "symptoms": [
+      "abdominal pain",
+      "chest pain",
+      "pelvic pain"
+    ],
+    "negatives": [],
+    "exam": {
+      "general": "Pale, clammy, GCS 13 (E3 V4 M6), confused. HR 132, BP 88/50, RR 30, SpO2 92% on 15 L. Capillary refill 4 s. Haemodynamically unstable.",
+      "respiratory": "Left chest wall tenderness, reduced air entry left base. Trachea central.",
+      "abdomen": "Distended, tender with guarding in the left upper quadrant. Pelvis tender on gentle palpation (not sprung).",
+      "neuro": "Moves all four limbs. Pupils equal and reactive."
+    },
+    "vitals": [
+      {
+        "minutesAgo": 5,
+        "heartRate": 132,
+        "systolicBp": 88,
+        "diastolicBp": 50,
+        "respiratoryRate": 30,
+        "temperatureC": 35.9,
+        "spo2": 92,
+        "avpu": "V",
+        "onSupplementalO2": true
+      }
+    ],
+    "labs": [
+      {
+        "analyte": "haemoglobin",
+        "name": "Haemoglobin",
+        "value": 10.1,
+        "unit": "g/dL",
+        "minutesAgo": 10
+      },
+      {
+        "analyte": "lactate",
+        "name": "Lactate",
+        "value": 5.2,
+        "unit": "mmol/L",
+        "minutesAgo": 10
+      },
+      {
+        "analyte": "baseExcess",
+        "name": "Base excess",
+        "value": -8,
+        "unit": "mmol/L",
+        "minutesAgo": 10
+      }
+    ],
+    "imaging": [
+      {
+        "name": "FAST scan",
+        "modality": "US",
+        "region": "Abdomen",
+        "result": "Free fluid in the splenorenal recess and Morison's pouch. Pericardium clear.",
+        "minutesAgo": 5
+      }
+    ],
+    "comorbidities": [],
+    "surgicalHistory": [],
+    "medications": [],
+    "allergies": [],
+    "nkda": true,
+    "socialHistory": "Courier.",
+    "confirmedDiagnosis": {
+      "name": "Blunt abdominal trauma with haemoperitoneum and haemorrhagic shock (ATLS class III)",
+      "icd10": "S39.91XA",
+      "paneDiseaseId": "blunt_abdominal_trauma",
+      "assessmentText": "Blunt polytrauma with haemorrhagic shock (ATLS class III), positive FAST, suspected splenic injury and pelvic injury. Primary survey, haemorrhage control, blood products, damage-control laparotomy."
+    },
+    "platform": {
+      "web": {
+        "ccTemplate": "Other / general surgical",
+        "symptoms": [
+          "abdominal pain",
+          "chest pain",
+          "confusion",
+          "loss of consciousness"
+        ],
+        "examFindings": {
+          "general": [
+            "Pale",
+            "In distress",
+            "GCS < 15"
+          ],
+          "abdomen": [
+            "Distended",
+            "Tender LUQ",
+            "Guarding"
+          ],
+          "cardiovascular": [
+            "Tachycardia",
+            "Capillary refill > 2s"
+          ],
+          "respiratory": [
+            "Reduced breath sounds (L)"
+          ]
+        },
+        "paneAnswers": {
+          "mechanism_blunt": true,
+          "haemodynamic_instability": true,
+          "abdominal_tenderness": true,
+          "guarding": true,
+          "loss_of_consciousness": true
+        },
+        "durationDays": 0,
+        "painScore": 9
+      }
+    }
+  },
+  "expected": {
+    "differential": {
+      "mustRankTopK": [
+        {
+          "id": "dx-abdominal-trauma-top3",
+          "severity": "quality",
+          "match": [
+            "abdominal trauma",
+            "splen",
+            "haemoperitoneum",
+            "hemoperitoneum"
+          ],
+          "k": 3,
+          "guidelineRefs": [
+            "atls-10-abdomen"
+          ],
+          "knownGap": [
+            "ios"
+          ],
+          "knownGapNote": "iOS CI 2026-09-25 (run 36169134350, database mode): not in top 3 of ios.bayes: 1. Sepsis | 2. Community-Acquired Pneumonia | 3. Bacterial Meningitis / Meningococcal Sepsis | 4. Ischaemic Colitis | 5. Acute Kidney Injury"
+        }
+      ]
+    },
+    "safety": {
+      "emergencyLevel": {
+        "id": "level-emergency",
+        "severity": "critical",
+        "atLeast": "emergency",
+        "guidelineRefs": [
+          "atls-10-initial",
+          "atls-10-shock"
+        ]
+      },
+      "mustAlarm": [
+        {
+          "id": "alarm-shock",
+          "severity": "critical",
+          "match": [
+            "hypotension",
+            "shock",
+            "haemodynamic",
+            "hemodynamic",
+            "haemorrhag"
+          ],
+          "guidelineRefs": [
+            "atls-10-shock"
+          ]
+        }
+      ],
+      "redFlags": [
+        {
+          "id": "flag-shock-class",
+          "severity": "quality",
+          "match": [
+            "class iii",
+            "class 3",
+            "haemorrhagic shock",
+            "hemorrhagic shock"
+          ],
+          "guidelineRefs": [
+            "atls-10-shock"
+          ],
+          "proposedFix": "Add an ATLS class estimate (HR, BP, pulse pressure, RR, GCS, base deficit) to the trauma red flags."
+        }
+      ]
+    },
+    "investigations": {
+      "mustInclude": [
+        {
+          "id": "inv-fast",
+          "severity": "quality",
+          "match": [
+            "fast"
+          ],
+          "guidelineRefs": [
+            "atls-10-abdomen"
+          ]
+        },
+        {
+          "id": "inv-crossmatch",
+          "severity": "quality",
+          "match": [
+            "crossmatch",
+            "cross-match",
+            "group and"
+          ]
+        }
+      ]
+    },
+    "management": {
+      "mustInclude": [
+        {
+          "id": "mgmt-primary-survey",
+          "severity": "critical",
+          "match": [
+            "primary survey",
+            "abcde",
+            "atls",
+            "c-abc",
+            "cabcde",
+            "xabcde",
+            "<c>abcde"
+          ],
+          "guidelineRefs": [
+            "atls-10-initial"
+          ]
+        },
+        {
+          "id": "mgmt-blood-products",
+          "severity": "critical",
+          "match": [
+            "massive transfusion",
+            "mtp",
+            "blood product",
+            "prbc",
+            "packed red",
+            "1:1:1",
+            "transfus",
+            "major haemorrhage protocol"
+          ],
+          "guidelineRefs": [
+            "atls-10-shock",
+            "nice-ng39"
+          ]
+        },
+        {
+          "id": "mgmt-laparotomy",
+          "severity": "critical",
+          "match": [
+            "laparotomy",
+            "damage control",
+            "damage-control",
+            "splenectomy"
+          ],
+          "guidelineRefs": [
+            "atls-10-abdomen"
+          ],
+          "note": "Unstable with a positive FAST → laparotomy."
+        },
+        {
+          "id": "mgmt-txa",
+          "severity": "quality",
+          "match": [
+            "tranexamic",
+            "txa"
+          ],
+          "guidelineRefs": [
+            "crash-2",
+            "nice-ng39"
+          ]
+        },
+        {
+          "id": "mgmt-pelvic-binder",
+          "severity": "quality",
+          "match": [
+            "pelvic binder",
+            "pelvic splint",
+            "binder"
+          ],
+          "guidelineRefs": [
+            "nice-ng39"
+          ],
+          "proposedFix": "Add \"pelvic binder if pelvic injury suspected with haemodynamic instability\" to the blunt trauma protocol immediate phase.",
+          "knownGap": [
+            "ios"
+          ],
+          "knownGapNote": "iOS CI 2026-09-25 (run 36169134350, database mode): no management item matched among 12 (ios.pipeline.decisions, ios.pipeline.actions, ios.radiation.plan, ios.radiation.followUp, ios.soap.plan)"
+        }
+      ],
+      "mustExclude": [
+        {
+          "id": "mgmt-no-ct-while-unstable",
+          "severity": "quality",
+          "match": [
+            "re:\\bct\\b[^.;]{0,30}(abdo|trauma|whole|pelvi)"
+          ],
+          "unless": [
+            "stable",
+            "if ",
+            "once"
+          ],
+          "guidelineRefs": [
+            "atls-10-abdomen"
+          ]
+        },
+        {
+          "id": "mgmt-no-antithrombotic-plan",
+          "severity": "critical",
+          "match": [
+            "aspirin 300",
+            "ticagrelor",
+            "clopidogrel 300",
+            "fondaparinux",
+            "alteplase",
+            "thrombolysis",
+            "rivaroxaban",
+            "apixaban 10",
+            "doacs (preferred)"
+          ],
+          "sources": [
+            "ios.radiation",
+            "ios.soap",
+            "web.plan",
+            "web.protocol",
+            "web.managementPanel"
+          ],
+          "guidelineRefs": [
+            "atls-10-shock"
+          ],
+          "note": "A PE or ACS antithrombotic/thrombolytic plan must never be attached to a haemorrhagic or non-thrombotic diagnosis. Reading the iOS source, DiagnosisRadiationEngine.radiate matches keywords by substring and would attach the ACS plan (\"mi\" inside \"abdominal\", \"limb\", \"haemodynamically\") or the PE plan (\"pe\" inside \"suspected\", \"penetrating\", \"superficial\") to this diagnosis — to be confirmed on the first iOS CI run."
+        }
+      ]
+    },
+    "pathway": {
+      "id": "pathway-trauma",
+      "severity": "quality",
+      "equals": "trauma"
+    }
+  },
+  "guideline": [
+    {
+      "id": "atls-10-initial",
+      "name": "ATLS 10th edition — initial assessment and management",
+      "year": 2018,
+      "section": "Chapter 1: primary survey in order — control of exsanguinating external haemorrhage, airway with cervical spine restriction, breathing, circulation with haemorrhage control, disability, exposure (x/c-ABCDE); adjuncts (FAST, CXR, pelvic XR); resuscitation before definitive imaging in unstable patients",
+      "citation": "American College of Surgeons Committee on Trauma. Advanced Trauma Life Support (ATLS) Student Course Manual. 10th ed. Chicago: ACS; 2018. Chapter 1.",
+      "verified": false
+    },
+    {
+      "id": "atls-10-shock",
+      "name": "ATLS 10th edition — shock",
+      "year": 2018,
+      "section": "Chapter 3, Table 3-1: haemorrhage classes I (<15%), II (15–30%), III (31–40%), IV (>40%) with heart rate, blood pressure, pulse pressure, respiratory rate, urine output, GCS and base deficit; class III–IV need blood products / massive transfusion protocol; early haemorrhage control; minimise crystalloid; beta-blockers and age blunt the tachycardic response",
+      "citation": "American College of Surgeons Committee on Trauma. ATLS Student Course Manual. 10th ed. Chicago: ACS; 2018. Chapter 3.",
+      "verified": false
+    },
+    {
+      "id": "atls-10-abdomen",
+      "name": "ATLS 10th edition — abdominal and pelvic trauma",
+      "year": 2018,
+      "section": "Chapter 5: FAST in the unstable patient; haemodynamically abnormal patient with positive FAST → laparotomy; CT only in stable patients; evisceration, peritonitis or haemodynamic instability after penetrating trauma → laparotomy; selective non-operative management of anterior stab wounds in stable patients",
+      "citation": "American College of Surgeons Committee on Trauma. ATLS Student Course Manual. 10th ed. Chicago: ACS; 2018. Chapter 5.",
+      "verified": false
+    },
+    {
+      "id": "crash-2",
+      "name": "CRASH-2 — tranexamic acid in bleeding trauma patients",
+      "year": 2011,
+      "section": "Tranexamic acid 1 g over 10 min then 1 g over 8 h, given within 3 h of injury; no benefit and possible harm when started after 3 h",
+      "citation": "CRASH-2 collaborators. The importance of early treatment with tranexamic acid in bleeding trauma patients: an exploratory analysis of the CRASH-2 randomised controlled trial. Lancet. 2011;377:1096–101.",
+      "verified": false
+    },
+    {
+      "id": "nice-ng39",
+      "name": "NICE NG39 — Major trauma: assessment and initial management",
+      "year": 2016,
+      "section": "Pre-hospital/hospital: tranexamic acid as soon as possible in major haemorrhage; pelvic binder for suspected pelvic haemorrhage; ratio-based blood product resuscitation; restrictive crystalloid; whole-body CT for suspected multiple injuries once stable enough",
+      "citation": "National Institute for Health and Care Excellence. Major trauma: assessment and initial management (NG39). London: NICE; 2016.",
+      "verified": false
+    }
+  ],
+  "rationale": "Base trauma case: high-energy blunt mechanism with ATLS class III haemorrhagic shock (tachycardia, hypotension, tachypnoea, confusion, base deficit −8) and a positive FAST. Tests primary-survey ordering, shock recognition, blood products, laparotomy for FAST-positive instability, TXA within 3 h and pelvic binder. ICD S39.91XA (unspecified injury of abdomen).",
+  "authoring": {
+    "author": "Claude (soft tissue / vascular / trauma / burns cluster)",
+    "date": "2026-09-25",
+    "notes": "Expectations need surgeon sign-off (reviewedBy). Citations verified: false. iOS outcomes are unverified until the first CI run."
+  }
+}

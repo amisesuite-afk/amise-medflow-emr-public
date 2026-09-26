@@ -1,0 +1,196 @@
+{
+  "schemaVersion": 1,
+  "id": "screen-breast-brca1-carrier-33",
+  "condition": "Known BRCA1 carrier — high-risk breast surveillance",
+  "category": "breast-endocrine",
+  "permutationOf": "breast-family-history-brca",
+  "permutationLabel": "Confirmed BRCA1 carrier, age 33, asymptomatic",
+  "summary": "33-year-old woman with a confirmed BRCA1 pathogenic variant (cascade testing after her mother's breast cancer), asymptomatic, never had imaging. NICE CG164: annual MRI 30–49, discuss risk-reducing surgery, specialist family-history service.",
+  "tags": [
+    "screening",
+    "high-risk",
+    "brca",
+    "breast"
+  ],
+  "inputs": {
+    "patient": {
+      "ageYears": 33,
+      "sex": "female",
+      "pregnancy": {
+        "status": "not-pregnant"
+      },
+      "heightCm": 167,
+      "weightKg": 61
+    },
+    "encounter": {
+      "setting": "outpatient",
+      "visitType": "newConsult",
+      "acuity": "routine"
+    },
+    "chiefComplaint": "BRCA1 gene carrier — wants to know about breast checks",
+    "hpi": "Asymptomatic 33-year-old. Mother had triple-negative breast cancer at 41; cascade genetic testing in Barbados 6 months ago confirmed a BRCA1 pathogenic variant in the patient. No breast imaging so far. Has two children, family complete. No breast symptoms.",
+    "symptoms": [],
+    "negatives": [
+      "breast lump",
+      "nipple discharge"
+    ],
+    "exam": {
+      "general": "Well.",
+      "other": "Breasts and axillae: normal examination."
+    },
+    "vitals": [
+      {
+        "minutesAgo": 10,
+        "heartRate": 68,
+        "systolicBp": 116,
+        "diastolicBp": 70,
+        "respiratoryRate": 14,
+        "temperatureC": 36.6,
+        "spo2": 99,
+        "avpu": "A",
+        "onSupplementalO2": false
+      }
+    ],
+    "labs": [
+      {
+        "analyte": "genetics",
+        "name": "BRCA genetic test",
+        "resultText": "BRCA1 pathogenic variant detected (heterozygous)",
+        "minutesAgo": 259200
+      }
+    ],
+    "imaging": [],
+    "comorbidities": [
+      "BRCA1 pathogenic variant carrier",
+      "Family history: mother breast cancer at 41"
+    ],
+    "surgicalHistory": [],
+    "medications": [
+      {
+        "drug": "Combined oral contraceptive",
+        "dose": "1 tablet",
+        "frequency": "OD",
+        "indication": "Contraception"
+      }
+    ],
+    "allergies": [],
+    "nkda": true,
+    "socialHistory": "Nurse. Non-smoker.",
+    "confirmedDiagnosis": {
+      "name": "BRCA1 pathogenic variant carrier — high-risk breast surveillance",
+      "icd10": "Z15.01",
+      "assessmentText": "Asymptomatic BRCA1 carrier, age 33, normal examination. Annual breast MRI (30–49); discuss risk-reducing mastectomy and risk-reducing salpingo-oophorectomy; refer to the high-risk / family history service."
+    },
+    "platform": {
+      "web": {
+        "ccTemplate": "Breast lump",
+        "symptoms": [],
+        "durationDays": 0
+      }
+    }
+  },
+  "expected": {
+    "safety": {
+      "emergencyLevel": {
+        "id": "level-not-urgent",
+        "severity": "quality",
+        "guidelineRefs": [
+          "nice-cg164"
+        ],
+        "atMost": "priority"
+      }
+    },
+    "investigations": {
+      "mustInclude": [
+        {
+          "id": "inv-annual-mri",
+          "severity": "quality",
+          "guidelineRefs": [
+            "nice-cg164"
+          ],
+          "note": "NICE CG164: annual MRI from 30 to 49 for BRCA1/2 carriers.",
+          "match": [
+            "re:\\bmri\\b[^\\n]{0,30}breast",
+            "re:breast[^\\n]{0,30}\\bmri\\b",
+            "re:annual mri"
+          ],
+          "knownGap": [
+            "ios"
+          ],
+          "knownGapNote": "iOS CI 2026-09-25 (run 36169134350, database mode): no investigation output on ios"
+        }
+      ],
+      "mustExclude": [
+        {
+          "id": "inv-no-biopsy",
+          "severity": "quality",
+          "guidelineRefs": [
+            "nice-cg164"
+          ],
+          "note": "No lesion: no biopsy.",
+          "match": [
+            "core biopsy",
+            "fnac",
+            "fine needle"
+          ]
+        }
+      ]
+    },
+    "management": {
+      "mustInclude": [
+        {
+          "id": "mgmt-risk-reducing-surgery",
+          "severity": "quality",
+          "guidelineRefs": [
+            "nice-cg164"
+          ],
+          "note": "Carriers should be offered a discussion of risk-reducing mastectomy and salpingo-oophorectomy.",
+          "match": [
+            "risk-reducing",
+            "risk reducing",
+            "prophylactic mastectomy",
+            "salpingo-oophorectomy",
+            "rrso"
+          ],
+          "knownGap": [
+            "ios"
+          ],
+          "knownGapNote": "iOS CI 2026-09-25 (run 36169134350, database mode): no management item matched among 3 (ios.pipeline.actions, ios.soap.plan)"
+        },
+        {
+          "id": "mgmt-high-risk-service",
+          "severity": "quality",
+          "guidelineRefs": [
+            "nice-cg164"
+          ],
+          "match": [
+            "genetic",
+            "family history clinic",
+            "high-risk",
+            "high risk"
+          ],
+          "knownGap": [
+            "ios"
+          ],
+          "knownGapNote": "iOS CI 2026-09-25 (run 36169134350, database mode): no management item matched among 3 (ios.pipeline.actions, ios.soap.plan)"
+        }
+      ]
+    }
+  },
+  "guideline": [
+    {
+      "id": "nice-cg164",
+      "name": "NICE CG164 — familial breast cancer",
+      "year": 2013,
+      "section": "Carriers of BRCA1/BRCA2 pathogenic variants: annual MRI surveillance from 30 to 49, with mammography added from 40; discuss risk-reducing mastectomy and bilateral salpingo-oophorectomy; care through specialist genetic / family history services (updated 2019–2023)",
+      "citation": "National Institute for Health and Care Excellence. Familial breast cancer: classification, care and managing breast cancer and related risks in people with a family history of breast cancer. Clinical guideline CG164, 2013 (updated 2023).",
+      "verified": false
+    }
+  ],
+  "rationale": "A confirmed BRCA1 carrier is in the highest risk group: MRI surveillance from 30, risk-reducing surgery counselling and specialist follow-up. The engines should recognise the carrier status from the record, not only from a family-history chip.",
+  "authoring": {
+    "author": "Claude (prevention/screening, obstetric-gynaecological mimics and paediatric surgery cluster)",
+    "date": "2026-09-25",
+    "notes": "Expectations need surgeon sign-off (reviewedBy). Every citation is verified: false. iOS outcomes are unverified (not run on Linux); triage after the first CI run."
+  }
+}

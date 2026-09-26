@@ -1,0 +1,261 @@
+{
+  "schemaVersion": 1,
+  "id": "acutemed-cap-child-rll-abdominal-pain",
+  "condition": "Right lower lobe pneumonia presenting as abdominal pain (child)",
+  "category": "general-medicine",
+  "permutationOf": "acutemed-cap-low-severity",
+  "permutationLabel": "Child, presenting as abdominal pain",
+  "summary": "9-year-old boy with 2 days of fever and right-sided abdominal pain, one vomit and a mild cough; RR 34, HR 128, T 39.1, SpO₂ 94 %, soft abdomen, crackles at the right base. Appendicitis mimic.",
+  "tags": [
+    "pneumonia",
+    "paediatric",
+    "mimic",
+    "appendicitis-mimic"
+  ],
+  "inputs": {
+    "patient": {
+      "ageYears": 9,
+      "sex": "male",
+      "pregnancy": {
+        "status": "not-applicable"
+      },
+      "heightCm": 134,
+      "weightKg": 29
+    },
+    "encounter": {
+      "setting": "outpatient",
+      "visitType": "urgentReview",
+      "acuity": "urgent"
+    },
+    "chiefComplaint": "Right-sided tummy pain and fever",
+    "hpi": "Referred by the GP as ?appendicitis. Two days of high fevers and pain in the right side of the tummy, vomited once, a mild cough. Mother notes fast breathing. Opened bowels normally yesterday. Eating a little.",
+    "socrates": {
+      "onset": [
+        "2–3 days ago"
+      ],
+      "site": [
+        "Right side",
+        "RUQ"
+      ],
+      "character": [
+        "Sharp"
+      ],
+      "radiation": [
+        "No radiation"
+      ],
+      "associations": [
+        "Fever",
+        "Vomiting"
+      ],
+      "timing": [
+        "Constant"
+      ],
+      "exacerbating": [
+        "Deep breathing",
+        "Coughing"
+      ],
+      "relieving": [
+        "Nothing"
+      ],
+      "severity": [
+        "Moderate (4–6/10)"
+      ]
+    },
+    "symptoms": [
+      "right-sided abdominal pain",
+      "fever",
+      "vomiting once",
+      "mild cough",
+      "fast breathing"
+    ],
+    "negatives": [
+      "diarrhoea",
+      "dysuria",
+      "rash"
+    ],
+    "exam": {
+      "general": "Flushed, tachypnoeic, grunting intermittently.",
+      "abdomen": "Soft, mild right upper tenderness on deep inspiration, no guarding, no rebound, not tender at McBurney's point.",
+      "respiratory": "Reduced breath sounds and crackles at the right base, RR 34.",
+      "cardiovascular": "HR 128, CRT 2 s."
+    },
+    "vitals": [
+      {
+        "minutesAgo": 5,
+        "heartRate": 128,
+        "systolicBp": 102,
+        "diastolicBp": 64,
+        "respiratoryRate": 34,
+        "temperatureC": 39.1,
+        "spo2": 94,
+        "avpu": "A",
+        "onSupplementalO2": false
+      }
+    ],
+    "labs": [
+      {
+        "analyte": "wbc",
+        "name": "WBC",
+        "value": 17.2,
+        "unit": "×10⁹/L",
+        "minutesAgo": 30
+      },
+      {
+        "analyte": "crp",
+        "name": "CRP",
+        "value": 128,
+        "unit": "mg/L",
+        "minutesAgo": 30
+      }
+    ],
+    "imaging": [],
+    "comorbidities": [],
+    "surgicalHistory": [],
+    "medications": [
+      {
+        "drug": "Paracetamol",
+        "dose": "15 mg/kg",
+        "frequency": "QDS PRN"
+      }
+    ],
+    "allergies": [],
+    "nkda": true,
+    "socialHistory": "Lives with parents, fully immunised.",
+    "confirmedDiagnosis": {
+      "name": "Right lower lobe pneumonia",
+      "icd10": "J18.1",
+      "assessmentText": "Right lower lobe pneumonia presenting as right-sided abdominal pain; appendicitis unlikely (soft abdomen, chest signs)."
+    },
+    "platform": {
+      "web": {
+        "ccTemplate": "Acute abdominal pain",
+        "symptoms": [
+          "abdominal pain",
+          "fever",
+          "vomiting",
+          "cough"
+        ],
+        "symptomDetails": {
+          "abdominal pain": [
+            "RUQ",
+            "1–3 days",
+            "Sharp",
+            "Moderate (4–6)",
+            "Fever",
+            "Vomiting",
+            "Deep breathing",
+            "Coughing"
+          ]
+        },
+        "examFindings": {
+          "respiratory": [
+            "Crackles (R)",
+            "Reduced breath sounds (R)"
+          ]
+        },
+        "paneAnswers": {
+          "fever": true,
+          "nausea_vomiting": true
+        },
+        "durationDays": 2,
+        "painScore": 5
+      }
+    }
+  },
+  "expected": {
+    "differential": {
+      "mustNotMiss": [
+        {
+          "id": "mnm-pneumonia",
+          "severity": "critical",
+          "match": [
+            "pneumonia",
+            "icd:J18",
+            "icd:J15",
+            "icd:J13",
+            "chest infection",
+            "lower respiratory tract infection"
+          ],
+          "guidelineRefs": [
+            "bts-cap-child-2011"
+          ]
+        }
+      ]
+    },
+    "safety": {
+      "emergencyLevel": {
+        "id": "level-at-least-urgent",
+        "severity": "quality",
+        "atLeast": "urgent",
+        "guidelineRefs": [
+          "bts-cap-child-2011"
+        ]
+      }
+    },
+    "investigations": {
+      "mustInclude": [
+        {
+          "id": "inv-cxr",
+          "severity": "critical",
+          "match": [
+            "re:\\bcxr\\b",
+            "chest x-ray",
+            "chest x ray",
+            "chest radiograph",
+            "re:\\bx-?ray\\b[^.;]{0,15}chest"
+          ],
+          "guidelineRefs": [
+            "bts-cap-child-2011"
+          ],
+          "note": "Diagnosis in doubt (abdominal presentation): CXR indicated."
+        }
+      ]
+    },
+    "management": {
+      "mustExclude": [
+        {
+          "id": "mgmt-no-appendicectomy",
+          "severity": "critical",
+          "match": [
+            "re:laparoscopic append(ic)?ectomy",
+            "appendicectomy",
+            "appendectomy"
+          ],
+          "guidelineRefs": [
+            "bts-cap-child-2011"
+          ],
+          "note": "Wrong procedure for a chest cause of abdominal pain.",
+          "proposedFix": "Gate the appendicectomy operative-plan cascade on the working diagnosis (see HPB findings gap 1) and a negation-aware exam matcher (\"no guarding\")."
+        },
+        {
+          "id": "mgmt-no-cholecystectomy",
+          "severity": "critical",
+          "match": [
+            "cholecystectomy"
+          ],
+          "guidelineRefs": [
+            "bts-cap-child-2011"
+          ],
+          "note": "Wrong procedure in a 9-year-old with pneumonia.",
+          "proposedFix": "The Assessment panel follows the PANE top (cholecystitis 0.299) instead of the confirmed diagnosis (J18.1); prefer the locked working diagnosis (HPB findings gap 7)."
+        }
+      ]
+    }
+  },
+  "guideline": [
+    {
+      "id": "bts-cap-child-2011",
+      "verified": false,
+      "name": "BTS guidelines for the management of community acquired pneumonia in children: update 2011",
+      "year": 2011,
+      "section": "Clinical features: fever with tachypnoea and increased work of breathing; lower-lobe pneumonia can present with abdominal pain; CXR not routine in the community but indicated when the diagnosis is in doubt or the child is admitted",
+      "citation": "Harris M, Clark J, Coote N, et al. Thorax. 2011;66(Suppl 2):ii1-23."
+    }
+  ],
+  "rationale": "Paediatric mimic: basal pneumonia referred as appendicitis. Every engine that routes by \"abdominal pain\" is expected to reach for appendicitis; the chest signs and tachypnoea should redirect.",
+  "authoring": {
+    "author": "Claude (acute medicine cluster)",
+    "date": "2026-09-25",
+    "notes": "Expectations need surgeon sign-off (reviewedBy). Citations written from the guideline texts, not yet checked against the source (verified: false). iOS outcomes are unverified until the next CI run."
+  }
+}

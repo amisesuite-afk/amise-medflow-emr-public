@@ -1,0 +1,351 @@
+{
+  "schemaVersion": 1,
+  "id": "epididymo-orchitis-sti-young",
+  "condition": "Epididymo-orchitis (sexually transmitted)",
+  "category": "urology",
+  "permutationOf": "mimic-testicular-torsion",
+  "permutationLabel": "Reverse mimic: gradual onset STI epididymo-orchitis with normal Doppler",
+  "summary": "27-year-old man with 3 days of gradual right scrotal pain, dysuria, urethral discharge and fever 38.1; tender epididymis, cremasteric reflex present, Doppler normal testicular flow.",
+  "tags": [
+    "scrotal",
+    "infection",
+    "sti"
+  ],
+  "inputs": {
+    "patient": {
+      "ageYears": 27,
+      "sex": "male",
+      "pregnancy": {
+        "status": "not-applicable"
+      },
+      "heightCm": 178,
+      "weightKg": 80
+    },
+    "encounter": {
+      "setting": "outpatient",
+      "visitType": "urgentReview",
+      "acuity": "priority"
+    },
+    "chiefComplaint": "Painful swelling of the right side of the scrotum over 3 days",
+    "hpi": "Three days of gradually increasing right scrotal pain and swelling, with burning on passing urine and a urethral discharge for a week. New partner 3 weeks ago, condoms not used. Mild fever. No vomiting.",
+    "socrates": {
+      "onset": [
+        "2–3 days ago",
+        "Gradual"
+      ],
+      "site": [
+        "Right scrotum"
+      ],
+      "character": [
+        "Aching"
+      ],
+      "radiation": [
+        "Groin"
+      ],
+      "associations": [
+        "Fever",
+        "Dysuria"
+      ],
+      "timing": [
+        "Progressive"
+      ],
+      "exacerbating": [
+        "Standing"
+      ],
+      "relieving": [
+        "Lying down"
+      ],
+      "severity": [
+        "Moderate (4–6/10)"
+      ]
+    },
+    "symptoms": [
+      "scrotal swelling",
+      "dysuria",
+      "penile discharge",
+      "fever"
+    ],
+    "negatives": [
+      "vomiting",
+      "sudden onset",
+      "trauma"
+    ],
+    "exam": {
+      "general": "Well. Pulse 96/min, BP 128/76, temperature 38.1°C.",
+      "other": "Genitalia: tender swollen right epididymis, normal testicular lie, cremasteric reflex present, pain eased by elevation. Urethral discharge."
+    },
+    "vitals": [
+      {
+        "minutesAgo": 10,
+        "heartRate": 96,
+        "systolicBp": 128,
+        "diastolicBp": 76,
+        "respiratoryRate": 16,
+        "temperatureC": 38.1,
+        "spo2": 99,
+        "avpu": "A",
+        "onSupplementalO2": false,
+        "weightKg": 80
+      }
+    ],
+    "labs": [
+      {
+        "analyte": "urinalysis",
+        "name": "Urine dipstick",
+        "resultText": "Leucocytes 2+, nitrite negative",
+        "minutesAgo": 30
+      },
+      {
+        "analyte": "wbc",
+        "name": "WBC",
+        "value": 12.6,
+        "unit": "×10⁹/L",
+        "minutesAgo": 30
+      },
+      {
+        "analyte": "crp",
+        "name": "CRP",
+        "value": 48,
+        "unit": "mg/L",
+        "minutesAgo": 30
+      }
+    ],
+    "imaging": [
+      {
+        "name": "Scrotal Doppler ultrasound",
+        "modality": "US",
+        "result": "Enlarged hyperaemic right epididymis with increased flow; normal testicular flow bilaterally; no torsion.",
+        "minutesAgo": 45,
+        "region": "Scrotum"
+      }
+    ],
+    "comorbidities": [],
+    "surgicalHistory": [],
+    "medications": [],
+    "allergies": [],
+    "nkda": true,
+    "socialHistory": "Chef. New sexual partner 3 weeks ago.",
+    "confirmedDiagnosis": {
+      "name": "Right epididymo-orchitis (probable sexually transmitted infection)",
+      "icd10": "N45.3",
+      "paneDiseaseId": "epididymo_orchitis",
+      "assessmentText": "Right epididymo-orchitis, likely STI (urethritis, new partner); Doppler shows normal testicular flow."
+    },
+    "platform": {
+      "web": {
+        "ccTemplate": "Other / general surgical",
+        "socratesAnswers": {
+          "site": "Right testicle (scrotal)",
+          "onset": "Gradual over 3 days",
+          "character": "Aching",
+          "radiation": "Groin",
+          "associated": "Fever, burning urine, urethral discharge",
+          "timing": "Getting worse",
+          "relief": "Lying down",
+          "severity": "5/10"
+        },
+        "symptoms": [
+          "scrotal swelling",
+          "dysuria",
+          "penile discharge",
+          "fever"
+        ],
+        "durationDays": 3,
+        "painScore": 5
+      }
+    }
+  },
+  "expected": {
+    "differential": {
+      "mustRankTopK": [
+        {
+          "id": "dx-epididymo-orchitis-top3",
+          "severity": "quality",
+          "match": [
+            "epididym",
+            "orchitis"
+          ],
+          "k": 3,
+          "guidelineRefs": [
+            "iusti-eo-2016"
+          ]
+        }
+      ],
+      "mustNotMiss": [
+        {
+          "id": "mnm-torsion-considered",
+          "severity": "quality",
+          "match": [
+            "torsion"
+          ],
+          "unless": [
+            "ovarian"
+          ],
+          "guidelineRefs": [
+            "iusti-eo-2016",
+            "eau-paed-2024"
+          ],
+          "note": "Torsion stays on the differential until excluded.",
+          "knownGap": [
+            "web",
+            "ios"
+          ],
+          "knownGapNote": "Web: PANE ranks epididymo-orchitis, appendicitis, inguinal hernia; torsion is not in the top 3 (symptom inference lists \"torsion / epididymo-orchitis\" #2). | iOS CI 2026-09-25 (run 36169134350, database mode): not in top 5 of ios.bayes: 1. Inguinal Hernia | 2. Hydrocele | 3. Epididymo-orchitis | 4. Fournier's Gangrene | 5. Incarcerated / Strangulated Hernia",
+          "proposedFix": "Calibrate pane-engine urology likelihoods/priors and map the urinary chips (loin pain, dysuria, retention, haematuria, scrotal) and the \"Other / general surgical\" CC into PANE features, as SmartSymptomPicker chips do for symptom inference."
+        }
+      ]
+    },
+    "safety": {
+      "emergencyLevel": {
+        "id": "level-priority",
+        "severity": "quality",
+        "atLeast": "priority",
+        "atMost": "urgent",
+        "guidelineRefs": [
+          "iusti-eo-2016"
+        ],
+        "note": "Same-day review, not an emergency, once Doppler shows normal testicular flow and onset is gradual (over-triage check).",
+        "knownGap": [
+          "web"
+        ],
+        "knownGapNote": "Web: Triage \"emergency_now\" (score 48): fever in the text and the 38.1 °C vital plus a moderate pain score add up past the emergency threshold (45); the scrotal chip itself adds nothing.",
+        "proposedFix": "Negation handling in triage free text; do not escalate gradual scrotal pain with normal Doppler flow."
+      }
+    },
+    "investigations": {
+      "mustInclude": [
+        {
+          "id": "inv-sti-testing",
+          "severity": "quality",
+          "match": [
+            "chlamydia",
+            "gonorrh",
+            "naat",
+            "sti screen",
+            "sexual health",
+            "urethral swab"
+          ],
+          "guidelineRefs": [
+            "iusti-eo-2016"
+          ]
+        },
+        {
+          "id": "inv-urine-culture",
+          "severity": "quality",
+          "match": [
+            "msu",
+            "urine culture",
+            "c&s",
+            "mid-stream",
+            "midstream",
+            "csu",
+            "catheter specimen"
+          ],
+          "guidelineRefs": [
+            "iusti-eo-2016"
+          ]
+        }
+      ]
+    },
+    "management": {
+      "mustInclude": [
+        {
+          "id": "mgmt-antibiotic",
+          "severity": "critical",
+          "match": [
+            "ceftriaxone",
+            "doxycycline",
+            "ofloxacin",
+            "levofloxacin",
+            "ciprofloxacin"
+          ],
+          "guidelineRefs": [
+            "iusti-eo-2016"
+          ]
+        },
+        {
+          "id": "mgmt-sti-regimen",
+          "severity": "quality",
+          "match": [
+            "re:ceftriaxone[^\\n]{0,80}doxycycline",
+            "re:doxycycline[^\\n]{0,80}ceftriaxone"
+          ],
+          "guidelineRefs": [
+            "iusti-eo-2016"
+          ]
+        },
+        {
+          "id": "mgmt-partner-notification",
+          "severity": "quality",
+          "match": [
+            "partner notification",
+            "partner"
+          ],
+          "guidelineRefs": [
+            "iusti-eo-2016"
+          ]
+        }
+      ],
+      "mustExclude": [
+        {
+          "id": "mgmt-no-orchidectomy",
+          "severity": "quality",
+          "match": [
+            "orchidectomy"
+          ],
+          "unless": [
+            "non-viable",
+            "risk of",
+            "if non-viable"
+          ],
+          "guidelineRefs": [
+            "iusti-eo-2016"
+          ]
+        },
+        {
+          "id": "mgmt-no-unconditional-exploration",
+          "severity": "quality",
+          "match": [
+            "emergency scrotal exploration"
+          ],
+          "unless": [
+            "if torsion",
+            "only if",
+            "cannot be excluded",
+            "if doubt",
+            "if in doubt"
+          ],
+          "guidelineRefs": [
+            "iusti-eo-2016",
+            "eau-paed-2024"
+          ],
+          "note": "Exploration is right when torsion cannot be excluded; here gradual onset, urethritis and normal Doppler flow make an unconditional exploration plan over-treatment."
+        }
+      ]
+    }
+  },
+  "guideline": [
+    {
+      "id": "iusti-eo-2016",
+      "name": "IUSTI/WHO European guideline on the management of epididymo-orchitis",
+      "year": 2016,
+      "section": "Exclude torsion (surgical exploration if in doubt); test for chlamydia and gonorrhoea (NAAT) and urine culture; likely STI: ceftriaxone plus doxycycline; enteric organisms likely: fluoroquinolone; scrotal support and analgesia; partner notification",
+      "citation": "Street EJ, Justice ED, Kopa Z, et al. The 2016 European guideline on the management of epididymo-orchitis. Int J STD AIDS. 2017;28:744–749.",
+      "verified": false
+    },
+    {
+      "id": "eau-paed-2024",
+      "name": "EAU/ESPU Guidelines on Paediatric Urology — acute scrotum",
+      "year": 2024,
+      "section": "Testicular torsion is a clinical diagnosis; urgent surgical exploration; Doppler ultrasound must not delay surgery; explore when torsion cannot be excluded",
+      "citation": "Radmayr C, Bogaert G, Burgu B, et al. EAU Guidelines on Paediatric Urology. EAU Guidelines Office, Arnhem; 2024 edition. Section: Acute scrotum in children.",
+      "verified": false
+    }
+  ],
+  "rationale": "The counterpart to torsion: gradual onset with urethritis and normal testicular flow. IUSTI 2016: STI tests, ceftriaxone plus doxycycline, partner notification.",
+  "authoring": {
+    "author": "Claude (endocrine / renal / urology / neuro cluster)",
+    "date": "2026-09-25",
+    "notes": "Expectations need surgeon sign-off (reviewedBy). Every citation is verified: false. iOS outcomes not observed (Linux)."
+  }
+}

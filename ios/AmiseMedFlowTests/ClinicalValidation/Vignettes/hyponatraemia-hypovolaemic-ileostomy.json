@@ -1,0 +1,256 @@
+{
+  "schemaVersion": 1,
+  "id": "hyponatraemia-hypovolaemic-ileostomy",
+  "condition": "Hypovolaemic hyponatraemia (high-output ileostomy)",
+  "category": "general-medicine",
+  "permutationOf": "hyponatraemia-severe-postop-seizure",
+  "permutationLabel": "Hypovolaemic: high-output stoma with AKI",
+  "summary": "48-year-old man 3 weeks after anterior resection with loop ileostomy, output 2.5 L/day, postural hypotension; sodium 126, urine sodium 8, creatinine 142.",
+  "tags": [
+    "post-operative",
+    "stoma",
+    "aki",
+    "metabolic"
+  ],
+  "inputs": {
+    "patient": {
+      "ageYears": 48,
+      "sex": "male",
+      "pregnancy": {
+        "status": "not-applicable"
+      },
+      "heightCm": 180,
+      "weightKg": 70
+    },
+    "encounter": {
+      "setting": "outpatient",
+      "visitType": "postOp",
+      "acuity": "urgent",
+      "isPostOp": true,
+      "postOpDays": 21
+    },
+    "chiefComplaint": "Dizzy and thirsty with very watery stoma output",
+    "hpi": "Loop ileostomy formed 3 weeks ago at anterior resection for rectal cancer. Stoma output 2.5 litres a day of watery fluid for 5 days; drinking lots of water and tea. Dizzy on standing, thirsty, cramps, passing little urine.",
+    "symptoms": [
+      "dizziness",
+      "excessive thirst",
+      "dehydration",
+      "fatigue",
+      "muscle pain"
+    ],
+    "negatives": [
+      "vomiting",
+      "abdominal pain",
+      "fever"
+    ],
+    "exam": {
+      "general": "Dry mucous membranes, reduced skin turgor. Pulse 108/min lying, BP 102/60 lying falling to 84/50 standing, RR 16, temperature 36.8°C.",
+      "abdomen": "Soft, non-tender. Healthy ileostomy with high-volume watery effluent; midline wound healed."
+    },
+    "vitals": [
+      {
+        "minutesAgo": 10,
+        "heartRate": 108,
+        "systolicBp": 102,
+        "diastolicBp": 60,
+        "respiratoryRate": 16,
+        "temperatureC": 36.8,
+        "spo2": 98,
+        "avpu": "A",
+        "onSupplementalO2": false,
+        "weightKg": 70
+      }
+    ],
+    "labs": [
+      {
+        "analyte": "sodium",
+        "name": "Sodium",
+        "value": 126,
+        "unit": "mmol/L",
+        "minutesAgo": 30
+      },
+      {
+        "analyte": "potassium",
+        "name": "Potassium",
+        "value": 3.3,
+        "unit": "mmol/L",
+        "minutesAgo": 30
+      },
+      {
+        "analyte": "urea",
+        "name": "Urea",
+        "value": 14.2,
+        "unit": "mmol/L",
+        "minutesAgo": 30
+      },
+      {
+        "analyte": "creatinine",
+        "name": "Creatinine",
+        "value": 142,
+        "unit": "µmol/L",
+        "minutesAgo": 30
+      },
+      {
+        "analyte": "sodium",
+        "name": "Urine sodium",
+        "value": 8,
+        "unit": "mmol/L",
+        "minutesAgo": 30
+      },
+      {
+        "analyte": "magnesium",
+        "name": "Magnesium",
+        "value": 0.52,
+        "unit": "mmol/L",
+        "minutesAgo": 30
+      }
+    ],
+    "imaging": [],
+    "comorbidities": [
+      "Rectal cancer (anterior resection, defunctioning loop ileostomy)",
+      "Baseline creatinine 80 µmol/L"
+    ],
+    "surgicalHistory": [
+      "Laparoscopic anterior resection with loop ileostomy 3 weeks ago"
+    ],
+    "medications": [
+      {
+        "drug": "Omeprazole",
+        "dose": "20 mg",
+        "frequency": "OD"
+      }
+    ],
+    "allergies": [],
+    "nkda": true,
+    "socialHistory": "Accountant.",
+    "confirmedDiagnosis": {
+      "name": "Hypovolaemic hyponatraemia with AKI (high-output ileostomy)",
+      "icd10": "E87.1",
+      "assessmentText": "Hypovolaemic hyponatraemia (Na 126, urine Na 8) with pre-renal AKI from high-output ileostomy and hypotonic oral intake."
+    },
+    "platform": {
+      "web": {
+        "ccTemplate": "Other / general surgical",
+        "symptoms": [
+          "dizziness",
+          "excessive thirst",
+          "dehydration",
+          "fatigue",
+          "diarrhoea"
+        ],
+        "symptomDetails": {
+          "dizziness": [
+            "Presyncope on standing",
+            "On standing"
+          ]
+        },
+        "durationDays": 5
+      }
+    }
+  },
+  "expected": {
+    "safety": {
+      "emergencyLevel": {
+        "id": "level-urgent",
+        "severity": "critical",
+        "atLeast": "urgent",
+        "guidelineRefs": [
+          "eur-hypona-2014",
+          "nice-ng148"
+        ]
+      },
+      "mustAlarm": [
+        {
+          "id": "alarm-hyponatraemia",
+          "severity": "critical",
+          "match": [
+            "hyponat",
+            "sodium"
+          ],
+          "guidelineRefs": [
+            "eur-hypona-2014"
+          ]
+        }
+      ],
+      "redFlags": [
+        {
+          "id": "flag-aki",
+          "severity": "quality",
+          "match": [
+            "acute kidney",
+            "aki",
+            "creatinine"
+          ],
+          "guidelineRefs": [
+            "nice-ng148"
+          ]
+        }
+      ]
+    },
+    "management": {
+      "mustInclude": [
+        {
+          "id": "mgmt-isotonic-volume",
+          "severity": "critical",
+          "match": [
+            "0.9% saline",
+            "0.9% sodium chloride",
+            "sodium chloride 0.9%",
+            "balanced crystalloid",
+            "hartmann's",
+            "volume replacement",
+            "rehydrat"
+          ],
+          "guidelineRefs": [
+            "eur-hypona-2014",
+            "nice-ng148"
+          ],
+          "note": "Hypovolaemic hyponatraemia: restore volume with isotonic crystalloid."
+        }
+      ],
+      "mustExclude": [
+        {
+          "id": "mgmt-no-fluid-restriction",
+          "severity": "critical",
+          "match": [
+            "fluid restriction"
+          ],
+          "unless": [
+            "avoid",
+            "not ",
+            "do not",
+            "hypovol"
+          ],
+          "guidelineRefs": [
+            "eur-hypona-2014"
+          ],
+          "note": "Fluid restriction offered without a volume assessment worsens hypovolaemia and AKI."
+        }
+      ]
+    }
+  },
+  "guideline": [
+    {
+      "id": "eur-hypona-2014",
+      "name": "European clinical practice guideline on diagnosis and treatment of hyponatraemia (ESE/ESICM/ERBP)",
+      "year": 2014,
+      "section": "Severe symptoms (seizure, vomiting, reduced consciousness): 150 mL 3% hypertonic saline over 20 min, repeated (up to twice) checking sodium, target +5 mmol/L; moderately severe symptoms: single 150 mL 3% infusion; limit the rise to 10 mmol/L in the first 24 h and 8 mmol/L in each subsequent 24 h; hypovolaemic hyponatraemia: restore volume with 0.9% saline or balanced crystalloid; SIADH: fluid restriction first line; stop contributing drugs",
+      "citation": "Spasovski G, Vanholder R, Allolio B, et al. Clinical practice guideline on diagnosis and treatment of hyponatraemia. Eur J Endocrinol. 2014;170:G1–47.",
+      "verified": false
+    },
+    {
+      "id": "nice-ng148",
+      "name": "NICE NG148 — Acute kidney injury: prevention, detection and management",
+      "year": 2019,
+      "section": "Detection (creatinine against baseline); urinalysis for all with AKI; ultrasound of the urinary tract within 24 h when obstruction is suspected (immediately if pyonephrosis suspected); stop/withhold nephrotoxic drugs (NSAIDs, ACE inhibitors, ARBs, diuretics) and review metformin; refer to urology immediately for pyonephrosis, obstructed solitary kidney, bilateral upper tract obstruction or complications of obstruction; nephrology referral criteria",
+      "citation": "National Institute for Health and Care Excellence. Acute kidney injury: prevention, detection and management. NICE guideline NG148. London: NICE; 2019.",
+      "verified": false
+    }
+  ],
+  "rationale": "The volume state decides treatment: isotonic fluid for hypovolaemic hyponatraemia, never fluid restriction (European 2014).",
+  "authoring": {
+    "author": "Claude (endocrine / renal / urology / neuro cluster)",
+    "date": "2026-09-25",
+    "notes": "Expectations need surgeon sign-off (reviewedBy). Every citation is verified: false. iOS outcomes not observed (Linux)."
+  }
+}

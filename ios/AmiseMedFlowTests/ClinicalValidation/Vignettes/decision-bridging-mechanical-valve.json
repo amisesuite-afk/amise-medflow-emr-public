@@ -1,0 +1,134 @@
+{
+  "schemaVersion": 1,
+  "id": "decision-bridging-mechanical-valve",
+  "condition": "Peri-operative warfarin with a mechanical mitral valve — bridging",
+  "category": "hpb",
+  "permutationOf": "decision-bridging-warfarin-af-no-bridge",
+  "permutationLabel": "Mechanical mitral valve",
+  "summary": "Warfarin for a mechanical mitral valve before elective laparoscopic cholecystectomy: bridging (high thromboembolic risk), marked borderline.",
+  "tags": [
+    "decision-support",
+    "anticoagulation"
+  ],
+  "inputs": {
+    "patient": {
+      "ageYears": 70,
+      "sex": "male",
+      "pregnancy": {
+        "status": "not-applicable"
+      },
+      "heightCm": 174,
+      "weightKg": 86
+    },
+    "encounter": {
+      "setting": "outpatient",
+      "visitType": "newConsult",
+      "acuity": "routine"
+    },
+    "chiefComplaint": "Recurrent upper abdominal pain after meals",
+    "hpi": "Three episodes of right upper quadrant pain after fatty meals over 6 months, each settling within hours. Ultrasound shows gallstones. Mechanical mitral valve replacement 2015 on warfarin.",
+    "exam": {
+      "general": "Well.",
+      "abdomen": "Soft, non-tender."
+    },
+    "vitals": [
+      {
+        "minutesAgo": 10,
+        "heartRate": 72,
+        "systolicBp": 136,
+        "diastolicBp": 82,
+        "respiratoryRate": 14,
+        "temperatureC": 36.6,
+        "spo2": 97,
+        "avpu": "A",
+        "onSupplementalO2": false
+      }
+    ],
+    "labs": [
+      {
+        "analyte": "egfr",
+        "name": "eGFR",
+        "value": 72,
+        "unit": "mL/min/1.73m2",
+        "minutesAgo": 60
+      }
+    ],
+    "comorbidities": [
+      "Mechanical mitral valve replacement"
+    ],
+    "medications": [
+      {
+        "drug": "Warfarin",
+        "dose": "per INR",
+        "indication": "anticoagulation"
+      }
+    ],
+    "nkda": true,
+    "scoreForms": {
+      "has-bled": {
+        "total": 2
+      },
+      "asa": {
+        "total": 2
+      }
+    },
+    "confirmedDiagnosis": {
+      "name": "Symptomatic gallstones (biliary colic)",
+      "icd10": "K80.20",
+      "paneDiseaseId": "biliary_colic",
+      "assessmentText": "Symptomatic gallstones — planned elective laparoscopic cholecystectomy."
+    },
+    "platform": {
+      "web": {
+        "ccTemplate": "Acute abdominal pain",
+        "symptoms": [
+          "Abdominal pain"
+        ]
+      }
+    }
+  },
+  "expected": {
+    "management": {
+      "mustInclude": [
+        {
+          "id": "decision-bridging-valve",
+          "severity": "critical",
+          "match": [
+            "re:rank 1: bridging with therapeutic-dose lmwh - treat"
+          ],
+          "sources": [
+            "web.decisions",
+            "ios.decisions"
+          ],
+          "guidelineRefs": [
+            "accp-2022"
+          ]
+        }
+      ]
+    }
+  },
+  "guideline": [
+    {
+      "id": "bridge-2015",
+      "name": "BRIDGE trial",
+      "year": 2015,
+      "section": "Bridging in atrial fibrillation",
+      "citation": "Douketis JD et al. N Engl J Med 2015;373:823-833.",
+      "verified": false
+    },
+    {
+      "id": "accp-2022",
+      "name": "ACCP perioperative antithrombotic guideline",
+      "year": 2022,
+      "section": "Bridging: mechanical valves, recent VTE",
+      "citation": "Douketis JD et al. Chest 2022;162:e207-e243.",
+      "verified": false
+    }
+  ],
+  "rationale": "ACCP 2022 / ACC-AHA 2020: bridging is suggested for mechanical mitral valves and other high thromboembolic-risk patients during warfarin interruption.",
+  "authoring": {
+    "author": "Claude (bayes-treatment branch)",
+    "date": "2026-09-25",
+    "notes": "Decision-support vignette (web.decisions / ios.decisions). Expectations test the band and ranking of the decision layer, whose numbers await surgeon sign-off (docs/clinical-validation/changes/bayes-treatment.md)."
+  }
+}
