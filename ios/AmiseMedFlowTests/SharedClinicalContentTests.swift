@@ -22,8 +22,8 @@ final class SharedClinicalContentTests: XCTestCase {
     func testFilesAreInTheRulesFolder() {
         for file in SharedClinicalContent.File.allCases {
             XCTAssertNotNil(Bundle.main.url(forResource: file.rawValue, withExtension: "json",
-                                            subdirectory: SharedClinicalContent.bundleFolder),
-                            "\(file.rawValue).json is not in the bundle's \(SharedClinicalContent.bundleFolder) folder")
+                                            subdirectory: file.folder),
+                            "\(file.rawValue).json is not in the bundle's \(file.folder) folder")
         }
     }
 

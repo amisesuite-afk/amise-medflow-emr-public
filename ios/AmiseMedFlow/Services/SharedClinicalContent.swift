@@ -3,7 +3,8 @@
 // platforms. The files are clinical-content/rules/<name>.json at the repository root, bundled
 // into the app as the folder reference "rules" (ios/project.yml: `path: ../clinical-content/rules`,
 // `type: folder`), so a new file needs no per-file registration. The web imports the same files.
-// Change the JSON, not a platform copy.
+// Change the JSON, not a platform copy. The disease-centred vademecum (phase 1, decoded only) is
+// clinical-content/vademecum/<name>.json, bundled the same way as the folder "vademecum".
 //
 // Each engine decodes its file once with its own Codable structs (for example
 // `ZebraCheck.RuleFile`, `SupplementCatalogue.Content`, `LifestylePractices.Content`,
@@ -23,8 +24,11 @@ import os
 
 enum SharedClinicalContent {
 
-    /// Name of the folder reference in the app bundle.
+    /// Name of the folder reference in the app bundle (the rule files).
     static let bundleFolder = "rules"
+
+    /// Name of the vademecum folder reference in the app bundle (clinical-content/vademecum).
+    static let vademecumFolder = "vademecum"
 
     /// Every shared rule file this build reads (the raw value is the file name without ".json").
     /// lint:shared-content fails when a clinical-content/rules/*.json file has no case here.
@@ -35,6 +39,22 @@ enum SharedClinicalContent {
         case examSigns = "exam-signs"
         case decisionRules = "decision-rules"
         case diagnosticReasoningRules = "diagnostic-reasoning-rules"
+        case vademecumFindings = "findings"
+        case vademecumAbdominalPain = "abdominal-pain"
+        case vademecumCoughBreathlessness = "cough-breathlessness"
+
+        /// The bundle folder the file is in.
+        var folder: String {
+            switch self {
+            case .vademecumFindings, .vademecumAbdominalPain, .vademecumCoughBreathlessness:
+                return SharedClinicalContent.vademecumFolder
+            default:
+                return SharedClinicalContent.bundleFolder
+            }
+        }
+
+        /// The vademecum area files (each decodes as `VademecumContent.AreaFile`).
+        static let vademecumAreas: [File] = [.vademecumAbdominalPain, .vademecumCoughBreathlessness]
 
         /// Row title in Settings → Diagnostics.
         var title: String {
@@ -45,6 +65,9 @@ enum SharedClinicalContent {
             case .examSigns:           return "Examination signs"
             case .decisionRules:       return "Decision rules"
             case .diagnosticReasoningRules: return "Diagnostic reasoning rules"
+            case .vademecumFindings:   return "Vademecum findings (shadow)"
+            case .vademecumAbdominalPain: return "Vademecum: abdominal pain (shadow)"
+            case .vademecumCoughBreathlessness: return "Vademecum: cough / breathlessness (shadow)"
             }
         }
     }
@@ -81,9 +104,10 @@ enum SharedClinicalContent {
 
     private static let log = Logger(subsystem: "AmiseMedFlow", category: "ClinicalContent")
 
-    /// The bundled file, in the "rules" folder (or at the bundle root, if it was ever copied flat).
+    /// The bundled file, in its folder ("rules" or "vademecum"; or at the bundle root, if it was
+    /// ever copied flat).
     static func url(for file: File, bundle: Bundle = .main) -> URL? {
-        bundle.url(forResource: file.rawValue, withExtension: "json", subdirectory: bundleFolder)
+        bundle.url(forResource: file.rawValue, withExtension: "json", subdirectory: file.folder)
             ?? bundle.url(forResource: file.rawValue, withExtension: "json")
     }
 
@@ -129,6 +153,10 @@ enum SharedClinicalContent {
             failure = errorText(decode(ExamEvidenceCatalogue.RulesFile.self, file, bundle: bundle))
         case .diagnosticReasoningRules:
             failure = errorText(decode(DiagnosticReasoningRules.RuleFile.self, file, bundle: bundle))
+        case .vademecumFindings:
+            failure = errorText(decode(VademecumContent.FindingsFile.self, file, bundle: bundle))
+        case .vademecumAbdominalPain, .vademecumCoughBreathlessness:
+            failure = errorText(decode(VademecumContent.AreaFile.self, file, bundle: bundle))
         }
         let fileURL = url(for: file, bundle: bundle)
         let stamp = fileURL

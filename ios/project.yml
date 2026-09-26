@@ -33,6 +33,11 @@ targets:
       - path: ../clinical-content/rules
         type: folder
         buildPhase: resources
+      # Disease-centred vademecum (phase 1, shadow: decoded only, VademecumContent.swift), bundled
+      # as the "vademecum" folder reference. lint:shared-content fails if this entry goes.
+      - path: ../clinical-content/vademecum
+        type: folder
+        buildPhase: resources
 
     resources:
       - path: AmiseMedFlow/Assets.xcassets
