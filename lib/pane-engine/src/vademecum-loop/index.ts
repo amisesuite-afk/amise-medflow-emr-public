@@ -16,10 +16,11 @@ export {
 export type { PatientInfo, ResolvedLink, LoadedDisease, Vademecum, Tri, CriteriaContext } from './model.js';
 export {
   evaluate, displayList, scoreDisease, bandFor, seedCandidates, complaintAreas, questionsAt, questionGain, bestQuestion, runLoop, signFor,
+  decidingFindings, deferredCantMiss, inPlayAt,
 } from './loop.js';
 export type {
   Band, LoopInput, CriteriaLevelStatus, CriteriaStatus, Contribution, DiseaseResult, Exclusion, Conflict, FinalDiagnosisPrompt,
-  IncidentalWorkupOutput, Evaluation, SeedInput, CandidateSet, Question, StopReason, LoopStep, LoopRun,
+  IncidentalWorkupOutput, Evaluation, SeedInput, CandidateSet, Question, StopReason, LoopStep, LoopRun, PendingWorkup,
 } from './loop.js';
 export { generateHistoryQuestions, generateExamSigns, generateInvestigations } from './generators.js';
 export type { GeneratedChip, GeneratedQuestion, GeneratedSign, GeneratedInvestigation } from './generators.js';

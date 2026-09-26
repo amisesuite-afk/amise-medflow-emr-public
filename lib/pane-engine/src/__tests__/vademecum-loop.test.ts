@@ -8,7 +8,7 @@ import { describe, expect, it } from 'vitest';
 import {
   VADEMECUM_AREAS, VADEMECUM_FINDINGS, bestQuestion, bundledVademecum, complaintAreas, evaluate, findingsFromLabs,
   findingsFromScores, findingsFromText, generateExamSigns, generateHistoryQuestions, generateInvestigations, loadVademecum,
-  runLoop, seedCandidates,
+  runLoop, seedCandidates, decidingFindings, deferredCantMiss,
 } from '../vademecum-loop/index.js';
 import type { PatientInfo, TextMatcher, VademecumAreaFile, VademecumDisease } from '../vademecum-loop/index.js';
 
@@ -194,6 +194,47 @@ describe('question picker, generators and stopping', () => {
     const run = runLoop(v, cand, { patient: man24, answers: {} }, q => (q.kind === 'finding' ? truth[q.id] ?? false : undefined));
     expect(run.stop).toBe('treat-threshold');
     expect(run.final.ranked[0]!.id).toBe('appendicitis');
+    expect(run.steps.length).toBeLessThanOrEqual(v.policy.maxQuestions);
+  });
+});
+
+describe('deciding tests: a can\'t-miss diagnosis settled by a later test does not hold history', () => {
+  const woman60: PatientInfo = { age: 60, sex: 'female' };
+  const cand = seedCandidates(v, { complaint: 'Right upper quadrant pain', frames: ['pain.abdomen'], patient: woman60 });
+  const history = { ruq_pain: true, fatty_food_trigger: true, fever: true, nausea_vomiting: true };
+
+  it('gallbladder carcinoma is decided by an investigation-level finding', () => {
+    const tests = decidingFindings(v, 'gallbladder_carcinoma');
+    expect(tests.length).toBeGreaterThan(0);
+    expect(tests.some(t => t.level === 'investigation')).toBe(true);
+  });
+
+  it('an open can\'t-miss with only later deciding tests is deferred at history, not at investigation', () => {
+    const ev = evaluate(v, cand.ids, { patient: woman60, answers: history });
+    const open = ev.ranked.filter(r => r !== ev.ranked[0] && r.cantMiss && r.band !== 'observe').map(r => r.id);
+    const atHistory = deferredCantMiss(v, ev, 'history', ev.answers);
+    for (const id of atHistory) expect(open).toContain(id);
+    for (const id of atHistory) {
+      expect(decidingFindings(v, id).some(f => f.level === 'investigation' || f.level === 'score')).toBe(true);
+    }
+    expect(deferredCantMiss(v, ev, 'investigation', ev.answers).size).toBe(0);
+  });
+
+  it('when the deciding test is not available the loop stops and names it, never dropping the diagnosis', () => {
+    const run = runLoop(v, cand, { patient: woman60, answers: {} }, q => {
+      if (q.kind !== 'finding') return undefined;
+      const level = v.findings.get(q.id)?.level;
+      if (level === 'investigation') return undefined; // not in the record: must be ordered
+      return (history as Record<string, boolean>)[q.id] ?? (q.id === 'sign.murphy' ? true : false);
+    });
+    if (run.stop === 'treat-threshold-workup') {
+      expect(run.pendingWorkup!.length).toBeGreaterThan(0);
+      for (const p of run.pendingWorkup!) {
+        expect(run.final.ranked.find(r => r.id === p.diseaseId)?.band).not.toBe('observe');
+        expect(p.tests.length).toBeGreaterThan(0);
+        expect(p.tests.every(t => t.level === 'score' || t.level === 'investigation')).toBe(true);
+      }
+    }
     expect(run.steps.length).toBeLessThanOrEqual(v.policy.maxQuestions);
   });
 });

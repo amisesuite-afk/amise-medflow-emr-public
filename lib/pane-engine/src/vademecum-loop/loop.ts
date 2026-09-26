@@ -605,18 +605,26 @@ function presentProbability(v: Vademecum, d: LoadedDisease, findingId: string): 
  * True when the answer moves the leading diagnosis, or a can't-miss candidate, across a test or
  * treat threshold (or drops it), or a new leader above its test threshold takes over.
  */
-function bandsChange(v: Vademecum, before: CoreView, after: CoreView): boolean {
-  if (!before.leader) return false;
+/** Leader marker in `bandMoves`: the leading diagnosis changes to one at or above its test band. */
+const LEADER_MOVE = '@leader';
+
+/**
+ * Which diagnoses an answer would move across a threshold: the leader or a can't-miss candidate
+ * whose band changes, and LEADER_MOVE when another diagnosis would lead at test or treat.
+ */
+function bandMoves(v: Vademecum, before: CoreView, after: CoreView): string[] {
+  if (!before.leader) return [];
   const band = (view: CoreView, id: string): Band | null => {
     const e = view.banded.get(id);
     return e === undefined ? null : bandFor(e, v.diseases.get(id)!.thresholds);
   };
-  if (after.leader && after.leader !== before.leader && band(after, after.leader) !== 'observe') return true;
+  const moves: string[] = [];
+  if (after.leader && after.leader !== before.leader && band(after, after.leader) !== 'observe') moves.push(LEADER_MOVE);
   for (const id of before.banded.keys()) {
     if (id !== before.leader && !v.diseases.get(id)!.disease.cantMiss) continue;
-    if (band(before, id) !== band(after, id)) return true;
+    if (band(before, id) !== band(after, id)) moves.push(id);
   }
-  return false;
+  return moves;
 }
 
 /** Unanswered questions at a level that bear on the candidates. */
@@ -699,7 +707,7 @@ function gainContext(v: Vademecum, candidates: readonly string[], input: LoopInp
 }
 
 /** Expected information gain (nats) of one question over the candidates' Bayesian posterior. */
-function questionGainIn(v: Vademecum, g: GainContext, q: { kind: 'finding' | 'rule'; id: string }): { gain: number; changesBand: boolean } {
+function questionGainIn(v: Vademecum, g: GainContext, q: { kind: 'finding' | 'rule'; id: string }): { gain: number; changesBand: boolean; moves: string[] } {
   const h0 = entropy(g.view.probability.values());
   const outcomes: { p: number; answers: Record<string, boolean>; changed: string[] }[] = [];
   if (q.kind === 'finding') {
@@ -710,7 +718,7 @@ function questionGainIn(v: Vademecum, g: GainContext, q: { kind: 'finding' | 'ru
     outcomes.push({ p: 1 - pPresent, answers: { ...g.answers, [q.id]: false }, changed: [q.id] });
   } else {
     const bands = v.ruleBands.get(q.id) ?? [];
-    if (!bands.length) return { gain: 0, changesBand: false };
+    if (!bands.length) return { gain: 0, changesBand: false, moves: [] };
     const w = 1 / bands.length;
     const pb = bands.map(b => {
       let p = 0;
@@ -726,14 +734,14 @@ function questionGainIn(v: Vademecum, g: GainContext, q: { kind: 'finding' | 'ru
     }));
   }
   let expected = 0;
-  let changesBand = false;
+  const moves = new Set<string>();
   for (const o of outcomes) {
     if (o.p <= 0) continue;
     const after = viewOf(v, coreWith(v, g.core, g.candidates, g.input, o.answers, o.changed));
     expected += o.p * entropy(after.probability.values());
-    if (!changesBand && bandsChange(v, g.view, after)) changesBand = true;
+    for (const id of bandMoves(v, g.view, after)) moves.add(id);
   }
-  return { gain: Math.max(0, h0 - expected), changesBand };
+  return { gain: Math.max(0, h0 - expected), changesBand: moves.size > 0, moves: [...moves] };
 }
 
 /** Expected information gain (nats) of one question, and whether an answer could cross a threshold. */
@@ -741,19 +749,25 @@ export function questionGain(
   v: Vademecum, candidates: readonly string[], input: LoopInput, q: { kind: 'finding' | 'rule'; id: string },
 ): { gain: number; changesBand: boolean } {
   const answers = { ...demographicAnswers(v, input.patient), ...input.answers };
-  return questionGainIn(v, gainContext(v, candidates, input, answers), q);
+  const { gain, changesBand } = questionGainIn(v, gainContext(v, candidates, input, answers), q);
+  return { gain, changesBand };
 }
 
 /** The best question at a level (information gain + criteria bonus), or null when none is worth asking. */
 export function bestQuestion(
   v: Vademecum, candidates: readonly string[], input: LoopInput, level: VademecumLevel, asked: ReadonlySet<string> = new Set(),
   ev: Evaluation = evaluate(v, candidates, input),
+  inPlay?: ReadonlySet<string>,
 ): Question | null {
   const live = ev.ranked.map(r => r.id);
   const g = gainContext(v, live, input, ev.answers);
   let best: Question | null = null;
   for (const q of questionsAt(v, live, level, ev.answers, asked)) {
-    const { gain, changesBand } = questionGainIn(v, g, q);
+    const { gain, moves } = questionGainIn(v, g, q);
+    // With `inPlay` (the loop): only a change of leader or a band move of a diagnosis in play counts.
+    // A question that could only lift an unsuspected can't-miss diagnosis from observe, or nudge one
+    // whose deciding test comes at a later level, does not hold this level.
+    const changesBand = inPlay ? moves.some(id => id === LEADER_MOVE || inPlay.has(id)) : moves.length > 0;
     const { bonus, reasons } = q.kind === 'finding' ? criteriaReasons(v, ev, input, q.id) : { bonus: 0, reasons: [] };
     const label = q.kind === 'rule' ? (decisionRule(q.id)?.name ?? q.id) : findingLabel(v, q.id);
     const cand: Question = { kind: q.kind, id: q.id, level, label, informationGain: gain, criteriaBonus: bonus, reasons, changesBand };
@@ -765,7 +779,72 @@ export function bestQuestion(
   return best;
 }
 
-export type StopReason = 'treat-threshold' | 'no-threshold-change' | 'question-cap' | 'no-candidates';
+export type StopReason = 'treat-threshold' | 'treat-threshold-workup' | 'no-threshold-change' | 'question-cap' | 'no-candidates';
+
+/** A can't-miss diagnosis left open at the stop, with the tests that would settle it. */
+export interface PendingWorkup {
+  diseaseId: string;
+  label: string;
+  /** Deciding findings (investigation / score level) the record does not hold yet. */
+  tests: { id: string; label: string; level: VademecumLevel }[];
+}
+
+/** Likelihood ratios strong enough for an investigation to decide a diagnosis on its own. */
+const DECIDING_LR_POSITIVE = 10;
+const DECIDING_LR_NEGATIVE = 0.1;
+
+/**
+ * The findings that decide a diagnosis: those its criteria and confirmatory (pathognomonic) entries
+ * name, and its links strong enough to settle it alone (LR+ >= 10 or LR- <= 0.1), each with its level.
+ */
+export function decidingFindings(v: Vademecum, diseaseId: string): { id: string; level: VademecumLevel }[] {
+  const d = v.diseases.get(diseaseId);
+  if (!d) return [];
+  const ids = new Set<string>();
+  for (const c of d.disease.criteria) for (const l of c.levels) criteriaFindings(l.when, ids);
+  for (const p of d.disease.pathognomonic) { ids.add(p.finding); for (const r of p.requires ?? []) ids.add(r); }
+  for (const [fid, link] of d.links) {
+    if ((link.lrPositive ?? 1) >= DECIDING_LR_POSITIVE || (link.lrNegative !== null && link.lrNegative <= DECIDING_LR_NEGATIVE)) ids.add(fid);
+  }
+  const out: { id: string; level: VademecumLevel }[] = [];
+  for (const id of ids) {
+    const f = v.findings.get(id);
+    if (f && !f.demographic) out.push({ id, level: f.level });
+  }
+  return out;
+}
+
+/**
+ * Can't-miss candidates (not the leader) still at or above their test band whose deciding tests all
+ * sit at a later level than `level` and are not yet answered: history or examination questions that
+ * could only nudge them do not hold the loop at `level`, because the test decides them.
+ */
+/**
+ * The diagnoses whose band moves hold the loop at `level`: the leader, and the can't-miss candidates
+ * already at or above their test band that are not waiting on a later-level deciding test.
+ */
+export function inPlayAt(v: Vademecum, ev: Evaluation, level: VademecumLevel): Set<string> {
+  const deferred = deferredCantMiss(v, ev, level, ev.answers);
+  const out = new Set<string>();
+  const leader = ev.ranked[0];
+  if (leader) out.add(leader.id);
+  for (const r of ev.ranked) if (r.cantMiss && r.band !== 'observe' && !deferred.has(r.id)) out.add(r.id);
+  return out;
+}
+
+export function deferredCantMiss(v: Vademecum, ev: Evaluation, level: VademecumLevel, answers: Record<string, boolean>): Set<string> {
+  const levels = v.policy.levels;
+  const li = levels.indexOf(level);
+  const out = new Set<string>();
+  const leader = ev.ranked[0];
+  for (const r of ev.ranked) {
+    if (r === leader || !r.cantMiss || r.band === 'observe') continue;
+    const later = decidingFindings(v, r.id).filter(f => levels.indexOf(f.level) > li && answers[f.id] === undefined);
+    const current = decidingFindings(v, r.id).filter(f => levels.indexOf(f.level) <= li && answers[f.id] === undefined);
+    if (later.length && !current.length) out.add(r.id);
+  }
+  return out;
+}
 
 export interface LoopStep {
   question: Question;
@@ -778,6 +857,8 @@ export interface LoopRun {
   steps: LoopStep[];
   stop: StopReason;
   final: Evaluation;
+  /** 'treat-threshold-workup': the can't-miss diagnoses left open and the tests that would settle them. */
+  pendingWorkup?: PendingWorkup[];
   /** The level the loop stopped at. */
   level: VademecumLevel;
 }
@@ -803,14 +884,33 @@ export function runLoop(
     const leader = ev.ranked[0];
     // Treat threshold reached, and no other can't-miss candidate is still at or above its test
     // threshold (a leader at "treat" does not end the work-up of a can't-miss alternative).
-    const openCantMiss = ev.ranked.some(r => r !== leader && r.cantMiss && r.band !== 'observe');
-    if (leader && leader.effective >= leader.thresholds.treat && !openCantMiss) {
-      return { candidates, steps, stop: 'treat-threshold', final: ev, level: levels[li]! };
+    const open = ev.ranked.filter(r => r !== leader && r.cantMiss && r.band !== 'observe');
+    if (leader && leader.effective >= leader.thresholds.treat) {
+      if (!open.length) return { candidates, steps, stop: 'treat-threshold', final: ev, level: levels[li]! };
+      // Every open can't-miss diagnosis waits only on a deciding test that was asked and is not in the
+      // record: stop and name the tests to order, instead of asking more history that cannot settle it.
+      const pending = open.map(r => ({
+        r,
+        tests: decidingFindings(v, r.id).filter(f => answers[f.id] === undefined && levels.indexOf(f.level) >= levels.indexOf('score')),
+      }));
+      const wasAsked = (id: string) => {
+        const rule = v.findings.get(id)?.decisionRule?.rule;
+        return asked.has(id) || (rule !== undefined && asked.has(`rule:${rule}`));
+      };
+      if (pending.every(p => p.tests.length > 0 && p.tests.every(t => wasAsked(t.id)))) {
+        return {
+          candidates, steps, stop: 'treat-threshold-workup', final: ev, level: levels[li]!,
+          pendingWorkup: pending.map(p => ({
+            diseaseId: p.r.id, label: p.r.label,
+            tests: p.tests.map(t => ({ id: t.id, label: findingLabel(v, t.id), level: t.level })),
+          })),
+        };
+      }
     }
     if (steps.length >= v.policy.maxQuestions) return { candidates, steps, stop: 'question-cap', final: ev, level: levels[li]! };
     let q: Question | null = null;
     while (li < levels.length) {
-      q = bestQuestion(v, candidates.ids, input(), levels[li]!, asked, ev);
+      q = bestQuestion(v, candidates.ids, input(), levels[li]!, asked, ev, inPlayAt(v, ev, levels[li]!));
       if (q?.changesBand) break;
       q = null;
       li++;

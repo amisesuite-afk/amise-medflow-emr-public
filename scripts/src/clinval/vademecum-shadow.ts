@@ -423,7 +423,7 @@ function vademecumQuestionRun(vd: Vademecum, v: Vignette, cand: CandidateSet, st
   });
   const vr = verdict(v, vademecumList(run.final));
   return {
-    questions: run.steps.length, stop: run.stop, reachedThreshold: run.stop === 'treat-threshold' || run.stop === 'no-threshold-change',
+    questions: run.steps.length, stop: run.stop, reachedThreshold: run.stop === 'treat-threshold' || run.stop === 'treat-threshold-workup' || run.stop === 'no-threshold-change',
     targetRankAtStop: vr.targetRank, cantMissAtStop: vr.cantMissCaptured,
     path: run.steps.map(s => `${s.question.id}=${s.answer === null ? '?' : s.answer === true ? 'yes' : s.answer === false ? 'no' : s.answer}`),
   };
@@ -485,7 +485,12 @@ export function shadowVignette(vd: Vademecum, v: Vignette, ios: Map<string, Rank
         if (pf) startPane[pf] = true;
       }
     }
-    const qCand = seedCandidates(vd, { complaint: inp.chiefComplaint, frames, patient, entryFindings: entryPointFindings(vd, start, kinds) });
+    // A result-first case (lab, imaging, pathology) is seeded from that result only: the report line
+    // in the chief-complaint field is not a symptom, and seeding its whole complaint area made the
+    // loop screen unrelated history (rectal bleeding, dysuria) for an ultrasound finding.
+    const qCand = seedCandidates(vd, entry === 'complaint'
+      ? { complaint: inp.chiefComplaint, frames, patient, entryFindings: entryPointFindings(vd, start, kinds) }
+      : { patient, entryFindings: entryPointFindings(vd, start, kinds) });
     vq = qCand.ids.length ? vademecumQuestionRun(vd, v, qCand, start, web) : null;
     pq = paneQuestionRun(v, startPane);
   }
