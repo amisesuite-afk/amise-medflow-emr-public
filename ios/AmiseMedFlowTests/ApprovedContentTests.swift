@@ -132,8 +132,8 @@ final class ApprovedContentTests: XCTestCase {
             let url = try XCTUnwrap(SharedClinicalContent.url(for: file), "\(file.rawValue).json")
             let data = try Data(contentsOf: url)
             let value = try XCTUnwrap(ApprovedContent.parse(data), file.rawValue)
-            let schema = try XCTUnwrap(ApprovedContentStore.bundledSchema(file.rawValue),
-                                       "\(file.rawValue).schema.json is not in the bundle's schemas folder")
+            let schema = try XCTUnwrap(ApprovedContentStore.bundledSchema(file.schemaName),
+                                       "\(file.schemaName).schema.json is not in the bundle's schemas folder")
             XCTAssertEqual(ApprovedContent.schemaProblems(schema: schema, data: value), [], file.rawValue)
             XCTAssertNotNil(ApprovedContent.contentSha256(value), file.rawValue)
         }

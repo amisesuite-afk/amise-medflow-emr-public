@@ -47,6 +47,11 @@ enum SharedClinicalContent {
         case examSigns = "exam-signs"
         case decisionRules = "decision-rules"
         case diagnosticReasoningRules = "diagnostic-reasoning-rules"
+        case treatmentDecisions = "treatment-decisions"
+        case whatsMissingRules = "whats-missing-rules"
+        case visitContinuity = "visit-continuity"
+        case lifestyleQuestions = "lifestyle-questions"
+        case negationCues = "negation-cues"
         case vademecumFindings = "findings"
         case vademecumAbdominalPain = "abdominal-pain"
         case vademecumCoughBreathlessness = "cough-breathlessness"
@@ -61,13 +66,21 @@ enum SharedClinicalContent {
             }
         }
 
+        /// Base name of the file's JSON Schema in clinical-content/schemas (bundled as "schemas"):
+        /// the file name for the rule files, one shared schema per kind for the vademecum.
+        var schemaName: String {
+            switch self {
+            case .vademecumFindings:
+                return "vademecum-findings"
+            case .vademecumAbdominalPain, .vademecumCoughBreathlessness:
+                return "vademecum-area"
+            default:
+                return rawValue
+            }
+        }
+
         /// The vademecum area files (each decodes as `VademecumContent.AreaFile`).
         static let vademecumAreas: [File] = [.vademecumAbdominalPain, .vademecumCoughBreathlessness]
-        case treatmentDecisions = "treatment-decisions"
-        case whatsMissingRules = "whats-missing-rules"
-        case visitContinuity = "visit-continuity"
-        case lifestyleQuestions = "lifestyle-questions"
-        case negationCues = "negation-cues"
 
         /// Row title in Settings → Diagnostics.
         var title: String {
@@ -218,15 +231,11 @@ enum SharedClinicalContent {
             checked = errorAndSource(decodeWithSource(VademecumContent.AreaFile.self, file, bundle: bundle))
         case .treatmentDecisions:
             checked = errorAndSource(decodeWithSource(TreatmentDecisions.Content.self, file, bundle: bundle))
-            checked = errorAndSource(decodeWithSource(TreatmentDecisions.Content.self, file, bundle: bundle))
         case .whatsMissingRules:
-            checked = errorAndSource(decodeWithSource(WhatsMissing.Rules.self, file, bundle: bundle))
             checked = errorAndSource(decodeWithSource(WhatsMissing.Rules.self, file, bundle: bundle))
         case .visitContinuity:
             checked = errorAndSource(decodeWithSource(VisitContinuity.WordRules.self, file, bundle: bundle))
-            checked = errorAndSource(decodeWithSource(VisitContinuity.WordRules.self, file, bundle: bundle))
         case .lifestyleQuestions:
-            checked = errorAndSource(decodeWithSource(LifestyleQuestions.Content.self, file, bundle: bundle))
             checked = errorAndSource(decodeWithSource(LifestyleQuestions.Content.self, file, bundle: bundle))
         case .negationCues:
             checked = errorAndSource(decodeWithSource(NegationMatcher.CueFile.self, file, bundle: bundle))

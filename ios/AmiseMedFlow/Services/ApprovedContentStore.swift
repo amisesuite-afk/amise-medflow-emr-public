@@ -84,7 +84,7 @@ enum ApprovedContentStore {
                           releases: [ApprovedContent.Release], bundle: Bundle = .main) -> ApprovedContent.Selection? {
         guard let bundled = ApprovedContent.parse(bundledData),
               let id = bundled.objectValue?["id"]?.stringValue, ApprovedContent.policy[id] != nil,
-              let schema = bundledSchema(file.rawValue, bundle: bundle) else { return nil }
+              let schema = bundledSchema(file.schemaName, bundle: bundle) else { return nil }
         return ApprovedContent.selectForChannel(contentId: id, bundled: bundled, schema: schema, releases: releases)
     }
 

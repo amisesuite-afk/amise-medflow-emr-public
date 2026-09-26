@@ -114,13 +114,22 @@ describe('semver', () => {
 });
 
 describe('schema checker against ajv on the repository rule files', () => {
-  const names = readdirSync(join(REPO_ROOT, 'clinical-content/rules')).filter(f => f.endsWith('.json')).map(f => f.replace(/\.json$/, ''));
+  // Every bundled file iOS checks (SharedClinicalContent.File.schemaName): the rule files, whose
+  // schema has the file's name, and the vademecum files, which share one schema per kind.
+  const files: { data: string; schema: string }[] = [
+    ...readdirSync(join(REPO_ROOT, 'clinical-content/rules')).filter(f => f.endsWith('.json'))
+      .map(f => ({ data: `rules/${f}`, schema: f.replace(/\.json$/, '') })),
+    ...readdirSync(join(REPO_ROOT, 'clinical-content/vademecum')).filter(f => f.endsWith('.json'))
+      .map(f => ({ data: `vademecum/${f}`, schema: f === 'findings.json' ? 'vademecum-findings' : 'vademecum-area' })),
+  ];
+  const names = files.map(f => f.data);
+  const schemaOf = (n: string) => JSON.parse(read(`clinical-content/schemas/${files.find(f => f.data === n)!.schema}.schema.json`)) as JsonSchema;
 
   it('every rule file is valid against its schema, as ajv says', { timeout: 60_000 }, () => {
     expect(names.length).toBeGreaterThan(5);
     for (const n of names) {
-      const schema = JSON.parse(read(`clinical-content/schemas/${n}.schema.json`)) as JsonSchema;
-      const data = JSON.parse(read(`clinical-content/rules/${n}.json`));
+      const schema = schemaOf(n);
+      const data = JSON.parse(read(`clinical-content/${n}`));
       expect(schemaProblems(schema, data), n).toEqual([]);
       expect(ajvValid(schema, data), n).toBe(true);
     }
@@ -129,8 +138,8 @@ describe('schema checker against ajv on the repository rule files', () => {
   it('agrees with ajv on mutated copies (missing, extra, retyped fields at every depth)', () => {
     let checked = 0;
     for (const n of names) {
-      const schema = JSON.parse(read(`clinical-content/schemas/${n}.schema.json`)) as JsonSchema;
-      const original = JSON.parse(read(`clinical-content/rules/${n}.json`));
+      const schema = schemaOf(n);
+      const original = JSON.parse(read(`clinical-content/${n}`));
       // Walk the first path of objects / arrays and mutate each level.
       const paths: (string | number)[][] = [];
       let node: unknown = original;

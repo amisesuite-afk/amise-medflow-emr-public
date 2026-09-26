@@ -21,8 +21,10 @@ describe('shared clinical content library', () => {
     const { problems, checked } = checkSharedContent(REPO_ROOT);
     expect(problems).toEqual([]);
     expect(checked).toEqual([
-      'decision-rules', 'diagnostic-reasoning-rules', 'exam-signs', 'lifestyle-practices', 'supplement-catalogue',
-      'vademecum/abdominal-pain', 'vademecum/cough-breathlessness', 'vademecum/findings', 'zebra-rules',
+      'decision-rules', 'diagnostic-reasoning-rules', 'exam-signs', 'lifestyle-practices', 'lifestyle-questions',
+      'negation-cues', 'supplement-catalogue', 'treatment-decisions',
+      'vademecum/abdominal-pain', 'vademecum/cough-breathlessness', 'vademecum/findings',
+      'visit-continuity', 'whats-missing-rules', 'zebra-rules',
     ]);
   });
 

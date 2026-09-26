@@ -127,6 +127,16 @@ const SCHEMA_CASES: { name: string; schema: Json; data: Json; valid: boolean; aj
   { name: 'unsupported keyword fails closed', schema: { type: 'string', format: 'date' }, data: '2026-09-26', valid: false, ajv: false },
   { name: 'unresolved $ref fails closed', schema: { $ref: '#/$defs/missing' }, data: 1, valid: false, ajv: false },
   { name: 'false schema', schema: { type: 'object', properties: { a: false } }, data: { a: 1 }, valid: false },
+  { name: 'uniqueItems: distinct items', schema: { type: 'array', uniqueItems: true }, data: ['a', 'b', { x: [1, 2] }, { x: [2, 1] }], valid: true },
+  { name: 'uniqueItems: a repeated string', schema: { type: 'array', uniqueItems: true }, data: ['no', 'not', 'no'], valid: false },
+  { name: 'uniqueItems: equal objects with keys in another order', schema: { type: 'array', uniqueItems: true }, data: [{ a: 1, b: 2 }, { b: 2, a: 1 }], valid: false },
+  { name: 'not: data matching the not schema is refused', schema: { type: 'string', not: { const: 'x' } }, data: 'x', valid: false },
+  { name: 'not: other data passes', schema: { type: 'string', not: { const: 'x' } }, data: 'y', valid: true },
+  { name: 'if / then: no sign needs a label (missing)', schema: { type: 'object', if: { not: { required: ['sign'] } }, then: { required: ['label'] }, else: { required: ['grade'] } }, data: {}, valid: false },
+  { name: 'if / then: no sign, label present', schema: { type: 'object', if: { not: { required: ['sign'] } }, then: { required: ['label'] }, else: { required: ['grade'] } }, data: { label: 'a' }, valid: true },
+  { name: 'if / else: a sign needs a grade (missing)', schema: { type: 'object', if: { not: { required: ['sign'] } }, then: { required: ['label'] }, else: { required: ['grade'] } }, data: { sign: 's' }, valid: false },
+  { name: 'if / else: a sign with a grade', schema: { type: 'object', if: { not: { required: ['sign'] } }, then: { required: ['label'] }, else: { required: ['grade'] } }, data: { sign: 's', grade: 1 }, valid: true },
+  { name: 'then without if is ignored', schema: { type: 'object', then: { required: ['x'] } }, data: {}, valid: true, ajv: false },
 ];
 
 // ── Selection ─────────────────────────────────────────────────────────────────────────────

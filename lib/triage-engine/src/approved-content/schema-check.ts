@@ -14,9 +14,9 @@
  *
  * Supported: type (string or list), enum, const, properties, required, additionalProperties
  * (boolean or schema), patternProperties, propertyNames, minProperties, maxProperties, items
- * (a schema), minItems, maxItems, minLength, maxLength (Unicode code points), pattern (unanchored
+ * (a schema), minItems, maxItems, uniqueItems, minLength, maxLength (Unicode code points), pattern (unanchored
  * search, JavaScript `u` flag / ICU), minimum, maximum, exclusiveMinimum, exclusiveMaximum (numbers),
- * oneOf, anyOf, allOf, $ref (local "#/…" JSON pointer), and the annotations $schema, $id, $comment,
+ * oneOf, anyOf, allOf, not, if / then / else, $ref (local "#/…" JSON pointer), and the annotations $schema, $id, $comment,
  * $defs, title, description, default, examples. Boolean schemas (true / false) are accepted.
  */
 
@@ -25,9 +25,9 @@ export type JsonSchema = boolean | { [keyword: string]: unknown };
 const ANNOTATIONS = new Set(['$schema', '$id', '$comment', '$defs', 'title', 'description', 'default', 'examples']);
 const KEYWORDS = new Set([
   'type', 'enum', 'const', 'properties', 'required', 'additionalProperties', 'patternProperties',
-  'propertyNames', 'minProperties', 'maxProperties', 'items', 'minItems', 'maxItems', 'minLength',
+  'propertyNames', 'minProperties', 'maxProperties', 'items', 'minItems', 'maxItems', 'uniqueItems', 'minLength',
   'maxLength', 'pattern', 'minimum', 'maximum', 'exclusiveMinimum', 'exclusiveMaximum', 'oneOf',
-  'anyOf', 'allOf', '$ref',
+  'anyOf', 'allOf', 'not', 'if', 'then', 'else', '$ref',
 ]);
 
 /** Every keyword the checker understands (annotations included). The Swift twin lists the same. */
@@ -170,6 +170,10 @@ function check(ctx: Ctx, schema: JsonSchema, data: unknown, path: string, depth:
     const minI = num(schema.minItems), maxI = num(schema.maxItems);
     if (minI !== null && data.length < minI) add(ctx, path, `fewer than ${minI} items`);
     if (maxI !== null && data.length > maxI) add(ctx, path, `more than ${maxI} items`);
+    if (schema.uniqueItems === true
+      && data.some((item, i) => data.some((other, j) => j > i && jsonEqual(item, other)))) {
+      add(ctx, path, 'items not unique');
+    }
     if (schema.items !== undefined) {
       const items = schema.items;
       if (typeof items !== 'boolean' && !isObject(items)) add(ctx, path, 'unsupported "items" form');
@@ -227,6 +231,15 @@ function check(ctx: Ctx, schema: JsonSchema, data: unknown, path: string, depth:
       ? schema.oneOf.filter(s => passes(ctx, s as JsonSchema, data, path, depth + 1)).length
       : 0;
     if (n !== 1) add(ctx, path, n === 0 ? 'matches none of oneOf' : 'matches more than one of oneOf');
+  }
+  if (schema.not !== undefined && passes(ctx, schema.not as JsonSchema, data, path, depth + 1)) {
+    add(ctx, path, 'matches the "not" schema');
+  }
+  // if / then / else: `then` applies when the data passes `if`, `else` when it does not; without
+  // `if`, both are ignored (JSON Schema 2020-12).
+  if (schema.if !== undefined) {
+    const branch = passes(ctx, schema.if as JsonSchema, data, path, depth + 1) ? schema.then : schema.else;
+    if (branch !== undefined) check(ctx, branch as JsonSchema, data, path, depth + 1);
   }
 }
 

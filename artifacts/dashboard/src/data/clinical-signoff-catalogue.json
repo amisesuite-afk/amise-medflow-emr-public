@@ -1,6 +1,6 @@
 {
   "format": "amise-signoff-catalogue/1",
-  "catalogueHash": "1dd931862df37021",
+  "catalogueHash": "5e3728e56bfbd675",
   "repoUrl": "https://github.com/amisesuite-afk/amise-medflow-emr-public/blob/main/",
   "sources": [
     {
@@ -797,12 +797,17 @@
     },
     {
       "id": "shared-content",
-      "title": "Change log — `shared-content` (one shared rule and content library for web and iOS, phase 1)",
+      "title": "Change log — `shared-content` (one shared rule and content library for web and iOS, phases 1 and 2)",
       "doc": "docs/clinical-validation/changes/shared-content.md",
       "anchor": "needs-sign-off",
       "ruleSetIds": [],
       "itemIds": [
-        "shared-content#1"
+        "shared-content#1",
+        "shared-content#2",
+        "shared-content#3",
+        "shared-content#4",
+        "shared-content#5",
+        "shared-content#6"
       ]
     },
     {
@@ -10878,6 +10883,66 @@
       "hash": "951ffc82bb22843d",
       "doc": "docs/clinical-validation/changes/shared-content.md",
       "anchor": "needs-sign-off",
+      "ruleSetIds": []
+    },
+    {
+      "id": "shared-content#2",
+      "source": "shared-content",
+      "number": "2",
+      "group": null,
+      "title": "Governance only (behaviour-neutral move). Confirm — the treatment-decision table is now one",
+      "text": "Governance only (behaviour-neutral move). Confirm — the treatment-decision table is now one\nshared file (`clinical-content/rules/treatment-decisions.json`) instead of two byte-identical\ncopies.",
+      "hash": "b83e385e4ae172f9",
+      "doc": "docs/clinical-validation/changes/shared-content.md",
+      "anchor": "needs-sign-off-phase-2",
+      "ruleSetIds": []
+    },
+    {
+      "id": "shared-content#3",
+      "source": "shared-content",
+      "number": "3",
+      "group": null,
+      "title": "Governance only (behaviour-neutral move). Confirm — the what's-missing rules are now one shared",
+      "text": "Governance only (behaviour-neutral move). Confirm — the what's-missing rules are now one shared\nfile (`clinical-content/rules/whats-missing-rules.json`) instead of two byte-identical copies.",
+      "hash": "c49ccecbc17b7d6b",
+      "doc": "docs/clinical-validation/changes/shared-content.md",
+      "anchor": "needs-sign-off-phase-2",
+      "ruleSetIds": []
+    },
+    {
+      "id": "shared-content#4",
+      "source": "shared-content",
+      "number": "4",
+      "group": null,
+      "title": "Workflow. Confirm — the visit-continuity word lists (which words decide \"same problem as the",
+      "text": "Workflow. Confirm — the visit-continuity word lists (which words decide \"same problem as the\nlast visit\": stop words such as \"pain\", \"lump\", \"swelling\", and the six body regions) are now a\nregistered rule set, `visit-continuity` 1.0.0, in one shared file; the words themselves are\nunchanged. Also confirm the iOS fallback: if the file cannot be read, iOS makes no\nfollow-up / new-problem suggestion and the booked visit type decides.",
+      "hash": "dcf10f3846a0a33e",
+      "doc": "docs/clinical-validation/changes/shared-content.md",
+      "anchor": "needs-sign-off-phase-2",
+      "ruleSetIds": []
+    },
+    {
+      "id": "shared-content#5",
+      "source": "shared-content",
+      "number": "5",
+      "group": null,
+      "title": "Patient-facing wording, governance only (verbatim move). Confirm — the lifestyle questionnaire",
+      "text": "Patient-facing wording, governance only (verbatim move). Confirm — the lifestyle questionnaire\nwording is now one shared file (`clinical-content/rules/lifestyle-questions.json`, part of the\n`lifestyle-practices` rule set) and is now also held to `lint:patient-instructions`. Also confirm\nthe iOS fallback: if the file cannot be read, the iPad questionnaire does not ask the lifestyle\nquestions.",
+      "hash": "950a140bf62d1eba",
+      "doc": "docs/clinical-validation/changes/shared-content.md",
+      "anchor": "needs-sign-off-phase-2",
+      "ruleSetIds": []
+    },
+    {
+      "id": "shared-content#6",
+      "source": "shared-content",
+      "number": "6",
+      "group": null,
+      "title": "P1 matching, governance only (verbatim move). Confirm — the negation cue lists used by every",
+      "text": "P1 matching, governance only (verbatim move). Confirm — the negation cue lists used by every\nfree-text matcher on both platforms are now a registered rule set, `negation-cues` 1.0.0, in one\nshared file; no cue or window changed. Also confirm the iOS fallback: if the file cannot be read,\nnothing is negated and every mention counts (over-triage rather than a hidden finding).",
+      "hash": "190f0431406cdf9f",
+      "doc": "docs/clinical-validation/changes/shared-content.md",
+      "anchor": "needs-sign-off-phase-2",
       "ruleSetIds": []
     },
     {

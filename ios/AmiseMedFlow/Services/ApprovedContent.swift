@@ -288,10 +288,10 @@ enum ApprovedContent {
     /// SCHEMA_CHECK_KEYWORDS; any other keyword makes the schema check fail (fail-closed).
     static let supportedKeywords: Set<String> = [
         "$comment", "$defs", "$id", "$ref", "$schema", "additionalProperties", "allOf", "anyOf", "const",
-        "default", "description", "enum", "examples", "exclusiveMaximum", "exclusiveMinimum", "items",
-        "maxItems", "maxLength", "maxProperties", "maximum", "minItems", "minLength", "minProperties",
-        "minimum", "oneOf", "pattern", "patternProperties", "properties", "propertyNames", "required",
-        "title", "type",
+        "default", "description", "else", "enum", "examples", "exclusiveMaximum", "exclusiveMinimum", "if",
+        "items", "maxItems", "maxLength", "maxProperties", "maximum", "minItems", "minLength", "minProperties",
+        "minimum", "not", "oneOf", "pattern", "patternProperties", "properties", "propertyNames", "required",
+        "then", "title", "type", "uniqueItems",
     ]
 
     /// Problems found checking `data` against `schema` (empty = valid), at most 20: key paths and
@@ -433,6 +433,12 @@ enum ApprovedContent {
             if case .array(let items) = data {
                 if let minI = number(schema["minItems"]), Double(items.count) < minI { add(path, "fewer than \(minI) items") }
                 if let maxI = number(schema["maxItems"]), Double(items.count) > maxI { add(path, "more than \(maxI) items") }
+                if case .bool(true)? = schema["uniqueItems"],
+                   items.indices.contains(where: { i in
+                       items.indices.contains(where: { j in j > i && ApprovedContent.jsonEqual(items[i], items[j]) })
+                   }) {
+                    add(path, "items not unique")
+                }
                 if let itemSchema = schema["items"] {
                     switch itemSchema {
                     case .bool, .object:
@@ -502,6 +508,15 @@ enum ApprovedContent {
                     n = list.filter { passes($0, data, path: path, depth: depth + 1) }.count
                 }
                 if n != 1 { add(path, n == 0 ? "matches none of oneOf" : "matches more than one of oneOf") }
+            }
+            if let notSchema = schema["not"], passes(notSchema, data, path: path, depth: depth + 1) {
+                add(path, "matches the \"not\" schema")
+            }
+            // if / then / else: `then` applies when the data passes `if`, `else` when it does not;
+            // without `if`, both are ignored (JSON Schema 2020-12).
+            if let ifSchema = schema["if"] {
+                let branch = passes(ifSchema, data, path: path, depth: depth + 1) ? schema["then"] : schema["else"]
+                if let branch { check(branch, data, path: path, depth: depth + 1) }
             }
         }
     }

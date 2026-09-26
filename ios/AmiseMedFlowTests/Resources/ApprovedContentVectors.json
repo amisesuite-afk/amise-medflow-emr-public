@@ -3153,6 +3153,213 @@
       },
       "valid": false,
       "ajv": true
+    },
+    {
+      "name": "uniqueItems: distinct items",
+      "schema": {
+        "type": "array",
+        "uniqueItems": true
+      },
+      "data": [
+        "a",
+        "b",
+        {
+          "x": [
+            1,
+            2
+          ]
+        },
+        {
+          "x": [
+            2,
+            1
+          ]
+        }
+      ],
+      "valid": true,
+      "ajv": true
+    },
+    {
+      "name": "uniqueItems: a repeated string",
+      "schema": {
+        "type": "array",
+        "uniqueItems": true
+      },
+      "data": [
+        "no",
+        "not",
+        "no"
+      ],
+      "valid": false,
+      "ajv": true
+    },
+    {
+      "name": "uniqueItems: equal objects with keys in another order",
+      "schema": {
+        "type": "array",
+        "uniqueItems": true
+      },
+      "data": [
+        {
+          "a": 1,
+          "b": 2
+        },
+        {
+          "b": 2,
+          "a": 1
+        }
+      ],
+      "valid": false,
+      "ajv": true
+    },
+    {
+      "name": "not: data matching the not schema is refused",
+      "schema": {
+        "type": "string",
+        "not": {
+          "const": "x"
+        }
+      },
+      "data": "x",
+      "valid": false,
+      "ajv": true
+    },
+    {
+      "name": "not: other data passes",
+      "schema": {
+        "type": "string",
+        "not": {
+          "const": "x"
+        }
+      },
+      "data": "y",
+      "valid": true,
+      "ajv": true
+    },
+    {
+      "name": "if / then: no sign needs a label (missing)",
+      "schema": {
+        "type": "object",
+        "if": {
+          "not": {
+            "required": [
+              "sign"
+            ]
+          }
+        },
+        "then": {
+          "required": [
+            "label"
+          ]
+        },
+        "else": {
+          "required": [
+            "grade"
+          ]
+        }
+      },
+      "data": {},
+      "valid": false,
+      "ajv": true
+    },
+    {
+      "name": "if / then: no sign, label present",
+      "schema": {
+        "type": "object",
+        "if": {
+          "not": {
+            "required": [
+              "sign"
+            ]
+          }
+        },
+        "then": {
+          "required": [
+            "label"
+          ]
+        },
+        "else": {
+          "required": [
+            "grade"
+          ]
+        }
+      },
+      "data": {
+        "label": "a"
+      },
+      "valid": true,
+      "ajv": true
+    },
+    {
+      "name": "if / else: a sign needs a grade (missing)",
+      "schema": {
+        "type": "object",
+        "if": {
+          "not": {
+            "required": [
+              "sign"
+            ]
+          }
+        },
+        "then": {
+          "required": [
+            "label"
+          ]
+        },
+        "else": {
+          "required": [
+            "grade"
+          ]
+        }
+      },
+      "data": {
+        "sign": "s"
+      },
+      "valid": false,
+      "ajv": true
+    },
+    {
+      "name": "if / else: a sign with a grade",
+      "schema": {
+        "type": "object",
+        "if": {
+          "not": {
+            "required": [
+              "sign"
+            ]
+          }
+        },
+        "then": {
+          "required": [
+            "label"
+          ]
+        },
+        "else": {
+          "required": [
+            "grade"
+          ]
+        }
+      },
+      "data": {
+        "sign": "s",
+        "grade": 1
+      },
+      "valid": true,
+      "ajv": true
+    },
+    {
+      "name": "then without if is ignored",
+      "schema": {
+        "type": "object",
+        "then": {
+          "required": [
+            "x"
+          ]
+        }
+      },
+      "data": {},
+      "valid": true,
+      "ajv": false
     }
   ],
   "selection": {
