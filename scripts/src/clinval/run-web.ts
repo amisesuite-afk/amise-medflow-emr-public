@@ -2,6 +2,7 @@
  * Clinical validation — web harness CLI (the fast local loop).
  *
  *   pnpm --filter @workspace/scripts run clinval:web
+ *   pnpm --filter @workspace/scripts run clinval:web -- --engine vademecum   (phase-1 shadow)
  *
  * Writes docs/clinical-validation/results/web-latest.json and web-latest.md, prints a summary,
  * and exits 1 when a critical expectation fails without a knownGap/unverified flag (2 when a
@@ -14,6 +15,7 @@ import { REPO_ROOT } from './load';
 import { renderReport } from './render';
 import type { SourcedText, WebResultsFile } from './types';
 import { runAllWeb } from './web-suite';
+import { ENGINES, renderShadow, runVademecumShadow } from './vademecum-shadow';
 
 const RESULTS_DIR = join(REPO_ROOT, 'docs', 'clinical-validation', 'results');
 const MAX_TEXT = 400;
@@ -37,7 +39,43 @@ function compact(file: WebResultsFile): WebResultsFile {
   };
 }
 
+/**
+ * `--engine vademecum`: the phase-1 vademecum shadow (vademecum-shadow.ts) on the pilot-area
+ * vignettes, beside PANE and the iOS results. Writes vademecum-shadow-latest.{json,md} (not
+ * committed) and never blocks. `--no-questions` skips the simulated consultations (faster).
+ */
+function mainVademecum(args: string[]): void {
+  const { file, errors } = runVademecumShadow({ withQuestions: !args.includes('--no-questions') });
+  if (errors.length) {
+    console.error('Vademecum shadow errors:');
+    for (const e of errors) console.error(`  - ${e}`);
+  }
+  mkdirSync(RESULTS_DIR, { recursive: true });
+  writeFileSync(join(RESULTS_DIR, 'vademecum-shadow-latest.json'), `${JSON.stringify(file, null, 2)}\n`);
+  writeFileSync(join(RESULTS_DIR, 'vademecum-shadow-latest.md'), renderShadow(file));
+  console.log(`CLINVAL vademecum shadow: ${file.rows.length} pilot vignettes (vademecum ${file.vademecumVersion})`);
+  for (const [key, g] of Object.entries(file.groups)) {
+    const parts = ENGINES.filter(e => g[e]).map(e => {
+      const a = g[e]!;
+      return `${e} top1 ${a.top1}/${a.nTarget} top3 ${a.top3} top5 ${a.top5} cm ${a.cantMissCaptured}/${a.cantMissTotal}`;
+    });
+    const q = g.questions;
+    console.log(`  ${key}: ${parts.join(' · ')}${q ? ` · questions vademecum ${q.vademecumMean} (median ${q.vademecumMedian}) vs PANE ${q.paneMean} (median ${q.paneMedian})` : ''}`);
+  }
+  console.log(`  lost can't-miss: ${file.lostCantMiss.length}; hybrid changed the answer in ${file.rows.filter(r => r.hybridChanges.length).length}`);
+  console.log('Wrote docs/clinical-validation/results/vademecum-shadow-latest.json and .md (shadow; do not commit)');
+  if (errors.length) process.exit(2);
+}
+
 function main(): void {
+  const args = process.argv.slice(2);
+  const ei = args.indexOf('--engine');
+  const engine = ei >= 0 ? args[ei + 1] : undefined;
+  if (engine === 'vademecum') return mainVademecum(args);
+  if (engine !== undefined && engine !== 'current') {
+    console.error(`Unknown --engine '${engine}' (current | vademecum)`);
+    process.exit(2);
+  }
   const { vignettes, results, errors, file } = runAllWeb();
   if (errors.length) {
     console.error('Vignette errors:');

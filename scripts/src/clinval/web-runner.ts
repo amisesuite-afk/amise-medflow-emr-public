@@ -92,7 +92,7 @@ function organs(form: ScoreForm | undefined): Organ[] {
   return Array.isArray(v) ? v.filter((o): o is Organ => (ORGANS as readonly string[]).includes(o)) : [];
 }
 
-function latestVitals(v: Vignette) {
+export function latestVitals(v: Vignette) {
   const list = [...(v.inputs.vitals ?? [])].sort((a, b) => (a.minutesAgo ?? 0) - (b.minutesAgo ?? 0));
   return list[0];
 }
@@ -103,7 +103,7 @@ function labValue(v: Vignette, analyte: string): number | null {
 }
 
 /** AppContext `extractedLabs` (clinical-scores.ts units). */
-function extractedLabs(v: Vignette): ExtractedLabs {
+export function extractedLabs(v: Vignette): ExtractedLabs {
   return {
     wbc: labValue(v, 'wbc'), haemoglobin: labValue(v, 'haemoglobin') !== null ? labValue(v, 'haemoglobin')! * 10 : null,
     platelets: labValue(v, 'platelets'), inr: labValue(v, 'inr'), crp: labValue(v, 'crp'),
@@ -114,7 +114,7 @@ function extractedLabs(v: Vignette): ExtractedLabs {
   };
 }
 
-function scoringVitals(v: Vignette): ScoringVitals {
+export function scoringVitals(v: Vignette): ScoringVitals {
   const lv = latestVitals(v);
   return {
     temperatureC: lv?.temperatureC ?? null, heartRate: lv?.heartRate ?? null,
@@ -147,7 +147,7 @@ function resultReports(v: Vignette): string[] {
 }
 
 /** ConsultationViewData-style "name → result" map used by CDS and clinical prompts. */
-function investigationResults(v: Vignette): Record<string, string> {
+export function investigationResults(v: Vignette): Record<string, string> {
   const out: Record<string, string> = {};
   for (const l of v.inputs.labs ?? []) {
     out[l.name] = l.resultText ?? `${l.value ?? ''} ${l.unit ?? ''}`.trim();
@@ -157,7 +157,7 @@ function investigationResults(v: Vignette): Record<string, string> {
 }
 
 /** ChiefComplaintStrip SOCRATES answers. Explicit platform.web.socratesAnswers win. */
-function socratesAnswers(v: Vignette): Record<string, string> {
+export function socratesAnswers(v: Vignette): Record<string, string> {
   const explicit = v.inputs.platform?.web?.socratesAnswers;
   if (explicit) return explicit;
   const s = v.inputs.socrates ?? {};
@@ -173,7 +173,7 @@ function socratesAnswers(v: Vignette): Record<string, string> {
  * ExaminationTab chips plus the Exam-step sign chips (inputs.examSigns → examFindings.signs, as
  * ExamSignsPanel writes them).
  */
-function vignetteExamFindings(v: Vignette): Record<string, string[]> {
+export function vignetteExamFindings(v: Vignette): Record<string, string[]> {
   let out: Record<string, string[]> = { ...(v.inputs.platform?.web?.examFindings ?? {}) };
   for (const [id, state] of Object.entries(v.inputs.examSigns ?? {})) out = withSignState(out, id, state);
   return out;
@@ -184,7 +184,7 @@ function vignetteExamFindings(v: Vignette): Record<string, string[]> {
  * the Alvarado and TG18 cholecystitis forms the harness computes, and every form with a `total`.
  * The PANE mirror and the decision-support mirror read the same record (clinical_scores).
  */
-function recordedScoreValues(v: Vignette): Record<string, number> {
+export function recordedScoreValues(v: Vignette): Record<string, number> {
   const forms = v.inputs.scoreForms ?? {};
   const out: Record<string, number> = {};
   const alv = forms['alvarado'];
@@ -224,7 +224,7 @@ function recordedClinicalScores(v: Vignette): Record<string, unknown> {
 }
 
 /** The AppContext fields paneContextFromConsultation reads, filled from the vignette record. */
-function consultationSnapshot(v: Vignette): Partial<ConsultationSnapshot> {
+export function consultationSnapshot(v: Vignette): Partial<ConsultationSnapshot> {
   const inp = v.inputs;
   const web = inp.platform?.web ?? {};
   const lv = latestVitals(v);
@@ -246,11 +246,11 @@ function consultationSnapshot(v: Vignette): Partial<ConsultationSnapshot> {
   };
 }
 
-function webSex(v: Vignette): 'male' | 'female' | 'unknown' {
+export function webSex(v: Vignette): 'male' | 'female' | 'unknown' {
   return v.inputs.patient.sex === 'unspecified' ? 'unknown' : v.inputs.patient.sex;
 }
 
-function pregnancyPossible(v: Vignette): boolean {
+export function pregnancyPossible(v: Vignette): boolean {
   const p = v.inputs.patient;
   const st = p.pregnancy?.status;
   return p.sex === 'female' && (st === 'pregnant' || st === 'unknown');

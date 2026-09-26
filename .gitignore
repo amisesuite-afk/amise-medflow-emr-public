@@ -65,3 +65,6 @@ ios/Configuration.xcconfig
 
 # Outcomes calibration script output (derived from patient data; never commit)
 outcomes-calibration-out/
+
+# Vademecum phase-1 shadow output (clinval:web --engine vademecum): local only, never committed.
+docs/clinical-validation/results/vademecum-shadow-latest.*
