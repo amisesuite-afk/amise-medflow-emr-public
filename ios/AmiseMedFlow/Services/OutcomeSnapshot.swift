@@ -386,7 +386,8 @@ enum OutcomeSnapshotBuilder {
     /// "Final diagnosis not yet recorded": an operation or pathology was expected, the visit was
     /// completed at least `dueDays` days ago, and no confirmed final diagnosis exists.
     static func isDue(prediction: OutcomePredictionRecord?, finals: [OutcomeFinalDiagnosisRecord],
-                      completedAt: Date, now: Date = .now, dueDays: Int = dueDays) -> Bool {
+                      completedAt: Date, now: Date = .now,
+                      dueDays: Int = OutcomeSnapshotBuilder.dueDays) -> Bool {
         guard let prediction, prediction.expectsOutcome else { return false }
         guard !finals.contains(where: \.isConfirmed) else { return false }
         return now.timeIntervalSince(completedAt) >= Double(dueDays) * 86_400
