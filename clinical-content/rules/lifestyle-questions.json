@@ -1,0 +1,56 @@
+{
+  "$schema": "../schemas/lifestyle-questions.schema.json",
+  "$comment": "Patient questionnaire questions on religious / ritual fasting and traditional or complementary treatments (patient-facing wording, information only: no advice, no medicine, no instruction verb; hazard H-10), and the \"(patient-reported)\" social-history line labels. A shared clinical rule file: the web (lib/triage-engine/src/lifestyle-questions.ts, APCQ: token questionnaire and web intake) and iOS (LifestyleQuestions.swift through SharedClinicalContent, front-desk iPad questionnaire) read this one file; lint:shared-content checks it against its schema and both platforms' types, and lint:patient-instructions checks the wording. Part of the lifestyle-practices rule set (same version as lifestyle-practices.json). Where the questions sit in the queue (placeLifestyleQuestions) and which templates ask them stay in code.",
+  "id": "lifestyle-practices",
+  "version": "0.1.0",
+  "questions": {
+    "religious_fasting": {
+      "key": "religious_fasting",
+      "text": "Do you fast for religious or other reasons (for example Ramadan, Lent, a Daniel Fast or intermittent fasting)?",
+      "type": "multi_choice",
+      "helpText": "This is for information only, so the team can plan your care. Select all that apply.",
+      "options": [
+        {"value": "none", "label": "No"},
+        {"value": "ramadan", "label": "Ramadan", "triggersKeys": ["religious_fasting_timing"]},
+        {"value": "orthodox_lent", "label": "Orthodox or Lent fasting", "triggersKeys": ["religious_fasting_timing"]},
+        {"value": "daniel_fast", "label": "Daniel Fast", "triggersKeys": ["religious_fasting_timing"]},
+        {"value": "time_restricted", "label": "Intermittent fasting or time-restricted eating", "triggersKeys": ["religious_fasting_timing"]},
+        {"value": "other", "label": "Other", "triggersKeys": ["religious_fasting_timing"]}
+      ]
+    },
+    "religious_fasting_timing": {
+      "key": "religious_fasting_timing",
+      "text": "Are you fasting at the moment, or planning a fast soon?",
+      "type": "single_choice",
+      "options": [
+        {"value": "now", "label": "Fasting now"},
+        {"value": "within_month", "label": "Planning to fast within the next month"},
+        {"value": "later", "label": "Planning to fast later"},
+        {"value": "not_sure", "label": "Not sure"}
+      ]
+    },
+    "complementary_therapies": {
+      "key": "complementary_therapies",
+      "text": "Do you use any traditional or complementary treatments (for example acupuncture, cupping, yoga, detox or cleanse programmes, vitamin drips)?",
+      "type": "multi_choice",
+      "helpText": "This is for information only, so the team has a full picture. Select all that apply.",
+      "options": [
+        {"value": "none", "label": "No"},
+        {"value": "acupuncture", "label": "Acupuncture"},
+        {"value": "cupping", "label": "Cupping"},
+        {"value": "yoga", "label": "Yoga"},
+        {"value": "tai_chi", "label": "Tai chi"},
+        {"value": "mindfulness", "label": "Mindfulness or meditation"},
+        {"value": "slow_breathing", "label": "Breathing exercises"},
+        {"value": "detox_cleanse", "label": "Detox or cleanse programmes (including detox teas)"},
+        {"value": "iv_vitamin_drips", "label": "Vitamin drips"},
+        {"value": "other", "label": "Other"}
+      ]
+    }
+  },
+  "lineLabels": {
+    "religious_fasting": "Fasting (patient-reported)",
+    "religious_fasting_timing": "Fasting timing (patient-reported)",
+    "complementary_therapies": "Complementary treatments (patient-reported)"
+  }
+}

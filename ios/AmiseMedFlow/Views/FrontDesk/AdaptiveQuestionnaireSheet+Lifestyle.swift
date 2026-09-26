@@ -13,8 +13,10 @@ import SwiftUI
 
 extension AdaptiveQuestionnaireSheet {
 
-    /// Web parity: the follow-up and post-operative questionnaires do not ask these.
+    /// Web parity: the follow-up and post-operative questionnaires do not ask these. Nothing is
+    /// asked when the shared question file is not loaded (LifestyleQuestions.isAvailable).
     var asksLifestyleQuestions: Bool {
+        guard LifestyleQuestions.isAvailable else { return false }
         if answers.ccCategory == .postop { return false }
         switch livePatient?.visitType {
         case .followUp?, .postOp?: return false

@@ -12,55 +12,45 @@
 // Clinician-side use of the answers: lifestyle-practices.ts (structured record, prompts, plan
 // suggestions). Source: practice evidence briefing (Dr D. D. Kabiye, Sept 2026), §4 and §6.
 
+// The wording (question and help text, option values and labels, the "(patient-reported)" line
+// labels) is the shared clinical rule file clinical-content/rules/lifestyle-questions.json, which
+// LifestyleQuestions.swift reads too (through SharedClinicalContent); lint:shared-content checks it
+// against its schema and both platforms' types, and lint:patient-instructions checks the wording.
+// The queue rule and the templates below stay in code.
+
 import type { Question } from './apcq';
+import rawQuestions from '../../../clinical-content/rules/lifestyle-questions.json';
 
-export const LIFESTYLE_QUESTIONS: Record<string, Question> = {
-  religious_fasting: {
-    key: 'religious_fasting',
-    text: 'Do you fast for religious or other reasons (for example Ramadan, Lent, a Daniel Fast or intermittent fasting)?',
-    type: 'multi_choice',
-    helpText: 'This is for information only, so the team can plan your care. Select all that apply.',
-    options: [
-      { value: 'none', label: 'No' },
-      { value: 'ramadan', label: 'Ramadan', triggersKeys: ['religious_fasting_timing'] },
-      { value: 'orthodox_lent', label: 'Orthodox or Lent fasting', triggersKeys: ['religious_fasting_timing'] },
-      { value: 'daniel_fast', label: 'Daniel Fast', triggersKeys: ['religious_fasting_timing'] },
-      { value: 'time_restricted', label: 'Intermittent fasting or time-restricted eating', triggersKeys: ['religious_fasting_timing'] },
-      { value: 'other', label: 'Other', triggersKeys: ['religious_fasting_timing'] },
-    ],
-  },
+/** One answer option (a subset of the APCQ `QuestionOption`). */
+export interface LifestyleQuestionOption {
+  value: string;
+  label: string;
+  triggersKeys?: string[];
+}
 
-  religious_fasting_timing: {
-    key: 'religious_fasting_timing',
-    text: 'Are you fasting at the moment, or planning a fast soon?',
-    type: 'single_choice',
-    options: [
-      { value: 'now', label: 'Fasting now' },
-      { value: 'within_month', label: 'Planning to fast within the next month' },
-      { value: 'later', label: 'Planning to fast later' },
-      { value: 'not_sure', label: 'Not sure' },
-    ],
-  },
+/** One question (a subset of the APCQ `Question`). */
+export interface LifestyleQuestionContent {
+  key: string;
+  text: string;
+  type: 'single_choice' | 'multi_choice';
+  helpText?: string;
+  options: LifestyleQuestionOption[];
+}
 
-  complementary_therapies: {
-    key: 'complementary_therapies',
-    text: 'Do you use any traditional or complementary treatments (for example acupuncture, cupping, yoga, detox or cleanse programmes, vitamin drips)?',
-    type: 'multi_choice',
-    helpText: 'This is for information only, so the team has a full picture. Select all that apply.',
-    options: [
-      { value: 'none', label: 'No' },
-      { value: 'acupuncture', label: 'Acupuncture' },
-      { value: 'cupping', label: 'Cupping' },
-      { value: 'yoga', label: 'Yoga' },
-      { value: 'tai_chi', label: 'Tai chi' },
-      { value: 'mindfulness', label: 'Mindfulness or meditation' },
-      { value: 'slow_breathing', label: 'Breathing exercises' },
-      { value: 'detox_cleanse', label: 'Detox or cleanse programmes (including detox teas)' },
-      { value: 'iv_vitamin_drips', label: 'Vitamin drips' },
-      { value: 'other', label: 'Other' },
-    ],
-  },
-};
+/** clinical-content/rules/lifestyle-questions.json (part of the lifestyle-practices rule set). */
+export interface LifestyleQuestionFile {
+  version: string;
+  /** Question key → question, in the order they are asked. */
+  questions: Record<string, LifestyleQuestionContent>;
+  /** Question key → social-history line label ("Fasting (patient-reported)"). */
+  lineLabels: Record<string, string>;
+}
+
+const QUESTION_FILE = rawQuestions as unknown as LifestyleQuestionFile;
+
+export const LIFESTYLE_QUESTIONS: Record<string, Question> = QUESTION_FILE.questions;
+/** Content version of the shared file (= the lifestyle-practices rule set version). */
+export const LIFESTYLE_QUESTIONS_VERSION: string = QUESTION_FILE.version;
 
 /** Every lifestyle question key (none of them is a symptom). */
 export const LIFESTYLE_QUESTION_KEYS: readonly string[] = Object.keys(LIFESTYLE_QUESTIONS);
@@ -95,11 +85,7 @@ export function placeLifestyleQuestions(
   return [...rest, ...pending.slice(0, room)];
 }
 
-const QUESTIONNAIRE_LINE_LABELS: Record<string, string> = {
-  religious_fasting: 'Fasting (patient-reported)',
-  religious_fasting_timing: 'Fasting timing (patient-reported)',
-  complementary_therapies: 'Complementary treatments (patient-reported)',
-};
+const QUESTIONNAIRE_LINE_LABELS: Record<string, string> = QUESTION_FILE.lineLabels;
 
 /**
  * Short social-history line for a questionnaire answer to a lifestyle question, e.g.

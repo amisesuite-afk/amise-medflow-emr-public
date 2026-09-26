@@ -115,6 +115,7 @@ identical to the file it replaces (checked by a structural comparison before and
 |---|---|---|---|---|
 | `treatment-decision-support` 1.0.0 | `treatment-decisions.json` (moved from `lib/pane-engine/src/decision/`) + `treatment-decisions.schema.json` | `lib/pane-engine/src/decision/index.ts` (`DECISION_CONTENT`, types in `types.ts`) | `TreatmentDecisionContent.swift` (`TreatmentDecisions.Content`, `SharedClinicalContent.File.treatmentDecisions`) | `ios/AmiseMedFlow/Resources/TreatmentDecisions.json` (byte-identical copy, deleted) |
 | `whats-missing` 1.0.0 | `whats-missing-rules.json` (moved from `lib/pane-engine/src/whats-missing/`) + `whats-missing-rules.schema.json` | `lib/pane-engine/src/whats-missing/rules.ts` (`WHATS_MISSING_RULES`) | `WhatsMissingRules.swift` (`WhatsMissing.Rules`, `SharedClinicalContent.File.whatsMissingRules`) | `ios/AmiseMedFlow/Resources/WhatsMissingRules.json` (byte-identical copy, deleted) |
+| `lifestyle-practices` 0.1.0 (questionnaire wording) | `lifestyle-questions.json` (a companion file of `lifestyle-practices.json`: same registry id and version; 3 questions with their text, help text, option values, labels and `triggersKeys`, and the 3 "(patient-reported)" line labels) + `lifestyle-questions.schema.json` | `lib/triage-engine/src/lifestyle-questions.ts` (`LIFESTYLE_QUESTIONS`, line labels; new `LIFESTYLE_QUESTIONS_VERSION`) | `LifestyleQuestions.swift` (`LifestyleQuestions.Content`, `SharedClinicalContent.File.lifestyleQuestions`) | the TS question literals and line labels; the Swift text, option and prefix literals. The queue rule (`placeLifestyleQuestions`, templates) and the iOS answer logic stay in code |
 | `visit-continuity` 1.0.0 (new registry entry; was under `excluded`) | `visit-continuity.json` (58 stop words, 6 body regions / 46 words, suffixes `ing` / `ed` / `s` unless ending `ss` with at least 4 letters left, minimum word length 4) + `visit-continuity.schema.json` | `lib/triage-engine/src/visit-continuity.ts` (`VISIT_CONTINUITY_WORD_RULES`, new `VISIT_CONTINUITY_RULES_VERSION`) | `VisitContinuity.swift` (`VisitContinuity.WordRules`, `SharedClinicalContent.File.visitContinuity`) | the TS and Swift stop-word lists, region maps and suffix literals; the matching logic stays twinned |
 
 Lint additions (`scripts/src/shared-content.ts`, unit-tested in `shared-content.test.ts`): a
@@ -153,6 +154,22 @@ caption, and the diagnostic-reasoning adapter counts no earlier visit as the sam
 longitudinal patterns already show nothing without meaningful words). With the file present,
 behaviour is unchanged.
 
+**Lifestyle questionnaire questions.** Patient-facing wording, moved verbatim: the JSON was
+generated from the web export, and a JSON snapshot of `LIFESTYLE_QUESTIONS`,
+`LIFESTYLE_QUESTION_KEYS` (also as re-exported by APCQ) and `lifestyleQuestionnaireLine` for every
+key is byte-identical before and after (same key order, so the questions the api-server serves are
+unchanged). The Swift literals were already identical (pinned by the parity test that parsed them).
+The file carries the `lifestyle-practices` id and version: `lint:shared-content` now accepts a
+companion file of a rule set (`COMPANION_FILES`: the registry stamp stays on
+`lifestyle-practices.json`, and every file of the rule set must carry the registry version).
+`lint:patient-instructions` now also checks this wording (it was not checked before; it passes).
+`lifestyle-questions-ios-parity.test.ts` now checks that the web export is the shared file, that
+Swift loads it and uses the same question keys and line-prefix rule, and that no wording is typed in
+Swift. The front-desk (Next.js) and api-server (esbuild) builds pass with the JSON imported from the
+repository root. On iOS a missing or undecodable file means `LifestyleQuestions.isAvailable` is
+false: the iPad questionnaire asks no lifestyle question (`asksLifestyleQuestions`), no
+"(patient-reported)" line is written, and none is read back from `pmhNotes`.
+
 ### For the iOS CI to confirm (phase 2; Swift cannot be compiled here)
 
 1. The app bundle has `rules/treatment-decisions.json` and no `TreatmentDecisions.json` at the
@@ -175,6 +192,14 @@ behaviour is unchanged.
    compile. `VisitContinuityTests` (new `testSharedWordRulesLoaded`, `testSharedVectors` over
    `Resources/VisitContinuityVectors.json`, which must be in the test bundle) and
    `SharedClinicalContentTests` pass; Settings → Diagnostics lists "Visit continuity words 1.0.0".
+6. The app bundle has `rules/lifestyle-questions.json`; `LifestyleQuestions.swift` (new `Content` /
+   `QuestionContent` / `OptionContent` Codable types and `QuestionType` enum; the text, option and
+   prefix members are now computed `static var`s; prefixes are `String?`, and `line(prefix:display:)`
+   / `value(of:in:)` take an optional) and `AdaptiveQuestionnaireSheet+Lifestyle.swift`
+   (`asksLifestyleQuestions` guard) compile. `LifestyleQuestionsTests` (new
+   `testSharedQuestionsLoaded`; the existing line and read-back tests pin the wording end to end)
+   and `SharedClinicalContentTests` pass; Settings → Diagnostics lists "Lifestyle questionnaire
+   questions 0.1.0".
 
 ### Needs sign-off (phase 2)
 
@@ -191,3 +216,8 @@ Nothing clinical: no content changed. The existing sign-off lists still apply
    registered rule set, `visit-continuity` 1.0.0, in one shared file; the words themselves are
    unchanged. Also confirm the iOS fallback: if the file cannot be read, iOS makes no
    follow-up / new-problem suggestion and the booked visit type decides.
+5. Patient-facing wording, governance only (verbatim move). Confirm — the lifestyle questionnaire
+   wording is now one shared file (`clinical-content/rules/lifestyle-questions.json`, part of the
+   `lifestyle-practices` rule set) and is now also held to `lint:patient-instructions`. Also confirm
+   the iOS fallback: if the file cannot be read, the iPad questionnaire does not ask the lifestyle
+   questions.

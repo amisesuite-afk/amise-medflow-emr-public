@@ -68,6 +68,7 @@ import { HEALTH_ARTICLES, articleText } from '../../artifacts/front-desk/content
 import { HERBAL_PREOP_PATIENT_TEXT, SUPPLEMENT_PATIENT_QUESTION } from '../../artifacts/dashboard/src/lib/supplement-catalogue';
 import { SUPPLEMENT_PATIENT_QUESTION as FRONT_DESK_SUPPLEMENT_QUESTION } from '../../artifacts/front-desk/lib/supplements-question';
 import * as PrepSheet from '../../artifacts/dashboard/src/lib/patient-prep-sheet';
+import { LIFESTYLE_QUESTIONS } from '../../lib/triage-engine/src/lifestyle-questions';
 
 // scripts/src/lint-patient-instructions.ts -> scripts/src -> scripts -> repo root
 const REPO_ROOT = join(fileURLToPath(import.meta.url), '..', '..', '..');
@@ -539,6 +540,15 @@ for (const article of HEALTH_ARTICLES) {
   for (const v of libraryViolations(text)) failures.push(`${where}: ${v}`);
 }
 
+// ── Lifestyle questionnaire questions (shared clinical-content/rules/lifestyle-questions.json,
+//    asked by the web intake, the token questionnaire and the iPad questionnaire) ──────────
+for (const q of Object.values(LIFESTYLE_QUESTIONS)) {
+  const text = [q.text, q.helpText ?? '', ...(q.options ?? []).map(o => o.label)].join('\n');
+  const where = `clinical-content/rules/lifestyle-questions.json ${q.key}`;
+  for (const s of medicationInstructionViolations(text)) failures.push(`${where}: medication instruction: "${s}"`);
+  for (const s of sentences(text)) if (MIDNIGHT_FAST.test(s)) failures.push(`${where}: fasting from midnight: "${s}"`);
+}
+
 // ── Pages and staff reference text ────────────────────────────────────────────
 for (const rel of SOURCE_FILES) {
   const text = stripSource(readFileSync(join(REPO_ROOT, rel), 'utf8'));
@@ -553,4 +563,4 @@ if (failures.length) {
   console.error('Use the approved wording: "MEDICATIONS: If you take insulin, blood thinners or diabetes medicines, please call the clinic before your procedure for instructions."');
   process.exit(1);
 }
-console.log(`✓ lint:patient-instructions — ${Object.keys(PROCEDURE_INSTRUCTIONS).length} instruction sets, ${Object.keys(APPOINTMENT_TYPES).length} booking-type mappings, ${HEALTH_ARTICLES.length} health-information articles, the dashboard printouts and ${SOURCE_FILES.length} source files clean.`);
+console.log(`✓ lint:patient-instructions — ${Object.keys(PROCEDURE_INSTRUCTIONS).length} instruction sets, ${Object.keys(APPOINTMENT_TYPES).length} booking-type mappings, ${HEALTH_ARTICLES.length} health-information articles, ${Object.keys(LIFESTYLE_QUESTIONS).length} lifestyle questions, the dashboard printouts and ${SOURCE_FILES.length} source files clean.`);

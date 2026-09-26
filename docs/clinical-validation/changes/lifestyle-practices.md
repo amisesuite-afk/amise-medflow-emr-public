@@ -65,7 +65,9 @@ the answers as "Fasting (patient-reported): …" social-history lines. The clini
 structured fields; answers are not copied into them automatically. The iOS front-desk iPad
 questionnaire (`AdaptiveQuestionnaireSheet`) asks the same questions since 2026-09-25
 (`LifestyleQuestions.swift`, see `followups-prep-h10.md`): last, the same "(patient-reported)"
-lines, and the clinician records them into `PathwayData.lifestyle` with one tap.
+lines, and the clinician records them into `PathwayData.lifestyle` with one tap. Since shared content
+phase 2 (2026-09-26) the wording is one file both platforms read,
+`clinical-content/rules/lifestyle-questions.json` (unchanged, verbatim).
 
 ### 3. Clinician-facing safety prompts (dismissible, cited)
 

@@ -177,12 +177,29 @@ export const SHARED_CONTENT: SharedContentFile[] = [
     swift: { files: ['ios/AmiseMedFlow/Services/VisitContinuity.swift'], root: 'VisitContinuity.WordRules', ignore: HEADER_IGNORE },
     ts: { files: ['lib/triage-engine/src/visit-continuity.ts'], root: 'VisitContinuityWordRuleFile', ignore: HEADER_IGNORE },
   },
+  // Lifestyle questionnaire questions (patient-facing wording; part of the lifestyle-practices
+  // rule set, COMPANION_FILES). iOS reads `triggersKeys` into its Codable struct but asks the
+  // timing follow-up by its own rule (`asksTiming`, checked against the web triggers by
+  // lifestyle-questions-ios-parity.test.ts).
+  {
+    name: 'lifestyle-questions',
+    regexLists: [],
+    swift: { files: ['ios/AmiseMedFlow/Services/LifestyleQuestions.swift'], root: 'LifestyleQuestions.Content', ignore: HEADER_IGNORE },
+    ts: { files: ['lib/triage-engine/src/lifestyle-questions.ts'], root: 'LifestyleQuestionFile', ignore: HEADER_IGNORE },
+  },
 ];
 
 /** Key of a configured file in the problem list and `checked` ("zebra-rules", "vademecum/findings"). */
 export function contentKey(f: { name: string; dir?: ContentDirKey }): string {
   return `${CONTENT_DIRS.find(d => d.key === (f.dir ?? 'rules'))!.prefix}${f.name}`;
 }
+/**
+ * Shared files that belong to another file's rule set (same registry id and version; the registry
+ * stamps the version on the main file): companion → main file.
+ */
+export const COMPANION_FILES: Record<string, string> = {
+  'clinical-content/rules/lifestyle-questions.json': 'clinical-content/rules/lifestyle-practices.json',
+};
 
 /** Platform copies replaced by a shared file: they must not come back. */
 export const RETIRED_COPIES = [
@@ -744,14 +761,17 @@ export function checkSharedContent(repoRoot: string): { problems: string[]; chec
     }
     if (data.$schema !== `../schemas/${schemaName}.schema.json`) problems.push(`${file}: "$schema" must be "../schemas/${schemaName}.schema.json"`);
 
-    // 2. Registry: the id names an entry that lists the file and stamps its version from it.
+    // 2. Registry: the id names an entry that lists the file and stamps its version from it. A
+    //    rule set may have companion files (lifestyle-practices: lifestyle-questions.json): the
+    //    stamp is on its main shared file, and every file's version equals the entry's version.
     const entry = registry.find(r => r.id === data.id);
     if (!entry) problems.push(`${file}: id "${String(data.id)}" is not a rule set in ${REGISTRY_FILE}`);
     else {
       if (!entry.files.includes(file)) problems.push(`${REGISTRY_FILE} ${entry.id}: files must list ${file}`);
       const stamp = entry.versionStamp;
-      if (!stamp || stamp.file !== file || stamp.type !== 'json-key' || stamp.key !== 'version') {
-        problems.push(`${REGISTRY_FILE} ${entry.id}: versionStamp must be { "file": "${file}", "type": "json-key", "key": "version" }`);
+      const companion = !!stamp && stamp.file !== file && COMPANION_FILES[file] === stamp.file;
+      if (!stamp || (stamp.file !== file && !companion) || stamp.type !== 'json-key' || stamp.key !== 'version') {
+        problems.push(`${REGISTRY_FILE} ${entry.id}: versionStamp must be { "file": "${COMPANION_FILES[file] ?? file}", "type": "json-key", "key": "version" }`);
       }
       if (entry.contentVersion !== data.version) problems.push(`${REGISTRY_FILE} ${entry.id}: contentVersion ${entry.contentVersion} but ${file} says ${String(data.version)}`);
     }

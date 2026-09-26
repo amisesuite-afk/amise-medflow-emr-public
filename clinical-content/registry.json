@@ -1303,6 +1303,8 @@
       "files": [
         "clinical-content/rules/lifestyle-practices.json",
         "clinical-content/schemas/lifestyle-practices.schema.json",
+        "clinical-content/rules/lifestyle-questions.json",
+        "clinical-content/schemas/lifestyle-questions.schema.json",
         "lib/triage-engine/src/lifestyle-practices.ts",
         "lib/triage-engine/src/lifestyle-questions.ts",
         "ios/AmiseMedFlow/Services/LifestylePractices.swift",
@@ -1386,7 +1388,8 @@
           "version": "0.1.0",
           "date": "2026-09-25",
           "change": "iOS front-desk iPad questionnaire asks the same lifestyle questions (LifestyleQuestions.swift, wording pinned to lifestyle-questions.ts by lifestyle-questions-ios-parity.test.ts), last; answers become the same '(patient-reported)' lines, recorded into PathwayData.lifestyle only on the clinician's tap. No rule or wording change."
-        }
+        },
+        { "version": "0.1.0", "date": "2026-09-26", "change": "Relocated, no wording change (shared content phase 2): the lifestyle questionnaire questions (question and help text, option values and labels, triggers, and the \"(patient-reported)\" line labels), typed in lifestyle-questions.ts and LifestyleQuestions.swift, are now one shared file clinical-content/rules/lifestyle-questions.json (a companion file of this rule set, same version) with a JSON Schema; both platforms read it. The web export is byte-identical before and after; the queue rule and templates stay in code. lint:patient-instructions now also checks this wording (governance only; see the shared-content change log, Phase 2)." }
       ]
     },
     {

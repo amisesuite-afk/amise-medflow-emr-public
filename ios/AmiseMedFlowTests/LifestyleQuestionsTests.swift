@@ -3,7 +3,8 @@ import SwiftData
 @testable import AmiseMedFlow
 
 /// Front-desk iPad questionnaire: the lifestyle questions (fasting, complementary treatments).
-/// Wording parity with lib/triage-engine/src/lifestyle-questions.ts is checked from the web side
+/// The wording is the shared file clinical-content/rules/lifestyle-questions.json (read by the web
+/// lifestyle-questions.ts too); the web side checks the keys and prefixes
 /// (artifacts/dashboard/src/lib/__tests__/lifestyle-questions-ios-parity.test.ts).
 @MainActor
 final class LifestyleQuestionsTests: XCTestCase {
@@ -17,6 +18,18 @@ final class LifestyleQuestionsTests: XCTestCase {
                              Encounter.self, ScoreHistoryEntry.self])
         container = try ModelContainer(for: schema, configurations: ModelConfiguration(isStoredInMemoryOnly: true))
         context = container.mainContext
+    }
+
+    func testSharedQuestionsLoaded() {
+        XCTAssertTrue(LifestyleQuestions.isAvailable, "rules/lifestyle-questions.json missing or not decoding")
+        XCTAssertEqual(LifestyleQuestions.fastingOptions.map(\.value),
+                       ["none", "ramadan", "orthodox_lent", "daniel_fast", "time_restricted", "other"])
+        XCTAssertEqual(LifestyleQuestions.timingOptions.count, 4)
+        XCTAssertEqual(LifestyleQuestions.therapyOptions.count, 10)
+        XCTAssertEqual(LifestyleQuestions.timingText, "Are you fasting at the moment, or planning a fast soon?")
+        XCTAssertEqual(LifestyleQuestions.fastingLinePrefix, "Fasting (patient-reported):")
+        XCTAssertFalse(LifestyleQuestions.fastingHelp.isEmpty)
+        XCTAssertFalse(LifestyleQuestions.therapiesHelp.isEmpty)
     }
 
     func testNoIsExclusiveAndTimingFollowsAFast() {

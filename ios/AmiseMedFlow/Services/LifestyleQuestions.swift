@@ -3,10 +3,13 @@
 // treatments, for the front-desk iPad questionnaire (AdaptiveQuestionnaireSheet).
 //
 // iOS twin of lib/triage-engine/src/lifestyle-questions.ts (the web intake and the token
-// questionnaire). DRIFT NOTE: question text, help text, option values and labels, and the
-// "(patient-reported)" line prefixes must stay identical to the TS file;
-// artifacts/dashboard/src/lib/__tests__/lifestyle-questions-ios-parity.test.ts parses this file
-// and fails when they differ. Change both files in the same PR.
+// questionnaire). The question text, help text, option values and labels and the
+// "(patient-reported)" line labels are the shared clinical rule file
+// clinical-content/rules/lifestyle-questions.json, which both platforms read (here through
+// SharedClinicalContent, File.lifestyleQuestions; lint:shared-content checks `Content` against its
+// schema). Change the JSON, not this file. A missing or undecodable file gives no questions:
+// `isAvailable` is false, the questionnaire shows no lifestyle section, and no line is written or
+// read back (Settings → Diagnostics says why).
 //
 // Information only (hazard H-10): the wording gives no advice, names no medicine and has no
 // instruction verb. Asked last in the questionnaire and never in place of a clinical question.
@@ -31,59 +34,87 @@ enum LifestyleQuestions {
         let label: String
     }
 
+    // MARK: - Shared content (clinical-content/rules/lifestyle-questions.json)
+
+    struct OptionContent: Codable {
+        let value: String
+        let label: String
+        /// Web APCQ: the follow-up question keys this answer queues (iOS: `asksTiming`).
+        let triggersKeys: [String]?
+    }
+
+    enum QuestionType: String, Codable {
+        case singleChoice = "single_choice"
+        case multiChoice = "multi_choice"
+    }
+
+    struct QuestionContent: Codable {
+        let key: String
+        let text: String
+        let type: QuestionType
+        let helpText: String?
+        let options: [OptionContent]
+    }
+
+    struct Content: Codable {
+        let version: String
+        /// Question key → question.
+        let questions: [String: QuestionContent]
+        /// Question key → social-history line label ("Fasting (patient-reported)").
+        let lineLabels: [String: String]
+    }
+
+    /// The shared questions (nil when the file is missing or does not decode).
+    static let content: Content? = SharedClinicalContent.load(Content.self, .lifestyleQuestions)
+
+    /// The questions can be asked. When false the questionnaire shows no lifestyle section and no
+    /// "(patient-reported)" line is written or read back.
+    static var isAvailable: Bool { content != nil }
+
+    static let fastingKey = "religious_fasting"
+    static let timingKey = "religious_fasting_timing"
+    static let therapiesKey = "complementary_therapies"
+
+    private static func question(_ key: String) -> QuestionContent? { content?.questions[key] }
+
+    private static func options(_ key: String) -> [Option] {
+        (question(key)?.options ?? []).map { Option(value: $0.value, label: $0.label) }
+    }
+
+    /// "Fasting (patient-reported):" — the label and a colon, as the web line is "<label>: <answer>".
+    private static func linePrefix(_ key: String) -> String? {
+        guard let label = content?.lineLabels[key], !label.isEmpty else { return nil }
+        return label + ":"
+    }
+
     // ── religious_fasting (multi choice; "No" is exclusive) ───────────────────
-    static let fastingText =
-        "Do you fast for religious or other reasons (for example Ramadan, Lent, a Daniel Fast or intermittent fasting)?"
-    static let fastingHelp =
-        "This is for information only, so the team can plan your care. Select all that apply."
-    static let fastingOptions: [Option] = [
-        Option(value: "none", label: "No"),
-        Option(value: "ramadan", label: "Ramadan"),
-        Option(value: "orthodox_lent", label: "Orthodox or Lent fasting"),
-        Option(value: "daniel_fast", label: "Daniel Fast"),
-        Option(value: "time_restricted", label: "Intermittent fasting or time-restricted eating"),
-        Option(value: "other", label: "Other"),
-    ]
+    static var fastingText: String { question(fastingKey)?.text ?? "" }
+    static var fastingHelp: String { question(fastingKey)?.helpText ?? "" }
+    static var fastingOptions: [Option] { options(fastingKey) }
 
     // ── religious_fasting_timing (single choice; asked when any fast is chosen) ──
-    static let timingText = "Are you fasting at the moment, or planning a fast soon?"
-    static let timingOptions: [Option] = [
-        Option(value: "now", label: "Fasting now"),
-        Option(value: "within_month", label: "Planning to fast within the next month"),
-        Option(value: "later", label: "Planning to fast later"),
-        Option(value: "not_sure", label: "Not sure"),
-    ]
+    static var timingText: String { question(timingKey)?.text ?? "" }
+    static var timingOptions: [Option] { options(timingKey) }
 
     // ── complementary_therapies (multi choice; "No" is exclusive) ─────────────
-    static let therapiesText =
-        "Do you use any traditional or complementary treatments (for example acupuncture, cupping, yoga, detox or cleanse programmes, vitamin drips)?"
-    static let therapiesHelp =
-        "This is for information only, so the team has a full picture. Select all that apply."
-    static let therapyOptions: [Option] = [
-        Option(value: "none", label: "No"),
-        Option(value: "acupuncture", label: "Acupuncture"),
-        Option(value: "cupping", label: "Cupping"),
-        Option(value: "yoga", label: "Yoga"),
-        Option(value: "tai_chi", label: "Tai chi"),
-        Option(value: "mindfulness", label: "Mindfulness or meditation"),
-        Option(value: "slow_breathing", label: "Breathing exercises"),
-        Option(value: "detox_cleanse", label: "Detox or cleanse programmes (including detox teas)"),
-        Option(value: "iv_vitamin_drips", label: "Vitamin drips"),
-        Option(value: "other", label: "Other"),
-    ]
+    static var therapiesText: String { question(therapiesKey)?.text ?? "" }
+    static var therapiesHelp: String { question(therapiesKey)?.helpText ?? "" }
+    static var therapyOptions: [Option] { options(therapiesKey) }
 
-    // ── Social-history lines (web QUESTIONNAIRE_LINE_LABELS) ──────────────────
-    static let fastingLinePrefix = "Fasting (patient-reported):"
-    static let timingLinePrefix = "Fasting timing (patient-reported):"
-    static let therapiesLinePrefix = "Complementary treatments (patient-reported):"
+    // ── Social-history lines (web QUESTIONNAIRE_LINE_LABELS); nil when not loaded ──
+    static var fastingLinePrefix: String? { linePrefix(fastingKey) }
+    static var timingLinePrefix: String? { linePrefix(timingKey) }
+    static var therapiesLinePrefix: String? { linePrefix(therapiesKey) }
 
     /// Labels of the chosen values, in option order, joined like the web `formatAnswerDisplay`.
     static func display(_ values: Set<String>, options: [Option]) -> String {
         options.filter { values.contains($0.value) }.map(\.label).joined(separator: ", ")
     }
 
-    /// Same rule as the web `lifestyleQuestionnaireLine`: nil when the answer is empty or "No".
-    static func line(prefix: String, display: String) -> String? {
+    /// Same rule as the web `lifestyleQuestionnaireLine`: nil when the answer is empty or "No"
+    /// (or when the shared file is not loaded, so there is no prefix).
+    static func line(prefix: String?, display: String) -> String? {
+        guard let prefix, !prefix.isEmpty else { return nil }
         let v = display.trimmingCharacters(in: .whitespacesAndNewlines)
         if v.isEmpty || ["no", "none"].contains(v.lowercased()) { return nil }
         return "\(prefix) \(v)"
@@ -161,8 +192,8 @@ struct LifestyleQuestionnaireAnswers: Equatable {
         return found ? a : nil
     }
 
-    private static func value(of prefix: String, in line: String) -> String? {
-        guard line.hasPrefix(prefix) else { return nil }
+    private static func value(of prefix: String?, in line: String) -> String? {
+        guard let prefix, !prefix.isEmpty, line.hasPrefix(prefix) else { return nil }
         return String(line.dropFirst(prefix.count)).trimmingCharacters(in: .whitespaces)
     }
 
