@@ -96,3 +96,7 @@ treatment-decision table and what's-missing rules (already byte-identical JSON; 
 
 Nothing clinical: no content changed. The existing sign-off lists still apply
 (`supplements-interactions.md`, `lifestyle-practices.md`, `diagnostic-reasoning.md`).
+
+1. Governance only (behaviour-neutral move, identical outputs before and after). Confirm — clinical rules in
+   `clinical-content/rules/*.json` are now the single source for both platforms, and edits there go
+   through the same registry versioning and sign-off as before.

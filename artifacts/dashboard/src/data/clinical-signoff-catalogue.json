@@ -1,6 +1,6 @@
 {
   "format": "amise-signoff-catalogue/1",
-  "catalogueHash": "92f116d718d6de89",
+  "catalogueHash": "81dd39ab7ae937b7",
   "repoUrl": "https://github.com/amisesuite-afk/amise-medflow-emr-public/blob/main/",
   "sources": [
     {
@@ -582,6 +582,16 @@
         "outcomes-calibration#6",
         "outcomes-calibration#7",
         "outcomes-calibration#8"
+      ]
+    },
+    {
+      "id": "shared-content",
+      "title": "Change log — `shared-content` (one shared rule and content library for web and iOS, phase 1)",
+      "doc": "docs/clinical-validation/changes/shared-content.md",
+      "anchor": "needs-sign-off",
+      "ruleSetIds": [],
+      "itemIds": [
+        "shared-content#1"
       ]
     },
     {
@@ -7445,6 +7455,18 @@
       "text": "**iOS push:** confirm iOS stays local for now, or ask for the push loop as a follow-up (needs\ndevice testing).",
       "hash": "670779e4c916f8a9",
       "doc": "docs/clinical-validation/changes/outcomes-calibration.md",
+      "anchor": "needs-sign-off",
+      "ruleSetIds": []
+    },
+    {
+      "id": "shared-content#1",
+      "source": "shared-content",
+      "number": "1",
+      "group": null,
+      "title": "Governance only (behaviour-neutral move, identical outputs before and after). Confirm — clinical rules in",
+      "text": "Governance only (behaviour-neutral move, identical outputs before and after). Confirm — clinical rules in\n`clinical-content/rules/*.json` are now the single source for both platforms, and edits there go\nthrough the same registry versioning and sign-off as before.",
+      "hash": "951ffc82bb22843d",
+      "doc": "docs/clinical-validation/changes/shared-content.md",
       "anchor": "needs-sign-off",
       "ruleSetIds": []
     },

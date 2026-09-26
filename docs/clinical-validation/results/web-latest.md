@@ -1,8 +1,8 @@
 # Clinical validation — web engines (latest local run)
 
-Generated 2026-09-26T00:31:12.162Z.
+Generated 2026-09-26T03:25:29.033Z.
 
-- Harness clinval-web/1; 425 vignettes from ios/AmiseMedFlowTests/ClinicalValidation/Vignettes/.
+- Harness clinval-web/1; 433 vignettes from ios/AmiseMedFlowTests/ClinicalValidation/Vignettes/.
 
 Status legend: PASS; FAIL — BLOCKING (critical, not flagged: fails the test run); FAIL (known gap) and
 FAIL (unverified) are reported only; "PASS (gap resolved)" means the flag can be removed from the vignette;
@@ -12,7 +12,7 @@ n/a = the expectation does not apply to that platform or the engine has no such 
 
 | Platform | Vignettes | Expectations | Pass | Fail | n/a | Critical fail | Blocking | Known-gap fail | Unverified fail | Gap resolved |
 |---|---|---|---|---|---|---|---|---|---|---|
-| web | 425 | 3138 | 2970 | 76 | 92 | 0 | 0 | 74 | 0 | 0 |
+| web | 433 | 3149 | 2981 | 76 | 92 | 0 | 0 | 74 | 0 | 0 |
 
 ## Blocking failures
 
@@ -10803,6 +10803,298 @@ Guidelines:
 - note: Seeded investigations: testicular_torsion (confirmed); 0 stat test(s) held back
 - note: Decision support: (no decision); factors (none)
 - note: matchPathways: Acute Abdomen (7), Acute Appendicitis (7), Anorectal (Haemorrhoids / Fissure / Fistula / Abscess) (7)
+
+</details>
+
+### Surveillance colonoscopy on apixaban
+
+#### `missing-anticoag-last-dose-colonoscopy` — What's missing — top item
+
+72-year-old man on apixaban for atrial fibrillation, booked for surveillance colonoscopy with polypectomy; last dose not recorded.
+
+| Expectation | Kind | Severity | web | Guideline | Proposed fix |
+|---|---|---|---|---|---|
+| missing-top-anticoag | missingTop | quality | PASS | BSG/ESGE 2021 |  |
+
+Guidelines:
+
+- **bsg-esge-2021-anticoag** — BSG/ESGE — Endoscopy in patients on antiplatelet or anticoagulant therapy (2021 update) (2021), Timing of DOAC interruption by procedure risk and renal function — needs the time of the last dose. Veitch AM, Radaelli F, Alikhan R, et al. Gut 2021;70:1611–28. *(statement wording/numbering not yet verified against the source)*
+
+<details><summary>web engine outputs</summary>
+
+- engine: paneEngine=pane-engine (188 diseases, 426 features); triageRulesVersion=1.4.0
+- differential web.pane: 1. Atrial Fibrillation / Flutter; 2. Stroke (Ischaemic / Haemorrhagic Cerebrovascular Event); 3. Acute Mesenteric Ischaemia
+- differential web.symptomInference: 1. Benign prostatic hyperplasia (BPH); 2. Prostate adenocarcinoma; 3. Colorectal carcinoma; 4. Lower GI bleed / colorectal; 5. Symptomatic / ruptured abdominal aortic aneurysm
+- differential web.passive: 1. Acute cholecystitis; 2. CBD stone / obstructive jaundice; 3. Peptic ulcer disease; 4. Reducible groin / abdominal hernia; 5. GORD / acid reflux / oesophagitis
+- differential web.triageSurgical: (empty)
+- emergency level: urgent (acuity=priority, action=same_day_call, score=36)
+- alarms: Pre-operative assessment [web.clinicalPrompts.safety]; Anticoagulation therapy (apixaban) [web.clinicalPrompts.safety]; Operative plan — VTE risk assessment [web.clinicalPrompts.safety]; Herbs, teas, bush remedies & supplements not asked [web.clinicalPrompts.safety]
+- recommended scores: cha2ds2-vasc, news2, has-bled, cfs
+- score values: (none)
+- dx variant: (none) (no group)
+- note: PANE features applied: known_af, anticoagulant_use, previous_surgery, trauma_mechanism, recent_surgery, aortic_graft, stoma
+- note: AssessmentTab ManagementPanel protocol: (none) (from the confirmed diagnosis)
+- note: PlanTab protocol: (none) (from the confirmed diagnosis)
+- note: Seeded investigations: atrial_fibrillation (leading differential); 1 stat test(s) held back
+- note: Decision Peri-procedural anticoagulation bridging — missing: Record HAS-BLED to refine: HAS-BLED 3 or more raises anticoagulant bleeding (bridging with therapeutic-dose LMWH).
+- note: Decision support: periop-bridging; factors age65to79, anticoagulated, doacOnly
+- note: matchPathways: Colonoscopy Diagnostic (Rectal Bleeding / Bowel Habit Change / Iron Deficiency) (5)
+
+</details>
+
+### Suspected appendicitis in a child
+
+#### `missing-child-no-weight` — What's missing — top item
+
+7-year-old boy with 12 h of periumbilical pain moving to the right iliac fossa; paracetamol planned; no weight and no allergy status recorded.
+
+| Expectation | Kind | Severity | web | Guideline | Proposed fix |
+|---|---|---|---|---|---|
+| missing-top-weight | missingTop | quality | PASS | BNF for Children 2024 |  |
+| missing-allergy-listed | missingInclude | quality | PASS | NICE CG183 2014 |  |
+
+Guidelines:
+
+- **bnfc-weight** — BNF for Children — prescribing in children (doses by body weight) (2024), General guidance: doses are expressed per kilogram; weigh the child before prescribing. Paediatric Formulary Committee. BNF for Children. BMJ Group / Pharmaceutical Press. *(statement wording/numbering not yet verified against the source)*
+- **nice-cg183** — NICE CG183 — Drug allergy: diagnosis and management (2014), 1.2 Documenting and sharing information: record drug allergy status (including 'none known') before prescribing. National Institute for Health and Care Excellence. Drug allergy (CG183). 2014. *(statement wording/numbering not yet verified against the source)*
+
+<details><summary>web engine outputs</summary>
+
+- engine: paneEngine=pane-engine (188 diseases, 426 features); triageRulesVersion=1.4.0
+- differential web.pane: 1. Acute Appendicitis; 2. Appendix Mass / Late Appendicitis; 3. Acute Gastroenteritis / Infective Colitis
+- differential web.symptomInference: 1. Acute appendicitis (paediatric); 2. Acute gastroenteritis; 3. Adhesive small bowel obstruction; 4. Meckel's diverticulum; 5. Acute alcoholic pancreatitis
+- differential web.passive: 1. Acute gastroenteritis; 2. Adhesive small bowel obstruction; 3. Acute appendicitis (paediatric); 4. Acute cholecystitis; 5. Acute appendicitis
+- differential web.triageSurgical: (empty)
+- emergency level: urgent (acuity=priority, action=same_day_call, score=30)
+- alarms: Acute abdominal presentation [web.clinicalPrompts.safety]; Pre-operative assessment [web.clinicalPrompts.safety]; Herbs, teas, bush remedies & supplements not asked [web.clinicalPrompts.safety]
+- recommended scores: alvarado, qsofa, ranson, news2
+- score values: (none)
+- dx variant: (none) (no group)
+- note: PANE features applied: abdominal_pain, nausea_vomiting, rlq_pain, periumbilical_pain, pain_migration, anorexia, guarding, abdominal_tenderness, fever, trauma_mechanism, recent_surgery, aortic_graft, stoma
+- note: AssessmentTab ManagementPanel protocol: appendicitis (from PANE top)
+- note: PlanTab protocol: (none) (from the confirmed diagnosis)
+- note: Seeded investigations: appendicitis (leading differential); 0 stat test(s) held back
+- note: Decision Acute appendicitis (uncomplicated) — missing: Record ASA grade to refine: ASA III-IV raises operative harm (laparoscopic appendicectomy).
+- note: Decision Acute appendicitis (uncomplicated) — missing: Record eGFR to refine: eGFR below 30 raises operative and anticoagulant harm (laparoscopic appendicectomy).
+- note: Decision Acute appendicitis (uncomplicated) — missing: Record BMI (height and weight) to refine: BMI 40 or more raises operative harm (laparoscopic appendicectomy).
+- note: Decision Acute appendicitis (uncomplicated) — missing: Record a full set of observations (NEWS2) to refine: NEWS2 7 or more or shock changes the balance (laparoscopic appendicectomy).
+- note: Decision support: appendicitis; factors (none)
+- note: matchPathways: Acute Appendicitis (12), Acute Abdomen (7), Anorectal (Haemorrhoids / Fissure / Fistula / Abscess) (7)
+
+</details>
+
+### Acute calculous cholecystitis without bloods
+
+#### `missing-cholecystitis-no-wbc` — What's missing — top item
+
+52-year-old man with confirmed acute cholecystitis on ultrasound; no WBC or CRP on file.
+
+| Expectation | Kind | Severity | web | Guideline | Proposed fix |
+|---|---|---|---|---|---|
+| missing-top-fbc-tg18 | missingTop | quality | PASS | Tokyo Guidelines 2018 2018 |  |
+| missing-crp-listed | missingInclude | quality | PASS | Tokyo Guidelines 2018 2018 |  |
+| missing-no-imaging-item | missingExclude | quality | PASS |  |  |
+
+Guidelines:
+
+- **tg18-dx-cholecystitis** — Tokyo Guidelines 2018 — diagnostic criteria and severity grading of acute cholecystitis (2018), Systemic signs (fever, raised CRP, raised WBC) and imaging; Grade II: WBC > 18,000/mm³. Yokoe M, Hata J, Takada T, et al. J Hepatobiliary Pancreat Sci. 2018;25:41–54. *(statement wording/numbering not yet verified against the source)*
+
+<details><summary>web engine outputs</summary>
+
+- engine: paneEngine=pane-engine (188 diseases, 426 features); triageRulesVersion=1.4.0
+- differential web.pane: 1. Acute Cholecystitis; 2. Choledocholithiasis; 3. Biliary Colic / Symptomatic Cholelithiasis
+- differential web.symptomInference: 1. Acute gastroenteritis; 2. Acute alcoholic pancreatitis; 3. Acute mesenteric ischaemia; 4. Mesenteric adenitis; 5. Perforated peptic ulcer
+- differential web.passive: 1. Acute cholecystitis; 2. Acute appendicitis (paediatric); 3. Acute gastroenteritis; 4. Acute mesenteric ischaemia; 5. Mesenteric adenitis
+- differential web.triageSurgical: (empty)
+- emergency level: emergency (acuity=urgent, action=emergency_now, score=110)
+- alarms: Emergency now [web.triage.emergency]; Cholecystitis / gallstone disease — surgical indication [web.clinicalPrompts.safety]; Murphy's sign positive [web.clinicalPrompts.safety]; Acute abdominal presentation [web.clinicalPrompts.safety]; Pre-operative assessment [web.clinicalPrompts.safety]; Operative plan — VTE risk assessment [web.clinicalPrompts.safety]; Herbs, teas, bush remedies & supplements not asked [web.clinicalPrompts.safety]
+- recommended scores: alvarado, tg18-cholangitis, tg18-cholecystitis, qsofa, asge-cbd, news2
+- score values: tg18-cholecystitis/autofill@web.scoreCalculator.tg18-cholecystitis=1
+- dx variant: cholecystitis_grade1 (Acute Cholecystitis)
+- note: PANE features applied: abdominal_pain, ruq_pain, nausea_vomiting, fever, fatty_food_trigger, murphy_sign, us_gallstones, trauma_mechanism, recent_surgery, aortic_graft, stoma
+- note: AssessmentTab ManagementPanel protocol: cholecystitis (from the confirmed diagnosis)
+- note: PlanTab protocol: cholecystitis (from the confirmed diagnosis)
+- note: Seeded investigations: cholecystitis (confirmed); 0 stat test(s) held back
+- note: Decision support: cholecystitis; factors (none)
+- note: matchPathways: Gallbladder Disease (Biliary Colic / Cholecystitis / Choledocholithiasis) (10)
+
+</details>
+
+### Microcytic anaemia without ferritin
+
+#### `missing-ferritin-microcytic-anaemia` — What's missing — top item
+
+46-year-old woman with tiredness; Hb 9.8 g/dL, MCV 72 fL; no ferritin on file.
+
+| Expectation | Kind | Severity | web | Guideline | Proposed fix |
+|---|---|---|---|---|---|
+| missing-top-ferritin | missingTop | quality | PASS | BSG guidelines for the management of iron deficiency anaemia in adults 2021 |  |
+
+Guidelines:
+
+- **bsg-2021-ida** — BSG guidelines for the management of iron deficiency anaemia in adults (2021), Serum ferritin confirms iron deficiency (< 45 µg/L) before bidirectional endoscopy. Snook J, Bhala N, Beales ILP, et al. Gut 2021;70:2030–51. *(statement wording/numbering not yet verified against the source)*
+
+<details><summary>web engine outputs</summary>
+
+- engine: paneEngine=pane-engine (188 diseases, 426 features); triageRulesVersion=1.4.0
+- differential web.pane: 1. Colorectal Cancer; 2. Community-acquired Pneumonia (Adult / Child); 3. Hashimoto Thyroiditis / Hypothyroidism
+- differential web.symptomInference: 1. Systemic lupus erythematosus; 2. Hypothyroidism; 3. Anaemia; 4. Lymphoma (Hodgkin / non-Hodgkin); 5. Rheumatoid arthritis
+- differential web.passive: 1. Anaemia; 2. Hypothyroidism; 3. Major depressive disorder; 4. COVID-19 / viral respiratory illness; 5. Addisonian crisis / adrenal insufficiency
+- differential web.triageSurgical: 1. Change in bowel habit / lower GI bleed — investigation
+- emergency level: priority (acuity=review, action=priority_24_48h, score=0)
+- alarms: Pre-operative assessment [web.clinicalPrompts.safety]; Herbs, teas, bush remedies & supplements not asked [web.clinicalPrompts.safety]
+- recommended scores: news2, stop-bang, web:phq9
+- score values: (none)
+- dx variant: (none) (no group)
+- note: PANE features applied: fatigue, dyspnoea, change_bowel_habit, anaemia, trauma_mechanism, recent_surgery, aortic_graft, stoma
+- note: AssessmentTab ManagementPanel protocol: (none) (from the confirmed diagnosis)
+- note: PlanTab protocol: (none) (from the confirmed diagnosis)
+- note: Seeded investigations: (none) (leading differential); 0 stat test(s) held back
+- note: Decision support: (no decision); factors (none)
+- note: matchPathways: Colonoscopy Diagnostic (Rectal Bleeding / Bowel Habit Change / Iron Deficiency) (12), Diverticular Disease / Diverticulitis (7), IBD — Surgical Complications (Crohn's / UC) (7)
+
+</details>
+
+### Post-operative pyrexia with partial observations
+
+#### `missing-news2-partial-post-op` — What's missing — top item
+
+68-year-old man, day 2 after a right hemicolectomy, febrile; RR, SpO₂, oxygen and consciousness not charted.
+
+| Expectation | Kind | Severity | web | Guideline | Proposed fix |
+|---|---|---|---|---|---|
+| missing-top-obs | missingTop | quality | PASS | Royal College of Physicians 2017 |  |
+
+Guidelines:
+
+- **rcp-news2** — Royal College of Physicians — National Early Warning Score (NEWS) 2 (2017), A full set of observations (RR, SpO₂, air / oxygen, BP, pulse, consciousness, temperature) is needed to score. Royal College of Physicians. NEWS2. London: RCP, 2017. *(statement wording/numbering not yet verified against the source)*
+
+<details><summary>web engine outputs</summary>
+
+- engine: paneEngine=pane-engine (188 diseases, 426 features); triageRulesVersion=1.4.0
+- differential web.pane: 1. Anastomotic Leak; 2. Post-operative Intra-abdominal Collection / Abscess / Bile Leak; 3. Post-operative Pneumonia / Atelectasis
+- differential web.symptomInference: 1. Fournier's gangrene; 2. Infective endocarditis; 3. Empyema thoracis; 4. Sepsis / systemic infection; 5. Lung abscess
+- differential web.passive: 1. Febrile convulsion; 2. Sepsis / systemic infection; 3. Infective endocarditis; 4. Dengue fever; 5. Kawasaki disease
+- differential web.triageSurgical: 1. Colon cancer
+- emergency level: emergency (acuity=urgent, action=emergency_now, score=196)
+- alarms: Emergency now [web.triage.emergency]; Pre-operative assessment [web.clinicalPrompts.safety]; Anticoagulation therapy (enoxaparin) [web.clinicalPrompts.safety]; Fever 38.2°C + HR 104 bpm [web.clinicalPrompts.safety]; Operative plan — VTE risk assessment [web.clinicalPrompts.safety]; Herbs, teas, bush remedies & supplements not asked [web.clinicalPrompts.safety]
+- recommended scores: wells-pe, wells-dvt, qsofa, news2, caprini, clavien-dindo, must, cfs, ecog
+- score values: (none)
+- dx variant: (none) (no group)
+- note: PANE features applied: fever, anticoagulant_use, known_malignancy, previous_surgery, recent_surgery, bowel_resection, elevated_wbc, raised_crp, postop_fever, tachycardia, trauma_mechanism, aortic_graft, stoma
+- note: AssessmentTab ManagementPanel protocol: postoperative_fever (from the confirmed diagnosis)
+- note: PlanTab protocol: postoperative_fever (from the confirmed diagnosis)
+- note: Seeded investigations: postoperative_fever (confirmed); 0 stat test(s) held back
+- note: Decision support: (no decision); factors age65to79, recentSurgery21d
+- note: matchPathways: IBD — Surgical Complications (Crohn's / UC) (5), Post-operative Follow-up (General) (5)
+
+</details>
+
+### Musculoskeletal back pain, NSAID planned
+
+#### `missing-nsaid-no-egfr` — What's missing — top item
+
+45-year-old man with mechanical back pain; ibuprofen planned; no renal function on file.
+
+| Expectation | Kind | Severity | web | Guideline | Proposed fix |
+|---|---|---|---|---|---|
+| missing-top-renal | missingTop | quality | PASS | NICE NG148 2019 |  |
+
+Guidelines:
+
+- **nice-nsaid-renal** — NICE NG148 — Acute kidney injury: prevention, detection and management (2019), Assess renal function before nephrotoxic medicines (NSAIDs) in people at risk. National Institute for Health and Care Excellence. Acute kidney injury (NG148). 2019. *(statement wording/numbering not yet verified against the source)*
+
+<details><summary>web engine outputs</summary>
+
+- engine: paneEngine=pane-engine (188 diseases, 426 features); triageRulesVersion=1.4.0
+- differential web.pane: 1. Inguinal / Femoral Hernia; 2. Acute Aortic Dissection; 3. Haemorrhoids
+- differential web.symptomInference: 1. Symptomatic / ruptured abdominal aortic aneurysm; 2. Sciatica / lumbar radiculopathy; 3. Testicular germ cell tumour; 4. Lumbar disc disease / sciatica; 5. Aortic dissection
+- differential web.passive: 1. Lumbar disc disease / sciatica; 2. Aortic dissection; 3. Sciatica / lumbar radiculopathy; 4. Symptomatic / ruptured abdominal aortic aneurysm; 5. Osteoarthritis
+- differential web.triageSurgical: (empty)
+- emergency level: routine (acuity=routine, action=routine_booking, score=0)
+- alarms: Pre-operative assessment [web.clinicalPrompts.safety]; Herbs, teas, bush remedies & supplements not asked [web.clinicalPrompts.safety]
+- recommended scores: ranson, news2, caprini, asa, rcri
+- score values: (none)
+- dx variant: (none) (no group)
+- note: PANE features applied: back_pain, known_hypertension, vascular_risk, worse_straining, trauma_mechanism, recent_surgery, aortic_graft, stoma
+- note: AssessmentTab ManagementPanel protocol: (none) (from the confirmed diagnosis)
+- note: PlanTab protocol: (none) (from the confirmed diagnosis)
+- note: Seeded investigations: (none) (leading differential); 0 stat test(s) held back
+- note: Decision support: (no decision); factors (none)
+
+</details>
+
+### Elective inguinal hernia repair
+
+#### `missing-supplements-before-hernia-repair` — What's missing — top item
+
+58-year-old man listed for laparoscopic inguinal hernia repair; the herbs and supplements question has not been asked.
+
+| Expectation | Kind | Severity | web | Guideline | Proposed fix |
+|---|---|---|---|---|---|
+| missing-top-supplements | missingTop | quality | PASS | SPAQI consensus 2021 |  |
+
+Guidelines:
+
+- **spaqi-herbal** — SPAQI consensus — perioperative management of dietary supplements and herbal products (2021), Ask about herbal and dietary supplements before surgery; stop times by product. Cummings KC 3rd, Keshock M, Ganesh R, et al. Mayo Clin Proc 2021;96:1342–55. *(statement wording/numbering not yet verified against the source)*
+
+<details><summary>web engine outputs</summary>
+
+- engine: paneEngine=pane-engine (188 diseases, 426 features); triageRulesVersion=1.4.0
+- differential web.pane: 1. Inguinal / Femoral Hernia; 2. Femoral Hernia; 3. Umbilical / Paraumbilical Hernia
+- differential web.symptomInference: 1. Benign prostatic hyperplasia (BPH); 2. Colorectal carcinoma; 3. Lower GI bleed / colorectal; 4. Reducible groin / abdominal hernia; 5. Osteoarthritis
+- differential web.passive: 1. Acute cholecystitis; 2. CBD stone / obstructive jaundice; 3. Peptic ulcer disease; 4. Reducible groin / abdominal hernia; 5. GORD / acid reflux / oesophagitis
+- differential web.triageSurgical: 1. Inguinal hernia
+- emergency level: routine (acuity=routine, action=routine_booking, score=0)
+- alarms: Acute abdominal presentation [web.clinicalPrompts.safety]; Pre-operative assessment [web.clinicalPrompts.safety]; Hernia — elective repair indicated [web.clinicalPrompts.safety]; Operative plan — VTE risk assessment [web.clinicalPrompts.safety]; Herbs, teas, bush remedies & supplements not asked [web.clinicalPrompts.safety]
+- recommended scores: news2
+- score values: (none)
+- dx variant: (none) (Hernia)
+- note: PANE features applied: groin_swelling, cough, cough_impulse, hernia_compressible, groin_lump_reducible, hernia_swelling, trauma_mechanism, recent_surgery, aortic_graft, stoma
+- note: AssessmentTab ManagementPanel protocol: inguinal_hernia (from the confirmed diagnosis)
+- note: PlanTab protocol: inguinal_hernia (from the confirmed diagnosis)
+- note: Seeded investigations: inguinal_hernia (confirmed); 0 stat test(s) held back
+- note: Decision support: inguinal-hernia; factors (none)
+- note: matchPathways: Hernia (Inguinal / Umbilical / Incisional / Femoral) (10), IBD — Surgical Complications (Crohn's / UC) (5)
+
+</details>
+
+### Right iliac fossa pain, CT planned
+
+#### `missing-woman-30-ct-planned` — What's missing — top item
+
+30-year-old woman with right iliac fossa pain; CT abdomen and pelvis with contrast planned; pregnancy status not recorded.
+
+| Expectation | Kind | Severity | web | Guideline | Proposed fix |
+|---|---|---|---|---|---|
+| missing-top-pregnancy | missingTop | quality | PASS | RCR / SCoR / BIR 2019 |  |
+
+Guidelines:
+
+- **rcr-pregnancy-ionising** — RCR / SCoR / BIR — Protection of pregnant patients during diagnostic medical exposures to ionising radiation (2019), Ask about pregnancy (12–55 years) before an examination that irradiates the abdomen or pelvis. Royal College of Radiologists, Society and College of Radiographers, British Institute of Radiology. 2019. *(statement wording/numbering not yet verified against the source)*
+
+<details><summary>web engine outputs</summary>
+
+- engine: paneEngine=pane-engine (188 diseases, 426 features); triageRulesVersion=1.4.0
+- differential web.pane: 1. Acute Appendicitis; 2. Ectopic Pregnancy; 3. Acute Cholecystitis
+- differential web.symptomInference: 1. Acute gastroenteritis; 2. Acute mesenteric ischaemia; 3. Adhesive small bowel obstruction; 4. Acute cholecystitis; 5. Perforated peptic ulcer
+- differential web.passive: 1. Acute appendicitis (paediatric); 2. Acute gastroenteritis; 3. Acute mesenteric ischaemia; 4. Adhesive small bowel obstruction; 5. Perforated peptic ulcer
+- differential web.triageSurgical: (empty)
+- emergency level: routine (acuity=routine, action=routine_booking, score=12)
+- alarms: Reproductive-age female with abdominal complaint [web.clinicalPrompts.safety]; Acute abdominal presentation [web.clinicalPrompts.safety]; Pre-operative assessment [web.clinicalPrompts.safety]; Herbs, teas, bush remedies & supplements not asked [web.clinicalPrompts.safety]
+- recommended scores: alvarado, news2
+- score values: (none)
+- dx variant: (none) (no group)
+- note: PANE features applied: abdominal_pain, nausea_vomiting, rlq_pain, pain_worse_movement, abdominal_tenderness, trauma_mechanism, recent_surgery, aortic_graft, stoma
+- note: AssessmentTab ManagementPanel protocol: appendicitis (from PANE top)
+- note: PlanTab protocol: (none) (from the confirmed diagnosis)
+- note: Seeded investigations: appendicitis (leading differential); 0 stat test(s) held back
+- note: Decision Acute appendicitis (uncomplicated) — missing: Record ASA grade to refine: ASA III-IV raises operative harm (laparoscopic appendicectomy).
+- note: Decision Acute appendicitis (uncomplicated) — missing: Record eGFR to refine: eGFR below 30 raises operative and anticoagulant harm (laparoscopic appendicectomy).
+- note: Decision Acute appendicitis (uncomplicated) — missing: Record pregnancy status to refine: pregnancy changes the harm of operations and thrombolysis and excludes some options (laparoscopic appendicectomy; antibiotics-first (non-operative)).
+- note: Decision Acute appendicitis (uncomplicated) — missing: Record BMI (height and weight) to refine: BMI 40 or more raises operative harm (laparoscopic appendicectomy).
+- note: Decision support: appendicitis; factors (none)
+- note: matchPathways: Acute Appendicitis (5)
 
 </details>
 
