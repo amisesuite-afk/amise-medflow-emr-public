@@ -23,6 +23,10 @@ final class Patient {
     var referringDoctor: String?
     var referringPractice: String?
     var appointmentType: String?
+    // Last appointmentType value confirmed with Supabase patients.appointment_type (Migration 97;
+    // SyncService+AppointmentType). A different current value is a change still to push. Cloud
+    // bookkeeping only.
+    var appointmentTypeSyncedValue: String?
     var notes: String?
     var ward: String?
     var bedNumber: String?

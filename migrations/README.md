@@ -298,7 +298,7 @@ What it does (idempotent; every table is guarded with `to_regclass()`):
     - insurance and referral: `insurance_provider`, `policy_number`, `pre_auth_status`,
       `referred_by`;
     - scheduling: `check_in_time`, `encounter_status`, `setting`, `location`,
-      `operation_date`, `visit_type`;
+      `operation_date`, `visit_type`, `appointment_type` (the column is added by Migration 97);
     - patient-reported intake: `chief_complaint`, `pmh_notes` (includes the questionnaire's
       `MEDICATIONS:` line), `family_history_notes`, `surgical_history`, `allergies_json`,
       `height_cm`;
@@ -560,3 +560,20 @@ are overridden here, so this step must stay after every step that creates those 
 - Clients tolerate its absence: `POST /api/lab-feed/inbound` answers 503 / HL7 `AE` (the laboratory
   retries); the dashboard uses the built-in default ranges and shows "available after the database
   update" in the Lab feed tab and in Settings; nothing returns a 500.
+
+### Migration 97 — `supabase-patients-appointment-type-migration.sql` (patients.appointment_type)
+
+- Adds nullable `appointment_type text` to `patients`. The iPad front-desk scheduler records the
+  booking type on the patient (`Patient.appointmentType`: "New Consultation", "Follow-Up",
+  "Procedure", "Endoscopy / ERCP", "Urgent / Emergency", or a calendar-import label such as
+  "Colonoscopy", which the bowel-preparation screen reads), but only `appointments` and
+  `appointment_requests` had the column, so it never left the device.
+- Guarded with `to_regclass('public.patients')` and `ADD COLUMN IF NOT EXISTS`; re-running is a
+  no-op. No CHECK: values are the app's labels.
+- Migration 89's front-desk column guard lists `appointment_type` (an administrative field), so
+  front desk can change it once 89 is applied. The name in the allow-list does not need the column.
+- iOS (`SyncService+AppointmentType.swift`) pushes and pulls it in its own requests, like
+  `pathway_data_json` and `news2_spo2_scale2`: until this migration runs those requests fail and
+  are retried on the next sync; the whole-row patient push and pull are unaffected. Also listed in
+  `docs/sql/check-ios-columns.sql`.
+- Independent of 87–96: safe to apply on its own.

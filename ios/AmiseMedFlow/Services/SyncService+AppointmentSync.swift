@@ -186,7 +186,7 @@ enum FrontDeskPatientColumns {
         "insurance_provider", "policy_number", "pre_auth_status", "referred_by",
         // scheduling / encounter flow
         "check_in_time", "encounter_status", "setting", "location", "operation_date",
-        "visit_type",
+        "visit_type", "appointment_type",   // appointment_type: own request, SyncService+AppointmentType
         // patient-reported intake
         "chief_complaint", "pmh_notes", "family_history_notes", "surgical_history",
         "allergies_json", "height_cm",

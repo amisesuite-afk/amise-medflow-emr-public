@@ -72,7 +72,8 @@ on `ContentView`, `@EnvironmentObject` in every view that needs it.
 Pull/push for patients, notes, prescriptions, vitals. `syncIfAuthenticated()` on
 every foreground resume. A patient column added by a not-yet-applied migration must not break
 the pull or push: select it with a fallback to the old column list and push it in its own
-request (see `SyncService+NEWS2Scale2.swift`, `patients.news2_spo2_scale2`, Migration 88).
+request (see `SyncService+NEWS2Scale2.swift`, `patients.news2_spo2_scale2`, Migration 88; and
+`SyncService+AppointmentType.swift`, `patients.appointment_type`, Migration 97, a front-desk column).
 Pull protection: `sync()` pulls patients BEFORE pushing them, so a pull must never write over a
 record with `pendingSync == true` (it would revert an offline edit before it is pushed). Patients
 go through `PatientPullMerge.applyServerPatientRow` (only `remoteId`, an MRN the local copy lacks,

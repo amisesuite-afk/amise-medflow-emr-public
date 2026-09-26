@@ -131,6 +131,7 @@ from (values
   ('patients','trauma_data_json'),
   ('patients','updated_at'),
   ('patients','visit_type'),
+  ('patients','appointment_type'),
   ('patients','ward'),
   ('patients','working_diagnosis'),
   ('patients','working_diagnosis_icd'),

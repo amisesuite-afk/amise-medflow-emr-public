@@ -228,6 +228,8 @@ final class SyncService: ObservableObject {
         await syncPathwayData(context: context)
         // Same for the NEWS2 SpO₂ Scale 2 flag (migration 88). Its pull is in pullPatients.
         await pushNEWS2Scale2(context: context)
+        // And the front-desk booking type (patients.appointment_type, migration 97).
+        await syncAppointmentType(context: context)
         await AuditLog.flush()
         if syncError == nil { lastSyncedAt = .now }
         recountPending(context: context)

@@ -84,6 +84,8 @@ struct AppointmentSchedulerView: View {
     @State private var isSaving = false
     @State private var savedError: String?
     @State private var savedEvent: EKEvent?
+    /// The booking was saved to the patient's record (it is, before the calendar write).
+    @State private var recordSaved = false
 
     private var effectiveDuration: TimeInterval {
         usesCustomDuration ? customDuration : apptType.ekDuration
@@ -91,13 +93,7 @@ struct AppointmentSchedulerView: View {
 
     /// Maps appointment type to the corresponding clinical setting so the
     /// patient record is updated when a procedure or endoscopy is scheduled.
-    private var impliedSetting: ClinicalSetting? {
-        switch apptType {
-        case .procedure:  return .theatre
-        case .endoscopy:  return .endoscopy
-        default:          return nil
-        }
-    }
+    private var impliedSetting: ClinicalSetting? { apptType.impliedSetting }
 
     // Privacy (surgeon's requirement): the scheduler is opened at the front desk, whose screen can
     // be seen across the counter, so there is no default patient list. Names appear only after a
@@ -121,6 +117,7 @@ struct AppointmentSchedulerView: View {
     var body: some View {
         NavigationStack {
             Form {
+                calendarErrorSection
                 patientSection
                 visitTypeSection
                 appointmentSection
@@ -363,15 +360,69 @@ struct AppointmentSchedulerView: View {
         }
     }
 
+    // MARK: - Calendar error
+
+    /// Shown when the calendar write failed (e.g. calendar access denied): the error, that the
+    /// record was saved anyway, and a retry. It used to be recorded in `savedError` and never shown,
+    /// so Save silently did nothing.
+    @ViewBuilder
+    private var calendarErrorSection: some View {
+        if let error = savedError {
+            Section {
+                Label(error, systemImage: "exclamationmark.triangle.fill")
+                    .foregroundStyle(.red)
+                    .accessibilityIdentifier("fd.scheduler.calendarError")
+                if recordSaved {
+                    Text("The visit type and appointment were saved to the patient's record. The calendar entry was not made.")
+                        .font(.caption)
+                        .foregroundStyle(.secondary)
+                }
+                Button {
+                    Task { await save() }
+                } label: {
+                    Label("Retry Calendar", systemImage: "arrow.clockwise")
+                }
+                .disabled(isSaving || selectedPatient?.isLive != true)
+                .accessibilityIdentifier("fd.scheduler.retryCalendar")
+                if recordSaved {
+                    Button("Done Without Calendar") {
+                        guard let p = selectedPatient, p.isLive else { dismiss(); return }
+                        Task { await finish(patient: p, eventId: nil) }
+                    }
+                    .disabled(isSaving)
+                    .accessibilityIdentifier("fd.scheduler.doneWithoutCalendar")
+                }
+            } header: {
+                Text("Calendar Not Updated")
+            }
+        }
+    }
+
     // MARK: - Save
 
+    /// Saves the booking to the patient's record first (on the device, synced like any edit), then
+    /// writes the practice calendar. A calendar failure is shown with a retry; the record is kept.
     private func save() async {
         guard let patient = selectedPatient, patient.isLive else { return }
         isSaving = true
         savedError = nil
 
+        // 1. The record: visit type, booking type, and for a procedure / endoscopy the setting and
+        //    date, whatever happens to the calendar.
+        let change = ApptType.applyBooking(apptType, visitType: visitType, date: apptDate, to: patient)
+        if change.visitTypeChanged {
+            AuditLog.record("update", "patient", patient: patient,
+                            details: ["field": "visit_type", "to": visitType.rawValue])
+        }
+        if change.appointmentTypeChanged {
+            AuditLog.record("update", "patient", patient: patient,
+                            details: ["field": "appointment_type", "to": apptType.rawValue])
+        }
+        if change.edited { try? context.save() }
+        recordSaved = true
+
+        // 2. The practice calendar (staff only): booking type and visit type in the title.
         do {
-            // Practice calendar (staff only): booking type and visit type in the title.
             let event = try await calendarService.createTheatreBooking(
                 procedure: ApptType.eventLabel(apptType, visitType: visitType),
                 patientName: patient.fullName,
@@ -381,58 +432,38 @@ struct AppointmentSchedulerView: View {
                 calendar: selectedCalendar
             )
             savedEvent = event
-
-            // Update patient record so they appear in the correct clinical list. The record may
-            // have been removed or merged by sync during the calendar request.
-            let live = patient.isLive
-            var edited = false
-            if live, let setting = impliedSetting {
-                patient.setting = setting
-                patient.operationDate = apptDate
-                if patient.appointmentType == nil || patient.appointmentType?.isEmpty == true {
-                    patient.appointmentType = apptType.rawValue
-                }
-                edited = true
-            }
-            // Visit type: decides the consultation pathway and the record sections. Front desk
-            // may set it (visit_type is on the Migration 89 allow-list, FrontDeskPatientColumns).
-            if live, patient.visitType != visitType {
-                AuditLog.record("update", "patient", patient: patient,
-                                details: ["field": "visit_type", "to": visitType.rawValue])
-                patient.visitType = visitType
-                edited = true
-            }
-            if edited {
-                patient.updatedAt = .now
-                patient.pendingSync = true
-                try? context.save()
-            }
-
-            if scheduleReminder {
-                let notifService = NotificationService()
-                await notifService.requestPermission()
-                await notifService.scheduleReminders(
-                    id: event.eventIdentifier ?? UUID().uuidString,
-                    patientName: patient.fullName,
-                    date: apptDate,
-                    type: apptType.rawValue
-                )
-            }
-
-            isSaving = false
-
-            if sendEmail && MailComposer.canSendMail && patient.email?.isEmpty == false {
-                showMailComposer = true
-            } else if sendSMS && SMSComposer.canSendText && patient.phone?.isEmpty == false {
-                showSMSComposer = true
-            } else if openQuestionnaire {
-                showQuestionnaire = true
-            } else {
-                dismiss()
-            }
+            // The record may have been removed or merged by sync during the calendar request.
+            guard patient.isLive else { isSaving = false; dismiss(); return }
+            await finish(patient: patient, eventId: event.eventIdentifier)
         } catch {
             savedError = error.localizedDescription
             isSaving = false
+        }
+    }
+
+    /// Reminders and the chosen follow-on (email, SMS, questionnaire), then close.
+    private func finish(patient: Patient, eventId: String?) async {
+        isSaving = true
+        if scheduleReminder {
+            let notifService = NotificationService()
+            await notifService.requestPermission()
+            await notifService.scheduleReminders(
+                id: eventId ?? UUID().uuidString,
+                patientName: patient.fullName,
+                date: apptDate,
+                type: apptType.rawValue
+            )
+        }
+        isSaving = false
+
+        if sendEmail && MailComposer.canSendMail && patient.email?.isEmpty == false {
+            showMailComposer = true
+        } else if sendSMS && SMSComposer.canSendText && patient.phone?.isEmpty == false {
+            showSMSComposer = true
+        } else if openQuestionnaire {
+            showQuestionnaire = true
+        } else {
+            dismiss()
         }
     }
 }

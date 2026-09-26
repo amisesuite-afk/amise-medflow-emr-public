@@ -299,7 +299,8 @@ end $$;
 -- PATCH /api/patients/:id demographics fields (patients-staff.ts), the
 -- dashboard (savePmhNotes: pmh_notes + family_history_notes) and the iOS
 -- front-desk screens (FDPatientDemographicsPanel: check-in, visit type, chief
--- complaint; AppointmentSchedulerView: setting + operation_date;
+-- complaint; AppointmentSchedulerView: setting + operation_date + appointment_type
+-- (Migration 97 adds the column; the name is allowed here whether or not it exists yet);
 -- AdaptiveQuestionnaireSheet: chief complaint, PMH notes, surgical history,
 -- allergies; PatientDemographicsForm on the iPhone front desk: height, family
 -- history). The iOS app leaves blocked columns out of a front-desk push
@@ -323,7 +324,7 @@ declare
     'insurance_provider', 'policy_number', 'pre_auth_status', 'referred_by',
     -- scheduling / encounter flow set by the front desk
     'check_in_time', 'encounter_status', 'setting', 'location', 'operation_date',
-    'visit_type',
+    'visit_type', 'appointment_type',
     -- patient-reported intake (questionnaire / registration)
     'chief_complaint', 'pmh_notes', 'family_history_notes', 'surgical_history',
     'allergies_json', 'height_cm',
