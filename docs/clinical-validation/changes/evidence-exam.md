@@ -157,10 +157,10 @@ records under the key `heart`.
 
 | Check | Result |
 |---|---|
-| Web clinval, 433 existing vignettes | 3149 expectations: 2981 pass, 76 fail before and after; **0 pass → fail, 0 blocking**; no known-gap flag resolved, so none removed |
-| Web clinval, all 446 vignettes | 3175 expectations: 3007 pass, 76 fail, 0 blocking |
-| New `exam-*` vignettes (web) | 26 / 26 pass with the recorded signs / rules; **11 / 26 without them** (same vignettes, `examSigns` and `scoreForms` removed) |
-| iOS simulator (TypeScript port of the scorer, 2.1.0 → 2.2.0 database) | only the `exam-*` vignettes' lists change; every existing iOS expectation keeps its status; the 10 new iOS differential expectations pass (flagged `unverified: ['ios']` until the Xcode run) |
+| Web clinval, 441 existing vignettes (after rebasing onto history-by-complaint) | 3164 expectations: 2992 pass, 78 fail before and after; **0 pass → fail, 0 blocking**, 0 critical failures; no known-gap flag resolved, so none removed |
+| Web clinval, all 454 vignettes | 3190 expectations: 3018 pass, 78 fail, 0 blocking |
+| New `exam-*` vignettes (web) | 26 / 26 pass with the recorded signs / rules; **11 / 26 without them** (same vignettes, `examSigns` and `scoreForms` removed): 2 top-3 differential ranks (abdominal-wall pain, paediatric gastroenteritis) and 13 reasoning lines (the sign's or rule's LR and move) |
+| iOS simulator (TypeScript port of the scorer, 2.1.0 → 2.2.0 database, 454 vignettes) | only 8 `exam-*` vignettes' lists change; every existing iOS expectation keeps its status (fixed 0, broken 0 against `ios-latest`); the 10 new iOS differential expectations pass (flagged `unverified: ['ios']` until the Xcode run). E.g. femoral hernia 5 → 15, cirrhosis 10 → 33, gastric carcinoma 8 → 32 log units; Carnett's sign puts the new ACNES candidate first |
 
 Web differential, the same vignette without → with the recorded evidence (top three, PANE):
 
