@@ -180,6 +180,12 @@ enum OutcomeSanitiser {
         guard let raw, !raw.isEmpty else { return nil }
         if let d = isoFormatter(fractional: true).date(from: raw) { return d }
         if let d = isoFormatter(fractional: false).date(from: raw) { return d }
+        // Postgres timestamptz comes back with microseconds ("…10:00:00.123456+00:00"), which
+        // ISO8601DateFormatter does not read: keep the milliseconds (what Date.parse keeps).
+        if let r = raw.range(of: #"\.(\d{3})\d+"#, options: .regularExpression) {
+            let trimmed = raw.replacingCharacters(in: r, with: String(raw[r].prefix(4)))
+            if let d = isoFormatter(fractional: true).date(from: trimmed) { return d }
+        }
         if raw.count == 10, normaliseSourceDate(raw, minimum: "0000-01-01") != nil {
             return isoFormatter(fractional: false).date(from: raw + "T00:00:00Z")
         }

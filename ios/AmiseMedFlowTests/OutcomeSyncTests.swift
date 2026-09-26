@@ -81,6 +81,15 @@ final class OutcomeSyncTests: XCTestCase {
         XCTAssertNil(OutcomeCodes.normaliseICD10("K35.80123"))
     }
 
+    func testServerTimestampsWithMicrosecondsAreRead() {
+        // Postgres returns timestamptz with microseconds; Date.parse keeps the milliseconds.
+        XCTAssertEqual(OutcomeSanitiser.isoDate("2026-09-22T10:00:00.123456+00:00"), "2026-09-22T10:00:00.123Z")
+        XCTAssertEqual(OutcomeSanitiser.isoDate("2026-09-22T10:00:00+00:00"), "2026-09-22T10:00:00.000Z")
+        XCTAssertEqual(OutcomeSanitiser.isoDate("2026-09-22"), "2026-09-22T00:00:00.000Z")
+        XCTAssertNil(OutcomeSanitiser.isoDate(""))
+        XCTAssertNil(OutcomeSanitiser.normaliseSourceDate("2026-9-22"))
+    }
+
     // MARK: - Rows
 
     private let patientRow = "0B3F6F7E-9A1D-4C55-8E2A-1A2B3C4D5E6F"
