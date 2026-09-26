@@ -1,7 +1,7 @@
 {
   "$comment": "Guideline registry for every clinical rule set in AMISE MedFlow (iOS, web, API, front desk). One entry per rule set in docs/CLINICAL-CONTENT-INVENTORY.md. Checked in CI by scripts/src/lint-guideline-registry.ts: a missing file or an unregistered known rule-set file fails; an unknown lastReviewed or a passed nextReviewDue only warns. Dates are YYYY-MM-DD (America/St_Lucia) or \"unknown\". lastReviewed records a documented CLINICAL review (surgeon, CSO or pharmacist) only; engineering checks go in reviewEvidence. Design: docs/CLINICAL-CONTENT-UPGRADES.md.",
   "registryVersion": "1.0.0",
-  "updated": "2026-09-25",
+  "updated": "2026-09-26",
   "reviewPolicy": {
     "defaultIntervalMonths": 12,
     "firstReviewTargets": {
@@ -678,7 +678,7 @@
       "title": "Web Bayesian differential (pane-engine): diseases, priors, feature likelihoods, prior modifiers, applicability, stopping rules; PANE feature mapper",
       "platforms": ["web"],
       "kind": "bayesian-model-data",
-      "contentVersion": "1.0.0",
+      "contentVersion": "1.0.1",
       "versionStamp": { "file": "lib/pane-engine/src/constants.ts", "type": "regex", "pattern": "PANE_MODEL_VERSION\\s*=\\s*'([^']+)'" },
       "files": [
         "lib/pane-engine/src/vademecum/specialties/*.ts",
@@ -691,7 +691,8 @@
         "lib/pane-engine/src/engine/likelihood.ts",
         "lib/pane-engine/src/engine/modifiers.ts",
         "lib/pane-engine/src/constants.ts",
-        "artifacts/dashboard/src/lib/socrates-to-features.ts"
+        "artifacts/dashboard/src/lib/socrates-to-features.ts",
+        "artifacts/dashboard/src/lib/record-text-match.ts"
       ],
       "tests": [
         "lib/pane-engine/src/__tests__/bayes.test.ts",
@@ -701,6 +702,7 @@
         "lib/pane-engine/src/__tests__/neutrality.test.ts",
         "artifacts/dashboard/src/lib/__tests__/socrates-to-features.test.ts",
         "artifacts/dashboard/src/lib/__tests__/pane-mapping-negation.test.ts",
+        "artifacts/dashboard/src/lib/__tests__/pane-mapper-false-positives.test.ts",
         "scripts/src/clinval/pane-neutrality.test.ts"
       ],
       "ciChecks": ["lint:dx-phases (disease ids)", "pane-engine vitest (model integrity, neutrality)", "scripts vitest (clinval PANE top-3 floors per category)"],
@@ -723,9 +725,10 @@
       "reviewPriority": "P1",
       "nextReviewDue": "2026-10-31",
       "changeAuthority": "Any repository committer. Ships on dashboard deploy.",
-      "notes": "Model 1.0.0: 187 diseases plus _other_, 426 features (surgical, medical, obstetric, paediatric, neurological, vascular), prior tiers (vademecum/priors.ts), unmodelled findings scored at the finding's background rate (engine/likelihood.ts; was a flat 0.30), bounded sex likelihood ratios and age/sex/pregnancy applicability (engine/modifiers.ts), feature mapper reads chips, vitals, history, results and free text (socrates-to-features.ts). Stops at posterior 0.85 or 8 questions.",
+      "notes": "Model 1.0.1 (mapper precision; the disease model is 1.0.0): 187 diseases plus _other_, 426 features (surgical, medical, obstetric, paediatric, neurological, vascular), prior tiers (vademecum/priors.ts), unmodelled findings scored at the finding's background rate (engine/likelihood.ts; was a flat 0.30), bounded sex likelihood ratios and age/sex/pregnancy applicability (engine/modifiers.ts), feature mapper reads chips, vitals, history, results and free text (socrates-to-features.ts). Stops at posterior 0.85 or 8 questions.",
       "changelog": [
-        { "version": "1.0.0", "date": "2026-09-25", "change": "Condition-neutral model (clinval C6): neutral background rates for unmodelled findings instead of 0.30; frequency-tier priors with no specialty boost (cholecystitis 0.15 → 0.015, GORD 0.12 → 0.03, PUD 0.10 → 0.015 …); sex modifiers bounded as likelihood ratios (inguinal hernia ×5/×0.3 → ×1.8/×0.2; gynaecological ×2.5 and breast ×1.8 boosts removed); applicability (sex, age, pregnancy); 58 new nodes (ACS, dissection, heart failure, AF, cardiac syncope, hypertensive emergency, pneumonia, asthma, COPD, sepsis, anaphylaxis, gastroenteritis, C. difficile, AKI, hyperkalaemia, hypercalcaemia, hyponatraemia, DKA, HHS, hypoglycaemia, phaeochromocytoma, stroke, TIA, SAH, meningitis, seizure, cauda equina, MSCC, pre-eclampsia/HELLP, abruption, hyperemesis, intussusception, pyloric stenosis, malrotation, HSP, mesenteric ischaemia, limb ischaemia, aorto-enteric fistula, femoral aneurysm, superficial thrombophlebitis, pyelonephritis, infected obstructed kidney, biliary colic, variceal bleed, perforated ulcer, food bolus, lower GI bleed, anal cancer, Fournier's, sigmoid volvulus, toxic megacolon, incarcerated hernia, post-operative collection and pneumonia, DFI, Charcot, inguinal nodes, anaplastic thyroid); feature mapper reads the whole consultation record. Versioned from unversioned." }
+        { "version": "1.0.0", "date": "2026-09-25", "change": "Condition-neutral model (clinval C6): neutral background rates for unmodelled findings instead of 0.30; frequency-tier priors with no specialty boost (cholecystitis 0.15 → 0.015, GORD 0.12 → 0.03, PUD 0.10 → 0.015 …); sex modifiers bounded as likelihood ratios (inguinal hernia ×5/×0.3 → ×1.8/×0.2; gynaecological ×2.5 and breast ×1.8 boosts removed); applicability (sex, age, pregnancy); 58 new nodes (ACS, dissection, heart failure, AF, cardiac syncope, hypertensive emergency, pneumonia, asthma, COPD, sepsis, anaphylaxis, gastroenteritis, C. difficile, AKI, hyperkalaemia, hypercalcaemia, hyponatraemia, DKA, HHS, hypoglycaemia, phaeochromocytoma, stroke, TIA, SAH, meningitis, seizure, cauda equina, MSCC, pre-eclampsia/HELLP, abruption, hyperemesis, intussusception, pyloric stenosis, malrotation, HSP, mesenteric ischaemia, limb ischaemia, aorto-enteric fistula, femoral aneurysm, superficial thrombophlebitis, pyelonephritis, infected obstructed kidney, biliary colic, variceal bleed, perforated ulcer, food bolus, lower GI bleed, anal cancer, Fournier's, sigmoid volvulus, toxic megacolon, incarcerated hernia, post-operative collection and pneumonia, DFI, Charcot, inguinal nodes, anaplastic thyroid); feature mapper reads the whole consultation record. Versioned from unversioned." },
+        { "version": "1.0.1", "date": "2026-09-26", "change": "Feature mapper precision (no disease, prior or likelihood changed). Every rule goes through record-text-match.ts: negated lists get a window per item (\"never had pain, jaundice or fever\"; \"denies A, B and C\"), family history is never the patient, symptoms and signs are not read from a sentence dated years back, a repaired or planned-for-repair condition or a lay guess, a [^.]{0,N} gap cannot cross a negation cue (\"DRE: no mass\"), requires-context must be affirmed. Pattern fixes: flame haemorrhages, restless + disorientated, rheumatoid arthritis, abscess drainage, defaecation as a syncope trigger, pale stools, calf pain on walking, pulse-oximetry, fistula cord, flatus incontinence and faecal urgency, rash on both legs, breast 'central' and 'diffuse neck' sites, RIF scar, distended neck veins, 'not passed urine' (oliguria), neuropathic pain; adrenal mass read from imaging. Clinval web: no expectation changed status. See docs/clinical-validation/changes/diagnostic-reasoning.md (precision pass)." }
       ]
     },
     {
@@ -1474,7 +1477,8 @@
       "notes": "transcript-dx-mapper maps transcript text to pane-engine features and pathognomonic findings.",
       "changelog": [
         { "version": "unversioned", "date": "2026-09-25", "change": "Prompts: emergency / safeguarding prompts from emergency-recognition.ts; operative templates only with a supporting working diagnosis; no adult doses under 16; no NSAIDs in pregnancy; β-HCG never assumed; COPD 88–92% (BTS 2017); no fluid bolus with heart-failure signs or PE; anaphylaxis and AAA before fluids; calcium gluconate 10% 30 mL (UKKA 2023); hyponatraemia volume status first (European 2014); procedure-specific anticoagulation (BSG/ESGE 2021, ACCP 2022, PAUSE) and stent-window plans (ESC/ESAIC 2022); dilated-CBD threshold; tetanus, asplenia, VTE, anaesthetic-hazard, obstetric-handover prompts. CDS: ABCD2 suggestion removed (NICE NG128). See docs/clinical-validation/changes/fix-web-triage.md." },
-        { "version": "unversioned", "date": "2026-09-25", "change": "web-last-gaps. Prompts: colonic stent by tumour side and contraindications (WSES 2018; ESGE 2020); inflammatory breast cancer and pregnancy anticoagulant wording; operative templates — fasting 6 h food / 2 h clear fluids (AAGBI 2010; ESA 2011), antibiotic prophylaxis only for high-risk lap chole (SIGN 104) and not routine for elective mesh repair (HerniaSurge 2018), no post-operative antibiotics after uncomplicated appendicitis (WSES 2020) or TG18 Grade I–II cholecystectomy, no NSAID with renal impairment / age ≥ 75 / heart failure / ulcer history / anticoagulant (NICE NG148; BNF), renally adjusted VTE prophylaxis (NICE NG89; BNF), ventral hernia template and cirrhosis-ascites inpatient repair (EHS/AHS 2020); penicillin lines withheld (not annotated) with a penicillin allergy; GI bleed resuscitation only when haemodynamically significant (BSG 2019; NICE CG141); no routine clotting screen before elective surgery (NICE NG45) or with a DOAC (PAUSE); two-level Wells for PE (NICE NG158); UKKA 2023 hyperkalaemia bands; anticoagulated injury — CT head and reversal readiness (NICE NG232); ultrasound first for children and pregnancy; meningococcal vaccines named; known diabetes via readPersonalRisk(). CDS: TG18 cholecystitis and BISAP suggested from the working diagnosis. See docs/clinical-validation/changes/web-last-gaps.md." }
+        { "version": "unversioned", "date": "2026-09-25", "change": "web-last-gaps. Prompts: colonic stent by tumour side and contraindications (WSES 2018; ESGE 2020); inflammatory breast cancer and pregnancy anticoagulant wording; operative templates — fasting 6 h food / 2 h clear fluids (AAGBI 2010; ESA 2011), antibiotic prophylaxis only for high-risk lap chole (SIGN 104) and not routine for elective mesh repair (HerniaSurge 2018), no post-operative antibiotics after uncomplicated appendicitis (WSES 2020) or TG18 Grade I–II cholecystectomy, no NSAID with renal impairment / age ≥ 75 / heart failure / ulcer history / anticoagulant (NICE NG148; BNF), renally adjusted VTE prophylaxis (NICE NG89; BNF), ventral hernia template and cirrhosis-ascites inpatient repair (EHS/AHS 2020); penicillin lines withheld (not annotated) with a penicillin allergy; GI bleed resuscitation only when haemodynamically significant (BSG 2019; NICE CG141); no routine clotting screen before elective surgery (NICE NG45) or with a DOAC (PAUSE); two-level Wells for PE (NICE NG158); UKKA 2023 hyperkalaemia bands; anticoagulated injury — CT head and reversal readiness (NICE NG232); ultrasound first for children and pregnancy; meningococcal vaccines named; known diabetes via readPersonalRisk(). CDS: TG18 cholecystitis and BISAP suggested from the working diagnosis. See docs/clinical-validation/changes/web-last-gaps.md." },
+        { "version": "unversioned", "date": "2026-09-26", "change": "transcript-dx-mapper: keywords and pathognomonic signs read through record-text-match.ts (negated lists, family history, historical / background mentions of symptoms and signs) like the PANE feature mapper; a family-history or historical mention records nothing." }
       ]
     },
     {
@@ -1584,14 +1588,12 @@
         "lib/triage-engine/src/diagnostic-reasoning/core.ts",
         "lib/triage-engine/src/diagnostic-reasoning/longitudinal.ts",
         "lib/triage-engine/src/diagnostic-reasoning/index.ts",
-        "artifacts/dashboard/src/lib/diagnostic-reasoning.ts",
         "ios/AmiseMedFlow/Services/DiagnosticReasoningCore.swift",
         "ios/AmiseMedFlow/Services/DiagnosticReasoningAdapter.swift",
         "ios/AmiseMedFlow/Services/LongitudinalPatterns.swift"
       ],
       "tests": [
         "artifacts/dashboard/src/lib/__tests__/diagnostic-reasoning-core.test.ts",
-        "artifacts/dashboard/src/lib/__tests__/diagnostic-reasoning.test.ts",
         "ios/AmiseMedFlowTests/DiagnosticReasoningTests.swift",
         "scripts/src/diagnostic-reasoning-parity.test.ts"
       ],
@@ -1615,9 +1617,42 @@
       "reviewPriority": "P1",
       "nextReviewDue": "2026-12-31",
       "changeAuthority": "Any repository committer (no CODEOWNERS). Web live on deploy; iOS with an app release.",
-      "notes": "Deterministic; reads the engines' own evidence (PANE feature likelihoods / DiagnosticDatabase logLR and citations); adds nothing to the record without a tap. Web can't-miss and coexisting disease lists, the PANE module sources and the time-out filters are in artifacts/dashboard/src/lib/diagnostic-reasoning.ts; iOS uses the database urgency (>= 2) and a 5 % background rate for P(finding | diagnosis) in the information gain.",
+      "notes": "Shared core (web + iOS twins). The web PANE adapter and its own rules are the diagnostic-reasoning-web entry. Deterministic; reads the engines' own evidence (PANE feature likelihoods / DiagnosticDatabase logLR and citations); adds nothing to the record without a tap. Web can't-miss and coexisting disease lists, the PANE module sources and the time-out filters are in artifacts/dashboard/src/lib/diagnostic-reasoning.ts; iOS uses the database urgency (>= 2) and a 5 % background rate for P(finding | diagnosis) in the information gain.",
       "changelog": [
         { "version": "1.0.0", "date": "2026-09-25", "change": "First version: for / against / missing / doesn't fit (LR >= 1.5 / <= 0.67; cardinal = P >= 0.6 and LR >= 2 on web, logLR >= 8 on iOS), best next discriminator (information gain, cost tiers ask/bedside 1, lab 0.85, imaging 0.6, advanced 0.35 and only with a can't-miss diagnosis), premature-closure alerts (contradicting finding LR <= 0.33; leader >= 50 % and 5x the working diagnosis with a driving finding of LR ratio >= 10; NEWS2 rise >= 2 to >= 5), diagnostic time-out (>= 3 unexplained specific findings; repeat visit for the same complaint without a firm diagnosis), longitudinal patterns (3+ visits, KDIGO creatinine rise, Hb fall >= 20 g/L, weight loss >= 5 % in 6 months)." }
+      ]
+    },
+    {
+      "id": "diagnostic-reasoning-web",
+      "title": "Diagnostic reasoning — web PANE adapter rules: working-diagnosis resolution, diagnosis families, two-conditions and already-named rules, web contradiction threshold, time-out coexisting states, can't-miss and coexisting lists",
+      "platforms": ["web"],
+      "kind": "decision-support-rules",
+      "contentVersion": "1.1.0",
+      "versionStamp": { "file": "artifacts/dashboard/src/lib/diagnostic-reasoning.ts", "type": "regex", "pattern": "DIAGNOSTIC_REASONING_WEB_VERSION\\s*=\\s*'([^']+)'" },
+      "files": [
+        "artifacts/dashboard/src/lib/diagnostic-reasoning.ts",
+        "artifacts/dashboard/src/lib/diagnosis-families.ts"
+      ],
+      "tests": [
+        "artifacts/dashboard/src/lib/__tests__/diagnostic-reasoning.test.ts",
+        "artifacts/dashboard/src/lib/__tests__/diagnostic-reasoning-web-rules.test.ts"
+      ],
+      "ciChecks": ["dashboard vitest", "clinval:web (web.reasoning; reasoning-* vignettes must still alert)"],
+      "guidelines": [
+        { "name": "Users' guides to the medical literature: diagnostic tests (likelihood ratios)", "version": "1994", "section": "LR 0.1-0.2 moderate, < 0.1 large evidence against", "citation": "Jaeschke R, Guyatt GH, Sackett DL. JAMA 1994;271:703-707" },
+        { "name": "ICD-10 (WHO) / ICD-10-CM", "version": "2019 / 2025", "section": "Categories (3 characters) and injury blocks (S2x thorax, S3x abdomen)", "citation": "World Health Organization; CMS/NCHS" }
+      ],
+      "citationStatus": "file-header",
+      "lastReviewed": "unknown",
+      "reviewer": "unknown",
+      "reviewEvidence": "None. Tuned on the 397 clinval vignettes whose confirmed diagnoses are correct: 'doesn't fit' alerts 77 -> 30, time-outs 103 -> 49; the 12 reasoning vignettes unchanged (the 4 closure vignettes still alert). No clinical review.",
+      "reviewPriority": "P1",
+      "nextReviewDue": "2026-12-31",
+      "changeAuthority": "Any repository committer. Ships on dashboard deploy. iOS twin rules not ported (DiagnosticReasoningAdapter.swift unchanged).",
+      "notes": "Web only. The shared core (diagnostic-reasoning-rules) and iOS are unchanged, so the iOS card still uses the core rules: contradicting finding LR <= 0.33, no families, no two-conditions rule. Porting these to DiagnosticReasoningAdapter.swift is a follow-up.",
+      "changelog": [
+        { "version": "1.0.0", "date": "2026-09-25", "change": "First version (part of diagnostic-reasoning-rules 1.0.0): PANE LRs, cardinal P >= 0.6 and LR >= 2, can't-miss list (50 PANE diseases), coexisting states (sepsis, AKI, hyperkalaemia, hypercalcaemia, hyponatraemia, hypoglycaemia), time-out filters (no history items; background rate <= 5 %), working diagnosis by disease id then ICD-10 (exact, then category)." },
+        { "version": "1.1.0", "date": "2026-09-26", "change": "Precision pass against alert fatigue. Diagnosis families (diagnosis-families.ts, from PANE ids, labels and ICD-10): same ICD-10 category and head noun; injuries of one body region (S2x, S3x); complication or grade modifier (incarcerated, strangulated, perforated, gangrene, necrotising, infected, obstructed, toxic, major, minor, late, early) with a shared head noun in the same ICD-10 chapter or named in the parenthesis. Family members are compatible: never the leader of 'the record favours X', and a finding that favours one does not alert. Working node matched by label when it beats the ICD-10 match by 2 (words found minus missing; 1 word needs an ICD match, else 2; acute/chronic contradict). 'The record favours X' only when X shares evidence (LR >= 1.5 in both) with a working diagnosis that has support of its own (LR >= 2), and X is not already named in the working diagnosis. A single contradicting finding alerts at LR <= 0.2 (core 0.33). Time-out: findings explained by a coexisting state are explained. Alerts 77 -> 30 / 397, time-outs 103 -> 49 / 397." }
       ]
     }
   ],

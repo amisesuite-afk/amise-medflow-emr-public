@@ -117,6 +117,7 @@ const KNOWN_RULE_SET_FILES: string[] = [
   // Diagnostic reasoning layer (web + iOS twins)
   'lib/triage-engine/src/diagnostic-reasoning/*.ts',
   'artifacts/dashboard/src/lib/diagnostic-reasoning.ts',
+  'artifacts/dashboard/src/lib/diagnosis-families.ts',
   'ios/AmiseMedFlow/Resources/ZebraRules.json',
   'ios/AmiseMedFlow/Services/ZebraCheck.swift',
   'ios/AmiseMedFlow/Services/DiagnosticReasoning*.swift',
@@ -146,6 +147,8 @@ const KNOWN_RULE_SET_FILES: string[] = [
   'artifacts/dashboard/src/lib/symptom-inference.ts',
   'artifacts/dashboard/src/lib/clinical-pathways.ts',
   'artifacts/dashboard/src/lib/transcript-dx-mapper.ts',
+  'artifacts/dashboard/src/lib/socrates-to-features.ts',
+  'artifacts/dashboard/src/lib/record-text-match.ts',
   'artifacts/dashboard/src/lib/vitals-news2-fields.ts',
   'artifacts/dashboard/src/pages/tabs/DosingTab.tsx',
   'artifacts/dashboard/src/pages/tabs/BookingInboxTab.tsx',
