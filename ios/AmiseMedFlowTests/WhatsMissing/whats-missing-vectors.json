@@ -2702,7 +2702,7 @@
           {
             "id": "renal",
             "tier": "safety",
-            "what": "Renal function not on file: eGFR",
+            "what": "Renal function: eGFR not on file",
             "why": "Needed before iodinated contrast",
             "also": [],
             "action": {
@@ -2807,7 +2807,7 @@
           {
             "id": "renal",
             "tier": "safety",
-            "what": "Renal function not on file: eGFR",
+            "what": "Renal function: eGFR not on file",
             "why": "Needed before iodinated contrast",
             "also": [],
             "action": {
@@ -2914,7 +2914,7 @@
           {
             "id": "renal",
             "tier": "safety",
-            "what": "Renal function not on file: urea and eGFR",
+            "what": "Renal function: urea and eGFR not on file",
             "why": "Needed before ibuprofen (renally cleared / NSAID)",
             "also": [
               "Needed for BISAP"
@@ -3023,7 +3023,7 @@
           {
             "id": "fbc",
             "tier": "score",
-            "what": "Full blood count not on file: WBC and neutrophils",
+            "what": "Full blood count: WBC and neutrophils not on file",
             "why": "Needed for TG18 cholecystitis and Alvarado",
             "also": [],
             "action": {
@@ -3177,7 +3177,7 @@
           {
             "id": "renal",
             "tier": "score",
-            "what": "Renal function not on file: urea",
+            "what": "Renal function: urea not on file",
             "why": "Needed for CURB-65",
             "also": [],
             "action": {
@@ -3714,7 +3714,7 @@
           {
             "id": "renal",
             "tier": "decision",
-            "what": "Renal function not on file: eGFR",
+            "what": "Renal function: eGFR not on file",
             "why": "May change Treat → Test further for early laparoscopic cholecystectomy (acute cholecystitis)",
             "also": [],
             "action": {
@@ -3744,7 +3744,7 @@
           {
             "id": "fbc",
             "tier": "score",
-            "what": "Full blood count not on file: WBC",
+            "what": "Full blood count: WBC not on file",
             "why": "Needed for TG18 cholecystitis",
             "also": [],
             "action": {
@@ -4286,7 +4286,7 @@
           {
             "id": "fbc",
             "tier": "score",
-            "what": "Full blood count not on file: WBC",
+            "what": "Full blood count: WBC not on file",
             "why": "Needed for TG18 cholecystitis",
             "also": [],
             "action": {
@@ -4614,7 +4614,7 @@
           {
             "id": "renal",
             "tier": "safety",
-            "what": "Renal function not on file: eGFR",
+            "what": "Renal function: eGFR not on file",
             "why": "Needed before ibuprofen (renally cleared / NSAID)",
             "also": [],
             "action": {
@@ -4678,7 +4678,7 @@
           {
             "id": "fbc",
             "tier": "score",
-            "what": "Full blood count not on file: WBC and neutrophils",
+            "what": "Full blood count: WBC and neutrophils not on file",
             "why": "Needed for Alvarado and AIR",
             "also": [],
             "action": {

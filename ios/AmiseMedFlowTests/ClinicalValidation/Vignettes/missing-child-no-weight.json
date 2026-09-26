@@ -1,0 +1,114 @@
+{
+  "schemaVersion": 1,
+  "id": "missing-child-no-weight",
+  "condition": "Suspected appendicitis in a child",
+  "category": "gi-emergency",
+  "permutationOf": null,
+  "permutationLabel": "What's missing — top item",
+  "summary": "7-year-old boy with 12 h of periumbilical pain moving to the right iliac fossa; paracetamol planned; no weight and no allergy status recorded.",
+  "tags": [
+    "whats-missing"
+  ],
+  "inputs": {
+    "patient": {
+      "ageYears": 7,
+      "sex": "male"
+    },
+    "encounter": {
+      "setting": "emergency",
+      "visitType": "urgentReview",
+      "acuity": "urgent"
+    },
+    "chiefComplaint": "Abdominal pain",
+    "hpi": "12 hours of central abdominal pain that moved to the right iliac fossa. Off his food. Vomited once.",
+    "exam": {
+      "general": "Flushed, uncomfortable.",
+      "abdomen": "Tender in the right iliac fossa with guarding."
+    },
+    "vitals": [
+      {
+        "minutesAgo": 10,
+        "heartRate": 118,
+        "temperatureC": 38.1,
+        "respiratoryRate": 24
+      }
+    ],
+    "labs": [],
+    "imaging": [],
+    "comorbidities": [],
+    "surgicalHistory": [],
+    "medications": [],
+    "allergies": [],
+    "orders": {
+      "prescriptions": [
+        "Paracetamol oral suspension"
+      ]
+    },
+    "platform": {
+      "web": {
+        "ccTemplate": "Acute abdominal pain",
+        "symptoms": [
+          "abdominal pain",
+          "vomiting"
+        ]
+      }
+    }
+  },
+  "expected": {
+    "missing": {
+      "top": {
+        "id": "missing-top-weight",
+        "severity": "quality",
+        "match": [
+          "weight not recorded"
+        ],
+        "unverified": [
+          "ios"
+        ],
+        "guidelineRefs": [
+          "bnfc-weight"
+        ],
+        "note": "Every paediatric dose is per kilogram: a missing weight blocks every prescription, so it ranks first (above the missing allergy status)."
+      },
+      "mustInclude": [
+        {
+          "id": "missing-allergy-listed",
+          "severity": "quality",
+          "match": [
+            "allergy status not recorded"
+          ],
+          "unverified": [
+            "ios"
+          ],
+          "guidelineRefs": [
+            "nice-cg183"
+          ]
+        }
+      ]
+    }
+  },
+  "guideline": [
+    {
+      "id": "bnfc-weight",
+      "name": "BNF for Children — prescribing in children (doses by body weight)",
+      "year": 2024,
+      "section": "General guidance: doses are expressed per kilogram; weigh the child before prescribing",
+      "citation": "Paediatric Formulary Committee. BNF for Children. BMJ Group / Pharmaceutical Press.",
+      "verified": false
+    },
+    {
+      "id": "nice-cg183",
+      "name": "NICE CG183 — Drug allergy: diagnosis and management",
+      "year": 2014,
+      "section": "1.2 Documenting and sharing information: record drug allergy status (including 'none known') before prescribing",
+      "citation": "National Institute for Health and Care Excellence. Drug allergy (CG183). 2014.",
+      "verified": false
+    }
+  ],
+  "rationale": "Owner's example: a child without a weight — weight first.",
+  "authoring": {
+    "author": "Claude (whats-missing)",
+    "date": "2026-09-26",
+    "notes": "What's missing strip vignette. Expectations need surgeon sign-off (reviewedBy)."
+  }
+}

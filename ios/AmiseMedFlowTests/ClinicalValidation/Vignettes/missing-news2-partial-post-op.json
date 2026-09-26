@@ -1,0 +1,140 @@
+{
+  "schemaVersion": 1,
+  "id": "missing-news2-partial-post-op",
+  "condition": "Post-operative pyrexia with partial observations",
+  "category": "other",
+  "permutationOf": null,
+  "permutationLabel": "What's missing — top item",
+  "summary": "68-year-old man, day 2 after a right hemicolectomy, febrile; RR, SpO₂, oxygen and consciousness not charted.",
+  "tags": [
+    "whats-missing"
+  ],
+  "inputs": {
+    "patient": {
+      "ageYears": 68,
+      "sex": "male",
+      "heightCm": 172,
+      "weightKg": 76
+    },
+    "encounter": {
+      "setting": "inpatient",
+      "visitType": "wardReview",
+      "acuity": "priority",
+      "isPostOp": true,
+      "postOpDays": 2
+    },
+    "chiefComplaint": "Fever after surgery",
+    "hpi": "Day 2 after an open right hemicolectomy for cancer. Temperature 38.2 overnight. Tolerating fluids.",
+    "exam": {
+      "abdomen": "Wound clean. Soft, appropriately tender."
+    },
+    "vitals": [
+      {
+        "minutesAgo": 20,
+        "heartRate": 104,
+        "systolicBp": 102,
+        "diastolicBp": 64,
+        "temperatureC": 38.2
+      }
+    ],
+    "labs": [
+      {
+        "analyte": "wbc",
+        "name": "WBC",
+        "value": 11.8,
+        "unit": "×10⁹/L",
+        "minutesAgo": 240
+      },
+      {
+        "analyte": "crp",
+        "name": "CRP",
+        "value": 140,
+        "unit": "mg/L",
+        "minutesAgo": 240
+      },
+      {
+        "analyte": "creatinine",
+        "name": "Creatinine",
+        "value": 88,
+        "unit": "µmol/L",
+        "minutesAgo": 240
+      },
+      {
+        "analyte": "egfr",
+        "name": "eGFR",
+        "value": 78,
+        "unit": "mL/min/1.73m²",
+        "minutesAgo": 240
+      },
+      {
+        "analyte": "urea",
+        "name": "Urea",
+        "value": 6.1,
+        "unit": "mmol/L",
+        "minutesAgo": 240
+      }
+    ],
+    "imaging": [],
+    "comorbidities": [
+      "Colon cancer (resected)"
+    ],
+    "surgicalHistory": [
+      "Open right hemicolectomy (day 2)"
+    ],
+    "medications": [
+      {
+        "drug": "Enoxaparin 40 mg OD"
+      }
+    ],
+    "allergies": [],
+    "nkda": true,
+    "supplements": "none",
+    "confirmedDiagnosis": {
+      "name": "Post-operative pyrexia",
+      "icd10": "R50.82",
+      "assessmentText": "Post-operative pyrexia, day 2 after right hemicolectomy — source to be found."
+    },
+    "platform": {
+      "web": {
+        "ccTemplate": "Fever",
+        "symptoms": [
+          "fever"
+        ]
+      }
+    }
+  },
+  "expected": {
+    "missing": {
+      "top": {
+        "id": "missing-top-obs",
+        "severity": "quality",
+        "match": [
+          "observations not recorded"
+        ],
+        "unverified": [
+          "ios"
+        ],
+        "guidelineRefs": [
+          "rcp-news2"
+        ],
+        "note": "NEWS2 with RR, SpO₂, oxygen and consciousness missing can under-score a febrile tachycardic post-operative patient (RCP 2017)."
+      }
+    }
+  },
+  "guideline": [
+    {
+      "id": "rcp-news2",
+      "name": "Royal College of Physicians — National Early Warning Score (NEWS) 2",
+      "year": 2017,
+      "section": "A full set of observations (RR, SpO₂, air / oxygen, BP, pulse, consciousness, temperature) is needed to score",
+      "citation": "Royal College of Physicians. NEWS2. London: RCP, 2017.",
+      "verified": false
+    }
+  ],
+  "rationale": "NEWS2 partial: the missing parameters are one observations item.",
+  "authoring": {
+    "author": "Claude (whats-missing)",
+    "date": "2026-09-26",
+    "notes": "What's missing strip vignette. Expectations need surgeon sign-off (reviewedBy)."
+  }
+}

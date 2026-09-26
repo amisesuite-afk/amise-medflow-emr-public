@@ -1,0 +1,115 @@
+{
+  "schemaVersion": 1,
+  "id": "missing-anticoag-last-dose-colonoscopy",
+  "condition": "Surveillance colonoscopy on apixaban",
+  "category": "colorectal",
+  "permutationOf": null,
+  "permutationLabel": "What's missing — top item",
+  "summary": "72-year-old man on apixaban for atrial fibrillation, booked for surveillance colonoscopy with polypectomy; last dose not recorded.",
+  "tags": [
+    "whats-missing"
+  ],
+  "inputs": {
+    "patient": {
+      "ageYears": 72,
+      "sex": "male"
+    },
+    "encounter": {
+      "setting": "endoscopy",
+      "visitType": "colonoscopy",
+      "acuity": "routine"
+    },
+    "chiefComplaint": "Polyp surveillance colonoscopy",
+    "hpi": "Surveillance after adenomas removed three years ago. No new bowel symptoms.",
+    "vitals": [
+      {
+        "minutesAgo": 15,
+        "heartRate": 84,
+        "systolicBp": 128,
+        "diastolicBp": 78,
+        "respiratoryRate": 16,
+        "temperatureC": 36.9,
+        "spo2": 98,
+        "avpu": "A",
+        "onSupplementalO2": false
+      }
+    ],
+    "labs": [
+      {
+        "analyte": "creatinine",
+        "name": "Creatinine",
+        "value": 98,
+        "unit": "µmol/L",
+        "minutesAgo": 1440
+      },
+      {
+        "analyte": "egfr",
+        "name": "eGFR",
+        "value": 64,
+        "unit": "mL/min/1.73m²",
+        "minutesAgo": 1440
+      }
+    ],
+    "imaging": [],
+    "comorbidities": [
+      "Atrial fibrillation"
+    ],
+    "surgicalHistory": [
+      "Colonoscopic polypectomy 2023"
+    ],
+    "medications": [
+      {
+        "drug": "Apixaban 5 mg BD",
+        "indication": "Atrial fibrillation"
+      }
+    ],
+    "allergies": [],
+    "nkda": true,
+    "supplements": "none",
+    "confirmedDiagnosis": {
+      "name": "Colorectal adenoma surveillance",
+      "icd10": "Z86.010",
+      "assessmentText": "Planned surveillance colonoscopy with polypectomy."
+    },
+    "platform": {
+      "web": {
+        "ccTemplate": "Endoscopy",
+        "symptoms": []
+      }
+    }
+  },
+  "expected": {
+    "missing": {
+      "top": {
+        "id": "missing-top-anticoag",
+        "severity": "quality",
+        "match": [
+          "anticoagulant last dose not recorded"
+        ],
+        "unverified": [
+          "ios"
+        ],
+        "guidelineRefs": [
+          "bsg-esge-2021-anticoag"
+        ],
+        "note": "Apixaban with a procedure planned: the time of the last dose decides the interruption (BSG/ESGE 2021)."
+      }
+    }
+  },
+  "guideline": [
+    {
+      "id": "bsg-esge-2021-anticoag",
+      "name": "BSG/ESGE — Endoscopy in patients on antiplatelet or anticoagulant therapy (2021 update)",
+      "year": 2021,
+      "section": "Timing of DOAC interruption by procedure risk and renal function — needs the time of the last dose",
+      "citation": "Veitch AM, Radaelli F, Alikhan R, et al. Gut 2021;70:1611–28.",
+      "verified": false
+    }
+  ],
+  "rationale": "Anticoagulant last dose before a procedure.",
+  "authoring": {
+    "author": "Claude (whats-missing)",
+    "date": "2026-09-26",
+    "notes": "What's missing strip vignette. Expectations need surgeon sign-off (reviewedBy)."
+  }
+}

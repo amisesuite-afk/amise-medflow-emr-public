@@ -1,0 +1,112 @@
+{
+  "schemaVersion": 1,
+  "id": "missing-ferritin-microcytic-anaemia",
+  "condition": "Microcytic anaemia without ferritin",
+  "category": "upper-gi",
+  "permutationOf": null,
+  "permutationLabel": "What's missing — top item",
+  "summary": "46-year-old woman with tiredness; Hb 9.8 g/dL, MCV 72 fL; no ferritin on file.",
+  "tags": [
+    "whats-missing"
+  ],
+  "inputs": {
+    "patient": {
+      "ageYears": 46,
+      "sex": "female",
+      "pregnancy": {
+        "status": "not-pregnant"
+      }
+    },
+    "encounter": {
+      "setting": "outpatient",
+      "visitType": "newConsult",
+      "acuity": "routine"
+    },
+    "chiefComplaint": "Tiredness",
+    "hpi": "Three months of tiredness and breathlessness on stairs. Periods regular. No change in bowel habit, no bleeding noticed.",
+    "vitals": [
+      {
+        "minutesAgo": 15,
+        "heartRate": 84,
+        "systolicBp": 128,
+        "diastolicBp": 78,
+        "respiratoryRate": 16,
+        "temperatureC": 36.9,
+        "spo2": 98,
+        "avpu": "A",
+        "onSupplementalO2": false
+      }
+    ],
+    "labs": [
+      {
+        "analyte": "haemoglobin",
+        "name": "Haemoglobin",
+        "value": 9.8,
+        "unit": "g/dL",
+        "minutesAgo": 1440
+      },
+      {
+        "analyte": "mcv",
+        "name": "MCV",
+        "value": 72,
+        "unit": "fL",
+        "minutesAgo": 1440
+      },
+      {
+        "analyte": "creatinine",
+        "name": "Creatinine",
+        "value": 60,
+        "unit": "µmol/L",
+        "minutesAgo": 1440
+      }
+    ],
+    "imaging": [],
+    "comorbidities": [],
+    "surgicalHistory": [],
+    "medications": [],
+    "allergies": [],
+    "nkda": true,
+    "platform": {
+      "web": {
+        "ccTemplate": "Fatigue",
+        "symptoms": [
+          "fatigue"
+        ]
+      }
+    }
+  },
+  "expected": {
+    "missing": {
+      "top": {
+        "id": "missing-top-ferritin",
+        "severity": "quality",
+        "match": [
+          "ferritin not on file"
+        ],
+        "unverified": [
+          "ios"
+        ],
+        "guidelineRefs": [
+          "bsg-2021-ida"
+        ],
+        "note": "Microcytic anaemia: the ferritin decides the BSG / NG12 pathway (bidirectional endoscopy)."
+      }
+    }
+  },
+  "guideline": [
+    {
+      "id": "bsg-2021-ida",
+      "name": "BSG guidelines for the management of iron deficiency anaemia in adults",
+      "year": 2021,
+      "section": "Serum ferritin confirms iron deficiency (< 45 µg/L) before bidirectional endoscopy",
+      "citation": "Snook J, Bhala N, Beales ILP, et al. Gut 2021;70:2030–51.",
+      "verified": false
+    }
+  ],
+  "rationale": "The NG12 / BSG ferritin prompt, carried by the strip.",
+  "authoring": {
+    "author": "Claude (whats-missing)",
+    "date": "2026-09-26",
+    "notes": "What's missing strip vignette. Expectations need surgeon sign-off (reviewedBy)."
+  }
+}

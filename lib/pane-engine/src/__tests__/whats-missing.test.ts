@@ -55,7 +55,7 @@ describe("what's missing — the owner's examples", () => {
   it('a decision flip outranks score completeness and names the band change', () => {
     const r = whatsMissing(VECTORS.rank.find(v => v.id === 'decision-flip-and-score')!.input);
     expect(r.items[0].why).toBe('May change Treat → Test further for early laparoscopic cholecystectomy (acute cholecystitis)');
-    expect(whatsMissingLines(r)[0]).toMatch(/^1\. \[decision\] Renal function not on file: eGFR — May change/);
+    expect(whatsMissingLines(r)[0]).toMatch(/^1\. \[decision\] Renal function: eGFR not on file — May change/);
   });
   it('an 82-year-old with an inguinal hernia: CFS would flip elective repair to observe', () => {
     const gaps = decisionGaps(VECTORS.probe.find(v => v.id === 'hernia-82')!.input);
