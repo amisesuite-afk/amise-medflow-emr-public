@@ -866,6 +866,106 @@
       ]
     },
     {
+      "id": "whats-missing",
+      "title": "What's missing — one ranked strip of the missing inputs the engines know about (safety basics, decision-layer inputs that flip a band, NG12 ferritin, best next discriminator, score completeness) and score auto-fill from the record",
+      "platforms": ["web", "ios"],
+      "kind": "decision-support-rules",
+      "contentVersion": "1.0.0",
+      "versionStamp": {
+        "file": "lib/pane-engine/src/whats-missing/whats-missing-rules.json",
+        "type": "json-key",
+        "key": "version"
+      },
+      "files": [
+        "lib/pane-engine/src/whats-missing/whats-missing-rules.json",
+        "lib/pane-engine/src/whats-missing/*.ts",
+        "ios/AmiseMedFlow/Resources/WhatsMissingRules.json",
+        "ios/AmiseMedFlow/Services/WhatsMissing*.swift",
+        "ios/AmiseMedFlow/Services/PatientScoreAutoPopulator+RecordFill.swift",
+        "artifacts/dashboard/src/lib/whats-missing-web.ts"
+      ],
+      "tests": [
+        "lib/pane-engine/src/__tests__/whats-missing.test.ts",
+        "artifacts/dashboard/src/lib/__tests__/whats-missing-web.test.ts",
+        "scripts/src/whats-missing-parity.test.ts",
+        "ios/AmiseMedFlowTests/WhatsMissingTests.swift",
+        "ios/AmiseMedFlowTests/WhatsMissing/whats-missing-vectors.json"
+      ],
+      "ciChecks": [
+        "pane-engine vitest (shared vectors: score auto-fill, decision-gap probe, ranking; rule hygiene: no medicine instruction, no dose)",
+        "scripts vitest whats-missing-parity (web and iOS JSON byte-identical; vectors current; Swift names every key)",
+        "dashboard vitest (adapter: negation-aware history and findings, safety facts, the owner's examples end to end)",
+        "ios-build-check.yml unit tests (WhatsMissingTests: the same vectors)",
+        "clinval:web (web.missing; 8 missing-* vignettes assert the top item)",
+        "e2e/emr-walkthrough.mjs (the strip renders, allergy status first for a new patient)"
+      ],
+      "guidelines": [
+        {
+          "name": "National Early Warning Score (NEWS) 2",
+          "version": "2017",
+          "section": "A full set of observations is needed to score",
+          "citation": "Royal College of Physicians. NEWS2. London: RCP, 2017."
+        },
+        {
+          "name": "BNF for Children",
+          "version": "current",
+          "section": "Doses by body weight",
+          "citation": "Paediatric Formulary Committee. BNF for Children."
+        },
+        {
+          "name": "NICE CG183 Drug allergy",
+          "version": "2014",
+          "section": "1.2 Record drug allergy status before prescribing",
+          "citation": "National Institute for Health and Care Excellence. CG183. 2014."
+        },
+        {
+          "name": "Protection of pregnant patients during diagnostic exposures to ionising radiation",
+          "version": "2019",
+          "section": "Ask 12-55-year-olds about pregnancy before abdominal / pelvic irradiation",
+          "citation": "RCR / SCoR / BIR. 2019."
+        },
+        {
+          "name": "NICE NG148 Acute kidney injury",
+          "version": "2019",
+          "section": "Renal function before nephrotoxic medicines",
+          "citation": "National Institute for Health and Care Excellence. NG148. 2019."
+        },
+        {
+          "name": "BSG/ESGE antiplatelet and anticoagulant therapy at endoscopy",
+          "version": "2021",
+          "section": "DOAC interruption by last dose and renal function",
+          "citation": "Veitch AM et al. Gut 2021;70:1611-28."
+        },
+        {
+          "name": "SPAQI consensus on dietary supplements and herbal products",
+          "version": "2021",
+          "section": "Ask about supplements before surgery",
+          "citation": "Cummings KC 3rd et al. Mayo Clin Proc 2021;96:1342-55."
+        },
+        {
+          "name": "BSG guidelines for iron deficiency anaemia",
+          "version": "2021",
+          "section": "Ferritin confirms iron deficiency",
+          "citation": "Snook J et al. Gut 2021;70:2030-51."
+        }
+      ],
+      "citationStatus": "file-header",
+      "lastReviewed": "unknown",
+      "reviewer": "unknown",
+      "reviewEvidence": "None. Built from the engines' existing rules and the owner's brief; exercised by the shared vectors, the dashboard tests and clinval:web (433 vignettes, no status change). Not a clinical review.",
+      "reviewPriority": "P1",
+      "nextReviewDue": "2026-12-31",
+      "changeAuthority": "Any repository committer. Web ships on dashboard deploy; iOS with an app release. Change the JSON in both places (parity test) and regenerate the vectors (gen:whats-missing-vectors).",
+      "notes": "Clinician-facing only. Nothing is ordered or recorded automatically: a field action jumps to the step, a test action adds a suggested investigation. Ranking: safety (cannot prescribe or dose safely without it) → decision (adverse-probe band flip by threshold distance, missing risk score, NG12 ferritin, best next discriminator while no diagnosis is confirmed) → score completeness. Score formulas unchanged. Sign-off list: docs/clinical-validation/changes/whats-missing.md.",
+      "changelog": [
+        {
+          "version": "1.0.0",
+          "date": "2026-09-26",
+          "change": "Created: safety basics (weight under 16, allergy status, pregnancy 12-55 with ionising imaging / prescribing / a procedure, renal function before renally cleared or NSAID drugs or contrast, anticoagulant last dose and supplements before a procedure), decision-gap probe (CFS 7, ASA IV, eGFR 25, pregnant, BMI 42, HAS-BLED 3, NEWS2 7), NG12 ferritin, best next discriminator, NEWS2 and score-input completeness for 13 scores; record auto-fill for Alvarado, AIR, Glasgow-Blatchford, CURB-65, Wells PE / DVT, Caprini, RCRI and BISAP. See docs/clinical-validation/changes/whats-missing.md."
+        }
+      ]
+    },
+    {
       "id": "dx-variants",
       "title": "Sub-diagnosis variants and the management phases each may show",
       "platforms": ["web"],
