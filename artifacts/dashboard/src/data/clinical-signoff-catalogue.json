@@ -1,6 +1,6 @@
 {
   "format": "amise-signoff-catalogue/1",
-  "catalogueHash": "a78e47b790ee5a42",
+  "catalogueHash": "323963a76aedf599",
   "repoUrl": "https://github.com/amisesuite-afk/amise-medflow-emr-public/blob/main/",
   "sources": [
     {
@@ -820,6 +820,33 @@
         "supplements-interactions#5",
         "supplements-interactions#6",
         "supplements-interactions#7"
+      ]
+    },
+    {
+      "id": "vademecum-phase1",
+      "title": "Change log — `vademecum-phase1` (disease-centred vademecum and hypothetico-deductive loop, SHADOW)",
+      "doc": "docs/clinical-validation/changes/vademecum-phase1.md",
+      "anchor": "needs-sign-off",
+      "ruleSetIds": [
+        "vademecum-findings",
+        "vademecum-abdominal-pain",
+        "vademecum-cough-breathlessness"
+      ],
+      "itemIds": [
+        "vademecum-phase1#V1",
+        "vademecum-phase1#V2",
+        "vademecum-phase1#V3",
+        "vademecum-phase1#V4",
+        "vademecum-phase1#V5",
+        "vademecum-phase1#V6",
+        "vademecum-phase1#V7",
+        "vademecum-phase1#V8",
+        "vademecum-phase1#V9",
+        "vademecum-phase1#V10",
+        "vademecum-phase1#V11",
+        "vademecum-phase1#V12",
+        "vademecum-phase1#V13",
+        "vademecum-phase1#V14"
       ]
     },
     {
@@ -2793,6 +2820,75 @@
         "ios-outcomes-calculators#10",
         "ios-outcomes-calculators#11",
         "ios-outcomes-calculators#12"
+      ]
+    },
+    {
+      "id": "vademecum-findings",
+      "title": "Disease-centred vademecum (phase 1, shadow): canonical finding dictionary and the hypothetico-deductive loop policy (thresholds, criteria floors, likelihood-ratio clamp)",
+      "reviewPriority": "P2",
+      "lastReviewed": "unknown",
+      "reviewer": "unknown",
+      "itemIds": [
+        "vademecum-phase1#V1",
+        "vademecum-phase1#V2",
+        "vademecum-phase1#V3",
+        "vademecum-phase1#V4",
+        "vademecum-phase1#V5",
+        "vademecum-phase1#V6",
+        "vademecum-phase1#V7",
+        "vademecum-phase1#V8",
+        "vademecum-phase1#V9",
+        "vademecum-phase1#V10",
+        "vademecum-phase1#V11",
+        "vademecum-phase1#V12",
+        "vademecum-phase1#V13",
+        "vademecum-phase1#V14"
+      ]
+    },
+    {
+      "id": "vademecum-abdominal-pain",
+      "title": "Disease-centred vademecum (phase 1, shadow): acute and chronic abdominal pain — diseases with findings by level and likelihood ratios, diagnostic criteria, pathognomonic findings, exclusions and incidental work-up",
+      "reviewPriority": "P1",
+      "lastReviewed": "unknown",
+      "reviewer": "unknown",
+      "itemIds": [
+        "vademecum-phase1#V1",
+        "vademecum-phase1#V2",
+        "vademecum-phase1#V3",
+        "vademecum-phase1#V4",
+        "vademecum-phase1#V5",
+        "vademecum-phase1#V6",
+        "vademecum-phase1#V7",
+        "vademecum-phase1#V8",
+        "vademecum-phase1#V9",
+        "vademecum-phase1#V10",
+        "vademecum-phase1#V11",
+        "vademecum-phase1#V12",
+        "vademecum-phase1#V13",
+        "vademecum-phase1#V14"
+      ]
+    },
+    {
+      "id": "vademecum-cough-breathlessness",
+      "title": "Disease-centred vademecum (phase 1, shadow): cough and breathlessness — acute and chronic causes with findings by level, criteria, pathognomonic findings, exclusions and incidental work-up",
+      "reviewPriority": "P1",
+      "lastReviewed": "unknown",
+      "reviewer": "unknown",
+      "itemIds": [
+        "vademecum-phase1#V1",
+        "vademecum-phase1#V2",
+        "vademecum-phase1#V3",
+        "vademecum-phase1#V4",
+        "vademecum-phase1#V5",
+        "vademecum-phase1#V6",
+        "vademecum-phase1#V7",
+        "vademecum-phase1#V8",
+        "vademecum-phase1#V9",
+        "vademecum-phase1#V10",
+        "vademecum-phase1#V11",
+        "vademecum-phase1#V12",
+        "vademecum-phase1#V13",
+        "vademecum-phase1#V14"
       ]
     }
   ],
@@ -10847,6 +10943,230 @@
       "ruleSetIds": [
         "drug-interactions",
         "supplement-catalogue"
+      ]
+    },
+    {
+      "id": "vademecum-phase1#V1",
+      "source": "vademecum-phase1",
+      "number": "V1",
+      "group": null,
+      "title": "Loop policy",
+      "text": "**Loop policy** (detail table A): the PANE prior tiers, test / treat thresholds (0.10 / 0.85; can't-miss test 0.02; the decision layer's thresholds for appendicitis, cholecystitis, PE and sepsis), criteria floors (definite 0.9, suspected 0.5), the plausibility gate (a floor applies only at a Bayesian posterior ≥ 0.01, else a conflict), the NG12 referral floor (3 %, test band only), the definitive-finding ratio (200), the ratio clamp (0.02–100), the conflict thresholds (0.2 / 0.8), the criteria bonus, the minimum information gain, 15 questions at most, five display places with two held for can't-miss diagnoses.",
+      "hash": "8cc34597986ff5ee",
+      "doc": "docs/clinical-validation/changes/vademecum-phase1.md",
+      "anchor": "needs-sign-off",
+      "ruleSetIds": [
+        "vademecum-findings",
+        "vademecum-abdominal-pain",
+        "vademecum-cough-breathlessness"
+      ]
+    },
+    {
+      "id": "vademecum-phase1#V2",
+      "source": "vademecum-phase1",
+      "number": "V2",
+      "group": null,
+      "title": "Conversion of the PANE model into likelihood ratios",
+      "text": "**Conversion of the PANE model into likelihood ratios** (table H): LR+ = P(f | D) / PANE base rate, LR− = (1 − P) / (1 − base), absence counted when LR− ≤ 0.9, range P ± 0.10. 1,430 links depend on this rule, and on PANE's own sensitivities, which are themselves unreviewed.",
+      "hash": "a977c33c37321f87",
+      "doc": "docs/clinical-validation/changes/vademecum-phase1.md",
+      "anchor": "needs-sign-off",
+      "ruleSetIds": [
+        "vademecum-findings",
+        "vademecum-abdominal-pain",
+        "vademecum-cough-breathlessness"
+      ]
+    },
+    {
+      "id": "vademecum-phase1#V3",
+      "source": "vademecum-phase1",
+      "number": "V3",
+      "group": null,
+      "title": "Where PANE and iOS disagree, the PANE value is the point",
+      "text": "**Where PANE and iOS disagree, the PANE value is the point** (201 links; the iOS ratio is kept in each link's `seedDetail`). Please choose per disease which source to trust where they differ materially.",
+      "hash": "d19782cb31a48df8",
+      "doc": "docs/clinical-validation/changes/vademecum-phase1.md",
+      "anchor": "needs-sign-off",
+      "ruleSetIds": [
+        "vademecum-findings",
+        "vademecum-abdominal-pain",
+        "vademecum-cough-breathlessness"
+      ]
+    },
+    {
+      "id": "vademecum-phase1#V4",
+      "source": "vademecum-phase1",
+      "number": "V4",
+      "group": null,
+      "title": "New diseases",
+      "text": "**New diseases** (table B): not in PANE, or added to cover what PANE reached for these complaints (irritable bowel syndrome, functional dyspepsia, mesenteric lymphadenitis, Meckel's diverticulitis, psoas abscess, colorectal adenoma, asymptomatic gallstones, Bosniak cyst, the cough-area diseases, hyponatraemia, cirrhosis, anorectal conditions): label, ICD-10, prevalence tier, can't-miss flag, urgency.",
+      "hash": "9cf6c947cb30fb47",
+      "doc": "docs/clinical-validation/changes/vademecum-phase1.md",
+      "anchor": "needs-sign-off",
+      "ruleSetIds": [
+        "vademecum-findings",
+        "vademecum-abdominal-pain",
+        "vademecum-cough-breathlessness"
+      ]
+    },
+    {
+      "id": "vademecum-phase1#V5",
+      "source": "vademecum-phase1",
+      "number": "V5",
+      "group": null,
+      "title": "Criteria logic",
+      "text": "**Criteria logic** (table C): each of the 25 criteria sets (TG18 cholecystitis and cholangitis, Revised Atlanta, JBDS DKA, ASGE 2019, NG12 colorectal / oesophago-gastric / pancreatic / lung, Rome IV IBS and functional dyspepsia, AIR and Alvarado bands, BTS CAP, GINA, GOLD, Framingham, UDAMI-4, WAO, BSG 2020, Bosniak 2019, TIRADS, ESE 2023 adrenal, Sepsis-3 qSOFA …) as written, and the grade given to each level (definite / suspected / referral / classification).",
+      "hash": "bd51913bf0ce9390",
+      "doc": "docs/clinical-validation/changes/vademecum-phase1.md",
+      "anchor": "needs-sign-off",
+      "ruleSetIds": [
+        "vademecum-findings",
+        "vademecum-abdominal-pain",
+        "vademecum-cough-breathlessness"
+      ]
+    },
+    {
+      "id": "vademecum-phase1#V6",
+      "source": "vademecum-phase1",
+      "number": "V6",
+      "group": null,
+      "title": "Grades that change the ranking",
+      "text": "**Grades that change the ranking**: TG18 \"suspected\" (A + B) gets the 0.5 floor although A + B is non-specific; Sepsis-3 qSOFA is a severity screen with no floor; NG12 \"urgent chest X-ray\" (≥ 40 with unexplained symptoms) is a referral-grade level.",
+      "hash": "70b52ce12d65ff82",
+      "doc": "docs/clinical-validation/changes/vademecum-phase1.md",
+      "anchor": "needs-sign-off",
+      "ruleSetIds": [
+        "vademecum-findings",
+        "vademecum-abdominal-pain",
+        "vademecum-cough-breathlessness"
+      ]
+    },
+    {
+      "id": "vademecum-phase1#V7",
+      "source": "vademecum-phase1",
+      "number": "V7",
+      "group": null,
+      "title": "Pathognomonic / confirmatory findings and their ratios",
+      "text": "**Pathognomonic / confirmatory findings and their ratios** (table D), including which are definitive (histology) and the requirement that a Grey Turner / Cullen sign counts for pancreatitis only with a raised lipase.",
+      "hash": "ab0700eb49f7ae37",
+      "doc": "docs/clinical-validation/changes/vademecum-phase1.md",
+      "anchor": "needs-sign-off",
+      "ruleSetIds": [
+        "vademecum-findings",
+        "vademecum-abdominal-pain",
+        "vademecum-cough-breathlessness"
+      ]
+    },
+    {
+      "id": "vademecum-phase1#V8",
+      "source": "vademecum-phase1",
+      "number": "V8",
+      "group": null,
+      "title": "Hard exclusions",
+      "text": "**Hard exclusions** (table E): previous appendicectomy, cholecystectomy (with the cystic-duct stump / retained-stone caveat), hysterectomy, bilateral oophorectomy, male sex, ACE-inhibitor / ARB use absent for ACE-inhibitor cough. The clinician can override each.",
+      "hash": "b6705b5e1fdda775",
+      "doc": "docs/clinical-validation/changes/vademecum-phase1.md",
+      "anchor": "needs-sign-off",
+      "ruleSetIds": [
+        "vademecum-findings",
+        "vademecum-abdominal-pain",
+        "vademecum-cough-breathlessness"
+      ]
+    },
+    {
+      "id": "vademecum-phase1#V9",
+      "source": "vademecum-phase1",
+      "number": "V9",
+      "group": null,
+      "title": "Incidental-finding work-ups",
+      "text": "**Incidental-finding work-ups** (table F): adrenal incidentaloma (ESE 2023 hormone work-up), thyroid nodule (TIRADS), pulmonary nodule, Bosniak cyst, asymptomatic gallstones (NICE CG188), colorectal adenoma (BSG 2020).",
+      "hash": "a7e242ddfea1853f",
+      "doc": "docs/clinical-validation/changes/vademecum-phase1.md",
+      "anchor": "needs-sign-off",
+      "ruleSetIds": [
+        "vademecum-findings",
+        "vademecum-abdominal-pain",
+        "vademecum-cough-breathlessness"
+      ]
+    },
+    {
+      "id": "vademecum-phase1#V10",
+      "source": "vademecum-phase1",
+      "number": "V10",
+      "group": null,
+      "title": "Ratios written as new content",
+      "text": "**Ratios written as new content** (table G), each with its named source, all from memory.",
+      "hash": "fec057df798f1fd0",
+      "doc": "docs/clinical-validation/changes/vademecum-phase1.md",
+      "anchor": "needs-sign-off",
+      "ruleSetIds": [
+        "vademecum-findings",
+        "vademecum-abdominal-pain",
+        "vademecum-cough-breathlessness"
+      ]
+    },
+    {
+      "id": "vademecum-phase1#V11",
+      "source": "vademecum-phase1",
+      "number": "V11",
+      "group": null,
+      "title": "iOS curated features not carried over",
+      "text": "**iOS curated features not carried over** (list I): map each to a new finding or drop it.",
+      "hash": "bd88f433b4bf2155",
+      "doc": "docs/clinical-validation/changes/vademecum-phase1.md",
+      "anchor": "needs-sign-off",
+      "ruleSetIds": [
+        "vademecum-findings",
+        "vademecum-abdominal-pain",
+        "vademecum-cough-breathlessness"
+      ]
+    },
+    {
+      "id": "vademecum-phase1#V12",
+      "source": "vademecum-phase1",
+      "number": "V12",
+      "group": null,
+      "title": "Complaint routing",
+      "text": "**Complaint routing** (per area `complaints`): the keywords and history frames that bring an area's candidates up, and the related mimics (ACS, pneumonia, anaphylaxis and PE for abdominal pain; GORD, sepsis, oesophageal perforation and DKA for cough / breathlessness).",
+      "hash": "65ea6c95d8562fb9",
+      "doc": "docs/clinical-validation/changes/vademecum-phase1.md",
+      "anchor": "needs-sign-off",
+      "ruleSetIds": [
+        "vademecum-findings",
+        "vademecum-abdominal-pain",
+        "vademecum-cough-breathlessness"
+      ]
+    },
+    {
+      "id": "vademecum-phase1#V13",
+      "source": "vademecum-phase1",
+      "number": "V13",
+      "group": null,
+      "title": "Entry-point pilot vignettes",
+      "text": "**Entry-point pilot vignettes** (`entry-*.json`) and the `entry:imaging` tag on the incidental-gallstones vignette: the stories, the expected diagnoses and the can't-miss expectations.",
+      "hash": "deeeed444d8f5869",
+      "doc": "docs/clinical-validation/changes/vademecum-phase1.md",
+      "anchor": "needs-sign-off",
+      "ruleSetIds": [
+        "vademecum-findings",
+        "vademecum-abdominal-pain",
+        "vademecum-cough-breathlessness"
+      ]
+    },
+    {
+      "id": "vademecum-phase1#V14",
+      "source": "vademecum-phase1",
+      "number": "V14",
+      "group": null,
+      "title": "The two production findings",
+      "text": "**The two production findings** above (TG18 auto-fill wall-thickening reading; PANE mapper findings the record negates): confirm they should be fixed in production.",
+      "hash": "53a0c06342ddcb4e",
+      "doc": "docs/clinical-validation/changes/vademecum-phase1.md",
+      "anchor": "needs-sign-off",
+      "ruleSetIds": [
+        "vademecum-findings",
+        "vademecum-abdominal-pain",
+        "vademecum-cough-breathlessness"
       ]
     },
     {
