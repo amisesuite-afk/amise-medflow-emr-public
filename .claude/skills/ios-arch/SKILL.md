@@ -295,6 +295,11 @@ other tabs under "More"):
 
 - The first door auto-opens only when the encounter starts (status waiting/not checked in).
   Choosing a pathway sets `patient.visitType` (keeps a more specific type, e.g. ERCP).
+- The step bar shows the visit type beside the pathway pill (`ConsultVisitTypeChip`,
+  `consult.visitType`, icon only on compact width). Changing it saves `patient.visitType` and, when
+  the pathway no longer fits, offers `ConsultPathway.suggestion(afterChangingTo:…)` under the step
+  bar (one tap; never switched automatically). The front-desk scheduler has the same choice as a
+  chip row (`VisitTypeChipRow`, `fd.scheduler.visitType`), saved with the appointment.
 - New `ConsultTab` cases need a `tabFilled` and a `tabContent` branch (both exhaustive switches).
 - `VisitType` raw values are persisted (SwiftData + Supabase `visit_type`): append cases, never
   rename. `ClinicalPipelineOrchestrator.filteredAutoActions` switches exhaustively on it.

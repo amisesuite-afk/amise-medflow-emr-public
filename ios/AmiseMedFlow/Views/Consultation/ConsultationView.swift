@@ -73,6 +73,9 @@ struct ConsultationView: View {
     // Visit pathway ("first door") — orders the steps in the tab bar
     @State var pathway: ConsultPathway = .firstVisit
     @State var showPathwayPicker = false
+    /// Offered after the visit type changed from the step bar and the pathway no longer fits it
+    /// (ConsultationView+VisitType.swift). Never applied without a tap.
+    @State var visitTypePathwaySuggestion: ConsultPathway.Recommendation? = nil
     @State var lastVisitShown: Encounter? = nil   // follow-up "Last visit" card → Open
     @State private var keyboardVisible = false        // hide the step footer while typing
     // Dynamic Type: the step bar's number + label are one concatenated Text, so their sizes are
@@ -172,6 +175,7 @@ struct ConsultationView: View {
             if !embeddedInNav { completenessBar(progress) }
             tabBar(filled: filled)
             Divider()
+            visitTypePathwaySuggestionBanner
             // Last step: what Save snapshot and Complete each do. Under the step bar, not in the
             // footer, so it stays on screen while the keyboard is up (walkthrough run 36195058935
             // did not find it: the Plan editor had the keyboard up and the footer was hidden).
@@ -337,6 +341,7 @@ struct ConsultationView: View {
     func choosePathway(_ p: ConsultPathway) {
         CrashReporting.breadcrumb("Chose pathway: \(p.rawValue)")
         pathway = p
+        visitTypePathwaySuggestion = nil
         recordVisitType(for: p)
         withAnimation(.easeInOut(duration: 0.15)) { activeTab = p.steps.first ?? .hpi }
     }

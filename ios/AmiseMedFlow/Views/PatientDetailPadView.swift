@@ -126,6 +126,15 @@ struct PatientDetailPadView: View {
                 selectedSection = rightSections.first
             }
         }
+        // The section bar follows the visit type (rightSections reads patient.visitType, so it
+        // redraws when the consultation's visit-type chip changes it). A section that no longer
+        // shows for the new type goes back to the first one; the consultation itself stays open.
+        .onChange(of: patient.visitType) { _, _ in
+            if let sel = selectedSection, !sel.isConsultationStep, sel != .consultation,
+               !rightSections.contains(sel) {
+                selectedSection = rightSections.first
+            }
+        }
     }
 
     // MARK: Compact patient header strip

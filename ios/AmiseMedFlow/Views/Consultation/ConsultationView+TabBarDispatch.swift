@@ -36,6 +36,12 @@ extension ConsultationView {
             .accessibilityIdentifier("consult.pathwayPill")
             .padding(.leading, 8)
 
+            // The patient's visit type, changeable with one tap (menu). iPhone: icon only.
+            ConsultVisitTypeChip(visitType: patient.visitType,
+                                 iconOnly: compactToolbar,
+                                 onSelect: { changeVisitType(to: $0) })
+                .padding(.leading, 4)
+
             ScrollViewReader { proxy in
                 ScrollView(.horizontal, showsIndicators: false) {
                     HStack(spacing: 0) {

@@ -1,7 +1,8 @@
 import XCTest
 @testable import AmiseMedFlow
 
-/// Visit type on the front-desk scheduler (ApptType mapping, calendar label).
+/// Visit type on the front-desk scheduler (ApptType mapping, calendar label) and in the
+/// consultation step bar (pathway suggestion).
 final class VisitTypeFormsTests: XCTestCase {
 
     // MARK: - Scheduler
@@ -29,6 +30,37 @@ final class VisitTypeFormsTests: XCTestCase {
     func testEventLabelAddsTheVisitType() {
         XCTAssertEqual(ApptType.eventLabel(.endoscopy, visitType: .colonoscopy), "Endoscopy / ERCP · Colonoscopy")
         XCTAssertEqual(ApptType.eventLabel(.followUp, visitType: .postOp), "Follow-Up · Post-op Review")
+    }
+
+    // MARK: - Consultation: pathway suggestion after a visit-type change
+
+    private func rec(_ p: ConsultPathway) -> ConsultPathway.Recommendation {
+        ConsultPathway.Recommendation(pathway: p, reasons: ["from the record"])
+    }
+
+    func testNoSuggestionWhileThePathwayFits() {
+        XCTAssertNil(ConsultPathway.suggestion(afterChangingTo: .ercp, current: .procedure,
+                                               recommended: rec(.procedure)))
+        XCTAssertNil(ConsultPathway.suggestion(afterChangingTo: .postOp, current: .followUp,
+                                               recommended: rec(.firstVisit)))
+    }
+
+    func testOffersTheRecommendedPathway() {
+        let s = ConsultPathway.suggestion(afterChangingTo: .ogd, current: .firstVisit,
+                                          recommended: rec(.procedure))
+        XCTAssertEqual(s?.pathway, .procedure)
+        XCTAssertEqual(s?.reasons, ["from the record"])
+        // The record's recommendation comes first (e.g. an inpatient: ward review).
+        XCTAssertEqual(ConsultPathway.suggestion(afterChangingTo: .ogd, current: .firstVisit,
+                                                 recommended: rec(.wardReview))?.pathway, .wardReview)
+    }
+
+    func testFallsBackToTheVisitTypesPathway() {
+        // The record still recommends the current pathway: offer the visit type's own one.
+        let s = ConsultPathway.suggestion(afterChangingTo: .followUp, current: .firstVisit,
+                                          recommended: rec(.firstVisit))
+        XCTAssertEqual(s?.pathway, .followUp)
+        XCTAssertEqual(s?.reasons, ["Visit type: Follow-up"])
     }
 
     /// Front desk may set the visit type (Migration 89 allow-list, mirrored on iOS).
