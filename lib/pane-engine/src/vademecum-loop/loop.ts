@@ -17,7 +17,8 @@ import type { CriteriaGrade, VademecumLevel, VCriteriaLevel } from './types.js';
  *      bonus for an item that would complete or refute a leading candidate's diagnostic criteria.
  *   4. Every answer recomputes the posterior (likelihood ratios; a decision rule supersedes its
  *      components; correlated findings of one group count once).
- *   5. It stops when the leading diagnosis reaches its treat threshold, or when no remaining
+ *   5. It stops when the leading diagnosis reaches its treat threshold while no other can't-miss
+ *      candidate is still at or above its test threshold, or when no remaining
  *      question can move the leading or a can't-miss diagnosis across a test or treat threshold
  *      (thresholds from the decision layer, lib/pane-engine/src/decision).
  *
@@ -800,7 +801,12 @@ export function runLoop(
   while (true) {
     const ev = evaluate(v, candidates.ids, input());
     const leader = ev.ranked[0];
-    if (leader && leader.effective >= leader.thresholds.treat) return { candidates, steps, stop: 'treat-threshold', final: ev, level: levels[li]! };
+    // Treat threshold reached, and no other can't-miss candidate is still at or above its test
+    // threshold (a leader at "treat" does not end the work-up of a can't-miss alternative).
+    const openCantMiss = ev.ranked.some(r => r !== leader && r.cantMiss && r.band !== 'observe');
+    if (leader && leader.effective >= leader.thresholds.treat && !openCantMiss) {
+      return { candidates, steps, stop: 'treat-threshold', final: ev, level: levels[li]! };
+    }
     if (steps.length >= v.policy.maxQuestions) return { candidates, steps, stop: 'question-cap', final: ev, level: levels[li]! };
     let q: Question | null = null;
     while (li < levels.length) {
