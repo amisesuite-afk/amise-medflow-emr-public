@@ -313,6 +313,16 @@ const MOCK_ENCOUNTER = {
     else fail("What's missing strip", `strip ${text ? `text: ${text.slice(0, 120)}` : 'not found'}`);
   }
 
+  // ── Clinical prompts strip (clinical-inference.ts) is rendered in the consultation ──
+  // It was imported but never rendered until 2026-09-26; the harness only called the function.
+  {
+    const cp = page.locator('[data-testid="clinical-prompts-strip"]');
+    if (await cp.count()) {
+      const t = (await cp.first().innerText()).replace(/\s+/g, ' ').slice(0, 120);
+      pass(`Clinical prompts strip rendered in the consultation (${t})`);
+    } else fail('Clinical prompts strip', 'data-testid="clinical-prompts-strip" not rendered');
+  }
+
   // ── Pathognomonic detection → SUGGESTION, confirmed by the clinician ──────────
   // A sign only suggests the working diagnosis (UX review C4); nothing is recorded until
   // "Confirm diagnosis" is tapped.

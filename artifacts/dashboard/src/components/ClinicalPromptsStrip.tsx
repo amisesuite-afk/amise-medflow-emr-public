@@ -152,7 +152,7 @@ export default function ClinicalPromptsStrip() {
   if (allPrompts.length === 0) return null;
 
   return (
-    <div style={{
+    <div data-testid="clinical-prompts-strip" style={{
       borderRadius: 10, marginBottom: 8, overflow: 'hidden',
       border: `1px solid ${hasUrgent ? '#7f1d1d' : actionableCount > 0 ? '#431407' : '#1e293b'}`,
       background: '#0f172a',

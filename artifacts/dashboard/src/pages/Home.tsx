@@ -722,6 +722,13 @@ export default function HomePage() {
         {/* Critical result alerts — vitals / investigation thresholds */}
         {topSection === 'consultation' && <CriticalResultAlert />}
 
+        {/* Clinical prompts — emergency / safeguarding recognition, medication safety (NSAIDs in
+            pregnancy, β-hCG, anticoagulation), screening and follow-up suggestions from
+            clinical-inference.ts. Every action needs a clinician tap. Self-hides when empty.
+            (Imported but never rendered until 2026-09-26 — the clinval harness exercised
+            computeClinicalPrompts() directly, so the gap was invisible to the suite.) */}
+        {topSection === 'consultation' && (!!patientId || !!patientName) && <ClinicalPromptsStrip />}
+
         {/* Previous visit disclosure — brief of prior encounters (date, type, CC, diagnosis)
             for continuity of care. Self-hides for a genuinely new patient (no history) and
             never modifies the current encounter — reference only. */}
