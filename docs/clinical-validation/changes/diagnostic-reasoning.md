@@ -193,3 +193,161 @@ added to `ios-bayesian-engine`. `lint:guideline-registry` knows the new files. I
   encounter's vital records (the dashboard has no patient-wide vitals query yet).
 - The premature-closure guard compares the working diagnosis with the current posterior; it does not
   yet store an earlier posterior to show "less likely than at confirmation".
+
+## Precision pass (branch `reasoning-precision`, 2026-09-26)
+
+The first version raised "Doesn't fit the working diagnosis" in 77 and a diagnostic time-out in 103
+of the 397 original vignettes, whose confirmed diagnoses are correct: alert fatigue. Most of it came
+from false features in the PANE feature mapper and from PANE modelling one condition at more than
+one granularity. **No PANE disease, prior or likelihood, no shared-core threshold, no
+DiagnosticDatabase entry and no iOS file was changed.**
+
+### What changed
+
+**1. Feature mapper** (`socrates-to-features.ts`, `transcript-dx-mapper.ts`; new
+`record-text-match.ts`; PANE model 1.0.0 → 1.0.1). Every regex / keyword rule now goes through
+`record-text-match.ts`, which runs the shared negation matcher (`negation.ts`, unchanged, iOS twin)
+and then:
+
+- **Negated lists**: each item of "no A, B or C" gets its own 5-word window, so "has never had
+  abdominal pain, indigestion after food, jaundice or fever" records none of them (negation.ts
+  counted all 6 words before "fever"). After "denies" / "never" a list may also end with "and". A
+  bare "no A, B" without "or" keeps negation.ts's safety bias ("No vomiting, rigid abdomen" keeps
+  rigid).
+- **Family history**: "mother had …", "father died of …", "family history of …", "FH" are never
+  the patient; a relative who reports ("Mother says he has vomited") is not family history.
+- **Findings that mean "now"** (PANE symptoms and signs, and the injury mechanism) are not read
+  from a sentence dated years back without an "ongoing" word ("Splenectomy 6 years ago … after a
+  motorbike accident"), from a condition already repaired or awaiting / planned for repair ("after
+  an umbilical hernia repair", "awaiting elective repair of a femoral hernia", "plan surgery for a
+  large incisional hernia"; "referred for repair of …" still counts), or from a lay guess ("Mother
+  thought it was a hernia"). History features (previous surgery, a known stone) still are.
+- A `[^.]{0,N}` gap in a rule cannot cross a negation cue ("DRE: no mass" is no rectal mass), and
+  rule context (`requires`) must be affirmed ("No wound" is no wound context).
+- Pattern fixes at the source: "flame haemorrhages" (fundoscopy) → burn; "restless, disorientated"
+  → writhing with pain; rheumatoid arthritis → joint pain; "after abscess drainage" → fluctuant
+  swelling; "during micturition / defaecation" (syncope) → pain on defaecation; "pale stools" →
+  pallor; "calf pain" on walking → calf tenderness; "weak pulse-oximetry trace" → absent pulses;
+  a fistula "cord towards the anal canal" → thrombophlebitis; flatus incontinence → urinary
+  incontinence; faecal urgency → urinary urgency (a bare "urgency" / "frequency" now needs a
+  urinary word in the sentence); "rash on both legs" → bilateral leg symptoms; breast site
+  "Central / areola" → periumbilical pain; "Diffuse neck" → diffuse abdominal pain; "right iliac
+  fossa scar" → RIF pain; "distended neck veins" → abdominal distension; "not passed urine" →
+  oliguria (was urinary retention); "neuropathic pain" → loss of protective sensation. One false
+  negative fixed: an adrenal mass in an imaging report was not read.
+- The ambient transcript mapper and the pathognomonic-sign check use the same rules.
+- The hernia in the acute heart-failure vignette is real ("Large incisional hernia, soft" on
+  examination), so it is still recorded (only the "plan surgery for …" mention no longer counts)
+  and still adds to that vignette's time-out; hiding a real finding is not the mapper's job.
+- Tests: `artifacts/dashboard/src/lib/__tests__/pane-mapper-false-positives.test.ts` (one per
+  false positive, each with the affirmed form).
+
+**2. Reasoning layer, web adapter** (`diagnostic-reasoning.ts`, new `diagnosis-families.ts`;
+registered as the new web-only rule set `diagnostic-reasoning-web` 1.1.0; the shared core stays
+1.0.0 because its version and thresholds are pinned to the iOS twin by the parity test):
+
+- **Diagnosis families** (derived from PANE ids, labels and ICD-10 codes; no vignette text): same
+  ICD-10 category **and** a shared label head noun (appendicitis / appendix mass, peptic ulcer /
+  perforated peptic ulcer, bowel obstruction / adhesional obstruction, upper / lower GI
+  haemorrhage, the thyroid carcinomas; not achalasia / Boerhaave in K22, not AAA / dissection in
+  I71); injuries of one body region (S2x thorax, S3x abdomen: blunt abdominal trauma / splenic
+  laceration, rib fractures / traumatic pneumothorax); a complication or grade modifier
+  (incarcerated, strangulated, perforated, gangrene, necrotising, infected, obstructed, toxic,
+  major, minor, late, early) with a shared head noun in the same ICD-10 chapter (incarcerated
+  hernia and every "… Hernia"; major / minor burn), or naming the other in its parenthesis (toxic
+  megacolon "(Acute Severe Colitis)" and ulcerative / C. difficile colitis; Fournier's gangrene
+  "(Perineal Necrotising Fasciitis)" and necrotising fasciitis). A family member is never the
+  leader of "the record favours X", and a finding that favours one does not alert. The NEWS2 alert
+  is unchanged.
+- **Working diagnosis by label** when its ICD-10 code is unspecific: the node whose label matches
+  the diagnosis text (words found − words missing; acute / chronic contradict) is used when it
+  beats the ICD-10 match by 2 — K92.2 "acute lower GI bleed" → lower GI haemorrhage, not upper;
+  E11.1 "euglycaemic DKA" → DKA, not HHS; K60.3 fistula-in-ano → perianal abscess / fistula, not
+  anal fissure; "cyclical mastalgia" → fibrocystic change, not fat necrosis. A one-word label
+  match needs an ICD-10 match to overrule; without one it needs two words.
+- **Two conditions**: "the record favours X" needs X to compete for the working diagnosis's
+  evidence — a present finding with LR ≥ 1.5 for both — whenever the working diagnosis has support
+  of its own (a finding with LR ≥ 2). New AF with a reducible inguinal hernia on examination, an
+  adrenal incidentaloma with an incidental ureteric stone, a pre-operative colorectal cancer in a
+  patient with heart-failure symptoms, an umbilical hernia with cirrhotic ascites: two conditions,
+  no alert (the other diagnosis stays in the differential and in "doesn't fit"). This implements
+  the core's stated intent ("a finding that merely belongs to a second condition does not alert on
+  its own"). All 4 premature-closure vignettes share evidence (epigastric pain, nausea, onset) and
+  still alert.
+- **Already named**: no "the record favours X" when the working diagnosis text names X ("Blunt
+  abdominal trauma in pregnancy — suspected placental abruption"; "… — suspected
+  phaeochromocytoma"; "biliary pancreatitis with acute cholangitis"; "sigmoid volvulus" confirmed
+  as bowel obstruction).
+- **Contradicting finding** alerts on the web only at LR ≤ 0.2 (moderate or strong evidence
+  against; Jaeschke, Guyatt & Sackett, JAMA 1994), not at the core's 0.33: a single
+  documented-absent cardinal finding at LR 0.26–0.32 ("no jaundice" in choledocholithiasis, "no
+  guarding" in a stable stab wound, "no surrounding erythema" in an uninfected diabetic ulcer) no
+  longer alerts.
+- **Time-out**: a finding that a coexisting state explains (sepsis, AKI, hyperkalaemia,
+  hypercalcaemia, hyponatraemia, hypoglycaemia; LR ≥ 1.5) is not "unexplained" — raised
+  creatinine, lactate and rigors in septic peritonitis.
+- Tests: `artifacts/dashboard/src/lib/__tests__/diagnostic-reasoning-web-rules.test.ts`.
+
+### Before / after (clinval `web.reasoning`, 397 original vignettes with correct confirmed diagnoses)
+
+| Step | "Doesn't fit" alerts | Time-out suggested |
+|---|---|---|
+| Base (`claude/pr-37-gbg22z` at `6e95863`) | 77 (19.4 %) | 103 (25.9 %) |
+| Mapper: negated lists, family history, not-current, first pattern fixes | 72 (18.1 %) | 87 (21.9 %) |
+| + families, label-matched working node, two conditions, coexisting states | 40 (10.1 %) | 51 (12.8 %) |
+| + web contradiction LR ≤ 0.2, already named, adrenal mass from imaging | 30 (7.6 %) | 51 (12.8 %) |
+| + remaining mapper fixes (neck veins, "not passed urine", neuropathic pain): **final** | **30 (7.6 %)** | **49 (12.3 %)** |
+
+No vignette gained an alert or a time-out. Four alert texts changed because the working node is
+now the one the diagnosis names (lower GI haemorrhage instead of upper; rectal carcinoma instead
+of rectal prolapse).
+
+The 12 reasoning vignettes are unchanged: the 4 premature-closure vignettes (biliary colic with
+lipase 1850, gastritis with troponin 480, gastroenteritis with ketones / bicarbonate, renal colic
+with NEWS2 0 → 9) still alert with the same text and all their expectations pass; the 8 zebra /
+next-test vignettes raise no alert, as before.
+
+`clinval:web` (409 vignettes, 3101 expectations): 2933 pass, 76 fail (all quality; 74 known gaps),
+92 n/a, **0 critical fails, 0 blocking — identical to the base; no expectation changed status** in
+either direction (no pass → fail; no fail → pass, so no `web` knownGap flag became removable).
+Results files were restored, not committed.
+
+The remaining 30: 28 "the record favours X" (one vignette also "no LIF pain", LR 0.15) and 2 NEWS2
+rising (3 → 7, 2 → 5: real deterioration). Many are the alert doing its job on a mimic the
+vignette was written for (AAA vs renal colic, pseudoachalasia, early Fournier's in a perianal
+abscess, anal cancer in an atypical fissure, colorectal cancer in iron-deficiency anaemia,
+necrotising fasciitis in wet gangrene, appendicitis in a strangulated adhesional obstruction).
+Others come from a vignette's `paneDiseaseId` naming a sibling node rather than the diagnosis
+(variceal bleeds mapped to "Upper GI Haemorrhage (… Non-variceal)", a diverticular haemorrhage
+mapped to diverticulitis, post-polypectomy bleeding resolved to anastomotic leak) and from cause /
+complication pairs that PANE's registry does not link (colorectal cancer and large-bowel
+obstruction, perforated diverticulitis and "perforated viscus", choledocholithiasis and
+cholangitis, peptic ulcer and gastritis in H. pylori).
+
+### Needs sign-off (additions to the list above)
+
+13. **Mapper clause rules** (`record-text-match.ts`): per-item negation windows in "no A, B or C"
+    lists and "denies / never … and" lists; family-history markers; "not current" = a sentence
+    dated years back without an ongoing word, a repaired or awaiting / planned repair, a lay guess
+    — applied to PANE symptoms and signs and the injury mechanism.
+14. **Mapper pattern changes** listed above (each narrows a pattern; "not passed urine" now means
+    oliguria, not retention).
+15. **Diagnosis families**: the three derivation rules and the modifier list.
+16. **Two-conditions rule** (shared evidence LR ≥ 1.5 in both; the working diagnosis's own support
+    LR ≥ 2) and the **already-named** rule.
+17. **Web contradiction threshold LR ≤ 0.2** (core and iOS: 0.33).
+18. **Working-diagnosis label matching** (margin 2; one word with an ICD-10 match, else two).
+19. **Time-out**: coexisting states count as explaining a finding.
+20. Remaining rates: alerts 30 / 397 (7.6 %), time-outs 49 / 397 (12.3 %). Acceptable?
+
+### Not done / follow-ups (precision pass)
+
+- **iOS**: none of the web adapter rules (families, two conditions, already named, LR ≤ 0.2,
+  label matching, coexisting-state time-out) is ported to `DiagnosticReasoningAdapter.swift`; iOS
+  still uses the core rules. The shared core, its vectors and `negation.ts` are unchanged.
+- Vignette `paneDiseaseId` values that name a sibling node (the variceal bleeds, the diverticular
+  haemorrhage, the adrenal "suspected phaeochromocytoma" → incidentaloma) were left as they are;
+  changing them would only hide alerts.
+- The mapper still records only present findings: a documented negative test ("pregnancy test
+  negative") does not lower a diagnosis (e.g. ectopic pregnancy in the ruptured corpus luteum
+  cyst vignette).
