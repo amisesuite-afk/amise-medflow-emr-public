@@ -308,9 +308,9 @@ copy (there is none).
 `ConsultationView.baseContent`: the top gap and "+N" (sheet with the ranked list, top 5 then "More…").
 Actions jump to a step (`onTab`) or tool (`onTool`), or add a test as a `.suggested` investigation;
 nothing is ordered or recorded automatically; "Dismiss" is per consultation view.
-- Core `WhatsMissingCore.swift` (+`Fill`, +`Probe`), rules `WhatsMissingRules.swift` +
-  `Resources/WhatsMissingRules.json` are twins of `lib/pane-engine/src/whats-missing/*`: same JSON
-  (byte-identical, `scripts/src/whats-missing-parity.test.ts`), same vectors
+- Core `WhatsMissingCore.swift` (+`Fill`, +`Probe`) and rules `WhatsMissingRules.swift` are twins of
+  `lib/pane-engine/src/whats-missing/*`: one shared rules file
+  (`clinical-content/rules/whats-missing-rules.json`, through `SharedClinicalContent`), same vectors
   (`AmiseMedFlowTests/WhatsMissing/whats-missing-vectors.json`, `WhatsMissingTests.swift`). Change both
   platforms together and run `gen:whats-missing-vectors`.
 - Adapter `WhatsMissingPatient.swift` reads the Patient (prescriptions dated today count as planned).

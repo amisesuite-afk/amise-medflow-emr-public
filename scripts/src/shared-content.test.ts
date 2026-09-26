@@ -199,10 +199,30 @@ enum Outer {
       .toMatch(/tuple of 2/);
     expect(compareTs(TRIPLE_SCHEMA, parseTs([TS_TRIPLE.replace("'only'", "'other'")]), 'File', []).join('\n'))
       .toMatch(/literals \[other\] differ/);
-    expect(compareSwift(TRIPLE_SCHEMA, parseSwift([SWIFT_TRIPLE]), 'Outer.File', [], TRIPLE_SCHEMA, { Triple: 'array' })).toEqual([]);
+    expect(compareSwift(TRIPLE_SCHEMA, parseSwift([SWIFT_TRIPLE]), 'Outer.File', [], TRIPLE_SCHEMA, { Triple: ['array'] })).toEqual([]);
     // Without the declaration the hand-written init(from:) cannot be checked.
     expect(compareSwift(TRIPLE_SCHEMA, parseSwift([SWIFT_TRIPLE]), 'Outer.File', []).join('\n')).toMatch(/Swift Triple but the schema says array/);
-    expect(compareSwift(TRIPLE_SCHEMA, parseSwift([SWIFT_TRIPLE]), 'Outer.File', [], TRIPLE_SCHEMA, { Triple: 'object' }).join('\n'))
+    expect(compareSwift(TRIPLE_SCHEMA, parseSwift([SWIFT_TRIPLE]), 'Outer.File', [], TRIPLE_SCHEMA, { Triple: ['object'] }).join('\n'))
       .toMatch(/decoded by hand from a JSON object/);
+  });
+
+  it('a number-or-word value: a TypeScript scalar union, a Swift enum decoded by hand', () => {
+    const schema: Schema = { type: 'object', required: ['probe'], properties: { probe: { type: ['number', 'string'] } } };
+    expect(compareTs(schema, parseTs(['export interface File { probe: number | string }']), 'File', [])).toEqual([]);
+    expect(compareTs(schema, parseTs(['export interface File { probe: number | boolean }']), 'File', []).join('\n'))
+      .toMatch(/probe: TypeScript number \| boolean/);
+    const swift = `
+enum Outer {
+    enum ProbeValue: Decodable {
+        case number(Double)
+        case word(String)
+    }
+    struct File: Decodable {
+        let probe: ProbeValue
+    }
+}`;
+    expect(compareSwift(schema, parseSwift([swift]), 'Outer.File', [], schema, { ProbeValue: ['number', 'string'] })).toEqual([]);
+    expect(compareSwift(schema, parseSwift([swift]), 'Outer.File', [], schema, { ProbeValue: ['string'] }).join('\n'))
+      .toMatch(/decoded by hand from a JSON string/);
   });
 });

@@ -120,7 +120,7 @@ Treat → Observe for elective inguinal hernia repair (inguinal hernia (reducibl
 
 | Part | Web | iOS |
 |---|---|---|
-| Rules (byte-identical) | `lib/pane-engine/src/whats-missing/whats-missing-rules.json` | `ios/AmiseMedFlow/Resources/WhatsMissingRules.json` |
+| Rules (one shared file, both read it) | `clinical-content/rules/whats-missing-rules.json` (schema `clinical-content/schemas/whats-missing-rules.schema.json`) | same file, bundled in the `rules` folder (`SharedClinicalContent`) |
 | Core: ranking, merge | `lib/pane-engine/src/whats-missing/engine.ts` | `Services/WhatsMissingCore.swift` |
 | Core: record fill | `record-fill.ts` | `Services/WhatsMissingCore+Fill.swift` |
 | Core: decision probe | `decision-probe.ts` | `Services/WhatsMissingCore+Probe.swift` |

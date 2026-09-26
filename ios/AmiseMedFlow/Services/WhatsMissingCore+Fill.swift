@@ -3,7 +3,7 @@
 // record", editable) and which record inputs a score needs that are not on file.
 //
 // DRIFT NOTE: Swift twin of lib/pane-engine/src/whats-missing/record-fill.ts — same thresholds
-// (Resources/WhatsMissingRules.json), same field keys (the web calculator names; the populators map
+// (the shared clinical-content/rules/whats-missing-rules.json), same field keys (the web calculator names; the populators map
 // them to the iOS input structs), same vectors. Numeric inputs fill true and false; history and
 // examination findings fill only when affirmed. No score formula is computed or changed here.
 

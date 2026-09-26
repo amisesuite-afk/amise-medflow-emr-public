@@ -1,4 +1,7 @@
 {
+  "$schema": "../schemas/whats-missing-rules.schema.json",
+  "$comment": "What's missing rules (gap groups, concepts, score inputs, decision probes, thresholds, terms and wording). A shared clinical rule file: the web (lib/pane-engine/src/whats-missing) and iOS (WhatsMissingRules.swift through SharedClinicalContent) read this one file; lint:shared-content checks it against clinical-content/schemas/whats-missing-rules.schema.json and both platforms' types. Needs sign-off: docs/clinical-validation/changes/whats-missing.md.",
+  "id": "whats-missing",
   "version": "1.0.0",
   "status": "needs-sign-off",
   "topN": 5,

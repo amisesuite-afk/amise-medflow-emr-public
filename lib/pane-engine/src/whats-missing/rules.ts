@@ -1,9 +1,11 @@
 /**
- * The "What's missing" rule content (whats-missing-rules.json; byte-identical iOS copy
- * ios/AmiseMedFlow/Resources/WhatsMissingRules.json, pinned by scripts/src/whats-missing-parity.test.ts).
+ * The "What's missing" rule content: the shared clinical rule file
+ * clinical-content/rules/whats-missing-rules.json, read by iOS too (WhatsMissingRules.swift through
+ * SharedClinicalContent). lint:shared-content checks it against its JSON Schema and against these
+ * interfaces. Registered as `whats-missing`.
  */
 
-import raw from './whats-missing-rules.json';
+import raw from '../../../../clinical-content/rules/whats-missing-rules.json';
 import type { MissingAction, MissingTier } from './types.js';
 
 export interface MissingGroupRule {
@@ -48,7 +50,32 @@ export interface MissingRules {
     findings: Record<string, string[]>;
     pleuralEffusion: string[];
   };
-  text: Record<string, string> & { bandLabels: Record<string, string> };
+  text: MissingText;
+}
+
+/** The wording of the strip ({placeholders} filled by the core). */
+export interface MissingText {
+  weightWhy: string;
+  allergyWhy: string;
+  pregnancyWhy: string;
+  pregnancyReasonImaging: string;
+  pregnancyReasonProcedure: string;
+  pregnancyReasonDrugs: string;
+  renalWhyDrugs: string;
+  renalWhyContrast: string;
+  anticoagWhy: string;
+  supplementsWhy: string;
+  decisionFlipWhy: string;
+  decisionRefineWhy: string;
+  riskScoreWhy: string;
+  ferritinWhy: string;
+  discriminatorWhat: string;
+  discriminatorWhy: string;
+  news2PartialWhy: string;
+  news2NoneWhy: string;
+  scoreWhy: string;
+  scoreWhat: string;
+  bandLabels: Record<string, string>;
 }
 
 export const WHATS_MISSING_RULES = raw as unknown as MissingRules;

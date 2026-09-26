@@ -1,7 +1,10 @@
 // WhatsMissingRules.swift
-// The "What's missing" rule content, decoded from Resources/WhatsMissingRules.json — a byte-identical
-// copy of lib/pane-engine/src/whats-missing/whats-missing-rules.json (pinned by
-// scripts/src/whats-missing-parity.test.ts, which also checks that this file names every key).
+// The "What's missing" rule content, decoded from the shared clinical rule file
+// clinical-content/rules/whats-missing-rules.json (the web core reads the same file), loaded through
+// SharedClinicalContent (File.whatsMissingRules). lint:shared-content checks these Codable structs
+// against the file's JSON Schema (clinical-content/schemas/whats-missing-rules.schema.json);
+// `ProbeValue` is decoded by hand from a number or a word and is checked as that. A missing or
+// undecodable file gives nil rules: the strip shows nothing, and Settings → Diagnostics says why.
 //
 // Pure data: no Patient, no SwiftData.
 
@@ -147,13 +150,11 @@ extension WhatsMissing {
 
     // MARK: - Loading
 
-    /// The bundled rules (nil only if the resource is missing or does not decode — the strip then
-    /// shows nothing, and WhatsMissingTests fails).
+    /// The shared rules (nil only if the file is missing or does not decode — the strip then shows
+    /// nothing, Settings → Diagnostics says why, and WhatsMissingTests fails).
     static let rules: Rules? = loadRules(from: Bundle.main)
 
     static func loadRules(from bundle: Bundle) -> Rules? {
-        guard let url = bundle.url(forResource: "WhatsMissingRules", withExtension: "json"),
-              let data = try? Data(contentsOf: url) else { return nil }
-        return try? JSONDecoder().decode(Rules.self, from: data)
+        SharedClinicalContent.load(Rules.self, .whatsMissingRules, bundle: bundle)
     }
 }

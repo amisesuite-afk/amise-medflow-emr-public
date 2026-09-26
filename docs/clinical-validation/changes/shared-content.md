@@ -114,20 +114,29 @@ identical to the file it replaces (checked by a structural comparison before and
 | Rule set (registry id) | Shared file | Web reader | iOS reader | Duplicate removed |
 |---|---|---|---|---|
 | `treatment-decision-support` 1.0.0 | `treatment-decisions.json` (moved from `lib/pane-engine/src/decision/`) + `treatment-decisions.schema.json` | `lib/pane-engine/src/decision/index.ts` (`DECISION_CONTENT`, types in `types.ts`) | `TreatmentDecisionContent.swift` (`TreatmentDecisions.Content`, `SharedClinicalContent.File.treatmentDecisions`) | `ios/AmiseMedFlow/Resources/TreatmentDecisions.json` (byte-identical copy, deleted) |
+| `whats-missing` 1.0.0 | `whats-missing-rules.json` (moved from `lib/pane-engine/src/whats-missing/`) + `whats-missing-rules.schema.json` | `lib/pane-engine/src/whats-missing/rules.ts` (`WHATS_MISSING_RULES`) | `WhatsMissingRules.swift` (`WhatsMissing.Rules`, `SharedClinicalContent.File.whatsMissingRules`) | `ios/AmiseMedFlow/Resources/WhatsMissingRules.json` (byte-identical copy, deleted) |
 
 Lint additions (`scripts/src/shared-content.ts`, unit-tested in `shared-content.test.ts`): a
 TypeScript fixed-length tuple (`Triple = [number, number, number]`) is checked as an array whose
 schema fixes `minItems` / `maxItems`; a single string literal (`requires?: 'redParameter'`) is
 checked as a one-value enum; and a Swift type decoded by hand (`TreatmentDecisions.Triple`, whose
 `init(from:)` reads a `[low, point, high]` array) is declared in the mapping's `customDecoded` and
-checked as that JSON type. The TypeScript `defaults.uln` type is written as an object literal
-(`{ lipase; amylase; troponin }`) instead of the equivalent `Record<'lipase' | …, number>`.
+checked as that JSON type (also `WhatsMissing.ProbeValue`, a number or a word); a TypeScript union
+of scalars (`probe: number | string`) is checked against the schema's JSON types. Two TypeScript
+types were rewritten in an equivalent form the lint can read (type-only, no runtime effect):
+`defaults.uln` as an object literal (`{ lipase; amylase; troponin }`) instead of
+`Record<'lipase' | …, number>`, and the what's-missing `text` as an explicit `MissingText`
+interface (the 20 wording keys and `bandLabels`, the same keys Swift `TextRules` names) instead of
+`Record<string, string> & { bandLabels }`.
 
 `decision-content-parity.test.ts` no longer compares two copies: it checks that the web engine's
 `DECISION_CONTENT` is the shared file, that neither old copy exists (both are also in
 `RETIRED_COPIES`), that iOS loads it through `SharedClinicalContent`, and that the shared vectors
 (`decision-vectors.json`) are current. The "Swift structs name every key" test is replaced by the
-typed schema check.
+typed schema check. `whats-missing-parity.test.ts` is changed the same way (the web core reads the
+shared file, the copies are gone, the vectors are current); it keeps its check that the Swift rule
+structs and core name every key and text, and `gen-whats-missing-vectors.ts` reads the rules through
+the web core as before (only its comment names the new path).
 
 ### For the iOS CI to confirm (phase 2; Swift cannot be compiled here)
 
@@ -139,12 +148,19 @@ typed schema check.
    `TreatmentDecisions.content` loaded) and the iOS clinical-validation run (`ios.decisions`) pass
    unchanged.
 3. On a device: Settings → Diagnostics → "Shared clinical rules" lists "Treatment decisions 1.0.0".
+4. The app bundle has `rules/whats-missing-rules.json` and no `WhatsMissingRules.json` at the root;
+   `WhatsMissingRules.swift` (`loadRules(from:)` now calls `SharedClinicalContent.load`) compiles.
+   `WhatsMissingTests` (shared `whats-missing-vectors.json`), `SharedClinicalContentTests`
+   (`WhatsMissing.rules` loaded) and the iOS clinical-validation run (`ios.missing`) pass unchanged;
+   Settings → Diagnostics lists "What's missing rules 1.0.0".
 
 ### Needs sign-off (phase 2)
 
 Nothing clinical: no content changed. The existing sign-off lists still apply
-(`bayes-treatment.md`).
+(`bayes-treatment.md`, `whats-missing.md`).
 
 2. Governance only (behaviour-neutral move). Confirm — the treatment-decision table is now one
    shared file (`clinical-content/rules/treatment-decisions.json`) instead of two byte-identical
    copies.
+3. Governance only (behaviour-neutral move). Confirm — the what's-missing rules are now one shared
+   file (`clinical-content/rules/whats-missing-rules.json`) instead of two byte-identical copies.

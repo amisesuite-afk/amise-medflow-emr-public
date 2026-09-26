@@ -2,7 +2,7 @@
 // "What's missing" — one ranked, de-duplicated list of the gaps the engines already know about.
 //
 // DRIFT NOTE: Swift twin of lib/pane-engine/src/whats-missing/engine.ts — same rules JSON
-// (Resources/WhatsMissingRules.json), same vectors (AmiseMedFlowTests/WhatsMissing/
+// (the shared clinical-content/rules/whats-missing-rules.json), same vectors (AmiseMedFlowTests/WhatsMissing/
 // whats-missing-vectors.json, asserted by WhatsMissingTests and by the web vitest). Keep the
 // signal order, the ranking keys and every text identical.
 //

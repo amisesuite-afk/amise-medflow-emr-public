@@ -86,7 +86,7 @@ final class WhatsMissingTests: XCTestCase {
     }
 
     private func rules() throws -> WhatsMissing.Rules {
-        try XCTUnwrap(WhatsMissing.rules, "Resources/WhatsMissingRules.json missing or not decoding")
+        try XCTUnwrap(WhatsMissing.rules, "rules/whats-missing-rules.json missing or not decoding")
     }
 
     func testRulesDecodeAndMatchTheVectorsVersion() throws {

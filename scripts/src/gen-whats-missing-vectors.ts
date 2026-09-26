@@ -10,7 +10,10 @@
  *   rank   — the ranked, de-duplicated list (engine.ts / WhatsMissingCore.swift)
  *   terms  — the word-start term matcher and the part joiner
  *
- * Regenerate after a deliberate rule change (version bump in whats-missing-rules.json):
+ * The rules come from the shared file clinical-content/rules/whats-missing-rules.json (read by the web
+ * core through WHATS_MISSING_RULES and by iOS through SharedClinicalContent).
+ *
+ * Regenerate after a deliberate rule change (version bump in clinical-content/rules/whats-missing-rules.json):
  *   pnpm --filter @workspace/scripts run gen:whats-missing-vectors
  */
 

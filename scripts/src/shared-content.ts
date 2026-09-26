@@ -55,9 +55,10 @@ export interface TypeMapping {
   ignore: string[];
   /**
    * Swift only: types decoded by hand (`init(from:)`) from another JSON shape, by simple type name,
-   * with the JSON type the schema must give them (e.g. `Triple` from a [low, point, high] array).
+   * with the JSON types the schema may give them (e.g. `Triple` from a [low, point, high] array,
+   * `ProbeValue` from a number or a string).
    */
-  customDecoded?: Record<string, string>;
+  customDecoded?: Record<string, string[]>;
 }
 
 export interface SharedContentFile {
@@ -153,9 +154,20 @@ export const SHARED_CONTENT: SharedContentFile[] = [
     regexLists: [],
     swift: {
       files: ['ios/AmiseMedFlow/Services/TreatmentDecisionContent.swift'], root: 'TreatmentDecisions.Content', ignore: HEADER_IGNORE,
-      customDecoded: { Triple: 'array' },
+      customDecoded: { Triple: ['array'] },
     },
     ts: { files: ['lib/pane-engine/src/decision/types.ts'], root: 'DecisionContent', ignore: HEADER_IGNORE },
+  },
+  // "What's missing" rules. Every field is read on both platforms; iOS decodes a decision probe
+  // (`ProbeValue`) by hand from a number or a word.
+  {
+    name: 'whats-missing-rules',
+    regexLists: [],
+    swift: {
+      files: ['ios/AmiseMedFlow/Services/WhatsMissingRules.swift'], root: 'WhatsMissing.Rules', ignore: HEADER_IGNORE,
+      customDecoded: { ProbeValue: ['number', 'string'] },
+    },
+    ts: { files: ['lib/pane-engine/src/whats-missing/rules.ts', 'lib/pane-engine/src/whats-missing/types.ts'], root: 'MissingRules', ignore: HEADER_IGNORE },
   },
 ];
 
@@ -173,6 +185,8 @@ export const RETIRED_COPIES = [
   'lib/pane-engine/src/evidence/decision-rules.json',
   'ios/AmiseMedFlow/Resources/TreatmentDecisions.json',
   'lib/pane-engine/src/decision/treatment-decisions.json',
+  'ios/AmiseMedFlow/Resources/WhatsMissingRules.json',
+  'lib/pane-engine/src/whats-missing/whats-missing-rules.json',
 ];
 
 // ── JSON Schema helpers ──────────────────────────────────────────────────────────────────────
@@ -469,7 +483,7 @@ function compareFields(
 /** Problems between a Swift Codable root struct and a schema node (empty = consistent). */
 export function compareSwift(
   root: Schema, types: SwiftTypes, rootType: string, ignore: string[], node: unknown = root,
-  customDecoded: Record<string, string> = {},
+  customDecoded: Record<string, string[]> = {},
 ): string[] {
   const problems: string[] = [];
   const ignored = new Set(ignore);
@@ -514,7 +528,8 @@ export function compareSwift(
     const simple = t.split('.').pop()!;
     const custom = customDecoded[simple];
     if (custom) {
-      if (!within(nonNull, [custom])) out.push(`${where}: Swift ${type} is decoded by hand from a JSON ${custom}, but the schema says ${[...types_].join('|') || 'any'}`);
+      const allowed = custom.includes('number') ? [...custom, 'integer'] : custom;
+      if (!within(nonNull, allowed)) out.push(`${where}: Swift ${type} is decoded by hand from a JSON ${custom.join('|')}, but the schema says ${[...types_].join('|') || 'any'}`);
       return;
     }
     const rawValues = types.stringEnums.get(simple);
@@ -558,6 +573,14 @@ export function compareTs(root: Schema, types: TsTypes, rootType: string, ignore
       const vals = enumValues(root, n)?.filter(v => v !== null).map(String);
       const a = rest.map(p => p.slice(1, -1)).sort().join(', ');
       if (!vals || [...vals].sort().join(', ') !== a) out.push(`${where}: TypeScript literals [${a}] differ from the schema enum [${(vals ?? []).sort().join(', ')}]`);
+      return;
+    }
+    const scalarTypes: Record<string, string[]> = { string: ['string'], number: ['number', 'integer'], boolean: ['boolean'] };
+    if (rest.length > 1 && rest.every(p => scalarTypes[p])) {
+      // A union of scalars (number | string): the schema allows exactly these JSON types.
+      const allowed = rest.flatMap(p => scalarTypes[p]!);
+      const covered = rest.every(p => scalarTypes[p]!.some(x => nonNull.has(x)));
+      if (!within(nonNull, allowed) || !covered) out.push(`${where}: TypeScript ${type} but the schema says ${[...types_].join('|') || 'any'}`);
       return;
     }
     if (rest.length !== 1) { out.push(`${where}: unsupported TypeScript type ${type}`); return; }

@@ -947,14 +947,14 @@
       "kind": "decision-support-rules",
       "contentVersion": "1.0.0",
       "versionStamp": {
-        "file": "lib/pane-engine/src/whats-missing/whats-missing-rules.json",
+        "file": "clinical-content/rules/whats-missing-rules.json",
         "type": "json-key",
         "key": "version"
       },
       "files": [
-        "lib/pane-engine/src/whats-missing/whats-missing-rules.json",
+        "clinical-content/rules/whats-missing-rules.json",
+        "clinical-content/schemas/whats-missing-rules.schema.json",
         "lib/pane-engine/src/whats-missing/*.ts",
-        "ios/AmiseMedFlow/Resources/WhatsMissingRules.json",
         "ios/AmiseMedFlow/Services/WhatsMissing*.swift",
         "ios/AmiseMedFlow/Services/PatientScoreAutoPopulator+RecordFill.swift",
         "artifacts/dashboard/src/lib/whats-missing-web.ts"
@@ -968,7 +968,8 @@
       ],
       "ciChecks": [
         "pane-engine vitest (shared vectors: score auto-fill, decision-gap probe, ranking; rule hygiene: no medicine instruction, no dose)",
-        "scripts vitest whats-missing-parity (web and iOS JSON byte-identical; vectors current; Swift names every key)",
+        "lint:shared-content (one shared file read by both platforms: schema validation, registry stamp, Swift Codable structs and TypeScript types checked against the schema)",
+        "scripts vitest whats-missing-parity (web core reads the shared file; vectors current)",
         "dashboard vitest (adapter: negation-aware history and findings, safety facts, the owner's examples end to end)",
         "ios-build-check.yml unit tests (WhatsMissingTests: the same vectors)",
         "clinval:web (web.missing; 8 missing-* vignettes assert the top item)",
@@ -1030,13 +1031,18 @@
       "reviewEvidence": "None. Built from the engines' existing rules and the owner's brief; exercised by the shared vectors, the dashboard tests and clinval:web (433 vignettes, no status change). Not a clinical review.",
       "reviewPriority": "P1",
       "nextReviewDue": "2026-12-31",
-      "changeAuthority": "Any repository committer. Web ships on dashboard deploy; iOS with an app release. Change the JSON in both places (parity test) and regenerate the vectors (gen:whats-missing-vectors).",
+      "changeAuthority": "Any repository committer. Web ships on dashboard deploy; iOS with an app release. Change the one shared file clinical-content/rules/whats-missing-rules.json (both platforms read it) and regenerate the vectors (gen:whats-missing-vectors).",
       "notes": "Clinician-facing only. Nothing is ordered or recorded automatically: a field action jumps to the step, a test action adds a suggested investigation. Ranking: safety (cannot prescribe or dose safely without it) → decision (adverse-probe band flip by threshold distance, missing risk score, NG12 ferritin, best next discriminator while no diagnosis is confirmed) → score completeness. Score formulas unchanged. Sign-off list: docs/clinical-validation/changes/whats-missing.md.",
       "changelog": [
         {
           "version": "1.0.0",
           "date": "2026-09-26",
           "change": "Created: safety basics (weight under 16, allergy status, pregnancy 12-55 with ionising imaging / prescribing / a procedure, renal function before renally cleared or NSAID drugs or contrast, anticoagulant last dose and supplements before a procedure), decision-gap probe (CFS 7, ASA IV, eGFR 25, pregnant, BMI 42, HAS-BLED 3, NEWS2 7), NG12 ferritin, best next discriminator, NEWS2 and score-input completeness for 13 scores; record auto-fill for Alvarado, AIR, Glasgow-Blatchford, CURB-65, Wells PE / DVT, Caprini, RCRI and BISAP. See docs/clinical-validation/changes/whats-missing.md."
+        },
+        {
+          "version": "1.0.0",
+          "date": "2026-09-26",
+          "change": "Relocated, no content change (shared content phase 2): the web copy lib/pane-engine/src/whats-missing/whats-missing-rules.json moved to clinical-content/rules/whats-missing-rules.json with a JSON Schema (clinical-content/schemas/whats-missing-rules.schema.json); the byte-identical iOS copy Resources/WhatsMissingRules.json is deleted and iOS reads the shared file through SharedClinicalContent. Header only: $schema, $comment and id added. Every string, number and term unchanged (docs/clinical-validation/changes/shared-content.md, Phase 2)."
         }
       ]
     },

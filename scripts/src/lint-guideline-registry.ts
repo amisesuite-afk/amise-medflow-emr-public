@@ -149,8 +149,7 @@ const KNOWN_RULE_SET_FILES: string[] = [
   'artifacts/dashboard/src/lib/decision-support.ts',
   // What's missing strip and score auto-fill from the record — web and iOS twins
   'lib/pane-engine/src/whats-missing/*.ts',
-  'lib/pane-engine/src/whats-missing/whats-missing-rules.json',
-  'ios/AmiseMedFlow/Resources/WhatsMissingRules.json',
+  'clinical-content/rules/whats-missing-rules.json',
   'ios/AmiseMedFlow/Services/WhatsMissing*.swift',
   'ios/AmiseMedFlow/Services/PatientScoreAutoPopulator+RecordFill.swift',
   'artifacts/dashboard/src/lib/whats-missing-web.ts',
