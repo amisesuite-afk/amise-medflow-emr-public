@@ -173,8 +173,15 @@ export interface ReferenceRangeRow {
   critical_low: number | string | null;
   critical_high: number | string | null;
   lab_source: string;
-  effective_from: string;
+  /** 'YYYY-MM-DD' from PostgREST (a Date from some drivers). */
+  effective_from: string | Date;
   retired_at?: string | null;
+  is_default?: boolean | null;
+}
+
+function isoDate(v: string | Date | null | undefined): string {
+  if (v instanceof Date) return Number.isFinite(v.getTime()) ? v.toISOString().slice(0, 10) : '';
+  return String(v ?? '').slice(0, 10);
 }
 
 function numOrNull(v: number | string | null | undefined): number | null {
@@ -183,7 +190,10 @@ function numOrNull(v: number | string | null | undefined): number | null {
   return Number.isFinite(n) ? n : null;
 }
 
-/** A practice row as a ReferenceRange; null when retired or invalid (it then never applies). */
+/**
+ * A database row as a ReferenceRange; null when retired or invalid (it then never applies).
+ * Seeded default rows keep isDefault: the lookup uses the code's defaults for those.
+ */
 export function rowToReferenceRange(row: ReferenceRangeRow): ReferenceRange | null {
   if (row.retired_at) return null;
   const sex = row.sex === 'male' || row.sex === 'female' ? row.sex : row.sex === 'any' ? 'any' : null;
@@ -193,8 +203,8 @@ export function rowToReferenceRange(row: ReferenceRangeRow): ReferenceRange | nu
     ageMinYears: numOrNull(row.age_min_years), ageMaxYears: numOrNull(row.age_max_years),
     lower: numOrNull(row.lower_limit), upper: numOrNull(row.upper_limit),
     criticalLow: numOrNull(row.critical_low), criticalHigh: numOrNull(row.critical_high),
-    labSource: row.lab_source ?? '', effectiveFrom: String(row.effective_from ?? '').slice(0, 10),
-    isDefault: false,
+    labSource: row.lab_source ?? '', effectiveFrom: isoDate(row.effective_from),
+    isDefault: row.is_default === true,
   };
   return referenceRangeProblems(r).length === 0 ? r : null;
 }

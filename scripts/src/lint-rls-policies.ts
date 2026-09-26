@@ -79,6 +79,20 @@ const REQUIRED_POLICIES: Record<string, string[]> = {
     'clinicians_select_clinical_signoffs',
     'reviewers_insert_clinical_signoffs',
   ],
+  // Migration 96 (supabase-lab-feed-migration.sql): ranges read by staff, written by admin;
+  // lab-feed log and reconciliation queue read by nurse / doctor / admin only (front desk and
+  // portal patients have no policy); only the service role writes them.
+  lab_reference_ranges: [
+    'staff_select_lab_reference_ranges',
+    'admin_insert_lab_reference_ranges',
+    'admin_update_lab_reference_ranges',
+  ],
+  lab_feed_messages: [
+    'clinicians_select_lab_feed_messages',
+  ],
+  lab_results_to_reconcile: [
+    'clinicians_select_lab_results_to_reconcile',
+  ],
 };
 
 const DIRECT_ENABLE_RE =
