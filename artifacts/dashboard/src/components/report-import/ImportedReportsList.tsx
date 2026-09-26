@@ -4,13 +4,19 @@ import {
   type ImportedImagingRow, type ImportedLabResultRow,
 } from '@/lib/db';
 import { formatEct } from '@/lib/report-import-save';
+import { isLabFeedRow } from '@/lib/lab-feed-session';
 
 /**
  * Lab and imaging reports on file for the open patient (investigation_results rows with
  * analytes, imaging_orders with a report), newest first — so an imported report is visible on
  * the Investigations tab as well as in the Results inbox. Read-only.
  */
-export default function ImportedReportsList({ patientId, refreshKey }: { patientId: string | null; refreshKey: number }) {
+export default function ImportedReportsList({ patientId, refreshKey, onUseInConsultation }: {
+  patientId: string | null;
+  refreshKey: number;
+  /** Lab-feed rows: copy the values into this consultation (explicit clinician tap only). */
+  onUseInConsultation?: (row: ImportedLabResultRow) => void;
+}) {
   const [labs, setLabs] = useState<ImportedLabResultRow[]>([]);
   const [imaging, setImaging] = useState<ImportedImagingRow[]>([]);
   const [loading, setLoading] = useState(false);
@@ -46,8 +52,18 @@ export default function ImportedReportsList({ patientId, refreshKey }: { patient
             {r.test_name} · {when(r.collected_at, r.created_at)}
             {r.is_critical && <span style={{ color: '#b91c1c', marginLeft: 6 }}>⚠ critical</span>}
             {r.linked_document_id && <button type="button" style={linkBtn} onClick={() => void openPdf(r.linked_document_id!)}>PDF</button>}
+            {onUseInConsultation && isLabFeedRow(r) && (
+              <button type="button" style={linkBtn} onClick={() => onUseInConsultation(r)} title="Copy these values into this consultation's results and score inputs">
+                Use in this consultation
+              </button>
+            )}
           </div>
           {r.notes && <div style={{ fontSize: 11, color: '#64748b' }}>{r.notes}</div>}
+          {isLabFeedRow(r) && (
+            <div style={{ fontSize: 11, color: r.status === 'resulted' ? '#b45309' : '#15803d' }}>
+              {r.status === 'resulted' ? 'Lab feed · received — awaiting clinician review (Results Inbox)' : 'Lab feed · reviewed'}
+            </div>
+          )}
           <div style={{ display: 'flex', flexWrap: 'wrap', gap: 4, marginTop: 4 }}>
             {(r.analytes ?? []).map((a, i) => {
               const critical = a.critical === true, abnormal = a.abnormal === true;

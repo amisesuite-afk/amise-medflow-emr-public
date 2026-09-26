@@ -29,7 +29,8 @@
  *   localStorage  amise_current_site, amise-top-section, amise-notification-prefs,
  *                 amise-ai-provider, amise-idle-last-activity, amise-phi-owner (cleared
  *                 with the PHI keys)
- *   sessionStorage apiDownSuppressed, amise_proto_auth
+ *   sessionStorage apiDownSuppressed, amise_proto_auth, results_inbox_tab (which Results
+ *                 Inbox tab to open: "feed" after the critical-result banner is clicked)
  *   IndexedDB     amise-medflow (learned narrative-term → chip mappings; not tied to a
  *                 patient — see the residual note in docs)
  *   Cache Storage the PWA's static assets and Google Fonts only — /api/* is NetworkOnly

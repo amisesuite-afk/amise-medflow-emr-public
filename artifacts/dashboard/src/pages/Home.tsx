@@ -83,6 +83,7 @@ import ErrorBoundary from '@/components/ErrorBoundary';
 import CommandPalette from '@/components/CommandPalette';
 import ProblemListStrip from '@/components/ProblemListStrip';
 import CriticalResultAlert from '@/components/CriticalResultAlert';
+import LabFeedCriticalBanner from '@/components/lab-feed/LabFeedCriticalBanner';
 import PreviousVisitStrip from '@/components/PreviousVisitStrip';
 import VisitContinuityPanel from '@/components/VisitContinuityPanel';
 import RecordLoadNotice from '@/components/RecordLoadNotice';
@@ -718,6 +719,10 @@ export default function HomePage() {
 
         {/* Concurrent-edit conflict — assessment/plan actually collided with another save */}
         <SaveConflictBanner />
+
+        {/* Critical result from the laboratory feed — doctors and admins, every page. The
+            Results Inbox stays reachable from the nav rail whether or not this shows. */}
+        {hasRole(userRole, 'doctor') && <LabFeedCriticalBanner onOpen={() => setTopSection('results_inbox')} />}
 
         {/* Critical result alerts — vitals / investigation thresholds */}
         {topSection === 'consultation' && <CriticalResultAlert />}
