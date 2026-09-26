@@ -102,9 +102,6 @@
         "match": [
           "full blood count: wbc"
         ],
-        "unverified": [
-          "ios"
-        ],
         "guidelineRefs": [
           "tg18-dx-cholecystitis"
         ],
@@ -117,9 +114,6 @@
           "match": [
             "crp not on file"
           ],
-          "unverified": [
-            "ios"
-          ],
           "guidelineRefs": [
             "tg18-dx-cholecystitis"
           ]
@@ -131,9 +125,6 @@
           "severity": "quality",
           "match": [
             "no ultrasound report"
-          ],
-          "unverified": [
-            "ios"
           ],
           "note": "The ultrasound report is on file."
         }

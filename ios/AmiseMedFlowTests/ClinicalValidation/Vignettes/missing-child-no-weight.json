@@ -62,9 +62,6 @@
         "match": [
           "weight not recorded"
         ],
-        "unverified": [
-          "ios"
-        ],
         "guidelineRefs": [
           "bnfc-weight"
         ],
@@ -76,9 +73,6 @@
           "severity": "quality",
           "match": [
             "allergy status not recorded"
-          ],
-          "unverified": [
-            "ios"
           ],
           "guidelineRefs": [
             "nice-cg183"

@@ -83,9 +83,6 @@
         "match": [
           "ferritin not on file"
         ],
-        "unverified": [
-          "ios"
-        ],
         "guidelineRefs": [
           "bsg-2021-ida"
         ],

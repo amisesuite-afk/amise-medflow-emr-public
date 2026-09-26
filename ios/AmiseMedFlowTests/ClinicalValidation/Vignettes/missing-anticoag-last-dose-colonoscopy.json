@@ -86,9 +86,6 @@
         "match": [
           "anticoagulant last dose not recorded"
         ],
-        "unverified": [
-          "ios"
-        ],
         "guidelineRefs": [
           "bsg-esge-2021-anticoag"
         ],

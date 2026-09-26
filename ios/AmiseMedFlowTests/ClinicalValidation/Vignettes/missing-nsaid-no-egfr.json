@@ -73,9 +73,6 @@
           "renal function: creatinine and egfr not on file",
           "renal function: egfr not on file"
         ],
-        "unverified": [
-          "ios"
-        ],
         "guidelineRefs": [
           "nice-nsaid-renal"
         ],

@@ -111,9 +111,6 @@
         "match": [
           "observations not recorded"
         ],
-        "unverified": [
-          "ios"
-        ],
         "guidelineRefs": [
           "rcp-news2"
         ],

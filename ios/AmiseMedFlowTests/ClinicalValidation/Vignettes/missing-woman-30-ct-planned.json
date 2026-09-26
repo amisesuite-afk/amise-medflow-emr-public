@@ -78,9 +78,6 @@
         "match": [
           "pregnancy status not recorded"
         ],
-        "unverified": [
-          "ios"
-        ],
         "guidelineRefs": [
           "rcr-pregnancy-ionising"
         ],

@@ -204,9 +204,7 @@
           "mode": "autofill",
           "min": 7,
           "platforms": ["ios"],
-          "note": "The record documents migration, anorexia, vomiting, RIF tenderness and rebound; an auto-filled Alvarado below 7 would show 'unlikely/possible' for a probable appendicitis until the clinician ticks the boxes.",
-          "knownGap": ["ios"],
-          "knownGapNote": "iOS auto-fill reads only temperature and WBC (3/10); history and examination items stay unticked."
+          "note": "The record documents migration, anorexia, vomiting, RIF tenderness and rebound; an auto-filled Alvarado below 7 would show 'unlikely/possible' for a probable appendicitis until the clinician ticks the boxes."
         }
       ]
     },
