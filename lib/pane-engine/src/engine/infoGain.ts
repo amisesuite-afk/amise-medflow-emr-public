@@ -50,7 +50,7 @@ export function nextBestQuestion(
   if (maxPosterior >= CONVERGENCE_THRESHOLD) return null;
   if (state.iteration >= MAX_QUESTIONS) return null;
 
-  const unanswered = features.filter(f => !(f.id in state.answered));
+  const unanswered = features.filter(f => !(f.id in state.answered) && f.askable !== false);
   if (unanswered.length === 0) return null;
 
   let best: Feature | null = null;

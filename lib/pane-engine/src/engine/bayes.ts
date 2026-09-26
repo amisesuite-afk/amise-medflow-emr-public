@@ -1,5 +1,10 @@
 import type { DiseaseNode, PaneState } from '../types.js';
 import { featureLikelihood } from './likelihood.js';
+import { groupedLikelihood } from './evidenceGroups.js';
+
+function isEvidenceFeatureId(featureId: string): boolean {
+  return featureId.startsWith('sign_') || featureId.startsWith('rule_');
+}
 
 function normalize(raw: Record<string, number>): Record<string, number> {
   const total = Object.values(raw).reduce((sum, p) => sum + p, 0);
@@ -32,11 +37,15 @@ export function updatePosterior(
   featureId: string,
   observed: boolean,
 ): PaneState {
+  // An examination sign or decision-rule band counts once, however many times it is supplied.
+  if (isEvidenceFeatureId(featureId) && state.answered[featureId] === observed) return state;
   const raw: Record<string, number> = {};
   for (const d of diseases) {
     const prior = state.posteriors[d.id] ?? 0;
+    // A decision rule and its components count once (engine/evidenceGroups.ts).
+    const grouped = groupedLikelihood(state.answered, d, featureId, observed);
     const sens = featureLikelihood(d, featureId);
-    const likelihood = observed ? sens : 1 - sens;
+    const likelihood = grouped ?? (observed ? sens : 1 - sens);
     raw[d.id] = prior * likelihood;
   }
   return {

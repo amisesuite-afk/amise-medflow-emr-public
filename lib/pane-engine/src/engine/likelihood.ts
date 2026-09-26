@@ -1,6 +1,7 @@
 import type { DiseaseCourse, DiseaseNode } from '../types.js';
 import { DEFAULT_BASE_RATE, MAX_LIKELIHOOD, MIN_LIKELIHOOD } from '../constants.js';
 import { getFeatureBaseRate } from '../vademecum/registry.js';
+import { evidenceLikelihood } from './evidenceLikelihood.js';
 
 /**
  * P(feature present | disease) as the engine uses it.
@@ -134,5 +135,9 @@ function correlated(disease: DiseaseNode, featureId: string): number | undefined
 export function featureLikelihood(disease: DiseaseNode, featureId: string): number {
   const own = disease.features[featureId];
   if (typeof own === 'number') return clamp(own);
+  // Examination signs and decision-rule bands (evidence/register.ts): likelihoods from the
+  // catalogue's likelihood ratios.
+  const evidence = evidenceLikelihood(disease, featureId);
+  if (evidence !== undefined) return clamp(evidence);
   return clamp(derived(disease, featureId) ?? baseRate(featureId));
 }

@@ -1,0 +1,3031 @@
+{
+  "$schema": "../schemas/exam-signs.schema.json",
+  "id": "exam-signs",
+  "version": "1.0.0",
+  "title": "Evidence-based examination signs (likelihood ratios) for the web and iOS Bayesian engines",
+  "updated": "2026-09-26",
+  "lastReviewed": "unknown",
+  "reviewer": "unknown",
+  "reference": "McGee S. Evidence-Based Physical Diagnosis, 5th ed. (2022) and the JAMA Rational Clinical Examination series. Every value is fromMemory until checked against the source (docs/clinical-validation/changes/evidence-exam.md, Needs sign-off).",
+  "conversion": "Sensitivity and specificity are derived from the likelihood ratios: specificity = (LR+ - 1) / (LR+ - LR-), sensitivity = LR+ x (1 - specificity). A second target (alsoTargets) shares the primary target's specificity: its sensitivity = its LR+ x (1 - specificity), capped at 0.95. iOS: logLR = round(5 x ln LR).",
+  "engineModes": {
+    "lr": "The sign is its own engine feature with these likelihood ratios; it supersedes (drops) the listed free-text twin features when the chip is recorded, so the sign counts once.",
+    "twin": "A red-flag or severity sign: 'present' records the listed engine features (the engine's own, safety-tuned weighting); the likelihood ratio is shown but not applied; absence is never used.",
+    "none": "Low value or no usable likelihood ratio: documentation only; it does not change the differential."
+  },
+  "absencePolicy": "An absent sign updates the engines only when negativeMeaningful is true and the chip was set to 'absent' (examined and absent). Unrecorded signs are never read as absent.",
+  "presentations": {
+    "abdominal-pain": {
+      "label": "Abdominal pain",
+      "keywords": [
+        "abdom",
+        "belly",
+        "stomach",
+        "tummy",
+        "epigastr",
+        "iliac fossa",
+        "rif",
+        "lif",
+        "ruq",
+        "luq",
+        "rlq",
+        "llq",
+        "periumbilical",
+        "flank pain",
+        "peritonit",
+        "appendic",
+        "cholecyst",
+        "biliary colic",
+        "diverticul"
+      ]
+    },
+    "ruq-pain": {
+      "label": "Right upper quadrant pain",
+      "keywords": [
+        "right upper",
+        "ruq",
+        "biliary",
+        "gallbladder",
+        "gallstone",
+        "cholecyst",
+        "epigastr"
+      ]
+    },
+    "rif-pain": {
+      "label": "Right iliac fossa pain",
+      "keywords": [
+        "right iliac",
+        "rif",
+        "rlq",
+        "right lower",
+        "appendic"
+      ]
+    },
+    "obstruction": {
+      "label": "Distension, vomiting, obstruction",
+      "keywords": [
+        "distension",
+        "distended",
+        "bloat",
+        "vomit",
+        "obstruct",
+        "not passing wind",
+        "constipat"
+      ]
+    },
+    "jaundice": {
+      "label": "Jaundice",
+      "keywords": [
+        "jaundice",
+        "yellow",
+        "icter",
+        "dark urine",
+        "pale stool",
+        "bilirubin"
+      ]
+    },
+    "liver": {
+      "label": "Liver disease",
+      "keywords": [
+        "jaundice",
+        "cirrhosis",
+        "alcohol",
+        "ascites",
+        "liver",
+        "swollen abdomen",
+        "abdominal swelling",
+        "haematemesis",
+        "varice"
+      ]
+    },
+    "groin-lump": {
+      "label": "Groin or abdominal-wall lump",
+      "keywords": [
+        "groin",
+        "inguinal",
+        "hernia",
+        "femoral",
+        "umbilical",
+        "scrotal swelling",
+        "lump in the groin",
+        "bulge"
+      ]
+    },
+    "chest-pain": {
+      "label": "Chest pain",
+      "keywords": [
+        "chest pain",
+        "chest tight",
+        "chest heav",
+        "pleuritic",
+        "chest discomfort"
+      ]
+    },
+    "breathlessness": {
+      "label": "Breathlessness",
+      "keywords": [
+        "breathless",
+        "short of breath",
+        "shortness of breath",
+        "dyspnoea",
+        "dyspnea",
+        "orthopnoea",
+        "sob"
+      ]
+    },
+    "cough-fever": {
+      "label": "Cough and fever",
+      "keywords": [
+        "cough",
+        "sputum",
+        "pneumonia",
+        "chest infection",
+        "fever"
+      ]
+    },
+    "leg-swelling": {
+      "label": "Leg swelling or calf pain",
+      "keywords": [
+        "leg swelling",
+        "swollen leg",
+        "calf",
+        "dvt",
+        "leg pain",
+        "swollen ankle"
+      ]
+    },
+    "limb-ischaemia": {
+      "label": "Leg ischaemia, ulcer",
+      "keywords": [
+        "claudication",
+        "cold leg",
+        "cold foot",
+        "rest pain",
+        "foot ulcer",
+        "leg ulcer",
+        "gangrene",
+        "pulseless",
+        "diabetic foot"
+      ]
+    },
+    "breast": {
+      "label": "Breast symptoms",
+      "keywords": [
+        "breast",
+        "nipple",
+        "axilla"
+      ]
+    },
+    "neck-lump": {
+      "label": "Neck lump or thyroid",
+      "keywords": [
+        "neck lump",
+        "neck swelling",
+        "thyroid",
+        "goitre",
+        "goiter",
+        "neck mass"
+      ]
+    },
+    "lymph-nodes": {
+      "label": "Lymph nodes",
+      "keywords": [
+        "lymph node",
+        "gland",
+        "lymphadenopathy",
+        "neck lump",
+        "neck swelling",
+        "axillary lump",
+        "supraclavicular",
+        "weight loss"
+      ]
+    },
+    "headache-meningism": {
+      "label": "Headache, fever, neck stiffness",
+      "keywords": [
+        "headache",
+        "neck stiff",
+        "photophobia",
+        "meningit",
+        "stiff neck"
+      ]
+    },
+    "neuro-deficit": {
+      "label": "Weakness, speech or face",
+      "keywords": [
+        "weakness",
+        "numbness",
+        "slurred",
+        "speech",
+        "facial droop",
+        "stroke",
+        "confusion",
+        "collapse",
+        "headache"
+      ]
+    },
+    "dehydration": {
+      "label": "Vomiting, diarrhoea, dehydration",
+      "keywords": [
+        "vomit",
+        "diarrhoea",
+        "diarrhea",
+        "dehydrat",
+        "gastroenteritis",
+        "poor intake",
+        "not drinking",
+        "reduced urine",
+        "fewer wet nappies"
+      ]
+    },
+    "sepsis": {
+      "label": "Fever, sepsis, shock",
+      "keywords": [
+        "fever",
+        "rigor",
+        "sepsis",
+        "septic",
+        "shiver",
+        "unwell",
+        "hypotens",
+        "shock"
+      ]
+    },
+    "rectal": {
+      "label": "Rectal, bowel or prostate symptoms",
+      "keywords": [
+        "rectal",
+        "per rectum",
+        "pr bleed",
+        "melaena",
+        "black stool",
+        "bowel habit",
+        "tenesmus",
+        "prostat",
+        "urinary",
+        "saddle",
+        "back pain"
+      ]
+    },
+    "gi-bleed": {
+      "label": "Gastrointestinal bleeding",
+      "keywords": [
+        "haematemesis",
+        "hematemesis",
+        "melaena",
+        "melena",
+        "black stool",
+        "coffee ground",
+        "vomiting blood",
+        "rectal bleed"
+      ]
+    },
+    "head-injury": {
+      "label": "Head injury",
+      "keywords": [
+        "head injury",
+        "hit head",
+        "head trauma",
+        "fall",
+        "collision",
+        "assault"
+      ]
+    },
+    "neck-injury": {
+      "label": "Neck injury",
+      "keywords": [
+        "neck injury",
+        "neck pain",
+        "whiplash",
+        "collision",
+        "fall"
+      ]
+    },
+    "ankle-injury": {
+      "label": "Ankle or foot injury",
+      "keywords": [
+        "ankle",
+        "foot injury",
+        "twisted",
+        "inversion injury"
+      ]
+    },
+    "knee-injury": {
+      "label": "Knee injury",
+      "keywords": [
+        "knee"
+      ]
+    },
+    "sore-throat": {
+      "label": "Sore throat",
+      "keywords": [
+        "sore throat",
+        "tonsil",
+        "pharyng",
+        "throat pain"
+      ]
+    },
+    "loin-pain": {
+      "label": "Loin pain",
+      "keywords": [
+        "loin",
+        "flank",
+        "renal colic",
+        "kidney stone",
+        "ureter"
+      ]
+    },
+    "syncope": {
+      "label": "Syncope",
+      "keywords": [
+        "syncope",
+        "faint",
+        "collapse",
+        "blackout",
+        "passed out",
+        "loss of consciousness"
+      ]
+    },
+    "skin-infection": {
+      "label": "Skin and soft-tissue infection",
+      "keywords": [
+        "cellulitis",
+        "red swollen",
+        "necrotising",
+        "skin infection",
+        "wound infection",
+        "abscess",
+        "fasciitis"
+      ]
+    },
+    "preop": {
+      "label": "Pre-operative assessment",
+      "keywords": [
+        "pre-op",
+        "preop",
+        "pre-operative",
+        "preoperative",
+        "surgery planned",
+        "for surgery",
+        "elective"
+      ]
+    }
+  },
+  "targetGroups": {
+    "peritonism": {
+      "label": "Peritonitis (localised or generalised)",
+      "pane": [
+        "appendicitis",
+        "perforated_peptic_ulcer",
+        "diverticulitis",
+        "anastomotic_leak",
+        "postop_collection",
+        "toxic_megacolon",
+        "blunt_abdominal_trauma",
+        "penetrating_abdominal_trauma",
+        "splenic_laceration"
+      ],
+      "ios": [
+        "appendicitis",
+        "perforated",
+        "perforation",
+        "diverticulitis",
+        "anastomotic leak",
+        "peritonitis",
+        "intra-abdominal sepsis"
+      ]
+    },
+    "appendicitis": {
+      "label": "Acute appendicitis",
+      "pane": [
+        "appendicitis"
+      ],
+      "ios": [
+        "appendicitis"
+      ]
+    },
+    "cholecystitis": {
+      "label": "Acute cholecystitis",
+      "pane": [
+        "cholecystitis"
+      ],
+      "ios": [
+        "cholecystitis"
+      ]
+    },
+    "malignant-biliary-obstruction": {
+      "label": "Malignant distal biliary obstruction",
+      "pane": [
+        "pancreatic_carcinoma",
+        "cholangiocarcinoma",
+        "gallbladder_carcinoma"
+      ],
+      "ios": [
+        "pancreatic carcinoma",
+        "pancreatic head",
+        "periampullary",
+        "pancreatic ductal",
+        "cholangiocarcinoma"
+      ]
+    },
+    "obstruction": {
+      "label": "Bowel obstruction",
+      "pane": [
+        "bowel_obstruction",
+        "adhesion_obstruction",
+        "obturator_hernia",
+        "internal_hernia",
+        "sigmoid_volvulus",
+        "incarcerated_hernia"
+      ],
+      "ios": [
+        "bowel obstruction",
+        "volvulus",
+        "incarcerated",
+        "obturator hernia"
+      ]
+    },
+    "aaa": {
+      "label": "Abdominal aortic aneurysm",
+      "pane": [
+        "aortic_aneurysm"
+      ],
+      "ios": [
+        "aortic aneurysm"
+      ]
+    },
+    "ascites": {
+      "label": "Ascites",
+      "pane": [],
+      "ios": [
+        "cirrho",
+        "ascites",
+        "spontaneous bacterial peritonitis",
+        "peritoneal metastases"
+      ]
+    },
+    "abdominal-wall": {
+      "label": "Abdominal-wall pain (e.g. anterior cutaneous nerve entrapment)",
+      "pane": [
+        "abdominal_wall_pain"
+      ],
+      "ios": [
+        "abdominal wall pain"
+      ]
+    },
+    "hernia": {
+      "label": "Uncomplicated abdominal-wall hernia",
+      "pane": [
+        "inguinal_hernia",
+        "femoral_hernia",
+        "umbilical_hernia",
+        "incisional_hernia",
+        "epigastric_hernia",
+        "spigelian_hernia",
+        "parastomal_hernia"
+      ],
+      "ios": [
+        "inguinal hernia",
+        "femoral hernia",
+        "umbilical",
+        "incisional hernia",
+        "epigastric hernia",
+        "spigelian",
+        "parastomal hernia",
+        "direct inguinal",
+        "indirect inguinal"
+      ]
+    },
+    "inguinal-hernia": {
+      "label": "Inguinal hernia",
+      "pane": [
+        "inguinal_hernia"
+      ],
+      "ios": [
+        "inguinal hernia"
+      ]
+    },
+    "femoral-hernia": {
+      "label": "Femoral hernia",
+      "pane": [
+        "femoral_hernia"
+      ],
+      "ios": [
+        "femoral hernia"
+      ]
+    },
+    "pneumonia": {
+      "label": "Pneumonia",
+      "pane": [
+        "pneumonia",
+        "postop_pneumonia"
+      ],
+      "ios": [
+        "pneumonia"
+      ]
+    },
+    "heart-failure": {
+      "label": "Heart failure (raised filling pressure or low ejection fraction)",
+      "pane": [
+        "acute_heart_failure"
+      ],
+      "ios": [
+        "heart failure",
+        "pulmonary oedema"
+      ]
+    },
+    "chest-trauma": {
+      "label": "Traumatic pneumothorax or haemothorax",
+      "pane": [
+        "pneumothorax_traumatic",
+        "haemothorax"
+      ],
+      "ios": [
+        "pneumothorax",
+        "haemothorax"
+      ]
+    },
+    "dvt": {
+      "label": "Deep vein thrombosis",
+      "pane": [
+        "deep_vein_thrombosis"
+      ],
+      "ios": [
+        "deep vein",
+        "dvt"
+      ]
+    },
+    "pad": {
+      "label": "Peripheral arterial disease",
+      "pane": [
+        "peripheral_arterial_disease",
+        "acute_limb_ischaemia",
+        "arterial_ulcer"
+      ],
+      "ios": [
+        "peripheral arterial",
+        "limb ischaemia",
+        "limb-threatening",
+        "arterial ulcer"
+      ]
+    },
+    "diabetic-foot": {
+      "label": "Diabetic foot infection or ischaemia",
+      "pane": [
+        "diabetic_foot_infection"
+      ],
+      "ios": [
+        "diabetic foot"
+      ]
+    },
+    "breast-cancer": {
+      "label": "Breast cancer",
+      "pane": [
+        "invasive_ductal_carcinoma"
+      ],
+      "ios": [
+        "breast carcinoma",
+        "invasive breast",
+        "inflammatory breast",
+        "breast cancer"
+      ]
+    },
+    "fat-necrosis": {
+      "label": "Fat necrosis of the breast (mimic)",
+      "pane": [
+        "fat_necrosis_breast"
+      ],
+      "ios": []
+    },
+    "thyroid-cancer": {
+      "label": "Thyroid cancer",
+      "pane": [
+        "thyroid_carcinoma",
+        "anaplastic_thyroid"
+      ],
+      "ios": [
+        "thyroid carcinoma",
+        "thyroid cancer",
+        "papillary thyroid",
+        "follicular thyroid",
+        "medullary thyroid",
+        "anaplastic thyroid",
+        "thyroid lymphoma"
+      ]
+    },
+    "retrosternal-goitre": {
+      "label": "Retrosternal extension of a goitre",
+      "pane": [],
+      "ios": []
+    },
+    "meningitis": {
+      "label": "Bacterial meningitis",
+      "pane": [
+        "meningitis"
+      ],
+      "ios": [
+        "meningitis"
+      ]
+    },
+    "stroke": {
+      "label": "Stroke",
+      "pane": [
+        "stroke"
+      ],
+      "ios": [
+        "stroke"
+      ]
+    },
+    "raised-icp": {
+      "label": "Raised intracranial pressure",
+      "pane": [],
+      "ios": []
+    },
+    "cirrhosis": {
+      "label": "Cirrhosis",
+      "pane": [
+        "cirrhosis",
+        "variceal_bleed",
+        "hepatocellular_carcinoma"
+      ],
+      "ios": [
+        "cirrho",
+        "variceal",
+        "acute-on-chronic liver"
+      ]
+    },
+    "dehydration-child": {
+      "label": "Dehydration of 5 % or more (child)",
+      "pane": [],
+      "ios": [
+        "dehydration"
+      ]
+    },
+    "hypovolaemia": {
+      "label": "Hypovolaemia",
+      "pane": [],
+      "ios": [
+        "dehydration"
+      ]
+    },
+    "blood-loss": {
+      "label": "Large blood loss (hypovolaemia)",
+      "pane": [],
+      "ios": []
+    },
+    "hypoperfusion": {
+      "label": "Tissue hypoperfusion / shock",
+      "pane": [],
+      "ios": []
+    },
+    "bacteraemia": {
+      "label": "Bacteraemia",
+      "pane": [],
+      "ios": []
+    },
+    "rectal-cancer": {
+      "label": "Rectal or anal cancer",
+      "pane": [
+        "rectal_carcinoma",
+        "anal_cancer"
+      ],
+      "ios": [
+        "rectal cancer",
+        "colorectal carcinoma",
+        "anal carcinoma",
+        "anal squamous",
+        "anal canal"
+      ]
+    },
+    "ugib-source": {
+      "label": "Upper gastrointestinal source of bleeding",
+      "pane": [],
+      "ios": []
+    },
+    "prostate-cancer": {
+      "label": "Prostate cancer",
+      "pane": [],
+      "ios": [
+        "prostate cancer",
+        "prostate adenocarcinoma"
+      ]
+    },
+    "cauda-equina": {
+      "label": "Cauda equina syndrome",
+      "pane": [
+        "cauda_equina"
+      ],
+      "ios": [
+        "cauda equina"
+      ]
+    },
+    "nodal-malignancy": {
+      "label": "Malignant (or granulomatous) cause of lymphadenopathy",
+      "pane": [
+        "gastric_carcinoma",
+        "oesophageal_carcinoma",
+        "pancreatic_carcinoma",
+        "thyroid_carcinoma",
+        "anaplastic_thyroid",
+        "invasive_ductal_carcinoma",
+        "melanoma",
+        "anal_cancer",
+        "scc_skin"
+      ],
+      "ios": [
+        "lymphoma",
+        "metastatic neck node",
+        "metasta"
+      ]
+    },
+    "supraclavicular-malignancy": {
+      "label": "Malignancy draining to the supraclavicular fossa (upper GI, breast, thyroid, lymphoma)",
+      "pane": [
+        "gastric_carcinoma",
+        "oesophageal_carcinoma",
+        "pancreatic_carcinoma",
+        "invasive_ductal_carcinoma",
+        "thyroid_carcinoma"
+      ],
+      "ios": [
+        "gastric carcinoma",
+        "oesophageal / gastric",
+        "pancreatic carcinoma",
+        "lymphoma",
+        "metasta"
+      ]
+    }
+  },
+  "signs": [
+    {
+      "id": "murphy",
+      "name": "Murphy's sign",
+      "synonyms": [
+        "Murphy sign",
+        "inspiratory arrest"
+      ],
+      "system": "abdomen",
+      "region": "Right upper quadrant",
+      "elicit": "Press under the right costal margin at the mid-clavicular line and ask for a deep breath: positive if the breath stops short because of pain.",
+      "presentations": [
+        "abdominal-pain",
+        "ruq-pain",
+        "jaundice"
+      ],
+      "target": {
+        "group": "cholecystitis"
+      },
+      "lrPositive": {
+        "point": 2.8,
+        "low": 0.8,
+        "high": 8.6
+      },
+      "lrNegative": {
+        "point": 0.5,
+        "low": 0.2,
+        "high": 1.0
+      },
+      "negativeMeaningful": true,
+      "supersedes": [
+        "murphy_sign"
+      ],
+      "source": "Trowbridge RL et al. Does this patient have acute cholecystitis? JAMA 2003;289:80-86 (Rational Clinical Examination); McGee S. Evidence-Based Physical Diagnosis, 5th ed. (Elsevier 2022), Abdominal pain and tenderness",
+      "quality": "pooled meta-analysis",
+      "note": "Less sensitive in older and diabetic patients (sonographic Murphy's sign is a different test).",
+      "fromMemory": true,
+      "engine": "lr"
+    },
+    {
+      "id": "mcburney",
+      "name": "McBurney's point tenderness",
+      "synonyms": [
+        "RIF tenderness at McBurney's point"
+      ],
+      "system": "abdomen",
+      "region": "Right iliac fossa",
+      "elicit": "Press one-third of the way from the right anterior superior iliac spine to the umbilicus: positive if that point is maximally tender.",
+      "presentations": [
+        "abdominal-pain",
+        "rif-pain"
+      ],
+      "target": {
+        "group": "appendicitis"
+      },
+      "lrPositive": {
+        "point": 3.4,
+        "low": 1.6,
+        "high": 7.2
+      },
+      "lrNegative": {
+        "point": 0.4,
+        "low": 0.3,
+        "high": 0.6
+      },
+      "negativeMeaningful": true,
+      "source": "McGee S. Evidence-Based Physical Diagnosis, 5th ed. (Elsevier 2022), Abdominal pain and tenderness (appendicitis)",
+      "quality": "pooled meta-analysis",
+      "fromMemory": true,
+      "engine": "lr",
+      "supersedes": []
+    },
+    {
+      "id": "rovsing",
+      "name": "Rovsing's sign",
+      "system": "abdomen",
+      "region": "Right iliac fossa",
+      "elicit": "Press deeply in the left iliac fossa: positive if the pain is felt in the right iliac fossa.",
+      "presentations": [
+        "abdominal-pain",
+        "rif-pain"
+      ],
+      "target": {
+        "group": "appendicitis"
+      },
+      "lrPositive": {
+        "point": 2.3,
+        "low": 1.2,
+        "high": 4.2
+      },
+      "lrNegative": {
+        "point": 0.8,
+        "low": 0.7,
+        "high": 0.9
+      },
+      "negativeMeaningful": false,
+      "source": "Wagner JM et al. Does this patient have appendicitis? JAMA 1996;276:1589-94 (RCE); McGee S. Evidence-Based Physical Diagnosis, 5th ed. (Elsevier 2022)",
+      "quality": "pooled meta-analysis",
+      "note": "A negative Rovsing's sign barely changes the probability (LR- 0.8).",
+      "synonyms": [],
+      "fromMemory": true,
+      "engine": "lr",
+      "supersedes": []
+    },
+    {
+      "id": "psoas",
+      "name": "Psoas sign",
+      "system": "abdomen",
+      "region": "Right iliac fossa / retrocaecal",
+      "elicit": "With the patient on the left side, extend the right hip (or ask for hip flexion against resistance): positive if this provokes right lower abdominal pain.",
+      "presentations": [
+        "abdominal-pain",
+        "rif-pain"
+      ],
+      "target": {
+        "group": "appendicitis"
+      },
+      "lrPositive": {
+        "point": 2.4,
+        "low": 1.2,
+        "high": 4.7
+      },
+      "lrNegative": {
+        "point": 0.9,
+        "low": 0.8,
+        "high": 1.0
+      },
+      "negativeMeaningful": false,
+      "source": "Wagner JM et al. JAMA 1996;276:1589-94 (RCE); McGee S. Evidence-Based Physical Diagnosis, 5th ed. (Elsevier 2022)",
+      "quality": "pooled meta-analysis",
+      "note": "Insensitive: its absence does not argue against appendicitis.",
+      "synonyms": [],
+      "fromMemory": true,
+      "engine": "lr",
+      "supersedes": []
+    },
+    {
+      "id": "obturator",
+      "name": "Obturator sign",
+      "system": "abdomen",
+      "region": "Pelvis / right iliac fossa",
+      "elicit": "With hip and knee flexed to 90 degrees, rotate the hip internally: positive if this provokes hypogastric pain.",
+      "presentations": [
+        "abdominal-pain",
+        "rif-pain"
+      ],
+      "target": {
+        "group": "appendicitis"
+      },
+      "lrPositive": null,
+      "lrNegative": null,
+      "negativeMeaningful": false,
+      "engine": "none",
+      "source": "McGee S. Evidence-Based Physical Diagnosis, 5th ed. (Elsevier 2022), Abdominal pain and tenderness",
+      "quality": "single study",
+      "note": "Low value: no pooled estimate, and the studies that exist find likelihood ratios not different from 1. Recorded for documentation only; it does not change the differential.",
+      "synonyms": [],
+      "fromMemory": true,
+      "supersedes": []
+    },
+    {
+      "id": "rebound",
+      "name": "Rebound tenderness",
+      "synonyms": [
+        "release tenderness"
+      ],
+      "system": "abdomen",
+      "region": "Any quadrant",
+      "elicit": "Press slowly and deeply, then release quickly: positive if the pain is worse on release.",
+      "presentations": [
+        "abdominal-pain",
+        "rif-pain",
+        "ruq-pain"
+      ],
+      "target": {
+        "group": "peritonism"
+      },
+      "lrPositive": {
+        "point": 2.0,
+        "low": 1.7,
+        "high": 2.4
+      },
+      "lrNegative": {
+        "point": 0.4,
+        "low": 0.3,
+        "high": 0.6
+      },
+      "negativeMeaningful": true,
+      "supersedes": [
+        "rebound_tenderness"
+      ],
+      "source": "McGee S. Evidence-Based Physical Diagnosis, 5th ed. (Elsevier 2022), Abdominal pain and tenderness (peritonitis)",
+      "quality": "pooled meta-analysis",
+      "note": "Percussion tenderness gives the same information more gently.",
+      "fromMemory": true,
+      "engine": "lr"
+    },
+    {
+      "id": "percussion_tenderness",
+      "name": "Percussion tenderness",
+      "system": "abdomen",
+      "region": "Any quadrant",
+      "elicit": "Percuss gently over each quadrant: positive if percussion is painful over the site of pain.",
+      "presentations": [
+        "abdominal-pain",
+        "rif-pain",
+        "ruq-pain"
+      ],
+      "target": {
+        "group": "peritonism"
+      },
+      "lrPositive": {
+        "point": 2.4,
+        "low": 1.5,
+        "high": 3.7
+      },
+      "lrNegative": {
+        "point": 0.5,
+        "low": 0.4,
+        "high": 0.7
+      },
+      "negativeMeaningful": true,
+      "source": "McGee S. Evidence-Based Physical Diagnosis, 5th ed. (Elsevier 2022), Abdominal pain and tenderness (peritonitis)",
+      "quality": "pooled meta-analysis",
+      "synonyms": [],
+      "fromMemory": true,
+      "engine": "lr",
+      "supersedes": []
+    },
+    {
+      "id": "guarding",
+      "name": "Guarding",
+      "synonyms": [
+        "voluntary guarding",
+        "muscular defence"
+      ],
+      "system": "abdomen",
+      "region": "Any quadrant",
+      "elicit": "Palpate gently: positive if the abdominal muscles tighten under the hand over the painful area.",
+      "presentations": [
+        "abdominal-pain",
+        "rif-pain",
+        "ruq-pain"
+      ],
+      "target": {
+        "group": "peritonism"
+      },
+      "lrPositive": {
+        "point": 2.2,
+        "low": 1.6,
+        "high": 3.1
+      },
+      "lrNegative": {
+        "point": 0.6,
+        "low": 0.5,
+        "high": 0.8
+      },
+      "negativeMeaningful": true,
+      "supersedes": [
+        "guarding"
+      ],
+      "source": "McGee S. Evidence-Based Physical Diagnosis, 5th ed. (Elsevier 2022), Abdominal pain and tenderness (peritonitis)",
+      "quality": "pooled meta-analysis",
+      "note": "Blunted in the elderly, on steroids and after opioids.",
+      "fromMemory": true,
+      "engine": "lr"
+    },
+    {
+      "id": "rigidity",
+      "name": "Rigidity (board-like abdomen)",
+      "synonyms": [
+        "involuntary guarding"
+      ],
+      "system": "abdomen",
+      "region": "Generalised",
+      "elicit": "Palpate gently: positive if the abdominal wall is continuously rigid and does not relax, even with distraction.",
+      "presentations": [
+        "abdominal-pain"
+      ],
+      "target": {
+        "group": "peritonism"
+      },
+      "lrPositive": {
+        "point": 3.7,
+        "low": 2.1,
+        "high": 6.4
+      },
+      "lrNegative": {
+        "point": 0.7,
+        "low": 0.6,
+        "high": 0.9
+      },
+      "negativeMeaningful": false,
+      "source": "McGee S. Evidence-Based Physical Diagnosis, 5th ed. (Elsevier 2022), Abdominal pain and tenderness (peritonitis)",
+      "quality": "pooled meta-analysis",
+      "note": "Specific but insensitive: a soft abdomen does not exclude peritonitis.",
+      "fromMemory": true,
+      "engine": "lr",
+      "supersedes": []
+    },
+    {
+      "id": "carnett",
+      "name": "Carnett's sign (abdominal-wall tenderness test)",
+      "synonyms": [
+        "Carnett sign",
+        "abdominal wall tenderness test"
+      ],
+      "system": "abdomen",
+      "region": "Any quadrant",
+      "elicit": "Find the tender point, then ask the patient to lift the head and shoulders off the bed: positive if the tenderness stays the same or increases with the muscles tensed.",
+      "presentations": [
+        "abdominal-pain"
+      ],
+      "target": {
+        "group": "abdominal-wall"
+      },
+      "lrPositive": {
+        "point": 6.5,
+        "low": 3.2,
+        "high": 13.0
+      },
+      "lrNegative": {
+        "point": 0.25,
+        "low": 0.1,
+        "high": 0.5
+      },
+      "negativeMeaningful": true,
+      "source": "Takada T et al. Carnett's sign in chronic abdominal pain, J Gen Intern Med 2011; McGee S. Evidence-Based Physical Diagnosis, 5th ed. (Elsevier 2022) (positive test argues against peritonitis, LR 0.1)",
+      "quality": "single study",
+      "note": "A positive test points to the abdominal wall (e.g. anterior cutaneous nerve entrapment) rather than a viscus; McGee gives LR 0.1 for peritonitis when positive. Values come from single cohorts.",
+      "fromMemory": true,
+      "engine": "lr",
+      "supersedes": []
+    },
+    {
+      "id": "shifting_dullness",
+      "name": "Shifting dullness",
+      "system": "abdomen",
+      "region": "Flanks",
+      "elicit": "Percuss from the umbilicus to the flank until dull, keep the finger there and roll the patient away: positive if the dull note becomes resonant.",
+      "presentations": [
+        "liver",
+        "jaundice",
+        "obstruction"
+      ],
+      "target": {
+        "group": "ascites",
+        "paneFeature": "ascites",
+        "pretest": 0.3
+      },
+      "lrPositive": {
+        "point": 2.7,
+        "low": 1.9,
+        "high": 3.9
+      },
+      "lrNegative": {
+        "point": 0.3,
+        "low": 0.2,
+        "high": 0.6
+      },
+      "negativeMeaningful": true,
+      "source": "Williams JW Jr, Simel DL. Does this patient have ascites? JAMA 1992;267:2645-8 (RCE); McGee S. Evidence-Based Physical Diagnosis, 5th ed. (Elsevier 2022)",
+      "quality": "pooled meta-analysis",
+      "note": "Finding-level sign: it changes the probability of ascites, which then weighs the causes of ascites (cirrhosis, malignancy, heart failure). Needs about 500 mL of fluid.",
+      "synonyms": [],
+      "fromMemory": true,
+      "engine": "lr",
+      "supersedes": []
+    },
+    {
+      "id": "fluid_wave",
+      "name": "Fluid wave (fluid thrill)",
+      "system": "abdomen",
+      "region": "Flanks",
+      "elicit": "With the patient's (or an assistant's) hand edge pressed along the midline, tap one flank: positive if the impulse is felt at the other flank.",
+      "presentations": [
+        "liver",
+        "jaundice"
+      ],
+      "target": {
+        "group": "ascites",
+        "paneFeature": "ascites",
+        "pretest": 0.3
+      },
+      "lrPositive": {
+        "point": 6.0,
+        "low": 3.3,
+        "high": 11.0
+      },
+      "lrNegative": {
+        "point": 0.4,
+        "low": 0.3,
+        "high": 0.6
+      },
+      "negativeMeaningful": true,
+      "source": "Williams JW Jr, Simel DL. JAMA 1992;267:2645-8 (RCE); McGee S. Evidence-Based Physical Diagnosis, 5th ed. (Elsevier 2022)",
+      "quality": "pooled meta-analysis",
+      "synonyms": [],
+      "fromMemory": true,
+      "engine": "lr",
+      "supersedes": []
+    },
+    {
+      "id": "courvoisier",
+      "name": "Palpable non-tender gallbladder in a jaundiced patient (Courvoisier)",
+      "synonyms": [
+        "Courvoisier's sign",
+        "Courvoisier's law"
+      ],
+      "system": "abdomen",
+      "region": "Right upper quadrant",
+      "elicit": "In a jaundiced patient, palpate below the right costal margin at the lateral edge of rectus: positive if a smooth, non-tender, pear-shaped mass moves with respiration.",
+      "presentations": [
+        "jaundice",
+        "ruq-pain"
+      ],
+      "target": {
+        "group": "malignant-biliary-obstruction"
+      },
+      "lrPositive": {
+        "point": 26.0,
+        "low": 4.0,
+        "high": 170.0
+      },
+      "lrNegative": {
+        "point": 0.7,
+        "low": 0.5,
+        "high": 0.9
+      },
+      "negativeMeaningful": false,
+      "source": "McGee S. Evidence-Based Physical Diagnosis, 5th ed. (Elsevier 2022), The liver and gallbladder (palpable gallbladder: extrahepatic obstruction in jaundice)",
+      "quality": "single study",
+      "note": "Stones rarely distend a chronically fibrosed gallbladder, so a palpable gallbladder points to a malignant distal obstruction. Its absence means little.",
+      "fromMemory": true,
+      "engine": "lr",
+      "supersedes": []
+    },
+    {
+      "id": "bowel_sounds",
+      "name": "Obstructive (high-pitched, tinkling) bowel sounds",
+      "synonyms": [
+        "tinkling bowel sounds",
+        "hyperactive bowel sounds"
+      ],
+      "system": "abdomen",
+      "region": "Whole abdomen",
+      "elicit": "Listen for at least a minute in the mid-abdomen: positive if the sounds are high-pitched, tinkling or come in rushes with colic.",
+      "presentations": [
+        "obstruction",
+        "abdominal-pain"
+      ],
+      "target": {
+        "group": "obstruction"
+      },
+      "lrPositive": {
+        "point": 1.8,
+        "low": 1.0,
+        "high": 3.3
+      },
+      "lrNegative": {
+        "point": 0.8,
+        "low": 0.6,
+        "high": 1.0
+      },
+      "negativeMeaningful": false,
+      "supersedes": [
+        "tinkling_bowel_sounds"
+      ],
+      "source": "Böhner H et al. Simple data from history and physical examination help to exclude bowel obstruction, Eur J Surg 1998; McGee S. Evidence-Based Physical Diagnosis, 5th ed. (Elsevier 2022) (abnormal bowel sounds: likelihood ratio not significant for peritonitis)",
+      "quality": "single study",
+      "note": "Low value: bowel sounds barely change the probability of obstruction, and absent or normal bowel sounds never exclude peritonitis or obstruction.",
+      "fromMemory": true,
+      "engine": "lr"
+    },
+    {
+      "id": "aortic_pulsation",
+      "name": "Widened expansile aortic pulsation",
+      "synonyms": [
+        "pulsatile expansile abdominal mass"
+      ],
+      "system": "abdomen",
+      "region": "Epigastrium / umbilicus",
+      "elicit": "Place both hands either side of the aortic pulsation above the umbilicus: positive if the hands are pushed apart and the width is 3 cm or more.",
+      "presentations": [
+        "abdominal-pain",
+        "loin-pain"
+      ],
+      "target": {
+        "group": "aaa"
+      },
+      "lrPositive": {
+        "point": 12.0,
+        "low": 7.4,
+        "high": 20.0
+      },
+      "lrNegative": {
+        "point": 0.72,
+        "low": 0.65,
+        "high": 0.81
+      },
+      "negativeMeaningful": false,
+      "source": "Lederle FA, Simel DL. Does this patient have abdominal aortic aneurysm? JAMA 1999;281:77-82 (RCE, AAA 4 cm or more)",
+      "quality": "pooled meta-analysis",
+      "note": "Insensitive in obesity: a normal examination does not exclude an aneurysm. Documented 'pulsatile mass' in the notes is counted separately (not superseded).",
+      "fromMemory": true,
+      "engine": "lr",
+      "supersedes": []
+    },
+    {
+      "id": "cough_impulse",
+      "name": "Cough impulse",
+      "system": "hernia",
+      "region": "Groin / abdominal wall",
+      "elicit": "With the patient standing, place fingers over the swelling and ask for a cough: positive if an expansile impulse is felt.",
+      "presentations": [
+        "groin-lump"
+      ],
+      "target": {
+        "group": "hernia"
+      },
+      "lrPositive": {
+        "point": 4.0,
+        "low": 2.0,
+        "high": 8.0
+      },
+      "lrNegative": {
+        "point": 0.3,
+        "low": 0.2,
+        "high": 0.5
+      },
+      "negativeMeaningful": false,
+      "supersedes": [
+        "cough_impulse"
+      ],
+      "source": "van den Berg JC et al. Detection of groin hernia with physical examination, ultrasound and MRI compared with laparoscopic findings, Invest Radiol 1999; HerniaSurge Group, Hernia 2018",
+      "quality": "single study",
+      "note": "An incarcerated hernia loses its cough impulse, so an absent impulse does not argue against a hernia (it may mean incarceration).",
+      "synonyms": [],
+      "fromMemory": true,
+      "engine": "lr"
+    },
+    {
+      "id": "reducible",
+      "name": "Swelling reduces completely",
+      "synonyms": [
+        "reducible hernia"
+      ],
+      "system": "hernia",
+      "region": "Groin / abdominal wall",
+      "elicit": "With the patient lying, apply gentle pressure over the swelling: positive if it disappears completely.",
+      "presentations": [
+        "groin-lump"
+      ],
+      "target": {
+        "group": "hernia"
+      },
+      "lrPositive": {
+        "point": 5.0,
+        "low": 2.0,
+        "high": 12.0
+      },
+      "lrNegative": {
+        "point": 0.2,
+        "low": 0.1,
+        "high": 0.5
+      },
+      "negativeMeaningful": false,
+      "supersedes": [
+        "groin_lump_reducible",
+        "hernia_compressible"
+      ],
+      "twins": {
+        "absent": [
+          "hernia_irreducible"
+        ]
+      },
+      "source": "WSES guidelines for emergency repair of complicated abdominal wall hernias (Birindelli et al. World J Emerg Surg 2017); HerniaSurge Group, Hernia 2018",
+      "quality": "expert consensus",
+      "note": "No accuracy study: the likelihood ratios are estimates for sign-off. 'Absent' (irreducible) is recorded as an irreducible hernia, which the engine weighs towards incarceration; a tense, tender, irreducible hernia is incarcerated until proven otherwise.",
+      "fromMemory": true,
+      "engine": "lr"
+    },
+    {
+      "id": "above_medial_tubercle",
+      "name": "Groin lump above and medial to the pubic tubercle",
+      "system": "hernia",
+      "region": "Groin",
+      "elicit": "Find the pubic tubercle and trace the neck of the swelling: positive if the neck lies above and medial to the tubercle (inguinal canal).",
+      "presentations": [
+        "groin-lump"
+      ],
+      "target": {
+        "group": "inguinal-hernia"
+      },
+      "lrPositive": {
+        "point": 3.0,
+        "low": 1.5,
+        "high": 6.0
+      },
+      "lrNegative": {
+        "point": 0.3,
+        "low": 0.15,
+        "high": 0.6
+      },
+      "negativeMeaningful": false,
+      "source": "HerniaSurge Group. International guidelines for groin hernia management, Hernia 2018; McGee S. Evidence-Based Physical Diagnosis, 5th ed. (Elsevier 2022)",
+      "quality": "expert consensus",
+      "note": "No pooled accuracy estimate; examination often misclassifies femoral hernias as inguinal. Record the paired sign (below and lateral) rather than 'absent'.",
+      "synonyms": [],
+      "fromMemory": true,
+      "engine": "lr",
+      "supersedes": []
+    },
+    {
+      "id": "below_lateral_tubercle",
+      "name": "Groin lump below and lateral to the pubic tubercle",
+      "system": "hernia",
+      "region": "Groin",
+      "elicit": "Find the pubic tubercle and trace the neck of the swelling: positive if the neck lies below the inguinal ligament and lateral to the tubercle (femoral canal).",
+      "presentations": [
+        "groin-lump"
+      ],
+      "target": {
+        "group": "femoral-hernia"
+      },
+      "lrPositive": {
+        "point": 8.0,
+        "low": 3.0,
+        "high": 20.0
+      },
+      "lrNegative": {
+        "point": 0.4,
+        "low": 0.2,
+        "high": 0.7
+      },
+      "negativeMeaningful": false,
+      "supersedes": [
+        "below_inguinal_ligament"
+      ],
+      "source": "HerniaSurge Group, Hernia 2018 (femoral hernia: women, older age, emergency presentation); McGee S. Evidence-Based Physical Diagnosis, 5th ed. (Elsevier 2022)",
+      "quality": "expert consensus",
+      "note": "Estimates for sign-off. A femoral hernia is repaired promptly because of its strangulation risk.",
+      "synonyms": [],
+      "fromMemory": true,
+      "engine": "lr"
+    },
+    {
+      "id": "dullness_percussion",
+      "name": "Dullness to percussion",
+      "system": "chest",
+      "region": "Lung bases / zones",
+      "elicit": "Percuss symmetrically from apex to base on both sides: positive if one area is dull compared with the other side.",
+      "presentations": [
+        "cough-fever",
+        "breathlessness",
+        "chest-pain"
+      ],
+      "target": {
+        "group": "pneumonia"
+      },
+      "lrPositive": {
+        "point": 3.0,
+        "low": 2.2,
+        "high": 4.3
+      },
+      "lrNegative": {
+        "point": 0.9,
+        "low": 0.8,
+        "high": 1.0
+      },
+      "negativeMeaningful": false,
+      "source": "Metlay JP et al. Does this patient have community-acquired pneumonia? JAMA 1997;278:1440-5 (RCE); McGee S. Evidence-Based Physical Diagnosis, 5th ed. (Elsevier 2022), Pneumonia; Wong CL et al. Does this patient have a pleural effusion? JAMA 2009;301:309-17 (RCE)",
+      "quality": "pooled meta-analysis",
+      "note": "Also the best single sign of a pleural effusion (LR+ 8.7, Wong 2009).",
+      "synonyms": [],
+      "fromMemory": true,
+      "engine": "lr",
+      "supersedes": []
+    },
+    {
+      "id": "crackles",
+      "name": "Crackles (crepitations)",
+      "synonyms": [
+        "rales",
+        "crepitations"
+      ],
+      "system": "chest",
+      "region": "Lung bases / zones",
+      "elicit": "Auscultate both lungs, asking for deep breaths through the mouth: positive if fine or coarse crackles persist after a cough.",
+      "presentations": [
+        "cough-fever",
+        "breathlessness"
+      ],
+      "target": {
+        "group": "pneumonia"
+      },
+      "alsoTargets": [
+        {
+          "group": "heart-failure",
+          "lrPositive": {
+            "point": 2.8,
+            "low": 1.9,
+            "high": 4.1
+          }
+        }
+      ],
+      "lrPositive": {
+        "point": 2.0,
+        "low": 1.6,
+        "high": 2.7
+      },
+      "lrNegative": {
+        "point": 0.8,
+        "low": 0.6,
+        "high": 0.9
+      },
+      "negativeMeaningful": false,
+      "supersedes": [
+        "crackles"
+      ],
+      "source": "Metlay JP et al. Does this patient have community-acquired pneumonia? JAMA 1997;278:1440-5 (RCE); McGee S. Evidence-Based Physical Diagnosis, 5th ed. (Elsevier 2022), Pneumonia; Wang CS et al. Does this dyspneic patient in the emergency department have congestive heart failure? JAMA 2005;294:1944-56 (RCE)",
+      "quality": "pooled meta-analysis",
+      "fromMemory": true,
+      "engine": "lr"
+    },
+    {
+      "id": "reduced_breath_sounds",
+      "name": "Reduced breath sounds",
+      "system": "chest",
+      "region": "Lung zones",
+      "elicit": "Auscultate symmetrical zones: positive if breath sounds are clearly quieter on one side or zone.",
+      "presentations": [
+        "cough-fever",
+        "breathlessness",
+        "chest-pain",
+        "head-injury"
+      ],
+      "target": {
+        "group": "pneumonia"
+      },
+      "alsoTargets": [
+        {
+          "group": "chest-trauma",
+          "lrPositive": {
+            "point": 6.0,
+            "low": 3.0,
+            "high": 12.0
+          }
+        }
+      ],
+      "lrPositive": {
+        "point": 2.3,
+        "low": 2.2,
+        "high": 2.5
+      },
+      "lrNegative": {
+        "point": 0.8,
+        "low": 0.6,
+        "high": 0.8
+      },
+      "negativeMeaningful": false,
+      "supersedes": [
+        "reduced_breath_sounds"
+      ],
+      "source": "Metlay JP et al. Does this patient have community-acquired pneumonia? JAMA 1997;278:1440-5 (RCE); McGee S. Evidence-Based Physical Diagnosis, 5th ed. (Elsevier 2022), Pneumonia; ATLS 10th ed. (American College of Surgeons 2018) for chest trauma",
+      "quality": "pooled meta-analysis",
+      "note": "The chest-trauma likelihood ratio is an estimate for sign-off.",
+      "synonyms": [],
+      "fromMemory": true,
+      "engine": "lr"
+    },
+    {
+      "id": "egophony",
+      "name": "Egophony",
+      "system": "chest",
+      "region": "Lung zones",
+      "elicit": "Ask the patient to say 'ee' while you auscultate: positive if it sounds like 'ay' over one area.",
+      "presentations": [
+        "cough-fever",
+        "breathlessness"
+      ],
+      "target": {
+        "group": "pneumonia"
+      },
+      "lrPositive": {
+        "point": 4.1,
+        "low": 2.0,
+        "high": 8.6
+      },
+      "lrNegative": {
+        "point": 0.9,
+        "low": 0.8,
+        "high": 1.0
+      },
+      "negativeMeaningful": false,
+      "source": "Metlay JP et al. Does this patient have community-acquired pneumonia? JAMA 1997;278:1440-5 (RCE); McGee S. Evidence-Based Physical Diagnosis, 5th ed. (Elsevier 2022), Pneumonia",
+      "quality": "pooled meta-analysis",
+      "synonyms": [],
+      "fromMemory": true,
+      "engine": "lr",
+      "supersedes": []
+    },
+    {
+      "id": "bronchial_breathing",
+      "name": "Bronchial breath sounds",
+      "system": "chest",
+      "region": "Lung zones",
+      "elicit": "Auscultate: positive if breath sounds are harsh with a gap between inspiration and expiration over a peripheral zone.",
+      "presentations": [
+        "cough-fever",
+        "breathlessness"
+      ],
+      "target": {
+        "group": "pneumonia"
+      },
+      "lrPositive": {
+        "point": 3.3,
+        "low": 2.0,
+        "high": 5.6
+      },
+      "lrNegative": {
+        "point": 0.9,
+        "low": 0.8,
+        "high": 1.0
+      },
+      "negativeMeaningful": false,
+      "supersedes": [
+        "bronchial_breathing"
+      ],
+      "source": "Metlay JP et al. Does this patient have community-acquired pneumonia? JAMA 1997;278:1440-5 (RCE); McGee S. Evidence-Based Physical Diagnosis, 5th ed. (Elsevier 2022), Pneumonia",
+      "quality": "pooled meta-analysis",
+      "synonyms": [],
+      "fromMemory": true,
+      "engine": "lr"
+    },
+    {
+      "id": "pleural_rub",
+      "name": "Pleural rub",
+      "system": "chest",
+      "region": "Lung zones",
+      "elicit": "Auscultate over the painful area: positive if a creaking, leathery sound is heard in both phases of respiration.",
+      "presentations": [
+        "chest-pain",
+        "cough-fever",
+        "breathlessness"
+      ],
+      "target": {
+        "group": "pneumonia"
+      },
+      "lrPositive": null,
+      "lrNegative": null,
+      "negativeMeaningful": false,
+      "engine": "none",
+      "source": "McGee S. Evidence-Based Physical Diagnosis, 5th ed. (Elsevier 2022), Pneumonia; Metlay JP et al. JAMA 1997 (not among the discriminating signs)",
+      "quality": "single study",
+      "note": "Low value: specific for pleural inflammation (pneumonia, pulmonary infarction, serositis) but rare and without a usable likelihood ratio; recorded for documentation only.",
+      "synonyms": [],
+      "fromMemory": true,
+      "supersedes": []
+    },
+    {
+      "id": "raised_jvp",
+      "name": "Raised jugular venous pressure",
+      "synonyms": [
+        "raised JVP",
+        "elevated JVP"
+      ],
+      "system": "cardiac",
+      "region": "Neck",
+      "elicit": "At 45 degrees, measure the height of the internal jugular pulsation above the sternal angle: positive if more than 3 cm (CVP above 8 cm H2O).",
+      "presentations": [
+        "breathlessness",
+        "leg-swelling",
+        "chest-pain"
+      ],
+      "target": {
+        "group": "heart-failure"
+      },
+      "lrPositive": {
+        "point": 5.1,
+        "low": 3.2,
+        "high": 7.9
+      },
+      "lrNegative": {
+        "point": 0.66,
+        "low": 0.57,
+        "high": 0.77
+      },
+      "negativeMeaningful": false,
+      "supersedes": [
+        "raised_jvp"
+      ],
+      "source": "Wang CS et al. JAMA 2005;294:1944-56 (RCE, heart failure in the dyspnoeic ED patient); McGee S. Evidence-Based Physical Diagnosis, 5th ed. (Elsevier 2022), The heart",
+      "quality": "pooled meta-analysis",
+      "fromMemory": true,
+      "engine": "lr"
+    },
+    {
+      "id": "s3",
+      "name": "Third heart sound (S3 gallop)",
+      "synonyms": [
+        "S3",
+        "ventricular gallop"
+      ],
+      "system": "cardiac",
+      "region": "Apex",
+      "elicit": "With the bell at the apex and the patient in the left lateral position: positive if a low-pitched sound follows S2.",
+      "presentations": [
+        "breathlessness",
+        "leg-swelling"
+      ],
+      "target": {
+        "group": "heart-failure"
+      },
+      "lrPositive": {
+        "point": 11.0,
+        "low": 4.9,
+        "high": 25.0
+      },
+      "lrNegative": {
+        "point": 0.88,
+        "low": 0.83,
+        "high": 0.94
+      },
+      "negativeMeaningful": false,
+      "source": "Wang CS et al. JAMA 2005;294:1944-56 (RCE, heart failure in the dyspnoeic ED patient); McGee S. Evidence-Based Physical Diagnosis, 5th ed. (Elsevier 2022), The heart",
+      "quality": "pooled meta-analysis",
+      "note": "Specific but insensitive; inter-observer agreement is poor.",
+      "fromMemory": true,
+      "engine": "lr",
+      "supersedes": []
+    },
+    {
+      "id": "displaced_apex",
+      "name": "Displaced apex beat",
+      "synonyms": [
+        "apical impulse lateral to the mid-clavicular line"
+      ],
+      "system": "cardiac",
+      "region": "Left chest",
+      "elicit": "Palpate the apex beat supine: positive if it lies lateral to the mid-clavicular line or is diffuse (more than 3 cm).",
+      "presentations": [
+        "breathlessness",
+        "leg-swelling"
+      ],
+      "target": {
+        "group": "heart-failure"
+      },
+      "lrPositive": {
+        "point": 5.0,
+        "low": 2.0,
+        "high": 13.0
+      },
+      "lrNegative": {
+        "point": 0.6,
+        "low": 0.5,
+        "high": 0.8
+      },
+      "negativeMeaningful": false,
+      "source": "McGee S. Evidence-Based Physical Diagnosis, 5th ed. (Elsevier 2022), The heart (low ejection fraction)",
+      "quality": "single study",
+      "note": "Detects left-ventricular dilatation (low ejection fraction) rather than acute decompensation.",
+      "fromMemory": true,
+      "engine": "lr",
+      "supersedes": []
+    },
+    {
+      "id": "hjr",
+      "name": "Hepatojugular (abdominojugular) reflux",
+      "synonyms": [
+        "abdominojugular test"
+      ],
+      "system": "cardiac",
+      "region": "Neck / abdomen",
+      "elicit": "Press firmly over the mid-abdomen for 10-15 seconds: positive if the JVP rises by 3 cm or more and stays up.",
+      "presentations": [
+        "breathlessness",
+        "leg-swelling"
+      ],
+      "target": {
+        "group": "heart-failure"
+      },
+      "lrPositive": {
+        "point": 6.4,
+        "low": 0.8,
+        "high": 51.0
+      },
+      "lrNegative": {
+        "point": 0.79,
+        "low": 0.62,
+        "high": 1.0
+      },
+      "negativeMeaningful": false,
+      "source": "Wang CS et al. JAMA 2005;294:1944-56 (RCE, heart failure in the dyspnoeic ED patient); McGee S. Evidence-Based Physical Diagnosis, 5th ed. (Elsevier 2022), The heart",
+      "quality": "pooled meta-analysis",
+      "fromMemory": true,
+      "engine": "lr",
+      "supersedes": []
+    },
+    {
+      "id": "calf_swelling",
+      "name": "Calf swelling 3 cm or more (10 cm below the tibial tuberosity)",
+      "system": "vascular",
+      "region": "Leg",
+      "elicit": "Measure both calf circumferences 10 cm below the tibial tuberosity: positive if the symptomatic calf is 3 cm or more larger.",
+      "presentations": [
+        "leg-swelling"
+      ],
+      "target": {
+        "group": "dvt"
+      },
+      "engine": "twin",
+      "twins": {
+        "present": [
+          "unilateral_leg_swelling"
+        ]
+      },
+      "lrPositive": {
+        "point": 2.1,
+        "low": 1.5,
+        "high": 3.0
+      },
+      "lrNegative": {
+        "point": 0.6,
+        "low": 0.5,
+        "high": 0.8
+      },
+      "negativeMeaningful": false,
+      "source": "Anand SS et al. Does this patient have deep vein thrombosis? JAMA 1998;279:1094-9 (RCE); Wells PS et al. NEJM 2003",
+      "quality": "pooled meta-analysis",
+      "note": "Individual leg signs are weak: use Wells DVT with a D-dimer. Recorded as unilateral leg swelling for the engine.",
+      "synonyms": [],
+      "fromMemory": true,
+      "supersedes": []
+    },
+    {
+      "id": "homans",
+      "name": "Homans' sign",
+      "system": "vascular",
+      "region": "Calf",
+      "elicit": "Dorsiflex the ankle with the knee slightly flexed: positive if this causes calf pain.",
+      "presentations": [
+        "leg-swelling"
+      ],
+      "target": {
+        "group": "dvt"
+      },
+      "engine": "none",
+      "lrPositive": {
+        "point": 1.4,
+        "low": 1.0,
+        "high": 2.0
+      },
+      "lrNegative": {
+        "point": 0.9,
+        "low": 0.8,
+        "high": 1.0
+      },
+      "negativeMeaningful": false,
+      "source": "Anand SS et al. JAMA 1998;279:1094-9 (RCE)",
+      "quality": "pooled meta-analysis",
+      "note": "Low value: does not help diagnose or exclude DVT. Use Wells DVT and a D-dimer.",
+      "synonyms": [],
+      "fromMemory": true,
+      "supersedes": []
+    },
+    {
+      "id": "absent_foot_pulses",
+      "name": "Absent or reduced foot pulses",
+      "synonyms": [
+        "absent pedal pulses",
+        "absent dorsalis pedis and posterior tibial pulses"
+      ],
+      "system": "vascular",
+      "region": "Foot",
+      "elicit": "Palpate dorsalis pedis and posterior tibial pulses on both feet: positive if either is absent or clearly weaker than the other side.",
+      "presentations": [
+        "limb-ischaemia",
+        "leg-swelling"
+      ],
+      "target": {
+        "group": "pad"
+      },
+      "alsoTargets": [
+        {
+          "group": "diabetic-foot",
+          "lrPositive": {
+            "point": 2.0,
+            "low": 1.2,
+            "high": 3.5
+          }
+        }
+      ],
+      "lrPositive": {
+        "point": 4.7,
+        "low": 2.2,
+        "high": 9.9
+      },
+      "lrNegative": {
+        "point": 0.38,
+        "low": 0.23,
+        "high": 0.64
+      },
+      "negativeMeaningful": true,
+      "supersedes": [
+        "absent_pulses"
+      ],
+      "source": "Khan NA et al. Does the clinical examination predict lower extremity peripheral arterial disease? JAMA 2006;295:536-46 (RCE)",
+      "quality": "pooled meta-analysis",
+      "note": "The diabetic-foot likelihood ratio is an estimate for sign-off.",
+      "fromMemory": true,
+      "engine": "lr"
+    },
+    {
+      "id": "abpi_low",
+      "name": "Ankle-brachial pressure index below 0.9",
+      "synonyms": [
+        "ABPI < 0.9",
+        "ABI < 0.9"
+      ],
+      "system": "vascular",
+      "region": "Ankle",
+      "elicit": "Hand-held Doppler: highest ankle systolic pressure divided by the higher brachial pressure; positive if below 0.9.",
+      "presentations": [
+        "limb-ischaemia"
+      ],
+      "target": {
+        "group": "pad"
+      },
+      "lrPositive": {
+        "point": 5.4,
+        "low": 3.5,
+        "high": 8.2
+      },
+      "lrNegative": {
+        "point": 0.29,
+        "low": 0.2,
+        "high": 0.4
+      },
+      "negativeMeaningful": true,
+      "source": "Xu D et al. Sensitivity and specificity of the ankle-brachial index to diagnose peripheral artery disease, Vasc Med 2010; ESC/ESVS 2017 PAD guidelines",
+      "quality": "pooled meta-analysis",
+      "note": "Calcified arteries (diabetes, renal failure) give a falsely normal or high index (above 1.3): use toe pressures then.",
+      "fromMemory": true,
+      "engine": "lr",
+      "supersedes": []
+    },
+    {
+      "id": "crt_adult",
+      "name": "Capillary refill longer than 3 seconds (adult)",
+      "system": "sepsis",
+      "region": "Finger pulp / sternum",
+      "elicit": "Press the fingertip at heart level for 5 seconds and release: positive if colour takes more than 3 seconds to return.",
+      "presentations": [
+        "sepsis",
+        "gi-bleed",
+        "dehydration"
+      ],
+      "target": {
+        "group": "hypoperfusion"
+      },
+      "engine": "none",
+      "lrPositive": null,
+      "lrNegative": null,
+      "negativeMeaningful": false,
+      "source": "McGee S. Evidence-Based Physical Diagnosis, 5th ed. (Elsevier 2022), Hypovolaemia; McGee S et al. Is this patient hypovolemic? JAMA 1999;281:1022-9 (RCE)",
+      "quality": "single study",
+      "note": "Low value for detecting hypovolaemia in adults (affected by temperature and age). Documentation only; use the observations and lactate.",
+      "synonyms": [],
+      "fromMemory": true,
+      "supersedes": []
+    },
+    {
+      "id": "breast_hard_fixed",
+      "name": "Hard, fixed or irregular breast lump",
+      "system": "breast",
+      "region": "Breast",
+      "elicit": "Palpate with the flat of the fingers, arm raised then relaxed: positive if the lump is hard, has an irregular edge or is fixed to skin or chest wall.",
+      "presentations": [
+        "breast"
+      ],
+      "target": {
+        "group": "breast-cancer"
+      },
+      "alsoTargets": [
+        {
+          "group": "fat-necrosis",
+          "lrPositive": {
+            "point": 3.0,
+            "low": 1.5,
+            "high": 6.0
+          }
+        }
+      ],
+      "lrPositive": {
+        "point": 5.0,
+        "low": 2.5,
+        "high": 10.0
+      },
+      "lrNegative": {
+        "point": 0.3,
+        "low": 0.2,
+        "high": 0.5
+      },
+      "negativeMeaningful": false,
+      "supersedes": [
+        "breast_lump_hard"
+      ],
+      "source": "NICE NG12 (2015, updated 2023) suspected cancer; Association of Breast Surgery triple assessment guidance; McGee S. Evidence-Based Physical Diagnosis, 5th ed. (Elsevier 2022), The breast",
+      "quality": "single study",
+      "note": "A soft, mobile lump still needs triple assessment: absence is never reassurance. Fat necrosis mimics cancer.",
+      "synonyms": [],
+      "fromMemory": true,
+      "engine": "lr"
+    },
+    {
+      "id": "skin_tethering",
+      "name": "Skin tethering or dimpling over a breast lump",
+      "system": "breast",
+      "region": "Breast",
+      "elicit": "Inspect with arms raised and hands pressed on hips; lift the breast gently: positive if the skin puckers or dimples over the lump.",
+      "presentations": [
+        "breast"
+      ],
+      "target": {
+        "group": "breast-cancer"
+      },
+      "lrPositive": {
+        "point": 8.0,
+        "low": 3.0,
+        "high": 20.0
+      },
+      "lrNegative": {
+        "point": 0.8,
+        "low": 0.7,
+        "high": 0.95
+      },
+      "negativeMeaningful": false,
+      "supersedes": [
+        "skin_dimpling"
+      ],
+      "source": "NICE NG12 (2015, updated 2023) suspected cancer; Association of Breast Surgery triple assessment guidance; McGee S. Evidence-Based Physical Diagnosis, 5th ed. (Elsevier 2022), The breast",
+      "quality": "expert consensus",
+      "note": "Estimate for sign-off; fat necrosis and previous surgery can tether skin.",
+      "synonyms": [],
+      "fromMemory": true,
+      "engine": "lr"
+    },
+    {
+      "id": "peau_dorange",
+      "name": "Peau d'orange",
+      "system": "breast",
+      "region": "Breast skin",
+      "elicit": "Inspect the breast skin in good light: positive if it is oedematous with prominent pores like orange peel.",
+      "presentations": [
+        "breast"
+      ],
+      "target": {
+        "group": "breast-cancer"
+      },
+      "lrPositive": {
+        "point": 15.0,
+        "low": 5.0,
+        "high": 40.0
+      },
+      "lrNegative": {
+        "point": 0.9,
+        "low": 0.8,
+        "high": 0.98
+      },
+      "negativeMeaningful": false,
+      "source": "NICE NG12 (2015, updated 2023) suspected cancer; Association of Breast Surgery triple assessment guidance; McGee S. Evidence-Based Physical Diagnosis, 5th ed. (Elsevier 2022), The breast",
+      "quality": "expert consensus",
+      "note": "Estimate for sign-off. Suggests locally advanced or inflammatory cancer; mastitis and abscess can cause skin oedema.",
+      "synonyms": [],
+      "fromMemory": true,
+      "engine": "lr",
+      "supersedes": []
+    },
+    {
+      "id": "nipple_retraction",
+      "name": "New nipple retraction",
+      "synonyms": [
+        "nipple inversion (new)"
+      ],
+      "system": "breast",
+      "region": "Nipple",
+      "elicit": "Ask when the nipple changed and inspect: positive if a previously everted nipple is newly pulled in (a central slit suggests duct ectasia).",
+      "presentations": [
+        "breast"
+      ],
+      "target": {
+        "group": "breast-cancer"
+      },
+      "lrPositive": {
+        "point": 4.0,
+        "low": 2.0,
+        "high": 8.0
+      },
+      "lrNegative": {
+        "point": 0.8,
+        "low": 0.7,
+        "high": 0.95
+      },
+      "negativeMeaningful": false,
+      "supersedes": [
+        "nipple_inversion"
+      ],
+      "source": "NICE NG12 (2015, updated 2023) suspected cancer; Association of Breast Surgery triple assessment guidance; McGee S. Evidence-Based Physical Diagnosis, 5th ed. (Elsevier 2022), The breast",
+      "quality": "expert consensus",
+      "note": "Estimate for sign-off; duct ectasia also retracts the nipple.",
+      "fromMemory": true,
+      "engine": "lr"
+    },
+    {
+      "id": "thyroid_hard_fixed",
+      "name": "Hard or fixed thyroid nodule",
+      "system": "thyroid",
+      "region": "Neck",
+      "elicit": "Palpate from behind with the neck slightly flexed, and ask the patient to swallow: positive if the nodule is stony hard or does not move freely.",
+      "presentations": [
+        "neck-lump"
+      ],
+      "target": {
+        "group": "thyroid-cancer"
+      },
+      "lrPositive": {
+        "point": 4.0,
+        "low": 1.5,
+        "high": 10.0
+      },
+      "lrNegative": {
+        "point": 0.8,
+        "low": 0.6,
+        "high": 0.95
+      },
+      "negativeMeaningful": false,
+      "source": "British Thyroid Association guidelines 2014; ATA 2015 thyroid nodule guidelines; McGee S. Evidence-Based Physical Diagnosis, 5th ed. (Elsevier 2022), The thyroid and its disorders",
+      "quality": "single study",
+      "note": "A soft nodule can still be malignant: ultrasound (U-grading) decides.",
+      "synonyms": [],
+      "fromMemory": true,
+      "engine": "lr",
+      "supersedes": []
+    },
+    {
+      "id": "thyroid_nodes",
+      "name": "Cervical lymphadenopathy with a thyroid nodule",
+      "system": "thyroid",
+      "region": "Neck",
+      "elicit": "Palpate levels II-VI on both sides: positive if a firm node lies on the same side as the nodule.",
+      "presentations": [
+        "neck-lump"
+      ],
+      "target": {
+        "group": "thyroid-cancer"
+      },
+      "lrPositive": {
+        "point": 5.0,
+        "low": 2.0,
+        "high": 12.0
+      },
+      "lrNegative": {
+        "point": 0.8,
+        "low": 0.6,
+        "high": 0.95
+      },
+      "negativeMeaningful": false,
+      "source": "British Thyroid Association guidelines 2014; ATA 2015 thyroid nodule guidelines; McGee S. Evidence-Based Physical Diagnosis, 5th ed. (Elsevier 2022), The thyroid and its disorders",
+      "quality": "single study",
+      "synonyms": [],
+      "fromMemory": true,
+      "engine": "lr",
+      "supersedes": []
+    },
+    {
+      "id": "pemberton",
+      "name": "Pemberton's sign",
+      "system": "thyroid",
+      "region": "Face / neck",
+      "elicit": "Ask the patient to raise both arms above the head for a minute: positive if the face becomes plethoric or the patient becomes breathless or stridulous.",
+      "presentations": [
+        "neck-lump"
+      ],
+      "target": {
+        "group": "retrosternal-goitre"
+      },
+      "engine": "none",
+      "lrPositive": null,
+      "lrNegative": null,
+      "negativeMeaningful": false,
+      "source": "British Thyroid Association guidelines 2014; ATA 2015 thyroid nodule guidelines; McGee S. Evidence-Based Physical Diagnosis, 5th ed. (Elsevier 2022), The thyroid and its disorders; Pemberton HS, Lancet 1946",
+      "quality": "expert consensus",
+      "note": "No accuracy study: suggests thoracic-inlet obstruction by a retrosternal goitre. CT neck and thorax decides.",
+      "synonyms": [],
+      "fromMemory": true,
+      "supersedes": []
+    },
+    {
+      "id": "goitre_lower_border",
+      "name": "Lower border of the goitre not palpable",
+      "system": "thyroid",
+      "region": "Neck",
+      "elicit": "Palpate the lower pole on swallowing: positive if you cannot get below it above the clavicles.",
+      "presentations": [
+        "neck-lump"
+      ],
+      "target": {
+        "group": "retrosternal-goitre"
+      },
+      "engine": "none",
+      "lrPositive": null,
+      "lrNegative": null,
+      "negativeMeaningful": false,
+      "source": "British Thyroid Association guidelines 2014; ATA 2015 thyroid nodule guidelines; McGee S. Evidence-Based Physical Diagnosis, 5th ed. (Elsevier 2022), The thyroid and its disorders",
+      "quality": "expert consensus",
+      "note": "No accuracy study: suggests retrosternal extension (with tracheal deviation or Pemberton's sign). Documentation only.",
+      "synonyms": [],
+      "fromMemory": true,
+      "supersedes": []
+    },
+    {
+      "id": "neck_stiffness",
+      "name": "Neck stiffness (nuchal rigidity)",
+      "synonyms": [
+        "meningism",
+        "nuchal rigidity"
+      ],
+      "system": "neuro",
+      "region": "Neck",
+      "elicit": "Supine, flex the neck passively to bring the chin to the chest: positive if there is resistance or pain.",
+      "presentations": [
+        "headache-meningism",
+        "sepsis"
+      ],
+      "target": {
+        "group": "meningitis"
+      },
+      "engine": "twin",
+      "twins": {
+        "present": [
+          "neck_stiffness"
+        ]
+      },
+      "lrPositive": {
+        "point": 0.94,
+        "low": 0.6,
+        "high": 1.5
+      },
+      "lrNegative": {
+        "point": 1.0,
+        "low": 0.8,
+        "high": 1.3
+      },
+      "negativeMeaningful": false,
+      "source": "Thomas KE et al. The diagnostic accuracy of Kernig's sign, Brudzinski's sign, and nuchal rigidity in adults with suspected meningitis, Clin Infect Dis 2002;35:46-52; Attia J et al. Does this adult patient have acute meningitis? JAMA 1999;282:175-81 (RCE)",
+      "quality": "single study",
+      "note": "Low sensitivity (about 30 %): its absence does not exclude meningitis. The engine keeps its safety weighting of documented neck stiffness; absence is never used.",
+      "fromMemory": true,
+      "supersedes": []
+    },
+    {
+      "id": "kernig",
+      "name": "Kernig's sign",
+      "system": "neuro",
+      "region": "Legs",
+      "elicit": "With the hip flexed to 90 degrees, extend the knee: positive if extension is limited by pain or resistance.",
+      "presentations": [
+        "headache-meningism"
+      ],
+      "target": {
+        "group": "meningitis"
+      },
+      "engine": "none",
+      "lrPositive": {
+        "point": 1.0,
+        "low": 0.4,
+        "high": 2.3
+      },
+      "lrNegative": {
+        "point": 1.0,
+        "low": 0.9,
+        "high": 1.1
+      },
+      "negativeMeaningful": false,
+      "source": "Thomas KE et al. The diagnostic accuracy of Kernig's sign, Brudzinski's sign, and nuchal rigidity in adults with suspected meningitis, Clin Infect Dis 2002;35:46-52; Attia J et al. Does this adult patient have acute meningitis? JAMA 1999;282:175-81 (RCE)",
+      "quality": "single study",
+      "note": "Low value: sensitivity about 5 %; neither presence nor absence changes the probability of meningitis. Documentation only.",
+      "synonyms": [],
+      "fromMemory": true,
+      "supersedes": []
+    },
+    {
+      "id": "brudzinski",
+      "name": "Brudzinski's sign",
+      "system": "neuro",
+      "region": "Neck / legs",
+      "elicit": "Flex the neck passively: positive if the hips and knees flex involuntarily.",
+      "presentations": [
+        "headache-meningism"
+      ],
+      "target": {
+        "group": "meningitis"
+      },
+      "engine": "none",
+      "lrPositive": {
+        "point": 1.0,
+        "low": 0.4,
+        "high": 2.3
+      },
+      "lrNegative": {
+        "point": 1.0,
+        "low": 0.9,
+        "high": 1.1
+      },
+      "negativeMeaningful": false,
+      "source": "Thomas KE et al. The diagnostic accuracy of Kernig's sign, Brudzinski's sign, and nuchal rigidity in adults with suspected meningitis, Clin Infect Dis 2002;35:46-52; Attia J et al. Does this adult patient have acute meningitis? JAMA 1999;282:175-81 (RCE)",
+      "quality": "single study",
+      "note": "Low value: sensitivity about 5 %; its absence never excludes meningitis. Documentation only.",
+      "synonyms": [],
+      "fromMemory": true,
+      "supersedes": []
+    },
+    {
+      "id": "focal_deficit",
+      "name": "New focal deficit: facial droop, arm drift or speech disturbance",
+      "synonyms": [
+        "FAST positive",
+        "Cincinnati prehospital stroke scale positive"
+      ],
+      "system": "neuro",
+      "region": "Face / arms / speech",
+      "elicit": "Ask the patient to smile, hold both arms out with eyes closed for 10 seconds and repeat a sentence: positive if any one is abnormal.",
+      "presentations": [
+        "neuro-deficit",
+        "headache-meningism",
+        "syncope"
+      ],
+      "target": {
+        "group": "stroke"
+      },
+      "engine": "twin",
+      "twins": {
+        "present": [
+          "focal_weakness"
+        ]
+      },
+      "lrPositive": {
+        "point": 5.1,
+        "low": 3.1,
+        "high": 8.4
+      },
+      "lrNegative": {
+        "point": 0.39,
+        "low": 0.25,
+        "high": 0.6
+      },
+      "negativeMeaningful": false,
+      "source": "Kothari RU et al. Cincinnati Prehospital Stroke Scale, Ann Emerg Med 1999;33:373-8; Goldstein LB, Simel DL. Is this patient having a stroke? JAMA 2005;293:2391-402 (RCE)",
+      "quality": "single study",
+      "note": "A red-flag sign: recorded as a focal deficit for the engine (its safety weighting); absence is never used to lower stroke, TIA or cord compression.",
+      "fromMemory": true,
+      "supersedes": []
+    },
+    {
+      "id": "papilloedema",
+      "name": "Papilloedema",
+      "system": "neuro",
+      "region": "Fundi",
+      "elicit": "Fundoscopy in a darkened room: positive if the disc margins are blurred with loss of venous pulsation and elevated discs.",
+      "presentations": [
+        "headache-meningism",
+        "neuro-deficit"
+      ],
+      "target": {
+        "group": "raised-icp"
+      },
+      "engine": "twin",
+      "twins": {
+        "present": [
+          "papilloedema"
+        ]
+      },
+      "lrPositive": null,
+      "lrNegative": null,
+      "negativeMeaningful": false,
+      "source": "McGee S. Evidence-Based Physical Diagnosis, 5th ed. (Elsevier 2022), The eye (optic disc); NICE NG228 (2023) headache red flags",
+      "quality": "single study",
+      "note": "Specific but insensitive for raised intracranial pressure; no pooled likelihood ratio. Red-flag sign: recorded for the engine; absence is never used.",
+      "synonyms": [],
+      "fromMemory": true,
+      "supersedes": []
+    },
+    {
+      "id": "spider_naevi",
+      "name": "Spider naevi",
+      "synonyms": [
+        "spider angiomata"
+      ],
+      "system": "liver",
+      "region": "Face, neck, upper chest, arms",
+      "elicit": "Inspect the territory of the superior vena cava: positive if there are more than a few central arterioles with radiating vessels that blanch on central pressure.",
+      "presentations": [
+        "liver",
+        "jaundice",
+        "gi-bleed"
+      ],
+      "target": {
+        "group": "cirrhosis"
+      },
+      "lrPositive": {
+        "point": 4.3,
+        "low": 2.4,
+        "high": 6.2
+      },
+      "lrNegative": {
+        "point": 0.64,
+        "low": 0.51,
+        "high": 0.77
+      },
+      "negativeMeaningful": false,
+      "supersedes": [
+        "spider_naevi"
+      ],
+      "source": "Udell JA et al. Does this patient with liver disease have cirrhosis? JAMA 2012;307:832-42 (RCE)",
+      "quality": "pooled meta-analysis",
+      "fromMemory": true,
+      "engine": "lr"
+    },
+    {
+      "id": "palmar_erythema",
+      "name": "Palmar erythema",
+      "system": "liver",
+      "region": "Hands",
+      "elicit": "Inspect the palms: positive if the thenar and hypothenar eminences are mottled red.",
+      "presentations": [
+        "liver",
+        "jaundice",
+        "gi-bleed"
+      ],
+      "target": {
+        "group": "cirrhosis"
+      },
+      "lrPositive": {
+        "point": 3.7,
+        "low": 2.1,
+        "high": 6.5
+      },
+      "lrNegative": {
+        "point": 0.64,
+        "low": 0.5,
+        "high": 0.8
+      },
+      "negativeMeaningful": false,
+      "source": "Udell JA et al. Does this patient with liver disease have cirrhosis? JAMA 2012;307:832-42 (RCE)",
+      "quality": "pooled meta-analysis",
+      "synonyms": [],
+      "fromMemory": true,
+      "engine": "lr",
+      "supersedes": []
+    },
+    {
+      "id": "caput_medusae",
+      "name": "Caput medusae",
+      "synonyms": [
+        "dilated abdominal wall veins draining away from the umbilicus"
+      ],
+      "system": "liver",
+      "region": "Abdominal wall",
+      "elicit": "Inspect the abdominal wall; strip a vein to find its flow: positive if dilated veins radiate from the umbilicus with flow away from it.",
+      "presentations": [
+        "liver",
+        "jaundice",
+        "gi-bleed"
+      ],
+      "target": {
+        "group": "cirrhosis"
+      },
+      "lrPositive": {
+        "point": 9.5,
+        "low": 2.0,
+        "high": 40.0
+      },
+      "lrNegative": {
+        "point": 0.8,
+        "low": 0.7,
+        "high": 0.95
+      },
+      "negativeMeaningful": false,
+      "source": "Udell JA et al. Does this patient with liver disease have cirrhosis? JAMA 2012;307:832-42 (RCE); McGee S. Evidence-Based Physical Diagnosis, 5th ed. (Elsevier 2022)",
+      "quality": "single study",
+      "note": "Specific but uncommon; the estimate rests on few patients.",
+      "fromMemory": true,
+      "engine": "lr",
+      "supersedes": []
+    },
+    {
+      "id": "crt_child",
+      "name": "Prolonged capillary refill (child)",
+      "system": "dehydration",
+      "region": "Finger pulp",
+      "elicit": "Warm room; press the fingertip at heart level for 5 seconds and release: positive if refill takes more than 2 seconds.",
+      "presentations": [
+        "dehydration",
+        "sepsis"
+      ],
+      "target": {
+        "group": "dehydration-child",
+        "paneFeature": "dehydration",
+        "pretest": 0.3
+      },
+      "lrPositive": {
+        "point": 4.1,
+        "low": 1.7,
+        "high": 9.8
+      },
+      "lrNegative": {
+        "point": 0.57,
+        "low": 0.39,
+        "high": 0.82
+      },
+      "negativeMeaningful": true,
+      "applicability": {
+        "ageMax": 5
+      },
+      "source": "Steiner MJ et al. Is this child dehydrated? JAMA 2004;291:2746-54 (RCE)",
+      "quality": "pooled meta-analysis",
+      "note": "The best single sign of 5 % dehydration in children aged 1 month to 5 years.",
+      "synonyms": [],
+      "fromMemory": true,
+      "engine": "lr",
+      "supersedes": []
+    },
+    {
+      "id": "skin_turgor_child",
+      "name": "Reduced skin turgor (child)",
+      "system": "dehydration",
+      "region": "Abdominal skin",
+      "elicit": "Pinch a fold of abdominal skin and release: positive if it recoils slowly (tenting for more than 2 seconds).",
+      "presentations": [
+        "dehydration"
+      ],
+      "target": {
+        "group": "dehydration-child",
+        "paneFeature": "dehydration",
+        "pretest": 0.3
+      },
+      "lrPositive": {
+        "point": 2.5,
+        "low": 1.5,
+        "high": 4.2
+      },
+      "lrNegative": {
+        "point": 0.66,
+        "low": 0.57,
+        "high": 0.75
+      },
+      "negativeMeaningful": false,
+      "applicability": {
+        "ageMax": 5
+      },
+      "source": "Steiner MJ et al. Is this child dehydrated? JAMA 2004;291:2746-54 (RCE)",
+      "quality": "pooled meta-analysis",
+      "synonyms": [],
+      "fromMemory": true,
+      "engine": "lr",
+      "supersedes": []
+    },
+    {
+      "id": "resp_pattern_child",
+      "name": "Abnormal (deep, acidotic) breathing (child)",
+      "system": "dehydration",
+      "region": "Chest",
+      "elicit": "Watch the breathing at rest: positive if it is deep and rapid without other signs of respiratory distress.",
+      "presentations": [
+        "dehydration"
+      ],
+      "target": {
+        "group": "dehydration-child",
+        "paneFeature": "dehydration",
+        "pretest": 0.3
+      },
+      "lrPositive": {
+        "point": 2.0,
+        "low": 1.5,
+        "high": 2.7
+      },
+      "lrNegative": {
+        "point": 0.76,
+        "low": 0.62,
+        "high": 0.88
+      },
+      "negativeMeaningful": false,
+      "applicability": {
+        "ageMax": 5
+      },
+      "source": "Steiner MJ et al. Is this child dehydrated? JAMA 2004;291:2746-54 (RCE)",
+      "quality": "pooled meta-analysis",
+      "synonyms": [],
+      "fromMemory": true,
+      "engine": "lr",
+      "supersedes": []
+    },
+    {
+      "id": "dry_axilla",
+      "name": "Dry axilla (adult)",
+      "system": "dehydration",
+      "region": "Axilla",
+      "elicit": "Feel the skin of the axilla with the back of the fingers: positive if it is completely dry.",
+      "presentations": [
+        "dehydration",
+        "sepsis",
+        "neuro-deficit"
+      ],
+      "target": {
+        "group": "hypovolaemia",
+        "paneFeature": "dehydration"
+      },
+      "lrPositive": {
+        "point": 2.8,
+        "low": 1.4,
+        "high": 5.4
+      },
+      "lrNegative": {
+        "point": 0.6,
+        "low": 0.4,
+        "high": 1.0
+      },
+      "negativeMeaningful": false,
+      "applicability": {
+        "ageMin": 16
+      },
+      "source": "McGee S et al. Is this patient hypovolemic? JAMA 1999;281:1022-9 (RCE); McGee S. Evidence-Based Physical Diagnosis, 5th ed. (Elsevier 2022), Hypovolaemia",
+      "quality": "single study",
+      "note": "Studied in older patients admitted acutely; a moist axilla does not exclude dehydration.",
+      "synonyms": [],
+      "fromMemory": true,
+      "engine": "lr",
+      "supersedes": []
+    },
+    {
+      "id": "postural_pulse",
+      "name": "Postural pulse rise of 30/min or more (or unable to stand)",
+      "system": "dehydration",
+      "region": "Pulse, lying then standing",
+      "elicit": "Measure the pulse after 2 minutes supine and after 1 minute standing: positive if it rises by 30/min or more, or dizziness stops the patient standing.",
+      "presentations": [
+        "gi-bleed",
+        "dehydration"
+      ],
+      "target": {
+        "group": "blood-loss"
+      },
+      "engine": "none",
+      "lrPositive": {
+        "point": 48.0,
+        "low": 3.0,
+        "high": 750.0
+      },
+      "lrNegative": {
+        "point": 0.03,
+        "low": 0.01,
+        "high": 0.1
+      },
+      "negativeMeaningful": false,
+      "source": "McGee S et al. Is this patient hypovolemic? JAMA 1999;281:1022-9 (RCE)",
+      "quality": "single study",
+      "note": "Applies to large blood loss (630-1150 mL, venesection studies). For moderate loss the sensitivity is only about 22 %: a normal result does not exclude bleeding. Documentation and bedside use; not an engine input.",
+      "synonyms": [],
+      "fromMemory": true,
+      "supersedes": []
+    },
+    {
+      "id": "mottling",
+      "name": "Skin mottling (knees)",
+      "system": "sepsis",
+      "region": "Knees / thighs",
+      "elicit": "Inspect the skin around the knees: positive if there is a patchy violaceous discolouration (score by extent, 0-5).",
+      "presentations": [
+        "sepsis"
+      ],
+      "target": {
+        "group": "hypoperfusion"
+      },
+      "engine": "twin",
+      "twins": {
+        "present": [
+          "mottled_skin"
+        ]
+      },
+      "lrPositive": null,
+      "lrNegative": null,
+      "negativeMeaningful": false,
+      "source": "Ait-Oufella H et al. Mottling score predicts survival in septic shock, Intensive Care Med 2011;37:801-7",
+      "quality": "single study",
+      "note": "A prognostic sign of hypoperfusion (mortality rises with the mottling score), not a diagnostic test; recorded for the engine as mottled skin.",
+      "synonyms": [],
+      "fromMemory": true,
+      "supersedes": []
+    },
+    {
+      "id": "new_confusion",
+      "name": "New confusion",
+      "synonyms": [
+        "altered mentation"
+      ],
+      "system": "sepsis",
+      "region": "Mental state",
+      "elicit": "Assess orientation, attention and the collateral history: positive if confusion is new (a qSOFA and NEWS2 criterion).",
+      "presentations": [
+        "sepsis",
+        "neuro-deficit"
+      ],
+      "target": {
+        "group": "hypoperfusion"
+      },
+      "engine": "twin",
+      "twins": {
+        "present": [
+          "confusion"
+        ]
+      },
+      "lrPositive": null,
+      "lrNegative": null,
+      "negativeMeaningful": false,
+      "source": "Singer M et al. Sepsis-3, JAMA 2016;315:801-10; RCP NEWS2 (2017)",
+      "quality": "pooled meta-analysis",
+      "note": "A severity criterion, not a diagnostic sign; recorded for the engine as confusion.",
+      "fromMemory": true,
+      "supersedes": []
+    },
+    {
+      "id": "rigors",
+      "name": "Shaking chills (rigors)",
+      "system": "sepsis",
+      "region": "Whole body",
+      "elicit": "Ask about or observe shaking chills: positive if there is uncontrollable shaking with teeth chattering, even under blankets.",
+      "presentations": [
+        "sepsis",
+        "cough-fever",
+        "jaundice",
+        "loin-pain"
+      ],
+      "target": {
+        "group": "bacteraemia"
+      },
+      "engine": "twin",
+      "twins": {
+        "present": [
+          "rigors"
+        ]
+      },
+      "lrPositive": {
+        "point": 4.7,
+        "low": 3.0,
+        "high": 7.2
+      },
+      "lrNegative": {
+        "point": 0.6,
+        "low": 0.5,
+        "high": 0.8
+      },
+      "negativeMeaningful": false,
+      "source": "Coburn B et al. Does this adult patient with suspected bacteremia require blood cultures? JAMA 2012;308:502-11 (RCE)",
+      "quality": "pooled meta-analysis",
+      "note": "Raises the probability of bacteraemia; take blood cultures. Recorded for the engine as rigors.",
+      "synonyms": [],
+      "fromMemory": true,
+      "supersedes": []
+    },
+    {
+      "id": "rectal_mass",
+      "name": "Palpable rectal mass on digital rectal examination",
+      "system": "rectal",
+      "region": "Rectum",
+      "elicit": "Left lateral, knees flexed; examine the rectal wall through 360 degrees: positive if a hard, irregular or ulcerated mass is felt.",
+      "presentations": [
+        "rectal",
+        "gi-bleed"
+      ],
+      "target": {
+        "group": "rectal-cancer"
+      },
+      "lrPositive": {
+        "point": 10.0,
+        "low": 4.0,
+        "high": 30.0
+      },
+      "lrNegative": {
+        "point": 0.6,
+        "low": 0.4,
+        "high": 0.8
+      },
+      "negativeMeaningful": false,
+      "supersedes": [
+        "rectal_mass"
+      ],
+      "source": "NICE NG12 (2015, updated 2023) suspected cancer: rectal mass; ACPGBI colorectal cancer guidance 2017",
+      "quality": "single study",
+      "note": "Only the lower rectum can be felt: a normal examination does not exclude colorectal cancer.",
+      "synonyms": [],
+      "fromMemory": true,
+      "engine": "lr"
+    },
+    {
+      "id": "melaena_dre",
+      "name": "Melaena on the glove",
+      "system": "rectal",
+      "region": "Rectum",
+      "elicit": "Inspect the glove after digital rectal examination: positive if the stool is black, tarry and offensive.",
+      "presentations": [
+        "gi-bleed",
+        "rectal"
+      ],
+      "target": {
+        "group": "ugib-source"
+      },
+      "engine": "twin",
+      "twins": {
+        "present": [
+          "melaena"
+        ]
+      },
+      "lrPositive": {
+        "point": 25.0,
+        "low": 4.0,
+        "high": 174.0
+      },
+      "lrNegative": {
+        "point": 0.8,
+        "low": 0.7,
+        "high": 0.9
+      },
+      "negativeMeaningful": false,
+      "source": "Srygley FD et al. Does this patient have a severe upper gastrointestinal bleed? JAMA 2012;307:1072-9 (RCE)",
+      "quality": "pooled meta-analysis",
+      "note": "Points to an upper-GI source; recorded for the engine as melaena.",
+      "synonyms": [],
+      "fromMemory": true,
+      "supersedes": []
+    },
+    {
+      "id": "prostate_hard",
+      "name": "Hard, nodular or asymmetric prostate",
+      "system": "rectal",
+      "region": "Prostate",
+      "elicit": "On digital rectal examination feel both lobes and the median sulcus: positive if a lobe is hard, nodular, craggy or the sulcus is lost.",
+      "presentations": [
+        "rectal"
+      ],
+      "target": {
+        "group": "prostate-cancer"
+      },
+      "lrPositive": {
+        "point": 5.0,
+        "low": 2.0,
+        "high": 10.0
+      },
+      "lrNegative": {
+        "point": 0.6,
+        "low": 0.5,
+        "high": 0.8
+      },
+      "negativeMeaningful": false,
+      "source": "Hoogendam A et al. Accuracy of digital rectal examination for prostate cancer, Fam Pract 1999; NICE NG12",
+      "quality": "pooled meta-analysis",
+      "note": "The web model has no prostate-cancer node, so on the web this is shown with its likelihood ratio but does not change the differential.",
+      "synonyms": [],
+      "fromMemory": true,
+      "engine": "lr",
+      "supersedes": []
+    },
+    {
+      "id": "anal_tone_reduced",
+      "name": "Reduced anal tone or saddle anaesthesia",
+      "system": "rectal",
+      "region": "Anus / perineum",
+      "elicit": "Test perianal pinprick sensation and resting and squeeze tone on digital rectal examination: positive if either is reduced.",
+      "presentations": [
+        "rectal"
+      ],
+      "target": {
+        "group": "cauda-equina"
+      },
+      "engine": "twin",
+      "twins": {
+        "present": [
+          "reduced_anal_tone"
+        ]
+      },
+      "lrPositive": null,
+      "lrNegative": null,
+      "negativeMeaningful": false,
+      "source": "GIRFT national cauda equina syndrome pathway (2023); NICE CKS back pain",
+      "quality": "expert consensus",
+      "note": "Red-flag sign; a normal examination does not exclude early cauda equina syndrome (MRI decides). Recorded for the engine; absence is never used.",
+      "synonyms": [],
+      "fromMemory": true,
+      "supersedes": []
+    },
+    {
+      "id": "rectal_tenderness",
+      "name": "Right-sided rectal tenderness",
+      "system": "rectal",
+      "region": "Rectum",
+      "elicit": "On digital rectal examination press towards the right pelvic wall: positive if this is painful.",
+      "presentations": [
+        "rif-pain"
+      ],
+      "target": {
+        "group": "appendicitis"
+      },
+      "engine": "none",
+      "lrPositive": {
+        "point": 1.0,
+        "low": 0.7,
+        "high": 1.4
+      },
+      "lrNegative": {
+        "point": 1.0,
+        "low": 0.8,
+        "high": 1.2
+      },
+      "negativeMeaningful": false,
+      "source": "McGee S. Evidence-Based Physical Diagnosis, 5th ed. (Elsevier 2022), Abdominal pain and tenderness (appendicitis); Wagner JM et al. JAMA 1996",
+      "quality": "pooled meta-analysis",
+      "note": "Low value: rectal tenderness does not help diagnose appendicitis. Documentation only.",
+      "synonyms": [],
+      "fromMemory": true,
+      "supersedes": []
+    },
+    {
+      "id": "node_large",
+      "name": "Lymph node larger than 2 cm",
+      "synonyms": [
+        "node area 4 cm² or more"
+      ],
+      "system": "lymph-nodes",
+      "region": "Any nodal area",
+      "elicit": "Measure the node in two dimensions: positive if the largest is more than 2 cm (area 4 cm² or more).",
+      "presentations": [
+        "lymph-nodes",
+        "neck-lump",
+        "breast"
+      ],
+      "target": {
+        "group": "nodal-malignancy",
+        "pretest": 0.1
+      },
+      "lrPositive": {
+        "point": 3.0,
+        "low": 1.6,
+        "high": 8.4
+      },
+      "lrNegative": {
+        "point": 0.4,
+        "low": 0.3,
+        "high": 0.6
+      },
+      "negativeMeaningful": true,
+      "source": "McGee S. Evidence-Based Physical Diagnosis, 5th ed. (Elsevier 2022), Peripheral lymphadenopathy (Vassilakopoulos TP et al., Oncologist 2000; Fijten GH, Blijham GH, J Fam Pract 1988)",
+      "quality": "single study",
+      "note": "The larger the node the higher the likelihood ratio (area 9 cm² or more: about 8). Nodes under 1 cm argue against malignancy.",
+      "fromMemory": true,
+      "engine": "lr",
+      "supersedes": []
+    },
+    {
+      "id": "node_hard",
+      "name": "Hard lymph node",
+      "system": "lymph-nodes",
+      "region": "Any nodal area",
+      "elicit": "Palpate the node: positive if it is stony hard (not rubbery or soft).",
+      "presentations": [
+        "lymph-nodes",
+        "neck-lump",
+        "breast"
+      ],
+      "target": {
+        "group": "nodal-malignancy",
+        "pretest": 0.1
+      },
+      "lrPositive": {
+        "point": 3.2,
+        "low": 2.2,
+        "high": 4.8
+      },
+      "lrNegative": {
+        "point": 0.6,
+        "low": 0.5,
+        "high": 0.8
+      },
+      "negativeMeaningful": false,
+      "source": "McGee S. Evidence-Based Physical Diagnosis, 5th ed. (Elsevier 2022), Peripheral lymphadenopathy (Vassilakopoulos TP et al., Oncologist 2000; Fijten GH, Blijham GH, J Fam Pract 1988)",
+      "quality": "single study",
+      "synonyms": [],
+      "fromMemory": true,
+      "engine": "lr",
+      "supersedes": []
+    },
+    {
+      "id": "node_fixed",
+      "name": "Fixed (matted) lymph node",
+      "system": "lymph-nodes",
+      "region": "Any nodal area",
+      "elicit": "Try to move the node over deep structures and under the skin: positive if it is fixed or matted to other nodes.",
+      "presentations": [
+        "lymph-nodes",
+        "neck-lump",
+        "breast"
+      ],
+      "target": {
+        "group": "nodal-malignancy",
+        "pretest": 0.1
+      },
+      "lrPositive": {
+        "point": 10.9,
+        "low": 2.3,
+        "high": 52.0
+      },
+      "lrNegative": {
+        "point": 0.8,
+        "low": 0.7,
+        "high": 0.9
+      },
+      "negativeMeaningful": false,
+      "source": "McGee S. Evidence-Based Physical Diagnosis, 5th ed. (Elsevier 2022), Peripheral lymphadenopathy (Vassilakopoulos TP et al., Oncologist 2000; Fijten GH, Blijham GH, J Fam Pract 1988)",
+      "quality": "single study",
+      "synonyms": [],
+      "fromMemory": true,
+      "engine": "lr",
+      "supersedes": []
+    },
+    {
+      "id": "supraclavicular_node",
+      "name": "Supraclavicular lymph node",
+      "synonyms": [
+        "Virchow's node",
+        "Troisier's sign"
+      ],
+      "system": "lymph-nodes",
+      "region": "Supraclavicular fossa",
+      "elicit": "From behind, palpate both supraclavicular fossae while the patient does a Valsalva manoeuvre: positive if a node is felt.",
+      "presentations": [
+        "lymph-nodes",
+        "neck-lump",
+        "abdominal-pain",
+        "breast"
+      ],
+      "target": {
+        "group": "supraclavicular-malignancy",
+        "pretest": 0.1
+      },
+      "lrPositive": {
+        "point": 3.2,
+        "low": 2.1,
+        "high": 4.8
+      },
+      "lrNegative": {
+        "point": 0.8,
+        "low": 0.7,
+        "high": 0.9
+      },
+      "negativeMeaningful": false,
+      "source": "McGee S. Evidence-Based Physical Diagnosis, 5th ed. (Elsevier 2022), Peripheral lymphadenopathy (Vassilakopoulos TP et al., Oncologist 2000; Fijten GH, Blijham GH, J Fam Pract 1988)",
+      "quality": "single study",
+      "note": "A left supraclavicular node points to an abdominal (upper-GI, pancreatic) primary; a right one to the chest or oesophagus.",
+      "fromMemory": true,
+      "engine": "lr",
+      "supersedes": []
+    }
+  ]
+}

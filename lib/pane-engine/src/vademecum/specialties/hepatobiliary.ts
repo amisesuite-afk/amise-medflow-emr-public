@@ -27,6 +27,13 @@ registerModule({
       features: { epigastric_pain: 0.55, jaundice: 0.60, weight_loss: 0.85, anorexia: 0.75, radiation_to_back: 0.45, back_pain: 0.35, dark_urine: 0.55, steatorrhoea: 0.30, painless_jaundice: 0.40, new_onset_diabetes: 0.20, dilated_cbd: 0.50, pruritus: 0.40, progressive_course: 0.60 },
     },
     {
+      // Evidence-exam 1.0.0 (exam-signs.json): target of the chronic-liver-disease stigmata. Udell JA
+      // et al., JAMA 2012 (RCE "Does this patient with liver disease have cirrhosis?"); EASL 2018
+      // decompensated cirrhosis; Baveno VII (2022). Values are approximations for sign-off.
+      id: 'cirrhosis', label: 'Cirrhosis / Chronic Liver Disease (Decompensated)', icd10: 'K74.60', prior: T.uncommon, course: 'chronic',
+      features: { known_liver_disease: 0.80, alcohol_use: 0.55, jaundice: 0.45, ascites: 0.50, abdominal_distension: 0.50, bilateral_leg_oedema: 0.35, spider_naevi: 0.45, fatigue: 0.55, anorexia: 0.40, weight_loss: 0.25, confusion: 0.15, thrombocytopenia: 0.60, pruritus: 0.20, dark_urine: 0.30, haematemesis: 0.05, melaena: 0.05, fever: 0.10, progressive_course: 0.40 },
+    },
+    {
       id: 'hepatocellular_carcinoma', label: 'Hepatocellular Carcinoma', icd10: 'C22.0', prior: T.rare, course: 'chronic',
       features: { ruq_pain: 0.55, weight_loss: 0.75, anorexia: 0.70, jaundice: 0.35, abdominal_distension: 0.50, fever: 0.20, known_liver_disease: 0.80, abdominal_mass: 0.30 },
     },

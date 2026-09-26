@@ -49,6 +49,14 @@ registerModule({
       features: { change_bowel_habit: 0.70, melaena: 0.10, pr_bleeding: 0.45, weight_loss: 0.50, anorexia: 0.40, lif_pain: 0.20, abdominal_pain: 0.45, anaemia: 0.45, fatigue: 0.40, abdominal_mass: 0.15, progressive_course: 0.50, positive_fit: 0.80, tenesmus: 0.15 },
     },
     {
+      // Evidence-exam 1.0.0 (exam-signs.json, Carnett's sign): chronic localised abdominal-wall pain,
+      // e.g. anterior cutaneous nerve entrapment (Takada et al., J Gen Intern Med 2011; Scheltinga &
+      // Roumen, Hernia 2018). Values are approximations for sign-off; ICD-10 G58.8 (other specified
+      // mononeuropathy) pending the surgeon's choice.
+      id: 'abdominal_wall_pain', label: 'Abdominal Wall Pain (e.g. Anterior Cutaneous Nerve Entrapment)', icd10: 'G58.8', prior: T.uncommon, course: 'chronic',
+      features: { localised_pain: 0.85, abdominal_tenderness: 0.95, rlq_pain: 0.30, ruq_pain: 0.15, lif_pain: 0.15, periumbilical_pain: 0.20, epigastric_pain: 0.10, pain_worse_movement: 0.50, episodic_pain: 0.40, previous_surgery: 0.30, nausea_vomiting: 0.05, fever: 0.02, elevated_wbc: 0.02, anorexia: 0.05 },
+    },
+    {
       id: 'bowel_obstruction', label: 'Bowel Obstruction', icd10: 'K56.60', prior: T.uncommon, course: 'acute',
       features: { colicky_pain: 0.80, abdominal_distension: 0.90, absolute_constipation: 0.80, nausea_vomiting: 0.85, bilious_vomiting: 0.45, tinkling_bowel_sounds: 0.70, previous_surgery: 0.55, visible_peristalsis: 0.45, periumbilical_pain: 0.35, diffuse_abdominal_pain: 0.40, abdominal_tenderness: 0.70 },
     },

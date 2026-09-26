@@ -21,6 +21,8 @@ import './specialties/metabolic.js';
 import './specialties/neurology.js';
 import './specialties/obstetrics.js';
 import './specialties/paediatrics.js';
+// Evidence-exam 1.0.0: examination signs and decision-rule bands (after every disease module).
+import '../evidence/register.js';
 
 import { getRegisteredDiseases, getRegisteredFeatures } from './registry.js';
 

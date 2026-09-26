@@ -42,3 +42,4 @@ export type {
   FilledField, FillSource, ScoreFill, DecisionGap, MissingDiscriminator, DiscriminatorKind, WhatsMissingInput,
   WhatsMissingItem, WhatsMissingResult, MissingAction, MissingTier,
 } from './whats-missing/index.js';
+export * from './evidence/index.js';

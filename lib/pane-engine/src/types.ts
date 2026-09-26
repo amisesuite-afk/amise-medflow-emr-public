@@ -11,6 +11,11 @@ export interface Feature {
    * DEFAULT_BASE_RATE (constants.ts).
    */
   baseRate?: number;
+  /**
+   * false: never offered as a PANE question or "best next discriminator" (examination-sign and
+   * decision-rule evidence features, recorded on the Exam step and the Scales step instead).
+   */
+  askable?: boolean;
 }
 
 /** Usual time course of the presentation, used to score the onset features. */
