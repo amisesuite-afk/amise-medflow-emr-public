@@ -1,8 +1,8 @@
 # Clinical validation — web engines (latest local run)
 
-Generated 2026-09-25T23:19:58.014Z.
+Generated 2026-09-26T00:31:12.162Z.
 
-- Harness clinval-web/1; 409 vignettes from ios/AmiseMedFlowTests/ClinicalValidation/Vignettes/.
+- Harness clinval-web/1; 425 vignettes from ios/AmiseMedFlowTests/ClinicalValidation/Vignettes/.
 
 Status legend: PASS; FAIL — BLOCKING (critical, not flagged: fails the test run); FAIL (known gap) and
 FAIL (unverified) are reported only; "PASS (gap resolved)" means the flag can be removed from the vignette;
@@ -12,7 +12,7 @@ n/a = the expectation does not apply to that platform or the engine has no such 
 
 | Platform | Vignettes | Expectations | Pass | Fail | n/a | Critical fail | Blocking | Known-gap fail | Unverified fail | Gap resolved |
 |---|---|---|---|---|---|---|---|---|---|---|
-| web | 409 | 3101 | 2933 | 76 | 92 | 0 | 0 | 74 | 0 | 0 |
+| web | 425 | 3138 | 2970 | 76 | 92 | 0 | 0 | 74 | 0 | 0 |
 
 ## Blocking failures
 
@@ -62,6 +62,7 @@ Guidelines:
 - note: AssessmentTab ManagementPanel protocol: aortic_aneurysm (from the confirmed diagnosis)
 - note: PlanTab protocol: aortic_aneurysm (from the confirmed diagnosis)
 - note: Seeded investigations: aortic_aneurysm (confirmed); 0 stat test(s) held back
+- note: Decision support: (no decision); factors age65to79
 
 </details>
 
@@ -109,6 +110,7 @@ Guidelines:
 - note: AssessmentTab ManagementPanel protocol: skin_abscess (from the confirmed diagnosis)
 - note: PlanTab protocol: skin_abscess (from the confirmed diagnosis)
 - note: Seeded investigations: skin_abscess (confirmed); 0 stat test(s) held back
+- note: Decision support: (no decision); factors (none)
 - note: matchPathways: Hernia (Inguinal / Umbilical / Incisional / Femoral) (5), Post-operative Follow-up (General) (5)
 
 </details>
@@ -147,6 +149,7 @@ Guidelines:
 - note: AssessmentTab ManagementPanel protocol: skin_abscess (from the confirmed diagnosis)
 - note: PlanTab protocol: skin_abscess (from the confirmed diagnosis)
 - note: Seeded investigations: skin_abscess (confirmed); 0 stat test(s) held back
+- note: Decision support: (no decision); factors (none)
 - note: matchPathways: Skin Lesion / Excision (5)
 
 </details>
@@ -189,6 +192,7 @@ Guidelines:
 - note: AssessmentTab ManagementPanel protocol: gastric_carcinoma (from the confirmed diagnosis)
 - note: PlanTab protocol: gastric_carcinoma (from the confirmed diagnosis)
 - note: Seeded investigations: gastric_carcinoma (confirmed); 0 stat test(s) held back
+- note: Decision support: (no decision); factors age65to79
 - note: matchPathways: Upper GI Endoscopy (Dyspepsia / GORD / Dysphagia) (17), Foreign Body Ingestion / Food Bolus (7)
 
 </details>
@@ -230,6 +234,7 @@ Guidelines:
 - note: AssessmentTab ManagementPanel protocol: achalasia (from the confirmed diagnosis)
 - note: PlanTab protocol: achalasia (from the confirmed diagnosis)
 - note: Seeded investigations: achalasia (confirmed); 0 stat test(s) held back
+- note: Decision support: (no decision); factors (none)
 - note: matchPathways: Upper GI Endoscopy (Dyspepsia / GORD / Dysphagia) (12), Foreign Body Ingestion / Food Bolus (7), Chest Pain — Emergency Redirect (5)
 
 </details>
@@ -271,6 +276,7 @@ Guidelines:
 - note: AssessmentTab ManagementPanel protocol: acute_coronary_syndrome (from the confirmed diagnosis)
 - note: PlanTab protocol: acute_coronary_syndrome (from the confirmed diagnosis)
 - note: Seeded investigations: acute_coronary_syndrome (confirmed); 0 stat test(s) held back
+- note: Decision support: (no decision); factors age65to79, diabetes
 - note: matchPathways: Chest Pain — Emergency Redirect (10), Diabetic Foot (10), Post-operative Follow-up (General) (5)
 
 </details>
@@ -315,6 +321,7 @@ Guidelines:
 - note: AssessmentTab ManagementPanel protocol: acute_coronary_syndrome (from the confirmed diagnosis)
 - note: PlanTab protocol: acute_coronary_syndrome (from the confirmed diagnosis)
 - note: Seeded investigations: acute_coronary_syndrome (confirmed); 0 stat test(s) held back
+- note: Decision support: (no decision); factors pregnant
 - note: matchPathways: Chest Pain — Emergency Redirect (5), Gallbladder Disease (Biliary Colic / Cholecystitis / Choledocholithiasis) (5), Varicose Veins (5)
 
 </details>
@@ -357,6 +364,7 @@ Guidelines:
 - note: AssessmentTab ManagementPanel protocol: acute_coronary_syndrome (from the confirmed diagnosis)
 - note: PlanTab protocol: acute_coronary_syndrome (from the confirmed diagnosis)
 - note: Seeded investigations: acute_coronary_syndrome (confirmed); 0 stat test(s) held back
+- note: Decision support: (no decision); factors (none)
 - note: matchPathways: Chest Pain — Emergency Redirect (10), Hernia (Inguinal / Umbilical / Incisional / Femoral) (10), Post-operative Follow-up (General) (5)
 
 </details>
@@ -402,6 +410,7 @@ Guidelines:
 - note: AssessmentTab ManagementPanel protocol: atrial_fibrillation (from the confirmed diagnosis)
 - note: PlanTab protocol: atrial_fibrillation (from the confirmed diagnosis)
 - note: Seeded investigations: atrial_fibrillation (confirmed); 0 stat test(s) held back
+- note: Decision support: (no decision); factors age80plus, antiplatelet
 - note: matchPathways: Hernia (Inguinal / Umbilical / Incisional / Femoral) (15), Pre-operative Assessment (10), Chest Pain — Emergency Redirect (5)
 
 </details>
@@ -443,6 +452,7 @@ Guidelines:
 - note: AssessmentTab ManagementPanel protocol: atrial_fibrillation (from the confirmed diagnosis)
 - note: PlanTab protocol: atrial_fibrillation (from the confirmed diagnosis)
 - note: Seeded investigations: atrial_fibrillation (confirmed); 0 stat test(s) held back
+- note: Decision support: (no decision); factors age65to79, diabetes
 - note: matchPathways: Hernia (Inguinal / Umbilical / Incisional / Femoral) (10), Chest Pain — Emergency Redirect (5)
 
 </details>
@@ -484,6 +494,7 @@ Guidelines:
 - note: AssessmentTab ManagementPanel protocol: atrial_fibrillation (from the confirmed diagnosis)
 - note: PlanTab protocol: atrial_fibrillation (from the confirmed diagnosis)
 - note: Seeded investigations: atrial_fibrillation (confirmed); 0 stat test(s) held back
+- note: Decision support: (no decision); factors age65to79, anticoagulated, doacOnly, news2High, shock
 - note: matchPathways: Post-operative Follow-up (General) (5), Soft Tissue Mass / Lipoma (5)
 
 </details>
@@ -523,10 +534,11 @@ Guidelines:
 - recommended scores: wells-pe, wells-dvt, cha2ds2-vasc, qsofa, news2, caprini, has-bled, asa, curb65, rcri, cfs
 - score values: (none)
 - dx variant: (none) (no group)
-- note: PANE features applied: leg_swelling, bilateral_leg_oedema, bilateral_leg_symptoms, exertional_symptoms, dyspnoea, orthopnoea, weight_gain, raised_jvp, irregular_pulse, crackles, known_heart_disease, vascular_risk, known_af, known_hypertension, anticoagulant_use, diuretic_use, recent_antibiotics, erythema_surrounding, raised_bp, tachypnoea, hypoxia, trauma_mechanism, recent_surgery, aortic_graft, stoma
+- note: PANE features applied: leg_swelling, bilateral_leg_oedema, exertional_symptoms, dyspnoea, orthopnoea, weight_gain, raised_jvp, irregular_pulse, crackles, known_heart_disease, vascular_risk, known_af, known_hypertension, anticoagulant_use, diuretic_use, recent_antibiotics, erythema_surrounding, raised_bp, tachypnoea, hypoxia, trauma_mechanism, recent_surgery, aortic_graft, stoma
 - note: AssessmentTab ManagementPanel protocol: acute_heart_failure (from the confirmed diagnosis)
 - note: PlanTab protocol: acute_heart_failure (from the confirmed diagnosis)
 - note: Seeded investigations: acute_heart_failure (confirmed); 0 stat test(s) held back
+- note: Decision support: (no decision); factors age80plus, anticoagulated, doacOnly
 - note: matchPathways: IBD — Surgical Complications (Crohn's / UC) (5)
 
 </details>
@@ -572,6 +584,7 @@ Guidelines:
 - note: AssessmentTab ManagementPanel protocol: acute_heart_failure (from the confirmed diagnosis)
 - note: PlanTab protocol: acute_heart_failure (from the confirmed diagnosis)
 - note: Seeded investigations: acute_heart_failure (confirmed); 0 stat test(s) held back
+- note: Decision support: (no decision); factors age65to79, antiplatelet, news2High
 - note: matchPathways: Hernia (Inguinal / Umbilical / Incisional / Femoral) (10), IBD — Surgical Complications (Crohn's / UC) (5)
 
 </details>
@@ -614,6 +627,7 @@ Guidelines:
 - note: AssessmentTab ManagementPanel protocol: anaphylaxis (from the confirmed diagnosis)
 - note: PlanTab protocol: anaphylaxis (from the confirmed diagnosis)
 - note: Seeded investigations: anaphylaxis (confirmed); 0 stat test(s) held back
+- note: Decision support: (no decision); factors penicillinAllergy, news2High, shock
 - note: matchPathways: Post-operative Follow-up (General) (5), Thyroid / Neck Mass (5), Wound Management (Acute / Chronic / SSI) (5)
 
 </details>
@@ -650,10 +664,11 @@ Guidelines:
 - recommended scores: wells-pe, qsofa, news2, caprini, curb65
 - score values: (none)
 - dx variant: (none) (no group)
-- note: PANE features applied: stridor, wheeze, rash, nausea_vomiting, dyspnoea, urticaria_angioedema, dyspnoea_pe, sudden_onset, known_asthma, previous_surgery, postprandial_pain, mottled_skin, allergen_exposure, hernia_swelling, umbilical_swelling, acute_onset, tachycardia, tachypnoea, hypoxia, trauma_mechanism, recent_surgery, aortic_graft, stoma
+- note: PANE features applied: stridor, wheeze, rash, nausea_vomiting, dyspnoea, urticaria_angioedema, dyspnoea_pe, sudden_onset, known_asthma, previous_surgery, postprandial_pain, mottled_skin, allergen_exposure, acute_onset, tachycardia, tachypnoea, hypoxia, trauma_mechanism, recent_surgery, aortic_graft, stoma
 - note: AssessmentTab ManagementPanel protocol: anaphylaxis (from the confirmed diagnosis)
 - note: PlanTab protocol: anaphylaxis (from the confirmed diagnosis)
 - note: Seeded investigations: anaphylaxis (confirmed); 0 stat test(s) held back
+- note: Decision support: (no decision); factors news2High, shock
 - note: matchPathways: Hernia (Inguinal / Umbilical / Incisional / Femoral) (10), Post-operative Follow-up (General) (5)
 
 </details>
@@ -696,6 +711,7 @@ Guidelines:
 - note: AssessmentTab ManagementPanel protocol: acute_asthma (from the confirmed diagnosis)
 - note: PlanTab protocol: acute_asthma (from the confirmed diagnosis)
 - note: Seeded investigations: acute_asthma (confirmed); 0 stat test(s) held back
+- note: Decision support: (no decision); factors (none)
 - note: matchPathways: Anorectal (Haemorrhoids / Fissure / Fistula / Abscess) (5), Skin Lesion / Excision (5), Wound Management (Acute / Chronic / SSI) (5)
 
 </details>
@@ -738,6 +754,7 @@ Guidelines:
 - note: AssessmentTab ManagementPanel protocol: acute_asthma (from the confirmed diagnosis)
 - note: PlanTab protocol: acute_asthma (from the confirmed diagnosis)
 - note: Seeded investigations: acute_asthma (confirmed); 0 stat test(s) held back
+- note: Decision support: (no decision); factors news2High
 - note: matchPathways: Wound Management (Acute / Chronic / SSI) (5)
 
 </details>
@@ -778,6 +795,7 @@ Guidelines:
 - note: AssessmentTab ManagementPanel protocol: (none) (from the confirmed diagnosis)
 - note: PlanTab protocol: (none) (from the confirmed diagnosis)
 - note: Seeded investigations: acute_asthma (leading differential); 2 stat test(s) held back
+- note: Decision support: (no decision); factors pregnant
 - note: matchPathways: Anorectal (Haemorrhoids / Fissure / Fistula / Abscess) (5)
 
 </details>
@@ -818,6 +836,7 @@ Guidelines:
 - note: AssessmentTab ManagementPanel protocol: pneumonia (from the confirmed diagnosis)
 - note: PlanTab protocol: pneumonia (from the confirmed diagnosis)
 - note: Seeded investigations: pneumonia (confirmed); 0 stat test(s) held back
+- note: Decision support: (no decision); factors news2High
 - note: matchPathways: Acute Abdomen (5), Acute Appendicitis (5)
 
 </details>
@@ -875,6 +894,7 @@ Guidelines:
 - note: PlanTab protocol: pneumonia (from the confirmed diagnosis)
 - note: Seeded investigations: pneumonia (confirmed); 0 stat test(s) held back
 - note: no web calculator for score form 'qsofa'
+- note: Decision support: sepsis; factors age80plus, news2High, shock
 - note: matchPathways: IBD — Surgical Complications (Crohn's / UC) (10), Diverticular Disease / Diverticulitis (5)
 
 </details>
@@ -915,10 +935,11 @@ Guidelines:
 - recommended scores: qsofa, news2, curb65, cfs
 - score values: (none)
 - dx variant: (none) (no group)
-- note: PANE features applied: cough, exertional_symptoms, dyspnoea, fatigue, crackles, immunosuppression, steroid_use, previous_repair, previous_surgery, fever, joint_pain, hernia_swelling, incisional_swelling, raised_crp, acute_onset, tachycardia, tachypnoea, hypoxia, trauma_mechanism, recent_surgery, aortic_graft, stoma
+- note: PANE features applied: cough, exertional_symptoms, dyspnoea, fatigue, crackles, immunosuppression, steroid_use, previous_repair, previous_surgery, fever, raised_crp, acute_onset, tachycardia, tachypnoea, hypoxia, trauma_mechanism, recent_surgery, aortic_graft, stoma
 - note: AssessmentTab ManagementPanel protocol: pneumonia (from the confirmed diagnosis)
 - note: PlanTab protocol: pneumonia (from the confirmed diagnosis)
 - note: Seeded investigations: pneumonia (confirmed); 0 stat test(s) held back
+- note: Decision support: (no decision); factors immunosuppressed, news2High
 - note: matchPathways: Hernia (Inguinal / Umbilical / Incisional / Femoral) (10), Post-operative Follow-up (General) (5), Wound Management (Acute / Chronic / SSI) (5)
 
 </details>
@@ -966,6 +987,7 @@ Guidelines:
 - note: AssessmentTab ManagementPanel protocol: pneumonia (from the confirmed diagnosis)
 - note: PlanTab protocol: pneumonia (from the confirmed diagnosis)
 - note: Seeded investigations: pneumonia (confirmed); 0 stat test(s) held back
+- note: Decision support: (no decision); factors (none)
 - note: matchPathways: Soft Tissue Mass / Lipoma (10), Chest Pain — Emergency Redirect (5), IBD — Surgical Complications (Crohn's / UC) (5)
 
 </details>
@@ -1010,6 +1032,7 @@ Guidelines:
 - note: AssessmentTab ManagementPanel protocol: cellulitis (from the confirmed diagnosis)
 - note: PlanTab protocol: cellulitis (from the confirmed diagnosis)
 - note: Seeded investigations: cellulitis (confirmed); 0 stat test(s) held back
+- note: Decision support: (no decision); factors (none)
 - note: matchPathways: Soft Tissue Mass / Lipoma (10)
 
 </details>
@@ -1054,6 +1077,7 @@ Guidelines:
 - note: AssessmentTab ManagementPanel protocol: copd_exacerbation (from the confirmed diagnosis)
 - note: PlanTab protocol: copd_exacerbation (from the confirmed diagnosis)
 - note: Seeded investigations: copd_exacerbation (confirmed); 0 stat test(s) held back
+- note: Decision support: (no decision); factors age65to79, news2High
 - note: matchPathways: Hernia (Inguinal / Umbilical / Incisional / Femoral) (10), IBD — Surgical Complications (Crohn's / UC) (5), Post-operative Follow-up (General) (5)
 
 </details>
@@ -1095,10 +1119,11 @@ Guidelines:
 - recommended scores: news2, curb65, cfs
 - score values: (none)
 - dx variant: (none) (no group)
-- note: PANE features applied: cough, productive_cough, wheeze, exertional_symptoms, dyspnoea, known_copd, previous_surgery, hernia_swelling, umbilical_swelling, smoker, vascular_risk, acute_onset, trauma_mechanism, recent_surgery, aortic_graft, stoma
+- note: PANE features applied: cough, productive_cough, wheeze, exertional_symptoms, dyspnoea, known_copd, previous_surgery, smoker, vascular_risk, acute_onset, trauma_mechanism, recent_surgery, aortic_graft, stoma
 - note: AssessmentTab ManagementPanel protocol: copd_exacerbation (from the confirmed diagnosis)
 - note: PlanTab protocol: copd_exacerbation (from the confirmed diagnosis)
 - note: Seeded investigations: copd_exacerbation (confirmed); 0 stat test(s) held back
+- note: Decision support: (no decision); factors age65to79
 - note: matchPathways: Hernia (Inguinal / Umbilical / Incisional / Femoral) (10), IBD — Surgical Complications (Crohn's / UC) (5), Post-operative Follow-up (General) (5)
 
 </details>
@@ -1139,6 +1164,7 @@ Guidelines:
 - note: AssessmentTab ManagementPanel protocol: deep_vein_thrombosis (from the confirmed diagnosis)
 - note: PlanTab protocol: deep_vein_thrombosis (from the confirmed diagnosis)
 - note: Seeded investigations: deep_vein_thrombosis (confirmed); 0 stat test(s) held back
+- note: Decision support: (no decision); factors (none)
 - note: matchPathways: IBD — Surgical Complications (Crohn's / UC) (5), Varicose Veins (5)
 
 </details>
@@ -1179,6 +1205,7 @@ Guidelines:
 - note: AssessmentTab ManagementPanel protocol: acute_kidney_injury (from the confirmed diagnosis)
 - note: PlanTab protocol: acute_kidney_injury (from the confirmed diagnosis)
 - note: Seeded investigations: acute_kidney_injury (confirmed); 0 stat test(s) held back
+- note: Decision support: (no decision); factors age80plus, diabetes, shock
 - note: matchPathways: Post-operative Follow-up (General) (5), Wound Management (Acute / Chronic / SSI) (5)
 
 </details>
@@ -1228,6 +1255,7 @@ Guidelines:
 - note: AssessmentTab ManagementPanel protocol: diabetic_ketoacidosis (from the confirmed diagnosis)
 - note: PlanTab protocol: diabetic_ketoacidosis (from the confirmed diagnosis)
 - note: Seeded investigations: diabetic_ketoacidosis (confirmed); 0 stat test(s) held back
+- note: Decision support: (no decision); factors diabetes
 - note: matchPathways: Gallbladder Disease (Biliary Colic / Cholecystitis / Choledocholithiasis) (12), Acute Abdomen (7), Acute Appendicitis (7)
 
 </details>
@@ -1259,7 +1287,7 @@ Guidelines:
 <details><summary>web engine outputs</summary>
 
 - engine: paneEngine=pane-engine (188 diseases, 426 features); triageRulesVersion=1.4.0
-- differential web.pane: 1. Hypertensive Emergency / Malignant Hypertension; 2. Stroke (Ischaemic / Haemorrhagic Cerebrovascular Event); 3. Traumatic Brain Injury
+- differential web.pane: 1. Hypertensive Emergency / Malignant Hypertension; 2. Stroke (Ischaemic / Haemorrhagic Cerebrovascular Event); 3. Bacterial Meningitis / Meningococcal Disease
 - differential web.symptomInference: 1. Hypertensive emergency / hypertensive encephalopathy; 2. Stroke / TIA; 3. Meningitis / encephalitis; 4. Migraine; 5. Malaria
 - differential web.passive: 1. Hypertensive emergency / hypertensive encephalopathy; 2. Stroke / TIA; 3. Meningitis / encephalitis; 4. Migraine; 5. Bacterial meningitis (paediatric)
 - differential web.triageSurgical: 1. Lipoma
@@ -1268,10 +1296,11 @@ Guidelines:
 - recommended scores: gcs, news2, caprini, asa, rcri, stop-bang, cfs
 - score values: (none)
 - dx variant: (none) (no group)
-- note: PANE features applied: headache, nausea_vomiting, visual_disturbance, confusion, known_hypertension, vascular_risk, papilloedema, gcs_drop, restless_writhing, burn_wound, raised_creatinine, proteinuria, acute_onset, raised_bp, severe_hypertension, recent_surgery, aortic_graft, stoma
+- note: PANE features applied: headache, nausea_vomiting, visual_disturbance, confusion, known_hypertension, vascular_risk, papilloedema, gcs_drop, raised_creatinine, proteinuria, acute_onset, raised_bp, severe_hypertension, trauma_mechanism, recent_surgery, aortic_graft, stoma
 - note: AssessmentTab ManagementPanel protocol: hypertensive_emergency (from the confirmed diagnosis)
 - note: PlanTab protocol: hypertensive_emergency (from the confirmed diagnosis)
 - note: Seeded investigations: hypertensive_emergency (confirmed); 0 stat test(s) held back
+- note: Decision support: (no decision); factors news2High
 - note: matchPathways: Soft Tissue Mass / Lipoma (5)
 
 </details>
@@ -1316,6 +1345,7 @@ Guidelines:
 - note: AssessmentTab ManagementPanel protocol: pre_eclampsia (from the confirmed diagnosis)
 - note: PlanTab protocol: pre_eclampsia (from the confirmed diagnosis)
 - note: Seeded investigations: pre_eclampsia (confirmed); 0 stat test(s) held back
+- note: Decision support: (no decision); factors pregnant
 - note: matchPathways: Gallbladder Disease (Biliary Colic / Cholecystitis / Choledocholithiasis) (17), Upper GI Endoscopy (Dyspepsia / GORD / Dysphagia) (12), Acute Abdomen (7)
 
 </details>
@@ -1356,6 +1386,7 @@ Guidelines:
 - note: AssessmentTab ManagementPanel protocol: (none) (from the confirmed diagnosis)
 - note: PlanTab protocol: (none) (from the confirmed diagnosis)
 - note: Seeded investigations: biliary_colic (leading differential); 0 stat test(s) held back
+- note: Decision support: (no decision); factors (none)
 - note: matchPathways: Gallbladder Disease (Biliary Colic / Cholecystitis / Choledocholithiasis) (10), Pre-operative Assessment (10), Chest Pain — Emergency Redirect (5)
 
 </details>
@@ -1393,10 +1424,12 @@ Guidelines:
 - recommended scores: wells-pe, qsofa, news2, caprini, asa, curb65, rcri, cfs
 - score values: (none)
 - dx variant: (none) (no group)
-- note: PANE features applied: syncope, dyspnoea, pain_on_defaecation, sudden_onset, dyspnoea_pe, raised_jvp, known_hypertension, vascular_risk, pallor, hernia_swelling, acute_onset, tachycardia, tachypnoea, hypoxia, trauma_mechanism, recent_surgery, aortic_graft, stoma
+- note: PANE features applied: syncope, dyspnoea, sudden_onset, dyspnoea_pe, raised_jvp, known_hypertension, vascular_risk, pallor, acute_onset, tachycardia, tachypnoea, hypoxia, trauma_mechanism, recent_surgery, aortic_graft, stoma
 - note: AssessmentTab ManagementPanel protocol: pulmonary_embolism (from the confirmed diagnosis)
 - note: PlanTab protocol: pulmonary_embolism (from the confirmed diagnosis)
 - note: Seeded investigations: pulmonary_embolism (confirmed); 0 stat test(s) held back
+- note: Decision Pulmonary embolism — missing: Record eGFR to refine: eGFR below 30 raises operative and anticoagulant harm (therapeutic anticoagulation).
+- note: Decision support: pulmonary-embolism; factors age65to79, news2High
 - note: matchPathways: Hernia (Inguinal / Umbilical / Incisional / Femoral) (10), Chest Pain — Emergency Redirect (5)
 
 </details>
@@ -1441,6 +1474,8 @@ Guidelines:
 - note: AssessmentTab ManagementPanel protocol: pulmonary_embolism (from the confirmed diagnosis)
 - note: PlanTab protocol: pulmonary_embolism (from the confirmed diagnosis)
 - note: Seeded investigations: pulmonary_embolism (confirmed); 0 stat test(s) held back
+- note: Decision Pulmonary embolism — missing: Record eGFR to refine: eGFR below 30 raises operative and anticoagulant harm (therapeutic anticoagulation).
+- note: Decision support: pulmonary-embolism; factors age65to79, news2High, shock
 - note: matchPathways: Chest Pain — Emergency Redirect (5), ERCP (Obstructive Jaundice / Bile Duct Stones / Pancreatic Duct) (5), Pancreatic Mass / Cyst (5)
 
 </details>
@@ -1482,6 +1517,8 @@ Guidelines:
 - note: AssessmentTab ManagementPanel protocol: pulmonary_embolism (from the confirmed diagnosis)
 - note: PlanTab protocol: pulmonary_embolism (from the confirmed diagnosis)
 - note: Seeded investigations: pulmonary_embolism (confirmed); 0 stat test(s) held back
+- note: Decision Pulmonary embolism — missing: Record eGFR to refine: eGFR below 30 raises operative and anticoagulant harm (therapeutic anticoagulation).
+- note: Decision support: pulmonary-embolism; factors (none)
 - note: matchPathways: Breast Lump / Breast Disease (5), Chest Pain — Emergency Redirect (5), Post-operative Follow-up (General) (5)
 
 </details>
@@ -1529,6 +1566,9 @@ Guidelines:
 - note: AssessmentTab ManagementPanel protocol: pulmonary_embolism (from the confirmed diagnosis)
 - note: PlanTab protocol: pulmonary_embolism (from the confirmed diagnosis)
 - note: Seeded investigations: pulmonary_embolism (confirmed); 0 stat test(s) held back
+- note: Decision Pulmonary embolism — missing: Record eGFR to refine: eGFR below 30 raises operative and anticoagulant harm (therapeutic anticoagulation).
+- note: Decision Pulmonary embolism — missing: Record pregnancy status to refine: pregnancy changes the harm of operations and thrombolysis and excludes some options (systemic thrombolysis).
+- note: Decision support: pulmonary-embolism; factors recentSurgery21d
 - note: matchPathways: Gallbladder Disease (Biliary Colic / Cholecystitis / Choledocholithiasis) (12), ERCP (Obstructive Jaundice / Bile Duct Stones / Pancreatic Duct) (7), Pancreatic Mass / Cyst (7)
 
 </details>
@@ -1572,6 +1612,8 @@ Guidelines:
 - note: AssessmentTab ManagementPanel protocol: pulmonary_embolism (from the confirmed diagnosis)
 - note: PlanTab protocol: pulmonary_embolism (from the confirmed diagnosis)
 - note: Seeded investigations: pulmonary_embolism (confirmed); 0 stat test(s) held back
+- note: Decision Pulmonary embolism — missing: Record eGFR to refine: eGFR below 30 raises operative and anticoagulant harm (therapeutic anticoagulation).
+- note: Decision support: pulmonary-embolism; factors pregnant
 - note: matchPathways: Anorectal (Haemorrhoids / Fissure / Fistula / Abscess) (5), Chest Pain — Emergency Redirect (5)
 
 </details>
@@ -1622,6 +1664,7 @@ Guidelines:
 - note: PlanTab protocol: sepsis (from the confirmed diagnosis)
 - note: Seeded investigations: sepsis (confirmed); 0 stat test(s) held back
 - note: no web calculator for score form 'qsofa'
+- note: Decision support: sepsis; factors age80plus, news2High
 - note: matchPathways: Hernia (Inguinal / Umbilical / Incisional / Femoral) (5)
 
 </details>
@@ -1661,10 +1704,11 @@ Guidelines:
 - recommended scores: qsofa, news2
 - score values: (none)
 - dx variant: (none) (no group)
-- note: PANE features applied: fever, rigors, myalgia, nausea_vomiting, rash, non_blanching_rash, asplenia, previous_surgery, mottled_skin, trauma_mechanism, mechanism_blunt, acute_onset, tachycardia, haemodynamic_instability, tachypnoea, recent_surgery, aortic_graft, stoma
+- note: PANE features applied: fever, rigors, myalgia, nausea_vomiting, rash, non_blanching_rash, asplenia, previous_surgery, mottled_skin, acute_onset, tachycardia, haemodynamic_instability, tachypnoea, trauma_mechanism, recent_surgery, aortic_graft, stoma
 - note: AssessmentTab ManagementPanel protocol: sepsis (from the confirmed diagnosis)
 - note: PlanTab protocol: sepsis (from the confirmed diagnosis)
 - note: Seeded investigations: sepsis (confirmed); 0 stat test(s) held back
+- note: Decision support: sepsis; factors news2High
 
 </details>
 
@@ -1707,6 +1751,7 @@ Guidelines:
 - note: AssessmentTab ManagementPanel protocol: (none) (from the confirmed diagnosis)
 - note: PlanTab protocol: (none) (from the confirmed diagnosis)
 - note: Seeded investigations: sepsis (leading differential); 2 stat test(s) held back
+- note: Decision support: sepsis; factors immunosuppressed
 - note: matchPathways: Post-operative Follow-up (General) (5), Skin Lesion / Excision (5), Wound Management (Acute / Chronic / SSI) (5)
 
 </details>
@@ -1745,10 +1790,11 @@ Guidelines:
 - recommended scores: news2, caprini, asa, rcri, stop-bang, cfs, web:phq9
 - score values: (none)
 - dx variant: (none) (no group)
-- note: PANE features applied: syncope, fatigue, exertional_symptoms, dyspnoea, sudden_onset, known_hypertension, vascular_risk, previous_surgery, loss_of_consciousness, hernia_swelling, acute_onset, bradycardia, trauma_mechanism, recent_surgery, aortic_graft, stoma
+- note: PANE features applied: syncope, fatigue, exertional_symptoms, dyspnoea, sudden_onset, known_hypertension, vascular_risk, previous_surgery, loss_of_consciousness, acute_onset, bradycardia, trauma_mechanism, recent_surgery, aortic_graft, stoma
 - note: AssessmentTab ManagementPanel protocol: syncope (from the confirmed diagnosis)
 - note: PlanTab protocol: syncope (from the confirmed diagnosis)
 - note: Seeded investigations: syncope (confirmed); 0 stat test(s) held back
+- note: Decision support: (no decision); factors age80plus
 - note: matchPathways: Hernia (Inguinal / Umbilical / Incisional / Femoral) (10), Post-operative Follow-up (General) (5)
 
 </details>
@@ -1787,6 +1833,7 @@ Guidelines:
 - note: AssessmentTab ManagementPanel protocol: syncope (from the confirmed diagnosis)
 - note: PlanTab protocol: syncope (from the confirmed diagnosis)
 - note: Seeded investigations: syncope (confirmed); 0 stat test(s) held back
+- note: Decision support: (no decision); factors age65to79
 - note: matchPathways: Gallbladder Disease (Biliary Colic / Cholecystitis / Choledocholithiasis) (5), Post-operative Follow-up (General) (5), Soft Tissue Mass / Lipoma (5)
 
 </details>
@@ -1831,6 +1878,7 @@ Guidelines:
 - note: AssessmentTab ManagementPanel protocol: syncope (from the confirmed diagnosis)
 - note: PlanTab protocol: syncope (from the confirmed diagnosis)
 - note: Seeded investigations: syncope (confirmed); 0 stat test(s) held back
+- note: Decision support: (no decision); factors (none)
 - note: matchPathways: Breast Lump / Breast Disease (10), Chest Pain — Emergency Redirect (5)
 
 </details>
@@ -1858,7 +1906,7 @@ Guidelines:
 <details><summary>web engine outputs</summary>
 
 - engine: paneEngine=pane-engine (188 diseases, 426 features); triageRulesVersion=1.4.0
-- differential web.pane: 1. Infected Obstructed Kidney (Pyonephrosis / Obstructive Urosepsis); 2. Renal Colic / Urolithiasis; 3. Hypertensive Emergency / Malignant Hypertension
+- differential web.pane: 1. Infected Obstructed Kidney (Pyonephrosis / Obstructive Urosepsis); 2. Phaeochromocytoma / Paraganglioma; 3. Adrenal Incidentaloma
 - differential web.symptomInference: 1. Hypertensive emergency / hypertensive encephalopathy; 2. Migraine; 3. Meningitis / encephalitis; 4. Dengue fever; 5. Malaria
 - differential web.passive: 1. Hypertensive emergency / hypertensive encephalopathy; 2. Migraine; 3. Meningitis / encephalitis; 4. Dengue fever; 5. Bacterial meningitis (paediatric)
 - differential web.triageSurgical: (empty)
@@ -1867,10 +1915,11 @@ Guidelines:
 - recommended scores: news2, caprini, asa, rcri
 - score values: (none)
 - dx variant: (none) (no group)
-- note: PANE features applied: abdominal_mass, headache, known_hypertension, vascular_risk, acei_arb_use, loin_pain, known_stone, raised_bp, trauma_mechanism, recent_surgery, aortic_graft, stoma
+- note: PANE features applied: abdominal_mass, headache, known_hypertension, vascular_risk, acei_arb_use, loin_pain, adrenal_mass, known_stone, raised_bp, trauma_mechanism, recent_surgery, aortic_graft, stoma
 - note: AssessmentTab ManagementPanel protocol: adrenal_incidentaloma (from the confirmed diagnosis)
 - note: PlanTab protocol: adrenal_incidentaloma (from the confirmed diagnosis)
 - note: Seeded investigations: adrenal_incidentaloma (confirmed); 0 stat test(s) held back
+- note: Decision support: (no decision); factors (none)
 
 </details>
 
@@ -1908,10 +1957,11 @@ Guidelines:
 - recommended scores: cha2ds2-vasc, news2, caprini, asa, rcri, web:gad7
 - score values: (none)
 - dx variant: (none) (no group)
-- note: PANE features applied: abdominal_mass, headache, palpitations, night_sweats, weight_loss, chronic_course, known_hypertension, vascular_risk, diaphoresis, pallor, paroxysmal_episodes, tachycardia, raised_bp, severe_hypertension, trauma_mechanism, recent_surgery, aortic_graft, stoma
+- note: PANE features applied: abdominal_mass, headache, palpitations, night_sweats, weight_loss, chronic_course, known_hypertension, vascular_risk, diaphoresis, pallor, paroxysmal_episodes, adrenal_mass, tachycardia, raised_bp, severe_hypertension, trauma_mechanism, recent_surgery, aortic_graft, stoma
 - note: AssessmentTab ManagementPanel protocol: adrenal_incidentaloma (from the confirmed diagnosis)
 - note: PlanTab protocol: adrenal_incidentaloma (from the confirmed diagnosis)
 - note: Seeded investigations: adrenal_incidentaloma (confirmed); 0 stat test(s) held back
+- note: Decision support: (no decision); factors (none)
 
 </details>
 
@@ -1954,10 +2004,11 @@ Guidelines:
 - recommended scores: gcs, news2, caprini, cfs
 - score values: (none)
 - dx variant: (none) (no group)
-- note: PANE features applied: urinary_incontinence, prostate_symptoms, confusion, abdominal_distension, urinary_retention_symptoms, anticholinergic_or_opioid, palpable_bladder, overflow_incontinence, peripheral_neuropathy, raised_creatinine, raised_urea, hyperkalaemia_lab, hydronephrosis, raised_bp, trauma_mechanism, recent_surgery, aortic_graft, stoma
+- note: PANE features applied: urinary_incontinence, prostate_symptoms, confusion, abdominal_distension, urinary_retention_symptoms, anticholinergic_or_opioid, palpable_bladder, overflow_incontinence, raised_creatinine, raised_urea, hyperkalaemia_lab, hydronephrosis, raised_bp, trauma_mechanism, recent_surgery, aortic_graft, stoma
 - note: AssessmentTab ManagementPanel protocol: acute_kidney_injury (from the confirmed diagnosis)
 - note: PlanTab protocol: acute_kidney_injury (from the confirmed diagnosis)
 - note: Seeded investigations: acute_kidney_injury (confirmed); 0 stat test(s) held back
+- note: Decision support: (no decision); factors age80plus
 - note: matchPathways: Bowel Obstruction (Small / Large) (5)
 
 </details>
@@ -2006,6 +2057,7 @@ Guidelines:
 - note: AssessmentTab ManagementPanel protocol: acute_kidney_injury (from the confirmed diagnosis)
 - note: PlanTab protocol: acute_kidney_injury (from the confirmed diagnosis)
 - note: Seeded investigations: acute_kidney_injury (confirmed); 0 stat test(s) held back
+- note: Decision support: (no decision); factors age65to79, diabetes
 - note: matchPathways: Wound Management (Acute / Chronic / SSI) (5)
 
 </details>
@@ -2049,6 +2101,7 @@ Guidelines:
 - note: AssessmentTab ManagementPanel protocol: acute_limb_ischaemia (from the confirmed diagnosis)
 - note: PlanTab protocol: acute_limb_ischaemia (from the confirmed diagnosis)
 - note: Seeded investigations: acute_limb_ischaemia (confirmed); 0 stat test(s) held back
+- note: Decision support: (no decision); factors age65to79
 - note: matchPathways: Peripheral Vascular Disease (10)
 
 </details>
@@ -2092,6 +2145,7 @@ Guidelines:
 - note: AssessmentTab ManagementPanel protocol: acute_limb_ischaemia (from the confirmed diagnosis)
 - note: PlanTab protocol: acute_limb_ischaemia (from the confirmed diagnosis)
 - note: Seeded investigations: acute_limb_ischaemia (confirmed); 0 stat test(s) held back
+- note: Decision support: (no decision); factors age65to79, antiplatelet, diabetes
 - note: matchPathways: Peripheral Vascular Disease (15)
 
 </details>
@@ -2136,6 +2190,10 @@ Guidelines:
 - note: AssessmentTab ManagementPanel protocol: mesenteric_ischaemia (from the confirmed diagnosis)
 - note: PlanTab protocol: mesenteric_ischaemia (from the confirmed diagnosis)
 - note: Seeded investigations: mesenteric_ischaemia (confirmed); 0 stat test(s) held back
+- note: Decision Emergency laparotomy (source control) — missing: Record Clinical Frailty Scale to refine: frailty raises the harm of operations and procedures (emergency laparotomy).
+- note: Decision Emergency laparotomy (source control) — missing: Record ASA grade to refine: ASA III-IV raises operative harm (emergency laparotomy).
+- note: Decision Emergency laparotomy (source control) — missing: Record eGFR to refine: eGFR below 30 raises operative and anticoagulant harm (emergency laparotomy).
+- note: Decision support: emergency-laparotomy; factors age65to79
 - note: matchPathways: Acute Abdomen (7), Acute Appendicitis (7), Anorectal (Haemorrhoids / Fissure / Fistula / Abscess) (7)
 
 </details>
@@ -2180,6 +2238,10 @@ Guidelines:
 - note: AssessmentTab ManagementPanel protocol: mesenteric_ischaemia (from the confirmed diagnosis)
 - note: PlanTab protocol: mesenteric_ischaemia (from the confirmed diagnosis)
 - note: Seeded investigations: mesenteric_ischaemia (confirmed); 0 stat test(s) held back
+- note: Decision Emergency laparotomy (source control) — missing: Record Clinical Frailty Scale to refine: frailty raises the harm of operations and procedures (emergency laparotomy).
+- note: Decision Emergency laparotomy (source control) — missing: Record ASA grade to refine: ASA III-IV raises operative harm (emergency laparotomy).
+- note: Decision Emergency laparotomy (source control) — missing: Record eGFR to refine: eGFR below 30 raises operative and anticoagulant harm (emergency laparotomy).
+- note: Decision support: emergency-laparotomy; factors age65to79, antiplatelet, news2High, shock
 - note: matchPathways: Anorectal (Haemorrhoids / Fissure / Fistula / Abscess) (12), Bowel Obstruction (Small / Large) (12), Acute Abdomen (7)
 
 </details>
@@ -2221,6 +2283,9 @@ Guidelines:
 - note: AssessmentTab ManagementPanel protocol: mesenteric_ischaemia (from the confirmed diagnosis)
 - note: PlanTab protocol: mesenteric_ischaemia (from the confirmed diagnosis)
 - note: Seeded investigations: mesenteric_ischaemia (confirmed); 0 stat test(s) held back
+- note: Decision Emergency laparotomy (source control) — missing: Record ASA grade to refine: ASA III-IV raises operative harm (emergency laparotomy).
+- note: Decision Emergency laparotomy (source control) — missing: Record eGFR to refine: eGFR below 30 raises operative and anticoagulant harm (emergency laparotomy).
+- note: Decision support: emergency-laparotomy; factors (none)
 - note: matchPathways: Acute Abdomen (7), Acute Appendicitis (7), Anorectal (Haemorrhoids / Fissure / Fistula / Abscess) (7)
 
 </details>
@@ -2263,6 +2328,7 @@ Guidelines:
 - note: AssessmentTab ManagementPanel protocol: anal_cancer (from the confirmed diagnosis)
 - note: PlanTab protocol: anal_cancer (from the confirmed diagnosis)
 - note: Seeded investigations: anal_cancer (confirmed); 0 stat test(s) held back
+- note: Decision support: (no decision); factors (none)
 - note: matchPathways: Anorectal (Haemorrhoids / Fissure / Fistula / Abscess) (15), Colonoscopy Diagnostic (Rectal Bleeding / Bowel Habit Change / Iron Deficiency) (5), GI Bleeding (Upper and Lower) (5)
 
 </details>
@@ -2305,6 +2371,7 @@ Guidelines:
 - note: AssessmentTab ManagementPanel protocol: anal_fissure (from the confirmed diagnosis)
 - note: PlanTab protocol: anal_fissure (from the confirmed diagnosis)
 - note: Seeded investigations: anal_fissure (confirmed); 0 stat test(s) held back
+- note: Decision support: (no decision); factors (none)
 - note: matchPathways: Colonoscopy Diagnostic (Rectal Bleeding / Bowel Habit Change / Iron Deficiency) (24), IBD — Surgical Complications (Crohn's / UC) (19), Cancer Screening (Age/Sex Appropriate) (7)
 
 </details>
@@ -2350,6 +2417,7 @@ Guidelines:
 - note: AssessmentTab ManagementPanel protocol: anal_fissure (from the confirmed diagnosis)
 - note: PlanTab protocol: anal_fissure (from the confirmed diagnosis)
 - note: Seeded investigations: anal_fissure (confirmed); 0 stat test(s) held back
+- note: Decision support: (no decision); factors immunosuppressed
 - note: matchPathways: Colonoscopy Diagnostic (Rectal Bleeding / Bowel Habit Change / Iron Deficiency) (12), Cancer Screening (Age/Sex Appropriate) (7), IBD — Surgical Complications (Crohn's / UC) (7)
 
 </details>
@@ -2387,6 +2455,7 @@ Guidelines:
 - note: AssessmentTab ManagementPanel protocol: anal_fissure (from the confirmed diagnosis)
 - note: PlanTab protocol: anal_fissure (from the confirmed diagnosis)
 - note: Seeded investigations: anal_fissure (confirmed); 0 stat test(s) held back
+- note: Decision support: (no decision); factors (none)
 - note: matchPathways: Anorectal (Haemorrhoids / Fissure / Fistula / Abscess) (5), Colonoscopy Diagnostic (Rectal Bleeding / Bowel Habit Change / Iron Deficiency) (5), GI Bleeding (Upper and Lower) (5)
 
 </details>
@@ -2431,6 +2500,7 @@ Guidelines:
 - note: AssessmentTab ManagementPanel protocol: aortic_dissection (from the confirmed diagnosis)
 - note: PlanTab protocol: aortic_dissection (from the confirmed diagnosis)
 - note: Seeded investigations: aortic_dissection (confirmed); 0 stat test(s) held back
+- note: Decision support: (no decision); factors (none)
 - note: matchPathways: Chest Pain — Emergency Redirect (5), Upper GI Endoscopy (Dyspepsia / GORD / Dysphagia) (5)
 
 </details>
@@ -2472,6 +2542,7 @@ Guidelines:
 - note: AssessmentTab ManagementPanel protocol: aortoenteric_fistula (from PANE top)
 - note: PlanTab protocol: (none) (from the confirmed diagnosis)
 - note: Seeded investigations: aortoenteric_fistula (leading differential); 2 stat test(s) held back
+- note: Decision support: (no decision); factors age65to79, antiplatelet
 - note: matchPathways: GI Bleeding (Upper and Lower) (15)
 
 </details>
@@ -2530,6 +2601,9 @@ Guidelines:
 - note: PlanTab protocol: appendicitis (from the confirmed diagnosis)
 - note: Seeded investigations: appendicitis (confirmed); 0 stat test(s) held back
 - note: no web calculator for score form 'air'
+- note: Decision Acute appendicitis (uncomplicated) — missing: Record ASA grade to refine: ASA III-IV raises operative harm (laparoscopic appendicectomy).
+- note: Decision Acute appendicitis (uncomplicated) — missing: Record eGFR to refine: eGFR below 30 raises operative and anticoagulant harm (laparoscopic appendicectomy).
+- note: Decision support: appendicitis; factors (none)
 - note: matchPathways: Acute Appendicitis (12), Acute Abdomen (7), Anorectal (Haemorrhoids / Fissure / Fistula / Abscess) (7)
 
 </details>
@@ -2579,6 +2653,9 @@ Guidelines:
 - note: PlanTab protocol: appendicitis (from the confirmed diagnosis)
 - note: Seeded investigations: appendicitis (confirmed); 0 stat test(s) held back
 - note: no web calculator for score form 'air'
+- note: Decision Acute appendicitis (uncomplicated) — missing: Record ASA grade to refine: ASA III-IV raises operative harm (laparoscopic appendicectomy).
+- note: Decision Acute appendicitis (uncomplicated) — missing: Record eGFR to refine: eGFR below 30 raises operative and anticoagulant harm (laparoscopic appendicectomy).
+- note: Decision support: appendicitis; factors (none)
 - note: matchPathways: Acute Appendicitis (12), Acute Abdomen (7), Anorectal (Haemorrhoids / Fissure / Fistula / Abscess) (7)
 
 </details>
@@ -2620,6 +2697,9 @@ Guidelines:
 - note: AssessmentTab ManagementPanel protocol: appendicitis (from the confirmed diagnosis)
 - note: PlanTab protocol: appendicitis (from the confirmed diagnosis)
 - note: Seeded investigations: appendicitis (confirmed); 0 stat test(s) held back
+- note: Decision Acute appendicitis (uncomplicated) — missing: Record ASA grade to refine: ASA III-IV raises operative harm (laparoscopic appendicectomy).
+- note: Decision Acute appendicitis (uncomplicated) — missing: Record eGFR to refine: eGFR below 30 raises operative and anticoagulant harm (laparoscopic appendicectomy).
+- note: Decision support: appendicitis; factors appendicolith
 - note: matchPathways: Acute Appendicitis (10), Acute Abdomen (5)
 
 </details>
@@ -2680,6 +2760,10 @@ Guidelines:
 - note: PlanTab protocol: appendicitis (from the confirmed diagnosis)
 - note: Seeded investigations: appendicitis (confirmed); 0 stat test(s) held back
 - note: no web calculator for score form 'air'
+- note: Decision Acute appendicitis (uncomplicated) — missing: Record Clinical Frailty Scale to refine: frailty raises the harm of operations and procedures (laparoscopic appendicectomy).
+- note: Decision Acute appendicitis (uncomplicated) — missing: Record ASA grade to refine: ASA III-IV raises operative harm (laparoscopic appendicectomy).
+- note: Decision Acute appendicitis (uncomplicated) — missing: Record eGFR to refine: eGFR below 30 raises operative and anticoagulant harm (laparoscopic appendicectomy).
+- note: Decision support: appendicitis; factors age65to79, anticoagulated, doacOnly
 - note: matchPathways: IBD — Surgical Complications (Crohn's / UC) (21), Anorectal (Haemorrhoids / Fissure / Fistula / Abscess) (19), Colonoscopy Diagnostic (Rectal Bleeding / Bowel Habit Change / Iron Deficiency) (19)
 
 </details>
@@ -2727,6 +2811,9 @@ Guidelines:
 - note: PlanTab protocol: appendicitis (from the confirmed diagnosis)
 - note: Seeded investigations: appendicitis (confirmed); 0 stat test(s) held back
 - note: no web calculator for score form 'qsofa'
+- note: Decision Emergency laparotomy (source control) — missing: Record ASA grade to refine: ASA III-IV raises operative harm (emergency laparotomy).
+- note: Decision Emergency laparotomy (source control) — missing: Record eGFR to refine: eGFR below 30 raises operative and anticoagulant harm (emergency laparotomy).
+- note: Decision support: emergency-laparotomy; factors news2High
 - note: matchPathways: IBD — Surgical Complications (Crohn's / UC) (12), Acute Abdomen (7), Acute Appendicitis (7)
 
 </details>
@@ -2767,6 +2854,9 @@ Guidelines:
 - note: AssessmentTab ManagementPanel protocol: appendicitis (from the confirmed diagnosis)
 - note: PlanTab protocol: appendicitis (from the confirmed diagnosis)
 - note: Seeded investigations: appendicitis (confirmed); 0 stat test(s) held back
+- note: Decision Acute appendicitis (uncomplicated) — missing: Record ASA grade to refine: ASA III-IV raises operative harm (laparoscopic appendicectomy).
+- note: Decision Acute appendicitis (uncomplicated) — missing: Record eGFR to refine: eGFR below 30 raises operative and anticoagulant harm (laparoscopic appendicectomy).
+- note: Decision support: appendicitis; factors diabetes, immunosuppressed
 - note: matchPathways: IBD — Surgical Complications (Crohn's / UC) (12), Acute Abdomen (7), Acute Appendicitis (7)
 
 </details>
@@ -2819,6 +2909,9 @@ Guidelines:
 - note: AssessmentTab ManagementPanel protocol: appendicitis (from the confirmed diagnosis)
 - note: PlanTab protocol: appendicitis (from the confirmed diagnosis)
 - note: Seeded investigations: appendicitis (confirmed); 0 stat test(s) held back
+- note: Decision Acute appendicitis (uncomplicated) — missing: Record ASA grade to refine: ASA III-IV raises operative harm (laparoscopic appendicectomy).
+- note: Decision Acute appendicitis (uncomplicated) — missing: Record eGFR to refine: eGFR below 30 raises operative and anticoagulant harm (laparoscopic appendicectomy).
+- note: Decision support: appendicitis; factors (none)
 
 </details>
 
@@ -2860,6 +2953,7 @@ Guidelines:
 - note: AssessmentTab ManagementPanel protocol: appendix_mass (from the confirmed diagnosis)
 - note: PlanTab protocol: appendix_mass (from the confirmed diagnosis)
 - note: Seeded investigations: appendix_mass (confirmed); 0 stat test(s) held back
+- note: Decision support: (no decision); factors appendicolith
 - note: matchPathways: IBD — Surgical Complications (Crohn's / UC) (21), Anorectal (Haemorrhoids / Fissure / Fistula / Abscess) (19), Colonoscopy Diagnostic (Rectal Bleeding / Bowel Habit Change / Iron Deficiency) (19)
 
 </details>
@@ -2916,6 +3010,9 @@ Guidelines:
 - note: AssessmentTab ManagementPanel protocol: appendicitis (from the confirmed diagnosis)
 - note: PlanTab protocol: appendicitis (from the confirmed diagnosis)
 - note: Seeded investigations: appendicitis (confirmed); 0 stat test(s) held back
+- note: Decision Acute appendicitis (uncomplicated) — missing: Record ASA grade to refine: ASA III-IV raises operative harm (laparoscopic appendicectomy).
+- note: Decision Acute appendicitis (uncomplicated) — missing: Record eGFR to refine: eGFR below 30 raises operative and anticoagulant harm (laparoscopic appendicectomy).
+- note: Decision support: appendicitis; factors pregnant
 - note: matchPathways: Acute Appendicitis (12), Acute Abdomen (7), Anorectal (Haemorrhoids / Fissure / Fistula / Abscess) (7)
 
 </details>
@@ -2961,11 +3058,14 @@ Guidelines:
 - recommended scores: alvarado, ranson, news2
 - score values: alvarado/calculator@web.scaleCalculator.alvarado=6
 - dx variant: appendicitis_uncomplicated (Acute Appendicitis)
-- note: PANE features applied: abdominal_pain, periumbilical_pain, rlq_pain, acute_onset, nausea_vomiting, pain_worse_movement, cough, symptoms_resolved, rebound_tenderness, abdominal_tenderness, elevated_wbc, raised_crp, trauma_mechanism, recent_surgery, aortic_graft, stoma
+- note: PANE features applied: abdominal_pain, periumbilical_pain, rlq_pain, acute_onset, nausea_vomiting, pain_worse_movement, cough, rebound_tenderness, abdominal_tenderness, elevated_wbc, raised_crp, trauma_mechanism, recent_surgery, aortic_graft, stoma
 - note: AssessmentTab ManagementPanel protocol: appendicitis (from the confirmed diagnosis)
 - note: PlanTab protocol: appendicitis (from the confirmed diagnosis)
 - note: Seeded investigations: appendicitis (confirmed); 0 stat test(s) held back
 - note: no web calculator for score form 'air'
+- note: Decision Acute appendicitis (uncomplicated) — missing: Record ASA grade to refine: ASA III-IV raises operative harm (laparoscopic appendicectomy).
+- note: Decision Acute appendicitis (uncomplicated) — missing: Record eGFR to refine: eGFR below 30 raises operative and anticoagulant harm (laparoscopic appendicectomy).
+- note: Decision support: appendicitis; factors (none)
 - note: matchPathways: Acute Appendicitis (5), IBD — Surgical Complications (Crohn's / UC) (5)
 
 </details>
@@ -3016,6 +3116,7 @@ Guidelines:
 - note: PlanTab protocol: (none) (from the confirmed diagnosis)
 - note: Seeded investigations: appendicitis (leading differential); 0 stat test(s) held back
 - note: no web calculator for score form 'air'
+- note: Decision support: (no decision); factors (none)
 - note: matchPathways: Acute Abdomen (7), Acute Appendicitis (7), Anorectal (Haemorrhoids / Fissure / Fistula / Abscess) (7)
 
 </details>
@@ -3050,7 +3151,7 @@ Guidelines:
 <details><summary>web engine outputs</summary>
 
 - engine: paneEngine=pane-engine (188 diseases, 426 features); triageRulesVersion=1.4.0
-- differential web.pane: 1. Acute Cholecystitis; 2. Acute Cholangitis; 3. Choledocholithiasis
+- differential web.pane: 1. Acute Cholecystitis; 2. Biliary Colic / Symptomatic Cholelithiasis; 3. Acute Cholangitis
 - differential web.symptomInference: 1. Breast carcinoma; 2. Uterine fibroids; 3. Acute cholecystitis; 4. Systemic lupus erythematosus; 5. CBD stone / obstructive jaundice
 - differential web.passive: 1. Acute cholecystitis; 2. CBD stone / obstructive jaundice; 3. Peptic ulcer disease; 4. Reducible groin / abdominal hernia; 5. GORD / acid reflux / oesophagitis
 - differential web.triageSurgical: (empty)
@@ -3059,10 +3160,11 @@ Guidelines:
 - recommended scores: news2
 - score values: (none)
 - dx variant: (none) (no group)
-- note: PANE features applied: fever, haematuria, us_gallstones, acute_onset, trauma_mechanism, recent_surgery, aortic_graft, stoma
+- note: PANE features applied: haematuria, us_gallstones, acute_onset, trauma_mechanism, recent_surgery, aortic_graft, stoma
 - note: AssessmentTab ManagementPanel protocol: biliary_colic (from the confirmed diagnosis)
 - note: PlanTab protocol: biliary_colic (from the confirmed diagnosis)
 - note: Seeded investigations: biliary_colic (confirmed); 0 stat test(s) held back
+- note: Decision support: (no decision); factors (none)
 - note: matchPathways: Gallbladder Disease (Biliary Colic / Cholecystitis / Choledocholithiasis) (19), Pancreatic Mass / Cyst (14), Upper GI Endoscopy (Dyspepsia / GORD / Dysphagia) (12)
 
 </details>
@@ -3109,6 +3211,7 @@ Guidelines:
 - note: AssessmentTab ManagementPanel protocol: biliary_colic (from the confirmed diagnosis)
 - note: PlanTab protocol: biliary_colic (from the confirmed diagnosis)
 - note: Seeded investigations: biliary_colic (confirmed); 0 stat test(s) held back
+- note: Decision support: (no decision); factors (none)
 - note: matchPathways: Gallbladder Disease (Biliary Colic / Cholecystitis / Choledocholithiasis) (24), Jaundice Workup (15), Pancreatic Mass / Cyst (14)
 
 </details>
@@ -3148,6 +3251,7 @@ Guidelines:
 - note: AssessmentTab ManagementPanel protocol: biliary_colic (from the confirmed diagnosis)
 - note: PlanTab protocol: biliary_colic (from the confirmed diagnosis)
 - note: Seeded investigations: biliary_colic (confirmed); 0 stat test(s) held back
+- note: Decision support: (no decision); factors (none)
 - note: matchPathways: Gallbladder Disease (Biliary Colic / Cholecystitis / Choledocholithiasis) (29), Pancreatic Mass / Cyst (21), IBD — Surgical Complications (Crohn's / UC) (14)
 
 </details>
@@ -3195,6 +3299,7 @@ Guidelines:
 - note: AssessmentTab ManagementPanel protocol: acute_coronary_syndrome (from the confirmed diagnosis)
 - note: PlanTab protocol: acute_coronary_syndrome (from the confirmed diagnosis)
 - note: Seeded investigations: acute_coronary_syndrome (confirmed); 0 stat test(s) held back
+- note: Decision support: (no decision); factors diabetes
 - note: matchPathways: Gallbladder Disease (Biliary Colic / Cholecystitis / Choledocholithiasis) (19), Pancreatic Mass / Cyst (14), Upper GI Endoscopy (Dyspepsia / GORD / Dysphagia) (12)
 
 </details>
@@ -3239,6 +3344,7 @@ Guidelines:
 - note: AssessmentTab ManagementPanel protocol: oesophageal_perforation (from the confirmed diagnosis)
 - note: PlanTab protocol: oesophageal_perforation (from the confirmed diagnosis)
 - note: Seeded investigations: oesophageal_perforation (confirmed); 0 stat test(s) held back
+- note: Decision support: (no decision); factors news2High
 - note: matchPathways: Chest Pain — Emergency Redirect (5), Thyroid / Neck Mass (5), Upper GI Endoscopy (Dyspepsia / GORD / Dysphagia) (5)
 
 </details>
@@ -3278,6 +3384,7 @@ Guidelines:
 - note: AssessmentTab ManagementPanel protocol: oesophageal_perforation (from the confirmed diagnosis)
 - note: PlanTab protocol: oesophageal_perforation (from the confirmed diagnosis)
 - note: Seeded investigations: oesophageal_perforation (confirmed); 0 stat test(s) held back
+- note: Decision support: (no decision); factors diabetes
 - note: matchPathways: Chest Pain — Emergency Redirect (5), Upper GI Endoscopy (Dyspepsia / GORD / Dysphagia) (5)
 
 </details>
@@ -3315,6 +3422,7 @@ Guidelines:
 - note: AssessmentTab ManagementPanel protocol: oesophageal_perforation (from the confirmed diagnosis)
 - note: PlanTab protocol: oesophageal_perforation (from the confirmed diagnosis)
 - note: Seeded investigations: oesophageal_perforation (confirmed); 0 stat test(s) held back
+- note: Decision support: (no decision); factors (none)
 - note: matchPathways: Gallbladder Disease (Biliary Colic / Cholecystitis / Choledocholithiasis) (12), Upper GI Endoscopy (Dyspepsia / GORD / Dysphagia) (12), Acute Abdomen (7)
 
 </details>
@@ -3355,6 +3463,7 @@ Guidelines:
 - note: AssessmentTab ManagementPanel protocol: breast_abscess (from the confirmed diagnosis)
 - note: PlanTab protocol: breast_abscess (from the confirmed diagnosis)
 - note: Seeded investigations: breast_abscess (confirmed); 0 stat test(s) held back
+- note: Decision support: (no decision); factors (none)
 - note: matchPathways: Breast Lump / Breast Disease (10), IBD — Surgical Complications (Crohn's / UC) (5)
 
 </details>
@@ -3393,10 +3502,11 @@ Guidelines:
 - recommended scores: news2
 - score values: (none)
 - dx variant: (none) (Breast)
-- note: PANE features applied: breast_lump, acute_onset, periumbilical_pain, localised_pain, nipple_discharge, breast_pain, breast_redness, erythema_surrounding, previous_surgery, nipple_inversion, swelling_fluctuant_soft, smoker, vascular_risk, trauma_mechanism, recent_surgery, aortic_graft, stoma
+- note: PANE features applied: breast_lump, acute_onset, localised_pain, nipple_discharge, breast_pain, breast_redness, erythema_surrounding, previous_surgery, nipple_inversion, swelling_fluctuant_soft, smoker, vascular_risk, trauma_mechanism, recent_surgery, aortic_graft, stoma
 - note: AssessmentTab ManagementPanel protocol: breast_abscess (from the confirmed diagnosis)
 - note: PlanTab protocol: breast_abscess (from the confirmed diagnosis)
 - note: Seeded investigations: breast_abscess (confirmed); 0 stat test(s) held back
+- note: Decision support: (no decision); factors (none)
 - note: matchPathways: Breast Lump / Breast Disease (15), Post-operative Follow-up (General) (5)
 
 </details>
@@ -3429,10 +3539,11 @@ Guidelines:
 - recommended scores: wells-dvt, news2, caprini, must, ecog
 - score values: (none)
 - dx variant: (none) (Breast)
-- note: PANE features applied: known_malignancy, acute_onset, trauma_mechanism, recent_surgery, aortic_graft, stoma
+- note: PANE features applied: acute_onset, trauma_mechanism, recent_surgery, aortic_graft, stoma
 - note: AssessmentTab ManagementPanel protocol: (none) (from the confirmed diagnosis)
 - note: PlanTab protocol: (none) (from the confirmed diagnosis)
 - note: Seeded investigations: (none) (confirmed); 0 stat test(s) held back
+- note: Decision support: (no decision); factors (none)
 - note: matchPathways: Breast Lump / Breast Disease (5)
 
 </details>
@@ -3472,10 +3583,11 @@ Guidelines:
 - recommended scores: news2, ecog
 - score values: (none)
 - dx variant: breast_inflammatory (Breast)
-- note: PANE features applied: breast_lump, chronic_course, periumbilical_pain, localised_pain, skin_dimpling, progressive_course, breast_redness, erythema_surrounding, axillary_nodes, recent_antibiotics, trauma_mechanism, recent_surgery, aortic_graft, stoma
+- note: PANE features applied: breast_lump, chronic_course, localised_pain, skin_dimpling, progressive_course, breast_redness, erythema_surrounding, axillary_nodes, recent_antibiotics, trauma_mechanism, recent_surgery, aortic_graft, stoma
 - note: AssessmentTab ManagementPanel protocol: invasive_ductal_carcinoma (from the confirmed diagnosis)
 - note: PlanTab protocol: invasive_ductal_carcinoma (from the confirmed diagnosis)
 - note: Seeded investigations: invasive_ductal_carcinoma (confirmed); 0 stat test(s) held back
+- note: Decision support: (no decision); factors (none)
 - note: matchPathways: IBD — Surgical Complications (Crohn's / UC) (5)
 
 </details>
@@ -3518,6 +3630,7 @@ Guidelines:
 - note: AssessmentTab ManagementPanel protocol: breast_lump (from the confirmed diagnosis)
 - note: PlanTab protocol: breast_lump (from the confirmed diagnosis)
 - note: Seeded investigations: breast_lump (confirmed); 0 stat test(s) held back
+- note: Decision support: (no decision); factors (none)
 - note: matchPathways: Breast Lump / Breast Disease (15)
 
 </details>
@@ -3566,6 +3679,7 @@ Guidelines:
 - note: AssessmentTab ManagementPanel protocol: breast_lump (from the confirmed diagnosis)
 - note: PlanTab protocol: breast_lump (from the confirmed diagnosis)
 - note: Seeded investigations: breast_lump (confirmed); 0 stat test(s) held back
+- note: Decision support: (no decision); factors (none)
 - note: matchPathways: Breast Lump / Breast Disease (10), IBD — Surgical Complications (Crohn's / UC) (5)
 
 </details>
@@ -3609,6 +3723,7 @@ Guidelines:
 - note: AssessmentTab ManagementPanel protocol: breast_lump (from the confirmed diagnosis)
 - note: PlanTab protocol: breast_lump (from the confirmed diagnosis)
 - note: Seeded investigations: breast_lump (confirmed); 0 stat test(s) held back
+- note: Decision support: (no decision); factors (none)
 - note: matchPathways: Breast Lump / Breast Disease (10)
 
 </details>
@@ -3655,6 +3770,7 @@ Guidelines:
 - note: AssessmentTab ManagementPanel protocol: breast_lump (from the confirmed diagnosis)
 - note: PlanTab protocol: breast_lump (from the confirmed diagnosis)
 - note: Seeded investigations: breast_lump (confirmed); 0 stat test(s) held back
+- note: Decision support: (no decision); factors (none)
 - note: matchPathways: Breast Lump / Breast Disease (10)
 
 </details>
@@ -3693,10 +3809,11 @@ Guidelines:
 - recommended scores: wells-dvt, news2, caprini, must, cfs, ecog
 - score values: (none)
 - dx variant: breast_triple_assessment (Breast)
-- note: PANE features applied: breast_lump, chronic_course, periumbilical_pain, skin_dimpling, breast_lump_hard, nipple_inversion, progressive_course, axillary_nodes, known_malignancy, trauma_mechanism, recent_surgery, aortic_graft, stoma
+- note: PANE features applied: breast_lump, chronic_course, skin_dimpling, breast_lump_hard, nipple_inversion, progressive_course, axillary_nodes, trauma_mechanism, recent_surgery, aortic_graft, stoma
 - note: AssessmentTab ManagementPanel protocol: breast_lump (from the confirmed diagnosis)
 - note: PlanTab protocol: breast_lump (from the confirmed diagnosis)
 - note: Seeded investigations: breast_lump (confirmed); 0 stat test(s) held back
+- note: Decision support: (no decision); factors age65to79
 - note: matchPathways: Breast Lump / Breast Disease (15), Cancer Screening (Age/Sex Appropriate) (7), Colonoscopy Diagnostic (Rectal Bleeding / Bowel Habit Change / Iron Deficiency) (7)
 
 </details>
@@ -3739,6 +3856,7 @@ Guidelines:
 - note: AssessmentTab ManagementPanel protocol: gynaecomastia (from the confirmed diagnosis)
 - note: PlanTab protocol: gynaecomastia (from the confirmed diagnosis)
 - note: Seeded investigations: gynaecomastia (confirmed); 0 stat test(s) held back
+- note: Decision support: (no decision); factors (none)
 - note: matchPathways: Breast Lump / Breast Disease (15), Cancer Screening (Age/Sex Appropriate) (7), Colonoscopy Diagnostic (Rectal Bleeding / Bowel Habit Change / Iron Deficiency) (7)
 
 </details>
@@ -3777,10 +3895,11 @@ Guidelines:
 - recommended scores: news2, ecog
 - score values: (none)
 - dx variant: (none) (no group)
-- note: PANE features applied: nipple_discharge, chronic_course, periumbilical_pain, breast_lump, episodic_pain, bloody_nipple_discharge, trauma_mechanism, recent_surgery, aortic_graft, stoma
+- note: PANE features applied: nipple_discharge, chronic_course, breast_lump, episodic_pain, bloody_nipple_discharge, trauma_mechanism, recent_surgery, aortic_graft, stoma
 - note: AssessmentTab ManagementPanel protocol: nipple_discharge (from the confirmed diagnosis)
 - note: PlanTab protocol: nipple_discharge (from the confirmed diagnosis)
 - note: Seeded investigations: nipple_discharge (confirmed); 0 stat test(s) held back
+- note: Decision support: (no decision); factors (none)
 - note: matchPathways: Breast Lump / Breast Disease (5)
 
 </details>
@@ -3820,6 +3939,7 @@ Guidelines:
 - note: AssessmentTab ManagementPanel protocol: mastalgia (from the confirmed diagnosis)
 - note: PlanTab protocol: mastalgia (from the confirmed diagnosis)
 - note: Seeded investigations: mastalgia (confirmed); 0 stat test(s) held back
+- note: Decision support: (no decision); factors (none)
 - note: matchPathways: Breast Lump / Breast Disease (15)
 
 </details>
@@ -3869,6 +3989,7 @@ Guidelines:
 - note: AssessmentTab ManagementPanel protocol: thermal_burn_major (from the confirmed diagnosis)
 - note: PlanTab protocol: thermal_burn_major (from the confirmed diagnosis)
 - note: Seeded investigations: thermal_burn_major (confirmed); 0 stat test(s) held back
+- note: Decision support: (no decision); factors (none)
 - note: matchPathways: Skin Lesion / Excision (5), Wound Management (Acute / Chronic / SSI) (5)
 
 </details>
@@ -3908,10 +4029,11 @@ Guidelines:
 - recommended scores: web:wagner, news2, clavien-dindo
 - score values: (none)
 - dx variant: (none) (no group)
-- note: PANE features applied: sudden_onset, acute_onset, limb_pain, pain_worse_movement, wound_pain, skin_lesion, bilateral_leg_symptoms, burn_wound, blistering, recent_surgery, aortic_graft, stoma
+- note: PANE features applied: sudden_onset, acute_onset, limb_pain, pain_worse_movement, wound_pain, skin_lesion, burn_wound, blistering, recent_surgery, aortic_graft, stoma
 - note: AssessmentTab ManagementPanel protocol: thermal_burn_minor (from the confirmed diagnosis)
 - note: PlanTab protocol: thermal_burn_minor (from the confirmed diagnosis)
 - note: Seeded investigations: thermal_burn_minor (confirmed); 0 stat test(s) held back
+- note: Decision support: (no decision); factors (none)
 - note: matchPathways: Skin Lesion / Excision (5), Wound Management (Acute / Chronic / SSI) (5)
 
 </details>
@@ -3959,6 +4081,7 @@ Guidelines:
 - note: AssessmentTab ManagementPanel protocol: corrosive_injury (from the confirmed diagnosis)
 - note: PlanTab protocol: corrosive_injury (from the confirmed diagnosis)
 - note: Seeded investigations: corrosive_injury (confirmed); 0 stat test(s) held back
+- note: Decision support: (no decision); factors (none)
 - note: matchPathways: Skin Lesion / Excision (5), Wound Management (Acute / Chronic / SSI) (5)
 
 </details>
@@ -4005,6 +4128,7 @@ Guidelines:
 - note: AssessmentTab ManagementPanel protocol: child_safeguarding (from the confirmed diagnosis)
 - note: PlanTab protocol: child_safeguarding (from the confirmed diagnosis)
 - note: Seeded investigations: child_safeguarding (confirmed); 0 stat test(s) held back
+- note: Decision support: (no decision); factors (none)
 - note: matchPathways: Skin Lesion / Excision (5), Wound Management (Acute / Chronic / SSI) (5)
 
 </details>
@@ -4052,6 +4176,7 @@ Guidelines:
 - note: AssessmentTab ManagementPanel protocol: thermal_burn_minor (from the confirmed diagnosis)
 - note: PlanTab protocol: thermal_burn_minor (from the confirmed diagnosis)
 - note: Seeded investigations: thermal_burn_minor (confirmed); 0 stat test(s) held back
+- note: Decision support: (no decision); factors (none)
 - note: matchPathways: Skin Lesion / Excision (5), Wound Management (Acute / Chronic / SSI) (5)
 
 </details>
@@ -4083,7 +4208,7 @@ Guidelines:
 <details><summary>web engine outputs</summary>
 
 - engine: paneEngine=pane-engine (188 diseases, 426 features); triageRulesVersion=1.4.0
-- differential web.pane: 1. Acute Limb Ischaemia (Arterial Embolism / Thrombosis); 2. Acute Aortic Dissection; 3. Minor / Moderate Thermal Burn (< 20 % TBSA)
+- differential web.pane: 1. Minor / Moderate Thermal Burn (< 20 % TBSA); 2. Sepsis / Septic Shock (source not yet identified; incl. neutropenic sepsis); 3. Major Thermal Burn (≥ 20 % TBSA)
 - differential web.symptomInference: 1. Acute compartment syndrome; 2. Sciatica / lumbar radiculopathy; 3. Lumbar disc disease / sciatica; 4. Carpal tunnel syndrome; 5. Acute limb ischaemia
 - differential web.passive: 1. Acute compartment syndrome; 2. Sciatica / lumbar radiculopathy; 3. Lumbar disc disease / sciatica; 4. Acute limb ischaemia; 5. Carpal tunnel syndrome
 - differential web.triageSurgical: (empty)
@@ -4092,10 +4217,11 @@ Guidelines:
 - recommended scores: web:wagner, news2, clavien-dindo
 - score values: (none)
 - dx variant: (none) (no group)
-- note: PANE features applied: sudden_onset, acute_onset, pain_worse_movement, severe_pain, wound_pain, limb_numbness, limb_pain, absent_pulses, mottled_skin, pallor, burn_wound, tachycardia, raised_bp, recent_surgery, aortic_graft, stoma
+- note: PANE features applied: sudden_onset, acute_onset, pain_worse_movement, severe_pain, wound_pain, limb_numbness, limb_pain, mottled_skin, pallor, burn_wound, tachycardia, raised_bp, recent_surgery, aortic_graft, stoma
 - note: AssessmentTab ManagementPanel protocol: thermal_burn_minor (from the confirmed diagnosis)
 - note: PlanTab protocol: thermal_burn_minor (from the confirmed diagnosis)
 - note: Seeded investigations: thermal_burn_minor (confirmed); 0 stat test(s) held back
+- note: Decision support: (no decision); factors (none)
 - note: matchPathways: Wound Management (Acute / Chronic / SSI) (5)
 
 </details>
@@ -4143,6 +4269,7 @@ Guidelines:
 - note: AssessmentTab ManagementPanel protocol: electrical_burn (from the confirmed diagnosis)
 - note: PlanTab protocol: electrical_burn (from the confirmed diagnosis)
 - note: Seeded investigations: electrical_burn (confirmed); 0 stat test(s) held back
+- note: Decision support: (no decision); factors (none)
 - note: matchPathways: Wound Management (Acute / Chronic / SSI) (10), Jaundice Workup (5)
 
 </details>
@@ -4193,6 +4320,7 @@ Guidelines:
 - note: AssessmentTab ManagementPanel protocol: thermal_burn_major (from the confirmed diagnosis)
 - note: PlanTab protocol: thermal_burn_major (from the confirmed diagnosis)
 - note: Seeded investigations: thermal_burn_major (confirmed); 0 stat test(s) held back
+- note: Decision support: (no decision); factors news2High
 - note: matchPathways: Thyroid / Neck Mass (5), Wound Management (Acute / Chronic / SSI) (5)
 
 </details>
@@ -4234,6 +4362,7 @@ Guidelines:
 - note: AssessmentTab ManagementPanel protocol: bowel_obstruction (from the confirmed diagnosis)
 - note: PlanTab protocol: bowel_obstruction (from the confirmed diagnosis)
 - note: Seeded investigations: bowel_obstruction (confirmed); 0 stat test(s) held back
+- note: Decision support: (no decision); factors (none)
 - note: matchPathways: Bowel Obstruction (Small / Large) (12), Acute Abdomen (7), Acute Appendicitis (7)
 
 </details>
@@ -4276,6 +4405,7 @@ Guidelines:
 - note: AssessmentTab ManagementPanel protocol: cauda_equina_syndrome (from the confirmed diagnosis)
 - note: PlanTab protocol: cauda_equina_syndrome (from the confirmed diagnosis)
 - note: Seeded investigations: cauda_equina_syndrome (confirmed); 0 stat test(s) held back
+- note: Decision support: (no decision); factors (none)
 
 </details>
 
@@ -4315,6 +4445,7 @@ Guidelines:
 - note: AssessmentTab ManagementPanel protocol: cauda_equina_syndrome (from the confirmed diagnosis)
 - note: PlanTab protocol: cauda_equina_syndrome (from the confirmed diagnosis)
 - note: Seeded investigations: cauda_equina_syndrome (confirmed); 0 stat test(s) held back
+- note: Decision support: (no decision); factors (none)
 - note: matchPathways: IBD — Surgical Complications (Crohn's / UC) (5), Wound Management (Acute / Chronic / SSI) (5)
 
 </details>
@@ -4357,6 +4488,7 @@ Guidelines:
 - note: AssessmentTab ManagementPanel protocol: corrosive_injury (from the confirmed diagnosis)
 - note: PlanTab protocol: corrosive_injury (from the confirmed diagnosis)
 - note: Seeded investigations: corrosive_injury (confirmed); 0 stat test(s) held back
+- note: Decision support: (no decision); factors (none)
 - note: matchPathways: Upper GI Endoscopy (Dyspepsia / GORD / Dysphagia) (10), Chest Pain — Emergency Redirect (5), Foreign Body Ingestion / Food Bolus (5)
 
 </details>
@@ -4401,6 +4533,7 @@ Guidelines:
 - note: PlanTab protocol: clostridioides_difficile (from the confirmed diagnosis)
 - note: Seeded investigations: clostridioides_difficile (confirmed); 0 stat test(s) held back
 - note: no web calculator for score form 'qsofa'
+- note: Decision support: (no decision); factors age65to79, news2High, shock
 - note: matchPathways: Bowel Obstruction (Small / Large) (5)
 
 </details>
@@ -4449,6 +4582,7 @@ Guidelines:
 - note: AssessmentTab ManagementPanel protocol: cellulitis (from the confirmed diagnosis)
 - note: PlanTab protocol: cellulitis (from the confirmed diagnosis)
 - note: Seeded investigations: cellulitis (confirmed); 0 stat test(s) held back
+- note: Decision support: (no decision); factors (none)
 - note: matchPathways: Diabetic Foot (5)
 
 </details>
@@ -4509,6 +4643,7 @@ Guidelines:
 - note: Seeded investigations: cellulitis (confirmed); 0 stat test(s) held back
 - note: no web calculator for score form 'qsofa'
 - note: no web calculator for score form 'sirs'
+- note: Decision support: sepsis; factors age65to79, diabetes, news2High
 - note: matchPathways: Varicose Veins (5)
 
 </details>
@@ -4546,10 +4681,11 @@ Guidelines:
 - recommended scores: wells-pe, wells-dvt, web:wagner, news2, caprini, asa, rcri
 - score values: (none)
 - dx variant: (none) (no group)
-- note: PANE features applied: foot_problem, known_diabetes, chronic_course, pain_worse_movement, erythema_surrounding, joint_pain, limb_numbness, peripheral_neuropathy, trauma_mechanism, recent_antibiotics, warm_swollen_foot, wound_erythema, recent_surgery, aortic_graft, stoma
+- note: PANE features applied: foot_problem, known_diabetes, chronic_course, pain_worse_movement, erythema_surrounding, joint_pain, limb_numbness, peripheral_neuropathy, trauma_mechanism, recent_antibiotics, warm_swollen_foot, recent_surgery, aortic_graft, stoma
 - note: AssessmentTab ManagementPanel protocol: charcot_foot (from the confirmed diagnosis)
 - note: PlanTab protocol: charcot_foot (from the confirmed diagnosis)
 - note: Seeded investigations: charcot_foot (confirmed); 0 stat test(s) held back
+- note: Decision support: (no decision); factors diabetes
 - note: matchPathways: IBD — Surgical Complications (Crohn's / UC) (5), Wound Management (Acute / Chronic / SSI) (5)
 
 </details>
@@ -4606,11 +4742,12 @@ Guidelines:
 - recommended scores: tg18-cholangitis, tg18-cholecystitis, qsofa, asge-cbd, news2, caprini, asa, rcri, cfs
 - score values: tg18-cholangitis/calculator@web.scaleCalculator.tg18-cholangitis=2; tg18-cholangitis/calculator@web.scoreCalculator.tg18-cholangitis=2; tg18-cholangitis/autofill@web.scoreCalculator.tg18-cholangitis=2
 - dx variant: cholangitis_grade2 (Cholangitis)
-- note: PANE features applied: jaundice, acute_onset, ruq_pain, fever, rigors, nausea_vomiting, pain_worse_movement, dark_urine, pallor, abdominal_pain, us_gallstones, known_hypertension, vascular_risk, previous_surgery, elevated_wbc, raised_crp, raised_liver_enzymes, raised_lactate, dilated_cbd, tachycardia, tachypnoea, trauma_mechanism, recent_surgery, aortic_graft, stoma
+- note: PANE features applied: jaundice, acute_onset, ruq_pain, fever, rigors, nausea_vomiting, pain_worse_movement, dark_urine, abdominal_pain, us_gallstones, known_hypertension, vascular_risk, previous_surgery, elevated_wbc, raised_crp, raised_liver_enzymes, raised_lactate, dilated_cbd, tachycardia, tachypnoea, trauma_mechanism, recent_surgery, aortic_graft, stoma
 - note: AssessmentTab ManagementPanel protocol: cholangitis (from the confirmed diagnosis)
 - note: PlanTab protocol: cholangitis (from the confirmed diagnosis)
 - note: Seeded investigations: cholangitis (confirmed); 0 stat test(s) held back
 - note: no web calculator for score form 'qsofa'
+- note: Decision support: (no decision); factors age65to79, news2High
 - note: matchPathways: Jaundice Workup (30), Gallbladder Disease (Biliary Colic / Cholecystitis / Choledocholithiasis) (20), ERCP (Obstructive Jaundice / Bile Duct Stones / Pancreatic Duct) (10)
 
 </details>
@@ -4664,6 +4801,7 @@ Guidelines:
 - note: AssessmentTab ManagementPanel protocol: cholangitis (from the confirmed diagnosis)
 - note: PlanTab protocol: cholangitis (from the confirmed diagnosis)
 - note: Seeded investigations: cholangitis (confirmed); 0 stat test(s) held back
+- note: Decision support: (no decision); factors age65to79
 - note: matchPathways: Jaundice Workup (25), Gallbladder Disease (Biliary Colic / Cholecystitis / Choledocholithiasis) (15), ERCP (Obstructive Jaundice / Bile Duct Stones / Pancreatic Duct) (10)
 
 </details>
@@ -4725,6 +4863,7 @@ Guidelines:
 - note: PlanTab protocol: cholangitis (from the confirmed diagnosis)
 - note: Seeded investigations: cholangitis (confirmed); 0 stat test(s) held back
 - note: no web calculator for score form 'qsofa'
+- note: Decision support: (no decision); factors age80plus, anticoagulated, doacOnly, diabetes, news2High, shock
 - note: matchPathways: Gallbladder Disease (Biliary Colic / Cholecystitis / Choledocholithiasis) (22), Jaundice Workup (20), Pancreatic Mass / Cyst (17)
 
 </details>
@@ -4775,6 +4914,9 @@ Guidelines:
 - note: AssessmentTab ManagementPanel protocol: cholecystitis (from the confirmed diagnosis)
 - note: PlanTab protocol: cholecystitis (from the confirmed diagnosis)
 - note: Seeded investigations: cholecystitis (confirmed); 0 stat test(s) held back
+- note: Decision Acute calculous cholecystitis — missing: Record ASA grade to refine: ASA III-IV raises operative harm (early laparoscopic cholecystectomy; percutaneous cholecystostomy (gallbladder drainage)).
+- note: Decision Acute calculous cholecystitis — missing: Record eGFR to refine: eGFR below 30 raises operative and anticoagulant harm (early laparoscopic cholecystectomy).
+- note: Decision support: cholecystitis; factors news2High
 - note: matchPathways: Jaundice Workup (15), ERCP (Obstructive Jaundice / Bile Duct Stones / Pancreatic Duct) (10), Gallbladder Disease (Biliary Colic / Cholecystitis / Choledocholithiasis) (10)
 
 </details>
@@ -4823,10 +4965,14 @@ Guidelines:
 - recommended scores: alvarado, tg18-cholangitis, tg18-cholecystitis, ranson, qsofa, asge-cbd, news2, asa, stop-bang
 - score values: tg18-cholecystitis/calculator@web.scoreCalculator.tg18-cholecystitis=1; tg18-cholecystitis/autofill@web.scoreCalculator.tg18-cholecystitis=1
 - dx variant: cholecystitis_grade1 (Acute Cholecystitis)
-- note: PANE features applied: abdominal_pain, acute_onset, ruq_pain, shoulder_tip_pain, fever, nausea_vomiting, pain_worse_movement, postprandial_pain, fatty_food_trigger, pleuritic_chest_pain, severe_pain, murphy_sign, guarding, abdominal_tenderness, elevated_wbc, raised_crp, us_gallstones, dilated_cbd, trauma_mechanism, recent_surgery, aortic_graft, stoma
+- note: PANE features applied: abdominal_pain, acute_onset, ruq_pain, shoulder_tip_pain, fever, nausea_vomiting, pain_worse_movement, postprandial_pain, fatty_food_trigger, pleuritic_chest_pain, severe_pain, murphy_sign, guarding, abdominal_tenderness, elevated_wbc, raised_crp, us_gallstones, trauma_mechanism, recent_surgery, aortic_graft, stoma
 - note: AssessmentTab ManagementPanel protocol: cholecystitis (from the confirmed diagnosis)
 - note: PlanTab protocol: cholecystitis (from the confirmed diagnosis)
 - note: Seeded investigations: cholecystitis (confirmed); 0 stat test(s) held back
+- note: Decision Acute calculous cholecystitis — missing: Record ASA grade to refine: ASA III-IV raises operative harm (early laparoscopic cholecystectomy; percutaneous cholecystostomy (gallbladder drainage)).
+- note: Decision Acute calculous cholecystitis — missing: Record eGFR to refine: eGFR below 30 raises operative and anticoagulant harm (early laparoscopic cholecystectomy).
+- note: Decision Acute calculous cholecystitis — missing: Record pregnancy status to refine: pregnancy changes the harm of operations and thrombolysis and excludes some options (early laparoscopic cholecystectomy).
+- note: Decision support: cholecystitis; factors (none)
 - note: matchPathways: Gallbladder Disease (Biliary Colic / Cholecystitis / Choledocholithiasis) (17), Jaundice Workup (15), ERCP (Obstructive Jaundice / Bile Duct Stones / Pancreatic Duct) (7)
 
 </details>
@@ -4879,6 +5025,10 @@ Guidelines:
 - note: AssessmentTab ManagementPanel protocol: cholecystitis (from the confirmed diagnosis)
 - note: PlanTab protocol: cholecystitis (from the confirmed diagnosis)
 - note: Seeded investigations: cholecystitis (confirmed); 0 stat test(s) held back
+- note: Decision Acute calculous cholecystitis — missing: Record Clinical Frailty Scale to refine: frailty raises the harm of operations and procedures (early laparoscopic cholecystectomy; percutaneous cholecystostomy (gallbladder drainage)).
+- note: Decision Acute calculous cholecystitis — missing: Record ASA grade to refine: ASA III-IV raises operative harm (early laparoscopic cholecystectomy; percutaneous cholecystostomy (gallbladder drainage)).
+- note: Decision Acute calculous cholecystitis — missing: Record eGFR to refine: eGFR below 30 raises operative and anticoagulant harm (early laparoscopic cholecystectomy).
+- note: Decision support: cholecystitis; factors age80plus, diabetes
 - note: matchPathways: Gallbladder Disease (Biliary Colic / Cholecystitis / Choledocholithiasis) (5), IBD — Surgical Complications (Crohn's / UC) (5)
 
 </details>
@@ -4926,6 +5076,10 @@ Guidelines:
 - note: AssessmentTab ManagementPanel protocol: cholecystitis (from the confirmed diagnosis)
 - note: PlanTab protocol: cholecystitis (from the confirmed diagnosis)
 - note: Seeded investigations: cholecystitis (confirmed); 0 stat test(s) held back
+- note: Decision Acute calculous cholecystitis — missing: Record Clinical Frailty Scale to refine: frailty raises the harm of operations and procedures (early laparoscopic cholecystectomy; percutaneous cholecystostomy (gallbladder drainage)).
+- note: Decision Acute calculous cholecystitis — missing: Record ASA grade to refine: ASA III-IV raises operative harm (early laparoscopic cholecystectomy; percutaneous cholecystostomy (gallbladder drainage)).
+- note: Decision Acute calculous cholecystitis — missing: Record eGFR to refine: eGFR below 30 raises operative and anticoagulant harm (early laparoscopic cholecystectomy).
+- note: Decision support: cholecystitis; factors age80plus, antiplatelet, news2High
 - note: matchPathways: Gallbladder Disease (Biliary Colic / Cholecystitis / Choledocholithiasis) (12), IBD — Surgical Complications (Crohn's / UC) (12), Acute Abdomen (7)
 
 </details>
@@ -4973,6 +5127,9 @@ Guidelines:
 - note: AssessmentTab ManagementPanel protocol: cholecystitis (from the confirmed diagnosis)
 - note: PlanTab protocol: cholecystitis (from the confirmed diagnosis)
 - note: Seeded investigations: cholecystitis (confirmed); 0 stat test(s) held back
+- note: Decision Acute calculous cholecystitis — missing: Record ASA grade to refine: ASA III-IV raises operative harm (early laparoscopic cholecystectomy; percutaneous cholecystostomy (gallbladder drainage)).
+- note: Decision Acute calculous cholecystitis — missing: Record eGFR to refine: eGFR below 30 raises operative and anticoagulant harm (early laparoscopic cholecystectomy).
+- note: Decision support: cholecystitis; factors immunosuppressed
 - note: matchPathways: Gallbladder Disease (Biliary Colic / Cholecystitis / Choledocholithiasis) (10)
 
 </details>
@@ -5023,6 +5180,9 @@ Guidelines:
 - note: AssessmentTab ManagementPanel protocol: cholecystitis (from the confirmed diagnosis)
 - note: PlanTab protocol: cholecystitis (from the confirmed diagnosis)
 - note: Seeded investigations: cholecystitis (confirmed); 0 stat test(s) held back
+- note: Decision Acute calculous cholecystitis — missing: Record ASA grade to refine: ASA III-IV raises operative harm (early laparoscopic cholecystectomy; percutaneous cholecystostomy (gallbladder drainage)).
+- note: Decision Acute calculous cholecystitis — missing: Record eGFR to refine: eGFR below 30 raises operative and anticoagulant harm (early laparoscopic cholecystectomy).
+- note: Decision support: cholecystitis; factors pregnant
 - note: matchPathways: Gallbladder Disease (Biliary Colic / Cholecystitis / Choledocholithiasis) (19), Pancreatic Mass / Cyst (14), Acute Abdomen (7)
 
 </details>
@@ -5071,6 +5231,9 @@ Guidelines:
 - note: AssessmentTab ManagementPanel protocol: cholecystitis (from the confirmed diagnosis)
 - note: PlanTab protocol: cholecystitis (from the confirmed diagnosis)
 - note: Seeded investigations: cholecystitis (confirmed); 0 stat test(s) held back
+- note: Decision Acute calculous cholecystitis — missing: Record ASA grade to refine: ASA III-IV raises operative harm (early laparoscopic cholecystectomy; percutaneous cholecystostomy (gallbladder drainage)).
+- note: Decision Acute calculous cholecystitis — missing: Record eGFR to refine: eGFR below 30 raises operative and anticoagulant harm (early laparoscopic cholecystectomy).
+- note: Decision support: cholecystitis; factors diabetes
 - note: matchPathways: Gallbladder Disease (Biliary Colic / Cholecystitis / Choledocholithiasis) (17), ERCP (Obstructive Jaundice / Bile Duct Stones / Pancreatic Duct) (7), Pancreatic Mass / Cyst (7)
 
 </details>
@@ -5133,6 +5296,10 @@ Guidelines:
 - note: PlanTab protocol: cholecystitis (from the confirmed diagnosis)
 - note: Seeded investigations: cholecystitis (confirmed); 0 stat test(s) held back
 - note: no web calculator for score form 'qsofa'
+- note: Decision Acute calculous cholecystitis — missing: Record Clinical Frailty Scale to refine: frailty raises the harm of operations and procedures (early laparoscopic cholecystectomy; percutaneous cholecystostomy (gallbladder drainage)).
+- note: Decision Acute calculous cholecystitis — missing: Record ASA grade to refine: ASA III-IV raises operative harm (early laparoscopic cholecystectomy; percutaneous cholecystostomy (gallbladder drainage)).
+- note: Decision Acute calculous cholecystitis — missing: Record eGFR to refine: eGFR below 30 raises operative and anticoagulant harm (early laparoscopic cholecystectomy).
+- note: Decision support: cholecystitis; factors age65to79, antiplatelet, penicillinAllergy, news2High, shock
 - note: matchPathways: Gallbladder Disease (Biliary Colic / Cholecystitis / Choledocholithiasis) (10), Wound Management (Acute / Chronic / SSI) (5)
 
 </details>
@@ -5177,6 +5344,7 @@ Guidelines:
 - note: AssessmentTab ManagementPanel protocol: pneumonia (from the confirmed diagnosis)
 - note: PlanTab protocol: pneumonia (from the confirmed diagnosis)
 - note: Seeded investigations: pneumonia (confirmed); 0 stat test(s) held back
+- note: Decision support: (no decision); factors news2High
 - note: matchPathways: Gallbladder Disease (Biliary Colic / Cholecystitis / Choledocholithiasis) (19), Pancreatic Mass / Cyst (14), IBD — Surgical Complications (Crohn's / UC) (12)
 
 </details>
@@ -5221,10 +5389,11 @@ Guidelines:
 - recommended scores: tg18-cholangitis, asge-cbd, news2
 - score values: (none)
 - dx variant: (none) (no group)
-- note: PANE features applied: jaundice, acute_onset, ruq_pain, epigastric_pain, colicky_pain, radiation_to_back, nausea_vomiting, episodic_pain, postprandial_pain, dark_urine, pallor, pruritus, abdominal_pain, raised_liver_enzymes, raised_crp, us_gallstones, dilated_cbd, trauma_mechanism, recent_surgery, aortic_graft, stoma
+- note: PANE features applied: jaundice, acute_onset, ruq_pain, epigastric_pain, colicky_pain, radiation_to_back, nausea_vomiting, episodic_pain, postprandial_pain, dark_urine, pruritus, abdominal_pain, raised_liver_enzymes, raised_crp, us_gallstones, dilated_cbd, trauma_mechanism, recent_surgery, aortic_graft, stoma
 - note: AssessmentTab ManagementPanel protocol: choledocholithiasis (from the confirmed diagnosis)
 - note: PlanTab protocol: choledocholithiasis (from the confirmed diagnosis)
 - note: Seeded investigations: choledocholithiasis (confirmed); 0 stat test(s) held back
+- note: Decision support: (no decision); factors (none)
 - note: matchPathways: Jaundice Workup (30), Gallbladder Disease (Biliary Colic / Cholecystitis / Choledocholithiasis) (22), Pancreatic Mass / Cyst (17)
 
 </details>
@@ -5267,10 +5436,11 @@ Guidelines:
 - recommended scores: tg18-cholangitis, cha2ds2-vasc, asge-cbd, web:wagner, news2, caprini, has-bled, asa, rcri, cfs
 - score values: (none)
 - dx variant: (none) (no group)
-- note: PANE features applied: jaundice, acute_onset, ruq_pain, anorexia, postprandial_pain, dark_urine, pallor, abdominal_pain, irregular_pulse, known_af, known_hypertension, vascular_risk, known_diabetes, anticoagulant_use, acei_arb_use, raised_liver_enzymes, us_gallstones, dilated_cbd, raised_bp, trauma_mechanism, recent_surgery, aortic_graft, stoma
+- note: PANE features applied: jaundice, acute_onset, ruq_pain, anorexia, postprandial_pain, dark_urine, abdominal_pain, irregular_pulse, known_af, known_hypertension, vascular_risk, known_diabetes, anticoagulant_use, acei_arb_use, raised_liver_enzymes, us_gallstones, dilated_cbd, raised_bp, trauma_mechanism, recent_surgery, aortic_graft, stoma
 - note: AssessmentTab ManagementPanel protocol: choledocholithiasis (from the confirmed diagnosis)
 - note: PlanTab protocol: choledocholithiasis (from the confirmed diagnosis)
 - note: Seeded investigations: choledocholithiasis (confirmed); 0 stat test(s) held back
+- note: Decision support: (no decision); factors age65to79, anticoagulated, diabetes
 - note: matchPathways: Jaundice Workup (30), Gallbladder Disease (Biliary Colic / Cholecystitis / Choledocholithiasis) (15), ERCP (Obstructive Jaundice / Bile Duct Stones / Pancreatic Duct) (10)
 
 </details>
@@ -5319,6 +5489,7 @@ Guidelines:
 - note: AssessmentTab ManagementPanel protocol: choledocholithiasis (from the confirmed diagnosis)
 - note: PlanTab protocol: choledocholithiasis (from the confirmed diagnosis)
 - note: Seeded investigations: choledocholithiasis (confirmed); 0 stat test(s) held back
+- note: Decision support: (no decision); factors pregnant
 - note: matchPathways: Jaundice Workup (25), Gallbladder Disease (Biliary Colic / Cholecystitis / Choledocholithiasis) (22), Pancreatic Mass / Cyst (17)
 
 </details>
@@ -5361,6 +5532,7 @@ Guidelines:
 - note: AssessmentTab ManagementPanel protocol: choledocholithiasis (from the confirmed diagnosis)
 - note: PlanTab protocol: choledocholithiasis (from the confirmed diagnosis)
 - note: Seeded investigations: choledocholithiasis (confirmed); 0 stat test(s) held back
+- note: Decision support: (no decision); factors (none)
 - note: matchPathways: Gallbladder Disease (Biliary Colic / Cholecystitis / Choledocholithiasis) (19), Pancreatic Mass / Cyst (14), Jaundice Workup (10)
 
 </details>
@@ -5403,6 +5575,7 @@ Guidelines:
 - note: AssessmentTab ManagementPanel protocol: biliary_colic (from the confirmed diagnosis)
 - note: PlanTab protocol: biliary_colic (from the confirmed diagnosis)
 - note: Seeded investigations: biliary_colic (confirmed); 0 stat test(s) held back
+- note: Decision support: (no decision); factors (none)
 - note: matchPathways: Gallbladder Disease (Biliary Colic / Cholecystitis / Choledocholithiasis) (19), Jaundice Workup (15), Pancreatic Mass / Cyst (14)
 
 </details>
@@ -5448,6 +5621,7 @@ Guidelines:
 - note: AssessmentTab ManagementPanel protocol: colorectal_cancer (from the confirmed diagnosis)
 - note: PlanTab protocol: colorectal_cancer (from the confirmed diagnosis)
 - note: Seeded investigations: colorectal_cancer (confirmed); 0 stat test(s) held back
+- note: Decision support: (no decision); factors age65to79, diabetes
 - note: matchPathways: Colonoscopy Diagnostic (Rectal Bleeding / Bowel Habit Change / Iron Deficiency) (27), Diverticular Disease / Diverticulitis (14), IBD — Surgical Complications (Crohn's / UC) (14)
 
 </details>
@@ -5490,6 +5664,7 @@ Guidelines:
 - note: AssessmentTab ManagementPanel protocol: suspected_colorectal_cancer_referral (from the confirmed diagnosis)
 - note: PlanTab protocol: suspected_colorectal_cancer_referral (from the confirmed diagnosis)
 - note: Seeded investigations: suspected_colorectal_cancer_referral (confirmed); 0 stat test(s) held back
+- note: Decision support: (no decision); factors (none)
 - note: matchPathways: Colonoscopy Diagnostic (Rectal Bleeding / Bowel Habit Change / Iron Deficiency) (19), IBD — Surgical Complications (Crohn's / UC) (14), Anorectal (Haemorrhoids / Fissure / Fistula / Abscess) (12)
 
 </details>
@@ -5533,6 +5708,7 @@ Guidelines:
 - note: AssessmentTab ManagementPanel protocol: iron_deficiency_anaemia (from the confirmed diagnosis)
 - note: PlanTab protocol: iron_deficiency_anaemia (from the confirmed diagnosis)
 - note: Seeded investigations: iron_deficiency_anaemia (confirmed); 0 stat test(s) held back
+- note: Decision support: (no decision); factors (none)
 - note: matchPathways: IBD — Surgical Complications (Crohn's / UC) (14), Liver Lesion / Hepatic Mass (14), Pancreatic Mass / Cyst (14)
 
 </details>
@@ -5557,7 +5733,7 @@ Guidelines:
 <details><summary>web engine outputs</summary>
 
 - engine: paneEngine=pane-engine (188 diseases, 426 features); triageRulesVersion=1.4.0
-- differential web.pane: 1. Acute Gastroenteritis / Infective Colitis; 2. Metastatic Spinal Cord Compression / Spinal Metastases (MSCC); 3. Renal Colic / Urolithiasis
+- differential web.pane: 1. Acute Gastroenteritis / Infective Colitis; 2. Renal Colic / Urolithiasis; 3. Acute Coronary Syndrome (STEMI / NSTEMI / Unstable Angina)
 - differential web.symptomInference: 1. Benign prostatic hyperplasia (BPH); 2. Testicular germ cell tumour; 3. Varicocele; 4. Reducible groin / abdominal hernia; 5. Pilonidal sinus / abscess
 - differential web.passive: 1. Acute cholecystitis; 2. CBD stone / obstructive jaundice; 3. Peptic ulcer disease; 4. Reducible groin / abdominal hernia; 5. GORD / acid reflux / oesophagitis
 - differential web.triageSurgical: 1. Colon cancer
@@ -5566,10 +5742,11 @@ Guidelines:
 - recommended scores: wells-dvt, news2, caprini, must, ecog
 - score values: (none)
 - dx variant: (none) (no group)
-- note: PANE features applied: known_malignancy, acute_onset, trauma_mechanism, recent_surgery, aortic_graft, stoma
+- note: PANE features applied: acute_onset, trauma_mechanism, recent_surgery, aortic_graft, stoma
 - note: AssessmentTab ManagementPanel protocol: (none) (from the confirmed diagnosis)
 - note: PlanTab protocol: (none) (from the confirmed diagnosis)
 - note: Seeded investigations: (none) (confirmed); 0 stat test(s) held back
+- note: Decision support: (no decision); factors (none)
 - note: matchPathways: Post-operative Follow-up (General) (10), Colonoscopy Diagnostic (Rectal Bleeding / Bowel Habit Change / Iron Deficiency) (5)
 
 </details>
@@ -5612,6 +5789,7 @@ Guidelines:
 - note: AssessmentTab ManagementPanel protocol: colorectal_cancer (from the confirmed diagnosis)
 - note: PlanTab protocol: colorectal_cancer (from the confirmed diagnosis)
 - note: Seeded investigations: colorectal_cancer (confirmed); 0 stat test(s) held back
+- note: Decision support: (no decision); factors (none)
 - note: matchPathways: Colonoscopy Diagnostic (Rectal Bleeding / Bowel Habit Change / Iron Deficiency) (17), IBD — Surgical Complications (Crohn's / UC) (14), Liver Lesion / Hepatic Mass (14)
 
 </details>
@@ -5654,6 +5832,7 @@ Guidelines:
 - note: AssessmentTab ManagementPanel protocol: rectal_carcinoma (from the confirmed diagnosis)
 - note: PlanTab protocol: rectal_carcinoma (from the confirmed diagnosis)
 - note: Seeded investigations: rectal_carcinoma (confirmed); 0 stat test(s) held back
+- note: Decision support: (no decision); factors age65to79
 - note: matchPathways: Colonoscopy Diagnostic (Rectal Bleeding / Bowel Habit Change / Iron Deficiency) (5), IBD — Surgical Complications (Crohn's / UC) (5)
 
 </details>
@@ -5689,10 +5868,11 @@ Guidelines:
 - recommended scores: wells-dvt, news2, caprini, asa, rcri, must, stop-bang, cfs, ecog
 - score values: (none)
 - dx variant: (none) (no group)
-- note: PANE features applied: known_hypertension, vascular_risk, known_malignancy, acute_onset, raised_bp, trauma_mechanism, recent_surgery, aortic_graft, stoma
+- note: PANE features applied: known_hypertension, vascular_risk, acute_onset, raised_bp, trauma_mechanism, recent_surgery, aortic_graft, stoma
 - note: AssessmentTab ManagementPanel protocol: (none) (from the confirmed diagnosis)
 - note: PlanTab protocol: (none) (from the confirmed diagnosis)
 - note: Seeded investigations: (none) (confirmed); 0 stat test(s) held back
+- note: Decision support: (no decision); factors (none)
 - note: matchPathways: Colonoscopy Diagnostic (Rectal Bleeding / Bowel Habit Change / Iron Deficiency) (10), Cancer Screening (Age/Sex Appropriate) (5), Post-operative Follow-up (General) (5)
 
 </details>
@@ -5734,6 +5914,7 @@ Guidelines:
 - note: AssessmentTab ManagementPanel protocol: suspected_colorectal_cancer_referral (from the confirmed diagnosis)
 - note: PlanTab protocol: suspected_colorectal_cancer_referral (from the confirmed diagnosis)
 - note: Seeded investigations: suspected_colorectal_cancer_referral (confirmed); 0 stat test(s) held back
+- note: Decision support: (no decision); factors (none)
 - note: matchPathways: Anorectal (Haemorrhoids / Fissure / Fistula / Abscess) (10), Colonoscopy Diagnostic (Rectal Bleeding / Bowel Habit Change / Iron Deficiency) (10), GI Bleeding (Upper and Lower) (5)
 
 </details>
@@ -5777,6 +5958,7 @@ Guidelines:
 - note: AssessmentTab ManagementPanel protocol: crohns_disease (from the confirmed diagnosis)
 - note: PlanTab protocol: crohns_disease (from the confirmed diagnosis)
 - note: Seeded investigations: crohns_disease (confirmed); 0 stat test(s) held back
+- note: Decision support: (no decision); factors immunosuppressed
 - note: matchPathways: IBD — Surgical Complications (Crohn's / UC) (17), Acute Abdomen (7), Acute Appendicitis (7)
 
 </details>
@@ -5821,7 +6003,618 @@ Guidelines:
 - note: AssessmentTab ManagementPanel protocol: crohns_disease (from the confirmed diagnosis)
 - note: PlanTab protocol: crohns_disease (from the confirmed diagnosis)
 - note: Seeded investigations: crohns_disease (confirmed); 0 stat test(s) held back
+- note: Decision support: (no decision); factors (none)
 - note: matchPathways: IBD — Surgical Complications (Crohn's / UC) (15), Anorectal (Haemorrhoids / Fissure / Fistula / Abscess) (10)
+
+</details>
+
+### Acute appendicitis in pregnancy (24 weeks)
+
+#### `decision-appendicitis-pregnant-surgery-first` — 
+
+24 weeks pregnant with MRI-confirmed uncomplicated appendicitis: laparoscopic appendicectomy ranks above antibiotics-first; pregnancy lowers the antibiotics-first benefit.
+
+| Expectation | Kind | Severity | web | Guideline | Proposed fix |
+|---|---|---|---|---|---|
+| decision-appendicectomy-first-in-pregnancy | managementInclude | critical | PASS | WSES Jerusalem guidelines 2020 |  |
+| decision-pregnancy-lowers-antibiotics-first | managementInclude | quality | PASS | WSES Jerusalem guidelines 2020; CODA trial 2020 |  |
+
+Guidelines:
+
+- **wses-2020** — WSES Jerusalem guidelines — acute appendicitis (2020 update) (2020), Appendicitis in pregnancy; non-operative management. Di Saverio S et al. World J Emerg Surg 2020;15:27. *(statement wording/numbering not yet verified against the source)*
+- **coda-2020** — CODA trial (2020), Antibiotics vs appendicectomy. CODA Collaborative. N Engl J Med 2020;383:1907-1919. *(statement wording/numbering not yet verified against the source)*
+
+<details><summary>web engine outputs</summary>
+
+- engine: paneEngine=pane-engine (188 diseases, 426 features); triageRulesVersion=1.4.0
+- differential web.pane: 1. Acute Appendicitis; 2. Appendix Mass / Late Appendicitis; 3. Perforated Peptic Ulcer / Perforated Viscus
+- differential web.symptomInference: 1. Systemic lupus erythematosus; 2. Breast carcinoma; 3. Acute cholecystitis; 4. Uterine fibroids; 5. Endometriosis
+- differential web.passive: 1. Acute cholecystitis; 2. CBD stone / obstructive jaundice; 3. Peptic ulcer disease; 4. Reducible groin / abdominal hernia; 5. GORD / acid reflux / oesophagitis
+- differential web.triageSurgical: (empty)
+- emergency level: urgent (acuity=priority, action=same_day_call, score=24)
+- alarms: Peritoneal signs (McBurney's / Rebound / Rovsing) [web.clinicalPrompts.safety]; Appendicitis — emergency surgical indication [web.clinicalPrompts.safety]; Pregnant (24 weeks) [web.clinicalPrompts.safety]; Acute abdominal presentation [web.clinicalPrompts.safety]; Pre-operative assessment [web.clinicalPrompts.safety]; WBC 15.1 × 10⁹/L — leucocytosis [web.clinicalPrompts.safety]; Operative plan — VTE risk assessment [web.clinicalPrompts.safety]; Herbs, teas, bush remedies & supplements not asked [web.clinicalPrompts.safety]
+- recommended scores: news2
+- score values: (none)
+- dx variant: appendicitis_uncomplicated (Acute Appendicitis)
+- note: PANE features applied: abdominal_pain, nausea_vomiting, anorexia, rlq_pain, periumbilical_pain, pregnant, guarding, elevated_wbc, raised_crp, trauma_mechanism, recent_surgery, aortic_graft, stoma
+- note: AssessmentTab ManagementPanel protocol: appendicitis (from the confirmed diagnosis)
+- note: PlanTab protocol: appendicitis (from the confirmed diagnosis)
+- note: Seeded investigations: appendicitis (confirmed); 0 stat test(s) held back
+- note: Decision support: appendicitis; factors pregnant
+- note: matchPathways: Acute Appendicitis (12), Acute Abdomen (7), Anorectal (Haemorrhoids / Fissure / Fistula / Abscess) (7)
+
+</details>
+
+### Peri-operative warfarin with a mechanical mitral valve — bridging
+
+#### `decision-bridging-mechanical-valve` — Mechanical mitral valve
+
+Warfarin for a mechanical mitral valve before elective laparoscopic cholecystectomy: bridging (high thromboembolic risk), marked borderline.
+
+Permutation of `decision-bridging-warfarin-af-no-bridge`.
+
+| Expectation | Kind | Severity | web | Guideline | Proposed fix |
+|---|---|---|---|---|---|
+| decision-bridging-valve | managementInclude | critical | PASS | ACCP perioperative antithrombotic guideline 2022 |  |
+
+Guidelines:
+
+- **bridge-2015** — BRIDGE trial (2015), Bridging in atrial fibrillation. Douketis JD et al. N Engl J Med 2015;373:823-833. *(statement wording/numbering not yet verified against the source)*
+- **accp-2022** — ACCP perioperative antithrombotic guideline (2022), Bridging: mechanical valves, recent VTE. Douketis JD et al. Chest 2022;162:e207-e243. *(statement wording/numbering not yet verified against the source)*
+
+<details><summary>web engine outputs</summary>
+
+- engine: paneEngine=pane-engine (188 diseases, 426 features); triageRulesVersion=1.4.0
+- differential web.pane: 1. Biliary Colic / Symptomatic Cholelithiasis; 2. Acute Cholecystitis; 3. Choledocholithiasis
+- differential web.symptomInference: 1. Benign prostatic hyperplasia (BPH); 2. Prostate adenocarcinoma; 3. Colorectal carcinoma; 4. Lower GI bleed / colorectal; 5. Symptomatic / ruptured abdominal aortic aneurysm
+- differential web.passive: 1. Acute cholecystitis; 2. CBD stone / obstructive jaundice; 3. Peptic ulcer disease; 4. Reducible groin / abdominal hernia; 5. GORD / acid reflux / oesophagitis
+- differential web.triageSurgical: (empty)
+- emergency level: priority (acuity=review, action=priority_24_48h, score=24)
+- alarms: Acute abdominal presentation [web.clinicalPrompts.safety]; Pre-operative assessment [web.clinicalPrompts.safety]; Anticoagulation therapy (warfarin) [web.clinicalPrompts.safety]; Herbs, teas, bush remedies & supplements not asked [web.clinicalPrompts.safety]
+- recommended scores: news2, cfs
+- score values: (none)
+- dx variant: (none) (no group)
+- note: PANE features applied: abdominal_pain, known_heart_disease, vascular_risk, anticoagulant_use, ruq_pain, postprandial_pain, fatty_food_trigger, trauma_mechanism, recent_surgery, aortic_graft, stoma
+- note: AssessmentTab ManagementPanel protocol: biliary_colic (from the confirmed diagnosis)
+- note: PlanTab protocol: biliary_colic (from the confirmed diagnosis)
+- note: Seeded investigations: biliary_colic (confirmed); 0 stat test(s) held back
+- note: Decision support: periop-bridging; factors age65to79, anticoagulated, mechanicalValve
+- note: matchPathways: Gallbladder Disease (Biliary Colic / Cholecystitis / Choledocholithiasis) (17), Acute Abdomen (7), Acute Appendicitis (7)
+
+</details>
+
+### Peri-operative warfarin for AF — no bridging
+
+#### `decision-bridging-warfarin-af-no-bridge` — 
+
+Warfarin for atrial fibrillation before elective laparoscopic cholecystectomy: no bridging (BRIDGE).
+
+| Expectation | Kind | Severity | web | Guideline | Proposed fix |
+|---|---|---|---|---|---|
+| decision-no-bridging-af | managementInclude | critical | PASS | BRIDGE trial 2015; ACCP perioperative antithrombotic guideline 2022 |  |
+
+Guidelines:
+
+- **bridge-2015** — BRIDGE trial (2015), Bridging in atrial fibrillation. Douketis JD et al. N Engl J Med 2015;373:823-833. *(statement wording/numbering not yet verified against the source)*
+- **accp-2022** — ACCP perioperative antithrombotic guideline (2022), Bridging: mechanical valves, recent VTE. Douketis JD et al. Chest 2022;162:e207-e243. *(statement wording/numbering not yet verified against the source)*
+
+<details><summary>web engine outputs</summary>
+
+- engine: paneEngine=pane-engine (188 diseases, 426 features); triageRulesVersion=1.4.0
+- differential web.pane: 1. Biliary Colic / Symptomatic Cholelithiasis; 2. Acute Cholecystitis; 3. Choledocholithiasis
+- differential web.symptomInference: 1. Benign prostatic hyperplasia (BPH); 2. Prostate adenocarcinoma; 3. Colorectal carcinoma; 4. Lower GI bleed / colorectal; 5. Symptomatic / ruptured abdominal aortic aneurysm
+- differential web.passive: 1. Acute cholecystitis; 2. CBD stone / obstructive jaundice; 3. Peptic ulcer disease; 4. Reducible groin / abdominal hernia; 5. GORD / acid reflux / oesophagitis
+- differential web.triageSurgical: (empty)
+- emergency level: urgent (acuity=priority, action=same_day_call, score=36)
+- alarms: Acute abdominal presentation [web.clinicalPrompts.safety]; Pre-operative assessment [web.clinicalPrompts.safety]; Anticoagulation therapy (warfarin) [web.clinicalPrompts.safety]; Herbs, teas, bush remedies & supplements not asked [web.clinicalPrompts.safety]
+- recommended scores: cha2ds2-vasc, news2, has-bled, cfs
+- score values: (none)
+- dx variant: (none) (no group)
+- note: PANE features applied: abdominal_pain, known_af, anticoagulant_use, ruq_pain, postprandial_pain, fatty_food_trigger, trauma_mechanism, recent_surgery, aortic_graft, stoma
+- note: AssessmentTab ManagementPanel protocol: biliary_colic (from the confirmed diagnosis)
+- note: PlanTab protocol: biliary_colic (from the confirmed diagnosis)
+- note: Seeded investigations: biliary_colic (confirmed); 0 stat test(s) held back
+- note: Decision support: periop-bridging; factors age65to79, anticoagulated
+- note: matchPathways: Gallbladder Disease (Biliary Colic / Cholecystitis / Choledocholithiasis) (17), Acute Abdomen (7), Acute Appendicitis (7)
+
+</details>
+
+### Acute cholecystitis — fit 45-year-old
+
+#### `decision-cholecystitis-fit-early-lc` — Fit 45-year-old
+
+Fit 45-year-old (ASA I) with ultrasound-confirmed acute calculous cholecystitis: early laparoscopic cholecystectomy ranks first.
+
+Permutation of `decision-cholecystitis-frail-88-drainage`.
+
+| Expectation | Kind | Severity | web | Guideline | Proposed fix |
+|---|---|---|---|---|---|
+| decision-early-lc-ranked-first | managementInclude | critical | PASS | Tokyo Guidelines 2018 2018; CHOCOLATE randomised trial 2018 |  |
+
+Guidelines:
+
+- **tg18** — Tokyo Guidelines 2018 — flowchart for the management of acute cholecystitis (2018), Grade I-III management; fitness (CCI, ASA). Okamoto K et al. J Hepatobiliary Pancreat Sci 2018;25:55-72. *(statement wording/numbering not yet verified against the source)*
+- **chocolate** — CHOCOLATE randomised trial (2018), LC vs percutaneous drainage in high-risk patients. Loozen CS et al. BMJ 2018;363:k3965. *(statement wording/numbering not yet verified against the source)*
+
+<details><summary>web engine outputs</summary>
+
+- engine: paneEngine=pane-engine (188 diseases, 426 features); triageRulesVersion=1.4.0
+- differential web.pane: 1. Acute Cholecystitis; 2. Choledocholithiasis; 3. Biliary Colic / Symptomatic Cholelithiasis
+- differential web.symptomInference: 1. Breast carcinoma; 2. Uterine fibroids; 3. Acute cholecystitis; 4. Systemic lupus erythematosus; 5. CBD stone / obstructive jaundice
+- differential web.passive: 1. Acute cholecystitis; 2. CBD stone / obstructive jaundice; 3. Peptic ulcer disease; 4. Reducible groin / abdominal hernia; 5. GORD / acid reflux / oesophagitis
+- differential web.triageSurgical: (empty)
+- emergency level: urgent (acuity=priority, action=same_day_call, score=40)
+- alarms: Reproductive-age female with abdominal complaint [web.clinicalPrompts.safety]; Cholecystitis / gallstone disease — surgical indication [web.clinicalPrompts.safety]; Murphy's sign positive [web.clinicalPrompts.safety]; Acute abdominal presentation [web.clinicalPrompts.safety]; Pre-operative assessment [web.clinicalPrompts.safety]; WBC 16.2 × 10⁹/L — leucocytosis [web.clinicalPrompts.safety]; Fever 38.4°C + HR 104 bpm [web.clinicalPrompts.safety]; Operative plan — VTE risk assessment [web.clinicalPrompts.safety]; Herbs, teas, bush remedies & supplements not asked [web.clinicalPrompts.safety]
+- recommended scores: tg18-cholangitis, tg18-cholecystitis, qsofa, news2
+- score values: tg18-cholecystitis/autofill@web.scoreCalculator.tg18-cholecystitis=1
+- dx variant: cholecystitis_grade1 (Acute Cholecystitis)
+- note: PANE features applied: abdominal_pain, nausea_vomiting, fever, ruq_pain, shoulder_tip_pain, fatty_food_trigger, murphy_sign, elevated_wbc, raised_crp, us_gallstones, tachycardia, trauma_mechanism, recent_surgery, aortic_graft, stoma
+- note: AssessmentTab ManagementPanel protocol: cholecystitis (from the confirmed diagnosis)
+- note: PlanTab protocol: cholecystitis (from the confirmed diagnosis)
+- note: Seeded investigations: cholecystitis (confirmed); 0 stat test(s) held back
+- note: Decision Acute calculous cholecystitis — missing: Record pregnancy status to refine: pregnancy changes the harm of operations and thrombolysis and excludes some options (early laparoscopic cholecystectomy).
+- note: Decision support: cholecystitis; factors (none)
+- note: matchPathways: Gallbladder Disease (Biliary Colic / Cholecystitis / Choledocholithiasis) (12), Acute Abdomen (7), Acute Appendicitis (7)
+
+</details>
+
+### Acute cholecystitis — frail 88-year-old
+
+#### `decision-cholecystitis-frail-88-drainage` — 
+
+Frail 88-year-old (Clinical Frailty Scale 7, ASA IV, eGFR 28) with ultrasound-confirmed acute calculous cholecystitis: the decision layer ranks gallbladder drainage above early laparoscopic cholecystectomy.
+
+| Expectation | Kind | Severity | web | Guideline | Proposed fix |
+|---|---|---|---|---|---|
+| decision-drainage-ranked-first | managementInclude | critical | PASS | Tokyo Guidelines 2018 2018; CPOC/BGS perioperative care for people living with frailty 2021 |  |
+| decision-lc-not-advised | managementInclude | critical | PASS | Tokyo Guidelines 2018 2018; CHOCOLATE randomised trial 2018 |  |
+| decision-no-early-lc-first | managementExclude | critical | PASS | Tokyo Guidelines 2018 2018 |  |
+| decision-frailty-named | managementInclude | quality | PASS | CPOC/BGS perioperative care for people living with frailty 2021 |  |
+
+Guidelines:
+
+- **tg18** — Tokyo Guidelines 2018 — flowchart for the management of acute cholecystitis (2018), Grade I-III management; fitness (CCI, ASA). Okamoto K et al. J Hepatobiliary Pancreat Sci 2018;25:55-72. *(statement wording/numbering not yet verified against the source)*
+- **chocolate** — CHOCOLATE randomised trial (2018), LC vs percutaneous drainage in high-risk patients. Loozen CS et al. BMJ 2018;363:k3965. *(statement wording/numbering not yet verified against the source)*
+- **cpoc-2021** — CPOC/BGS perioperative care for people living with frailty (2021), Emergency surgery; shared decision-making. Centre for Perioperative Care 2021. *(statement wording/numbering not yet verified against the source)*
+
+<details><summary>web engine outputs</summary>
+
+- engine: paneEngine=pane-engine (188 diseases, 426 features); triageRulesVersion=1.4.0
+- differential web.pane: 1. Acute Cholecystitis; 2. Choledocholithiasis; 3. Acute Cholangitis
+- differential web.symptomInference: 1. Breast carcinoma; 2. Uterine fibroids; 3. Acute cholecystitis; 4. Colorectal carcinoma; 5. Lower GI bleed / colorectal
+- differential web.passive: 1. Acute cholecystitis; 2. CBD stone / obstructive jaundice; 3. Peptic ulcer disease; 4. Reducible groin / abdominal hernia; 5. GORD / acid reflux / oesophagitis
+- differential web.triageSurgical: (empty)
+- emergency level: emergency (acuity=urgent, action=emergency_now, score=64)
+- alarms: Emergency now [web.triage.emergency]; Cholecystitis / gallstone disease — surgical indication [web.clinicalPrompts.safety]; Murphy's sign positive [web.clinicalPrompts.safety]; Acute abdominal presentation [web.clinicalPrompts.safety]; Pre-operative assessment [web.clinicalPrompts.safety]; WBC 16.2 × 10⁹/L — leucocytosis [web.clinicalPrompts.safety]; Creatinine 160 μmol/L — elevated [web.clinicalPrompts.safety]; Fever 38.4°C + HR 104 bpm [web.clinicalPrompts.safety]; Operative plan — VTE risk assessment [web.clinicalPrompts.safety]; Herbs, teas, bush remedies & supplements not asked [web.clinicalPrompts.safety]
+- recommended scores: tg18-cholangitis, tg18-cholecystitis, qsofa, news2, caprini, asa, rcri, cfs
+- score values: tg18-cholecystitis/autofill@web.scoreCalculator.tg18-cholecystitis=1
+- dx variant: cholecystitis_grade2 (Acute Cholecystitis)
+- note: PANE features applied: abdominal_pain, nausea_vomiting, fever, known_hypertension, vascular_risk, known_ckd, known_heart_disease, ruq_pain, shoulder_tip_pain, fatty_food_trigger, murphy_sign, recent_hospitalisation, elevated_wbc, raised_crp, raised_creatinine, us_gallstones, tachycardia, trauma_mechanism, recent_surgery, aortic_graft, stoma
+- note: AssessmentTab ManagementPanel protocol: cholecystitis (from the confirmed diagnosis)
+- note: PlanTab protocol: cholecystitis (from the confirmed diagnosis)
+- note: Seeded investigations: cholecystitis (confirmed); 0 stat test(s) held back
+- note: Decision support: cholecystitis; factors age80plus, cfs7plus, asa4plus, egfrBelow30
+- note: matchPathways: Gallbladder Disease (Biliary Colic / Cholecystitis / Choledocholithiasis) (12), Acute Abdomen (7), Acute Appendicitis (7)
+
+</details>
+
+### Uncomplicated diverticulitis — immunosuppressed, penicillin-allergic
+
+#### `decision-diverticulitis-immunosuppressed-penicillin` — Immunosuppressed, penicillin-allergic
+
+Renal-transplant recipient on tacrolimus and prednisolone with a penicillin allergy: antibiotics now indicated (non-penicillin regimen) and admission favoured.
+
+Permutation of `decision-diverticulitis-uncomplicated-observe`.
+
+| Expectation | Kind | Severity | web | Guideline | Proposed fix |
+|---|---|---|---|---|---|
+| decision-antibiotics-when-immunosuppressed | managementInclude | critical | PASS | WSES guidelines 2020 |  |
+| decision-penicillin-allergy-factor | managementInclude | quality | PASS | WSES guidelines 2020 |  |
+
+Guidelines:
+
+- **wses-div-2020** — WSES guidelines — acute colonic diverticulitis (2020 update) (2020), Uncomplicated diverticulitis: antibiotics and outpatient management. Sartelli M et al. World J Emerg Surg 2020;15:32. *(statement wording/numbering not yet verified against the source)*
+- **diabolo-2017** — DIABOLO trial (2017), Observation vs antibiotics. Daniels L et al. Br J Surg 2017;104:52-61. *(statement wording/numbering not yet verified against the source)*
+
+<details><summary>web engine outputs</summary>
+
+- engine: paneEngine=pane-engine (188 diseases, 426 features); triageRulesVersion=1.4.0
+- differential web.pane: 1. Acute Appendicitis; 2. Perforated Peptic Ulcer / Perforated Viscus; 3. Acute Diverticulitis
+- differential web.symptomInference: 1. Benign prostatic hyperplasia (BPH); 2. Colorectal carcinoma; 3. Lower GI bleed / colorectal; 4. Reducible groin / abdominal hernia; 5. Osteoarthritis
+- differential web.passive: 1. Acute cholecystitis; 2. CBD stone / obstructive jaundice; 3. Peptic ulcer disease; 4. Reducible groin / abdominal hernia; 5. GORD / acid reflux / oesophagitis
+- differential web.triageSurgical: (empty)
+- emergency level: routine (acuity=routine, action=routine_booking, score=12)
+- alarms: Anaesthetic / peri-operative hazard recorded [web.clinicalPrompts.safety]; Acute abdominal presentation [web.clinicalPrompts.safety]; Pre-operative assessment [web.clinicalPrompts.safety]; Herbs, teas, bush remedies & supplements not asked [web.clinicalPrompts.safety]
+- recommended scores: news2, rcri
+- score values: (none)
+- dx variant: diverticulitis_uncomplicated (Diverticulitis)
+- note: PANE features applied: abdominal_pain, nausea_vomiting, immunosuppression, steroid_use, lif_pain, guarding, elevated_wbc, raised_crp, trauma_mechanism, recent_surgery, aortic_graft, stoma
+- note: AssessmentTab ManagementPanel protocol: diverticulitis (from the confirmed diagnosis)
+- note: PlanTab protocol: diverticulitis (from the confirmed diagnosis)
+- note: Seeded investigations: diverticulitis (confirmed); 0 stat test(s) held back
+- note: Decision support: diverticulitis; factors penicillinAllergy, immunosuppressed
+- note: matchPathways: Diverticular Disease / Diverticulitis (12), Acute Abdomen (7), Acute Appendicitis (7)
+
+</details>
+
+### Uncomplicated diverticulitis — fit outpatient
+
+#### `decision-diverticulitis-uncomplicated-observe` — 
+
+Fit 52-year-old with CT-confirmed uncomplicated diverticulitis: observe — no routine antibiotics and outpatient management.
+
+| Expectation | Kind | Severity | web | Guideline | Proposed fix |
+|---|---|---|---|---|---|
+| decision-no-routine-antibiotics | managementInclude | critical | PASS | DIABOLO trial 2017; WSES guidelines 2020 |  |
+| decision-no-antibiotics-treat-band | managementExclude | critical | PASS | DIABOLO trial 2017 |  |
+| decision-outpatient | managementInclude | quality | PASS | WSES guidelines 2020 |  |
+
+Guidelines:
+
+- **wses-div-2020** — WSES guidelines — acute colonic diverticulitis (2020 update) (2020), Uncomplicated diverticulitis: antibiotics and outpatient management. Sartelli M et al. World J Emerg Surg 2020;15:32. *(statement wording/numbering not yet verified against the source)*
+- **diabolo-2017** — DIABOLO trial (2017), Observation vs antibiotics. Daniels L et al. Br J Surg 2017;104:52-61. *(statement wording/numbering not yet verified against the source)*
+
+<details><summary>web engine outputs</summary>
+
+- engine: paneEngine=pane-engine (188 diseases, 426 features); triageRulesVersion=1.4.0
+- differential web.pane: 1. Acute Appendicitis; 2. Acute Diverticulitis; 3. Perforated Peptic Ulcer / Perforated Viscus
+- differential web.symptomInference: 1. Benign prostatic hyperplasia (BPH); 2. Colorectal carcinoma; 3. Lower GI bleed / colorectal; 4. Reducible groin / abdominal hernia; 5. Osteoarthritis
+- differential web.passive: 1. Acute cholecystitis; 2. CBD stone / obstructive jaundice; 3. Peptic ulcer disease; 4. Reducible groin / abdominal hernia; 5. GORD / acid reflux / oesophagitis
+- differential web.triageSurgical: (empty)
+- emergency level: routine (acuity=routine, action=routine_booking, score=0)
+- alarms: Acute abdominal presentation [web.clinicalPrompts.safety]; Pre-operative assessment [web.clinicalPrompts.safety]; Herbs, teas, bush remedies & supplements not asked [web.clinicalPrompts.safety]
+- recommended scores: news2
+- score values: (none)
+- dx variant: diverticulitis_uncomplicated (Diverticulitis)
+- note: PANE features applied: abdominal_pain, nausea_vomiting, lif_pain, guarding, elevated_wbc, raised_crp, trauma_mechanism, recent_surgery, aortic_graft, stoma
+- note: AssessmentTab ManagementPanel protocol: diverticulitis (from the confirmed diagnosis)
+- note: PlanTab protocol: diverticulitis (from the confirmed diagnosis)
+- note: Seeded investigations: diverticulitis (confirmed); 0 stat test(s) held back
+- note: Decision support: diverticulitis; factors (none)
+- note: matchPathways: Diverticular Disease / Diverticulitis (12), Acute Abdomen (7), Acute Appendicitis (7)
+
+</details>
+
+### Inguinal hernia — frail 86-year-old
+
+#### `decision-hernia-frail-watchful-waiting` — Frail 86-year-old
+
+Frail 86-year-old man (CFS 7, ASA III) with a reducible minimally symptomatic inguinal hernia: watchful waiting rather than elective repair.
+
+Permutation of `decision-vte-caprini-low-mechanical`.
+
+| Expectation | Kind | Severity | web | Guideline | Proposed fix |
+|---|---|---|---|---|---|
+| decision-watchful-waiting | managementInclude | critical | PASS | HerniaSurge international groin hernia guidelines 2018; CPOC/BGS perioperative care for people living with frailty 2021 |  |
+| decision-no-repair-treat-band | managementExclude | critical | PASS | HerniaSurge international groin hernia guidelines 2018 |  |
+
+Guidelines:
+
+- **herniasurge-2018** — HerniaSurge international groin hernia guidelines (2018), Watchful waiting; frail patients. Hernia 2018;22:1-165. *(statement wording/numbering not yet verified against the source)*
+- **cpoc-2021** — CPOC/BGS perioperative care for people living with frailty (2021), Emergency surgery; shared decision-making. Centre for Perioperative Care 2021. *(statement wording/numbering not yet verified against the source)*
+
+<details><summary>web engine outputs</summary>
+
+- engine: paneEngine=pane-engine (188 diseases, 426 features); triageRulesVersion=1.4.0
+- differential web.pane: 1. Inguinal / Femoral Hernia; 2. Femoral Hernia; 3. Umbilical / Paraumbilical Hernia
+- differential web.symptomInference: 1. Benign prostatic hyperplasia (BPH); 2. Prostate adenocarcinoma; 3. Colorectal carcinoma; 4. Lower GI bleed / colorectal; 5. Symptomatic / ruptured abdominal aortic aneurysm
+- differential web.passive: 1. Acute cholecystitis; 2. CBD stone / obstructive jaundice; 3. Peptic ulcer disease; 4. Reducible groin / abdominal hernia; 5. GORD / acid reflux / oesophagitis
+- differential web.triageSurgical: 1. Inguinal hernia
+- emergency level: routine (acuity=routine, action=routine_booking, score=12)
+- alarms: Acute abdominal presentation [web.clinicalPrompts.safety]; Pre-operative assessment [web.clinicalPrompts.safety]; Hernia — elective repair indicated [web.clinicalPrompts.safety]; Operative plan — VTE risk assessment [web.clinicalPrompts.safety]; Herbs, teas, bush remedies & supplements not asked [web.clinicalPrompts.safety]
+- recommended scores: news2, cfs
+- score values: (none)
+- dx variant: (none) (Hernia)
+- note: PANE features applied: groin_swelling, cough, cough_impulse, hernia_compressible, groin_lump_reducible, hernia_swelling, trauma_mechanism, recent_surgery, aortic_graft, stoma
+- note: AssessmentTab ManagementPanel protocol: inguinal_hernia (from the confirmed diagnosis)
+- note: PlanTab protocol: inguinal_hernia (from the confirmed diagnosis)
+- note: Seeded investigations: inguinal_hernia (confirmed); 0 stat test(s) held back
+- note: Decision support: inguinal-hernia; factors age80plus, cfs7plus, asa3, egfr30to59
+- note: matchPathways: Hernia (Inguinal / Umbilical / Incisional / Femoral) (10), IBD — Surgical Complications (Crohn's / UC) (5)
+
+</details>
+
+### Acute gallstone pancreatitis — predicted severe
+
+#### `decision-pancreatitis-severe-defer-cholecystectomy` — 
+
+Gallstone pancreatitis with lipase 1450 U/L and Glasgow-Imrie 4: the lipase meets the Atlanta criterion; same-admission cholecystectomy is deferred in predicted severe disease.
+
+| Expectation | Kind | Severity | web | Guideline | Proposed fix |
+|---|---|---|---|---|---|
+| decision-defer-cholecystectomy | redFlags | critical | PASS | IAP/APA acute pancreatitis guidelines 2013; PONCHO trial 2015 |  |
+| decision-lipase-atlanta | managementInclude | critical | PASS | Revised Atlanta classification 2012 |  |
+| decision-glasgow-severe | managementInclude | quality | PASS | IAP/APA acute pancreatitis guidelines 2013 |  |
+
+Guidelines:
+
+- **atlanta-2012** — Revised Atlanta classification (2012), Diagnosis (2 of 3); severity. Banks PA et al. Gut 2013;62:102-111. *(statement wording/numbering not yet verified against the source)*
+- **iap-apa-2013** — IAP/APA acute pancreatitis guidelines (2013), Timing of cholecystectomy in severe pancreatitis. Pancreatology 2013;13(4 Suppl 2):e1-e15. *(statement wording/numbering not yet verified against the source)*
+- **poncho-2015** — PONCHO trial (2015), Same-admission cholecystectomy in mild gallstone pancreatitis. da Costa DW et al. Lancet 2015;386:1261-1268. *(statement wording/numbering not yet verified against the source)*
+
+<details><summary>web engine outputs</summary>
+
+- engine: paneEngine=pane-engine (188 diseases, 426 features); triageRulesVersion=1.4.0
+- differential web.pane: 1. Acute Pancreatitis; 2. Acute Cholecystitis; 3. Perforated Peptic Ulcer / Perforated Viscus
+- differential web.symptomInference: 1. Breast carcinoma; 2. Uterine fibroids; 3. Acute cholecystitis; 4. Colorectal carcinoma; 5. Lower GI bleed / colorectal
+- differential web.passive: 1. Acute cholecystitis; 2. CBD stone / obstructive jaundice; 3. Peptic ulcer disease; 4. Reducible groin / abdominal hernia; 5. GORD / acid reflux / oesophagitis
+- differential web.triageSurgical: 1. Acute biliary pancreatitis
+- emergency level: urgent (acuity=priority, action=same_day_call, score=15)
+- alarms: Suspected sepsis without fever (moderate to high risk) [web.clinicalPrompts.safety]; Reproductive-age female with abdominal complaint [web.clinicalPrompts.safety]; Amylase 1450 U/L — severe elevation [web.clinicalPrompts.safety]; Acute abdominal presentation [web.clinicalPrompts.safety]; Pre-operative assessment [web.clinicalPrompts.safety]; WBC 17 × 10⁹/L in acute pancreatitis [web.clinicalPrompts.safety]; HR 112 bpm — unexplained tachycardia [web.clinicalPrompts.safety]; Cholecystitis / gallstone disease — surgical indication [web.clinicalPrompts.safety]; Operative plan — VTE risk assessment [web.clinicalPrompts.safety]; Herbs, teas, bush remedies & supplements not asked [web.clinicalPrompts.safety]
+- recommended scores: ranson, qsofa, bisap, news2
+- score values: (none)
+- dx variant: (none) (Pancreatitis)
+- note: PANE features applied: abdominal_pain, nausea_vomiting, epigastric_pain, radiation_to_back, guarding, abdominal_tenderness, elevated_amylase, elevated_wbc, raised_urea, hyperglycaemia, us_gallstones, tachycardia, tachypnoea, trauma_mechanism, recent_surgery, aortic_graft, stoma
+- note: AssessmentTab ManagementPanel protocol: pancreatitis (from the confirmed diagnosis)
+- note: PlanTab protocol: pancreatitis (from the confirmed diagnosis)
+- note: Seeded investigations: pancreatitis (confirmed); 0 stat test(s) held back
+- note: Decision Acute gallstone pancreatitis — timing of cholecystectomy — missing: Record pregnancy status to refine: pregnancy changes the harm of operations and thrombolysis and excludes some options (same-admission laparoscopic cholecystectomy).
+- note: Decision support: gallstone-pancreatitis; factors predictedSeverePancreatitis
+- note: matchPathways: Gallbladder Disease (Biliary Colic / Cholecystitis / Choledocholithiasis) (12), Upper GI Endoscopy (Dyspepsia / GORD / Dysphagia) (12), Acute Abdomen (7)
+
+</details>
+
+### High-risk PE after recent surgery
+
+#### `decision-pe-postop-thrombolysis-contraindicated` — 
+
+Day 5 after an anterior resection with CT-confirmed PE and shock: systemic thrombolysis is not for this patient (major surgery within 3 weeks); anticoagulation ranks first.
+
+| Expectation | Kind | Severity | web | Guideline | Proposed fix |
+|---|---|---|---|---|---|
+| decision-thrombolysis-not-for-patient | redFlags | critical | PASS | ESC guidelines 2019 |  |
+| decision-anticoagulation-first | managementInclude | critical | PASS | ESC guidelines 2019 |  |
+| decision-no-thrombolysis-after-surgery | managementExclude | critical | PASS | ESC guidelines 2019 |  |
+
+Guidelines:
+
+- **esc-pe-2019** — ESC guidelines — acute pulmonary embolism (2019), Diagnostic strategy; reperfusion; contraindications to fibrinolysis. Konstantinides SV et al. Eur Heart J 2020;41:543-603. *(statement wording/numbering not yet verified against the source)*
+
+<details><summary>web engine outputs</summary>
+
+- engine: paneEngine=pane-engine (188 diseases, 426 features); triageRulesVersion=1.4.0
+- differential web.pane: 1. Pulmonary Embolism; 2. Acute Coronary Syndrome (STEMI / NSTEMI / Unstable Angina); 3. Anastomotic Leak
+- differential web.symptomInference: 1. Benign prostatic hyperplasia (BPH); 2. Prostate adenocarcinoma; 3. Colorectal carcinoma; 4. Lower GI bleed / colorectal; 5. Symptomatic / ruptured abdominal aortic aneurysm
+- differential web.passive: 1. Acute cholecystitis; 2. CBD stone / obstructive jaundice; 3. Peptic ulcer disease; 4. Reducible groin / abdominal hernia; 5. GORD / acid reflux / oesophagitis
+- differential web.triageSurgical: 1. Rectal cancer
+- emergency level: emergency (acuity=urgent, action=emergency_now, score=319)
+- alarms: Hypotension [web.triage.vitalRedFlags]; Tachycardia [web.triage.vitalRedFlags]; Tachypnoea [web.triage.vitalRedFlags]; Low SpO₂ [web.triage.vitalRedFlags]; Critical hypoxia [web.triage.vitalRedFlags]; Emergency now [web.triage.emergency]; Suspected acute coronary syndrome [web.clinicalPrompts.safety]; Pulmonary embolism with shock or hypoxia (high risk) [web.clinicalPrompts.safety]; Acute heart failure / pulmonary oedema [web.clinicalPrompts.safety]; Raised lactate [web.clinicalPrompts.safety]; SBP 84 mmHg — hypotension [web.clinicalPrompts.safety]; SpO₂ 89% — hypoxia [web.clinicalPrompts.safety]; Pre-operative assessment [web.clinicalPrompts.safety]; HR 128 bpm — unexplained tachycardia [web.clinicalPrompts.safety]; Operative plan — VTE risk assessment [web.clinicalPrompts.safety]; Herbs, teas, bush remedies & supplements not asked [web.clinicalPrompts.safety]
+- recommended scores: heart, wells-pe, wells-dvt, qsofa, news2, caprini, clavien-dindo, curb65, must, ecog
+- score values: (none)
+- dx variant: (none) (no group)
+- note: PANE features applied: dyspnoea, chest_pain, known_malignancy, previous_surgery, sudden_onset, diaphoresis, pale_clammy, syncope, dizziness, raised_jvp, pallor, dyspnoea_pe, pleuritic_chest_pain, recent_surgery, bowel_resection, raised_lactate, tachycardia, haemodynamic_instability, hypotension, tachypnoea, hypoxia, trauma_mechanism, aortic_graft, stoma
+- note: AssessmentTab ManagementPanel protocol: pulmonary_embolism (from the confirmed diagnosis)
+- note: PlanTab protocol: pulmonary_embolism (from the confirmed diagnosis)
+- note: Seeded investigations: pulmonary_embolism (confirmed); 0 stat test(s) held back
+- note: Decision support: pulmonary-embolism; factors news2High, shock, recentSurgery21d
+- note: matchPathways: Chest Pain — Emergency Redirect (5)
+
+</details>
+
+### Suspected pulmonary embolism — Wells unlikely
+
+#### `decision-pe-wells-unlikely-test` — 
+
+Pleuritic chest pain with Wells PE 3 (PE unlikely): D-dimer first; anticoagulation band is test further; no thrombolysis.
+
+| Expectation | Kind | Severity | web | Guideline | Proposed fix |
+|---|---|---|---|---|---|
+| decision-wells-unlikely-d-dimer | managementInclude | critical | PASS | NICE NG158 venous thromboembolic diseases 2020 |  |
+| decision-anticoagulation-test-further | managementInclude | critical | PASS | ESC guidelines 2019; NICE NG158 venous thromboembolic diseases 2020 |  |
+| decision-no-thrombolysis | managementExclude | critical | PASS | ESC guidelines 2019 |  |
+
+Guidelines:
+
+- **esc-pe-2019** — ESC guidelines — acute pulmonary embolism (2019), Diagnostic strategy; reperfusion; contraindications to fibrinolysis. Konstantinides SV et al. Eur Heart J 2020;41:543-603. *(statement wording/numbering not yet verified against the source)*
+- **nice-ng158** — NICE NG158 venous thromboembolic diseases (2020), Two-level Wells; D-dimer; interim anticoagulation. NICE NG158 (2020). *(statement wording/numbering not yet verified against the source)*
+
+<details><summary>web engine outputs</summary>
+
+- engine: paneEngine=pane-engine (188 diseases, 426 features); triageRulesVersion=1.4.0
+- differential web.pane: 1. Pulmonary Embolism; 2. Community-acquired Pneumonia (Adult / Child); 3. Oesophageal Perforation (Boerhaave)
+- differential web.symptomInference: 1. Uterine fibroids; 2. Acute cholecystitis; 3. Systemic lupus erythematosus; 4. Breast carcinoma; 5. Endometriosis
+- differential web.passive: 1. Acute cholecystitis; 2. CBD stone / obstructive jaundice; 3. Peptic ulcer disease; 4. Reducible groin / abdominal hernia; 5. GORD / acid reflux / oesophagitis
+- differential web.triageSurgical: (empty)
+- emergency level: urgent (acuity=priority, action=same_day_call, score=25)
+- alarms: Chest pain — exclude acute coronary syndrome [web.clinicalPrompts.safety]; Possible pulmonary embolism [web.clinicalPrompts.safety]; Pre-operative assessment [web.clinicalPrompts.safety]; Herbs, teas, bush remedies & supplements not asked [web.clinicalPrompts.safety]
+- recommended scores: heart, wells-pe, news2, curb65
+- score values: (none)
+- dx variant: (none) (no group)
+- note: PANE features applied: chest_pain, dyspnoea, pleuritic_chest_pain, recent_immobility, tachycardia, trauma_mechanism, recent_surgery, aortic_graft, stoma
+- note: AssessmentTab ManagementPanel protocol: pulmonary_embolism (from PANE top)
+- note: PlanTab protocol: (none) (from the confirmed diagnosis)
+- note: Seeded investigations: pulmonary_embolism (leading differential); 5 stat test(s) held back
+- note: Decision support: pulmonary-embolism; factors (none)
+- note: matchPathways: Chest Pain — Emergency Redirect (5), Varicose Veins (5)
+
+</details>
+
+### Sepsis with shock — antibiotics within 1 hour
+
+#### `decision-sepsis-lactate-shock` — 
+
+Urinary sepsis with hypotension and lactate 5: IV antibiotics within 1 hour (treat band); lactate result action.
+
+| Expectation | Kind | Severity | web | Guideline | Proposed fix |
+|---|---|---|---|---|---|
+| decision-antibiotics-within-1h | managementInclude | critical | PASS | Surviving Sepsis Campaign 2021 2021 |  |
+| decision-lactate-4 | managementInclude | critical | PASS | Surviving Sepsis Campaign 2021 2021 |  |
+
+Guidelines:
+
+- **ssc-2021** — Surviving Sepsis Campaign 2021 (2021), Antibiotic timing; lactate. Evans L et al. Crit Care Med 2021;49:e1063-e1143. *(statement wording/numbering not yet verified against the source)*
+
+<details><summary>web engine outputs</summary>
+
+- engine: paneEngine=pane-engine (188 diseases, 426 features); triageRulesVersion=1.4.0
+- differential web.pane: 1. Acute Pyelonephritis / Upper Urinary Tract Infection; 2. Sepsis / Septic Shock (source not yet identified; incl. neutropenic sepsis); 3. Infected Obstructed Kidney (Pyonephrosis / Obstructive Urosepsis)
+- differential web.symptomInference: 1. Breast carcinoma; 2. Uterine fibroids; 3. Acute cholecystitis; 4. Colorectal carcinoma; 5. Lower GI bleed / colorectal
+- differential web.passive: 1. Acute cholecystitis; 2. CBD stone / obstructive jaundice; 3. Peptic ulcer disease; 4. Reducible groin / abdominal hernia; 5. GORD / acid reflux / oesophagitis
+- differential web.triageSurgical: (empty)
+- emergency level: emergency (acuity=urgent, action=emergency_now, score=137)
+- alarms: Hypotension [web.triage.vitalRedFlags]; Tachycardia [web.triage.vitalRedFlags]; Tachypnoea [web.triage.vitalRedFlags]; Emergency now [web.triage.emergency]; Suspected sepsis (high risk) [web.clinicalPrompts.safety]; Anaphylaxis [web.clinicalPrompts.safety]; Critical laboratory result [web.clinicalPrompts.safety]; Fever 39.2°C + HR 124 bpm + SBP 84 mmHg — septic shock [web.clinicalPrompts.safety]; Pre-operative assessment [web.clinicalPrompts.safety]; WBC 21 × 10⁹/L — leucocytosis [web.clinicalPrompts.safety]; Herbs, teas, bush remedies & supplements not asked [web.clinicalPrompts.safety]
+- recommended scores: qsofa, gcs, news2, cfs
+- score values: (none)
+- dx variant: (none) (no group)
+- note: PANE features applied: fever, confusion, loin_pain, renal_angle_tenderness, rigors, dysuria, raised_lactate, elevated_wbc, tachycardia, haemodynamic_instability, hypotension, tachypnoea, trauma_mechanism, recent_surgery, aortic_graft, stoma
+- note: AssessmentTab ManagementPanel protocol: sepsis (from the confirmed diagnosis)
+- note: PlanTab protocol: sepsis (from the confirmed diagnosis)
+- note: Seeded investigations: sepsis (confirmed); 0 stat test(s) held back
+- note: Decision support: sepsis; factors age65to79, egfr30to59, news2High, shock
+
+</details>
+
+### Upper GI bleeding — Glasgow-Blatchford 14 with shock
+
+#### `decision-ugib-gbs-high-shock` — GBS 14 with shock
+
+71-year-old with haematemesis and melaena, hypotensive, Hb 64 g/L, Glasgow-Blatchford 14: admit and endoscopy within 24 h, within 12 h after resuscitation for persisting instability; restrictive transfusion threshold met.
+
+Permutation of `decision-ugib-gbs-low-outpatient`.
+
+| Expectation | Kind | Severity | web | Guideline | Proposed fix |
+|---|---|---|---|---|---|
+| decision-admit-endoscopy-24h | managementInclude | critical | PASS | NICE CG141 acute upper GI bleeding 2012; ESGE guideline 2021 |  |
+| decision-endoscopy-12h-in-shock | managementInclude | critical | PASS | ESGE guideline 2021 |  |
+| decision-hb-below-70 | managementInclude | critical | PASS | NICE NG24 blood transfusion 2015 |  |
+
+Guidelines:
+
+- **nice-cg141** — NICE CG141 acute upper GI bleeding (2012), Glasgow-Blatchford; early discharge; timing of endoscopy. NICE CG141 (2012, updated 2016). *(statement wording/numbering not yet verified against the source)*
+- **esge-2021** — ESGE guideline — non-variceal upper GI haemorrhage (2021) (2021), Risk stratification; timing of endoscopy; transfusion threshold. Gralnek IM et al. Endoscopy 2021;53:300-332. *(statement wording/numbering not yet verified against the source)*
+- **nice-ng24** — NICE NG24 blood transfusion (2015), Restrictive red cell thresholds. NICE NG24 (2015). *(statement wording/numbering not yet verified against the source)*
+
+<details><summary>web engine outputs</summary>
+
+- engine: paneEngine=pane-engine (188 diseases, 426 features); triageRulesVersion=1.4.0
+- differential web.pane: 1. Upper GI Haemorrhage (Peptic Ulcer / Non-variceal); 2. Oesophageal Variceal Haemorrhage (Portal Hypertension); 3. Aorto-enteric Fistula (after aortic graft)
+- differential web.symptomInference: 1. Benign prostatic hyperplasia (BPH); 2. Prostate adenocarcinoma; 3. Colorectal carcinoma; 4. Lower GI bleed / colorectal; 5. Symptomatic / ruptured abdominal aortic aneurysm
+- differential web.passive: 1. Acute cholecystitis; 2. CBD stone / obstructive jaundice; 3. Peptic ulcer disease; 4. Reducible groin / abdominal hernia; 5. GORD / acid reflux / oesophagitis
+- differential web.triageSurgical: 1. Peptic ulcer with haemorrhage
+- emergency level: emergency (acuity=urgent, action=emergency_now, score=182)
+- alarms: Hypotension [web.triage.vitalRedFlags]; Emergency now [web.triage.emergency]; Critical laboratory result [web.clinicalPrompts.safety]; GI haemorrhage — haemodynamically significant [web.clinicalPrompts.safety]; Haemoglobin 6.4 g/dL — severe anaemia [web.clinicalPrompts.safety]; SBP 86 mmHg — hypotension [web.clinicalPrompts.safety]; Acute abdominal presentation [web.clinicalPrompts.safety]; Pre-operative assessment [web.clinicalPrompts.safety]; HR 118 bpm — unexplained tachycardia [web.clinicalPrompts.safety]; Herbs, teas, bush remedies & supplements not asked [web.clinicalPrompts.safety]
+- recommended scores: qsofa, news2, cfs
+- score values: (none)
+- dx variant: ugib_nonvariceal_stable (Upper GI Bleed)
+- note: PANE features applied: upper_gi_bleeding, nausea_vomiting, haematemesis, epigastric_pain, dizziness, melaena, abdominal_tenderness, nsaid_use, anaemia, raised_urea, tachycardia, hypotension, haemodynamic_instability, tachypnoea, trauma_mechanism, recent_surgery, aortic_graft, stoma
+- note: AssessmentTab ManagementPanel protocol: upper_gi_bleed (from the confirmed diagnosis)
+- note: PlanTab protocol: upper_gi_bleed (from the confirmed diagnosis)
+- note: Seeded investigations: upper_gi_bleed (confirmed); 0 stat test(s) held back
+- note: Decision support: upper-gi-bleed; factors age65to79, news2High, shock
+- note: matchPathways: GI Bleeding (Upper and Lower) (10)
+
+</details>
+
+### Upper GI bleeding — Glasgow-Blatchford 0
+
+#### `decision-ugib-gbs-low-outpatient` — 
+
+35-year-old with a single small haematemesis after retching, normal observations and bloods, Glasgow-Blatchford 0: outpatient management candidate.
+
+| Expectation | Kind | Severity | web | Guideline | Proposed fix |
+|---|---|---|---|---|---|
+| decision-gbs-outpatient-action | managementInclude | critical | PASS | NICE CG141 acute upper GI bleeding 2012; ESGE guideline 2021 |  |
+| decision-gbs-observe-admission | managementInclude | critical | PASS | NICE CG141 acute upper GI bleeding 2012 |  |
+
+Guidelines:
+
+- **nice-cg141** — NICE CG141 acute upper GI bleeding (2012), Glasgow-Blatchford; early discharge; timing of endoscopy. NICE CG141 (2012, updated 2016). *(statement wording/numbering not yet verified against the source)*
+- **esge-2021** — ESGE guideline — non-variceal upper GI haemorrhage (2021) (2021), Risk stratification; timing of endoscopy; transfusion threshold. Gralnek IM et al. Endoscopy 2021;53:300-332. *(statement wording/numbering not yet verified against the source)*
+
+<details><summary>web engine outputs</summary>
+
+- engine: paneEngine=pane-engine (188 diseases, 426 features); triageRulesVersion=1.4.0
+- differential web.pane: 1. Mallory-Weiss Tear; 2. Upper GI Haemorrhage (Peptic Ulcer / Non-variceal); 3. Peptic Ulcer Disease
+- differential web.symptomInference: 1. Benign prostatic hyperplasia (BPH); 2. Testicular germ cell tumour; 3. Varicocele; 4. Reducible groin / abdominal hernia; 5. Pilonidal sinus / abscess
+- differential web.passive: 1. Acute cholecystitis; 2. CBD stone / obstructive jaundice; 3. Peptic ulcer disease; 4. Reducible groin / abdominal hernia; 5. GORD / acid reflux / oesophagitis
+- differential web.triageSurgical: 1. Peptic ulcer with haemorrhage
+- emergency level: emergency (acuity=urgent, action=emergency_now, score=80)
+- alarms: Emergency now [web.triage.emergency]; Acute abdominal presentation [web.clinicalPrompts.safety]; GI bleeding — haemodynamically stable [web.clinicalPrompts.safety]; Pre-operative assessment [web.clinicalPrompts.safety]; Herbs, teas, bush remedies & supplements not asked [web.clinicalPrompts.safety]
+- recommended scores: news2
+- score values: (none)
+- dx variant: (none) (no group)
+- note: PANE features applied: upper_gi_bleeding, nausea_vomiting, haematemesis, epigastric_pain, severe_vomiting_before_pain, pr_bleeding, abdominal_tenderness, alcohol_use, trauma_mechanism, recent_surgery, aortic_graft, stoma
+- note: AssessmentTab ManagementPanel protocol: mallory_weiss (from PANE top)
+- note: PlanTab protocol: (none) (from the confirmed diagnosis)
+- note: Seeded investigations: mallory_weiss (leading differential); 0 stat test(s) held back
+- note: Decision support: upper-gi-bleed; factors (none)
+- note: matchPathways: GI Bleeding (Upper and Lower) (10)
+
+</details>
+
+### VTE prophylaxis and bridging — Caprini 8 on apixaban (colon cancer resection)
+
+#### `decision-vte-caprini-high-doac` — 
+
+72-year-old on apixaban for AF, planned right hemicolectomy for colon cancer, Caprini 8: prophylactic LMWH is not for this patient (therapeutic anticoagulation plan) and there is no bridging with a DOAC.
+
+| Expectation | Kind | Severity | web | Guideline | Proposed fix |
+|---|---|---|---|---|---|
+| decision-no-prophylactic-lmwh-on-doac | redFlags | critical | PASS | NICE NG89 VTE prophylaxis in over 16s 2018 |  |
+| decision-no-bridging-doac | redFlags | critical | PASS | PAUSE study 2019 |  |
+| decision-mechanical-prophylaxis | managementInclude | quality | PASS | NICE NG89 VTE prophylaxis in over 16s 2018 |  |
+
+Guidelines:
+
+- **nice-ng89** — NICE NG89 VTE prophylaxis in over 16s (2018), Surgical patients. NICE NG89 (2018). *(statement wording/numbering not yet verified against the source)*
+- **pause-2019** — PAUSE study (2019), Peri-operative DOAC interruption without bridging. Douketis JD et al. JAMA Intern Med 2019;179:1469-1478. *(statement wording/numbering not yet verified against the source)*
+- **accp-2022** — ACCP perioperative antithrombotic guideline (2022), Bridging: mechanical valves, recent VTE. Douketis JD et al. Chest 2022;162:e207-e243. *(statement wording/numbering not yet verified against the source)*
+
+<details><summary>web engine outputs</summary>
+
+- engine: paneEngine=pane-engine (188 diseases, 426 features); triageRulesVersion=1.4.0
+- differential web.pane: 1. Atrial Fibrillation / Flutter; 2. Upper GI Haemorrhage (Peptic Ulcer / Non-variceal); 3. Lower GI Haemorrhage (Diverticular / Angiodysplasia)
+- differential web.symptomInference: 1. Breast carcinoma; 2. Uterine fibroids; 3. Acute cholecystitis; 4. Colorectal carcinoma; 5. Lower GI bleed / colorectal
+- differential web.passive: 1. Acute cholecystitis; 2. CBD stone / obstructive jaundice; 3. Peptic ulcer disease; 4. Reducible groin / abdominal hernia; 5. GORD / acid reflux / oesophagitis
+- differential web.triageSurgical: 1. Colon cancer
+- emergency level: emergency (acuity=urgent, action=emergency_now, score=61)
+- alarms: Emergency now [web.triage.emergency]; Atrial fibrillation — newly detected [web.clinicalPrompts.safety]; Pre-operative assessment [web.clinicalPrompts.safety]; Anticoagulation therapy (apixaban) [web.clinicalPrompts.safety]; Herbs, teas, bush remedies & supplements not asked [web.clinicalPrompts.safety]
+- recommended scores: wells-dvt, cha2ds2-vasc, news2, caprini, has-bled, must, cfs, ecog
+- score values: (none)
+- dx variant: (none) (no group)
+- note: PANE features applied: known_af, anticoagulant_use, known_malignancy, anaemia, trauma_mechanism, recent_surgery, aortic_graft, stoma
+- note: AssessmentTab ManagementPanel protocol: colorectal_cancer (from the confirmed diagnosis)
+- note: PlanTab protocol: colorectal_cancer (from the confirmed diagnosis)
+- note: Seeded investigations: colorectal_cancer (confirmed); 0 stat test(s) held back
+- note: Decision support: vte-prophylaxis, periop-bridging; factors age65to79, anticoagulated, doacOnly
+- note: matchPathways: Colonoscopy Diagnostic (Rectal Bleeding / Bowel Habit Change / Iron Deficiency) (15), Pre-operative Assessment (10)
+
+</details>
+
+### VTE prophylaxis — Caprini low risk (elective hernia repair)
+
+#### `decision-vte-caprini-low-mechanical` — 
+
+Fit 50-year-old for elective inguinal hernia repair with Caprini 1: mechanical prophylaxis; pharmacological prophylaxis not needed.
+
+| Expectation | Kind | Severity | web | Guideline | Proposed fix |
+|---|---|---|---|---|---|
+| decision-mechanical-first | managementInclude | critical | PASS | ACCP 9th edition 2012; NICE NG89 VTE prophylaxis in over 16s 2018 |  |
+| decision-lmwh-observe | managementInclude | quality | PASS | ACCP 9th edition 2012 |  |
+
+Guidelines:
+
+- **accp-2012** — ACCP 9th edition — VTE prevention in non-orthopaedic surgery (2012), Caprini risk groups. Gould MK et al. Chest 2012;141(2 Suppl):e227S-e277S. *(statement wording/numbering not yet verified against the source)*
+- **nice-ng89** — NICE NG89 VTE prophylaxis in over 16s (2018), Surgical patients. NICE NG89 (2018). *(statement wording/numbering not yet verified against the source)*
+
+<details><summary>web engine outputs</summary>
+
+- engine: paneEngine=pane-engine (188 diseases, 426 features); triageRulesVersion=1.4.0
+- differential web.pane: 1. Inguinal / Femoral Hernia; 2. Femoral Hernia; 3. Umbilical / Paraumbilical Hernia
+- differential web.symptomInference: 1. Benign prostatic hyperplasia (BPH); 2. Reducible groin / abdominal hernia; 3. Gout / pseudogout; 4. Breast carcinoma; 5. Hepatocellular carcinoma (HCC)
+- differential web.passive: 1. Acute cholecystitis; 2. CBD stone / obstructive jaundice; 3. Peptic ulcer disease; 4. Reducible groin / abdominal hernia; 5. GORD / acid reflux / oesophagitis
+- differential web.triageSurgical: 1. Inguinal hernia
+- emergency level: routine (acuity=routine, action=routine_booking, score=0)
+- alarms: Acute abdominal presentation [web.clinicalPrompts.safety]; Pre-operative assessment [web.clinicalPrompts.safety]; Hernia — elective repair indicated [web.clinicalPrompts.safety]; Operative plan — VTE risk assessment [web.clinicalPrompts.safety]; Herbs, teas, bush remedies & supplements not asked [web.clinicalPrompts.safety]
+- recommended scores: news2
+- score values: (none)
+- dx variant: (none) (Hernia)
+- note: PANE features applied: groin_swelling, cough, cough_impulse, hernia_compressible, groin_lump_reducible, hernia_swelling, trauma_mechanism, recent_surgery, aortic_graft, stoma
+- note: AssessmentTab ManagementPanel protocol: inguinal_hernia (from the confirmed diagnosis)
+- note: PlanTab protocol: inguinal_hernia (from the confirmed diagnosis)
+- note: Seeded investigations: inguinal_hernia (confirmed); 0 stat test(s) held back
+- note: Decision support: inguinal-hernia, vte-prophylaxis; factors (none)
+- note: matchPathways: Hernia (Inguinal / Umbilical / Incisional / Femoral) (10), IBD — Surgical Complications (Crohn's / UC) (5)
 
 </details>
 
@@ -5870,6 +6663,7 @@ Guidelines:
 - note: AssessmentTab ManagementPanel protocol: diabetic_foot (from the confirmed diagnosis)
 - note: PlanTab protocol: diabetic_foot (from the confirmed diagnosis)
 - note: Seeded investigations: diabetic_foot (confirmed); 0 stat test(s) held back
+- note: Decision support: (no decision); factors diabetes
 - note: matchPathways: Diabetic Foot (15), Wound Management (Acute / Chronic / SSI) (10)
 
 </details>
@@ -5918,6 +6712,7 @@ Guidelines:
 - note: AssessmentTab ManagementPanel protocol: diabetic_foot (from the confirmed diagnosis)
 - note: PlanTab protocol: diabetic_foot (from the confirmed diagnosis)
 - note: Seeded investigations: diabetic_foot (confirmed); 0 stat test(s) held back
+- note: Decision support: (no decision); factors age65to79, antiplatelet, diabetes, news2High
 - note: matchPathways: Diabetic Foot (15), Peripheral Vascular Disease (10)
 
 </details>
@@ -5966,6 +6761,7 @@ Guidelines:
 - note: AssessmentTab ManagementPanel protocol: arterial_ulcer (from the confirmed diagnosis)
 - note: PlanTab protocol: arterial_ulcer (from the confirmed diagnosis)
 - note: Seeded investigations: arterial_ulcer (confirmed); 0 stat test(s) held back
+- note: Decision support: (no decision); factors age65to79, diabetes
 - note: matchPathways: Diabetic Foot (10), Peripheral Vascular Disease (10), Wound Management (Acute / Chronic / SSI) (5)
 
 </details>
@@ -6014,6 +6810,7 @@ Guidelines:
 - note: AssessmentTab ManagementPanel protocol: diabetic_foot (from the confirmed diagnosis)
 - note: PlanTab protocol: diabetic_foot (from the confirmed diagnosis)
 - note: Seeded investigations: diabetic_foot (confirmed); 0 stat test(s) held back
+- note: Decision support: (no decision); factors diabetes
 - note: matchPathways: Diabetic Foot (5), Wound Management (Acute / Chronic / SSI) (5)
 
 </details>
@@ -6056,6 +6853,7 @@ Guidelines:
 - note: AssessmentTab ManagementPanel protocol: diverticulitis (from the confirmed diagnosis)
 - note: PlanTab protocol: diverticulitis (from the confirmed diagnosis)
 - note: Seeded investigations: diverticulitis (confirmed); 0 stat test(s) held back
+- note: Decision support: diverticulitis; factors (none)
 - note: matchPathways: Diverticular Disease / Diverticulitis (17), Acute Abdomen (7), Acute Appendicitis (7)
 
 </details>
@@ -6100,6 +6898,7 @@ Guidelines:
 - note: AssessmentTab ManagementPanel protocol: diverticulitis (from the confirmed diagnosis)
 - note: PlanTab protocol: diverticulitis (from the confirmed diagnosis)
 - note: Seeded investigations: diverticulitis (confirmed); 0 stat test(s) held back
+- note: Decision support: (no decision); factors (none)
 - note: matchPathways: Diverticular Disease / Diverticulitis (12), IBD — Surgical Complications (Crohn's / UC) (12), Acute Abdomen (7)
 
 </details>
@@ -6144,6 +6943,10 @@ Guidelines:
 - note: AssessmentTab ManagementPanel protocol: diverticulitis (from the confirmed diagnosis)
 - note: PlanTab protocol: diverticulitis (from the confirmed diagnosis)
 - note: Seeded investigations: diverticulitis (confirmed); 0 stat test(s) held back
+- note: Decision Emergency laparotomy (source control) — missing: Record Clinical Frailty Scale to refine: frailty raises the harm of operations and procedures (emergency laparotomy).
+- note: Decision Emergency laparotomy (source control) — missing: Record ASA grade to refine: ASA III-IV raises operative harm (emergency laparotomy).
+- note: Decision Emergency laparotomy (source control) — missing: Record eGFR to refine: eGFR below 30 raises operative and anticoagulant harm (emergency laparotomy).
+- note: Decision support: sepsis, emergency-laparotomy; factors age65to79, diabetes, news2High, shock
 - note: matchPathways: Acute Abdomen (7), Acute Appendicitis (7), Anorectal (Haemorrhoids / Fissure / Fistula / Abscess) (7)
 
 </details>
@@ -6186,6 +6989,8 @@ Guidelines:
 - note: AssessmentTab ManagementPanel protocol: diverticulitis (from the confirmed diagnosis)
 - note: PlanTab protocol: diverticulitis (from the confirmed diagnosis)
 - note: Seeded investigations: diverticulitis (confirmed); 0 stat test(s) held back
+- note: Decision Acute uncomplicated diverticulitis — missing: Record Clinical Frailty Scale to refine: frailty raises the harm of operations and procedures (hospital admission).
+- note: Decision support: diverticulitis; factors age65to79, diabetes, immunosuppressed
 
 </details>
 
@@ -6232,6 +7037,9 @@ Guidelines:
 - note: AssessmentTab ManagementPanel protocol: diverticulitis (from the confirmed diagnosis)
 - note: PlanTab protocol: diverticulitis (from the confirmed diagnosis)
 - note: Seeded investigations: diverticulitis (confirmed); 0 stat test(s) held back
+- note: Decision Emergency laparotomy (source control) — missing: Record ASA grade to refine: ASA III-IV raises operative harm (emergency laparotomy).
+- note: Decision Emergency laparotomy (source control) — missing: Record eGFR to refine: eGFR below 30 raises operative and anticoagulant harm (emergency laparotomy).
+- note: Decision support: emergency-laparotomy; factors (none)
 - note: matchPathways: Diverticular Disease / Diverticulitis (12), Acute Abdomen (7), Acute Appendicitis (7)
 
 </details>
@@ -6280,6 +7088,7 @@ Guidelines:
 - note: AssessmentTab ManagementPanel protocol: diabetic_ketoacidosis (from the confirmed diagnosis)
 - note: PlanTab protocol: diabetic_ketoacidosis (from the confirmed diagnosis)
 - note: Seeded investigations: diabetic_ketoacidosis (confirmed); 0 stat test(s) held back
+- note: Decision support: (no decision); factors diabetes, recentSurgery21d
 - note: matchPathways: Gallbladder Disease (Biliary Colic / Cholecystitis / Choledocholithiasis) (5), IBD — Surgical Complications (Crohn's / UC) (5), Post-operative Follow-up (General) (5)
 
 </details>
@@ -6329,6 +7138,7 @@ Guidelines:
 - note: AssessmentTab ManagementPanel protocol: (none) (from the confirmed diagnosis)
 - note: PlanTab protocol: (none) (from the confirmed diagnosis)
 - note: Seeded investigations: diabetic_ketoacidosis (leading differential); 2 stat test(s) held back
+- note: Decision support: (no decision); factors pregnant, diabetes
 - note: matchPathways: IBD — Surgical Complications (Crohn's / UC) (12), Acute Abdomen (7), Acute Appendicitis (7)
 
 </details>
@@ -6377,6 +7187,7 @@ Guidelines:
 - note: AssessmentTab ManagementPanel protocol: diabetic_ketoacidosis (from the confirmed diagnosis)
 - note: PlanTab protocol: diabetic_ketoacidosis (from the confirmed diagnosis)
 - note: Seeded investigations: diabetic_ketoacidosis (confirmed); 0 stat test(s) held back
+- note: Decision support: (no decision); factors diabetes
 - note: matchPathways: IBD — Surgical Complications (Crohn's / UC) (5), Pre-operative Assessment (5), Wound Management (Acute / Chronic / SSI) (5)
 
 </details>
@@ -6421,6 +7232,7 @@ Guidelines:
 - note: AssessmentTab ManagementPanel protocol: deep_vein_thrombosis (from the confirmed diagnosis)
 - note: PlanTab protocol: deep_vein_thrombosis (from the confirmed diagnosis)
 - note: Seeded investigations: deep_vein_thrombosis (confirmed); 0 stat test(s) held back
+- note: Decision support: (no decision); factors pregnant
 - note: matchPathways: Chest Pain — Emergency Redirect (5), Varicose Veins (5)
 
 </details>
@@ -6448,7 +7260,7 @@ Guidelines:
 <details><summary>web engine outputs</summary>
 
 - engine: paneEngine=pane-engine (188 diseases, 426 features); triageRulesVersion=1.4.0
-- differential web.pane: 1. Deep Vein Thrombosis; 2. Pulmonary Embolism; 3. Superficial Vein Thrombosis / Thrombophlebitis
+- differential web.pane: 1. Deep Vein Thrombosis; 2. Pulmonary Embolism; 3. Cellulitis
 - differential web.symptomInference: 1. Deep vein thrombosis (DVT); 2. Sciatica / lumbar radiculopathy; 3. Acute compartment syndrome; 4. Lumbar disc disease / sciatica; 5. Carpal tunnel syndrome
 - differential web.passive: 1. Deep vein thrombosis (DVT); 2. Sciatica / lumbar radiculopathy; 3. Acute compartment syndrome; 4. Osteomyelitis (paediatric); 5. Lumbar disc disease / sciatica
 - differential web.triageSurgical: 1. Leg swelling — possible DVT
@@ -6457,10 +7269,11 @@ Guidelines:
 - recommended scores: wells-pe, wells-dvt, news2
 - score values: (none)
 - dx variant: (none) (no group)
-- note: PANE features applied: acute_onset, limb_pain, pain_worse_movement, leg_swelling, oestrogen_use, previous_surgery, unilateral_leg_swelling, calf_tenderness, trauma_mechanism, recent_surgery, aortic_graft, stoma
+- note: PANE features applied: acute_onset, limb_pain, pain_worse_movement, leg_swelling, oestrogen_use, previous_surgery, unilateral_leg_swelling, trauma_mechanism, recent_surgery, aortic_graft, stoma
 - note: AssessmentTab ManagementPanel protocol: deep_vein_thrombosis (from the confirmed diagnosis)
 - note: PlanTab protocol: deep_vein_thrombosis (from the confirmed diagnosis)
 - note: Seeded investigations: deep_vein_thrombosis (confirmed); 0 stat test(s) held back
+- note: Decision support: (no decision); factors (none)
 - note: matchPathways: Chest Pain — Emergency Redirect (5), Varicose Veins (5)
 
 </details>
@@ -6503,6 +7316,7 @@ Guidelines:
 - note: AssessmentTab ManagementPanel protocol: dyspepsia (from the confirmed diagnosis)
 - note: PlanTab protocol: dyspepsia (from the confirmed diagnosis)
 - note: Seeded investigations: dyspepsia (confirmed); 0 stat test(s) held back
+- note: Decision support: (no decision); factors (none)
 - note: matchPathways: Upper GI Endoscopy (Dyspepsia / GORD / Dysphagia) (10)
 
 </details>
@@ -6545,6 +7359,7 @@ Guidelines:
 - note: AssessmentTab ManagementPanel protocol: oesophageal_carcinoma (from the confirmed diagnosis)
 - note: PlanTab protocol: oesophageal_carcinoma (from the confirmed diagnosis)
 - note: Seeded investigations: oesophageal_carcinoma (confirmed); 0 stat test(s) held back
+- note: Decision support: (no decision); factors age65to79
 - note: matchPathways: Upper GI Endoscopy (Dyspepsia / GORD / Dysphagia) (22), Foreign Body Ingestion / Food Bolus (7)
 
 </details>
@@ -6587,6 +7402,7 @@ Guidelines:
 - note: AssessmentTab ManagementPanel protocol: oesophageal_stricture (from the confirmed diagnosis)
 - note: PlanTab protocol: oesophageal_stricture (from the confirmed diagnosis)
 - note: Seeded investigations: oesophageal_stricture (confirmed); 0 stat test(s) held back
+- note: Decision support: (no decision); factors (none)
 - note: matchPathways: Upper GI Endoscopy (Dyspepsia / GORD / Dysphagia) (22), Foreign Body Ingestion / Food Bolus (7)
 
 </details>
@@ -6635,6 +7451,7 @@ Guidelines:
 - note: AssessmentTab ManagementPanel protocol: eosinophilic_oesophagitis (from the confirmed diagnosis)
 - note: PlanTab protocol: eosinophilic_oesophagitis (from the confirmed diagnosis)
 - note: Seeded investigations: eosinophilic_oesophagitis (confirmed); 0 stat test(s) held back
+- note: Decision support: (no decision); factors (none)
 - note: matchPathways: Upper GI Endoscopy (Dyspepsia / GORD / Dysphagia) (15), IBD — Surgical Complications (Crohn's / UC) (5)
 
 </details>
@@ -6686,6 +7503,7 @@ Guidelines:
 - note: AssessmentTab ManagementPanel protocol: epididymo_orchitis (from the confirmed diagnosis)
 - note: PlanTab protocol: epididymo_orchitis (from the confirmed diagnosis)
 - note: Seeded investigations: epididymo_orchitis (confirmed); 0 stat test(s) held back
+- note: Decision support: (no decision); factors (none)
 - note: matchPathways: Wound Management (Acute / Chronic / SSI) (5)
 
 </details>
@@ -6721,10 +7539,11 @@ Guidelines:
 - recommended scores: news2
 - score values: (none)
 - dx variant: (none) (no group)
-- note: PANE features applied: chronic_course, anal_pain, faecal_incontinence, episodic_pain, discharge_perianal, tenesmus, previous_surgery, urinary_incontinence, frequency_urgency, trauma_mechanism, recent_surgery, aortic_graft, stoma
+- note: PANE features applied: chronic_course, anal_pain, faecal_incontinence, episodic_pain, discharge_perianal, tenesmus, previous_surgery, trauma_mechanism, recent_surgery, aortic_graft, stoma
 - note: AssessmentTab ManagementPanel protocol: fistula_in_ano (from the confirmed diagnosis)
 - note: PlanTab protocol: fistula_in_ano (from the confirmed diagnosis)
 - note: Seeded investigations: fistula_in_ano (confirmed); 0 stat test(s) held back
+- note: Decision support: (no decision); factors (none)
 - note: matchPathways: Anorectal (Haemorrhoids / Fissure / Fistula / Abscess) (5), IBD — Surgical Complications (Crohn's / UC) (5), Post-operative Follow-up (General) (5)
 
 </details>
@@ -6757,10 +7576,11 @@ Guidelines:
 - recommended scores: news2
 - score values: (none)
 - dx variant: (none) (no group)
-- note: PANE features applied: chronic_course, anal_pain, faecal_incontinence, episodic_pain, discharge_perianal, previous_surgery, tender_cord, swelling_fluctuant_soft, discharge_pus, trauma_mechanism, recent_surgery, aortic_graft, stoma
+- note: PANE features applied: chronic_course, anal_pain, faecal_incontinence, episodic_pain, discharge_perianal, previous_surgery, discharge_pus, trauma_mechanism, recent_surgery, aortic_graft, stoma
 - note: AssessmentTab ManagementPanel protocol: fistula_in_ano (from the confirmed diagnosis)
 - note: PlanTab protocol: fistula_in_ano (from the confirmed diagnosis)
 - note: Seeded investigations: fistula_in_ano (confirmed); 0 stat test(s) held back
+- note: Decision support: (no decision); factors (none)
 - note: matchPathways: Anorectal (Haemorrhoids / Fissure / Fistula / Abscess) (15), IBD — Surgical Complications (Crohn's / UC) (12), Cancer Screening (Age/Sex Appropriate) (7)
 
 </details>
@@ -6802,6 +7622,7 @@ Guidelines:
 - note: AssessmentTab ManagementPanel protocol: food_bolus_obstruction (from the confirmed diagnosis)
 - note: PlanTab protocol: food_bolus_obstruction (from the confirmed diagnosis)
 - note: Seeded investigations: food_bolus_obstruction (confirmed); 0 stat test(s) held back
+- note: Decision support: (no decision); factors (none)
 - note: matchPathways: Foreign Body Ingestion / Food Bolus (5), IBD — Surgical Complications (Crohn's / UC) (5), Upper GI Endoscopy (Dyspepsia / GORD / Dysphagia) (5)
 
 </details>
@@ -6848,6 +7669,7 @@ Guidelines:
 - note: PlanTab protocol: fournier_gangrene (from the confirmed diagnosis)
 - note: Seeded investigations: fournier_gangrene (confirmed); 0 stat test(s) held back
 - note: no web calculator for score form 'qsofa'
+- note: Decision support: (no decision); factors diabetes, news2High, shock
 - note: matchPathways: Anorectal (Haemorrhoids / Fissure / Fistula / Abscess) (5)
 
 </details>
@@ -6888,6 +7710,7 @@ Guidelines:
 - note: AssessmentTab ManagementPanel protocol: perianal_abscess (from the confirmed diagnosis)
 - note: PlanTab protocol: perianal_abscess (from the confirmed diagnosis)
 - note: Seeded investigations: perianal_abscess (confirmed); 0 stat test(s) held back
+- note: Decision support: sepsis; factors diabetes
 - note: matchPathways: Anorectal (Haemorrhoids / Fissure / Fistula / Abscess) (15), IBD — Surgical Complications (Crohn's / UC) (5)
 
 </details>
@@ -6929,6 +7752,7 @@ Guidelines:
 - note: AssessmentTab ManagementPanel protocol: gastric_outlet_obstruction (from the confirmed diagnosis)
 - note: PlanTab protocol: gastric_outlet_obstruction (from the confirmed diagnosis)
 - note: Seeded investigations: gastric_outlet_obstruction (confirmed); 0 stat test(s) held back
+- note: Decision support: (no decision); factors age65to79
 - note: matchPathways: Upper GI Endoscopy (Dyspepsia / GORD / Dysphagia) (10), Wound Management (Acute / Chronic / SSI) (5)
 
 </details>
@@ -6969,6 +7793,7 @@ Guidelines:
 - note: AssessmentTab ManagementPanel protocol: gord (from the confirmed diagnosis)
 - note: PlanTab protocol: gord (from the confirmed diagnosis)
 - note: Seeded investigations: gord (confirmed); 0 stat test(s) held back
+- note: Decision support: (no decision); factors (none)
 - note: matchPathways: Upper GI Endoscopy (Dyspepsia / GORD / Dysphagia) (12), Cancer Screening (Age/Sex Appropriate) (7), Colonoscopy Diagnostic (Rectal Bleeding / Bowel Habit Change / Iron Deficiency) (7)
 
 </details>
@@ -7008,6 +7833,7 @@ Guidelines:
 - note: AssessmentTab ManagementPanel protocol: gord (from the confirmed diagnosis)
 - note: PlanTab protocol: gord (from the confirmed diagnosis)
 - note: Seeded investigations: gord (confirmed); 0 stat test(s) held back
+- note: Decision support: (no decision); factors (none)
 - note: matchPathways: Upper GI Endoscopy (Dyspepsia / GORD / Dysphagia) (5)
 
 </details>
@@ -7043,10 +7869,11 @@ Guidelines:
 - recommended scores: news2, caprini, asa, rcri, cfs
 - score values: (none)
 - dx variant: (none) (no group)
-- note: PANE features applied: groin_swelling, chronic_course, below_inguinal_ligament, pulsatile_mass, claudication, vascular_risk, known_hypertension, known_copd, antiplatelet_use, epigastric_pain, calf_tenderness, limb_pain, hernia_irreducible, abdominal_mass, smoker, known_aaa, raised_bp, trauma_mechanism, recent_surgery, aortic_graft, stoma
+- note: PANE features applied: groin_swelling, chronic_course, below_inguinal_ligament, pulsatile_mass, claudication, vascular_risk, known_hypertension, known_copd, antiplatelet_use, epigastric_pain, limb_pain, hernia_irreducible, abdominal_mass, smoker, known_aaa, raised_bp, trauma_mechanism, recent_surgery, aortic_graft, stoma
 - note: AssessmentTab ManagementPanel protocol: aortic_aneurysm (from the confirmed diagnosis)
 - note: PlanTab protocol: aortic_aneurysm (from the confirmed diagnosis)
 - note: Seeded investigations: aortic_aneurysm (confirmed); 0 stat test(s) held back
+- note: Decision support: (no decision); factors age65to79, antiplatelet
 - note: matchPathways: Hernia (Inguinal / Umbilical / Incisional / Femoral) (10), Peripheral Vascular Disease (5)
 
 </details>
@@ -7087,6 +7914,7 @@ Guidelines:
 - note: AssessmentTab ManagementPanel protocol: neck_lymphadenopathy (from the confirmed diagnosis)
 - note: PlanTab protocol: neck_lymphadenopathy (from the confirmed diagnosis)
 - note: Seeded investigations: neck_lymphadenopathy (confirmed); 0 stat test(s) held back
+- note: Decision support: (no decision); factors (none)
 - note: matchPathways: Hernia (Inguinal / Umbilical / Incisional / Femoral) (15), Thyroid / Neck Mass (5), Wound Management (Acute / Chronic / SSI) (5)
 
 </details>
@@ -7113,7 +7941,7 @@ Guidelines:
 <details><summary>web engine outputs</summary>
 
 - engine: paneEngine=pane-engine (188 diseases, 426 features); triageRulesVersion=1.4.0
-- differential web.pane: 1. Incarcerated / Strangulated Hernia (Groin, Umbilical or Incisional); 2. Testicular Torsion; 3. Inguinal / Femoral Hernia
+- differential web.pane: 1. Testicular Torsion; 2. Incarcerated / Strangulated Hernia (Groin, Umbilical or Incisional); 3. Inguinal / Femoral Hernia
 - differential web.symptomInference: 1. Testicular torsion / epididymo-orchitis; 2. Inguinal hernia (paediatric); 3. Varicocele; 4. Acute appendicitis (paediatric); 5. Testicular germ cell tumour
 - differential web.passive: 1. Testicular torsion / epididymo-orchitis; 2. Varicocele; 3. Inguinal hernia (paediatric); 4. Acute gastroenteritis; 5. Hypertrophic pyloric stenosis
 - differential web.triageSurgical: (empty)
@@ -7122,10 +7950,11 @@ Guidelines:
 - recommended scores: news2
 - score values: (none)
 - dx variant: (none) (no group)
-- note: PANE features applied: groin_swelling, sudden_onset, acute_onset, scrotal_swelling, localised_pain, severe_pain, groin_pain, nausea_vomiting, high_riding_testis, hernia_swelling, tachycardia, trauma_mechanism, recent_surgery, aortic_graft, stoma
+- note: PANE features applied: groin_swelling, sudden_onset, acute_onset, scrotal_swelling, localised_pain, severe_pain, groin_pain, nausea_vomiting, high_riding_testis, tachycardia, trauma_mechanism, recent_surgery, aortic_graft, stoma
 - note: AssessmentTab ManagementPanel protocol: testicular_torsion (from the confirmed diagnosis)
 - note: PlanTab protocol: testicular_torsion (from the confirmed diagnosis)
 - note: Seeded investigations: testicular_torsion (confirmed); 0 stat test(s) held back
+- note: Decision support: (no decision); factors (none)
 - note: matchPathways: Hernia (Inguinal / Umbilical / Incisional / Femoral) (5)
 
 </details>
@@ -7166,6 +7995,7 @@ Guidelines:
 - note: AssessmentTab ManagementPanel protocol: ovarian_torsion (from the confirmed diagnosis)
 - note: PlanTab protocol: ovarian_torsion (from the confirmed diagnosis)
 - note: Seeded investigations: ovarian_torsion (confirmed); 0 stat test(s) held back
+- note: Decision support: (no decision); factors (none)
 - note: matchPathways: Acute Abdomen (7), Acute Appendicitis (7), Anorectal (Haemorrhoids / Fissure / Fistula / Abscess) (7)
 
 </details>
@@ -7207,6 +8037,7 @@ Guidelines:
 - note: AssessmentTab ManagementPanel protocol: ovarian_torsion (from the confirmed diagnosis)
 - note: PlanTab protocol: ovarian_torsion (from the confirmed diagnosis)
 - note: Seeded investigations: ovarian_torsion (confirmed); 0 stat test(s) held back
+- note: Decision support: (no decision); factors (none)
 - note: matchPathways: Acute Abdomen (7), Acute Appendicitis (7), Anorectal (Haemorrhoids / Fissure / Fistula / Abscess) (7)
 
 </details>
@@ -7252,6 +8083,7 @@ Guidelines:
 - note: AssessmentTab ManagementPanel protocol: pelvic_inflammatory_disease (from the confirmed diagnosis)
 - note: PlanTab protocol: pelvic_inflammatory_disease (from the confirmed diagnosis)
 - note: Seeded investigations: pelvic_inflammatory_disease (confirmed); 0 stat test(s) held back
+- note: Decision support: sepsis; factors news2High
 - note: matchPathways: Acute Abdomen (7), Acute Appendicitis (7), Anorectal (Haemorrhoids / Fissure / Fistula / Abscess) (7)
 
 </details>
@@ -7295,6 +8127,7 @@ Guidelines:
 - note: AssessmentTab ManagementPanel protocol: pelvic_inflammatory_disease (from the confirmed diagnosis)
 - note: PlanTab protocol: pelvic_inflammatory_disease (from the confirmed diagnosis)
 - note: Seeded investigations: pelvic_inflammatory_disease (confirmed); 0 stat test(s) held back
+- note: Decision support: (no decision); factors (none)
 - note: matchPathways: Acute Abdomen (7), Acute Appendicitis (7), Anorectal (Haemorrhoids / Fissure / Fistula / Abscess) (7)
 
 </details>
@@ -7341,6 +8174,9 @@ Guidelines:
 - note: AssessmentTab ManagementPanel protocol: ovarian_cyst (from the confirmed diagnosis)
 - note: PlanTab protocol: ovarian_cyst (from the confirmed diagnosis)
 - note: Seeded investigations: ovarian_cyst (confirmed); 0 stat test(s) held back
+- note: Decision Peri-procedural anticoagulation bridging — missing: Record eGFR to refine: eGFR below 30 raises operative and anticoagulant harm (bridging with therapeutic-dose LMWH).
+- note: Decision Peri-procedural anticoagulation bridging — missing: Record HAS-BLED to refine: HAS-BLED 3 or more raises anticoagulant bleeding (bridging with therapeutic-dose LMWH).
+- note: Decision support: periop-bridging; factors anticoagulated, doacOnly
 - note: matchPathways: Acute Abdomen (7), Acute Appendicitis (7), Anorectal (Haemorrhoids / Fissure / Fistula / Abscess) (7)
 
 </details>
@@ -7379,6 +8215,7 @@ Guidelines:
 - note: AssessmentTab ManagementPanel protocol: gastritis (from the confirmed diagnosis)
 - note: PlanTab protocol: gastritis (from the confirmed diagnosis)
 - note: Seeded investigations: gastritis (confirmed); 0 stat test(s) held back
+- note: Decision support: (no decision); factors penicillinAllergy
 - note: matchPathways: Post-operative Follow-up (General) (10), Upper GI Endoscopy (Dyspepsia / GORD / Dysphagia) (10)
 
 </details>
@@ -7417,6 +8254,7 @@ Guidelines:
 - note: AssessmentTab ManagementPanel protocol: gastritis (from the confirmed diagnosis)
 - note: PlanTab protocol: gastritis (from the confirmed diagnosis)
 - note: Seeded investigations: gastritis (confirmed); 0 stat test(s) held back
+- note: Decision support: (no decision); factors (none)
 - note: matchPathways: Post-operative Follow-up (General) (10), Upper GI Endoscopy (Dyspepsia / GORD / Dysphagia) (10)
 
 </details>
@@ -7461,6 +8299,7 @@ Guidelines:
 - note: AssessmentTab ManagementPanel protocol: urinary_retention (from the confirmed diagnosis)
 - note: PlanTab protocol: urinary_retention (from the confirmed diagnosis)
 - note: Seeded investigations: urinary_retention (confirmed); 0 stat test(s) held back
+- note: Decision support: (no decision); factors age65to79, anticoagulated, doacOnly
 
 </details>
 
@@ -7501,6 +8340,7 @@ Guidelines:
 - note: AssessmentTab ManagementPanel protocol: haematuria_investigation (from the confirmed diagnosis)
 - note: PlanTab protocol: haematuria_investigation (from the confirmed diagnosis)
 - note: Seeded investigations: haematuria_investigation (confirmed); 0 stat test(s) held back
+- note: Decision support: (no decision); factors age65to79
 
 </details>
 
@@ -7527,7 +8367,7 @@ Guidelines:
 <details><summary>web engine outputs</summary>
 
 - engine: paneEngine=pane-engine (188 diseases, 426 features); triageRulesVersion=1.4.0
-- differential web.pane: 1. Rectal Carcinoma; 2. Anal Fissure; 3. Haemorrhoids
+- differential web.pane: 1. Anal Fissure; 2. Haemorrhoids; 3. Ulcerative Colitis
 - differential web.symptomInference: 1. Lower GI bleed / colorectal; 2. Colorectal carcinoma; 3. Anal fissure; 4. Haemorrhoids / anorectal disease; 5. Rectal prolapse
 - differential web.passive: 1. Lower GI bleed / colorectal; 2. Haemorrhoids / anorectal disease; 3. Meckel's diverticulum; 4. Intussusception; 5. Colorectal carcinoma
 - differential web.triageSurgical: 1. Change in bowel habit / lower GI bleed — investigation
@@ -7536,10 +8376,13 @@ Guidelines:
 - recommended scores: cha2ds2-vasc, news2, rockall, caprini, has-bled, asa, rcri, cfs
 - score values: (none)
 - dx variant: (none) (no group)
-- note: PANE features applied: pr_bleeding, chronic_course, anal_pain, episodic_pain, known_af, known_hypertension, vascular_risk, anticoagulant_use, change_bowel_habit, rectal_mass, trauma_mechanism, recent_surgery, aortic_graft, stoma
+- note: PANE features applied: pr_bleeding, chronic_course, anal_pain, episodic_pain, known_af, known_hypertension, vascular_risk, anticoagulant_use, change_bowel_habit, trauma_mechanism, recent_surgery, aortic_graft, stoma
 - note: AssessmentTab ManagementPanel protocol: haemorrhoids (from the confirmed diagnosis)
 - note: PlanTab protocol: haemorrhoids (from the confirmed diagnosis)
 - note: Seeded investigations: haemorrhoids (confirmed); 0 stat test(s) held back
+- note: Decision Peri-procedural anticoagulation bridging — missing: Record eGFR to refine: eGFR below 30 raises operative and anticoagulant harm (bridging with therapeutic-dose LMWH).
+- note: Decision Peri-procedural anticoagulation bridging — missing: Record HAS-BLED to refine: HAS-BLED 3 or more raises anticoagulant bleeding (bridging with therapeutic-dose LMWH).
+- note: Decision support: periop-bridging; factors age65to79, anticoagulated
 - note: matchPathways: Colonoscopy Diagnostic (Rectal Bleeding / Bowel Habit Change / Iron Deficiency) (29), IBD — Surgical Complications (Crohn's / UC) (14), Cancer Screening (Age/Sex Appropriate) (7)
 
 </details>
@@ -7578,10 +8421,11 @@ Guidelines:
 - recommended scores: news2, rockall, caprini, asa, rcri
 - score values: (none)
 - dx variant: (none) (no group)
-- note: PANE features applied: pr_bleeding, chronic_course, anal_pain, mucus_pr, faecal_incontinence, episodic_pain, worse_straining, perianal_swelling, discharge_perianal, prolapse_pr, known_hypertension, vascular_risk, rectal_mass, hernia_compressible, trauma_mechanism, recent_surgery, aortic_graft, stoma
+- note: PANE features applied: pr_bleeding, chronic_course, anal_pain, mucus_pr, faecal_incontinence, episodic_pain, worse_straining, perianal_swelling, discharge_perianal, prolapse_pr, known_hypertension, vascular_risk, hernia_compressible, trauma_mechanism, recent_surgery, aortic_graft, stoma
 - note: AssessmentTab ManagementPanel protocol: haemorrhoids (from the confirmed diagnosis)
 - note: PlanTab protocol: haemorrhoids (from the confirmed diagnosis)
 - note: Seeded investigations: haemorrhoids (confirmed); 0 stat test(s) held back
+- note: Decision support: (no decision); factors (none)
 - note: matchPathways: Colonoscopy Diagnostic (Rectal Bleeding / Bowel Habit Change / Iron Deficiency) (17), IBD — Surgical Complications (Crohn's / UC) (12), Cancer Screening (Age/Sex Appropriate) (7)
 
 </details>
@@ -7619,6 +8463,7 @@ Guidelines:
 - note: AssessmentTab ManagementPanel protocol: haemorrhoids (from the confirmed diagnosis)
 - note: PlanTab protocol: haemorrhoids (from the confirmed diagnosis)
 - note: Seeded investigations: haemorrhoids (confirmed); 0 stat test(s) held back
+- note: Decision support: (no decision); factors (none)
 - note: matchPathways: Anorectal (Haemorrhoids / Fissure / Fistula / Abscess) (10), Colonoscopy Diagnostic (Rectal Bleeding / Bowel Habit Change / Iron Deficiency) (5), GI Bleeding (Upper and Lower) (5)
 
 </details>
@@ -7659,6 +8504,7 @@ Guidelines:
 - note: AssessmentTab ManagementPanel protocol: femoral_hernia (from the confirmed diagnosis)
 - note: PlanTab protocol: femoral_hernia (from the confirmed diagnosis)
 - note: Seeded investigations: femoral_hernia (confirmed); 0 stat test(s) held back
+- note: Decision support: (no decision); factors age65to79
 - note: matchPathways: Hernia (Inguinal / Umbilical / Incisional / Femoral) (10), Wound Management (Acute / Chronic / SSI) (5)
 
 </details>
@@ -7707,6 +8553,12 @@ Guidelines:
 - note: AssessmentTab ManagementPanel protocol: femoral_hernia (from the confirmed diagnosis)
 - note: PlanTab protocol: femoral_hernia (from the confirmed diagnosis)
 - note: Seeded investigations: femoral_hernia (confirmed); 0 stat test(s) held back
+- note: Decision Emergency laparotomy (source control) — missing: Record Clinical Frailty Scale to refine: frailty raises the harm of operations and procedures (emergency laparotomy).
+- note: Decision Emergency laparotomy (source control) — missing: Record ASA grade to refine: ASA III-IV raises operative harm (emergency laparotomy).
+- note: Decision Emergency laparotomy (source control) — missing: Record eGFR to refine: eGFR below 30 raises operative and anticoagulant harm (emergency laparotomy).
+- note: Decision Peri-procedural anticoagulation bridging — missing: Record eGFR to refine: eGFR below 30 raises operative and anticoagulant harm (bridging with therapeutic-dose LMWH).
+- note: Decision Peri-procedural anticoagulation bridging — missing: Record HAS-BLED to refine: HAS-BLED 3 or more raises anticoagulant bleeding (bridging with therapeutic-dose LMWH).
+- note: Decision support: emergency-laparotomy, periop-bridging; factors age80plus, anticoagulated, doacOnly
 - note: matchPathways: Bowel Obstruction (Small / Large) (12), Hernia (Inguinal / Umbilical / Incisional / Femoral) (12), Acute Abdomen (7)
 
 </details>
@@ -7746,11 +8598,12 @@ Guidelines:
 - recommended scores: news2, caprini, asa, rcri, cfs
 - score values: (none)
 - dx variant: hernia_incarcerated (Hernia)
-- note: PANE features applied: groin_swelling, sudden_onset, acute_onset, localised_pain, worse_straining, hernia_swelling, groin_pain, hernia_irreducible, known_hypertension, vascular_risk, acei_arb_use, hernia_compressible, groin_lump_reducible, abdominal_tenderness, raised_bp, trauma_mechanism, recent_surgery, aortic_graft, stoma
+- note: PANE features applied: groin_swelling, sudden_onset, acute_onset, localised_pain, worse_straining, hernia_swelling, groin_pain, hernia_irreducible, known_hypertension, vascular_risk, acei_arb_use, hernia_compressible, groin_lump_reducible, raised_bp, trauma_mechanism, recent_surgery, aortic_graft, stoma
 - note: AssessmentTab ManagementPanel protocol: inguinal_hernia (from the confirmed diagnosis)
 - note: PlanTab protocol: inguinal_hernia (from the confirmed diagnosis)
 - note: Seeded investigations: inguinal_hernia (confirmed); 0 stat test(s) held back
 - note: no web calculator for score form 'qsofa'
+- note: Decision support: (no decision); factors age65to79
 - note: matchPathways: Hernia (Inguinal / Umbilical / Incisional / Femoral) (20), IBD — Surgical Complications (Crohn's / UC) (5), Wound Management (Acute / Chronic / SSI) (5)
 
 </details>
@@ -7799,6 +8652,10 @@ Guidelines:
 - note: PlanTab protocol: inguinal_hernia (from the confirmed diagnosis)
 - note: Seeded investigations: inguinal_hernia (confirmed); 0 stat test(s) held back
 - note: no web calculator for score form 'qsofa'
+- note: Decision Emergency laparotomy (source control) — missing: Record Clinical Frailty Scale to refine: frailty raises the harm of operations and procedures (emergency laparotomy).
+- note: Decision Emergency laparotomy (source control) — missing: Record ASA grade to refine: ASA III-IV raises operative harm (emergency laparotomy).
+- note: Decision Emergency laparotomy (source control) — missing: Record eGFR to refine: eGFR below 30 raises operative and anticoagulant harm (emergency laparotomy).
+- note: Decision support: emergency-laparotomy; factors age65to79, diabetes, news2High, shock
 - note: matchPathways: Hernia (Inguinal / Umbilical / Incisional / Femoral) (15), Bowel Obstruction (Small / Large) (5), IBD — Surgical Complications (Crohn's / UC) (5)
 
 </details>
@@ -7841,6 +8698,7 @@ Guidelines:
 - note: AssessmentTab ManagementPanel protocol: incisional_hernia (from the confirmed diagnosis)
 - note: PlanTab protocol: incisional_hernia (from the confirmed diagnosis)
 - note: Seeded investigations: incisional_hernia (confirmed); 0 stat test(s) held back
+- note: Decision support: (no decision); factors diabetes
 - note: matchPathways: Hernia (Inguinal / Umbilical / Incisional / Femoral) (5)
 
 </details>
@@ -7882,6 +8740,9 @@ Guidelines:
 - note: AssessmentTab ManagementPanel protocol: inguinal_hernia (from the confirmed diagnosis)
 - note: PlanTab protocol: inguinal_hernia (from the confirmed diagnosis)
 - note: Seeded investigations: inguinal_hernia (confirmed); 0 stat test(s) held back
+- note: Decision Inguinal hernia (reducible, minimally symptomatic) — missing: Record ASA grade to refine: ASA III-IV raises operative harm (elective inguinal hernia repair).
+- note: Decision Inguinal hernia (reducible, minimally symptomatic) — missing: Record eGFR to refine: eGFR below 30 raises operative and anticoagulant harm (elective inguinal hernia repair).
+- note: Decision support: inguinal-hernia; factors (none)
 - note: matchPathways: Hernia (Inguinal / Umbilical / Incisional / Femoral) (15), IBD — Surgical Complications (Crohn's / UC) (12), Cancer Screening (Age/Sex Appropriate) (7)
 
 </details>
@@ -7922,6 +8783,7 @@ Guidelines:
 - note: AssessmentTab ManagementPanel protocol: inguinal_hernia (from the confirmed diagnosis)
 - note: PlanTab protocol: inguinal_hernia (from the confirmed diagnosis)
 - note: Seeded investigations: inguinal_hernia (confirmed); 0 stat test(s) held back
+- note: Decision support: (no decision); factors (none)
 - note: matchPathways: Hernia (Inguinal / Umbilical / Incisional / Femoral) (15), Colonoscopy Diagnostic (Rectal Bleeding / Bowel Habit Change / Iron Deficiency) (12), Diverticular Disease / Diverticulitis (7)
 
 </details>
@@ -7965,6 +8827,7 @@ Guidelines:
 - note: AssessmentTab ManagementPanel protocol: obturator_hernia (from the confirmed diagnosis)
 - note: PlanTab protocol: obturator_hernia (from the confirmed diagnosis)
 - note: Seeded investigations: obturator_hernia (confirmed); 0 stat test(s) held back
+- note: Decision support: (no decision); factors age80plus
 - note: matchPathways: Bowel Obstruction (Small / Large) (12), Acute Abdomen (7), Acute Appendicitis (7)
 
 </details>
@@ -8006,6 +8869,7 @@ Guidelines:
 - note: AssessmentTab ManagementPanel protocol: inguinal_hernia (from the confirmed diagnosis)
 - note: PlanTab protocol: inguinal_hernia (from the confirmed diagnosis)
 - note: Seeded investigations: inguinal_hernia (confirmed); 0 stat test(s) held back
+- note: Decision support: (no decision); factors (none)
 - note: matchPathways: Hernia (Inguinal / Umbilical / Incisional / Femoral) (10)
 
 </details>
@@ -8044,6 +8908,10 @@ Guidelines:
 - note: AssessmentTab ManagementPanel protocol: inguinal_hernia (from the confirmed diagnosis)
 - note: PlanTab protocol: inguinal_hernia (from the confirmed diagnosis)
 - note: Seeded investigations: inguinal_hernia (confirmed); 0 stat test(s) held back
+- note: Decision Inguinal hernia (reducible, minimally symptomatic) — missing: Record ASA grade to refine: ASA III-IV raises operative harm (elective inguinal hernia repair).
+- note: Decision Inguinal hernia (reducible, minimally symptomatic) — missing: Record eGFR to refine: eGFR below 30 raises operative and anticoagulant harm (elective inguinal hernia repair).
+- note: Decision Inguinal hernia (reducible, minimally symptomatic) — missing: Record BMI (height and weight) to refine: BMI 40 or more raises operative harm (elective inguinal hernia repair).
+- note: Decision support: inguinal-hernia; factors (none)
 - note: matchPathways: Hernia (Inguinal / Umbilical / Incisional / Femoral) (10)
 
 </details>
@@ -8086,6 +8954,7 @@ Guidelines:
 - note: AssessmentTab ManagementPanel protocol: parastomal_hernia (from the confirmed diagnosis)
 - note: PlanTab protocol: parastomal_hernia (from the confirmed diagnosis)
 - note: Seeded investigations: parastomal_hernia (confirmed); 0 stat test(s) held back
+- note: Decision support: (no decision); factors age65to79
 - note: matchPathways: Hernia (Inguinal / Umbilical / Incisional / Femoral) (5)
 
 </details>
@@ -8134,6 +9003,7 @@ Guidelines:
 - note: AssessmentTab ManagementPanel protocol: umbilical_hernia (from the confirmed diagnosis)
 - note: PlanTab protocol: umbilical_hernia (from the confirmed diagnosis)
 - note: Seeded investigations: umbilical_hernia (confirmed); 0 stat test(s) held back
+- note: Decision support: (no decision); factors penicillinAllergy, diabetes
 - note: matchPathways: Hernia (Inguinal / Umbilical / Incisional / Femoral) (10), IBD — Surgical Complications (Crohn's / UC) (5), Wound Management (Acute / Chronic / SSI) (5)
 
 </details>
@@ -8172,6 +9042,7 @@ Guidelines:
 - note: AssessmentTab ManagementPanel protocol: umbilical_hernia (from the confirmed diagnosis)
 - note: PlanTab protocol: umbilical_hernia (from the confirmed diagnosis)
 - note: Seeded investigations: umbilical_hernia (confirmed); 0 stat test(s) held back
+- note: Decision support: (no decision); factors (none)
 - note: matchPathways: Hernia (Inguinal / Umbilical / Incisional / Femoral) (5), Wound Management (Acute / Chronic / SSI) (5)
 
 </details>
@@ -8215,6 +9086,7 @@ Guidelines:
 - note: AssessmentTab ManagementPanel protocol: umbilical_hernia (from the confirmed diagnosis)
 - note: PlanTab protocol: umbilical_hernia (from the confirmed diagnosis)
 - note: Seeded investigations: umbilical_hernia (confirmed); 0 stat test(s) held back
+- note: Decision support: (no decision); factors (none)
 - note: matchPathways: Bowel Obstruction (Small / Large) (5), Hernia (Inguinal / Umbilical / Incisional / Femoral) (5)
 
 </details>
@@ -8260,6 +9132,7 @@ Guidelines:
 - note: AssessmentTab ManagementPanel protocol: hyperosmolar_hyperglycaemic_state (from the confirmed diagnosis)
 - note: PlanTab protocol: hyperosmolar_hyperglycaemic_state (from the confirmed diagnosis)
 - note: Seeded investigations: hyperosmolar_hyperglycaemic_state (confirmed); 0 stat test(s) held back
+- note: Decision support: (no decision); factors age80plus, diabetes, news2High
 - note: matchPathways: Wound Management (Acute / Chronic / SSI) (5)
 
 </details>
@@ -8304,6 +9177,7 @@ Guidelines:
 - note: AssessmentTab ManagementPanel protocol: hypercalcaemia (from the confirmed diagnosis)
 - note: PlanTab protocol: hypercalcaemia (from the confirmed diagnosis)
 - note: Seeded investigations: hypercalcaemia (confirmed); 0 stat test(s) held back
+- note: Decision support: (no decision); factors (none)
 - note: matchPathways: Breast Lump / Breast Disease (5), Wound Management (Acute / Chronic / SSI) (5)
 
 </details>
@@ -8347,6 +9221,7 @@ Guidelines:
 - note: AssessmentTab ManagementPanel protocol: hypercalcaemia (from the confirmed diagnosis)
 - note: PlanTab protocol: hypercalcaemia (from the confirmed diagnosis)
 - note: Seeded investigations: hypercalcaemia (confirmed); 0 stat test(s) held back
+- note: Decision support: (no decision); factors age65to79
 - note: matchPathways: Colonoscopy Diagnostic (Rectal Bleeding / Bowel Habit Change / Iron Deficiency) (17), Anorectal (Haemorrhoids / Fissure / Fistula / Abscess) (12), GI Bleeding (Upper and Lower) (12)
 
 </details>
@@ -8394,6 +9269,7 @@ Guidelines:
 - note: AssessmentTab ManagementPanel protocol: acute_kidney_injury (from the confirmed diagnosis)
 - note: PlanTab protocol: acute_kidney_injury (from the confirmed diagnosis)
 - note: Seeded investigations: acute_kidney_injury (confirmed); 0 stat test(s) held back
+- note: Decision support: (no decision); factors age65to79, recentSurgery21d
 - note: matchPathways: Diverticular Disease / Diverticulitis (10), Chest Pain — Emergency Redirect (5)
 
 </details>
@@ -8438,6 +9314,7 @@ Guidelines:
 - note: AssessmentTab ManagementPanel protocol: hyperkalaemia (from the confirmed diagnosis)
 - note: PlanTab protocol: hyperkalaemia (from the confirmed diagnosis)
 - note: Seeded investigations: hyperkalaemia (confirmed); 0 stat test(s) held back
+- note: Decision support: (no decision); factors age65to79, diabetes
 - note: matchPathways: Chest Pain — Emergency Redirect (5)
 
 </details>
@@ -8479,6 +9356,7 @@ Guidelines:
 - note: AssessmentTab ManagementPanel protocol: hypoglycaemia (from the confirmed diagnosis)
 - note: PlanTab protocol: hypoglycaemia (from the confirmed diagnosis)
 - note: Seeded investigations: hypoglycaemia (confirmed); 0 stat test(s) held back
+- note: Decision support: (no decision); factors diabetes
 - note: matchPathways: IBD — Surgical Complications (Crohn's / UC) (5), Pre-operative Assessment (5)
 
 </details>
@@ -8519,6 +9397,7 @@ Guidelines:
 - note: AssessmentTab ManagementPanel protocol: hypoglycaemia (from the confirmed diagnosis)
 - note: PlanTab protocol: hypoglycaemia (from the confirmed diagnosis)
 - note: Seeded investigations: hypoglycaemia (confirmed); 0 stat test(s) held back
+- note: Decision support: (no decision); factors age65to79, egfrBelow30, diabetes
 
 </details>
 
@@ -8561,6 +9440,7 @@ Guidelines:
 - note: AssessmentTab ManagementPanel protocol: hyponatraemia (from the confirmed diagnosis)
 - note: PlanTab protocol: hyponatraemia (from the confirmed diagnosis)
 - note: Seeded investigations: hyponatraemia (confirmed); 0 stat test(s) held back
+- note: Decision support: (no decision); factors age80plus
 
 </details>
 
@@ -8601,6 +9481,7 @@ Guidelines:
 - note: AssessmentTab ManagementPanel protocol: hyponatraemia (from the confirmed diagnosis)
 - note: PlanTab protocol: hyponatraemia (from the confirmed diagnosis)
 - note: Seeded investigations: hyponatraemia (confirmed); 0 stat test(s) held back
+- note: Decision support: (no decision); factors recentSurgery21d
 - note: matchPathways: Wound Management (Acute / Chronic / SSI) (5)
 
 </details>
@@ -8642,6 +9523,7 @@ Guidelines:
 - note: AssessmentTab ManagementPanel protocol: hyponatraemia (from the confirmed diagnosis)
 - note: PlanTab protocol: hyponatraemia (from the confirmed diagnosis)
 - note: Seeded investigations: hyponatraemia (confirmed); 0 stat test(s) held back
+- note: Decision support: (no decision); factors recentSurgery21d
 - note: matchPathways: Gallbladder Disease (Biliary Colic / Cholecystitis / Choledocholithiasis) (5), IBD — Surgical Complications (Crohn's / UC) (5), Post-operative Follow-up (General) (5)
 
 </details>
@@ -8685,6 +9567,7 @@ Guidelines:
 - note: AssessmentTab ManagementPanel protocol: infective_colitis (from the confirmed diagnosis)
 - note: PlanTab protocol: infective_colitis (from the confirmed diagnosis)
 - note: Seeded investigations: infective_colitis (confirmed); 0 stat test(s) held back
+- note: Decision support: (no decision); factors (none)
 - note: matchPathways: Anorectal (Haemorrhoids / Fissure / Fistula / Abscess) (12), Acute Abdomen (7), Acute Appendicitis (7)
 
 </details>
@@ -8727,6 +9610,7 @@ Guidelines:
 - note: AssessmentTab ManagementPanel protocol: iron_deficiency_anaemia (from the confirmed diagnosis)
 - note: PlanTab protocol: iron_deficiency_anaemia (from the confirmed diagnosis)
 - note: Seeded investigations: iron_deficiency_anaemia (confirmed); 0 stat test(s) held back
+- note: Decision support: (no decision); factors age65to79
 - note: matchPathways: Colonoscopy Diagnostic (Rectal Bleeding / Bowel Habit Change / Iron Deficiency) (5)
 
 </details>
@@ -8767,6 +9651,7 @@ Guidelines:
 - note: AssessmentTab ManagementPanel protocol: ischaemic_colitis (from the confirmed diagnosis)
 - note: PlanTab protocol: ischaemic_colitis (from the confirmed diagnosis)
 - note: Seeded investigations: ischaemic_colitis (confirmed); 0 stat test(s) held back
+- note: Decision support: (no decision); factors age65to79, antiplatelet, diabetes
 - note: matchPathways: Anorectal (Haemorrhoids / Fissure / Fistula / Abscess) (5), Colonoscopy Diagnostic (Rectal Bleeding / Bowel Habit Change / Iron Deficiency) (5), GI Bleeding (Upper and Lower) (5)
 
 </details>
@@ -8807,6 +9692,10 @@ Guidelines:
 - note: AssessmentTab ManagementPanel protocol: mesenteric_ischaemia (from the confirmed diagnosis)
 - note: PlanTab protocol: mesenteric_ischaemia (from the confirmed diagnosis)
 - note: Seeded investigations: mesenteric_ischaemia (confirmed); 0 stat test(s) held back
+- note: Decision Emergency laparotomy (source control) — missing: Record Clinical Frailty Scale to refine: frailty raises the harm of operations and procedures (emergency laparotomy).
+- note: Decision Emergency laparotomy (source control) — missing: Record ASA grade to refine: ASA III-IV raises operative harm (emergency laparotomy).
+- note: Decision Emergency laparotomy (source control) — missing: Record eGFR to refine: eGFR below 30 raises operative and anticoagulant harm (emergency laparotomy).
+- note: Decision support: emergency-laparotomy; factors age65to79, shock
 - note: matchPathways: Anorectal (Haemorrhoids / Fissure / Fistula / Abscess) (12), IBD — Surgical Complications (Crohn's / UC) (12), Acute Abdomen (7)
 
 </details>
@@ -8852,6 +9741,7 @@ Guidelines:
 - note: AssessmentTab ManagementPanel protocol: acute_hepatitis (from the confirmed diagnosis)
 - note: PlanTab protocol: acute_hepatitis (from the confirmed diagnosis)
 - note: Seeded investigations: acute_hepatitis (confirmed); 0 stat test(s) held back
+- note: Decision support: (no decision); factors (none)
 - note: matchPathways: Jaundice Workup (25), Gallbladder Disease (Biliary Colic / Cholecystitis / Choledocholithiasis) (15), ERCP (Obstructive Jaundice / Bile Duct Stones / Pancreatic Duct) (10)
 
 </details>
@@ -8895,6 +9785,7 @@ Guidelines:
 - note: AssessmentTab ManagementPanel protocol: colorectal_cancer (from the confirmed diagnosis)
 - note: PlanTab protocol: colorectal_cancer (from the confirmed diagnosis)
 - note: Seeded investigations: colorectal_cancer (confirmed); 0 stat test(s) held back
+- note: Decision support: (no decision); factors age65to79, diabetes
 - note: matchPathways: Colonoscopy Diagnostic (Rectal Bleeding / Bowel Habit Change / Iron Deficiency) (17), Cancer Screening (Age/Sex Appropriate) (7), IBD — Surgical Complications (Crohn's / UC) (7)
 
 </details>
@@ -8934,6 +9825,10 @@ Guidelines:
 - note: AssessmentTab ManagementPanel protocol: colorectal_cancer (from the confirmed diagnosis)
 - note: PlanTab protocol: colorectal_cancer (from the confirmed diagnosis)
 - note: Seeded investigations: colorectal_cancer (confirmed); 0 stat test(s) held back
+- note: Decision Emergency laparotomy (source control) — missing: Record Clinical Frailty Scale to refine: frailty raises the harm of operations and procedures (emergency laparotomy).
+- note: Decision Emergency laparotomy (source control) — missing: Record ASA grade to refine: ASA III-IV raises operative harm (emergency laparotomy).
+- note: Decision Emergency laparotomy (source control) — missing: Record eGFR to refine: eGFR below 30 raises operative and anticoagulant harm (emergency laparotomy).
+- note: Decision support: emergency-laparotomy; factors age65to79, news2High
 - note: matchPathways: Diverticular Disease / Diverticulitis (14), IBD — Surgical Complications (Crohn's / UC) (14), Bowel Obstruction (Small / Large) (12)
 
 </details>
@@ -8971,6 +9866,7 @@ Guidelines:
 - note: AssessmentTab ManagementPanel protocol: colorectal_cancer (from the confirmed diagnosis)
 - note: PlanTab protocol: colorectal_cancer (from the confirmed diagnosis)
 - note: Seeded investigations: colorectal_cancer (confirmed); 0 stat test(s) held back
+- note: Decision support: (no decision); factors age65to79
 - note: matchPathways: Bowel Obstruction (Small / Large) (12), Colonoscopy Diagnostic (Rectal Bleeding / Bowel Habit Change / Iron Deficiency) (10), Acute Abdomen (7)
 
 </details>
@@ -9017,6 +9913,7 @@ Guidelines:
 - note: AssessmentTab ManagementPanel protocol: angiodysplasia (from the confirmed diagnosis)
 - note: PlanTab protocol: angiodysplasia (from the confirmed diagnosis)
 - note: Seeded investigations: angiodysplasia (confirmed); 0 stat test(s) held back
+- note: Decision support: (no decision); factors age65to79, antiplatelet
 - note: matchPathways: Colonoscopy Diagnostic (Rectal Bleeding / Bowel Habit Change / Iron Deficiency) (29), IBD — Surgical Complications (Crohn's / UC) (14), Cancer Screening (Age/Sex Appropriate) (7)
 
 </details>
@@ -9065,6 +9962,8 @@ Guidelines:
 - note: AssessmentTab ManagementPanel protocol: lower_gi_bleed (from the confirmed diagnosis)
 - note: PlanTab protocol: lower_gi_bleed (from the confirmed diagnosis)
 - note: Seeded investigations: lower_gi_bleed (confirmed); 0 stat test(s) held back
+- note: Decision Acute uncomplicated diverticulitis — missing: Record Clinical Frailty Scale to refine: frailty raises the harm of operations and procedures (hospital admission).
+- note: Decision support: diverticulitis; factors age65to79, anticoagulated, doacOnly
 - note: matchPathways: Anorectal (Haemorrhoids / Fissure / Fistula / Abscess) (12), Diverticular Disease / Diverticulitis (12), Acute Abdomen (7)
 
 </details>
@@ -9110,6 +10009,7 @@ Guidelines:
 - note: AssessmentTab ManagementPanel protocol: haemorrhoids (from the confirmed diagnosis)
 - note: PlanTab protocol: haemorrhoids (from the confirmed diagnosis)
 - note: Seeded investigations: haemorrhoids (confirmed); 0 stat test(s) held back
+- note: Decision support: (no decision); factors (none)
 - note: matchPathways: Colonoscopy Diagnostic (Rectal Bleeding / Bowel Habit Change / Iron Deficiency) (29), IBD — Surgical Complications (Crohn's / UC) (21), Diverticular Disease / Diverticulitis (14)
 
 </details>
@@ -9151,6 +10051,7 @@ Guidelines:
 - note: AssessmentTab ManagementPanel protocol: lower_gi_bleed (from the confirmed diagnosis)
 - note: PlanTab protocol: lower_gi_bleed (from the confirmed diagnosis)
 - note: Seeded investigations: lower_gi_bleed (confirmed); 0 stat test(s) held back
+- note: Decision support: (no decision); factors age65to79, antiplatelet, diabetes, recentSurgery21d
 - note: matchPathways: Anorectal (Haemorrhoids / Fissure / Fistula / Abscess) (12), IBD — Surgical Complications (Crohn's / UC) (12), Colonoscopy Diagnostic (Rectal Bleeding / Bowel Habit Change / Iron Deficiency) (10)
 
 </details>
@@ -9200,6 +10101,8 @@ Guidelines:
 - note: AssessmentTab ManagementPanel protocol: lower_gi_bleed (from the confirmed diagnosis)
 - note: PlanTab protocol: lower_gi_bleed (from the confirmed diagnosis)
 - note: Seeded investigations: lower_gi_bleed (confirmed); 0 stat test(s) held back
+- note: Decision Upper GI bleeding — admission and endoscopy timing — missing: Calculate the Glasgow-Blatchford score to set the risk.
+- note: Decision support: upper-gi-bleed; factors age65to79, news2High, shock
 - note: matchPathways: Diverticular Disease / Diverticulitis (17), GI Bleeding (Upper and Lower) (15), Anorectal (Haemorrhoids / Fissure / Fistula / Abscess) (12)
 
 </details>
@@ -9240,6 +10143,8 @@ Guidelines:
 - note: AssessmentTab ManagementPanel protocol: lower_gi_bleed (from the confirmed diagnosis)
 - note: PlanTab protocol: lower_gi_bleed (from the confirmed diagnosis)
 - note: Seeded investigations: lower_gi_bleed (confirmed); 0 stat test(s) held back
+- note: Decision Upper GI bleeding — admission and endoscopy timing — missing: Calculate the Glasgow-Blatchford score to set the risk.
+- note: Decision support: upper-gi-bleed; factors age80plus, anticoagulated, news2High, shock
 - note: matchPathways: Anorectal (Haemorrhoids / Fissure / Fistula / Abscess) (12), Diverticular Disease / Diverticulitis (12), Colonoscopy Diagnostic (Rectal Bleeding / Bowel Habit Change / Iron Deficiency) (10)
 
 </details>
@@ -9283,6 +10188,7 @@ Guidelines:
 - note: AssessmentTab ManagementPanel protocol: amoebic_liver_abscess (from the confirmed diagnosis)
 - note: PlanTab protocol: amoebic_liver_abscess (from the confirmed diagnosis)
 - note: Seeded investigations: amoebic_liver_abscess (confirmed); 0 stat test(s) held back
+- note: Decision support: (no decision); factors (none)
 - note: matchPathways: Gallbladder Disease (Biliary Colic / Cholecystitis / Choledocholithiasis) (19), Pancreatic Mass / Cyst (14), Acute Abdomen (7)
 
 </details>
@@ -9331,6 +10237,7 @@ Guidelines:
 - note: AssessmentTab ManagementPanel protocol: liver_abscess (from the confirmed diagnosis)
 - note: PlanTab protocol: liver_abscess (from the confirmed diagnosis)
 - note: Seeded investigations: liver_abscess (confirmed); 0 stat test(s) held back
+- note: Decision support: sepsis; factors age65to79, news2High, shock
 - note: matchPathways: ERCP (Obstructive Jaundice / Bile Duct Stones / Pancreatic Duct) (20), Jaundice Workup (15), Gallbladder Disease (Biliary Colic / Cholecystitis / Choledocholithiasis) (10)
 
 </details>
@@ -9382,6 +10289,7 @@ Guidelines:
 - note: AssessmentTab ManagementPanel protocol: liver_abscess (from the confirmed diagnosis)
 - note: PlanTab protocol: liver_abscess (from the confirmed diagnosis)
 - note: Seeded investigations: liver_abscess (confirmed); 0 stat test(s) held back
+- note: Decision support: (no decision); factors diabetes, news2High
 - note: matchPathways: Gallbladder Disease (Biliary Colic / Cholecystitis / Choledocholithiasis) (12), Acute Abdomen (7), Acute Appendicitis (7)
 
 </details>
@@ -9427,6 +10335,8 @@ Guidelines:
 - note: AssessmentTab ManagementPanel protocol: mallory_weiss (from the confirmed diagnosis)
 - note: PlanTab protocol: mallory_weiss (from the confirmed diagnosis)
 - note: Seeded investigations: mallory_weiss (confirmed); 0 stat test(s) held back
+- note: Decision Upper GI bleeding — admission and endoscopy timing — missing: Calculate the Glasgow-Blatchford score to set the risk.
+- note: Decision support: upper-gi-bleed; factors (none)
 - note: matchPathways: Chest Pain — Emergency Redirect (5), GI Bleeding (Upper and Lower) (5)
 
 </details>
@@ -9467,10 +10377,11 @@ Guidelines:
 - recommended scores: qsofa, gcs, news2, cfs
 - score values: (none)
 - dx variant: (none) (no group)
-- note: PANE features applied: acute_onset, fever, headache, confusion, neck_stiffness, immunosuppression, steroid_use, gcs_drop, joint_pain, elevated_wbc, raised_crp, tachycardia, tachypnoea, trauma_mechanism, recent_surgery, aortic_graft, stoma
+- note: PANE features applied: acute_onset, fever, headache, confusion, neck_stiffness, immunosuppression, steroid_use, gcs_drop, elevated_wbc, raised_crp, tachycardia, tachypnoea, trauma_mechanism, recent_surgery, aortic_graft, stoma
 - note: AssessmentTab ManagementPanel protocol: bacterial_meningitis (from the confirmed diagnosis)
 - note: PlanTab protocol: bacterial_meningitis (from the confirmed diagnosis)
 - note: Seeded investigations: bacterial_meningitis (confirmed); 0 stat test(s) held back
+- note: Decision support: (no decision); factors age65to79, immunosuppressed, news2High
 
 </details>
 
@@ -9509,10 +10420,11 @@ Guidelines:
 - recommended scores: qsofa, gcs, news2
 - score values: (none)
 - dx variant: (none) (no group)
-- note: PANE features applied: acute_onset, fever, headache, neck_stiffness, photophobia, non_blanching_rash, rash, nausea_vomiting, confusion, mottled_skin, gcs_drop, bilateral_leg_symptoms, elevated_wbc, raised_crp, raised_lactate, thrombocytopenia, tachycardia, haemodynamic_instability, tachypnoea, trauma_mechanism, recent_surgery, aortic_graft, stoma
+- note: PANE features applied: acute_onset, fever, headache, neck_stiffness, photophobia, non_blanching_rash, rash, nausea_vomiting, confusion, mottled_skin, gcs_drop, elevated_wbc, raised_crp, raised_lactate, thrombocytopenia, tachycardia, haemodynamic_instability, tachypnoea, trauma_mechanism, recent_surgery, aortic_graft, stoma
 - note: AssessmentTab ManagementPanel protocol: bacterial_meningitis (from the confirmed diagnosis)
 - note: PlanTab protocol: bacterial_meningitis (from the confirmed diagnosis)
 - note: Seeded investigations: bacterial_meningitis (confirmed); 0 stat test(s) held back
+- note: Decision support: sepsis; factors news2High
 
 </details>
 
@@ -9556,6 +10468,7 @@ Guidelines:
 - note: AssessmentTab ManagementPanel protocol: acute_coronary_syndrome (from the confirmed diagnosis)
 - note: PlanTab protocol: acute_coronary_syndrome (from the confirmed diagnosis)
 - note: Seeded investigations: acute_coronary_syndrome (confirmed); 0 stat test(s) held back
+- note: Decision support: (no decision); factors age65to79, diabetes
 - note: matchPathways: Upper GI Endoscopy (Dyspepsia / GORD / Dysphagia) (10)
 
 </details>
@@ -9596,6 +10509,7 @@ Guidelines:
 - note: AssessmentTab ManagementPanel protocol: aortic_aneurysm (from the confirmed diagnosis)
 - note: PlanTab protocol: aortic_aneurysm (from the confirmed diagnosis)
 - note: Seeded investigations: aortic_aneurysm (confirmed); 0 stat test(s) held back
+- note: Decision support: (no decision); factors age65to79, antiplatelet
 
 </details>
 
@@ -9637,6 +10551,7 @@ Guidelines:
 - note: AssessmentTab ManagementPanel protocol: diabetic_ketoacidosis (from the confirmed diagnosis)
 - note: PlanTab protocol: diabetic_ketoacidosis (from the confirmed diagnosis)
 - note: Seeded investigations: diabetic_ketoacidosis (confirmed); 0 stat test(s) held back
+- note: Decision support: (no decision); factors diabetes, news2High
 - note: matchPathways: Acute Abdomen (7), Acute Appendicitis (7), Anorectal (Haemorrhoids / Fissure / Fistula / Abscess) (7)
 
 </details>
@@ -9678,6 +10593,7 @@ Guidelines:
 - note: AssessmentTab ManagementPanel protocol: ectopic_pregnancy (from the confirmed diagnosis)
 - note: PlanTab protocol: ectopic_pregnancy (from the confirmed diagnosis)
 - note: Seeded investigations: ectopic_pregnancy (confirmed); 0 stat test(s) held back
+- note: Decision support: (no decision); factors pregnant
 - note: matchPathways: Acute Abdomen (12), Acute Appendicitis (12), Anorectal (Haemorrhoids / Fissure / Fistula / Abscess) (7)
 
 </details>
@@ -9718,6 +10634,7 @@ Guidelines:
 - note: AssessmentTab ManagementPanel protocol: ectopic_pregnancy (from the confirmed diagnosis)
 - note: PlanTab protocol: ectopic_pregnancy (from the confirmed diagnosis)
 - note: Seeded investigations: ectopic_pregnancy (confirmed); 0 stat test(s) held back
+- note: Decision support: (no decision); factors pregnant, news2High, shock
 - note: matchPathways: Acute Abdomen (7), Acute Appendicitis (7), Anorectal (Haemorrhoids / Fissure / Fistula / Abscess) (7)
 
 </details>
@@ -9762,6 +10679,7 @@ Guidelines:
 - note: AssessmentTab ManagementPanel protocol: acute_coronary_syndrome (from the confirmed diagnosis)
 - note: PlanTab protocol: acute_coronary_syndrome (from the confirmed diagnosis)
 - note: Seeded investigations: acute_coronary_syndrome (confirmed); 0 stat test(s) held back
+- note: Decision support: (no decision); factors diabetes
 - note: matchPathways: Upper GI Endoscopy (Dyspepsia / GORD / Dysphagia) (10), Chest Pain — Emergency Redirect (5)
 
 </details>
@@ -9800,6 +10718,7 @@ Guidelines:
 - note: AssessmentTab ManagementPanel protocol: acute_coronary_syndrome (from the confirmed diagnosis)
 - note: PlanTab protocol: acute_coronary_syndrome (from the confirmed diagnosis)
 - note: Seeded investigations: acute_coronary_syndrome (confirmed); 0 stat test(s) held back
+- note: Decision support: (no decision); factors age65to79, diabetes
 - note: matchPathways: Upper GI Endoscopy (Dyspepsia / GORD / Dysphagia) (5)
 
 </details>
@@ -9844,6 +10763,7 @@ Guidelines:
 - note: AssessmentTab ManagementPanel protocol: aortic_aneurysm (from the confirmed diagnosis)
 - note: PlanTab protocol: aortic_aneurysm (from the confirmed diagnosis)
 - note: Seeded investigations: aortic_aneurysm (confirmed); 0 stat test(s) held back
+- note: Decision support: (no decision); factors age65to79, news2High, shock
 
 </details>
 
@@ -9881,6 +10801,7 @@ Guidelines:
 - note: AssessmentTab ManagementPanel protocol: testicular_torsion (from the confirmed diagnosis)
 - note: PlanTab protocol: testicular_torsion (from the confirmed diagnosis)
 - note: Seeded investigations: testicular_torsion (confirmed); 0 stat test(s) held back
+- note: Decision support: (no decision); factors (none)
 - note: matchPathways: Acute Abdomen (7), Acute Appendicitis (7), Anorectal (Haemorrhoids / Fissure / Fistula / Abscess) (7)
 
 </details>
@@ -9921,6 +10842,7 @@ Guidelines:
 - note: AssessmentTab ManagementPanel protocol: metastatic_spinal_cord_compression (from the confirmed diagnosis)
 - note: PlanTab protocol: metastatic_spinal_cord_compression (from the confirmed diagnosis)
 - note: Seeded investigations: metastatic_spinal_cord_compression (confirmed); 0 stat test(s) held back
+- note: Decision support: (no decision); factors (none)
 - note: matchPathways: Breast Lump / Breast Disease (5), Post-operative Follow-up (General) (5), Skin Lesion / Excision (5)
 
 </details>
@@ -9960,6 +10882,7 @@ Guidelines:
 - note: AssessmentTab ManagementPanel protocol: metastatic_spinal_cord_compression (from the confirmed diagnosis)
 - note: PlanTab protocol: metastatic_spinal_cord_compression (from the confirmed diagnosis)
 - note: Seeded investigations: metastatic_spinal_cord_compression (confirmed); 0 stat test(s) held back
+- note: Decision support: (no decision); factors age65to79
 - note: matchPathways: Wound Management (Acute / Chronic / SSI) (5)
 
 </details>
@@ -10002,6 +10925,7 @@ Guidelines:
 - note: AssessmentTab ManagementPanel protocol: peptic_ulcer (from the confirmed diagnosis)
 - note: PlanTab protocol: peptic_ulcer (from the confirmed diagnosis)
 - note: Seeded investigations: peptic_ulcer (confirmed); 0 stat test(s) held back
+- note: Decision support: (no decision); factors antiplatelet
 - note: matchPathways: Upper GI Endoscopy (Dyspepsia / GORD / Dysphagia) (27), Acute Abdomen (7), Acute Appendicitis (7)
 
 </details>
@@ -10061,6 +10985,7 @@ Guidelines:
 - note: PlanTab protocol: necrotising_fasciitis (from the confirmed diagnosis)
 - note: Seeded investigations: necrotising_fasciitis (confirmed); 0 stat test(s) held back
 - note: no web calculator for score form 'qsofa'
+- note: Decision support: (no decision); factors diabetes, news2High
 - note: matchPathways: Varicose Veins (5)
 
 </details>
@@ -10107,6 +11032,7 @@ Guidelines:
 - note: AssessmentTab ManagementPanel protocol: necrotising_fasciitis (from the confirmed diagnosis)
 - note: PlanTab protocol: necrotising_fasciitis (from the confirmed diagnosis)
 - note: Seeded investigations: necrotising_fasciitis (confirmed); 0 stat test(s) held back
+- note: Decision support: (no decision); factors (none)
 
 </details>
 
@@ -10151,10 +11077,11 @@ Guidelines:
 - recommended scores: qsofa, gcs, web:wagner, news2, caprini, asa, rcri, stop-bang, cfs
 - score values: (none)
 - dx variant: (none) (no group)
-- note: PANE features applied: acute_onset, perineal_pain, groin_pain, radiation_to_groin, fever, rigors, pain_worse_movement, severe_pain, scrotal_swelling, anal_pain, confusion, diaphoresis, erythema_surrounding, known_diabetes, known_hypertension, vascular_risk, insulin_or_sulfonylurea, acei_arb_use, previous_surgery, testicular_pain, swelling_fluctuant_soft, crepitus_soft_tissue, skin_necrosis, elevated_wbc, anaemia, raised_crp, hyponatraemia_lab, raised_creatinine, hyperglycaemia, raised_lactate, tachycardia, haemodynamic_instability, hypotension, tachypnoea, gcs_drop, trauma_mechanism, recent_surgery, aortic_graft, stoma
+- note: PANE features applied: acute_onset, perineal_pain, groin_pain, radiation_to_groin, fever, rigors, pain_worse_movement, severe_pain, scrotal_swelling, anal_pain, confusion, diaphoresis, erythema_surrounding, known_diabetes, known_hypertension, vascular_risk, insulin_or_sulfonylurea, acei_arb_use, previous_surgery, testicular_pain, crepitus_soft_tissue, skin_necrosis, elevated_wbc, anaemia, raised_crp, hyponatraemia_lab, raised_creatinine, hyperglycaemia, raised_lactate, tachycardia, haemodynamic_instability, hypotension, tachypnoea, gcs_drop, trauma_mechanism, recent_surgery, aortic_graft, stoma
 - note: AssessmentTab ManagementPanel protocol: fournier_gangrene (from the confirmed diagnosis)
 - note: PlanTab protocol: fournier_gangrene (from the confirmed diagnosis)
 - note: Seeded investigations: fournier_gangrene (confirmed); 0 stat test(s) held back
+- note: Decision support: (no decision); factors diabetes, news2High, shock
 - note: matchPathways: Anorectal (Haemorrhoids / Fissure / Fistula / Abscess) (15), Post-operative Follow-up (General) (5)
 
 </details>
@@ -10202,6 +11129,7 @@ Guidelines:
 - note: AssessmentTab ManagementPanel protocol: necrotising_fasciitis (from the confirmed diagnosis)
 - note: PlanTab protocol: necrotising_fasciitis (from the confirmed diagnosis)
 - note: Seeded investigations: necrotising_fasciitis (confirmed); 0 stat test(s) held back
+- note: Decision support: (no decision); factors age65to79, penicillinAllergy, news2High, shock, recentSurgery21d
 - note: matchPathways: Post-operative Follow-up (General) (10), Wound Management (Acute / Chronic / SSI) (10), Diverticular Disease / Diverticulitis (5)
 
 </details>
@@ -10251,6 +11179,7 @@ Guidelines:
 - note: AssessmentTab ManagementPanel protocol: placental_abruption (from the confirmed diagnosis)
 - note: PlanTab protocol: placental_abruption (from the confirmed diagnosis)
 - note: Seeded investigations: placental_abruption (confirmed); 0 stat test(s) held back
+- note: Decision support: (no decision); factors pregnant
 - note: matchPathways: Acute Abdomen (12), Acute Appendicitis (7), Anorectal (Haemorrhoids / Fissure / Fistula / Abscess) (7)
 
 </details>
@@ -10298,6 +11227,9 @@ Guidelines:
 - note: AssessmentTab ManagementPanel protocol: appendicitis (from the confirmed diagnosis)
 - note: PlanTab protocol: appendicitis (from the confirmed diagnosis)
 - note: Seeded investigations: appendicitis (confirmed); 0 stat test(s) held back
+- note: Decision Acute appendicitis (uncomplicated) — missing: Record ASA grade to refine: ASA III-IV raises operative harm (laparoscopic appendicectomy).
+- note: Decision Acute appendicitis (uncomplicated) — missing: Record eGFR to refine: eGFR below 30 raises operative and anticoagulant harm (laparoscopic appendicectomy).
+- note: Decision support: appendicitis; factors pregnant
 - note: matchPathways: IBD — Surgical Complications (Crohn's / UC) (12), Acute Abdomen (7), Acute Appendicitis (7)
 
 </details>
@@ -10341,6 +11273,7 @@ Guidelines:
 - note: AssessmentTab ManagementPanel protocol: (none) (from the confirmed diagnosis)
 - note: PlanTab protocol: (none) (from the confirmed diagnosis)
 - note: Seeded investigations: ectopic_pregnancy (leading differential); 3 stat test(s) held back
+- note: Decision support: (no decision); factors pregnant
 - note: matchPathways: Acute Abdomen (7), Acute Appendicitis (7), Anorectal (Haemorrhoids / Fissure / Fistula / Abscess) (7)
 
 </details>
@@ -10387,6 +11320,7 @@ Guidelines:
 - note: AssessmentTab ManagementPanel protocol: pre_eclampsia (from the confirmed diagnosis)
 - note: PlanTab protocol: pre_eclampsia (from the confirmed diagnosis)
 - note: Seeded investigations: pre_eclampsia (confirmed); 0 stat test(s) held back
+- note: Decision support: (no decision); factors antiplatelet, pregnant
 - note: matchPathways: Gallbladder Disease (Biliary Colic / Cholecystitis / Choledocholithiasis) (17), Upper GI Endoscopy (Dyspepsia / GORD / Dysphagia) (12), Acute Abdomen (7)
 
 </details>
@@ -10432,6 +11366,7 @@ Guidelines:
 - note: AssessmentTab ManagementPanel protocol: hyperemesis_gravidarum (from the confirmed diagnosis)
 - note: PlanTab protocol: hyperemesis_gravidarum (from the confirmed diagnosis)
 - note: Seeded investigations: hyperemesis_gravidarum (confirmed); 0 stat test(s) held back
+- note: Decision support: (no decision); factors pregnant
 - note: matchPathways: Acute Abdomen (7), Acute Appendicitis (7), Anorectal (Haemorrhoids / Fissure / Fistula / Abscess) (7)
 
 </details>
@@ -10474,6 +11409,7 @@ Guidelines:
 - note: AssessmentTab ManagementPanel protocol: pre_eclampsia (from the confirmed diagnosis)
 - note: PlanTab protocol: pre_eclampsia (from the confirmed diagnosis)
 - note: Seeded investigations: pre_eclampsia (confirmed); 0 stat test(s) held back
+- note: Decision support: (no decision); factors (none)
 - note: matchPathways: Upper GI Endoscopy (Dyspepsia / GORD / Dysphagia) (12), Acute Abdomen (7), Acute Appendicitis (7)
 
 </details>
@@ -10523,6 +11459,9 @@ Guidelines:
 - note: AssessmentTab ManagementPanel protocol: appendicitis (from the confirmed diagnosis)
 - note: PlanTab protocol: appendicitis (from the confirmed diagnosis)
 - note: Seeded investigations: appendicitis (confirmed); 0 stat test(s) held back
+- note: Decision Emergency laparotomy (source control) — missing: Record ASA grade to refine: ASA III-IV raises operative harm (emergency laparotomy).
+- note: Decision Emergency laparotomy (source control) — missing: Record eGFR to refine: eGFR below 30 raises operative and anticoagulant harm (emergency laparotomy).
+- note: Decision support: emergency-laparotomy; factors news2High, appendicolith
 - note: matchPathways: Acute Abdomen (7), Acute Appendicitis (7), Anorectal (Haemorrhoids / Fissure / Fistula / Abscess) (7)
 
 </details>
@@ -10570,6 +11509,7 @@ Guidelines:
 - note: AssessmentTab ManagementPanel protocol: diabetic_ketoacidosis (from the confirmed diagnosis)
 - note: PlanTab protocol: diabetic_ketoacidosis (from the confirmed diagnosis)
 - note: Seeded investigations: diabetic_ketoacidosis (confirmed); 0 stat test(s) held back
+- note: Decision support: (no decision); factors news2High
 - note: matchPathways: Acute Abdomen (12), Acute Appendicitis (12), Anorectal (Haemorrhoids / Fissure / Fistula / Abscess) (7)
 
 </details>
@@ -10612,6 +11552,7 @@ Guidelines:
 - note: AssessmentTab ManagementPanel protocol: (none) (from the confirmed diagnosis)
 - note: PlanTab protocol: (none) (from the confirmed diagnosis)
 - note: Seeded investigations: sepsis (leading differential); 2 stat test(s) held back
+- note: Decision support: (no decision); factors news2High, shock
 - note: matchPathways: Hernia (Inguinal / Umbilical / Incisional / Femoral) (10), Post-operative Follow-up (General) (5)
 
 </details>
@@ -10653,6 +11594,7 @@ Guidelines:
 - note: AssessmentTab ManagementPanel protocol: hsp_iga_vasculitis (from the confirmed diagnosis)
 - note: PlanTab protocol: hsp_iga_vasculitis (from the confirmed diagnosis)
 - note: Seeded investigations: hsp_iga_vasculitis (confirmed); 0 stat test(s) held back
+- note: Decision support: (no decision); factors (none)
 - note: matchPathways: Anorectal (Haemorrhoids / Fissure / Fistula / Abscess) (5), Colonoscopy Diagnostic (Rectal Bleeding / Bowel Habit Change / Iron Deficiency) (5), GI Bleeding (Upper and Lower) (5)
 
 </details>
@@ -10696,6 +11638,7 @@ Guidelines:
 - note: AssessmentTab ManagementPanel protocol: intussusception (from the confirmed diagnosis)
 - note: PlanTab protocol: intussusception (from the confirmed diagnosis)
 - note: Seeded investigations: intussusception (confirmed); 0 stat test(s) held back
+- note: Decision support: (no decision); factors news2High
 - note: matchPathways: Anorectal (Haemorrhoids / Fissure / Fistula / Abscess) (5), Colonoscopy Diagnostic (Rectal Bleeding / Bowel Habit Change / Iron Deficiency) (5), GI Bleeding (Upper and Lower) (5)
 
 </details>
@@ -10738,6 +11681,7 @@ Guidelines:
 - note: AssessmentTab ManagementPanel protocol: (none) (from the confirmed diagnosis)
 - note: PlanTab protocol: (none) (from the confirmed diagnosis)
 - note: Seeded investigations: intussusception (leading differential); 1 stat test(s) held back
+- note: Decision support: (no decision); factors news2High, shock
 
 </details>
 
@@ -10780,6 +11724,7 @@ Guidelines:
 - note: AssessmentTab ManagementPanel protocol: malrotation_volvulus (from the confirmed diagnosis)
 - note: PlanTab protocol: malrotation_volvulus (from the confirmed diagnosis)
 - note: Seeded investigations: malrotation_volvulus (confirmed); 0 stat test(s) held back
+- note: Decision support: (no decision); factors news2High, shock
 - note: matchPathways: Upper GI Endoscopy (Dyspepsia / GORD / Dysphagia) (5)
 
 </details>
@@ -10823,6 +11768,7 @@ Guidelines:
 - note: AssessmentTab ManagementPanel protocol: malrotation_volvulus (from the confirmed diagnosis)
 - note: PlanTab protocol: malrotation_volvulus (from the confirmed diagnosis)
 - note: Seeded investigations: malrotation_volvulus (confirmed); 0 stat test(s) held back
+- note: Decision support: (no decision); factors news2High, shock
 - note: matchPathways: IBD — Surgical Complications (Crohn's / UC) (5)
 
 </details>
@@ -10873,6 +11819,7 @@ Guidelines:
 - note: AssessmentTab ManagementPanel protocol: child_safeguarding (from the confirmed diagnosis)
 - note: PlanTab protocol: child_safeguarding (from the confirmed diagnosis)
 - note: Seeded investigations: child_safeguarding (confirmed); 0 stat test(s) held back
+- note: Decision support: (no decision); factors news2High
 - note: matchPathways: Acute Abdomen (7), Acute Appendicitis (7), Anorectal (Haemorrhoids / Fissure / Fistula / Abscess) (7)
 
 </details>
@@ -10917,6 +11864,7 @@ Guidelines:
 - note: AssessmentTab ManagementPanel protocol: pyloric_stenosis (from the confirmed diagnosis)
 - note: PlanTab protocol: pyloric_stenosis (from the confirmed diagnosis)
 - note: Seeded investigations: pyloric_stenosis (confirmed); 0 stat test(s) held back
+- note: Decision support: (no decision); factors news2High, shock
 
 </details>
 
@@ -10961,10 +11909,11 @@ Guidelines:
 - recommended scores: asge-cbd, web:wagner, news2, caprini, asa, rcri, cfs, ecog
 - score values: (none)
 - dx variant: (none) (no group)
-- note: PANE features applied: jaundice, chronic_course, epigastric_pain, radiation_to_back, anorexia, weight_loss, nocturnal_pain, progressive_course, pruritus, dark_urine, pallor, known_diabetes, ruq_pain, painless_jaundice, raised_liver_enzymes, hyperglycaemia, dilated_cbd, trauma_mechanism, recent_surgery, aortic_graft, stoma
+- note: PANE features applied: jaundice, chronic_course, epigastric_pain, radiation_to_back, anorexia, weight_loss, nocturnal_pain, progressive_course, pruritus, dark_urine, known_diabetes, ruq_pain, painless_jaundice, raised_liver_enzymes, hyperglycaemia, dilated_cbd, trauma_mechanism, recent_surgery, aortic_graft, stoma
 - note: AssessmentTab ManagementPanel protocol: pancreatic_carcinoma (from the confirmed diagnosis)
 - note: PlanTab protocol: pancreatic_carcinoma (from the confirmed diagnosis)
 - note: Seeded investigations: pancreatic_carcinoma (confirmed); 0 stat test(s) held back
+- note: Decision support: (no decision); factors age65to79, diabetes
 - note: matchPathways: Jaundice Workup (30), ERCP (Obstructive Jaundice / Bile Duct Stones / Pancreatic Duct) (10), Gallbladder Disease (Biliary Colic / Cholecystitis / Choledocholithiasis) (10)
 
 </details>
@@ -11007,6 +11956,7 @@ Guidelines:
 - note: AssessmentTab ManagementPanel protocol: pancreatic_carcinoma (from the confirmed diagnosis)
 - note: PlanTab protocol: pancreatic_carcinoma (from the confirmed diagnosis)
 - note: Seeded investigations: pancreatic_carcinoma (confirmed); 0 stat test(s) held back
+- note: Decision support: (no decision); factors age80plus
 - note: matchPathways: Pancreatic Mass / Cyst (17), Jaundice Workup (15), ERCP (Obstructive Jaundice / Bile Duct Stones / Pancreatic Duct) (10)
 
 </details>
@@ -11048,6 +11998,7 @@ Guidelines:
 - note: AssessmentTab ManagementPanel protocol: pancreatic_carcinoma (from the confirmed diagnosis)
 - note: PlanTab protocol: pancreatic_carcinoma (from the confirmed diagnosis)
 - note: Seeded investigations: pancreatic_carcinoma (confirmed); 0 stat test(s) held back
+- note: Decision support: (no decision); factors age65to79, diabetes
 - note: matchPathways: Pancreatic Mass / Cyst (14), Cancer Screening (Age/Sex Appropriate) (7), Colonoscopy Diagnostic (Rectal Bleeding / Bowel Habit Change / Iron Deficiency) (7)
 
 </details>
@@ -11103,6 +12054,7 @@ Guidelines:
 - note: AssessmentTab ManagementPanel protocol: pancreatitis (from the confirmed diagnosis)
 - note: PlanTab protocol: pancreatitis (from the confirmed diagnosis)
 - note: Seeded investigations: pancreatitis (confirmed); 0 stat test(s) held back
+- note: Decision support: (no decision); factors (none)
 - note: matchPathways: Gallbladder Disease (Biliary Colic / Cholecystitis / Choledocholithiasis) (14), Pancreatic Mass / Cyst (14), Upper GI Endoscopy (Dyspepsia / GORD / Dysphagia) (12)
 
 </details>
@@ -11154,6 +12106,10 @@ Guidelines:
 - note: AssessmentTab ManagementPanel protocol: pancreatitis (from the confirmed diagnosis)
 - note: PlanTab protocol: pancreatitis (from the confirmed diagnosis)
 - note: Seeded investigations: pancreatitis (confirmed); 0 stat test(s) held back
+- note: Decision Acute gallstone pancreatitis — timing of cholecystectomy — missing: Record ASA grade to refine: ASA III-IV raises operative harm (same-admission laparoscopic cholecystectomy).
+- note: Decision Acute gallstone pancreatitis — timing of cholecystectomy — missing: Record eGFR to refine: eGFR below 30 raises operative and anticoagulant harm (same-admission laparoscopic cholecystectomy).
+- note: Decision Acute gallstone pancreatitis — timing of cholecystectomy — missing: Record pregnancy status to refine: pregnancy changes the harm of operations and thrombolysis and excludes some options (same-admission laparoscopic cholecystectomy).
+- note: Decision support: gallstone-pancreatitis; factors immunosuppressed
 - note: matchPathways: IBD — Surgical Complications (Crohn's / UC) (17), Gallbladder Disease (Biliary Colic / Cholecystitis / Choledocholithiasis) (12), Upper GI Endoscopy (Dyspepsia / GORD / Dysphagia) (12)
 
 </details>
@@ -11211,6 +12167,10 @@ Guidelines:
 - note: AssessmentTab ManagementPanel protocol: pancreatitis (from the confirmed diagnosis)
 - note: PlanTab protocol: pancreatitis (from the confirmed diagnosis)
 - note: Seeded investigations: pancreatitis (confirmed); 0 stat test(s) held back
+- note: Decision Acute gallstone pancreatitis — timing of cholecystectomy — missing: Record ASA grade to refine: ASA III-IV raises operative harm (same-admission laparoscopic cholecystectomy).
+- note: Decision Acute gallstone pancreatitis — timing of cholecystectomy — missing: Record eGFR to refine: eGFR below 30 raises operative and anticoagulant harm (same-admission laparoscopic cholecystectomy).
+- note: Decision Acute gallstone pancreatitis — timing of cholecystectomy — missing: Record pregnancy status to refine: pregnancy changes the harm of operations and thrombolysis and excludes some options (same-admission laparoscopic cholecystectomy).
+- note: Decision support: gallstone-pancreatitis; factors (none)
 - note: matchPathways: Gallbladder Disease (Biliary Colic / Cholecystitis / Choledocholithiasis) (14), Pancreatic Mass / Cyst (14), Upper GI Endoscopy (Dyspepsia / GORD / Dysphagia) (12)
 
 </details>
@@ -11265,6 +12225,10 @@ Guidelines:
 - note: AssessmentTab ManagementPanel protocol: pancreatitis (from the confirmed diagnosis)
 - note: PlanTab protocol: pancreatitis (from the confirmed diagnosis)
 - note: Seeded investigations: pancreatitis (confirmed); 0 stat test(s) held back
+- note: Decision Acute gallstone pancreatitis — timing of cholecystectomy — missing: Record Clinical Frailty Scale to refine: frailty raises the harm of operations and procedures (same-admission laparoscopic cholecystectomy).
+- note: Decision Acute gallstone pancreatitis — timing of cholecystectomy — missing: Record ASA grade to refine: ASA III-IV raises operative harm (same-admission laparoscopic cholecystectomy).
+- note: Decision Acute gallstone pancreatitis — timing of cholecystectomy — missing: Record eGFR to refine: eGFR below 30 raises operative and anticoagulant harm (same-admission laparoscopic cholecystectomy).
+- note: Decision support: gallstone-pancreatitis; factors age65to79, anticoagulated, doacOnly
 - note: matchPathways: Gallbladder Disease (Biliary Colic / Cholecystitis / Choledocholithiasis) (14), Pancreatic Mass / Cyst (14), IBD — Surgical Complications (Crohn's / UC) (12)
 
 </details>
@@ -11312,6 +12276,9 @@ Guidelines:
 - note: AssessmentTab ManagementPanel protocol: pancreatitis (from the confirmed diagnosis)
 - note: PlanTab protocol: pancreatitis (from the confirmed diagnosis)
 - note: Seeded investigations: pancreatitis (confirmed); 0 stat test(s) held back
+- note: Decision Acute gallstone pancreatitis — timing of cholecystectomy — missing: Record ASA grade to refine: ASA III-IV raises operative harm (same-admission laparoscopic cholecystectomy).
+- note: Decision Acute gallstone pancreatitis — timing of cholecystectomy — missing: Record eGFR to refine: eGFR below 30 raises operative and anticoagulant harm (same-admission laparoscopic cholecystectomy).
+- note: Decision support: gallstone-pancreatitis; factors predictedSeverePancreatitis
 - note: matchPathways: Gallbladder Disease (Biliary Colic / Cholecystitis / Choledocholithiasis) (19), Pancreatic Mass / Cyst (14), Upper GI Endoscopy (Dyspepsia / GORD / Dysphagia) (12)
 
 </details>
@@ -11368,6 +12335,9 @@ Guidelines:
 - note: AssessmentTab ManagementPanel protocol: pancreatitis (from the confirmed diagnosis)
 - note: PlanTab protocol: pancreatitis (from the confirmed diagnosis)
 - note: Seeded investigations: pancreatitis (confirmed); 0 stat test(s) held back
+- note: Decision Acute gallstone pancreatitis — timing of cholecystectomy — missing: Record ASA grade to refine: ASA III-IV raises operative harm (same-admission laparoscopic cholecystectomy).
+- note: Decision Acute gallstone pancreatitis — timing of cholecystectomy — missing: Record eGFR to refine: eGFR below 30 raises operative and anticoagulant harm (same-admission laparoscopic cholecystectomy).
+- note: Decision support: gallstone-pancreatitis; factors pregnant
 - note: matchPathways: Gallbladder Disease (Biliary Colic / Cholecystitis / Choledocholithiasis) (14), Pancreatic Mass / Cyst (14), Upper GI Endoscopy (Dyspepsia / GORD / Dysphagia) (12)
 
 </details>
@@ -11423,6 +12393,9 @@ Guidelines:
 - note: AssessmentTab ManagementPanel protocol: pancreatitis (from the confirmed diagnosis)
 - note: PlanTab protocol: pancreatitis (from the confirmed diagnosis)
 - note: Seeded investigations: pancreatitis (confirmed); 0 stat test(s) held back
+- note: Decision Acute gallstone pancreatitis — timing of cholecystectomy — missing: Record ASA grade to refine: ASA III-IV raises operative harm (same-admission laparoscopic cholecystectomy).
+- note: Decision Acute gallstone pancreatitis — timing of cholecystectomy — missing: Record eGFR to refine: eGFR below 30 raises operative and anticoagulant harm (same-admission laparoscopic cholecystectomy).
+- note: Decision support: gallstone-pancreatitis; factors diabetes, news2High, predictedSeverePancreatitis
 - note: matchPathways: Gallbladder Disease (Biliary Colic / Cholecystitis / Choledocholithiasis) (12), ERCP (Obstructive Jaundice / Bile Duct Stones / Pancreatic Duct) (7), Pancreatic Mass / Cyst (7)
 
 </details>
@@ -11477,6 +12450,10 @@ Guidelines:
 - note: AssessmentTab ManagementPanel protocol: pancreatitis (from the confirmed diagnosis)
 - note: PlanTab protocol: pancreatitis (from the confirmed diagnosis)
 - note: Seeded investigations: pancreatitis (confirmed); 0 stat test(s) held back
+- note: Decision Acute gallstone pancreatitis — timing of cholecystectomy — missing: Record Clinical Frailty Scale to refine: frailty raises the harm of operations and procedures (same-admission laparoscopic cholecystectomy).
+- note: Decision Acute gallstone pancreatitis — timing of cholecystectomy — missing: Record ASA grade to refine: ASA III-IV raises operative harm (same-admission laparoscopic cholecystectomy).
+- note: Decision Acute gallstone pancreatitis — timing of cholecystectomy — missing: Record eGFR to refine: eGFR below 30 raises operative and anticoagulant harm (same-admission laparoscopic cholecystectomy).
+- note: Decision support: gallstone-pancreatitis; factors age65to79, news2High
 - note: matchPathways: Gallbladder Disease (Biliary Colic / Cholecystitis / Choledocholithiasis) (27), Jaundice Workup (25), Pancreatic Mass / Cyst (17)
 
 </details>
@@ -11530,6 +12507,10 @@ Guidelines:
 - note: AssessmentTab ManagementPanel protocol: pancreatitis (from the confirmed diagnosis)
 - note: PlanTab protocol: pancreatitis (from the confirmed diagnosis)
 - note: Seeded investigations: pancreatitis (confirmed); 0 stat test(s) held back
+- note: Decision Acute gallstone pancreatitis — timing of cholecystectomy — missing: Record ASA grade to refine: ASA III-IV raises operative harm (same-admission laparoscopic cholecystectomy).
+- note: Decision Acute gallstone pancreatitis — timing of cholecystectomy — missing: Record eGFR to refine: eGFR below 30 raises operative and anticoagulant harm (same-admission laparoscopic cholecystectomy).
+- note: Decision Acute gallstone pancreatitis — timing of cholecystectomy — missing: Record pregnancy status to refine: pregnancy changes the harm of operations and thrombolysis and excludes some options (same-admission laparoscopic cholecystectomy).
+- note: Decision support: gallstone-pancreatitis; factors diabetes
 - note: matchPathways: Upper GI Endoscopy (Dyspepsia / GORD / Dysphagia) (12), Acute Abdomen (7), Acute Appendicitis (7)
 
 </details>
@@ -11573,6 +12554,7 @@ Guidelines:
 - note: AssessmentTab ManagementPanel protocol: aortic_aneurysm (from the confirmed diagnosis)
 - note: PlanTab protocol: aortic_aneurysm (from the confirmed diagnosis)
 - note: Seeded investigations: aortic_aneurysm (confirmed); 0 stat test(s) held back
+- note: Decision support: (no decision); factors age65to79, antiplatelet, news2High, shock
 - note: matchPathways: Gallbladder Disease (Biliary Colic / Cholecystitis / Choledocholithiasis) (12), Upper GI Endoscopy (Dyspepsia / GORD / Dysphagia) (12), Acute Abdomen (7)
 
 </details>
@@ -11617,6 +12599,7 @@ Guidelines:
 - note: AssessmentTab ManagementPanel protocol: primary_hyperparathyroidism (from the confirmed diagnosis)
 - note: PlanTab protocol: primary_hyperparathyroidism (from the confirmed diagnosis)
 - note: Seeded investigations: primary_hyperparathyroidism (confirmed); 0 stat test(s) held back
+- note: Decision support: (no decision); factors age65to79
 - note: matchPathways: Acute Abdomen (7), Acute Appendicitis (7), Anorectal (Haemorrhoids / Fissure / Fistula / Abscess) (7)
 
 </details>
@@ -11658,6 +12641,7 @@ Guidelines:
 - note: AssessmentTab ManagementPanel protocol: primary_hyperparathyroidism (from the confirmed diagnosis)
 - note: PlanTab protocol: primary_hyperparathyroidism (from the confirmed diagnosis)
 - note: Seeded investigations: primary_hyperparathyroidism (confirmed); 0 stat test(s) held back
+- note: Decision support: (no decision); factors egfr30to59
 - note: matchPathways: Wound Management (Acute / Chronic / SSI) (5)
 
 </details>
@@ -11696,6 +12680,7 @@ Guidelines:
 - note: AssessmentTab ManagementPanel protocol: (none) (from the confirmed diagnosis)
 - note: PlanTab protocol: (none) (from the confirmed diagnosis)
 - note: Seeded investigations: pneumonia (leading differential); 0 stat test(s) held back
+- note: Decision support: (no decision); factors (none)
 - note: matchPathways: Chest Pain — Emergency Redirect (5), Varicose Veins (5)
 
 </details>
@@ -11742,6 +12727,8 @@ Guidelines:
 - note: AssessmentTab ManagementPanel protocol: pulmonary_embolism (from the confirmed diagnosis)
 - note: PlanTab protocol: pulmonary_embolism (from the confirmed diagnosis)
 - note: Seeded investigations: pulmonary_embolism (confirmed); 0 stat test(s) held back
+- note: Decision Pulmonary embolism — missing: Record eGFR to refine: eGFR below 30 raises operative and anticoagulant harm (therapeutic anticoagulation).
+- note: Decision support: pulmonary-embolism; factors news2High, recentSurgery21d
 - note: matchPathways: Chest Pain — Emergency Redirect (5), IBD — Surgical Complications (Crohn's / UC) (5)
 
 </details>
@@ -11789,6 +12776,7 @@ Guidelines:
 - note: AssessmentTab ManagementPanel protocol: perianal_abscess (from the confirmed diagnosis)
 - note: PlanTab protocol: perianal_abscess (from the confirmed diagnosis)
 - note: Seeded investigations: perianal_abscess (confirmed); 0 stat test(s) held back
+- note: Decision support: (no decision); factors diabetes
 - note: matchPathways: Anorectal (Haemorrhoids / Fissure / Fistula / Abscess) (5), Diabetic Foot (5)
 
 </details>
@@ -11836,6 +12824,7 @@ Guidelines:
 - note: AssessmentTab ManagementPanel protocol: perianal_abscess (from the confirmed diagnosis)
 - note: PlanTab protocol: perianal_abscess (from the confirmed diagnosis)
 - note: Seeded investigations: perianal_abscess (confirmed); 0 stat test(s) held back
+- note: Decision support: (no decision); factors immunosuppressed
 - note: matchPathways: Anorectal (Haemorrhoids / Fissure / Fistula / Abscess) (5)
 
 </details>
@@ -11869,10 +12858,11 @@ Guidelines:
 - recommended scores: news2
 - score values: (none)
 - dx variant: (none) (no group)
-- note: PANE features applied: acute_onset, anal_pain, pain_on_defaecation, severe_pain, perianal_swelling, erythema_surrounding, swelling_fluctuant_soft, rectal_mass, localised_pain, elevated_wbc, raised_crp, trauma_mechanism, recent_surgery, aortic_graft, stoma
+- note: PANE features applied: acute_onset, anal_pain, pain_on_defaecation, severe_pain, perianal_swelling, erythema_surrounding, swelling_fluctuant_soft, localised_pain, elevated_wbc, raised_crp, trauma_mechanism, recent_surgery, aortic_graft, stoma
 - note: AssessmentTab ManagementPanel protocol: perianal_abscess (from the confirmed diagnosis)
 - note: PlanTab protocol: perianal_abscess (from the confirmed diagnosis)
 - note: Seeded investigations: perianal_abscess (confirmed); 0 stat test(s) held back
+- note: Decision support: (no decision); factors (none)
 - note: matchPathways: Cancer Screening (Age/Sex Appropriate) (7), Colonoscopy Diagnostic (Rectal Bleeding / Bowel Habit Change / Iron Deficiency) (7), IBD — Surgical Complications (Crohn's / UC) (7)
 
 </details>
@@ -11917,6 +12907,9 @@ Guidelines:
 - note: AssessmentTab ManagementPanel protocol: inguinal_hernia (from the confirmed diagnosis)
 - note: PlanTab protocol: inguinal_hernia (from the confirmed diagnosis)
 - note: Seeded investigations: inguinal_hernia (confirmed); 0 stat test(s) held back
+- note: Decision Inguinal hernia (reducible, minimally symptomatic) — missing: Record ASA grade to refine: ASA III-IV raises operative harm (elective inguinal hernia repair).
+- note: Decision Inguinal hernia (reducible, minimally symptomatic) — missing: Record eGFR to refine: eGFR below 30 raises operative and anticoagulant harm (elective inguinal hernia repair).
+- note: Decision support: inguinal-hernia; factors (none)
 - note: matchPathways: Hernia (Inguinal / Umbilical / Incisional / Femoral) (15), IBD — Surgical Complications (Crohn's / UC) (5), Pre-operative Assessment (5)
 
 </details>
@@ -11951,7 +12944,7 @@ Guidelines:
 <details><summary>web engine outputs</summary>
 
 - engine: paneEngine=pane-engine (188 diseases, 426 features); triageRulesVersion=1.4.0
-- differential web.pane: 1. Epidermoid / Sebaceous Cyst; 2. Lipoma; 3. Anaphylaxis
+- differential web.pane: 1. Colorectal Cancer; 2. Ulcerative Colitis; 3. Ovarian Cyst (incl. Haemorrhagic / Ruptured Corpus Luteum)
 - differential web.symptomInference: 1. Breast carcinoma; 2. Uterine fibroids; 3. Acute cholecystitis; 4. Colorectal carcinoma; 5. Lower GI bleed / colorectal
 - differential web.passive: 1. Acute cholecystitis; 2. CBD stone / obstructive jaundice; 3. Peptic ulcer disease; 4. Reducible groin / abdominal hernia; 5. GORD / acid reflux / oesophagitis
 - differential web.triageSurgical: 1. Diverticulitis of colon; 2. Skin / soft tissue abscess
@@ -11960,10 +12953,11 @@ Guidelines:
 - recommended scores: news2, caprini, asa, rcri
 - score values: (none)
 - dx variant: (none) (Diverticulitis)
-- note: PANE features applied: lif_pain, known_hypertension, vascular_risk, previous_surgery, syncope, urticaria_angioedema, swelling_fluctuant_soft, bowel_resection, known_allergy, chronic_course, trauma_mechanism, recent_surgery, aortic_graft, stoma
+- note: PANE features applied: lif_pain, known_hypertension, vascular_risk, previous_surgery, bowel_resection, known_allergy, chronic_course, trauma_mechanism, recent_surgery, aortic_graft, stoma
 - note: AssessmentTab ManagementPanel protocol: diverticulitis (from the confirmed diagnosis)
 - note: PlanTab protocol: diverticulitis (from the confirmed diagnosis)
 - note: Seeded investigations: diverticulitis (confirmed); 0 stat test(s) held back
+- note: Decision support: (no decision); factors penicillinAllergy
 - note: matchPathways: Diverticular Disease / Diverticulitis (15), Colonoscopy Diagnostic (Rectal Bleeding / Bowel Habit Change / Iron Deficiency) (5), IBD — Surgical Complications (Crohn's / UC) (5)
 
 </details>
@@ -12008,6 +13002,8 @@ Guidelines:
 - note: AssessmentTab ManagementPanel protocol: umbilical_hernia (from the confirmed diagnosis)
 - note: PlanTab protocol: umbilical_hernia (from the confirmed diagnosis)
 - note: Seeded investigations: umbilical_hernia (confirmed); 0 stat test(s) held back
+- note: Decision Peri-procedural anticoagulation bridging — missing: Record HAS-BLED to refine: HAS-BLED 3 or more raises anticoagulant bleeding (bridging with therapeutic-dose LMWH).
+- note: Decision support: periop-bridging; factors age80plus, egfr30to59, anticoagulated, doacOnly
 - note: matchPathways: Hernia (Inguinal / Umbilical / Incisional / Femoral) (10), IBD — Surgical Complications (Crohn's / UC) (5), Pre-operative Assessment (5)
 
 </details>
@@ -12050,6 +13046,9 @@ Guidelines:
 - note: AssessmentTab ManagementPanel protocol: preoperative_assessment (from the confirmed diagnosis)
 - note: PlanTab protocol: preoperative_assessment (from the confirmed diagnosis)
 - note: Seeded investigations: preoperative_assessment (confirmed); 0 stat test(s) held back
+- note: Decision Peri-procedural anticoagulation bridging — missing: Record eGFR to refine: eGFR below 30 raises operative and anticoagulant harm (bridging with therapeutic-dose LMWH).
+- note: Decision Peri-procedural anticoagulation bridging — missing: Record HAS-BLED to refine: HAS-BLED 3 or more raises anticoagulant bleeding (bridging with therapeutic-dose LMWH).
+- note: Decision support: periop-bridging; factors age65to79, anticoagulated
 - note: matchPathways: Gallbladder Disease (Biliary Colic / Cholecystitis / Choledocholithiasis) (10), Pre-operative Assessment (10), Soft Tissue Mass / Lipoma (5)
 
 </details>
@@ -12093,6 +13092,9 @@ Guidelines:
 - note: AssessmentTab ManagementPanel protocol: incisional_hernia (from the confirmed diagnosis)
 - note: PlanTab protocol: incisional_hernia (from the confirmed diagnosis)
 - note: Seeded investigations: incisional_hernia (confirmed); 0 stat test(s) held back
+- note: Decision Peri-procedural anticoagulation bridging — missing: Record eGFR to refine: eGFR below 30 raises operative and anticoagulant harm (bridging with therapeutic-dose LMWH).
+- note: Decision Peri-procedural anticoagulation bridging — missing: Record HAS-BLED to refine: HAS-BLED 3 or more raises anticoagulant bleeding (bridging with therapeutic-dose LMWH).
+- note: Decision support: periop-bridging; factors anticoagulated, mechanicalValve
 - note: matchPathways: Hernia (Inguinal / Umbilical / Incisional / Femoral) (10), Pre-operative Assessment (5)
 
 </details>
@@ -12138,6 +13140,7 @@ Guidelines:
 - note: AssessmentTab ManagementPanel protocol: diabetic_ketoacidosis (from the confirmed diagnosis)
 - note: PlanTab protocol: diabetic_ketoacidosis (from the confirmed diagnosis)
 - note: Seeded investigations: diabetic_ketoacidosis (confirmed); 0 stat test(s) held back
+- note: Decision support: (no decision); factors diabetes, recentSurgery21d
 - note: matchPathways: Gallbladder Disease (Biliary Colic / Cholecystitis / Choledocholithiasis) (5), IBD — Surgical Complications (Crohn's / UC) (5), Soft Tissue Mass / Lipoma (5)
 
 </details>
@@ -12179,6 +13182,9 @@ Guidelines:
 - note: AssessmentTab ManagementPanel protocol: inguinal_hernia (from the confirmed diagnosis)
 - note: PlanTab protocol: inguinal_hernia (from the confirmed diagnosis)
 - note: Seeded investigations: inguinal_hernia (confirmed); 0 stat test(s) held back
+- note: Decision Inguinal hernia (reducible, minimally symptomatic) — missing: Record ASA grade to refine: ASA III-IV raises operative harm (elective inguinal hernia repair).
+- note: Decision Inguinal hernia (reducible, minimally symptomatic) — missing: Record eGFR to refine: eGFR below 30 raises operative and anticoagulant harm (elective inguinal hernia repair).
+- note: Decision support: inguinal-hernia; factors diabetes
 - note: matchPathways: Hernia (Inguinal / Umbilical / Incisional / Femoral) (20), Chest Pain — Emergency Redirect (5), IBD — Surgical Complications (Crohn's / UC) (5)
 
 </details>
@@ -12220,6 +13226,9 @@ Guidelines:
 - note: AssessmentTab ManagementPanel protocol: appendicitis (from the confirmed diagnosis)
 - note: PlanTab protocol: appendicitis (from the confirmed diagnosis)
 - note: Seeded investigations: appendicitis (confirmed); 0 stat test(s) held back
+- note: Decision Acute appendicitis (uncomplicated) — missing: Record ASA grade to refine: ASA III-IV raises operative harm (laparoscopic appendicectomy).
+- note: Decision Acute appendicitis (uncomplicated) — missing: Record eGFR to refine: eGFR below 30 raises operative and anticoagulant harm (laparoscopic appendicectomy).
+- note: Decision support: appendicitis; factors diabetes
 - note: matchPathways: Acute Appendicitis (17), IBD — Surgical Complications (Crohn's / UC) (12), Acute Abdomen (7)
 
 </details>
@@ -12262,6 +13271,7 @@ Guidelines:
 - note: AssessmentTab ManagementPanel protocol: colorectal_polyp (from the confirmed diagnosis)
 - note: PlanTab protocol: colorectal_polyp (from the confirmed diagnosis)
 - note: Seeded investigations: colorectal_polyp (confirmed); 0 stat test(s) held back
+- note: Decision support: (no decision); factors antiplatelet, diabetes
 - note: matchPathways: Colonoscopy Diagnostic (Rectal Bleeding / Bowel Habit Change / Iron Deficiency) (5), Diverticular Disease / Diverticulitis (5)
 
 </details>
@@ -12304,6 +13314,9 @@ Guidelines:
 - note: AssessmentTab ManagementPanel protocol: dyspepsia (from the confirmed diagnosis)
 - note: PlanTab protocol: dyspepsia (from the confirmed diagnosis)
 - note: Seeded investigations: dyspepsia (confirmed); 0 stat test(s) held back
+- note: Decision Peri-procedural anticoagulation bridging — missing: Record eGFR to refine: eGFR below 30 raises operative and anticoagulant harm (bridging with therapeutic-dose LMWH).
+- note: Decision Peri-procedural anticoagulation bridging — missing: Record HAS-BLED to refine: HAS-BLED 3 or more raises anticoagulant bleeding (bridging with therapeutic-dose LMWH).
+- note: Decision support: periop-bridging; factors age65to79, anticoagulated
 - note: matchPathways: Upper GI Endoscopy (Dyspepsia / GORD / Dysphagia) (25), Cancer Screening (Age/Sex Appropriate) (7), Colonoscopy Diagnostic (Rectal Bleeding / Bowel Habit Change / Iron Deficiency) (7)
 
 </details>
@@ -12347,6 +13360,9 @@ Guidelines:
 - note: AssessmentTab ManagementPanel protocol: choledocholithiasis (from the confirmed diagnosis)
 - note: PlanTab protocol: choledocholithiasis (from the confirmed diagnosis)
 - note: Seeded investigations: choledocholithiasis (confirmed); 0 stat test(s) held back
+- note: Decision Peri-procedural anticoagulation bridging — missing: Record eGFR to refine: eGFR below 30 raises operative and anticoagulant harm (bridging with therapeutic-dose LMWH).
+- note: Decision Peri-procedural anticoagulation bridging — missing: Record HAS-BLED to refine: HAS-BLED 3 or more raises anticoagulant bleeding (bridging with therapeutic-dose LMWH).
+- note: Decision support: periop-bridging; factors age65to79, anticoagulated, doacOnly
 - note: matchPathways: ERCP (Obstructive Jaundice / Bile Duct Stones / Pancreatic Duct) (30), Gallbladder Disease (Biliary Colic / Cholecystitis / Choledocholithiasis) (20), Jaundice Workup (15)
 
 </details>
@@ -12390,6 +13406,7 @@ Guidelines:
 - note: AssessmentTab ManagementPanel protocol: colorectal_polyp (from the confirmed diagnosis)
 - note: PlanTab protocol: colorectal_polyp (from the confirmed diagnosis)
 - note: Seeded investigations: colorectal_polyp (confirmed); 0 stat test(s) held back
+- note: Decision support: (no decision); factors age65to79, antiplatelet
 - note: matchPathways: Colonoscopy Diagnostic (Rectal Bleeding / Bowel Habit Change / Iron Deficiency) (5), IBD — Surgical Complications (Crohn's / UC) (5), Wound Management (Acute / Chronic / SSI) (5)
 
 </details>
@@ -12421,7 +13438,7 @@ Guidelines:
 <details><summary>web engine outputs</summary>
 
 - engine: paneEngine=pane-engine (188 diseases, 426 features); triageRulesVersion=1.4.0
-- differential web.pane: 1. Colorectal Cancer; 2. Inguinal / Femoral Hernia; 3. Sepsis / Septic Shock (source not yet identified; incl. neutropenic sepsis)
+- differential web.pane: 1. Colorectal Cancer; 2. Ulcerative Colitis; 3. Rectal Carcinoma
 - differential web.symptomInference: 1. Prostate adenocarcinoma; 2. Hepatocellular carcinoma (HCC); 3. Heart failure; 4. Symptomatic / ruptured abdominal aortic aneurysm; 5. Anaemia
 - differential web.passive: 1. Anaemia; 2. Hypothyroidism; 3. Major depressive disorder; 4. COVID-19 / viral respiratory illness; 5. Addisonian crisis / adrenal insufficiency
 - differential web.triageSurgical: 1. Colon cancer
@@ -12430,10 +13447,11 @@ Guidelines:
 - recommended scores: news2, caprini, asa, rcri, stop-bang, cfs, ecog, web:phq9
 - score values: (none)
 - dx variant: (none) (no group)
-- note: PANE features applied: change_bowel_habit, fatigue, known_hypertension, vascular_risk, previous_surgery, pallor, gait_disturbance, confusion, hernia_swelling, anaemia, chronic_course, raised_bp, trauma_mechanism, recent_surgery, aortic_graft, stoma
+- note: PANE features applied: change_bowel_habit, fatigue, known_hypertension, vascular_risk, previous_surgery, pallor, gait_disturbance, anaemia, chronic_course, raised_bp, trauma_mechanism, recent_surgery, aortic_graft, stoma
 - note: AssessmentTab ManagementPanel protocol: colorectal_cancer (from the confirmed diagnosis)
 - note: PlanTab protocol: colorectal_cancer (from the confirmed diagnosis)
 - note: Seeded investigations: colorectal_cancer (confirmed); 0 stat test(s) held back
+- note: Decision support: (no decision); factors age80plus
 - note: matchPathways: Colonoscopy Diagnostic (Rectal Bleeding / Bowel Habit Change / Iron Deficiency) (15), Hernia (Inguinal / Umbilical / Incisional / Femoral) (5), Wound Management (Acute / Chronic / SSI) (5)
 
 </details>
@@ -12486,10 +13504,16 @@ Guidelines:
 - recommended scores: alvarado, tg18-cholangitis, ranson, cha2ds2-vasc, qsofa, news2, caprini, has-bled, asa, rcri, cfs
 - score values: (none)
 - dx variant: diverticulitis_peritonitis (Diverticulitis)
-- note: PANE features applied: abdominal_pain, sudden_onset, acute_onset, diffuse_abdominal_pain, lif_pain, fever, nausea_vomiting, anorexia, pain_worse_movement, cough, severe_pain, known_af, known_hypertension, vascular_risk, anticoagulant_use, confusion, abdominal_distension, urinary_retention_symptoms, guarding, rebound_tenderness, absent_bowel_sounds, elevated_wbc, raised_crp, raised_lactate, raised_creatinine, raised_urea, free_gas, pelvic_free_fluid, tachycardia, tachypnoea, trauma_mechanism, recent_surgery, aortic_graft, stoma
+- note: PANE features applied: abdominal_pain, sudden_onset, acute_onset, diffuse_abdominal_pain, lif_pain, fever, nausea_vomiting, anorexia, pain_worse_movement, cough, severe_pain, known_af, known_hypertension, vascular_risk, anticoagulant_use, confusion, abdominal_distension, oliguria, guarding, rebound_tenderness, absent_bowel_sounds, elevated_wbc, raised_crp, raised_lactate, raised_creatinine, raised_urea, free_gas, pelvic_free_fluid, tachycardia, tachypnoea, trauma_mechanism, recent_surgery, aortic_graft, stoma
 - note: AssessmentTab ManagementPanel protocol: diverticulitis (from the confirmed diagnosis)
 - note: PlanTab protocol: diverticulitis (from the confirmed diagnosis)
 - note: Seeded investigations: diverticulitis (confirmed); 0 stat test(s) held back
+- note: Decision Emergency laparotomy (source control) — missing: Record Clinical Frailty Scale to refine: frailty raises the harm of operations and procedures (emergency laparotomy).
+- note: Decision Emergency laparotomy (source control) — missing: Record ASA grade to refine: ASA III-IV raises operative harm (emergency laparotomy).
+- note: Decision Emergency laparotomy (source control) — missing: Record eGFR to refine: eGFR below 30 raises operative and anticoagulant harm (emergency laparotomy).
+- note: Decision Peri-procedural anticoagulation bridging — missing: Record eGFR to refine: eGFR below 30 raises operative and anticoagulant harm (bridging with therapeutic-dose LMWH).
+- note: Decision Peri-procedural anticoagulation bridging — missing: Record HAS-BLED to refine: HAS-BLED 3 or more raises anticoagulant bleeding (bridging with therapeutic-dose LMWH).
+- note: Decision support: emergency-laparotomy, periop-bridging; factors age80plus, anticoagulated, doacOnly, news2High, shock
 - note: matchPathways: Acute Abdomen (12), Acute Appendicitis (7), Anorectal (Haemorrhoids / Fissure / Fistula / Abscess) (7)
 
 </details>
@@ -12535,6 +13559,7 @@ Guidelines:
 - note: AssessmentTab ManagementPanel protocol: acute_kidney_injury (from the confirmed diagnosis)
 - note: PlanTab protocol: acute_kidney_injury (from the confirmed diagnosis)
 - note: Seeded investigations: acute_kidney_injury (confirmed); 0 stat test(s) held back
+- note: Decision support: (no decision); factors age65to79, recentSurgery21d
 - note: matchPathways: IBD — Surgical Complications (Crohn's / UC) (5), Post-operative Follow-up (General) (5), Wound Management (Acute / Chronic / SSI) (5)
 
 </details>
@@ -12581,6 +13606,7 @@ Guidelines:
 - note: AssessmentTab ManagementPanel protocol: anastomotic_leak (from the confirmed diagnosis)
 - note: PlanTab protocol: anastomotic_leak (from the confirmed diagnosis)
 - note: Seeded investigations: anastomotic_leak (confirmed); 0 stat test(s) held back
+- note: Decision support: (no decision); factors news2High, recentSurgery21d
 - note: matchPathways: Acute Abdomen (7), Acute Appendicitis (7), Anorectal (Haemorrhoids / Fissure / Fistula / Abscess) (7)
 
 </details>
@@ -12625,6 +13651,7 @@ Guidelines:
 - note: AssessmentTab ManagementPanel protocol: anastomotic_leak (from the confirmed diagnosis)
 - note: PlanTab protocol: anastomotic_leak (from the confirmed diagnosis)
 - note: Seeded investigations: anastomotic_leak (confirmed); 0 stat test(s) held back
+- note: Decision support: (no decision); factors age65to79, immunosuppressed, news2High, recentSurgery21d
 - note: matchPathways: Bowel Obstruction (Small / Large) (5), IBD — Surgical Complications (Crohn's / UC) (5)
 
 </details>
@@ -12656,7 +13683,7 @@ Guidelines:
 <details><summary>web engine outputs</summary>
 
 - engine: paneEngine=pane-engine (188 diseases, 426 features); triageRulesVersion=1.4.0
-- differential web.pane: 1. Post-operative Pneumonia / Atelectasis; 2. Urinary Retention (Acute / Chronic); 3. Community-acquired Pneumonia (Adult / Child)
+- differential web.pane: 1. Post-operative Pneumonia / Atelectasis; 2. Community-acquired Pneumonia (Adult / Child); 3. Sepsis / Septic Shock (source not yet identified; incl. neutropenic sepsis)
 - differential web.symptomInference: 1. Hypertensive emergency / hypertensive encephalopathy; 2. Stroke / TIA; 3. Sepsis / systemic infection; 4. Meningitis / encephalitis; 5. Hypoglycaemia
 - differential web.passive: 1. Hypertensive emergency / hypertensive encephalopathy; 2. Sepsis / systemic infection; 3. Meningitis / encephalitis; 4. Hypoglycaemia; 5. DKA / hyperglycaemic hyperosmolar state
 - differential web.triageSurgical: 1. Intestinal obstruction
@@ -12665,10 +13692,11 @@ Guidelines:
 - recommended scores: wells-pe, wells-dvt, gcs, news2, caprini, asa, clavien-dindo, rcri, cfs
 - score values: (none)
 - dx variant: (none) (no group)
-- note: PANE features applied: confusion, known_hypertension, vascular_risk, anticholinergic_or_opioid, anticoagulant_use, previous_surgery, reduced_breath_sounds, urinary_retention_symptoms, palpable_bladder, recent_surgery, raised_crp, acute_onset, hypoxia, trauma_mechanism, aortic_graft, stoma
+- note: PANE features applied: confusion, known_hypertension, vascular_risk, anticholinergic_or_opioid, anticoagulant_use, previous_surgery, reduced_breath_sounds, palpable_bladder, oliguria, recent_surgery, raised_crp, acute_onset, hypoxia, trauma_mechanism, aortic_graft, stoma
 - note: AssessmentTab ManagementPanel protocol: delirium (from the confirmed diagnosis)
 - note: PlanTab protocol: delirium (from the confirmed diagnosis)
 - note: Seeded investigations: delirium (confirmed); 0 stat test(s) held back
+- note: Decision support: (no decision); factors age80plus, recentSurgery21d
 - note: matchPathways: Bowel Obstruction (Small / Large) (5), IBD — Surgical Complications (Crohn's / UC) (5), Post-operative Follow-up (General) (5)
 
 </details>
@@ -12717,6 +13745,7 @@ Guidelines:
 - note: AssessmentTab ManagementPanel protocol: postoperative_fever (from the confirmed diagnosis)
 - note: PlanTab protocol: postoperative_fever (from the confirmed diagnosis)
 - note: Seeded investigations: postoperative_fever (confirmed); 0 stat test(s) held back
+- note: Decision support: (no decision); factors recentSurgery21d
 - note: matchPathways: Post-operative Follow-up (General) (10), Soft Tissue Mass / Lipoma (5), Wound Management (Acute / Chronic / SSI) (5)
 
 </details>
@@ -12760,6 +13789,7 @@ Guidelines:
 - note: AssessmentTab ManagementPanel protocol: ileus_postop (from the confirmed diagnosis)
 - note: PlanTab protocol: ileus_postop (from the confirmed diagnosis)
 - note: Seeded investigations: ileus_postop (confirmed); 0 stat test(s) held back
+- note: Decision support: (no decision); factors age65to79, recentSurgery21d
 - note: matchPathways: Bowel Obstruction (Small / Large) (5), IBD — Surgical Complications (Crohn's / UC) (5), Wound Management (Acute / Chronic / SSI) (5)
 
 </details>
@@ -12804,6 +13834,8 @@ Guidelines:
 - note: AssessmentTab ManagementPanel protocol: pulmonary_embolism (from the confirmed diagnosis)
 - note: PlanTab protocol: pulmonary_embolism (from the confirmed diagnosis)
 - note: Seeded investigations: pulmonary_embolism (confirmed); 0 stat test(s) held back
+- note: Decision Pulmonary embolism — missing: Record eGFR to refine: eGFR below 30 raises operative and anticoagulant harm (therapeutic anticoagulation).
+- note: Decision support: pulmonary-embolism; factors age65to79, news2High, shock, recentSurgery21d
 - note: matchPathways: Diverticular Disease / Diverticulitis (10), Chest Pain — Emergency Redirect (5)
 
 </details>
@@ -12853,6 +13885,7 @@ Guidelines:
 - note: AssessmentTab ManagementPanel protocol: pneumonia (from the confirmed diagnosis)
 - note: PlanTab protocol: pneumonia (from the confirmed diagnosis)
 - note: Seeded investigations: pneumonia (confirmed); 0 stat test(s) held back
+- note: Decision support: sepsis; factors age65to79, news2High, recentSurgery21d
 - note: matchPathways: IBD — Surgical Complications (Crohn's / UC) (5), Wound Management (Acute / Chronic / SSI) (5)
 
 </details>
@@ -12900,6 +13933,7 @@ Guidelines:
 - note: AssessmentTab ManagementPanel protocol: surgical_site_infection (from the confirmed diagnosis)
 - note: PlanTab protocol: surgical_site_infection (from the confirmed diagnosis)
 - note: Seeded investigations: surgical_site_infection (confirmed); 0 stat test(s) held back
+- note: Decision support: (no decision); factors age65to79, diabetes, news2High, recentSurgery21d
 - note: matchPathways: IBD — Surgical Complications (Crohn's / UC) (17), Wound Management (Acute / Chronic / SSI) (15), Acute Abdomen (7)
 
 </details>
@@ -12946,6 +13980,7 @@ Guidelines:
 - note: AssessmentTab ManagementPanel protocol: surgical_site_infection (from the confirmed diagnosis)
 - note: PlanTab protocol: surgical_site_infection (from the confirmed diagnosis)
 - note: Seeded investigations: surgical_site_infection (confirmed); 0 stat test(s) held back
+- note: Decision support: (no decision); factors recentSurgery21d
 - note: matchPathways: Wound Management (Acute / Chronic / SSI) (15), Acute Abdomen (12), Acute Appendicitis (12)
 
 </details>
@@ -12987,10 +14022,14 @@ Guidelines:
 - recommended scores: wells-pe, wells-dvt, news2, caprini, asa, clavien-dindo, rcri, cfs
 - score values: (none)
 - dx variant: (none) (Hernia)
-- note: PANE features applied: acute_onset, suprapubic_pain, pain_worse_movement, urinary_retention_symptoms, prostate_symptoms, known_hypertension, vascular_risk, anticholinergic_or_opioid, previous_surgery, abdominal_pain, nocturia, hernia_swelling, previous_repair, recent_surgery, raised_bp, trauma_mechanism, aortic_graft, stoma
+- note: PANE features applied: acute_onset, suprapubic_pain, pain_worse_movement, urinary_retention_symptoms, prostate_symptoms, known_hypertension, vascular_risk, anticholinergic_or_opioid, previous_surgery, abdominal_pain, nocturia, oliguria, hernia_swelling, previous_repair, recent_surgery, raised_bp, trauma_mechanism, aortic_graft, stoma
 - note: AssessmentTab ManagementPanel protocol: urinary_retention (from the confirmed diagnosis)
 - note: PlanTab protocol: urinary_retention (from the confirmed diagnosis)
 - note: Seeded investigations: urinary_retention (confirmed); 0 stat test(s) held back
+- note: Decision Inguinal hernia (reducible, minimally symptomatic) — missing: Record Clinical Frailty Scale to refine: frailty raises the harm of operations and procedures (elective inguinal hernia repair).
+- note: Decision Inguinal hernia (reducible, minimally symptomatic) — missing: Record ASA grade to refine: ASA III-IV raises operative harm (elective inguinal hernia repair).
+- note: Decision Inguinal hernia (reducible, minimally symptomatic) — missing: Record eGFR to refine: eGFR below 30 raises operative and anticoagulant harm (elective inguinal hernia repair).
+- note: Decision support: inguinal-hernia; factors age65to79, recentSurgery21d
 - note: matchPathways: Hernia (Inguinal / Umbilical / Incisional / Femoral) (5)
 
 </details>
@@ -13036,10 +14075,11 @@ Guidelines:
 - recommended scores: alvarado, ranson, news2
 - score values: (none)
 - dx variant: (none) (Bowel Obstruction)
-- note: PANE features applied: abdominal_pain, acute_onset, diffuse_abdominal_pain, periumbilical_pain, colicky_pain, nausea_vomiting, anorexia, postprandial_pain, severe_pain, abdominal_distension, constipation, previous_surgery, rlq_pain, bilious_vomiting, absolute_constipation, pregnant, tinkling_bowel_sounds, elevated_wbc, raised_crp, raised_lactate, pelvic_free_fluid, tachycardia, trauma_mechanism, recent_surgery, aortic_graft, stoma
+- note: PANE features applied: abdominal_pain, acute_onset, diffuse_abdominal_pain, periumbilical_pain, colicky_pain, nausea_vomiting, anorexia, postprandial_pain, severe_pain, abdominal_distension, constipation, previous_surgery, bilious_vomiting, absolute_constipation, pregnant, tinkling_bowel_sounds, elevated_wbc, raised_crp, raised_lactate, pelvic_free_fluid, tachycardia, trauma_mechanism, recent_surgery, aortic_graft, stoma
 - note: AssessmentTab ManagementPanel protocol: adhesion_obstruction (from the confirmed diagnosis)
 - note: PlanTab protocol: adhesion_obstruction (from the confirmed diagnosis)
 - note: Seeded investigations: adhesion_obstruction (confirmed); 0 stat test(s) held back
+- note: Decision support: (no decision); factors pregnant
 - note: matchPathways: Acute Abdomen (12), Acute Appendicitis (12), Bowel Obstruction (Small / Large) (12)
 
 </details>
@@ -13088,6 +14128,7 @@ Guidelines:
 - note: AssessmentTab ManagementPanel protocol: preoperative_assessment (from the confirmed diagnosis)
 - note: PlanTab protocol: preoperative_assessment (from the confirmed diagnosis)
 - note: Seeded investigations: preoperative_assessment (confirmed); 0 stat test(s) held back
+- note: Decision support: (no decision); factors (none)
 - note: matchPathways: Gallbladder Disease (Biliary Colic / Cholecystitis / Choledocholithiasis) (15), Pre-operative Assessment (10), Soft Tissue Mass / Lipoma (5)
 
 </details>
@@ -13133,6 +14174,7 @@ Guidelines:
 - note: AssessmentTab ManagementPanel protocol: preoperative_assessment (from the confirmed diagnosis)
 - note: PlanTab protocol: preoperative_assessment (from the confirmed diagnosis)
 - note: Seeded investigations: preoperative_assessment (confirmed); 0 stat test(s) held back
+- note: Decision support: (no decision); factors (none)
 - note: matchPathways: Gallbladder Disease (Biliary Colic / Cholecystitis / Choledocholithiasis) (15), Pre-operative Assessment (10), IBD — Surgical Complications (Crohn's / UC) (5)
 
 </details>
@@ -13169,10 +14211,11 @@ Guidelines:
 - recommended scores: asge-cbd, news2
 - score values: (none)
 - dx variant: (none) (no group)
-- note: PANE features applied: ruq_pain, episodic_pain, wheeze, urticaria_angioedema, pruritus, previous_surgery, us_gallstones, chronic_course, trauma_mechanism, recent_surgery, aortic_graft, stoma
+- note: PANE features applied: ruq_pain, episodic_pain, pruritus, previous_surgery, us_gallstones, chronic_course, trauma_mechanism, recent_surgery, aortic_graft, stoma
 - note: AssessmentTab ManagementPanel protocol: preoperative_assessment (from the confirmed diagnosis)
 - note: PlanTab protocol: preoperative_assessment (from the confirmed diagnosis)
 - note: Seeded investigations: preoperative_assessment (confirmed); 0 stat test(s) held back
+- note: Decision support: (no decision); factors (none)
 - note: matchPathways: Gallbladder Disease (Biliary Colic / Cholecystitis / Choledocholithiasis) (15), Pre-operative Assessment (10), Soft Tissue Mass / Lipoma (5)
 
 </details>
@@ -13212,6 +14255,7 @@ Guidelines:
 - note: AssessmentTab ManagementPanel protocol: preoperative_assessment (from the confirmed diagnosis)
 - note: PlanTab protocol: preoperative_assessment (from the confirmed diagnosis)
 - note: Seeded investigations: preoperative_assessment (confirmed); 0 stat test(s) held back
+- note: Decision support: (no decision); factors immunosuppressed
 - note: matchPathways: Gallbladder Disease (Biliary Colic / Cholecystitis / Choledocholithiasis) (15), Pre-operative Assessment (10), Soft Tissue Mass / Lipoma (5)
 
 </details>
@@ -13248,10 +14292,11 @@ Guidelines:
 - recommended scores: asge-cbd, news2, caprini, ecog
 - score values: (none)
 - dx variant: (none) (no group)
-- note: PANE features applied: ruq_pain, episodic_pain, known_malignancy, previous_surgery, us_gallstones, chronic_course, trauma_mechanism, recent_surgery, aortic_graft, stoma
+- note: PANE features applied: ruq_pain, episodic_pain, previous_surgery, us_gallstones, chronic_course, trauma_mechanism, recent_surgery, aortic_graft, stoma
 - note: AssessmentTab ManagementPanel protocol: preoperative_assessment (from the confirmed diagnosis)
 - note: PlanTab protocol: preoperative_assessment (from the confirmed diagnosis)
 - note: Seeded investigations: preoperative_assessment (confirmed); 0 stat test(s) held back
+- note: Decision support: (no decision); factors (none)
 - note: matchPathways: Gallbladder Disease (Biliary Colic / Cholecystitis / Choledocholithiasis) (15), Pre-operative Assessment (10), Soft Tissue Mass / Lipoma (5)
 
 </details>
@@ -13295,6 +14340,7 @@ Guidelines:
 - note: AssessmentTab ManagementPanel protocol: preoperative_assessment (from the confirmed diagnosis)
 - note: PlanTab protocol: preoperative_assessment (from the confirmed diagnosis)
 - note: Seeded investigations: preoperative_assessment (confirmed); 0 stat test(s) held back
+- note: Decision support: (no decision); factors bmi40plus
 - note: matchPathways: Gallbladder Disease (Biliary Colic / Cholecystitis / Choledocholithiasis) (10), Pre-operative Assessment (10), Soft Tissue Mass / Lipoma (5)
 
 </details>
@@ -13341,6 +14387,7 @@ Guidelines:
 - note: AssessmentTab ManagementPanel protocol: colorectal_cancer (from the confirmed diagnosis)
 - note: PlanTab protocol: colorectal_cancer (from the confirmed diagnosis)
 - note: Seeded investigations: colorectal_cancer (confirmed); 0 stat test(s) held back
+- note: Decision support: (no decision); factors age65to79, antiplatelet, diabetes
 - note: matchPathways: Colonoscopy Diagnostic (Rectal Bleeding / Bowel Habit Change / Iron Deficiency) (10), Pre-operative Assessment (10), Chest Pain — Emergency Redirect (5)
 
 </details>
@@ -13384,6 +14431,7 @@ Guidelines:
 - note: AssessmentTab ManagementPanel protocol: preoperative_assessment (from the confirmed diagnosis)
 - note: PlanTab protocol: preoperative_assessment (from the confirmed diagnosis)
 - note: Seeded investigations: preoperative_assessment (confirmed); 0 stat test(s) held back
+- note: Decision support: (no decision); factors antiplatelet
 - note: matchPathways: Gallbladder Disease (Biliary Colic / Cholecystitis / Choledocholithiasis) (22), Pre-operative Assessment (10), ERCP (Obstructive Jaundice / Bile Duct Stones / Pancreatic Duct) (7)
 
 </details>
@@ -13424,6 +14472,9 @@ Guidelines:
 - note: AssessmentTab ManagementPanel protocol: appendicitis (from the confirmed diagnosis)
 - note: PlanTab protocol: appendicitis (from the confirmed diagnosis)
 - note: Seeded investigations: appendicitis (confirmed); 0 stat test(s) held back
+- note: Decision Acute appendicitis (uncomplicated) — missing: Record ASA grade to refine: ASA III-IV raises operative harm (laparoscopic appendicectomy).
+- note: Decision Acute appendicitis (uncomplicated) — missing: Record eGFR to refine: eGFR below 30 raises operative and anticoagulant harm (laparoscopic appendicectomy).
+- note: Decision support: appendicitis; factors (none)
 - note: matchPathways: Acute Appendicitis (12), Acute Abdomen (7), Anorectal (Haemorrhoids / Fissure / Fistula / Abscess) (7)
 
 </details>
@@ -13462,6 +14513,7 @@ Guidelines:
 - note: AssessmentTab ManagementPanel protocol: rectal_carcinoma (from the confirmed diagnosis)
 - note: PlanTab protocol: rectal_carcinoma (from the confirmed diagnosis)
 - note: Seeded investigations: rectal_carcinoma (confirmed); 0 stat test(s) held back
+- note: Decision support: (no decision); factors age65to79
 - note: matchPathways: Colonoscopy Diagnostic (Rectal Bleeding / Bowel Habit Change / Iron Deficiency) (10), Varicose Veins (10), Anorectal (Haemorrhoids / Fissure / Fistula / Abscess) (5)
 
 </details>
@@ -13502,6 +14554,8 @@ Guidelines:
 - note: AssessmentTab ManagementPanel protocol: upper_gi_bleed (from the confirmed diagnosis)
 - note: PlanTab protocol: upper_gi_bleed (from the confirmed diagnosis)
 - note: Seeded investigations: upper_gi_bleed (confirmed); 0 stat test(s) held back
+- note: Decision Upper GI bleeding — admission and endoscopy timing — missing: Calculate the Glasgow-Blatchford score to set the risk.
+- note: Decision support: upper-gi-bleed; factors recentSurgery21d
 - note: matchPathways: GI Bleeding (Upper and Lower) (5), Post-operative Follow-up (General) (5)
 
 </details>
@@ -13546,6 +14600,7 @@ Guidelines:
 - note: AssessmentTab ManagementPanel protocol: pharyngeal_pouch (from the confirmed diagnosis)
 - note: PlanTab protocol: pharyngeal_pouch (from the confirmed diagnosis)
 - note: Seeded investigations: pharyngeal_pouch (confirmed); 0 stat test(s) held back
+- note: Decision support: (no decision); factors age65to79
 - note: matchPathways: Upper GI Endoscopy (Dyspepsia / GORD / Dysphagia) (10)
 
 </details>
@@ -13583,6 +14638,7 @@ Guidelines:
 - note: AssessmentTab ManagementPanel protocol: pilonidal_disease (from the confirmed diagnosis)
 - note: PlanTab protocol: pilonidal_disease (from the confirmed diagnosis)
 - note: Seeded investigations: pilonidal_disease (confirmed); 0 stat test(s) held back
+- note: Decision support: (no decision); factors (none)
 - note: matchPathways: Anorectal (Haemorrhoids / Fissure / Fistula / Abscess) (5)
 
 </details>
@@ -13620,6 +14676,7 @@ Guidelines:
 - note: AssessmentTab ManagementPanel protocol: colorectal_polyp (from the confirmed diagnosis)
 - note: PlanTab protocol: colorectal_polyp (from the confirmed diagnosis)
 - note: Seeded investigations: colorectal_polyp (confirmed); 0 stat test(s) held back
+- note: Decision support: (no decision); factors (none)
 - note: matchPathways: Colonoscopy Diagnostic (Rectal Bleeding / Bowel Habit Change / Iron Deficiency) (5), Diverticular Disease / Diverticulitis (5), Post-operative Follow-up (General) (5)
 
 </details>
@@ -13673,6 +14730,9 @@ Guidelines:
 - note: PlanTab protocol: peptic_ulcer (from the confirmed diagnosis)
 - note: Seeded investigations: peptic_ulcer (confirmed); 0 stat test(s) held back
 - note: no web calculator for score form 'qsofa'
+- note: Decision Emergency laparotomy (source control) — missing: Record ASA grade to refine: ASA III-IV raises operative harm (emergency laparotomy).
+- note: Decision Emergency laparotomy (source control) — missing: Record eGFR to refine: eGFR below 30 raises operative and anticoagulant harm (emergency laparotomy).
+- note: Decision support: emergency-laparotomy; factors (none)
 - note: matchPathways: Upper GI Endoscopy (Dyspepsia / GORD / Dysphagia) (17), Acute Abdomen (7), Acute Appendicitis (7)
 
 </details>
@@ -13723,6 +14783,10 @@ Guidelines:
 - note: PlanTab protocol: peptic_ulcer (from the confirmed diagnosis)
 - note: Seeded investigations: peptic_ulcer (confirmed); 0 stat test(s) held back
 - note: no web calculator for score form 'qsofa'
+- note: Decision Emergency laparotomy (source control) — missing: Record Clinical Frailty Scale to refine: frailty raises the harm of operations and procedures (emergency laparotomy).
+- note: Decision Emergency laparotomy (source control) — missing: Record ASA grade to refine: ASA III-IV raises operative harm (emergency laparotomy).
+- note: Decision Emergency laparotomy (source control) — missing: Record eGFR to refine: eGFR below 30 raises operative and anticoagulant harm (emergency laparotomy).
+- note: Decision support: emergency-laparotomy; factors age80plus, immunosuppressed, news2High
 - note: matchPathways: Upper GI Endoscopy (Dyspepsia / GORD / Dysphagia) (5)
 
 </details>
@@ -13764,10 +14828,13 @@ Guidelines:
 - recommended scores: alvarado, tg18-cholangitis, ranson, child-pugh, qsofa, bisap, gcs, news2, web:gerdq, web:audit
 - score values: (none)
 - dx variant: (none) (Upper GI Bleed)
-- note: PANE features applied: abdominal_pain, diffuse_abdominal_pain, epigastric_pain, sudden_onset, acute_onset, confusion, fever, nausea_vomiting, pain_worse_movement, severe_pain, abdominal_distension, guarding, absent_bowel_sounds, alcohol_use, mottled_skin, urinary_retention_symptoms, rebound_tenderness, smoker, vascular_risk, elevated_wbc, raised_crp, raised_lactate, raised_creatinine, thrombocytopenia, free_gas, pelvic_free_fluid, tachycardia, haemodynamic_instability, hypotension, tachypnoea, hypoxia, gcs_drop, trauma_mechanism, recent_surgery, aortic_graft, stoma
+- note: PANE features applied: abdominal_pain, diffuse_abdominal_pain, epigastric_pain, sudden_onset, acute_onset, confusion, fever, nausea_vomiting, pain_worse_movement, severe_pain, abdominal_distension, guarding, absent_bowel_sounds, alcohol_use, mottled_skin, oliguria, rebound_tenderness, smoker, vascular_risk, elevated_wbc, raised_crp, raised_lactate, raised_creatinine, thrombocytopenia, free_gas, pelvic_free_fluid, tachycardia, haemodynamic_instability, hypotension, tachypnoea, hypoxia, gcs_drop, trauma_mechanism, recent_surgery, aortic_graft, stoma
 - note: AssessmentTab ManagementPanel protocol: peptic_ulcer (from the confirmed diagnosis)
 - note: PlanTab protocol: peptic_ulcer (from the confirmed diagnosis)
 - note: Seeded investigations: peptic_ulcer (confirmed); 0 stat test(s) held back
+- note: Decision Emergency laparotomy (source control) — missing: Record ASA grade to refine: ASA III-IV raises operative harm (emergency laparotomy).
+- note: Decision Emergency laparotomy (source control) — missing: Record eGFR to refine: eGFR below 30 raises operative and anticoagulant harm (emergency laparotomy).
+- note: Decision support: sepsis, emergency-laparotomy; factors news2High, shock
 - note: matchPathways: Acute Abdomen (12), Upper GI Endoscopy (Dyspepsia / GORD / Dysphagia) (12), Acute Appendicitis (7)
 
 </details>
@@ -13811,6 +14878,7 @@ Guidelines:
 - note: AssessmentTab ManagementPanel protocol: pyelonephritis (from the confirmed diagnosis)
 - note: PlanTab protocol: pyelonephritis (from the confirmed diagnosis)
 - note: Seeded investigations: pyelonephritis (confirmed); 0 stat test(s) held back
+- note: Decision support: (no decision); factors (none)
 - note: matchPathways: Wound Management (Acute / Chronic / SSI) (5)
 
 </details>
@@ -13859,6 +14927,7 @@ Guidelines:
 - note: AssessmentTab ManagementPanel protocol: pyelonephritis (from the confirmed diagnosis)
 - note: PlanTab protocol: pyelonephritis (from the confirmed diagnosis)
 - note: Seeded investigations: pyelonephritis (confirmed); 0 stat test(s) held back
+- note: Decision support: (no decision); factors pregnant
 
 </details>
 
@@ -13903,6 +14972,7 @@ Guidelines:
 - note: AssessmentTab ManagementPanel protocol: aortic_aneurysm (from the confirmed diagnosis)
 - note: PlanTab protocol: aortic_aneurysm (from the confirmed diagnosis)
 - note: Seeded investigations: aortic_aneurysm (confirmed); 0 stat test(s) held back
+- note: Decision support: (no decision); factors age65to79, news2High, shock
 - note: matchPathways: Acute Abdomen (7), Acute Appendicitis (7), Anorectal (Haemorrhoids / Fissure / Fistula / Abscess) (7)
 
 </details>
@@ -13939,6 +15009,7 @@ Guidelines:
 - note: AssessmentTab ManagementPanel protocol: biliary_colic (from the confirmed diagnosis)
 - note: PlanTab protocol: biliary_colic (from the confirmed diagnosis)
 - note: Seeded investigations: biliary_colic (confirmed); 0 stat test(s) held back
+- note: Decision support: (no decision); factors (none)
 - note: matchPathways: Gallbladder Disease (Biliary Colic / Cholecystitis / Choledocholithiasis) (12), Upper GI Endoscopy (Dyspepsia / GORD / Dysphagia) (12), Acute Abdomen (7)
 
 </details>
@@ -13974,6 +15045,7 @@ Guidelines:
 - note: AssessmentTab ManagementPanel protocol: gastritis (from the confirmed diagnosis)
 - note: PlanTab protocol: gastritis (from the confirmed diagnosis)
 - note: Seeded investigations: gastritis (confirmed); 0 stat test(s) held back
+- note: Decision support: (no decision); factors diabetes
 - note: matchPathways: Upper GI Endoscopy (Dyspepsia / GORD / Dysphagia) (5)
 
 </details>
@@ -14009,6 +15081,7 @@ Guidelines:
 - note: AssessmentTab ManagementPanel protocol: infective_colitis (from the confirmed diagnosis)
 - note: PlanTab protocol: infective_colitis (from the confirmed diagnosis)
 - note: Seeded investigations: infective_colitis (confirmed); 0 stat test(s) held back
+- note: Decision support: (no decision); factors diabetes
 - note: matchPathways: Acute Abdomen (7), Acute Appendicitis (7), Anorectal (Haemorrhoids / Fissure / Fistula / Abscess) (7)
 
 </details>
@@ -14045,6 +15118,7 @@ Guidelines:
 - note: AssessmentTab ManagementPanel protocol: renal_colic (from the confirmed diagnosis)
 - note: PlanTab protocol: renal_colic (from the confirmed diagnosis)
 - note: Seeded investigations: renal_colic (confirmed); 0 stat test(s) held back
+- note: Decision support: (no decision); factors age65to79, news2High, shock
 
 </details>
 
@@ -14079,6 +15153,10 @@ Guidelines:
 - note: AssessmentTab ManagementPanel protocol: pancreatitis (from PANE top)
 - note: PlanTab protocol: (none) (from the confirmed diagnosis)
 - note: Seeded investigations: pancreatitis (leading differential); 1 stat test(s) held back
+- note: Decision Acute gallstone pancreatitis — timing of cholecystectomy — missing: Record ASA grade to refine: ASA III-IV raises operative harm (same-admission laparoscopic cholecystectomy).
+- note: Decision Acute gallstone pancreatitis — timing of cholecystectomy — missing: Record eGFR to refine: eGFR below 30 raises operative and anticoagulant harm (same-admission laparoscopic cholecystectomy).
+- note: Decision Acute gallstone pancreatitis — timing of cholecystectomy — missing: Record BMI (height and weight) to refine: BMI 40 or more raises operative harm (same-admission laparoscopic cholecystectomy).
+- note: Decision support: gallstone-pancreatitis; factors (none)
 - note: matchPathways: Upper GI Endoscopy (Dyspepsia / GORD / Dysphagia) (12), Acute Abdomen (7), Acute Appendicitis (7)
 
 </details>
@@ -14113,6 +15191,7 @@ Guidelines:
 - note: AssessmentTab ManagementPanel protocol: ectopic_pregnancy (from PANE top)
 - note: PlanTab protocol: (none) (from the confirmed diagnosis)
 - note: Seeded investigations: ectopic_pregnancy (leading differential); 3 stat test(s) held back
+- note: Decision support: (no decision); factors (none)
 - note: matchPathways: Acute Appendicitis (12), Acute Abdomen (7), Anorectal (Haemorrhoids / Fissure / Fistula / Abscess) (7)
 
 </details>
@@ -14147,6 +15226,7 @@ Guidelines:
 - note: AssessmentTab ManagementPanel protocol: aortoenteric_fistula (from PANE top)
 - note: PlanTab protocol: (none) (from the confirmed diagnosis)
 - note: Seeded investigations: aortoenteric_fistula (leading differential); 2 stat test(s) held back
+- note: Decision support: (no decision); factors age65to79, antiplatelet
 - note: matchPathways: GI Bleeding (Upper and Lower) (10)
 
 </details>
@@ -14181,6 +15261,7 @@ Guidelines:
 - note: AssessmentTab ManagementPanel protocol: renal_colic (from PANE top)
 - note: PlanTab protocol: (none) (from the confirmed diagnosis)
 - note: Seeded investigations: renal_colic (leading differential); 0 stat test(s) held back
+- note: Decision support: (no decision); factors (none)
 
 </details>
 
@@ -14214,6 +15295,7 @@ Guidelines:
 - note: AssessmentTab ManagementPanel protocol: oesophageal_stricture (from PANE top)
 - note: PlanTab protocol: (none) (from the confirmed diagnosis)
 - note: Seeded investigations: oesophageal_stricture (leading differential); 0 stat test(s) held back
+- note: Decision support: (no decision); factors (none)
 - note: matchPathways: Foreign Body Ingestion / Food Bolus (10), IBD — Surgical Complications (Crohn's / UC) (5), Upper GI Endoscopy (Dyspepsia / GORD / Dysphagia) (5)
 
 </details>
@@ -14248,6 +15330,7 @@ Guidelines:
 - note: AssessmentTab ManagementPanel protocol: acute_hepatitis (from PANE top)
 - note: PlanTab protocol: (none) (from the confirmed diagnosis)
 - note: Seeded investigations: acute_hepatitis (leading differential); 0 stat test(s) held back
+- note: Decision support: (no decision); factors (none)
 - note: matchPathways: Jaundice Workup (25), Gallbladder Disease (Biliary Colic / Cholecystitis / Choledocholithiasis) (17), Pancreatic Mass / Cyst (17)
 
 </details>
@@ -14282,6 +15365,7 @@ Guidelines:
 - note: AssessmentTab ManagementPanel protocol: adrenal_incidentaloma (from PANE top)
 - note: PlanTab protocol: (none) (from the confirmed diagnosis)
 - note: Seeded investigations: adrenal_incidentaloma (leading differential); 0 stat test(s) held back
+- note: Decision support: (no decision); factors (none)
 
 </details>
 
@@ -14315,6 +15399,10 @@ Guidelines:
 - note: AssessmentTab ManagementPanel protocol: pancreatitis (from PANE top)
 - note: PlanTab protocol: (none) (from the confirmed diagnosis)
 - note: Seeded investigations: pancreatitis (leading differential); 1 stat test(s) held back
+- note: Decision Acute gallstone pancreatitis — timing of cholecystectomy — missing: Record ASA grade to refine: ASA III-IV raises operative harm (same-admission laparoscopic cholecystectomy).
+- note: Decision Acute gallstone pancreatitis — timing of cholecystectomy — missing: Record eGFR to refine: eGFR below 30 raises operative and anticoagulant harm (same-admission laparoscopic cholecystectomy).
+- note: Decision Acute gallstone pancreatitis — timing of cholecystectomy — missing: Record BMI (height and weight) to refine: BMI 40 or more raises operative harm (same-admission laparoscopic cholecystectomy).
+- note: Decision support: gallstone-pancreatitis; factors diabetes
 - note: matchPathways: Upper GI Endoscopy (Dyspepsia / GORD / Dysphagia) (12), Acute Abdomen (7), Acute Appendicitis (7)
 
 </details>
@@ -14361,6 +15449,7 @@ Guidelines:
 - note: AssessmentTab ManagementPanel protocol: haemorrhoids (from the confirmed diagnosis)
 - note: PlanTab protocol: haemorrhoids (from the confirmed diagnosis)
 - note: Seeded investigations: haemorrhoids (confirmed); 0 stat test(s) held back
+- note: Decision support: (no decision); factors (none)
 - note: matchPathways: IBD — Surgical Complications (Crohn's / UC) (31), Colonoscopy Diagnostic (Rectal Bleeding / Bowel Habit Change / Iron Deficiency) (29), Diverticular Disease / Diverticulitis (14)
 
 </details>
@@ -14398,6 +15487,7 @@ Guidelines:
 - note: AssessmentTab ManagementPanel protocol: rectal_prolapse (from the confirmed diagnosis)
 - note: PlanTab protocol: rectal_prolapse (from the confirmed diagnosis)
 - note: Seeded investigations: rectal_prolapse (confirmed); 0 stat test(s) held back
+- note: Decision support: (no decision); factors age65to79
 - note: matchPathways: Anorectal (Haemorrhoids / Fissure / Fistula / Abscess) (10), Colonoscopy Diagnostic (Rectal Bleeding / Bowel Habit Change / Iron Deficiency) (5), GI Bleeding (Upper and Lower) (5)
 
 </details>
@@ -14445,6 +15535,7 @@ Guidelines:
 - note: AssessmentTab ManagementPanel protocol: obstructed_infected_kidney (from the confirmed diagnosis)
 - note: PlanTab protocol: obstructed_infected_kidney (from the confirmed diagnosis)
 - note: Seeded investigations: obstructed_infected_kidney (confirmed); 0 stat test(s) held back
+- note: Decision support: (no decision); factors diabetes, news2High
 
 </details>
 
@@ -14469,7 +15560,7 @@ Permutation of `renal-colic-typical`.
 
 Failure details:
 
-- **mgmt-paracetamol-opioid** (web): no management item matched among 5 (web.clinicalPrompts) [known gap: Web: No analgesia at all: the Assessment panel now follows the confirmed diagnosis (O26.83, no protocol) instead of the PANE top (renal colic 0.47), so the renal colic plan is no longer shown. Before the fix the only analgesia was diclofenac first-line. \| iOS CI 2026-09-25 (run 36169134350, database mode): no management item matched among 6 (ios.pipeline.actions, ios.soap.plan)]
+- **mgmt-paracetamol-opioid** (web): no management item matched among 9 (web.clinicalPrompts, web.decisions, web.decisions.shift) [known gap: Web: No analgesia at all: the Assessment panel now follows the confirmed diagnosis (O26.83, no protocol) instead of the PANE top (renal colic 0.47), so the renal colic plan is no longer shown. Before the fix the only analgesia was diclofenac first-line. \| iOS CI 2026-09-25 (run 36169134350, database mode): no management item matched among 6 (ios.pipeline.actions, ios.soap.plan)]
 
 Guidelines:
 
@@ -14492,6 +15583,7 @@ Guidelines:
 - note: AssessmentTab ManagementPanel protocol: (none) (from the confirmed diagnosis)
 - note: PlanTab protocol: (none) (from the confirmed diagnosis)
 - note: Seeded investigations: renal_colic (leading differential); 0 stat test(s) held back
+- note: Decision support: (no decision); factors pregnant
 
 </details>
 
@@ -14521,7 +15613,7 @@ Guidelines:
 <details><summary>web engine outputs</summary>
 
 - engine: paneEngine=pane-engine (188 diseases, 426 features); triageRulesVersion=1.4.0
-- differential web.pane: 1. Renal Colic / Urolithiasis; 2. Infected Obstructed Kidney (Pyonephrosis / Obstructive Urosepsis); 3. Urinary Retention (Acute / Chronic)
+- differential web.pane: 1. Renal Colic / Urolithiasis; 2. Infected Obstructed Kidney (Pyonephrosis / Obstructive Urosepsis); 3. Acute Kidney Injury (AKI)
 - differential web.symptomInference: 1. Renal colic / urolithiasis; 2. Pyelonephritis; 3. Acute gastroenteritis; 4. Acute alcoholic pancreatitis; 5. Acute kidney injury
 - differential web.passive: 1. Renal colic / urolithiasis; 2. Pyelonephritis; 3. Acute gastroenteritis; 4. Acute kidney injury; 5. Adhesive small bowel obstruction
 - differential web.triageSurgical: (empty)
@@ -14530,10 +15622,11 @@ Guidelines:
 - recommended scores: cha2ds2-vasc, news2, has-bled, rcri, cfs, ecog
 - score values: (none)
 - dx variant: (none) (no group)
-- note: PANE features applied: abdominal_pain, sudden_onset, acute_onset, loin_pain, colicky_pain, radiation_to_groin, nausea_vomiting, episodic_pain, known_ckd, known_af, anticoagulant_use, known_malignancy, previous_surgery, renal_angle_tenderness, urinary_retention_symptoms, raised_creatinine, raised_urea, hydronephrosis, raised_bp, trauma_mechanism, recent_surgery, aortic_graft, stoma
+- note: PANE features applied: abdominal_pain, sudden_onset, acute_onset, loin_pain, colicky_pain, radiation_to_groin, nausea_vomiting, episodic_pain, known_ckd, known_af, anticoagulant_use, known_malignancy, previous_surgery, renal_angle_tenderness, oliguria, raised_creatinine, raised_urea, hydronephrosis, raised_bp, trauma_mechanism, recent_surgery, aortic_graft, stoma
 - note: AssessmentTab ManagementPanel protocol: renal_colic (from the confirmed diagnosis)
 - note: PlanTab protocol: renal_colic (from the confirmed diagnosis)
 - note: Seeded investigations: renal_colic (confirmed); 0 stat test(s) held back
+- note: Decision support: (no decision); factors anticoagulated, doacOnly
 
 </details>
 
@@ -14575,6 +15668,7 @@ Guidelines:
 - note: AssessmentTab ManagementPanel protocol: renal_colic (from the confirmed diagnosis)
 - note: PlanTab protocol: renal_colic (from the confirmed diagnosis)
 - note: Seeded investigations: renal_colic (confirmed); 0 stat test(s) held back
+- note: Decision support: (no decision); factors (none)
 
 </details>
 
@@ -14614,6 +15708,7 @@ Guidelines:
 - note: AssessmentTab ManagementPanel protocol: subarachnoid_haemorrhage (from the confirmed diagnosis)
 - note: PlanTab protocol: subarachnoid_haemorrhage (from the confirmed diagnosis)
 - note: Seeded investigations: subarachnoid_haemorrhage (confirmed); 0 stat test(s) held back
+- note: Decision support: (no decision); factors (none)
 - note: matchPathways: Post-operative Follow-up (General) (10), Hernia (Inguinal / Umbilical / Incisional / Femoral) (5)
 
 </details>
@@ -14656,6 +15751,7 @@ Guidelines:
 - note: AssessmentTab ManagementPanel protocol: subarachnoid_haemorrhage (from the confirmed diagnosis)
 - note: PlanTab protocol: subarachnoid_haemorrhage (from the confirmed diagnosis)
 - note: Seeded investigations: subarachnoid_haemorrhage (confirmed); 0 stat test(s) held back
+- note: Decision support: (no decision); factors (none)
 
 </details>
 
@@ -14702,6 +15798,7 @@ Guidelines:
 - note: AssessmentTab ManagementPanel protocol: adhesion_obstruction (from the confirmed diagnosis)
 - note: PlanTab protocol: adhesion_obstruction (from the confirmed diagnosis)
 - note: Seeded investigations: adhesion_obstruction (confirmed); 0 stat test(s) held back
+- note: Decision support: (no decision); factors (none)
 - note: matchPathways: IBD — Surgical Complications (Crohn's / UC) (21), Colonoscopy Diagnostic (Rectal Bleeding / Bowel Habit Change / Iron Deficiency) (19), Diverticular Disease / Diverticulitis (14)
 
 </details>
@@ -14741,6 +15838,7 @@ Guidelines:
 - note: AssessmentTab ManagementPanel protocol: adhesion_obstruction (from the confirmed diagnosis)
 - note: PlanTab protocol: adhesion_obstruction (from the confirmed diagnosis)
 - note: Seeded investigations: adhesion_obstruction (confirmed); 0 stat test(s) held back
+- note: Decision support: (no decision); factors age65to79, diabetes
 - note: matchPathways: Bowel Obstruction (Small / Large) (15), IBD — Surgical Complications (Crohn's / UC) (10), Acute Abdomen (5)
 
 </details>
@@ -14780,6 +15878,9 @@ Guidelines:
 - note: AssessmentTab ManagementPanel protocol: bowel_obstruction (from the confirmed diagnosis)
 - note: PlanTab protocol: bowel_obstruction (from the confirmed diagnosis)
 - note: Seeded investigations: bowel_obstruction (confirmed); 0 stat test(s) held back
+- note: Decision Emergency laparotomy (source control) — missing: Record ASA grade to refine: ASA III-IV raises operative harm (emergency laparotomy).
+- note: Decision Emergency laparotomy (source control) — missing: Record eGFR to refine: eGFR below 30 raises operative and anticoagulant harm (emergency laparotomy).
+- note: Decision support: emergency-laparotomy; factors immunosuppressed
 - note: matchPathways: Bowel Obstruction (Small / Large) (5)
 
 </details>
@@ -14820,6 +15921,12 @@ Guidelines:
 - note: AssessmentTab ManagementPanel protocol: femoral_hernia (from the confirmed diagnosis)
 - note: PlanTab protocol: femoral_hernia (from the confirmed diagnosis)
 - note: Seeded investigations: femoral_hernia (confirmed); 0 stat test(s) held back
+- note: Decision Emergency laparotomy (source control) — missing: Record Clinical Frailty Scale to refine: frailty raises the harm of operations and procedures (emergency laparotomy).
+- note: Decision Emergency laparotomy (source control) — missing: Record ASA grade to refine: ASA III-IV raises operative harm (emergency laparotomy).
+- note: Decision Emergency laparotomy (source control) — missing: Record eGFR to refine: eGFR below 30 raises operative and anticoagulant harm (emergency laparotomy).
+- note: Decision Peri-procedural anticoagulation bridging — missing: Record eGFR to refine: eGFR below 30 raises operative and anticoagulant harm (bridging with therapeutic-dose LMWH).
+- note: Decision Peri-procedural anticoagulation bridging — missing: Record HAS-BLED to refine: HAS-BLED 3 or more raises anticoagulant bleeding (bridging with therapeutic-dose LMWH).
+- note: Decision support: emergency-laparotomy, periop-bridging; factors age80plus, anticoagulated, doacOnly
 - note: matchPathways: Bowel Obstruction (Small / Large) (12), Hernia (Inguinal / Umbilical / Incisional / Femoral) (12), Acute Abdomen (7)
 
 </details>
@@ -14861,10 +15968,14 @@ Guidelines:
 - recommended scores: alvarado, tg18-cholangitis, ranson, qsofa, news2, caprini, asa, rcri, cfs
 - score values: (none)
 - dx variant: sbo_strangulation (Bowel Obstruction)
-- note: PANE features applied: abdominal_pain, diffuse_abdominal_pain, rlq_pain, acute_onset, colicky_pain, fever, rigors, nausea_vomiting, constipation, absolute_constipation, pain_worse_movement, abdominal_distension, guarding, rebound_tenderness, known_hypertension, vascular_risk, previous_surgery, diaphoresis, anxiety_tremor, abdominal_tenderness, trauma_mechanism, mechanism_penetrating, wound_erythema, elevated_wbc, raised_crp, raised_lactate, raised_creatinine, pelvic_free_fluid, tachycardia, tachypnoea, recent_surgery, aortic_graft, stoma
+- note: PANE features applied: abdominal_pain, diffuse_abdominal_pain, rlq_pain, acute_onset, colicky_pain, fever, rigors, nausea_vomiting, constipation, absolute_constipation, pain_worse_movement, abdominal_distension, guarding, rebound_tenderness, known_hypertension, vascular_risk, previous_surgery, diaphoresis, anxiety_tremor, abdominal_tenderness, wound_erythema, elevated_wbc, raised_crp, raised_lactate, raised_creatinine, pelvic_free_fluid, tachycardia, tachypnoea, trauma_mechanism, recent_surgery, aortic_graft, stoma
 - note: AssessmentTab ManagementPanel protocol: adhesion_obstruction (from the confirmed diagnosis)
 - note: PlanTab protocol: adhesion_obstruction (from the confirmed diagnosis)
 - note: Seeded investigations: adhesion_obstruction (confirmed); 0 stat test(s) held back
+- note: Decision Emergency laparotomy (source control) — missing: Record Clinical Frailty Scale to refine: frailty raises the harm of operations and procedures (emergency laparotomy).
+- note: Decision Emergency laparotomy (source control) — missing: Record ASA grade to refine: ASA III-IV raises operative harm (emergency laparotomy).
+- note: Decision Emergency laparotomy (source control) — missing: Record eGFR to refine: eGFR below 30 raises operative and anticoagulant harm (emergency laparotomy).
+- note: Decision support: emergency-laparotomy; factors age65to79, shock
 - note: matchPathways: Bowel Obstruction (Small / Large) (22), Acute Abdomen (12), IBD — Surgical Complications (Crohn's / UC) (12)
 
 </details>
@@ -14909,6 +16020,10 @@ Guidelines:
 - note: AssessmentTab ManagementPanel protocol: bowel_obstruction (from the confirmed diagnosis)
 - note: PlanTab protocol: bowel_obstruction (from the confirmed diagnosis)
 - note: Seeded investigations: bowel_obstruction (confirmed); 0 stat test(s) held back
+- note: Decision Emergency laparotomy (source control) — missing: Record Clinical Frailty Scale to refine: frailty raises the harm of operations and procedures (emergency laparotomy).
+- note: Decision Emergency laparotomy (source control) — missing: Record ASA grade to refine: ASA III-IV raises operative harm (emergency laparotomy).
+- note: Decision Emergency laparotomy (source control) — missing: Record eGFR to refine: eGFR below 30 raises operative and anticoagulant harm (emergency laparotomy).
+- note: Decision support: emergency-laparotomy; factors age65to79
 - note: matchPathways: IBD — Surgical Complications (Crohn's / UC) (14), Liver Lesion / Hepatic Mass (14), Pancreatic Mass / Cyst (14)
 
 </details>
@@ -14949,6 +16064,7 @@ Guidelines:
 - note: AssessmentTab ManagementPanel protocol: (none) (from the confirmed diagnosis)
 - note: PlanTab protocol: (none) (from the confirmed diagnosis)
 - note: Seeded investigations: (none) (confirmed); 0 stat test(s) held back
+- note: Decision support: (no decision); factors age65to79
 - note: matchPathways: Annual Health Check (5), Colonoscopy Diagnostic (Rectal Bleeding / Bowel Habit Change / Iron Deficiency) (5), Post-operative Follow-up (General) (5)
 
 </details>
@@ -14990,6 +16106,7 @@ Guidelines:
 - note: AssessmentTab ManagementPanel protocol: (none) (from the confirmed diagnosis)
 - note: PlanTab protocol: (none) (from the confirmed diagnosis)
 - note: Seeded investigations: (none) (confirmed); 0 stat test(s) held back
+- note: Decision support: (no decision); factors (none)
 - note: matchPathways: Breast Lump / Breast Disease (10), Cancer Screening (Age/Sex Appropriate) (10), Annual Health Check (5)
 
 </details>
@@ -15026,10 +16143,11 @@ Guidelines:
 - recommended scores: wells-dvt, news2, caprini, must, ecog
 - score values: (none)
 - dx variant: breast_mastectomy (Breast)
-- note: PANE features applied: breast_lump, oestrogen_use, known_malignancy, acute_onset, trauma_mechanism, recent_surgery, aortic_graft, stoma
+- note: PANE features applied: breast_lump, oestrogen_use, acute_onset, trauma_mechanism, recent_surgery, aortic_graft, stoma
 - note: AssessmentTab ManagementPanel protocol: (none) (from the confirmed diagnosis)
 - note: PlanTab protocol: (none) (from the confirmed diagnosis)
 - note: Seeded investigations: breast_abscess (leading differential); 0 stat test(s) held back
+- note: Decision support: (no decision); factors (none)
 - note: matchPathways: Breast Lump / Breast Disease (5)
 
 </details>
@@ -15070,6 +16188,7 @@ Guidelines:
 - note: AssessmentTab ManagementPanel protocol: (none) (from the confirmed diagnosis)
 - note: PlanTab protocol: (none) (from the confirmed diagnosis)
 - note: Seeded investigations: (none) (confirmed); 0 stat test(s) held back
+- note: Decision support: (no decision); factors immunosuppressed
 - note: matchPathways: Annual Health Check (5), Post-operative Follow-up (General) (5)
 
 </details>
@@ -15109,6 +16228,7 @@ Guidelines:
 - note: AssessmentTab ManagementPanel protocol: (none) (from the confirmed diagnosis)
 - note: PlanTab protocol: (none) (from the confirmed diagnosis)
 - note: Seeded investigations: infective_colitis (leading differential); 0 stat test(s) held back
+- note: Decision support: (no decision); factors (none)
 - note: matchPathways: Colonoscopy Diagnostic (Rectal Bleeding / Bowel Habit Change / Iron Deficiency) (41), IBD — Surgical Complications (Crohn's / UC) (28), Diverticular Disease / Diverticulitis (21)
 
 </details>
@@ -15147,10 +16267,11 @@ Guidelines:
 - recommended scores: wells-dvt, news2, caprini, must, ecog
 - score values: (none)
 - dx variant: (none) (no group)
-- note: PANE features applied: known_malignancy, acute_onset, trauma_mechanism, recent_surgery, aortic_graft, stoma
+- note: PANE features applied: acute_onset, trauma_mechanism, recent_surgery, aortic_graft, stoma
 - note: AssessmentTab ManagementPanel protocol: (none) (from the confirmed diagnosis)
 - note: PlanTab protocol: (none) (from the confirmed diagnosis)
 - note: Seeded investigations: (none) (confirmed); 0 stat test(s) held back
+- note: Decision support: (no decision); factors (none)
 - note: matchPathways: Colonoscopy Diagnostic (Rectal Bleeding / Bowel Habit Change / Iron Deficiency) (15)
 
 </details>
@@ -15193,6 +16314,7 @@ Guidelines:
 - note: AssessmentTab ManagementPanel protocol: (none) (from the confirmed diagnosis)
 - note: PlanTab protocol: (none) (from the confirmed diagnosis)
 - note: Seeded investigations: (none) (confirmed); 0 stat test(s) held back
+- note: Decision support: (no decision); factors (none)
 - note: matchPathways: Chest Pain — Emergency Redirect (10), Annual Health Check (5), Peripheral Vascular Disease (5)
 
 </details>
@@ -15231,6 +16353,7 @@ Guidelines:
 - note: AssessmentTab ManagementPanel protocol: (none) (from the confirmed diagnosis)
 - note: PlanTab protocol: (none) (from the confirmed diagnosis)
 - note: Seeded investigations: (none) (confirmed); 0 stat test(s) held back
+- note: Decision support: (no decision); factors diabetes
 - note: matchPathways: Annual Health Check (5), IBD — Surgical Complications (Crohn's / UC) (5)
 
 </details>
@@ -15259,7 +16382,7 @@ Guidelines:
 <details><summary>web engine outputs</summary>
 
 - engine: paneEngine=pane-engine (188 diseases, 426 features); triageRulesVersion=1.4.0
-- differential web.pane: 1. Sepsis / Septic Shock (source not yet identified; incl. neutropenic sepsis); 2. Acute Gastroenteritis / Infective Colitis; 3. Clostridioides difficile Colitis (C. diff infection)
+- differential web.pane: 1. Acute Gastroenteritis / Infective Colitis; 2. Renal Colic / Urolithiasis; 3. Acute Coronary Syndrome (STEMI / NSTEMI / Unstable Angina)
 - differential web.symptomInference: 1. Benign prostatic hyperplasia (BPH); 2. Testicular germ cell tumour; 3. Varicocele; 4. Reducible groin / abdominal hernia; 5. Pilonidal sinus / abscess
 - differential web.passive: 1. Acute cholecystitis; 2. CBD stone / obstructive jaundice; 3. Peptic ulcer disease; 4. Reducible groin / abdominal hernia; 5. GORD / acid reflux / oesophagitis
 - differential web.triageSurgical: (empty)
@@ -15268,10 +16391,11 @@ Guidelines:
 - recommended scores: news2
 - score values: (none)
 - dx variant: (none) (no group)
-- note: PANE features applied: immunosuppression, acute_onset, trauma_mechanism, recent_surgery, aortic_graft, stoma
+- note: PANE features applied: acute_onset, trauma_mechanism, recent_surgery, aortic_graft, stoma
 - note: AssessmentTab ManagementPanel protocol: (none) (from the confirmed diagnosis)
 - note: PlanTab protocol: (none) (from the confirmed diagnosis)
 - note: Seeded investigations: (none) (confirmed); 0 stat test(s) held back
+- note: Decision support: (no decision); factors immunosuppressed
 - note: matchPathways: ERCP (Obstructive Jaundice / Bile Duct Stones / Pancreatic Duct) (7), Gallbladder Disease (Biliary Colic / Cholecystitis / Choledocholithiasis) (7), Pancreatic Mass / Cyst (7)
 
 </details>
@@ -15306,10 +16430,11 @@ Guidelines:
 - recommended scores: wells-dvt, news2, caprini, must, ecog
 - score values: (none)
 - dx variant: (none) (no group)
-- note: PANE features applied: known_malignancy, smoker, vascular_risk, acute_onset, trauma_mechanism, recent_surgery, aortic_graft, stoma
+- note: PANE features applied: smoker, vascular_risk, acute_onset, trauma_mechanism, recent_surgery, aortic_graft, stoma
 - note: AssessmentTab ManagementPanel protocol: (none) (from the confirmed diagnosis)
 - note: PlanTab protocol: (none) (from the confirmed diagnosis)
 - note: Seeded investigations: (none) (confirmed); 0 stat test(s) held back
+- note: Decision support: (no decision); factors (none)
 - note: matchPathways: Upper GI Endoscopy (Dyspepsia / GORD / Dysphagia) (10), Cancer Screening (Age/Sex Appropriate) (7), Colonoscopy Diagnostic (Rectal Bleeding / Bowel Habit Change / Iron Deficiency) (7)
 
 </details>
@@ -15347,10 +16472,11 @@ Guidelines:
 - recommended scores: news2, caprini, asa, rcri, ecog
 - score values: (none)
 - dx variant: (none) (Hernia)
-- note: PANE features applied: umbilical_swelling, headache, visual_disturbance, known_hypertension, vascular_risk, leg_swelling, papilloedema, hernia_compressible, hernia_swelling, burn_wound, proteinuria, acute_onset, raised_bp, severe_hypertension, recent_surgery, aortic_graft, stoma
+- note: PANE features applied: umbilical_swelling, headache, visual_disturbance, known_hypertension, vascular_risk, leg_swelling, papilloedema, hernia_compressible, hernia_swelling, proteinuria, acute_onset, raised_bp, severe_hypertension, trauma_mechanism, recent_surgery, aortic_graft, stoma
 - note: AssessmentTab ManagementPanel protocol: hypertensive_emergency (from the confirmed diagnosis)
 - note: PlanTab protocol: hypertensive_emergency (from the confirmed diagnosis)
 - note: Seeded investigations: hypertensive_emergency (confirmed); 0 stat test(s) held back
+- note: Decision support: (no decision); factors (none)
 - note: matchPathways: Hernia (Inguinal / Umbilical / Incisional / Femoral) (15), Chest Pain — Emergency Redirect (5), IBD — Surgical Complications (Crohn's / UC) (5)
 
 </details>
@@ -15393,6 +16519,7 @@ Guidelines:
 - note: AssessmentTab ManagementPanel protocol: (none) (from the confirmed diagnosis)
 - note: PlanTab protocol: (none) (from the confirmed diagnosis)
 - note: Seeded investigations: acute_coronary_syndrome (leading differential); 2 stat test(s) held back
+- note: Decision support: (no decision); factors (none)
 - note: matchPathways: Annual Health Check (5), Chest Pain — Emergency Redirect (5), Post-operative Follow-up (General) (5)
 
 </details>
@@ -15436,6 +16563,7 @@ Guidelines:
 - note: AssessmentTab ManagementPanel protocol: (none) (from the confirmed diagnosis)
 - note: PlanTab protocol: (none) (from the confirmed diagnosis)
 - note: Seeded investigations: (none) (confirmed); 0 stat test(s) held back
+- note: Decision support: (no decision); factors age80plus
 - note: matchPathways: Colonoscopy Diagnostic (Rectal Bleeding / Bowel Habit Change / Iron Deficiency) (12), Cancer Screening (Age/Sex Appropriate) (7), IBD — Surgical Complications (Crohn's / UC) (7)
 
 </details>
@@ -15474,6 +16602,7 @@ Guidelines:
 - note: AssessmentTab ManagementPanel protocol: colorectal_polyp (from the confirmed diagnosis)
 - note: PlanTab protocol: colorectal_polyp (from the confirmed diagnosis)
 - note: Seeded investigations: colorectal_polyp (confirmed); 0 stat test(s) held back
+- note: Decision support: (no decision); factors (none)
 - note: matchPathways: Colonoscopy Diagnostic (Rectal Bleeding / Bowel Habit Change / Iron Deficiency) (5), Post-operative Follow-up (General) (5)
 
 </details>
@@ -15512,6 +16641,7 @@ Guidelines:
 - note: AssessmentTab ManagementPanel protocol: colorectal_polyp (from the confirmed diagnosis)
 - note: PlanTab protocol: colorectal_polyp (from the confirmed diagnosis)
 - note: Seeded investigations: colorectal_polyp (confirmed); 0 stat test(s) held back
+- note: Decision support: (no decision); factors age65to79
 - note: matchPathways: Post-operative Follow-up (General) (10), Colonoscopy Diagnostic (Rectal Bleeding / Bowel Habit Change / Iron Deficiency) (5), IBD — Surgical Complications (Crohn's / UC) (5)
 
 </details>
@@ -15554,6 +16684,7 @@ Guidelines:
 - note: AssessmentTab ManagementPanel protocol: (none) (from the confirmed diagnosis)
 - note: PlanTab protocol: (none) (from the confirmed diagnosis)
 - note: Seeded investigations: (none) (confirmed); 0 stat test(s) held back
+- note: Decision support: (no decision); factors (none)
 - note: matchPathways: Annual Health Check (5), Cancer Screening (Age/Sex Appropriate) (5), Colonoscopy Screening (5)
 
 </details>
@@ -15596,6 +16727,7 @@ Guidelines:
 - note: AssessmentTab ManagementPanel protocol: (none) (from the confirmed diagnosis)
 - note: PlanTab protocol: (none) (from the confirmed diagnosis)
 - note: Seeded investigations: surgical_site_infection (leading differential); 0 stat test(s) held back
+- note: Decision support: (no decision); factors recentSurgery21d
 - note: matchPathways: Post-operative Follow-up (General) (10), Wound Management (Acute / Chronic / SSI) (5)
 
 </details>
@@ -15635,6 +16767,7 @@ Guidelines:
 - note: AssessmentTab ManagementPanel protocol: (none) (from the confirmed diagnosis)
 - note: PlanTab protocol: (none) (from the confirmed diagnosis)
 - note: Seeded investigations: (none) (confirmed); 0 stat test(s) held back
+- note: Decision support: (no decision); factors (none)
 - note: matchPathways: Cancer Screening (Age/Sex Appropriate) (5), Post-operative Follow-up (General) (5)
 
 </details>
@@ -15674,6 +16807,7 @@ Guidelines:
 - note: AssessmentTab ManagementPanel protocol: (none) (from the confirmed diagnosis)
 - note: PlanTab protocol: (none) (from the confirmed diagnosis)
 - note: Seeded investigations: (none) (confirmed); 0 stat test(s) held back
+- note: Decision support: (no decision); factors diabetes
 - note: matchPathways: Wound Management (Acute / Chronic / SSI) (5)
 
 </details>
@@ -15710,10 +16844,11 @@ Guidelines:
 - recommended scores: gcs, news2
 - score values: (none)
 - dx variant: (none) (no group)
-- note: PANE features applied: seizure, syncope, loss_of_consciousness, confusion, symptoms_resolved, tongue_bite, urinary_incontinence, acute_onset, trauma_mechanism, recent_surgery, aortic_graft, stoma
+- note: PANE features applied: seizure, syncope, loss_of_consciousness, confusion, tongue_bite, urinary_incontinence, acute_onset, trauma_mechanism, recent_surgery, aortic_graft, stoma
 - note: AssessmentTab ManagementPanel protocol: first_seizure (from the confirmed diagnosis)
 - note: PlanTab protocol: first_seizure (from the confirmed diagnosis)
 - note: Seeded investigations: first_seizure (confirmed); 0 stat test(s) held back
+- note: Decision support: (no decision); factors (none)
 
 </details>
 
@@ -15755,6 +16890,7 @@ Guidelines:
 - note: AssessmentTab ManagementPanel protocol: pre_eclampsia (from the confirmed diagnosis)
 - note: PlanTab protocol: pre_eclampsia (from the confirmed diagnosis)
 - note: Seeded investigations: pre_eclampsia (confirmed); 0 stat test(s) held back
+- note: Decision support: (no decision); factors pregnant
 
 </details>
 
@@ -15796,6 +16932,7 @@ Guidelines:
 - note: AssessmentTab ManagementPanel protocol: bowel_obstruction (from the confirmed diagnosis)
 - note: PlanTab protocol: bowel_obstruction (from the confirmed diagnosis)
 - note: Seeded investigations: bowel_obstruction (confirmed); 0 stat test(s) held back
+- note: Decision support: (no decision); factors age80plus
 - note: matchPathways: Bowel Obstruction (Small / Large) (12), Acute Abdomen (7), Acute Appendicitis (7)
 
 </details>
@@ -15840,6 +16977,10 @@ Guidelines:
 - note: AssessmentTab ManagementPanel protocol: bowel_obstruction (from the confirmed diagnosis)
 - note: PlanTab protocol: bowel_obstruction (from the confirmed diagnosis)
 - note: Seeded investigations: bowel_obstruction (confirmed); 0 stat test(s) held back
+- note: Decision Emergency laparotomy (source control) — missing: Record Clinical Frailty Scale to refine: frailty raises the harm of operations and procedures (emergency laparotomy).
+- note: Decision Emergency laparotomy (source control) — missing: Record ASA grade to refine: ASA III-IV raises operative harm (emergency laparotomy).
+- note: Decision Emergency laparotomy (source control) — missing: Record eGFR to refine: eGFR below 30 raises operative and anticoagulant harm (emergency laparotomy).
+- note: Decision support: emergency-laparotomy; factors age65to79, news2High, shock
 - note: matchPathways: Bowel Obstruction (Small / Large) (17), Diverticular Disease / Diverticulitis (12), Acute Abdomen (7)
 
 </details>
@@ -15882,6 +17023,7 @@ Guidelines:
 - note: AssessmentTab ManagementPanel protocol: acute_stroke (from the confirmed diagnosis)
 - note: PlanTab protocol: acute_stroke (from the confirmed diagnosis)
 - note: Seeded investigations: acute_stroke (confirmed); 0 stat test(s) held back
+- note: Decision support: (no decision); factors age65to79
 
 </details>
 
@@ -15923,6 +17065,9 @@ Guidelines:
 - note: AssessmentTab ManagementPanel protocol: acute_stroke (from the confirmed diagnosis)
 - note: PlanTab protocol: acute_stroke (from the confirmed diagnosis)
 - note: Seeded investigations: acute_stroke (confirmed); 0 stat test(s) held back
+- note: Decision Peri-procedural anticoagulation bridging — missing: Record eGFR to refine: eGFR below 30 raises operative and anticoagulant harm (bridging with therapeutic-dose LMWH).
+- note: Decision Peri-procedural anticoagulation bridging — missing: Record HAS-BLED to refine: HAS-BLED 3 or more raises anticoagulant bleeding (bridging with therapeutic-dose LMWH).
+- note: Decision support: periop-bridging; factors age80plus, anticoagulated, doacOnly
 
 </details>
 
@@ -15961,6 +17106,7 @@ Guidelines:
 - note: AssessmentTab ManagementPanel protocol: superficial_vein_thrombosis (from the confirmed diagnosis)
 - note: PlanTab protocol: superficial_vein_thrombosis (from the confirmed diagnosis)
 - note: Seeded investigations: superficial_vein_thrombosis (confirmed); 0 stat test(s) held back
+- note: Decision support: (no decision); factors (none)
 - note: matchPathways: Varicose Veins (15)
 
 </details>
@@ -16001,6 +17147,7 @@ Guidelines:
 - note: AssessmentTab ManagementPanel protocol: thyroid_nodule_benign (from the confirmed diagnosis)
 - note: PlanTab protocol: thyroid_nodule_benign (from the confirmed diagnosis)
 - note: Seeded investigations: thyroid_nodule_benign (confirmed); 0 stat test(s) held back
+- note: Decision support: (no decision); factors (none)
 - note: matchPathways: Thyroid / Neck Mass (15), Foreign Body Ingestion / Food Bolus (7), Upper GI Endoscopy (Dyspepsia / GORD / Dysphagia) (7)
 
 </details>
@@ -16041,6 +17188,7 @@ Guidelines:
 - note: AssessmentTab ManagementPanel protocol: thyroid_nodule_benign (from the confirmed diagnosis)
 - note: PlanTab protocol: thyroid_nodule_benign (from the confirmed diagnosis)
 - note: Seeded investigations: thyroid_nodule_benign (confirmed); 0 stat test(s) held back
+- note: Decision support: (no decision); factors (none)
 - note: matchPathways: Thyroid / Neck Mass (15), Foreign Body Ingestion / Food Bolus (7), Upper GI Endoscopy (Dyspepsia / GORD / Dysphagia) (7)
 
 </details>
@@ -16081,6 +17229,7 @@ Guidelines:
 - note: AssessmentTab ManagementPanel protocol: thyroid_nodule_benign (from the confirmed diagnosis)
 - note: PlanTab protocol: thyroid_nodule_benign (from the confirmed diagnosis)
 - note: Seeded investigations: thyroid_nodule_benign (confirmed); 0 stat test(s) held back
+- note: Decision support: (no decision); factors (none)
 - note: matchPathways: Thyroid / Neck Mass (15), Foreign Body Ingestion / Food Bolus (7), Upper GI Endoscopy (Dyspepsia / GORD / Dysphagia) (7)
 
 </details>
@@ -16121,6 +17270,7 @@ Guidelines:
 - note: AssessmentTab ManagementPanel protocol: thyroid_nodule_benign (from the confirmed diagnosis)
 - note: PlanTab protocol: thyroid_nodule_benign (from the confirmed diagnosis)
 - note: Seeded investigations: thyroid_nodule_benign (confirmed); 0 stat test(s) held back
+- note: Decision support: (no decision); factors (none)
 - note: matchPathways: Thyroid / Neck Mass (15), Foreign Body Ingestion / Food Bolus (7), Upper GI Endoscopy (Dyspepsia / GORD / Dysphagia) (7)
 
 </details>
@@ -16160,6 +17310,7 @@ Guidelines:
 - note: AssessmentTab ManagementPanel protocol: thyroid_nodule_benign (from the confirmed diagnosis)
 - note: PlanTab protocol: thyroid_nodule_benign (from the confirmed diagnosis)
 - note: Seeded investigations: thyroid_nodule_benign (confirmed); 0 stat test(s) held back
+- note: Decision support: (no decision); factors (none)
 - note: matchPathways: Thyroid / Neck Mass (15), Foreign Body Ingestion / Food Bolus (7), Upper GI Endoscopy (Dyspepsia / GORD / Dysphagia) (7)
 
 </details>
@@ -16201,6 +17352,7 @@ Guidelines:
 - note: AssessmentTab ManagementPanel protocol: thyroid_carcinoma (from the confirmed diagnosis)
 - note: PlanTab protocol: thyroid_carcinoma (from the confirmed diagnosis)
 - note: Seeded investigations: thyroid_carcinoma (confirmed); 0 stat test(s) held back
+- note: Decision support: (no decision); factors (none)
 - note: matchPathways: Thyroid / Neck Mass (15), Foreign Body Ingestion / Food Bolus (7), Upper GI Endoscopy (Dyspepsia / GORD / Dysphagia) (7)
 
 </details>
@@ -16244,6 +17396,7 @@ Guidelines:
 - note: AssessmentTab ManagementPanel protocol: thyroid_nodule_benign (from the confirmed diagnosis)
 - note: PlanTab protocol: thyroid_nodule_benign (from the confirmed diagnosis)
 - note: Seeded investigations: thyroid_nodule_benign (confirmed); 0 stat test(s) held back
+- note: Decision support: (no decision); factors (none)
 - note: matchPathways: Thyroid / Neck Mass (15), Foreign Body Ingestion / Food Bolus (7), Upper GI Endoscopy (Dyspepsia / GORD / Dysphagia) (7)
 
 </details>
@@ -16285,6 +17438,7 @@ Guidelines:
 - note: AssessmentTab ManagementPanel protocol: hyperthyroidism (from the confirmed diagnosis)
 - note: PlanTab protocol: hyperthyroidism (from the confirmed diagnosis)
 - note: Seeded investigations: hyperthyroidism (confirmed); 0 stat test(s) held back
+- note: Decision support: (no decision); factors (none)
 - note: matchPathways: Thyroid / Neck Mass (10), Cancer Screening (Age/Sex Appropriate) (7), Colonoscopy Diagnostic (Rectal Bleeding / Bowel Habit Change / Iron Deficiency) (7)
 
 </details>
@@ -16324,6 +17478,7 @@ Guidelines:
 - note: AssessmentTab ManagementPanel protocol: post_thyroidectomy_hypocalcaemia (from the confirmed diagnosis)
 - note: PlanTab protocol: post_thyroidectomy_hypocalcaemia (from the confirmed diagnosis)
 - note: Seeded investigations: post_thyroidectomy_hypocalcaemia (confirmed); 0 stat test(s) held back
+- note: Decision support: (no decision); factors recentSurgery21d
 - note: matchPathways: Thyroid / Neck Mass (5), Wound Management (Acute / Chronic / SSI) (5)
 
 </details>
@@ -16366,6 +17521,7 @@ Guidelines:
 - note: AssessmentTab ManagementPanel protocol: postop_haematoma (from the confirmed diagnosis)
 - note: PlanTab protocol: postop_haematoma (from the confirmed diagnosis)
 - note: Seeded investigations: postop_haematoma (confirmed); 0 stat test(s) held back
+- note: Decision support: (no decision); factors news2High, recentSurgery21d
 - note: matchPathways: Thyroid / Neck Mass (10), Post-operative Follow-up (General) (5), Wound Management (Acute / Chronic / SSI) (5)
 
 </details>
@@ -16409,6 +17565,7 @@ Guidelines:
 - note: AssessmentTab ManagementPanel protocol: thyroid_carcinoma (from the confirmed diagnosis)
 - note: PlanTab protocol: thyroid_carcinoma (from the confirmed diagnosis)
 - note: Seeded investigations: thyroid_carcinoma (confirmed); 0 stat test(s) held back
+- note: Decision support: (no decision); factors age65to79
 - note: matchPathways: Thyroid / Neck Mass (15), Upper GI Endoscopy (Dyspepsia / GORD / Dysphagia) (10)
 
 </details>
@@ -16444,10 +17601,11 @@ Guidelines:
 - recommended scores: wells-pe, news2, caprini, asa, curb65, rcri, cfs
 - score values: (none)
 - dx variant: thyroid_total (Thyroid)
-- note: PANE features applied: neck_lump, thyroid_swelling, chronic_course, diffuse_abdominal_pain, dyspnoea, dysphagia, progressive_course, orthopnoea, dysphagia_solids, episodic_pain, known_hypertension, vascular_risk, acei_arb_use, worse_lying_flat, tracheal_deviation, aspiration_symptoms, raised_bp, trauma_mechanism, recent_surgery, aortic_graft, stoma
+- note: PANE features applied: neck_lump, thyroid_swelling, chronic_course, dyspnoea, dysphagia, progressive_course, orthopnoea, dysphagia_solids, episodic_pain, known_hypertension, vascular_risk, acei_arb_use, worse_lying_flat, tracheal_deviation, aspiration_symptoms, raised_bp, trauma_mechanism, recent_surgery, aortic_graft, stoma
 - note: AssessmentTab ManagementPanel protocol: thyroid_nodule_benign (from the confirmed diagnosis)
 - note: PlanTab protocol: thyroid_nodule_benign (from the confirmed diagnosis)
 - note: Seeded investigations: thyroid_nodule_benign (confirmed); 0 stat test(s) held back
+- note: Decision support: (no decision); factors age65to79
 - note: matchPathways: Thyroid / Neck Mass (10), Upper GI Endoscopy (Dyspepsia / GORD / Dysphagia) (10)
 
 </details>
@@ -16489,6 +17647,7 @@ Guidelines:
 - note: AssessmentTab ManagementPanel protocol: transient_ischaemic_attack (from the confirmed diagnosis)
 - note: PlanTab protocol: transient_ischaemic_attack (from the confirmed diagnosis)
 - note: Seeded investigations: transient_ischaemic_attack (confirmed); 0 stat test(s) held back
+- note: Decision support: (no decision); factors diabetes
 - note: matchPathways: Hernia (Inguinal / Umbilical / Incisional / Femoral) (5), Pre-operative Assessment (5)
 
 </details>
@@ -16533,6 +17692,7 @@ Guidelines:
 - note: AssessmentTab ManagementPanel protocol: testicular_torsion (from the confirmed diagnosis)
 - note: PlanTab protocol: testicular_torsion (from the confirmed diagnosis)
 - note: Seeded investigations: testicular_torsion (confirmed); 0 stat test(s) held back
+- note: Decision support: (no decision); factors (none)
 
 </details>
 
@@ -16583,6 +17743,7 @@ Guidelines:
 - note: AssessmentTab ManagementPanel protocol: blunt_abdominal_trauma (from the confirmed diagnosis)
 - note: PlanTab protocol: blunt_abdominal_trauma (from the confirmed diagnosis)
 - note: Seeded investigations: blunt_abdominal_trauma (confirmed); 0 stat test(s) held back
+- note: Decision support: (no decision); factors news2High, shock
 - note: matchPathways: Chest Pain — Emergency Redirect (5), IBD — Surgical Complications (Crohn's / UC) (5)
 
 </details>
@@ -16626,6 +17787,7 @@ Guidelines:
 - note: AssessmentTab ManagementPanel protocol: rib_fractures (from the confirmed diagnosis)
 - note: PlanTab protocol: rib_fractures (from the confirmed diagnosis)
 - note: Seeded investigations: rib_fractures (confirmed); 0 stat test(s) held back
+- note: Decision support: (no decision); factors age65to79, anticoagulated, shock
 - note: matchPathways: Chest Pain — Emergency Redirect (5)
 
 </details>
@@ -16671,6 +17833,7 @@ Guidelines:
 - note: AssessmentTab ManagementPanel protocol: traumatic_brain_injury (from the confirmed diagnosis)
 - note: PlanTab protocol: traumatic_brain_injury (from the confirmed diagnosis)
 - note: Seeded investigations: traumatic_brain_injury (confirmed); 0 stat test(s) held back
+- note: Decision support: (no decision); factors age80plus, anticoagulated, doacOnly
 
 </details>
 
@@ -16713,6 +17876,7 @@ Guidelines:
 - note: AssessmentTab ManagementPanel protocol: traumatic_brain_injury (from the confirmed diagnosis)
 - note: PlanTab protocol: traumatic_brain_injury (from the confirmed diagnosis)
 - note: Seeded investigations: traumatic_brain_injury (confirmed); 0 stat test(s) held back
+- note: Decision support: (no decision); factors (none)
 
 </details>
 
@@ -16759,6 +17923,7 @@ Guidelines:
 - note: AssessmentTab ManagementPanel protocol: child_safeguarding (from the confirmed diagnosis)
 - note: PlanTab protocol: child_safeguarding (from the confirmed diagnosis)
 - note: Seeded investigations: child_safeguarding (confirmed); 0 stat test(s) held back
+- note: Decision support: (no decision); factors (none)
 
 </details>
 
@@ -16804,6 +17969,7 @@ Guidelines:
 - note: AssessmentTab ManagementPanel protocol: trauma_in_pregnancy (from the confirmed diagnosis)
 - note: PlanTab protocol: trauma_in_pregnancy (from the confirmed diagnosis)
 - note: Seeded investigations: trauma_in_pregnancy (confirmed); 0 stat test(s) held back
+- note: Decision support: (no decision); factors pregnant
 - note: matchPathways: Acute Abdomen (7), Acute Appendicitis (7), Anorectal (Haemorrhoids / Fissure / Fistula / Abscess) (7)
 
 </details>
@@ -16845,6 +18011,7 @@ Guidelines:
 - note: AssessmentTab ManagementPanel protocol: splenic_laceration (from the confirmed diagnosis)
 - note: PlanTab protocol: splenic_laceration (from the confirmed diagnosis)
 - note: Seeded investigations: splenic_laceration (confirmed); 0 stat test(s) held back
+- note: Decision support: (no decision); factors (none)
 - note: matchPathways: Acute Abdomen (7), Acute Appendicitis (7), Anorectal (Haemorrhoids / Fissure / Fistula / Abscess) (7)
 
 </details>
@@ -16892,6 +18059,7 @@ Guidelines:
 - note: AssessmentTab ManagementPanel protocol: splenic_laceration (from the confirmed diagnosis)
 - note: PlanTab protocol: splenic_laceration (from the confirmed diagnosis)
 - note: Seeded investigations: splenic_laceration (confirmed); 0 stat test(s) held back
+- note: Decision support: (no decision); factors news2High, shock
 - note: matchPathways: Acute Abdomen (7), Acute Appendicitis (7), Anorectal (Haemorrhoids / Fissure / Fistula / Abscess) (7)
 
 </details>
@@ -16935,6 +18103,7 @@ Guidelines:
 - note: AssessmentTab ManagementPanel protocol: penetrating_abdominal_trauma (from the confirmed diagnosis)
 - note: PlanTab protocol: penetrating_abdominal_trauma (from the confirmed diagnosis)
 - note: Seeded investigations: penetrating_abdominal_trauma (confirmed); 0 stat test(s) held back
+- note: Decision support: (no decision); factors (none)
 - note: matchPathways: Acute Abdomen (7), Acute Appendicitis (7), Anorectal (Haemorrhoids / Fissure / Fistula / Abscess) (7)
 
 </details>
@@ -16977,6 +18146,7 @@ Guidelines:
 - note: AssessmentTab ManagementPanel protocol: penetrating_abdominal_trauma (from the confirmed diagnosis)
 - note: PlanTab protocol: penetrating_abdominal_trauma (from the confirmed diagnosis)
 - note: Seeded investigations: penetrating_abdominal_trauma (confirmed); 0 stat test(s) held back
+- note: Decision support: (no decision); factors (none)
 - note: matchPathways: Wound Management (Acute / Chronic / SSI) (5)
 
 </details>
@@ -17015,10 +18185,11 @@ Guidelines:
 - recommended scores: heart, wells-pe, qsofa, news2, curb65
 - score values: (none)
 - dx variant: (none) (no group)
-- note: PANE features applied: sudden_onset, acute_onset, chest_pain, dyspnoea, pleuritic_chest_pain, severe_pain, dyspnoea_pe, reduced_breath_sounds, tracheal_deviation, raised_jvp, confusion, subcutaneous_emphysema, abdominal_distension, trauma_mechanism, mechanism_blunt, known_copd, tachycardia, haemodynamic_instability, hypotension, tachypnoea, hypoxia, recent_surgery, aortic_graft, stoma
+- note: PANE features applied: sudden_onset, acute_onset, chest_pain, dyspnoea, pleuritic_chest_pain, severe_pain, dyspnoea_pe, reduced_breath_sounds, tracheal_deviation, raised_jvp, confusion, subcutaneous_emphysema, trauma_mechanism, mechanism_blunt, known_copd, tachycardia, haemodynamic_instability, hypotension, tachypnoea, hypoxia, recent_surgery, aortic_graft, stoma
 - note: AssessmentTab ManagementPanel protocol: pneumothorax_traumatic (from the confirmed diagnosis)
 - note: PlanTab protocol: pneumothorax_traumatic (from the confirmed diagnosis)
 - note: Seeded investigations: pneumothorax_traumatic (confirmed); 0 stat test(s) held back
+- note: Decision support: (no decision); factors news2High, shock
 - note: matchPathways: Chest Pain — Emergency Redirect (5), IBD — Surgical Complications (Crohn's / UC) (5)
 
 </details>
@@ -17069,10 +18240,11 @@ Guidelines:
 - recommended scores: alvarado, tg18-cholangitis, ranson, qsofa, news2, rockall
 - score values: (none)
 - dx variant: (none) (no group)
-- note: PANE features applied: change_bowel_habit, acute_onset, diffuse_abdominal_pain, colicky_pain, fever, pr_bleeding, nocturnal_pain, diarrhoea, abdominal_pain, tenesmus, lif_pain, abdominal_distension, ulcerative_colitis_history, pallor, bloody_diarrhoea, frequency_urgency, abdominal_tenderness, anaemia, elevated_wbc, raised_crp, tachycardia, trauma_mechanism, recent_surgery, aortic_graft, stoma
+- note: PANE features applied: change_bowel_habit, acute_onset, diffuse_abdominal_pain, colicky_pain, fever, pr_bleeding, nocturnal_pain, diarrhoea, abdominal_pain, tenesmus, lif_pain, abdominal_distension, ulcerative_colitis_history, pallor, bloody_diarrhoea, abdominal_tenderness, anaemia, elevated_wbc, raised_crp, tachycardia, trauma_mechanism, recent_surgery, aortic_graft, stoma
 - note: AssessmentTab ManagementPanel protocol: ulcerative_colitis (from the confirmed diagnosis)
 - note: PlanTab protocol: ulcerative_colitis (from the confirmed diagnosis)
 - note: Seeded investigations: ulcerative_colitis (confirmed); 0 stat test(s) held back
+- note: Decision support: (no decision); factors (none)
 - note: matchPathways: Anorectal (Haemorrhoids / Fissure / Fistula / Abscess) (12), IBD — Surgical Complications (Crohn's / UC) (12), Acute Abdomen (7)
 
 </details>
@@ -17117,6 +18289,7 @@ Guidelines:
 - note: AssessmentTab ManagementPanel protocol: ulcerative_colitis (from the confirmed diagnosis)
 - note: PlanTab protocol: ulcerative_colitis (from the confirmed diagnosis)
 - note: Seeded investigations: ulcerative_colitis (confirmed); 0 stat test(s) held back
+- note: Decision support: (no decision); factors immunosuppressed
 - note: matchPathways: Anorectal (Haemorrhoids / Fissure / Fistula / Abscess) (5), Colonoscopy Diagnostic (Rectal Bleeding / Bowel Habit Change / Iron Deficiency) (5), Diverticular Disease / Diverticulitis (5)
 
 </details>
@@ -17156,6 +18329,7 @@ Guidelines:
 - note: AssessmentTab ManagementPanel protocol: clostridioides_difficile (from the confirmed diagnosis)
 - note: PlanTab protocol: clostridioides_difficile (from the confirmed diagnosis)
 - note: Seeded investigations: clostridioides_difficile (confirmed); 0 stat test(s) held back
+- note: Decision support: (no decision); factors immunosuppressed
 - note: matchPathways: Anorectal (Haemorrhoids / Fissure / Fistula / Abscess) (5), Colonoscopy Diagnostic (Rectal Bleeding / Bowel Habit Change / Iron Deficiency) (5), GI Bleeding (Upper and Lower) (5)
 
 </details>
@@ -17195,6 +18369,7 @@ Guidelines:
 - note: AssessmentTab ManagementPanel protocol: ulcerative_colitis (from the confirmed diagnosis)
 - note: PlanTab protocol: ulcerative_colitis (from the confirmed diagnosis)
 - note: Seeded investigations: ulcerative_colitis (confirmed); 0 stat test(s) held back
+- note: Decision support: (no decision); factors immunosuppressed
 - note: matchPathways: Anorectal (Haemorrhoids / Fissure / Fistula / Abscess) (5), Colonoscopy Diagnostic (Rectal Bleeding / Bowel Habit Change / Iron Deficiency) (5), Diverticular Disease / Diverticulitis (5)
 
 </details>
@@ -17239,6 +18414,7 @@ Guidelines:
 - note: AssessmentTab ManagementPanel protocol: ulcerative_colitis (from the confirmed diagnosis)
 - note: PlanTab protocol: ulcerative_colitis (from the confirmed diagnosis)
 - note: Seeded investigations: ulcerative_colitis (confirmed); 0 stat test(s) held back
+- note: Decision support: (no decision); factors news2High
 - note: matchPathways: Anorectal (Haemorrhoids / Fissure / Fistula / Abscess) (5), Bowel Obstruction (Small / Large) (5), Colonoscopy Diagnostic (Rectal Bleeding / Bowel Habit Change / Iron Deficiency) (5)
 
 </details>
@@ -17294,6 +18470,8 @@ Guidelines:
 - note: AssessmentTab ManagementPanel protocol: upper_gi_bleed (from the confirmed diagnosis)
 - note: PlanTab protocol: upper_gi_bleed (from the confirmed diagnosis)
 - note: Seeded investigations: upper_gi_bleed (confirmed); 0 stat test(s) held back
+- note: Decision Upper GI bleeding — admission and endoscopy timing — missing: Calculate the Glasgow-Blatchford score to set the risk.
+- note: Decision support: upper-gi-bleed; factors (none)
 - note: matchPathways: GI Bleeding (Upper and Lower) (10), Upper GI Endoscopy (Dyspepsia / GORD / Dysphagia) (5)
 
 </details>
@@ -17341,6 +18519,8 @@ Guidelines:
 - note: AssessmentTab ManagementPanel protocol: upper_gi_bleed (from the confirmed diagnosis)
 - note: PlanTab protocol: upper_gi_bleed (from the confirmed diagnosis)
 - note: Seeded investigations: upper_gi_bleed (confirmed); 0 stat test(s) held back
+- note: Decision Upper GI bleeding — admission and endoscopy timing — missing: Calculate the Glasgow-Blatchford score to set the risk.
+- note: Decision support: upper-gi-bleed; factors age65to79, antiplatelet
 - note: matchPathways: GI Bleeding (Upper and Lower) (15), Chest Pain — Emergency Redirect (10)
 
 </details>
@@ -17390,6 +18570,10 @@ Guidelines:
 - note: AssessmentTab ManagementPanel protocol: upper_gi_bleed (from the confirmed diagnosis)
 - note: PlanTab protocol: upper_gi_bleed (from the confirmed diagnosis)
 - note: Seeded investigations: upper_gi_bleed (confirmed); 0 stat test(s) held back
+- note: Decision Upper GI bleeding — admission and endoscopy timing — missing: Calculate the Glasgow-Blatchford score to set the risk.
+- note: Decision Peri-procedural anticoagulation bridging — missing: Record eGFR to refine: eGFR below 30 raises operative and anticoagulant harm (bridging with therapeutic-dose LMWH).
+- note: Decision Peri-procedural anticoagulation bridging — missing: Record HAS-BLED to refine: HAS-BLED 3 or more raises anticoagulant bleeding (bridging with therapeutic-dose LMWH).
+- note: Decision support: upper-gi-bleed, periop-bridging; factors age80plus, anticoagulated, doacOnly
 - note: matchPathways: GI Bleeding (Upper and Lower) (15)
 
 </details>
@@ -17433,6 +18617,8 @@ Guidelines:
 - note: AssessmentTab ManagementPanel protocol: upper_gi_bleed (from the confirmed diagnosis)
 - note: PlanTab protocol: upper_gi_bleed (from the confirmed diagnosis)
 - note: Seeded investigations: upper_gi_bleed (confirmed); 0 stat test(s) held back
+- note: Decision Upper GI bleeding — admission and endoscopy timing — missing: Calculate the Glasgow-Blatchford score to set the risk.
+- note: Decision support: upper-gi-bleed; factors (none)
 - note: matchPathways: GI Bleeding (Upper and Lower) (10), Upper GI Endoscopy (Dyspepsia / GORD / Dysphagia) (5)
 
 </details>
@@ -17477,6 +18663,8 @@ Guidelines:
 - note: AssessmentTab ManagementPanel protocol: upper_gi_bleed (from the confirmed diagnosis)
 - note: PlanTab protocol: upper_gi_bleed (from the confirmed diagnosis)
 - note: Seeded investigations: upper_gi_bleed (confirmed); 0 stat test(s) held back
+- note: Decision Upper GI bleeding — admission and endoscopy timing — missing: Calculate the Glasgow-Blatchford score to set the risk.
+- note: Decision support: upper-gi-bleed; factors (none)
 - note: matchPathways: Upper GI Endoscopy (Dyspepsia / GORD / Dysphagia) (5)
 
 </details>
@@ -17527,6 +18715,8 @@ Guidelines:
 - note: AssessmentTab ManagementPanel protocol: upper_gi_bleed (from the confirmed diagnosis)
 - note: PlanTab protocol: upper_gi_bleed (from the confirmed diagnosis)
 - note: Seeded investigations: upper_gi_bleed (confirmed); 0 stat test(s) held back
+- note: Decision Upper GI bleeding — admission and endoscopy timing — missing: Calculate the Glasgow-Blatchford score to set the risk.
+- note: Decision support: upper-gi-bleed; factors age65to79, news2High, shock
 - note: matchPathways: GI Bleeding (Upper and Lower) (20)
 
 </details>
@@ -17575,6 +18765,8 @@ Guidelines:
 - note: AssessmentTab ManagementPanel protocol: upper_gi_bleed (from the confirmed diagnosis)
 - note: PlanTab protocol: upper_gi_bleed (from the confirmed diagnosis)
 - note: Seeded investigations: upper_gi_bleed (confirmed); 0 stat test(s) held back
+- note: Decision Upper GI bleeding — admission and endoscopy timing — missing: Calculate the Glasgow-Blatchford score to set the risk.
+- note: Decision support: upper-gi-bleed; factors age65to79, anticoagulated
 - note: matchPathways: GI Bleeding (Upper and Lower) (15)
 
 </details>
@@ -17621,6 +18813,8 @@ Guidelines:
 - note: AssessmentTab ManagementPanel protocol: peptic_ulcer (from the confirmed diagnosis)
 - note: PlanTab protocol: peptic_ulcer (from the confirmed diagnosis)
 - note: Seeded investigations: peptic_ulcer (confirmed); 0 stat test(s) held back
+- note: Decision Upper GI bleeding — admission and endoscopy timing — missing: Calculate the Glasgow-Blatchford score to set the risk.
+- note: Decision support: upper-gi-bleed; factors age65to79
 - note: matchPathways: GI Bleeding (Upper and Lower) (10), Upper GI Endoscopy (Dyspepsia / GORD / Dysphagia) (10), Post-operative Follow-up (General) (5)
 
 </details>
@@ -17661,6 +18855,7 @@ Guidelines:
 - note: AssessmentTab ManagementPanel protocol: gastric_carcinoma (from the confirmed diagnosis)
 - note: PlanTab protocol: gastric_carcinoma (from the confirmed diagnosis)
 - note: Seeded investigations: gastric_carcinoma (confirmed); 0 stat test(s) held back
+- note: Decision support: (no decision); factors (none)
 - note: matchPathways: IBD — Surgical Complications (Crohn's / UC) (14), Liver Lesion / Hepatic Mass (14), Pancreatic Mass / Cyst (14)
 
 </details>
@@ -17704,6 +18899,7 @@ Guidelines:
 - note: AssessmentTab ManagementPanel protocol: urinary_retention (from the confirmed diagnosis)
 - note: PlanTab protocol: urinary_retention (from the confirmed diagnosis)
 - note: Seeded investigations: urinary_retention (confirmed); 0 stat test(s) held back
+- note: Decision support: (no decision); factors age65to79
 
 </details>
 
@@ -17748,10 +18944,11 @@ Guidelines:
 - recommended scores: qsofa, gcs, news2, cfs
 - score values: (none)
 - dx variant: (none) (no group)
-- note: PANE features applied: confusion, rigors, fever, fatigue, immunosuppression, steroid_use, suprapubic_pain, mottled_skin, joint_pain, abdominal_tenderness, raised_lactate, elevated_wbc, raised_crp, raised_creatinine, positive_urinalysis, acute_onset, tachycardia, haemodynamic_instability, hypotension, tachypnoea, trauma_mechanism, recent_surgery, aortic_graft, stoma
+- note: PANE features applied: confusion, rigors, fever, fatigue, immunosuppression, steroid_use, suprapubic_pain, mottled_skin, abdominal_tenderness, raised_lactate, elevated_wbc, raised_crp, raised_creatinine, positive_urinalysis, acute_onset, tachycardia, haemodynamic_instability, hypotension, tachypnoea, trauma_mechanism, recent_surgery, aortic_graft, stoma
 - note: AssessmentTab ManagementPanel protocol: uti (from the confirmed diagnosis)
 - note: PlanTab protocol: uti (from the confirmed diagnosis)
 - note: Seeded investigations: uti (confirmed); 0 stat test(s) held back
+- note: Decision support: sepsis; factors age65to79, immunosuppressed, news2High, shock
 - note: matchPathways: Post-operative Follow-up (General) (5)
 
 </details>
@@ -17806,6 +19003,7 @@ Guidelines:
 - note: AssessmentTab ManagementPanel protocol: variceal_bleed (from the confirmed diagnosis)
 - note: PlanTab protocol: variceal_bleed (from the confirmed diagnosis)
 - note: Seeded investigations: variceal_bleed (confirmed); 0 stat test(s) held back
+- note: Decision support: (no decision); factors (none)
 - note: matchPathways: GI Bleeding (Upper and Lower) (20), Jaundice Workup (15), ERCP (Obstructive Jaundice / Bile Duct Stones / Pancreatic Duct) (10)
 
 </details>
@@ -17852,6 +19050,7 @@ Guidelines:
 - note: AssessmentTab ManagementPanel protocol: variceal_bleed (from the confirmed diagnosis)
 - note: PlanTab protocol: variceal_bleed (from the confirmed diagnosis)
 - note: Seeded investigations: variceal_bleed (confirmed); 0 stat test(s) held back
+- note: Decision support: (no decision); factors (none)
 - note: matchPathways: GI Bleeding (Upper and Lower) (10), Bowel Obstruction (Small / Large) (5)
 
 </details>
@@ -17930,7 +19129,7 @@ Guidelines:
 | `pharyngeal-pouch-elderly` | mnm-pouch | web | quality | known gap | not in top 3 of web.pane: 1. Oesophageal Carcinoma \| 2. Oesophageal Stricture (Benign) \| 3. Achalasia [known gap: No pharyngeal pouch / Zenker node in PANE or symptom inference; site "Upper neck" maps to neck_lump. \| iOS CI 2026-09-25 (r |
 | `ppu-perforated-peptic-ulcer` | score-rec-boey | web | quality | known gap | boey not recommended; recommended: alvarado, ranson, qsofa, news2, web:gerdq [known gap: Web: No Boey or PULP score on either platform. \| iOS CI 2026-09-25 (run 36169134350, database mode): boey not recommended; recommended: glasgow-blatch |
 | `rectal-bleeding-young-haemorrhoidal` | level-routine-or-priority | web | quality | known gap | web.triage: emergency (acuity=urgent, action=emergency_now, score=65); expected ≤ priority [known gap: Web adaptiveTriage has no negation handling and treats any "bleed/bleeding" as an urgent red flag (RED_FLAGS "GI or other bleeding" → eme |
-| `renal-colic-pregnant` | mgmt-paracetamol-opioid | web | quality | known gap | no management item matched among 5 (web.clinicalPrompts) [known gap: Web: No analgesia at all: the Assessment panel now follows the confirmed diagnosis (O26.83, no protocol) instead of the PANE top (renal colic 0.47), so the renal colic pla |
+| `renal-colic-pregnant` | mgmt-paracetamol-opioid | web | quality | known gap | no management item matched among 9 (web.clinicalPrompts, web.decisions, web.decisions.shift) [known gap: Web: No analgesia at all: the Assessment panel now follows the confirmed diagnosis (O26.83, no protocol) instead of the PANE top (renal |
 | `sbo-virgin-abdomen` | mnm-neoplasm | web | quality | known gap | not in top 3 of web.pane: 1. Bowel Obstruction \| 2. Obturator Hernia \| 3. Small Bowel Obstruction — Adhesions [known gap: Web: PANE top 3: bowel obstruction, cholecystitis, appendicitis, although weight_loss was extracted; PANE has no sma |
 | `trauma-paediatric-nai-bruising` | mnm-nai | web | quality | known gap | not in top 3 of web.pane: 1. Rib Fractures \| 2. Traumatic Brain Injury \| 3. Intussusception [known gap: No engine has non-accidental injury / child maltreatment as a diagnosis. \| iOS CI 2026-09-25 (run 36169134350, database mode): not in |
 | `uc-acute-severe-truelove-witts` | score-rec-truelove-witts | web | quality | known gap | truelove-witts not recommended; recommended: alvarado, tg18-cholangitis, ranson, qsofa, news2, rockall [known gap: No Truelove-Witts (or Oxford day-3) calculator or CDS rule on web; CDS suggests Alvarado, TG18 cholangitis and Ranson. \| iOS |

@@ -1,10 +1,10 @@
 # Clinical validation report — consultation engines vs guidelines
 
-Generated 2026-09-26T00:02:01.082Z.
+Generated 2026-09-26T00:32:58.259Z.
 
-- iOS: 409 vignette results from `docs/clinical-validation/results/ios-latest.jsonl` (generated 2026-09-25T23:29:19Z).
+- iOS: 409 vignette results from `docs/clinical-validation/results/ios-latest.jsonl` (generated 2026-09-26T00:18:19Z).
 - iOS differential engine mode: database (BayesianDiagnosisEngine used DiagnosticDatabase.json).
-- Web: 409 vignette results from `docs/clinical-validation/results/web-latest.json` (generated 2026-09-25T23:19:58.014Z, clinval-web/1).
+- Web: 425 vignette results from `docs/clinical-validation/results/web-latest.json` (generated 2026-09-26T00:31:12.162Z, clinval-web/1).
 
 Status legend: PASS; FAIL — BLOCKING (critical, not flagged: fails the test run); FAIL (known gap) and
 FAIL (unverified) are reported only; "PASS (gap resolved)" means the flag can be removed from the vignette;
@@ -14,8 +14,8 @@ n/a = the expectation does not apply to that platform or the engine has no such 
 
 | Platform | Vignettes | Expectations | Pass | Fail | n/a | Critical fail | Blocking | Known-gap fail | Unverified fail | Gap resolved |
 |---|---|---|---|---|---|---|---|---|---|---|
-| ios | 409 | 3101 | 2756 | 229 | 116 | 2 | 0 | 221 | 4 | 11 |
-| web | 409 | 3101 | 2933 | 76 | 92 | 0 | 0 | 74 | 0 | 0 |
+| ios | 409 | 3101 | 2756 | 229 | 116 | 2 | 0 | 225 | 0 | 0 |
+| web | 425 | 3138 | 2970 | 76 | 92 | 0 | 0 | 74 | 0 | 0 |
 
 ## Blocking failures
 
@@ -23,8 +23,8 @@ None.
 
 ## All critical failures (including known gaps and unverified)
 
-- `reasoning-closure-gastritis-troponin` / **alert-favours-acs** (ios, FAIL (unverified)): no reasoning line output from web.reasoning.alert, ios.reasoning.alert on ios
-- `reasoning-closure-gastroenteritis-dka` / **alert-favours-dka** (ios, FAIL (unverified)): no reasoning line output from web.reasoning.alert, ios.reasoning.alert on ios
+- `reasoning-closure-gastritis-troponin` / **alert-favours-acs** (ios, FAIL (known gap)): no reasoning line output from web.reasoning.alert, ios.reasoning.alert on ios [known gap: iOS CI 2026-09-25 (run 36200720842): no reasoning line output from web.reasoning.alert, ios.reasoning.alert on ios]
+- `reasoning-closure-gastroenteritis-dka` / **alert-favours-dka** (ios, FAIL (known gap)): no reasoning line output from web.reasoning.alert, ios.reasoning.alert on ios [known gap: iOS CI 2026-09-25 (run 36200720842): no reasoning line output from web.reasoning.alert, ios.reasoning.alert on ios]
 
 ## Results by condition and permutation
 
@@ -1454,7 +1454,7 @@ Permutation of `appendicitis-adult-typical`.
 
 Failure details:
 
-- **mgmt-antibiotics-first-option** (ios): no management item matched among 33 (ios.pipeline.decisions, ios.pipeline.actions, ios.radiation.plan, ios.radiation.followUp, ios.scoreCalculator.air, ios.soap.plan) [known gap: Web: No antibiotics-first option anywhere for CT-confirmed uncomplicated appendicitis; the protocol's only non-operative step is for an appendix mass. \| iOS CI 2026-09-25 (run 36169134350, database mode): no management item matched among 24 (ios.pipeline.decisions, ios.pipeline.actions, ios.radiation.plan, ios.radiation.followUp, ios.scoreCalculator.air, ios.soap.plan)]
+- **mgmt-antibiotics-first-option** (ios): no management item matched among 34 (ios.pipeline.decisions, ios.pipeline.actions, ios.radiation.plan, ios.radiation.followUp, ios.scoreCalculator.air, ios.soap.plan) [known gap: Web: No antibiotics-first option anywhere for CT-confirmed uncomplicated appendicitis; the protocol's only non-operative step is for an appendix mass. \| iOS CI 2026-09-25 (run 36169134350, database mode): no management item matched among 24 (ios.pipeline.decisions, ios.pipeline.actions, ios.radiation.plan, ios.radiation.followUp, ios.scoreCalculator.air, ios.soap.plan)]
 - **mnm-gynaecological** (web): not in top 5 of web.symptomInference: 1. Acute appendicitis \| 2. Mesenteric adenitis \| 3. Acute alcoholic pancreatitis \| 4. Acute gastroenteritis \| 5. Typhoid fever [known gap: Web: Symptom inference top 5: appendicitis ×2, alcoholic pancreatitis, gastroenteritis, typhoid; no gynaecological cause for a 28-year-old woman.]
 
 Guidelines:
@@ -1481,7 +1481,7 @@ Permutation of `appendicitis-adult-typical`.
 
 Failure details:
 
-- **mgmt-appendicolith-caution** (ios): no management item matched among 22 (ios.pipeline.decisions, ios.pipeline.actions, ios.radiation.plan, ios.radiation.followUp, ios.soap.plan) [known gap: Web: Appendicolith appears only as a CT finding to look for; no statement links it to antibiotic-first failure. \| iOS CI 2026-09-25 (run 36169134350, database mode): no management item matched among 15 (ios.pipeline.decisions, ios.pipeline.actions, ios.radiation.plan, ios.radiation.followUp, ios.soap.plan)]
+- **mgmt-appendicolith-caution** (ios): no management item matched among 23 (ios.pipeline.decisions, ios.pipeline.actions, ios.radiation.plan, ios.radiation.followUp, ios.soap.plan) [known gap: Web: Appendicolith appears only as a CT finding to look for; no statement links it to antibiotic-first failure. \| iOS CI 2026-09-25 (run 36169134350, database mode): no management item matched among 15 (ios.pipeline.decisions, ios.pipeline.actions, ios.radiation.plan, ios.radiation.followUp, ios.soap.plan)]
 
 Guidelines:
 
@@ -1627,8 +1627,8 @@ Permutation of `appendicitis-adult-typical`.
 
 Failure details:
 
-- **mgmt-percutaneous-drainage** (ios): no management item matched among 24 (ios.pipeline.decisions, ios.pipeline.actions, ios.radiation.plan, ios.radiation.followUp, ios.soap.plan) [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): no management item matched among 17 (ios.pipeline.decisions, ios.pipeline.actions, ios.radiation.plan, ios.radiation.followUp, ios.soap.plan)]
-- **mgmt-interval-colon-evaluation** (ios): no management item matched among 24 (ios.pipeline.decisions, ios.pipeline.actions, ios.radiation.plan, ios.radiation.followUp, ios.soap.plan) [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): no management item matched among 17 (ios.pipeline.decisions, ios.pipeline.actions, ios.radiation.plan, ios.radiation.followUp, ios.soap.plan)]
+- **mgmt-percutaneous-drainage** (ios): no management item matched among 25 (ios.pipeline.decisions, ios.pipeline.actions, ios.radiation.plan, ios.radiation.followUp, ios.soap.plan) [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): no management item matched among 17 (ios.pipeline.decisions, ios.pipeline.actions, ios.radiation.plan, ios.radiation.followUp, ios.soap.plan)]
+- **mgmt-interval-colon-evaluation** (ios): no management item matched among 25 (ios.pipeline.decisions, ios.pipeline.actions, ios.radiation.plan, ios.radiation.followUp, ios.soap.plan) [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): no management item matched among 17 (ios.pipeline.decisions, ios.pipeline.actions, ios.radiation.plan, ios.radiation.followUp, ios.soap.plan)]
 
 Guidelines:
 
@@ -3386,8 +3386,8 @@ Guidelines:
 Failure details:
 
 - **dx-crohn-top3** (ios): not in top 3 of ios.bayes: 1. Acute Appendicitis \| 2. Skin Abscess \| 3. Typhoid Fever \| 4. Infective Endocarditis \| 5. Acute Pancreatitis [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): not in top 3 of ios.bayes: 1. Acute Appendicitis \| 2. Skin Abscess \| 3. Typhoid Fever \| 4. Infective Endocarditis \| 5. Acute Pancreatitis]
-- **flag-immunosuppressed** (ios): no red flag matched among 10 (ios.visitRisk, ios.allergyBanner, ios.triage, ios.radiation.redFlags, ios.pipeline.alert) [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): no red flag matched among 8 (ios.visitRisk, ios.allergyBanner, ios.triage, ios.radiation.redFlags, ios.pipeline.alert)]
-- **mgmt-resection-plan** (ios): no management item matched among 17 (ios.pipeline.decisions, ios.pipeline.actions, ios.radiation.plan, ios.radiation.followUp, ios.soap.plan) [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): no management item matched among 11 (ios.pipeline.decisions, ios.pipeline.actions, ios.radiation.plan, ios.radiation.followUp, ios.soap.plan)]
+- **flag-immunosuppressed** (ios): no red flag matched among 9 (ios.visitRisk, ios.allergyBanner, ios.triage, ios.radiation.redFlags, ios.pipeline.alert) [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): no red flag matched among 8 (ios.visitRisk, ios.allergyBanner, ios.triage, ios.radiation.redFlags, ios.pipeline.alert)]
+- **mgmt-resection-plan** (ios): no management item matched among 18 (ios.pipeline.decisions, ios.pipeline.actions, ios.radiation.plan, ios.radiation.followUp, ios.soap.plan) [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): no management item matched among 11 (ios.pipeline.decisions, ios.pipeline.actions, ios.radiation.plan, ios.radiation.followUp, ios.soap.plan)]
 
 Guidelines:
 
@@ -3417,6 +3417,279 @@ Guidelines:
 
 - **ascrs-abscess-2022** — ASCRS clinical practice guidelines — anorectal abscess, fistula-in-ano and rectovaginal fistula (2022), Abscess: prompt drainage. Crohn’s fistula: loose seton for complex disease; MRI or EUS to define anatomy; fistulotomy only for simple, low fistulas. Gaertner WB, Burgess PL, Davids JS, et al. The American Society of Colon and Rectal Surgeons clinical practice guidelines for the management of anorectal abscess, fistula-in-ano, and rectovaginal fistula. Dis Colon Rectum. 2022;65:964–985. *(statement wording/numbering not yet verified against the source)*
 - **bsg-ibd-2019** — BSG consensus guidelines — management of inflammatory bowel disease in adults (2019), Perianal Crohn’s: MRI pelvis; EUA, drainage and seton; anti-TNF after sepsis control. Lamb CA, Kennedy NA, Raine T, et al. British Society of Gastroenterology consensus guidelines on the management of inflammatory bowel disease in adults. Gut. 2019;68(Suppl 3):s1–s106. *(statement wording/numbering not yet verified against the source)*
+
+### Acute appendicitis in pregnancy (24 weeks)
+
+#### `decision-appendicitis-pregnant-surgery-first` — 
+
+24 weeks pregnant with MRI-confirmed uncomplicated appendicitis: laparoscopic appendicectomy ranks above antibiotics-first; pregnancy lowers the antibiotics-first benefit.
+
+| Expectation | Kind | Severity | ios | web | Guideline | Proposed fix |
+|---|---|---|---|---|---|---|
+| decision-appendicectomy-first-in-pregnancy | managementInclude | critical | not run | PASS | WSES Jerusalem guidelines 2020 |  |
+| decision-pregnancy-lowers-antibiotics-first | managementInclude | quality | not run | PASS | WSES Jerusalem guidelines 2020; CODA trial 2020 |  |
+
+Guidelines:
+
+- **wses-2020** — WSES Jerusalem guidelines — acute appendicitis (2020 update) (2020), Appendicitis in pregnancy; non-operative management. Di Saverio S et al. World J Emerg Surg 2020;15:27. *(statement wording/numbering not yet verified against the source)*
+- **coda-2020** — CODA trial (2020), Antibiotics vs appendicectomy. CODA Collaborative. N Engl J Med 2020;383:1907-1919. *(statement wording/numbering not yet verified against the source)*
+
+### Peri-operative warfarin with a mechanical mitral valve — bridging
+
+#### `decision-bridging-mechanical-valve` — Mechanical mitral valve
+
+Warfarin for a mechanical mitral valve before elective laparoscopic cholecystectomy: bridging (high thromboembolic risk), marked borderline.
+
+Permutation of `decision-bridging-warfarin-af-no-bridge`.
+
+| Expectation | Kind | Severity | ios | web | Guideline | Proposed fix |
+|---|---|---|---|---|---|---|
+| decision-bridging-valve | managementInclude | critical | not run | PASS | ACCP perioperative antithrombotic guideline 2022 |  |
+
+Guidelines:
+
+- **bridge-2015** — BRIDGE trial (2015), Bridging in atrial fibrillation. Douketis JD et al. N Engl J Med 2015;373:823-833. *(statement wording/numbering not yet verified against the source)*
+- **accp-2022** — ACCP perioperative antithrombotic guideline (2022), Bridging: mechanical valves, recent VTE. Douketis JD et al. Chest 2022;162:e207-e243. *(statement wording/numbering not yet verified against the source)*
+
+### Peri-operative warfarin for AF — no bridging
+
+#### `decision-bridging-warfarin-af-no-bridge` — 
+
+Warfarin for atrial fibrillation before elective laparoscopic cholecystectomy: no bridging (BRIDGE).
+
+| Expectation | Kind | Severity | ios | web | Guideline | Proposed fix |
+|---|---|---|---|---|---|---|
+| decision-no-bridging-af | managementInclude | critical | not run | PASS | BRIDGE trial 2015; ACCP perioperative antithrombotic guideline 2022 |  |
+
+Guidelines:
+
+- **bridge-2015** — BRIDGE trial (2015), Bridging in atrial fibrillation. Douketis JD et al. N Engl J Med 2015;373:823-833. *(statement wording/numbering not yet verified against the source)*
+- **accp-2022** — ACCP perioperative antithrombotic guideline (2022), Bridging: mechanical valves, recent VTE. Douketis JD et al. Chest 2022;162:e207-e243. *(statement wording/numbering not yet verified against the source)*
+
+### Acute cholecystitis — fit 45-year-old
+
+#### `decision-cholecystitis-fit-early-lc` — Fit 45-year-old
+
+Fit 45-year-old (ASA I) with ultrasound-confirmed acute calculous cholecystitis: early laparoscopic cholecystectomy ranks first.
+
+Permutation of `decision-cholecystitis-frail-88-drainage`.
+
+| Expectation | Kind | Severity | ios | web | Guideline | Proposed fix |
+|---|---|---|---|---|---|---|
+| decision-early-lc-ranked-first | managementInclude | critical | not run | PASS | Tokyo Guidelines 2018 2018; CHOCOLATE randomised trial 2018 |  |
+
+Guidelines:
+
+- **tg18** — Tokyo Guidelines 2018 — flowchart for the management of acute cholecystitis (2018), Grade I-III management; fitness (CCI, ASA). Okamoto K et al. J Hepatobiliary Pancreat Sci 2018;25:55-72. *(statement wording/numbering not yet verified against the source)*
+- **chocolate** — CHOCOLATE randomised trial (2018), LC vs percutaneous drainage in high-risk patients. Loozen CS et al. BMJ 2018;363:k3965. *(statement wording/numbering not yet verified against the source)*
+
+### Acute cholecystitis — frail 88-year-old
+
+#### `decision-cholecystitis-frail-88-drainage` — 
+
+Frail 88-year-old (Clinical Frailty Scale 7, ASA IV, eGFR 28) with ultrasound-confirmed acute calculous cholecystitis: the decision layer ranks gallbladder drainage above early laparoscopic cholecystectomy.
+
+| Expectation | Kind | Severity | ios | web | Guideline | Proposed fix |
+|---|---|---|---|---|---|---|
+| decision-drainage-ranked-first | managementInclude | critical | not run | PASS | Tokyo Guidelines 2018 2018; CPOC/BGS perioperative care for people living with frailty 2021 |  |
+| decision-lc-not-advised | managementInclude | critical | not run | PASS | Tokyo Guidelines 2018 2018; CHOCOLATE randomised trial 2018 |  |
+| decision-no-early-lc-first | managementExclude | critical | not run | PASS | Tokyo Guidelines 2018 2018 |  |
+| decision-frailty-named | managementInclude | quality | not run | PASS | CPOC/BGS perioperative care for people living with frailty 2021 |  |
+
+Guidelines:
+
+- **tg18** — Tokyo Guidelines 2018 — flowchart for the management of acute cholecystitis (2018), Grade I-III management; fitness (CCI, ASA). Okamoto K et al. J Hepatobiliary Pancreat Sci 2018;25:55-72. *(statement wording/numbering not yet verified against the source)*
+- **chocolate** — CHOCOLATE randomised trial (2018), LC vs percutaneous drainage in high-risk patients. Loozen CS et al. BMJ 2018;363:k3965. *(statement wording/numbering not yet verified against the source)*
+- **cpoc-2021** — CPOC/BGS perioperative care for people living with frailty (2021), Emergency surgery; shared decision-making. Centre for Perioperative Care 2021. *(statement wording/numbering not yet verified against the source)*
+
+### Uncomplicated diverticulitis — immunosuppressed, penicillin-allergic
+
+#### `decision-diverticulitis-immunosuppressed-penicillin` — Immunosuppressed, penicillin-allergic
+
+Renal-transplant recipient on tacrolimus and prednisolone with a penicillin allergy: antibiotics now indicated (non-penicillin regimen) and admission favoured.
+
+Permutation of `decision-diverticulitis-uncomplicated-observe`.
+
+| Expectation | Kind | Severity | ios | web | Guideline | Proposed fix |
+|---|---|---|---|---|---|---|
+| decision-antibiotics-when-immunosuppressed | managementInclude | critical | not run | PASS | WSES guidelines 2020 |  |
+| decision-penicillin-allergy-factor | managementInclude | quality | not run | PASS | WSES guidelines 2020 |  |
+
+Guidelines:
+
+- **wses-div-2020** — WSES guidelines — acute colonic diverticulitis (2020 update) (2020), Uncomplicated diverticulitis: antibiotics and outpatient management. Sartelli M et al. World J Emerg Surg 2020;15:32. *(statement wording/numbering not yet verified against the source)*
+- **diabolo-2017** — DIABOLO trial (2017), Observation vs antibiotics. Daniels L et al. Br J Surg 2017;104:52-61. *(statement wording/numbering not yet verified against the source)*
+
+### Uncomplicated diverticulitis — fit outpatient
+
+#### `decision-diverticulitis-uncomplicated-observe` — 
+
+Fit 52-year-old with CT-confirmed uncomplicated diverticulitis: observe — no routine antibiotics and outpatient management.
+
+| Expectation | Kind | Severity | ios | web | Guideline | Proposed fix |
+|---|---|---|---|---|---|---|
+| decision-no-routine-antibiotics | managementInclude | critical | not run | PASS | DIABOLO trial 2017; WSES guidelines 2020 |  |
+| decision-no-antibiotics-treat-band | managementExclude | critical | not run | PASS | DIABOLO trial 2017 |  |
+| decision-outpatient | managementInclude | quality | not run | PASS | WSES guidelines 2020 |  |
+
+Guidelines:
+
+- **wses-div-2020** — WSES guidelines — acute colonic diverticulitis (2020 update) (2020), Uncomplicated diverticulitis: antibiotics and outpatient management. Sartelli M et al. World J Emerg Surg 2020;15:32. *(statement wording/numbering not yet verified against the source)*
+- **diabolo-2017** — DIABOLO trial (2017), Observation vs antibiotics. Daniels L et al. Br J Surg 2017;104:52-61. *(statement wording/numbering not yet verified against the source)*
+
+### Inguinal hernia — frail 86-year-old
+
+#### `decision-hernia-frail-watchful-waiting` — Frail 86-year-old
+
+Frail 86-year-old man (CFS 7, ASA III) with a reducible minimally symptomatic inguinal hernia: watchful waiting rather than elective repair.
+
+Permutation of `decision-vte-caprini-low-mechanical`.
+
+| Expectation | Kind | Severity | ios | web | Guideline | Proposed fix |
+|---|---|---|---|---|---|---|
+| decision-watchful-waiting | managementInclude | critical | not run | PASS | HerniaSurge international groin hernia guidelines 2018; CPOC/BGS perioperative care for people living with frailty 2021 |  |
+| decision-no-repair-treat-band | managementExclude | critical | not run | PASS | HerniaSurge international groin hernia guidelines 2018 |  |
+
+Guidelines:
+
+- **herniasurge-2018** — HerniaSurge international groin hernia guidelines (2018), Watchful waiting; frail patients. Hernia 2018;22:1-165. *(statement wording/numbering not yet verified against the source)*
+- **cpoc-2021** — CPOC/BGS perioperative care for people living with frailty (2021), Emergency surgery; shared decision-making. Centre for Perioperative Care 2021. *(statement wording/numbering not yet verified against the source)*
+
+### Acute gallstone pancreatitis — predicted severe
+
+#### `decision-pancreatitis-severe-defer-cholecystectomy` — 
+
+Gallstone pancreatitis with lipase 1450 U/L and Glasgow-Imrie 4: the lipase meets the Atlanta criterion; same-admission cholecystectomy is deferred in predicted severe disease.
+
+| Expectation | Kind | Severity | ios | web | Guideline | Proposed fix |
+|---|---|---|---|---|---|---|
+| decision-defer-cholecystectomy | redFlags | critical | not run | PASS | IAP/APA acute pancreatitis guidelines 2013; PONCHO trial 2015 |  |
+| decision-lipase-atlanta | managementInclude | critical | not run | PASS | Revised Atlanta classification 2012 |  |
+| decision-glasgow-severe | managementInclude | quality | not run | PASS | IAP/APA acute pancreatitis guidelines 2013 |  |
+
+Guidelines:
+
+- **atlanta-2012** — Revised Atlanta classification (2012), Diagnosis (2 of 3); severity. Banks PA et al. Gut 2013;62:102-111. *(statement wording/numbering not yet verified against the source)*
+- **iap-apa-2013** — IAP/APA acute pancreatitis guidelines (2013), Timing of cholecystectomy in severe pancreatitis. Pancreatology 2013;13(4 Suppl 2):e1-e15. *(statement wording/numbering not yet verified against the source)*
+- **poncho-2015** — PONCHO trial (2015), Same-admission cholecystectomy in mild gallstone pancreatitis. da Costa DW et al. Lancet 2015;386:1261-1268. *(statement wording/numbering not yet verified against the source)*
+
+### High-risk PE after recent surgery
+
+#### `decision-pe-postop-thrombolysis-contraindicated` — 
+
+Day 5 after an anterior resection with CT-confirmed PE and shock: systemic thrombolysis is not for this patient (major surgery within 3 weeks); anticoagulation ranks first.
+
+| Expectation | Kind | Severity | ios | web | Guideline | Proposed fix |
+|---|---|---|---|---|---|---|
+| decision-thrombolysis-not-for-patient | redFlags | critical | not run | PASS | ESC guidelines 2019 |  |
+| decision-anticoagulation-first | managementInclude | critical | not run | PASS | ESC guidelines 2019 |  |
+| decision-no-thrombolysis-after-surgery | managementExclude | critical | not run | PASS | ESC guidelines 2019 |  |
+
+Guidelines:
+
+- **esc-pe-2019** — ESC guidelines — acute pulmonary embolism (2019), Diagnostic strategy; reperfusion; contraindications to fibrinolysis. Konstantinides SV et al. Eur Heart J 2020;41:543-603. *(statement wording/numbering not yet verified against the source)*
+
+### Suspected pulmonary embolism — Wells unlikely
+
+#### `decision-pe-wells-unlikely-test` — 
+
+Pleuritic chest pain with Wells PE 3 (PE unlikely): D-dimer first; anticoagulation band is test further; no thrombolysis.
+
+| Expectation | Kind | Severity | ios | web | Guideline | Proposed fix |
+|---|---|---|---|---|---|---|
+| decision-wells-unlikely-d-dimer | managementInclude | critical | not run | PASS | NICE NG158 venous thromboembolic diseases 2020 |  |
+| decision-anticoagulation-test-further | managementInclude | critical | not run | PASS | ESC guidelines 2019; NICE NG158 venous thromboembolic diseases 2020 |  |
+| decision-no-thrombolysis | managementExclude | critical | not run | PASS | ESC guidelines 2019 |  |
+
+Guidelines:
+
+- **esc-pe-2019** — ESC guidelines — acute pulmonary embolism (2019), Diagnostic strategy; reperfusion; contraindications to fibrinolysis. Konstantinides SV et al. Eur Heart J 2020;41:543-603. *(statement wording/numbering not yet verified against the source)*
+- **nice-ng158** — NICE NG158 venous thromboembolic diseases (2020), Two-level Wells; D-dimer; interim anticoagulation. NICE NG158 (2020). *(statement wording/numbering not yet verified against the source)*
+
+### Sepsis with shock — antibiotics within 1 hour
+
+#### `decision-sepsis-lactate-shock` — 
+
+Urinary sepsis with hypotension and lactate 5: IV antibiotics within 1 hour (treat band); lactate result action.
+
+| Expectation | Kind | Severity | ios | web | Guideline | Proposed fix |
+|---|---|---|---|---|---|---|
+| decision-antibiotics-within-1h | managementInclude | critical | not run | PASS | Surviving Sepsis Campaign 2021 2021 |  |
+| decision-lactate-4 | managementInclude | critical | not run | PASS | Surviving Sepsis Campaign 2021 2021 |  |
+
+Guidelines:
+
+- **ssc-2021** — Surviving Sepsis Campaign 2021 (2021), Antibiotic timing; lactate. Evans L et al. Crit Care Med 2021;49:e1063-e1143. *(statement wording/numbering not yet verified against the source)*
+
+### Upper GI bleeding — Glasgow-Blatchford 14 with shock
+
+#### `decision-ugib-gbs-high-shock` — GBS 14 with shock
+
+71-year-old with haematemesis and melaena, hypotensive, Hb 64 g/L, Glasgow-Blatchford 14: admit and endoscopy within 24 h, within 12 h after resuscitation for persisting instability; restrictive transfusion threshold met.
+
+Permutation of `decision-ugib-gbs-low-outpatient`.
+
+| Expectation | Kind | Severity | ios | web | Guideline | Proposed fix |
+|---|---|---|---|---|---|---|
+| decision-admit-endoscopy-24h | managementInclude | critical | not run | PASS | NICE CG141 acute upper GI bleeding 2012; ESGE guideline 2021 |  |
+| decision-endoscopy-12h-in-shock | managementInclude | critical | not run | PASS | ESGE guideline 2021 |  |
+| decision-hb-below-70 | managementInclude | critical | not run | PASS | NICE NG24 blood transfusion 2015 |  |
+
+Guidelines:
+
+- **nice-cg141** — NICE CG141 acute upper GI bleeding (2012), Glasgow-Blatchford; early discharge; timing of endoscopy. NICE CG141 (2012, updated 2016). *(statement wording/numbering not yet verified against the source)*
+- **esge-2021** — ESGE guideline — non-variceal upper GI haemorrhage (2021) (2021), Risk stratification; timing of endoscopy; transfusion threshold. Gralnek IM et al. Endoscopy 2021;53:300-332. *(statement wording/numbering not yet verified against the source)*
+- **nice-ng24** — NICE NG24 blood transfusion (2015), Restrictive red cell thresholds. NICE NG24 (2015). *(statement wording/numbering not yet verified against the source)*
+
+### Upper GI bleeding — Glasgow-Blatchford 0
+
+#### `decision-ugib-gbs-low-outpatient` — 
+
+35-year-old with a single small haematemesis after retching, normal observations and bloods, Glasgow-Blatchford 0: outpatient management candidate.
+
+| Expectation | Kind | Severity | ios | web | Guideline | Proposed fix |
+|---|---|---|---|---|---|---|
+| decision-gbs-outpatient-action | managementInclude | critical | not run | PASS | NICE CG141 acute upper GI bleeding 2012; ESGE guideline 2021 |  |
+| decision-gbs-observe-admission | managementInclude | critical | not run | PASS | NICE CG141 acute upper GI bleeding 2012 |  |
+
+Guidelines:
+
+- **nice-cg141** — NICE CG141 acute upper GI bleeding (2012), Glasgow-Blatchford; early discharge; timing of endoscopy. NICE CG141 (2012, updated 2016). *(statement wording/numbering not yet verified against the source)*
+- **esge-2021** — ESGE guideline — non-variceal upper GI haemorrhage (2021) (2021), Risk stratification; timing of endoscopy; transfusion threshold. Gralnek IM et al. Endoscopy 2021;53:300-332. *(statement wording/numbering not yet verified against the source)*
+
+### VTE prophylaxis and bridging — Caprini 8 on apixaban (colon cancer resection)
+
+#### `decision-vte-caprini-high-doac` — 
+
+72-year-old on apixaban for AF, planned right hemicolectomy for colon cancer, Caprini 8: prophylactic LMWH is not for this patient (therapeutic anticoagulation plan) and there is no bridging with a DOAC.
+
+| Expectation | Kind | Severity | ios | web | Guideline | Proposed fix |
+|---|---|---|---|---|---|---|
+| decision-no-prophylactic-lmwh-on-doac | redFlags | critical | not run | PASS | NICE NG89 VTE prophylaxis in over 16s 2018 |  |
+| decision-no-bridging-doac | redFlags | critical | not run | PASS | PAUSE study 2019 |  |
+| decision-mechanical-prophylaxis | managementInclude | quality | not run | PASS | NICE NG89 VTE prophylaxis in over 16s 2018 |  |
+
+Guidelines:
+
+- **nice-ng89** — NICE NG89 VTE prophylaxis in over 16s (2018), Surgical patients. NICE NG89 (2018). *(statement wording/numbering not yet verified against the source)*
+- **pause-2019** — PAUSE study (2019), Peri-operative DOAC interruption without bridging. Douketis JD et al. JAMA Intern Med 2019;179:1469-1478. *(statement wording/numbering not yet verified against the source)*
+- **accp-2022** — ACCP perioperative antithrombotic guideline (2022), Bridging: mechanical valves, recent VTE. Douketis JD et al. Chest 2022;162:e207-e243. *(statement wording/numbering not yet verified against the source)*
+
+### VTE prophylaxis — Caprini low risk (elective hernia repair)
+
+#### `decision-vte-caprini-low-mechanical` — 
+
+Fit 50-year-old for elective inguinal hernia repair with Caprini 1: mechanical prophylaxis; pharmacological prophylaxis not needed.
+
+| Expectation | Kind | Severity | ios | web | Guideline | Proposed fix |
+|---|---|---|---|---|---|---|
+| decision-mechanical-first | managementInclude | critical | not run | PASS | ACCP 9th edition 2012; NICE NG89 VTE prophylaxis in over 16s 2018 |  |
+| decision-lmwh-observe | managementInclude | quality | not run | PASS | ACCP 9th edition 2012 |  |
+
+Guidelines:
+
+- **accp-2012** — ACCP 9th edition — VTE prevention in non-orthopaedic surgery (2012), Caprini risk groups. Gould MK et al. Chest 2012;141(2 Suppl):e227S-e277S. *(statement wording/numbering not yet verified against the source)*
+- **nice-ng89** — NICE NG89 VTE prophylaxis in over 16s (2018), Surgical patients. NICE NG89 (2018). *(statement wording/numbering not yet verified against the source)*
 
 ### Diabetes-related foot infection with osteomyelitis
 
@@ -3550,7 +3823,7 @@ Guidelines:
 
 Failure details:
 
-- **mgmt-selective-antibiotics** (ios): no management item matched among 17 (ios.pipeline.decisions, ios.pipeline.actions, ios.radiation.plan, ios.radiation.referral, ios.radiation.followUp, ios.soap.plan) [known gap: Web: No antibiotic-free option; protocol and variant prescribe co-amoxiclav for 5–7 days. \| iOS CI 2026-09-25 (run 36169134350, database mode): no management item matched among 11 (ios.pipeline.decisions, ios.pipeline.actions, ios.radiation.plan, ios.radiation.referral, ios.radiation.followUp, ios.soap.plan)]
+- **mgmt-selective-antibiotics** (ios): no management item matched among 16 (ios.pipeline.decisions, ios.pipeline.actions, ios.radiation.plan, ios.radiation.referral, ios.radiation.followUp, ios.soap.plan) [known gap: Web: No antibiotic-free option; protocol and variant prescribe co-amoxiclav for 5–7 days. \| iOS CI 2026-09-25 (run 36169134350, database mode): no management item matched among 11 (ios.pipeline.decisions, ios.pipeline.actions, ios.radiation.plan, ios.radiation.referral, ios.radiation.followUp, ios.soap.plan)]
 
 Guidelines:
 
@@ -6595,7 +6868,7 @@ Permutation of `pancreatitis-gallstone-mild`.
 
 Failure details:
 
-- **mgmt-abdominal-compartment** (ios): no management item matched among 21 (ios.pipeline.decisions, ios.pipeline.actions, ios.radiation.plan, ios.radiation.referral, ios.radiation.followUp, ios.soap.plan) [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): no management item matched among 19 (ios.pipeline.decisions, ios.pipeline.actions, ios.radiation.plan, ios.radiation.referral, ios.radiation.followUp, ios.soap.plan)]
+- **mgmt-abdominal-compartment** (ios): no management item matched among 22 (ios.pipeline.decisions, ios.pipeline.actions, ios.radiation.plan, ios.radiation.referral, ios.radiation.followUp, ios.soap.plan) [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): no management item matched among 19 (ios.pipeline.decisions, ios.pipeline.actions, ios.radiation.plan, ios.radiation.referral, ios.radiation.followUp, ios.soap.plan)]
 
 Guidelines:
 
@@ -7545,14 +7818,10 @@ Permutation of `periop-nela-frail-emergency-laparotomy`.
 | mgmt-obstetric-involvement | managementInclude | critical | PASS | PASS | ACOG Committee Opinion 775 2019; SAGES guidelines 2017 |  |
 | mgmt-no-nsaid | managementExclude | critical | PASS | PASS | FDA drug safety communication 2020 |  |
 | mgmt-no-appendicectomy | managementExclude | critical | PASS | PASS |  |  |
-| inv-no-unqualified-ct | investigationExclude | quality | PASS (gap resolved) | PASS | ACOG Committee Opinion 775 2019 | When pregnant: prefer MRI/US, qualify CT, and suppress the ectopic pathway beyond the first trimester (see findings/hpb.md gap 6). |
+| inv-no-unqualified-ct | investigationExclude | quality | PASS | PASS | ACOG Committee Opinion 775 2019 | When pregnant: prefer MRI/US, qualify CT, and suppress the ectopic pathway beyond the first trimester (see findings/hpb.md gap 6). |
 | mgmt-vte-prophylaxis | managementInclude | quality | PASS | PASS | RCOG Green-top Guideline 37a 2015; SAGES guidelines 2017 |  |
 | mgmt-left-uterine-displacement | managementInclude | quality | PASS | PASS | SAGES guidelines 2017 | See mgmt-obstetric-involvement. |
 | mgmt-antenatal-steroids | managementInclude | quality | PASS | PASS | NICE NG25 2022 | See mgmt-obstetric-involvement. |
-
-Failure details:
-
-- **inv-no-unqualified-ct** (ios): none of 11 investigations matched
 
 Guidelines:
 
@@ -7893,7 +8162,7 @@ Guidelines:
 
 Failure details:
 
-- **flag-nsaid** (ios): no red flag matched among 13 (ios.visitRisk, ios.allergyBanner, ios.triage, ios.radiation.redFlags, ios.radiation.urgencyNote, ios.textParser, ios.pipeline.alert, ios.acuity) [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): no red flag matched among 14 (ios.visitRisk, ios.allergyBanner, ios.triage, ios.radiation.redFlags, ios.textParser, ios.pipeline.alert, ios.acuity)]
+- **flag-nsaid** (ios): no red flag matched among 15 (ios.visitRisk, ios.allergyBanner, ios.triage, ios.radiation.redFlags, ios.radiation.urgencyNote, ios.textParser, ios.pipeline.alert, ios.acuity) [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): no red flag matched among 14 (ios.visitRisk, ios.allergyBanner, ios.triage, ios.radiation.redFlags, ios.textParser, ios.pipeline.alert, ios.acuity)]
 - **score-rec-boey** (ios): boey not recommended; recommended: glasgow-blatchford, wells-pe, rockall, ios:perc, aims65, spesi, ios:forrest, ios:revisedGeneva, news2, mews [known gap: Web: No Boey or PULP score on either platform. \| iOS CI 2026-09-25 (run 36169134350, database mode): boey not recommended; recommended: glasgow-blatchford, wells-pe, rockall, ios:perc, aims65, spesi, ios:forrest, ios:revisedGeneva, news2, mews]
 - **score-rec-boey** (web): boey not recommended; recommended: alvarado, ranson, qsofa, news2, web:gerdq [known gap: Web: No Boey or PULP score on either platform. \| iOS CI 2026-09-25 (run 36169134350, database mode): boey not recommended; recommended: glasgow-blatchford, wells-pe, rockall, ios:perc, aims65, spesi, ios:forrest, ios:revisedGeneva, news2, mews]
 
@@ -8045,13 +8314,8 @@ Guidelines:
 
 | Expectation | Kind | Severity | ios | web | Guideline | Proposed fix |
 |---|---|---|---|---|---|---|
-| alert-favours-pancreatitis | reasoningInclude | critical | PASS (verify: was unverified) | PASS | Classification of acute pancreatitis 2013 |  |
-| alert-names-lipase | reasoningInclude | quality | PASS (verify: was unverified) | PASS |  |  |
-
-Failure details:
-
-- **alert-favours-pancreatitis** (ios): reasoning line found in ios.reasoning.alert: "doesn't fit the working diagnosis: the record favours acute pancreatitis (70%) over biliary colic (7%) - mainly lipase/amylase >3× uln or imaging featur..."
-- **alert-names-lipase** (ios): reasoning line found in ios.reasoning.alert: "...s acute pancreatitis (70%) over biliary colic (7%) - mainly lipase/amylase >3× uln or imaging features (lr 11 vs 1.0)."
+| alert-favours-pancreatitis | reasoningInclude | critical | PASS | PASS | Classification of acute pancreatitis 2013 |  |
+| alert-names-lipase | reasoningInclude | quality | PASS | PASS |  |  |
 
 Guidelines:
 
@@ -8066,11 +8330,11 @@ Guidelines:
 
 | Expectation | Kind | Severity | ios | web | Guideline | Proposed fix |
 |---|---|---|---|---|---|---|
-| alert-favours-acs | reasoningInclude | critical | FAIL (unverified) | PASS | ESC Guidelines for the management of acute coronary syndromes 2023 |  |
+| alert-favours-acs | reasoningInclude | critical | FAIL (known gap) | PASS | ESC Guidelines for the management of acute coronary syndromes 2023 |  |
 
 Failure details:
 
-- **alert-favours-acs** (ios): no reasoning line output from web.reasoning.alert, ios.reasoning.alert on ios
+- **alert-favours-acs** (ios): no reasoning line output from web.reasoning.alert, ios.reasoning.alert on ios [known gap: iOS CI 2026-09-25 (run 36200720842): no reasoning line output from web.reasoning.alert, ios.reasoning.alert on ios]
 
 Guidelines:
 
@@ -8085,11 +8349,11 @@ Guidelines:
 
 | Expectation | Kind | Severity | ios | web | Guideline | Proposed fix |
 |---|---|---|---|---|---|---|
-| alert-favours-dka | reasoningInclude | critical | FAIL (unverified) | PASS | The management of diabetic ketoacidosis in adults 2023 |  |
+| alert-favours-dka | reasoningInclude | critical | FAIL (known gap) | PASS | The management of diabetic ketoacidosis in adults 2023 |  |
 
 Failure details:
 
-- **alert-favours-dka** (ios): no reasoning line output from web.reasoning.alert, ios.reasoning.alert on ios
+- **alert-favours-dka** (ios): no reasoning line output from web.reasoning.alert, ios.reasoning.alert on ios [known gap: iOS CI 2026-09-25 (run 36200720842): no reasoning line output from web.reasoning.alert, ios.reasoning.alert on ios]
 
 Guidelines:
 
@@ -8104,11 +8368,7 @@ Guidelines:
 
 | Expectation | Kind | Severity | ios | web | Guideline | Proposed fix |
 |---|---|---|---|---|---|---|
-| alert-news2-rising | reasoningInclude | critical | PASS (verify: was unverified) | PASS | National Early Warning Score (NEWS) 2 2017; Abdominal aortic aneurysm: diagnosis and management 2020 |  |
-
-Failure details:
-
-- **alert-news2-rising** (ios): reasoning line found in ios.reasoning.alert: "news2 rising (0 → 9): is renal colic still the whole story? consider symptomatic / ruptured abdomin..."
+| alert-news2-rising | reasoningInclude | critical | PASS | PASS | National Early Warning Score (NEWS) 2 2017; Abdominal aortic aneurysm: diagnosis and management 2020 |  |
 
 Guidelines:
 
@@ -8124,13 +8384,12 @@ Guidelines:
 
 | Expectation | Kind | Severity | ios | web | Guideline | Proposed fix |
 |---|---|---|---|---|---|---|
-| next-test-lipase | reasoningInclude | quality | PASS (verify: was unverified) | PASS | Classification of acute pancreatitis 2013 |  |
-| no-ct-first | reasoningExclude | quality | FAIL (unverified) | PASS |  |  |
+| next-test-lipase | reasoningInclude | quality | PASS | PASS | Classification of acute pancreatitis 2013 |  |
+| no-ct-first | reasoningExclude | quality | FAIL (known gap) | PASS |  |  |
 
 Failure details:
 
-- **next-test-lipase** (ios): reasoning line found in ios.reasoning.discriminator: "lipase/amylase >3× uln or imaging features [lab] - if positive: acute pancreatitis 23% → 77%, acute appendicitis 8% → 2%. if neg..."
-- **no-ct-first** (ios): forbidden reasoning line present in ios.reasoning.discriminator: "appendicitis on ultrasound or ct [advanced] - if positive: acute appendicitis 8% → 49%, acute pancreatitis 23% → 13%. if ne..."
+- **no-ct-first** (ios): forbidden reasoning line present in ios.reasoning.discriminator: "appendicitis on ultrasound or ct [advanced] - if positive: acute appendicitis 8% → 49%, acute pancreatitis 23% → 13%. if ne..." [known gap: iOS CI 2026-09-25 (run 36200720842): forbidden reasoning line present in ios.reasoning.discriminator: "appendicitis on ultrasound or ct [advanced] - if positive: acute appendicitis 8% → 49%, acute pancreatitis 23% → 13%. if ne..."]
 
 Guidelines:
 
@@ -8144,11 +8403,11 @@ Guidelines:
 
 | Expectation | Kind | Severity | ios | web | Guideline | Proposed fix |
 |---|---|---|---|---|---|---|
-| next-test-pregnancy | reasoningInclude | quality | FAIL (unverified) | PASS | Ectopic pregnancy and miscarriage: diagnosis and initial management 2019 |  |
+| next-test-pregnancy | reasoningInclude | quality | FAIL (known gap) | PASS | Ectopic pregnancy and miscarriage: diagnosis and initial management 2019 |  |
 
 Failure details:
 
-- **next-test-pregnancy** (ios): no reasoning line matched among 3 (ios.reasoning.discriminator)
+- **next-test-pregnancy** (ios): no reasoning line matched among 3 (ios.reasoning.discriminator) [known gap: iOS CI 2026-09-25 (run 36200720842): no reasoning line matched among 3 (ios.reasoning.discriminator)]
 
 Guidelines:
 
@@ -8162,11 +8421,7 @@ Guidelines:
 
 | Expectation | Kind | Severity | ios | web | Guideline | Proposed fix |
 |---|---|---|---|---|---|---|
-| zebra-aef | reasoningInclude | critical | PASS (verify: was unverified) | PASS | ESVS 2020 clinical practice guidelines on the management of vascular graft and endograft infections 2020 |  |
-
-Failure details:
-
-- **zebra-aef** (ios): reasoning line found in ios.reasoning.zebra: "aorto-enteric fistula - gastrointestinal bleeding after aortic graft or aneurysm repair (a herald ble..."
+| zebra-aef | reasoningInclude | critical | PASS | PASS | ESVS 2020 clinical practice guidelines on the management of vascular graft and endograft infections 2020 |  |
 
 Guidelines:
 
@@ -8180,11 +8435,7 @@ Guidelines:
 
 | Expectation | Kind | Severity | ios | web | Guideline | Proposed fix |
 |---|---|---|---|---|---|---|
-| zebra-conn | reasoningInclude | quality | PASS (verify: was unverified) | PASS | The management of primary aldosteronism: case detection, diagnosis, and treatment 2016 |  |
-
-Failure details:
-
-- **zebra-conn** (ios): reasoning line found in ios.reasoning.zebra: "primary aldosteronism (conn's syndrome) - hypertension with hypokalaemia (spontaneous or on a diureti..."
+| zebra-conn | reasoningInclude | quality | PASS | PASS | The management of primary aldosteronism: case detection, diagnosis, and treatment 2016 |  |
 
 Guidelines:
 
@@ -8198,11 +8449,7 @@ Guidelines:
 
 | Expectation | Kind | Severity | ios | web | Guideline | Proposed fix |
 |---|---|---|---|---|---|---|
-| zebra-eoe | reasoningInclude | quality | PASS (verify: was unverified) | PASS | Updated international consensus diagnostic criteria for eosinophilic esophagitis (AGREE) 2018 |  |
-
-Failure details:
-
-- **zebra-eoe** (ios): reasoning line found in ios.reasoning.zebra: "eosinophilic oesophagitis - dysphagia or food bolus impaction with eosinophilia or atopy (dysphagia + eos..."
+| zebra-eoe | reasoningInclude | quality | PASS | PASS | Updated international consensus diagnostic criteria for eosinophilic esophagitis (AGREE) 2018 |  |
 
 Guidelines:
 
@@ -8216,11 +8463,7 @@ Guidelines:
 
 | Expectation | Kind | Severity | ios | web | Guideline | Proposed fix |
 |---|---|---|---|---|---|---|
-| zebra-hili | reasoningInclude | quality | PASS (verify: was unverified) | PASS | EASL Clinical Practice Guidelines: drug-induced liver injury 2019 |  |
-
-Failure details:
-
-- **zebra-hili** (ios): reasoning line found in ios.reasoning.zebra: "herb- or supplement-induced liver injury - unexplained raised liver tests or jaundice with herbal products, bush teas or..."
+| zebra-hili | reasoningInclude | quality | PASS | PASS | EASL Clinical Practice Guidelines: drug-induced liver injury 2019 |  |
 
 Guidelines:
 
@@ -8234,11 +8477,7 @@ Guidelines:
 
 | Expectation | Kind | Severity | ios | web | Guideline | Proposed fix |
 |---|---|---|---|---|---|---|
-| zebra-phaeo | reasoningInclude | quality | PASS (verify: was unverified) | PASS | Pheochromocytoma and paraganglioma: an Endocrine Society clinical practice guideline 2014 |  |
-
-Failure details:
-
-- **zebra-phaeo** (ios): reasoning line found in ios.reasoning.zebra: "phaeochromocytoma / paraganglioma - episodic headache, sweating and palpitations, with hypertensi..."
+| zebra-phaeo | reasoningInclude | quality | PASS | PASS | Pheochromocytoma and paraganglioma: an Endocrine Society clinical practice guideline 2014 |  |
 
 Guidelines:
 
@@ -8252,11 +8491,7 @@ Guidelines:
 
 | Expectation | Kind | Severity | ios | web | Guideline | Proposed fix |
 |---|---|---|---|---|---|---|
-| zebra-htg | reasoningInclude | quality | PASS (verify: was unverified) | PASS | American College of Gastroenterology guidelines: management of acute pancreatitis 2024 |  |
-
-Failure details:
-
-- **zebra-htg** (ios): reasoning line found in ios.reasoning.zebra: "hypertriglyceridaemia-induced pancreatitis - recurrent acute pancreatitis without gallstones or alcohol excess (fasting tr..."
+| zebra-htg | reasoningInclude | quality | PASS | PASS | American College of Gastroenterology guidelines: management of acute pancreatitis 2024 |  |
 
 Guidelines:
 
@@ -8358,7 +8593,7 @@ Permutation of `renal-colic-typical`.
 
 Failure details:
 
-- **mgmt-paracetamol-opioid** (web): no management item matched among 5 (web.clinicalPrompts) [known gap: Web: No analgesia at all: the Assessment panel now follows the confirmed diagnosis (O26.83, no protocol) instead of the PANE top (renal colic 0.47), so the renal colic plan is no longer shown. Before the fix the only analgesia was diclofenac first-line. \| iOS CI 2026-09-25 (run 36169134350, database mode): no management item matched among 6 (ios.pipeline.actions, ios.soap.plan)]
+- **mgmt-paracetamol-opioid** (web): no management item matched among 9 (web.clinicalPrompts, web.decisions, web.decisions.shift) [known gap: Web: No analgesia at all: the Assessment panel now follows the confirmed diagnosis (O26.83, no protocol) instead of the PANE top (renal colic 0.47), so the renal colic plan is no longer shown. Before the fix the only analgesia was diclofenac first-line. \| iOS CI 2026-09-25 (run 36169134350, database mode): no management item matched among 6 (ios.pipeline.actions, ios.soap.plan)]
 
 Guidelines:
 
@@ -10346,13 +10581,13 @@ Guidelines:
 | `anal-fissure-chronic-refractory` | mgmt-continence-assessment | ios | quality | known gap | no management item matched among 16 (ios.pipeline.actions, ios.radiation.plan, ios.radiation.followUp, ios.soap.plan) [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): no management item matched among 12 (ios.pipeline.actions, |
 | `aortoenteric-fistula-herald-bleed` | inv-blood-cultures | ios | quality | known gap | no investigation matched among 11 (ios.pipeline.decisions, ios.pipeline.voi, ios.pipeline.actions, ios.radiation) [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): no investigation matched among 11 (ios.pipeline.decisions, ios |
 | `appendicitis-adult-typical` | score-alvarado-autofill | ios | quality | known gap | expected ≥ 7; got ios.autofill.alvarado=3 (Score 3/10 — appendicitis unlikely) [known gap: iOS auto-fill reads only temperature and WBC (3/10); history and examination items stay unticked.] |
-| `appendicitis-antibiotics-first-coda` | mgmt-antibiotics-first-option | ios | quality | known gap | no management item matched among 33 (ios.pipeline.decisions, ios.pipeline.actions, ios.radiation.plan, ios.radiation.followUp, ios.scoreCalculator.air, ios.soap.plan) [known gap: Web: No antibiotics-first option anywhere for CT-confirmed un |
-| `appendicitis-appendicolith` | mgmt-appendicolith-caution | ios | quality | known gap | no management item matched among 22 (ios.pipeline.decisions, ios.pipeline.actions, ios.radiation.plan, ios.radiation.followUp, ios.soap.plan) [known gap: Web: Appendicolith appears only as a CT finding to look for; no statement links it to  |
+| `appendicitis-antibiotics-first-coda` | mgmt-antibiotics-first-option | ios | quality | known gap | no management item matched among 34 (ios.pipeline.decisions, ios.pipeline.actions, ios.radiation.plan, ios.radiation.followUp, ios.scoreCalculator.air, ios.soap.plan) [known gap: Web: No antibiotics-first option anywhere for CT-confirmed un |
+| `appendicitis-appendicolith` | mgmt-appendicolith-caution | ios | quality | known gap | no management item matched among 23 (ios.pipeline.decisions, ios.pipeline.actions, ios.radiation.plan, ios.radiation.followUp, ios.soap.plan) [known gap: Web: Appendicolith appears only as a CT finding to look for; no statement links it to  |
 | `appendicitis-elderly-atypical` | mnm-caecal-neoplasm | ios | quality | known gap | not in top 5 of ios.bayes: 1. Acute Appendicitis \| 2. Small Bowel Obstruction \| 3. Acute Diverticulitis \| 4. Acute Mesenteric Ischaemia \| 5. Obturator Hernia [known gap: Not in PANE top 3. iOS: fallback mode: the built-in abdominalPain  |
 | `appendicitis-elderly-atypical` | mgmt-no-discharge-on-low-score | ios | quality | known gap | forbidden management item present in ios.scoreCalculator.air: "...appendicitis unlikely. consider observation, analgesia, and discharge with safety-net advice. d/w senior if clinical picture worsens." (+1 more) [known gap: iOS AIR calculato |
 | `appendicitis-paediatric-9y` | score-rec-pas | ios | quality | known gap | pas not recommended; recommended: alvarado, air, ripasa, news2, rcri, asa, mews [known gap: Web: Web CDS has no PAS (or AIR) rule; Alvarado is suggested in a 9-year-old. \| iOS CI 2026-09-25 (run 36169134350, database mode): pas not recomme |
-| `appendicitis-perforated-abscess` | mgmt-percutaneous-drainage | ios | quality | known gap | no management item matched among 24 (ios.pipeline.decisions, ios.pipeline.actions, ios.radiation.plan, ios.radiation.followUp, ios.soap.plan) [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): no management item matched among 1 |
-| `appendicitis-perforated-abscess` | mgmt-interval-colon-evaluation | ios | quality | known gap | no management item matched among 24 (ios.pipeline.decisions, ios.pipeline.actions, ios.radiation.plan, ios.radiation.followUp, ios.soap.plan) [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): no management item matched among 1 |
+| `appendicitis-perforated-abscess` | mgmt-percutaneous-drainage | ios | quality | known gap | no management item matched among 25 (ios.pipeline.decisions, ios.pipeline.actions, ios.radiation.plan, ios.radiation.followUp, ios.soap.plan) [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): no management item matched among 1 |
+| `appendicitis-perforated-abscess` | mgmt-interval-colon-evaluation | ios | quality | known gap | no management item matched among 25 (ios.pipeline.decisions, ios.pipeline.actions, ios.radiation.plan, ios.radiation.followUp, ios.soap.plan) [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): no management item matched among 1 |
 | `appendicitis-pregnant-t2` | mnm-obstetric-cause | ios | quality | known gap | not in top 5 of ios.bayes: 1. Acute Appendicitis \| 2. Urinary Tract Infection (Cystitis) \| 3. Small Bowel Obstruction \| 4. Ectopic Pregnancy \| 5. Acute Pyelonephritis [known gap: PANE has no obstetric disease nodes in the top 3. iOS: fa |
 | `appendicitis-pregnant-t2` | inv-no-unqualified-ct | ios | quality | known gap | forbidden investigation present in ios.pipeline.decisions: "ct abdomen/pelvis with contrast if uss equivocal (sensitivity 94%, specificity 95%..." (+1 more) [known gap: CT with IV contrast is suggested without a pregnancy qualifier.] |
 | `appendicitis-score-intermediate-band` | score-rec-aas | ios | quality | known gap | aas not recommended; recommended: alvarado, air, ripasa, news2, rcri, asa, mews [known gap: Web: Neither platform implements the Adult Appendicitis Score. \| iOS CI 2026-09-25 (run 36169134350, database mode): aas not recommended; recommend |
@@ -10400,10 +10635,10 @@ Guidelines:
 | `choledocholithiasis-elderly-warfarin` | mnm-malignant-obstruction | ios | quality | known gap | not in top 5 of ios.bayes: 1. Choledocholithiasis \| 2. Ascending Cholangitis \| 3. Liver Cirrhosis (Decompensated) \| 4. Acute Pancreatitis \| 5. Acute Appendicitis [known gap: PANE top 3: choledocholithiasis, inguinal hernia, cholecystiti |
 | `crc-young-onset-34` | mnm-ibd | ios | quality | known gap | not in top 5 of ios.bayes: 1. Inguinal Hernia \| 2. Perianal Abscess \| 3. Colorectal Carcinoma \| 4. Upper GI Bleeding (Peptic Ulcer) \| 5. Ischaemic Colitis [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): not in top 5 of i |
 | `crohns-ileocaecal-abscess` | dx-crohn-top3 | ios | quality | known gap | not in top 3 of ios.bayes: 1. Acute Appendicitis \| 2. Skin Abscess \| 3. Typhoid Fever \| 4. Infective Endocarditis \| 5. Acute Pancreatitis [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): not in top 3 of ios.bayes: 1. Acut |
-| `crohns-ileocaecal-abscess` | flag-immunosuppressed | ios | quality | known gap | no red flag matched among 10 (ios.visitRisk, ios.allergyBanner, ios.triage, ios.radiation.redFlags, ios.pipeline.alert) [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): no red flag matched among 8 (ios.visitRisk, ios.allergyB |
-| `crohns-ileocaecal-abscess` | mgmt-resection-plan | ios | quality | known gap | no management item matched among 17 (ios.pipeline.decisions, ios.pipeline.actions, ios.radiation.plan, ios.radiation.followUp, ios.soap.plan) [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): no management item matched among 1 |
+| `crohns-ileocaecal-abscess` | flag-immunosuppressed | ios | quality | known gap | no red flag matched among 9 (ios.visitRisk, ios.allergyBanner, ios.triage, ios.radiation.redFlags, ios.pipeline.alert) [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): no red flag matched among 8 (ios.visitRisk, ios.allergyBa |
+| `crohns-ileocaecal-abscess` | mgmt-resection-plan | ios | quality | known gap | no management item matched among 18 (ios.pipeline.decisions, ios.pipeline.actions, ios.radiation.plan, ios.radiation.followUp, ios.soap.plan) [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): no management item matched among 1 |
 | `dfu-ischaemic-calcified-abpi` | flag-incompressible | ios | quality | known gap | no red flag matched among 7 (ios.visitRisk, ios.allergyBanner, ios.triage, ios.acuity) [known gap: The arterial-ulcer protocol mentions TBI in investigations but no red flag says the ABPI of 1.4 is falsely reassuring. \| iOS CI 2026-09-25 ( |
-| `diverticulitis-uncomplicated-outpatient` | mgmt-selective-antibiotics | ios | quality | known gap | no management item matched among 17 (ios.pipeline.decisions, ios.pipeline.actions, ios.radiation.plan, ios.radiation.referral, ios.radiation.followUp, ios.soap.plan) [known gap: Web: No antibiotic-free option; protocol and variant prescribe |
+| `diverticulitis-uncomplicated-outpatient` | mgmt-selective-antibiotics | ios | quality | known gap | no management item matched among 16 (ios.pipeline.decisions, ios.pipeline.actions, ios.radiation.plan, ios.radiation.referral, ios.radiation.followUp, ios.soap.plan) [known gap: Web: No antibiotic-free option; protocol and variant prescribe |
 | `dka-type1-young-typical` | mgmt-continue-basal-insulin | ios | quality | known gap | no management item matched among 19 (ios.pipeline.actions, ios.radiation.plan, ios.radiation.followUp, ios.soap.plan) [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): no management item matched among 17 (ios.pipeline.actions, |
 | `dvt-wells-likely` | flag-oestrogen | ios | quality | known gap | no red flag matched among 6 (ios.visitRisk, ios.allergyBanner, ios.triage, ios.radiation.redFlags, ios.radiation.urgencyNote) [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): no red flag matched among 6 (ios.visitRisk, ios.al |
 | `dyspepsia-young-no-alarm-test-and-treat` | inv-hpylori-non-invasive | ios | quality | known gap | no investigation output on ios [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): no investigation output on ios] |
@@ -10454,7 +10689,7 @@ Guidelines:
 | `paed-nai-duodenal-haematoma` | pathway-trauma | ios | quality | known gap | recommended firstVisit (No previous visits on record); expected trauma [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): recommended firstVisit (No previous visits on record); expected trauma] |
 | `painless-jaundice-pancreatic-head` | mnm-cholangiocarcinoma-ampullary | ios | quality | known gap | not in top 5 of ios.bayes: 1. Pancreatic Carcinoma \| 2. Non-Alcoholic Fatty Liver Disease (NAFLD/NASH) \| 3. Hepatitis B (Chronic Active) \| 4. Ascending Cholangitis \| 5. Acute Pancreatitis [known gap: iOS CI 2026-09-25 (run 36169134350,  |
 | `pancreatitis-gallstone-mild` | mgmt-no-routine-nbm | ios | quality | known gap | forbidden management item present in ios.pipeline.decisions: "...ine - ignore old advice); anti-emetic: ondansetron 4 mg iv; nil by mouth initially (clear fluids once pain improves - within 24-48 h in mild cases); oxy..." (+1 more) [known g |
-| `pancreatitis-severe-organ-failure` | mgmt-abdominal-compartment | ios | quality | known gap | no management item matched among 21 (ios.pipeline.decisions, ios.pipeline.actions, ios.radiation.plan, ios.radiation.referral, ios.radiation.followUp, ios.soap.plan) [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): no managem |
+| `pancreatitis-severe-organ-failure` | mgmt-abdominal-compartment | ios | quality | known gap | no management item matched among 22 (ios.pipeline.decisions, ios.pipeline.actions, ios.radiation.plan, ios.radiation.referral, ios.radiation.followUp, ios.soap.plan) [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): no managem |
 | `parathyroid-primary-hpt-surgical-indications` | dx-hyperparathyroid-top3 | ios | quality | known gap | not in top 3 of ios.bayes: 1. Hypercalcaemia \| 2. Obstructive Sleep Apnoea \| 3. Iron Deficiency Anaemia \| 4. Acute Kidney Injury \| 5. Malignant Hypercalcaemia; also in ios.pipeline#1 [known gap: iOS CI 2026-09-25 (run 36169134350, datab |
 | `perianal-abscess-diabetic-cellulitis` | mnm-nsti | ios | quality | known gap | not in top 5 of ios.bayes: 1. Skin Abscess \| 2. Perianal Abscess \| 3. Cellulitis \| 4. Infective Endocarditis \| 5. Acute Pyelonephritis [known gap: PANE does not carry necrotising infection for diabetic perianal sepsis (top 3: perianal a |
 | `perianal-abscess-hiv` | mnm-anal-neoplasia | ios | quality | known gap | not in top 5 of ios.bayes: 1. Skin Abscess \| 2. Perianal Abscess \| 3. Inguinal Hernia \| 4. Deep Vein Thrombosis \| 5. Incarcerated / Strangulated Hernia [known gap: Anal cancer is not a PANE disease; symptom inference ranks anal SCC #2.  |
@@ -10482,12 +10717,12 @@ Guidelines:
 | `pilonidal-abscess-acute` | mgmt-no-acute-excision | ios | quality | known gap | forbidden management item present in ios.radiation.plan: "excision with limberg flap or karydakis procedure - best outcomes, low recurrence" [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): forbidden management item present i |
 | `ppu-elderly-steroids-masked` | score-rec-qsofa | ios | quality | known gap | qsofa not recommended; recommended: (none) [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): qsofa not recommended; recommended: (none)] |
 | `ppu-elderly-steroids-masked` | score-qsofa-autofill | ios | quality | known gap | expected = 3; got ios.autofill.qsofa=2 (qSOFA 2/3 — qSOFA ≥2 — assess for sepsis / deterioration) [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): expected = 3; got ios.autofill.qsofa=2 (qSOFA 2/3 — qSOFA ≥2 — assess for seps |
-| `ppu-perforated-peptic-ulcer` | flag-nsaid | ios | quality | known gap | no red flag matched among 13 (ios.visitRisk, ios.allergyBanner, ios.triage, ios.radiation.redFlags, ios.radiation.urgencyNote, ios.textParser, ios.pipeline.alert, ios.acuity) [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): n |
+| `ppu-perforated-peptic-ulcer` | flag-nsaid | ios | quality | known gap | no red flag matched among 15 (ios.visitRisk, ios.allergyBanner, ios.triage, ios.radiation.redFlags, ios.radiation.urgencyNote, ios.textParser, ios.pipeline.alert, ios.acuity) [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): n |
 | `ppu-perforated-peptic-ulcer` | score-rec-boey | ios | quality | known gap | boey not recommended; recommended: glasgow-blatchford, wells-pe, rockall, ios:perc, aims65, spesi, ios:forrest, ios:revisedGeneva, news2, mews [known gap: Web: No Boey or PULP score on either platform. \| iOS CI 2026-09-25 (run 36169134350, |
-| `reasoning-closure-gastritis-troponin` | alert-favours-acs | ios | critical | unverified | no reasoning line output from web.reasoning.alert, ios.reasoning.alert on ios |
-| `reasoning-closure-gastroenteritis-dka` | alert-favours-dka | ios | critical | unverified | no reasoning line output from web.reasoning.alert, ios.reasoning.alert on ios |
-| `reasoning-next-test-epigastric-lipase` | no-ct-first | ios | quality | unverified | forbidden reasoning line present in ios.reasoning.discriminator: "appendicitis on ultrasound or ct [advanced] - if positive: acute appendicitis 8% → 49%, acute pancreatitis 23% → 13%. if ne..." |
-| `reasoning-next-test-rif-pain-woman` | next-test-pregnancy | ios | quality | unverified | no reasoning line matched among 3 (ios.reasoning.discriminator) |
+| `reasoning-closure-gastritis-troponin` | alert-favours-acs | ios | critical | known gap | no reasoning line output from web.reasoning.alert, ios.reasoning.alert on ios [known gap: iOS CI 2026-09-25 (run 36200720842): no reasoning line output from web.reasoning.alert, ios.reasoning.alert on ios] |
+| `reasoning-closure-gastroenteritis-dka` | alert-favours-dka | ios | critical | known gap | no reasoning line output from web.reasoning.alert, ios.reasoning.alert on ios [known gap: iOS CI 2026-09-25 (run 36200720842): no reasoning line output from web.reasoning.alert, ios.reasoning.alert on ios] |
+| `reasoning-next-test-epigastric-lipase` | no-ct-first | ios | quality | known gap | forbidden reasoning line present in ios.reasoning.discriminator: "appendicitis on ultrasound or ct [advanced] - if positive: acute appendicitis 8% → 49%, acute pancreatitis 23% → 13%. if ne..." [known gap: iOS CI 2026-09-25 (run 36200720842 |
+| `reasoning-next-test-rif-pain-woman` | next-test-pregnancy | ios | quality | known gap | no reasoning line matched among 3 (ios.reasoning.discriminator) [known gap: iOS CI 2026-09-25 (run 36200720842): no reasoning line matched among 3 (ios.reasoning.discriminator)] |
 | `rectal-bleeding-young-haemorrhoidal` | dx-haemorrhoids-top3 | ios | quality | known gap | not in top 3 of ios.bayes: 1. Anxiety Disorder \| 2. Medication Side Effect / Adverse Drug Reaction \| 3. Acute Kidney Injury \| 4. Preventive / Screening Visit \| 5. Hypertensive Emergency [known gap: iOS CI 2026-09-25 (run 36169134350, da |
 | `rectal-prolapse-incarcerated` | dx-prolapse-top3 | ios | quality | known gap | not in top 3 of ios.bayes: 1. Fournier's Gangrene \| 2. Perianal Abscess \| 3. Skin Abscess \| 4. Femoral Hernia \| 5. Ischaemic Colitis [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): not in top 3 of ios.bayes: 1. Fournier' |
 | `renal-colic-solitary-kidney-anticoagulated` | mgmt-no-conservative-met | ios | quality | known gap | forbidden management item present in ios.radiation.plan: "alpha blocker (met - medical expulsive therapy):" [known gap: Web: MET (tamsulosin × 4 weeks) is offered for an anuric solitary kidney. \| iOS CI 2026-09-25 (run 36169134350, databas |
@@ -10616,7 +10851,7 @@ Guidelines:
 | `pharyngeal-pouch-elderly` | mnm-pouch | web | quality | known gap | not in top 3 of web.pane: 1. Oesophageal Carcinoma \| 2. Oesophageal Stricture (Benign) \| 3. Achalasia [known gap: No pharyngeal pouch / Zenker node in PANE or symptom inference; site "Upper neck" maps to neck_lump. \| iOS CI 2026-09-25 (r |
 | `ppu-perforated-peptic-ulcer` | score-rec-boey | web | quality | known gap | boey not recommended; recommended: alvarado, ranson, qsofa, news2, web:gerdq [known gap: Web: No Boey or PULP score on either platform. \| iOS CI 2026-09-25 (run 36169134350, database mode): boey not recommended; recommended: glasgow-blatch |
 | `rectal-bleeding-young-haemorrhoidal` | level-routine-or-priority | web | quality | known gap | web.triage: emergency (acuity=urgent, action=emergency_now, score=65); expected ≤ priority [known gap: Web adaptiveTriage has no negation handling and treats any "bleed/bleeding" as an urgent red flag (RED_FLAGS "GI or other bleeding" → eme |
-| `renal-colic-pregnant` | mgmt-paracetamol-opioid | web | quality | known gap | no management item matched among 5 (web.clinicalPrompts) [known gap: Web: No analgesia at all: the Assessment panel now follows the confirmed diagnosis (O26.83, no protocol) instead of the PANE top (renal colic 0.47), so the renal colic pla |
+| `renal-colic-pregnant` | mgmt-paracetamol-opioid | web | quality | known gap | no management item matched among 9 (web.clinicalPrompts, web.decisions, web.decisions.shift) [known gap: Web: No analgesia at all: the Assessment panel now follows the confirmed diagnosis (O26.83, no protocol) instead of the PANE top (renal |
 | `sbo-virgin-abdomen` | mnm-neoplasm | web | quality | known gap | not in top 3 of web.pane: 1. Bowel Obstruction \| 2. Obturator Hernia \| 3. Small Bowel Obstruction — Adhesions [known gap: Web: PANE top 3: bowel obstruction, cholecystitis, appendicitis, although weight_loss was extracted; PANE has no sma |
 | `trauma-paediatric-nai-bruising` | mnm-nai | web | quality | known gap | not in top 3 of web.pane: 1. Rib Fractures \| 2. Traumatic Brain Injury \| 3. Intussusception [known gap: No engine has non-accidental injury / child maltreatment as a diagnosis. \| iOS CI 2026-09-25 (run 36169134350, database mode): not in |
 | `uc-acute-severe-truelove-witts` | score-rec-truelove-witts | web | quality | known gap | truelove-witts not recommended; recommended: alvarado, tg18-cholangitis, ranson, qsofa, news2, rockall [known gap: No Truelove-Witts (or Oxford day-3) calculator or CDS rule on web; CDS suggests Alvarado, TG18 cholangitis and Ranson. \| iOS |
