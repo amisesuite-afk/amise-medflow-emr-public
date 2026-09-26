@@ -139,9 +139,6 @@
           "guidelineRefs": [
             "nice-ng12"
           ],
-          "unverified": [
-            "ios"
-          ],
           "note": "Cough frame chips: haemoptysis, weight loss, night sweats, productive, >3 weeks (cough pool)."
         },
         {
@@ -191,9 +188,10 @@
           "guidelineRefs": [
             "nice-ng12"
           ],
-          "unverified": [
+          "knownGap": [
             "ios"
-          ]
+          ],
+          "knownGapNote": "iOS CI (run 36221770637): no red flag matched among 5 (ios.visitRisk, ios.allergyBanner, ios.triage)"
         }
       ]
     }

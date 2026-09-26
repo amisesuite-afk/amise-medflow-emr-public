@@ -78,10 +78,7 @@
           "match": [
             "gastroenteritis"
           ],
-          "k": 3,
-          "unverified": [
-            "ios"
-          ]
+          "k": 3
         }
       ]
     },

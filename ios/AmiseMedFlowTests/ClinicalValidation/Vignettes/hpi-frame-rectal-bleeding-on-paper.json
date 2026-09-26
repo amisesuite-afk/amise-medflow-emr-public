@@ -123,10 +123,11 @@
           "guidelineRefs": [
             "ascrs-haem-2024"
           ],
-          "unverified": [
+          "note": "Bleeding frame: bright red, on the paper (web pr_bleeding).",
+          "knownGap": [
             "ios"
           ],
-          "note": "Bleeding frame: bright red, on the paper (web pr_bleeding)."
+          "knownGapNote": "iOS CI (run 36221770637): not in top 3 of ios.bayes: 1. Anxiety Disorder | 2. Medication Side Effect / Adverse Drug Reaction | 3. Perianal Abscess | 4. Femoral Hernia | 5. Upper GI Bleeding (Peptic Ulcer)"
         }
       ]
     }

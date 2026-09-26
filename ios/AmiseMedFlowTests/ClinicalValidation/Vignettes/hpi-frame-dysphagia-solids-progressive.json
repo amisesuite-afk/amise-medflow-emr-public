@@ -134,9 +134,6 @@
           "guidelineRefs": [
             "nice-ng12"
           ],
-          "unverified": [
-            "ios"
-          ],
           "note": "Dysphagia frame: solids then liquids, progressive (web dysphagia_progressive, dysphagia_solids)."
         }
       ]
@@ -153,9 +150,6 @@
           ],
           "guidelineRefs": [
             "nice-ng12"
-          ],
-          "unverified": [
-            "ios"
           ]
         }
       ]

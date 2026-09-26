@@ -124,9 +124,6 @@
           "guidelineRefs": [
             "ers-cough-2020"
           ],
-          "unverified": [
-            "ios"
-          ],
           "note": "Cough history chips: timing \">3 weeks\", \"After starting ACEi\", character \"Dry\" (DiagnosticDatabase cough pool)."
         },
         {

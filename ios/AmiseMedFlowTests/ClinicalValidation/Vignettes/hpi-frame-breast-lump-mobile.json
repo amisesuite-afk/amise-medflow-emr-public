@@ -123,9 +123,6 @@
           "guidelineRefs": [
             "nice-ng12"
           ],
-          "unverified": [
-            "ios"
-          ],
           "note": "Breast frame: smooth, mobile, non-tender lump (web breast_lump, breast_lump_mobile)."
         }
       ],
@@ -141,10 +138,11 @@
           "guidelineRefs": [
             "nice-ng12"
           ],
-          "unverified": [
+          "note": "Triple assessment still applies.",
+          "knownGap": [
             "ios"
           ],
-          "note": "Triple assessment still applies."
+          "knownGapNote": "iOS CI (run 36221770637): not in top 5 of ios.bayes: 1. Fibroadenoma / Benign Breast Lump | 2. Incisional Hernia | 3. Lymphadenopathy (Lymphoma / Metastatic / Reactive) | 4. Femoral Hernia | 5. Deep Vein Thrombosis; also in ios.triage#3"
         }
       ]
     }

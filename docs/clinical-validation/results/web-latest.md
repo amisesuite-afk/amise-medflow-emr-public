@@ -1,6 +1,6 @@
 # Clinical validation — web engines (latest local run)
 
-Generated 2026-09-26T05:44:03.941Z.
+Generated 2026-09-26T06:23:13.562Z.
 
 - Harness clinval-web/1; 454 vignettes from ios/AmiseMedFlowTests/ClinicalValidation/Vignettes/.
 

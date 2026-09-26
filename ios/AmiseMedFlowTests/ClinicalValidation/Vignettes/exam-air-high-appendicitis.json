@@ -98,10 +98,7 @@
           "match": [
             "appendic"
           ],
-          "k": 1,
-          "unverified": [
-            "ios"
-          ]
+          "k": 1
         }
       ]
     },
