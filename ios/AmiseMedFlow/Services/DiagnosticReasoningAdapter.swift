@@ -9,10 +9,23 @@
 // check and the longitudinal view. Web twin: artifacts/dashboard/src/lib/diagnostic-reasoning.ts
 // (PANE). Nothing here writes to the record.
 //
-// Weights: LR = exp(logLR / 5) (DiagnosticDatabase.json stores round(ln LR × 5)). The database
-// stores likelihood ratios, not sensitivities, so for the information gain a finding is assumed
-// present in `backgroundRate` (5 %, the web's DEFAULT_BASE_RATE) of patients without the
-// diagnosis: P(finding | diagnosis) = min(0.95, 0.05 × LR). Needs sign-off.
+// Weights: the likelihood ratio the database states for a curated feature (`likelihoodRatio`),
+// else LR = exp(logLR / 5) (DiagnosticDatabase.json stores round(ln LR × 5): a stated LR 1.5 is
+// stored as 2, and exp(2 / 5) = 1.49 fell just below the "supports" threshold of 1.5, so half the
+// visits suggested a diagnostic time-out). The database stores likelihood ratios, not
+// sensitivities, so for the information gain a finding is assumed present in `backgroundRate`
+// (5 %, the web's DEFAULT_BASE_RATE) of patients without the diagnosis: P(finding | diagnosis) =
+// min(0.95, 0.05 × LR). Needs sign-off.
+//
+// Shared rules (DiagnosticReasoningRules.swift, clinical-content/rules/diagnostic-reasoning-rules.json,
+// the same file and vectors as the web): the working diagnosis is found among every scored
+// candidate, not only the five shown (a label match beats an unspecific ICD-10 code); diagnoses
+// of its family are compatible; "the record favours X" needs X to share evidence with a supported
+// working diagnosis and not to be named in it; a single contradicting finding alerts at LR <= 0.2.
+// iOS evidence: one finding fired by several candidates under the same label is one finding, and
+// every candidate's "presenting complaint" feature is one piece of evidence (evidence group).
+// Time-out: findings a coexisting state (sepsis, AKI, electrolyte disorders) explains are
+// explained; history and score (decision-rule) findings are context.
 
 import Foundation
 
@@ -22,8 +35,11 @@ enum DiagnosticReasoningAdapter {
     /// A feature with a stored weight of 8 or more (LR ≈ 5) is cardinal for its candidate.
     static let cardinalMinLogLR = 8
     static let topK = 3
-    /// Syndromes and states that accompany other diagnoses (never the alternative an alert points to).
-    static let coexistingTerms = ["sepsis", "septic", "acute kidney injury", "hyponatr", "hyperkal", "hypercalc", "hypoglyc"]
+    /// Syndromes and states that accompany other diagnoses (never the alternative an alert points
+    /// to): diagnostic-reasoning-rules.json `coexisting.nameTerms`; this list only when the rules
+    /// file is unavailable (diagnostic-reasoning-parity.test.ts keeps the two equal).
+    static let fallbackCoexistingTerms = ["sepsis", "septic", "acute kidney injury", "hyponatr", "hyperkal", "hypercalc", "hypoglyc"]
+    static var coexistingTerms: [String] { DiagnosticReasoningRules.ruleFile?.coexisting.nameTerms ?? fallbackCoexistingTerms }
     /// Keys whose features can be offered as the next question, sign or test.
     static let probeKeys: Set<String> = ["finding", "inv", "investigations", "exam", "exam_abdo", "exam_general", "exam_cvs",
                                          "ct_abdomen", "ultrasound", "uss", "cxr", "mri", "ecg", "ogd", "us", "ct", "fbc",
@@ -66,6 +82,11 @@ enum DiagnosticReasoningAdapter {
 
     static func lr(_ logLR: Int) -> Double { exp(Double(logLR) / BayesianDiagnosisEngine.logUnitsPerNat) }
 
+    /// The feature's likelihood ratio: the one the database states, else exp(logLR / 5).
+    static func lr(_ f: BayesianDiagnosisEngine.FiredFeature) -> Double { f.statedLR ?? lr(f.logLR) }
+
+    static func lr(_ f: BayesianDiagnosisEngine.Candidate.Feature) -> Double { f.likelihoodRatio ?? lr(f.logLR) }
+
     static func pGiven(lrPlus: Double) -> Double { min(0.95, max(0.005, backgroundRate * lrPlus)) }
 
     static func lrAbsent(fromPlus lrPlus: Double) -> Double {
@@ -91,8 +112,22 @@ enum DiagnosticReasoningAdapter {
 
     // MARK: - Input
 
+    /// "Upper abdominal pain as the presenting complaint" and "upper abdominal pain as the
+    /// presenting complaint" are one finding: lower case, letters and digits only.
+    static func labelKey(_ label: String) -> String {
+        label.lowercased()
+            .components(separatedBy: CharacterSet.alphanumerics.inverted)
+            .filter { !$0.isEmpty }
+            .joined(separator: " ")
+    }
+
     /// Hypotheses (top 3, then the working diagnosis) and the findings and weights they fired.
-    static func buildInput(_ shown: [Result]) -> (input: DiagnosticReasoning.Input, historyFindings: Set<String>) {
+    /// One finding fired by several candidates under the same label is one finding (its id is the
+    /// first feature's key and value); examination signs and decision rules keep their own ids.
+    /// `historyFindings`: history and score findings (context, not counted by the time-out);
+    /// `complaintFindings`: the candidates' "presenting complaint" features (one evidence group).
+    static func buildInput(_ shown: [Result]) -> (input: DiagnosticReasoning.Input, historyFindings: Set<String>,
+                                                   complaintFindings: Set<String>) {
         var hypotheses: [DiagnosticReasoning.Hypothesis] = []
         var seenIds = Set<String>()
         for r in shown {
@@ -107,7 +142,19 @@ enum DiagnosticReasoningAdapter {
         var labels: [String: String] = [:]
         var status: [String: DiagnosticReasoning.FindingStatus] = [:]
         var historyOnly: [String: Bool] = [:]
+        var complaint = Set<String>()
         var weights: [String: [String: DiagnosticReasoning.Weight]] = [:]
+        var canonical: [String: String] = [:]
+
+        func idFor(key: String, value: String, label: String) -> String {
+            let own = findingId(key: key, value: value)
+            if key == "sign" || key == "rule" { return own }
+            let k = labelKey(label)
+            if k.isEmpty { return own }
+            if let id = canonical[k] { return id }
+            canonical[k] = own
+            return own
+        }
 
         func note(_ id: String, _ label: String, _ st: DiagnosticReasoning.FindingStatus, history: Bool) {
             if labels[id] == nil { order.append(id); labels[id] = label }
@@ -116,35 +163,46 @@ enum DiagnosticReasoningAdapter {
             historyOnly[id] = (historyOnly[id] ?? true) && history
         }
 
+        func strength(_ w: DiagnosticReasoning.Weight) -> Double { abs(log(w.lrPresent)) + abs(log(w.lrAbsent)) }
+
         for (i, r) in shown.enumerated() {
             let hid = hypotheses[i].id
             var w: [String: DiagnosticReasoning.Weight] = [:]
             let source = { (f: BayesianDiagnosisEngine.FiredFeature) -> String in
                 f.citation ?? "DiagnosticDatabase \(DiagnosticDatabaseInfo.current.versionText)"
             }
+            var firedIds = Set<String>()
             for f in r.firedFeatures where f.sourceKey != "demographics" && !f.label.isEmpty {
+                let weight: DiagnosticReasoning.Weight
+                let id: String
                 switch f.key {
                 case "notFinding":
-                    let id = findingId(key: f.key, value: f.value)
-                    note(id, positiveLabel(f.label), f.documentedAbsent ? .absent : .unknown, history: false)
-                    w[id] = DiagnosticReasoning.Weight(lrPresent: 1, lrAbsent: lr(f.logLR), modelled: true, cardinal: true, source: source(f))
+                    let label = positiveLabel(f.label)
+                    id = idFor(key: f.key, value: f.value, label: label)
+                    note(id, label, f.documentedAbsent ? .absent : .unknown, history: false)
+                    weight = DiagnosticReasoning.Weight(lrPresent: 1, lrAbsent: lr(f), modelled: true, cardinal: true, source: source(f))
                 default:
                     // A present observation, including a documented negative ("D-dimer negative",
                     // findingAbsent) that argues against with LR < 1.
-                    let id = findingId(key: f.key, value: f.value)
-                    note(id, f.label, .present, history: f.sourceKey == "history")
-                    let plus = lr(f.logLR)
-                    w[id] = DiagnosticReasoning.Weight(lrPresent: plus, lrAbsent: lrAbsent(fromPlus: plus), modelled: true,
-                                                       cardinal: f.baseLogLR >= cardinalMinLogLR, source: source(f))
+                    id = idFor(key: f.key, value: f.value, label: f.label)
+                    if f.key == "complaint" { complaint.insert(id) }
+                    note(id, f.label, .present, history: f.sourceKey == "history" || f.sourceKey == "score")
+                    let plus = lr(f)
+                    weight = DiagnosticReasoning.Weight(lrPresent: plus, lrAbsent: lrAbsent(fromPlus: plus), modelled: true,
+                                                        cardinal: f.baseLogLR >= cardinalMinLogLR, source: source(f))
                 }
+                firedIds.insert(id)
+                // Two features of one candidate with the same label: the stronger evidence counts.
+                if let old = w[id], strength(old) >= strength(weight) { continue }
+                w[id] = weight
             }
             // Cardinal findings of this candidate that did not fire: "expected, not recorded".
-            let firedIds = Set(r.firedFeatures.map { findingId(key: $0.key, value: $0.value) })
             for f in r.candidateFeatures where f.logLR >= cardinalMinLogLR && probeKeys.contains(f.key) {
-                let id = findingId(key: f.key, value: f.value)
+                let label = f.evidenceLabel.isEmpty ? f.value : f.evidenceLabel
+                let id = idFor(key: f.key, value: f.value, label: label)
                 if firedIds.contains(id) || w[id] != nil { continue }
-                note(id, f.evidenceLabel.isEmpty ? f.value : f.evidenceLabel, .unknown, history: false)
-                let plus = lr(f.logLR)
+                note(id, label, .unknown, history: false)
+                let plus = lr(f)
                 w[id] = DiagnosticReasoning.Weight(lrPresent: plus, lrAbsent: lrAbsent(fromPlus: plus), modelled: true, cardinal: true,
                                                    source: f.citation ?? "DiagnosticDatabase")
             }
@@ -152,7 +210,7 @@ enum DiagnosticReasoningAdapter {
         }
         let findings = order.map { DiagnosticReasoning.Finding(id: $0, label: labels[$0] ?? $0, status: status[$0] ?? .unknown) }
         let history = Set(order.filter { historyOnly[$0] == true })
-        return (DiagnosticReasoning.Input(hypotheses: hypotheses, findings: findings, weights: weights), history)
+        return (DiagnosticReasoning.Input(hypotheses: hypotheses, findings: findings, weights: weights), history, complaint)
     }
 
     // MARK: - Discriminators
@@ -170,19 +228,21 @@ enum DiagnosticReasoningAdapter {
         let top = Array(shown.prefix(topK))
         guard top.count >= 2 else { return [] }
         let recorded = Set(input.findings.filter { $0.status != .unknown }.map(\.id))
+        // A finding recorded under another candidate's wording is recorded too.
+        let recordedLabels = Set(input.findings.filter { $0.status != .unknown }.map { labelKey($0.label) })
         var order: [String] = []
         var info: [String: (label: String, key: String, value: String)] = [:]
         var pPos: [String: [Double]] = [:]
         for (i, r) in top.enumerated() {
             for f in r.candidateFeatures where f.logLR > 0 && probeKeys.contains(f.key) {
                 let id = findingId(key: f.key, value: f.value)
-                if recorded.contains(id) { continue }
+                if recorded.contains(id) || recordedLabels.contains(labelKey(f.evidenceLabel.isEmpty ? f.value : f.evidenceLabel)) { continue }
                 if info[id] == nil {
                     order.append(id)
                     info[id] = (label: f.evidenceLabel.isEmpty ? f.value : f.evidenceLabel, key: f.key, value: f.value)
                     pPos[id] = Array(repeating: backgroundRate, count: top.count)
                 }
-                pPos[id]![i] = max(pPos[id]![i], pGiven(lrPlus: lr(f.logLR)))
+                pPos[id]![i] = max(pPos[id]![i], pGiven(lrPlus: lr(f)))
             }
         }
         let priors = top.map { Double($0.probability) / 100 }
@@ -211,18 +271,19 @@ enum DiagnosticReasoningAdapter {
 
     // MARK: - Working diagnosis
 
-    /// Index of the working diagnosis among the results: same name, one name containing the other,
-    /// or the same ICD-10 category (3 characters).
+    /// Index of the working diagnosis among `results`: the same name; else the shared rule
+    /// (DiagnosisFamilies.resolveWorkingIndex: a label match that beats an unspecific ICD-10 code,
+    /// else the ICD-10 code, exact then category, most probable first); else one name containing
+    /// the other.
     static func workingIndex(_ results: [Result], name: String?, icd: String?) -> Int? {
         let n = (name ?? "").trimmingCharacters(in: .whitespacesAndNewlines).lowercased()
         guard !n.isEmpty else { return nil }
         if let i = results.firstIndex(where: { $0.name.lowercased() == n }) { return i }
-        if let i = results.firstIndex(where: { $0.name.lowercased().contains(n) || n.contains($0.name.lowercased()) }) { return i }
-        let code = (icd ?? "").replacingOccurrences(of: ".", with: "").uppercased()
-        if code.count >= 3 {
-            let head = String(code.prefix(3))
-            if let i = results.firstIndex(where: { $0.icdCode.replacingOccurrences(of: ".", with: "").uppercased().hasPrefix(head) }) { return i }
+        let nodes = results.map {
+            DiagnosisFamilies.WorkingCandidate(label: $0.name, icd10: $0.icdCode, probability: Double($0.rawLogPosterior))
         }
+        if let i = DiagnosisFamilies.resolveWorkingIndex(nodes, label: name ?? "", icdCode: icd) { return i }
+        if let i = results.firstIndex(where: { $0.name.lowercased().contains(n) || n.contains($0.name.lowercased()) }) { return i }
         return nil
     }
 
@@ -302,25 +363,45 @@ enum DiagnosticReasoningAdapter {
 
     static func report(results: [Result], patient p: Patient, now: Date = .now) -> Report {
         let top = Array(results.prefix(topK))
-        let wIdx = workingIndex(results, name: p.workingDiagnosis, icd: p.workingDiagnosisICD)
+        // The shown results, then every other scored candidate (rankedBelow, carried on the first
+        // result): a confirmed working diagnosis the engine ranks lower is still compared.
+        let shownNames = Set(results.map(\.name))
+        let all = results + results.flatMap(\.rankedBelow).filter { !shownNames.contains($0.name) }
+        let wIdx = workingIndex(all, name: p.workingDiagnosis, icd: p.workingDiagnosisICD)
         var shown = top
-        if let w = wIdx, w >= topK { shown.append(results[w]) }
+        if let w = wIdx, w >= top.count { shown.append(all[w]) }
         let built = buildInput(shown)
         let input = built.input
         let explanations = input.hypotheses.map { DiagnosticReasoning.explain(input, hypothesisId: $0.id) }
-        let workingId: String? = wIdx.map { w in w < topK ? input.hypotheses[w].id : input.hypotheses[input.hypotheses.count - 1].id }
+        let workingId: String? = wIdx.map { w in w < top.count ? input.hypotheses[w].id : input.hypotheses[input.hypotheses.count - 1].id }
 
         let workingLabel = (p.workingDiagnosis ?? "").trimmingCharacters(in: .whitespacesAndNewlines)
+        var familyIds = Set<String>()
+        if let wid = workingId, let wi = input.hypotheses.firstIndex(where: { $0.id == wid }) {
+            let nodes = input.hypotheses.indices.map {
+                DiagnosisFamilies.Node(id: input.hypotheses[$0].id, label: shown[$0].name, icd10: shown[$0].icdCode)
+            }
+            familyIds = DiagnosisFamilies.familyOf(nodes[wi], in: nodes)
+        }
+        let complaintFindings = built.complaintFindings
         let alerts: [DiagnosticReasoning.ClosureAlert] = workingLabel.isEmpty ? [] :
-            DiagnosticReasoning.prematureClosureAlerts(input, workingId: workingId, workingLabel: workingLabel, news2Series: news2Series(p))
+            DiagnosticReasoning.adapterClosureAlerts(
+                input, workingId: workingId, workingText: workingLabel, familyIds: familyIds, news2Series: news2Series(p),
+                evidenceGroup: { complaintFindings.contains($0) ? "presenting-complaint" : $0 })
 
-        // Time-out: unexplained symptoms, signs and results (history items are context), and repeat
-        // visits for the same complaint without a firm diagnosis.
+        // Time-out: unexplained symptoms, signs and results (history and score findings are
+        // context) that neither the leading diagnoses nor a coexisting state (sepsis, AKI,
+        // electrolyte disorders) explain; and repeat visits for the same complaint without a firm
+        // diagnosis.
+        let shownSet = Set(shown.map(\.name))
+        let coexisting = all.filter { !shownSet.contains($0.name) && isCoexisting($0.name) }
+        let explainers = buildInput(shown + coexisting).input
+        let recorded = Set(input.findings.map(\.id))
         let timeInput = DiagnosticReasoning.Input(
-            hypotheses: input.hypotheses,
-            findings: input.findings.filter { !built.historyFindings.contains($0.id) },
-            weights: input.weights)
-        let unexplained = DiagnosticReasoning.unexplainedFindings(timeInput, hypothesisIds: input.hypotheses.map(\.id))
+            hypotheses: explainers.hypotheses,
+            findings: explainers.findings.filter { recorded.contains($0.id) && !built.historyFindings.contains($0.id) },
+            weights: explainers.weights)
+        let unexplained = DiagnosticReasoning.unexplainedFindings(timeInput, hypothesisIds: explainers.hypotheses.map(\.id))
         let earlier = earlierEncounters(p, now: now)
         let same = earlier.filter { e in
             let prev = VisitContinuity.PreviousVisit(date: e.encounterDate, complaint: e.chiefComplaint,

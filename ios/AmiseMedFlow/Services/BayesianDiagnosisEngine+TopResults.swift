@@ -60,6 +60,30 @@ extension BayesianDiagnosisEngine {
         shownIdx += (Array(dontMissIdx) + Array(fillIdx)).sorted()
         let shown = shownIdx.map { withProb[$0] }
 
+        // Every other scored candidate (most probable first), carried on the first result for the
+        // diagnostic-reasoning layer: a confirmed working diagnosis the engine ranks lower is still
+        // compared with the leaders (DiagnosticReasoningAdapter). Not shown in the differential.
+        let shownSet = Set(shownIdx)
+        let rankedBelow: [DiagnosisResult] = withProb.indices
+            .filter { !shownSet.contains($0) && withProb[$0].0.logPosterior > excludedLogPosterior }
+            .map { i in
+                let (s, prob) = withProb[i]
+                return DiagnosisResult(
+                    name: s.candidate.name,
+                    icdCode: s.candidate.icd,
+                    probability: prob,
+                    evidence: Array(s.evidence.prefix(6)),
+                    evidenceSources: s.evidenceSources.mapValues { Array($0.prefix(4)) },
+                    confidence: s.pathognomicFindings.isEmpty ? .low : .high,
+                    rawLogPosterior: s.logPosterior,
+                    logGap: 0,
+                    pathognomicFindings: s.pathognomicFindings,
+                    urgency: s.candidate.urgency,
+                    firedFeatures: s.fired,
+                    candidateFeatures: s.candidate.features
+                )
+            }
+
         return shown.enumerated().map { (idx, pair) in
             let (s, prob) = pair
             // Only rank-1 carries the gap; lower ranks carry 0
@@ -87,7 +111,8 @@ extension BayesianDiagnosisEngine {
                 pathognomicFindings: s.pathognomicFindings,
                 urgency: s.candidate.urgency,
                 firedFeatures: s.fired,
-                candidateFeatures: s.candidate.features
+                candidateFeatures: s.candidate.features,
+                rankedBelow: idx == 0 ? rankedBelow : []
             )
         }
     }

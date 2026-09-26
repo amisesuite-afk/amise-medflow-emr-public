@@ -35,6 +35,10 @@ enum BayesianDiagnosisEngine {
         var firedFeatures: [FiredFeature] = []
         /// The candidate's own feature list (for its cardinal findings that did not fire).
         var candidateFeatures: [Candidate.Feature] = []
+        /// On the most probable result only: every other scored candidate below the five shown, most
+        /// probable first (the diagnostic-reasoning layer finds a confirmed working diagnosis there
+        /// when the engine ranks it lower). Empty on the other results.
+        var rankedBelow: [DiagnosisResult] = []
 
         enum Confidence {
             case certain  // logGap ≥ 25 — statistically overwhelming
@@ -4263,6 +4267,10 @@ enum BayesianDiagnosisEngine {
             var maskedBy: [String]? = nil
             /// Source of the weight (DiagnosticDatabase.json feature citation); nil for the built-in lists.
             var citation: String? = nil
+            /// The likelihood ratio the stored weight was rounded from (DiagnosticDatabase.json curated
+            /// features); nil for pool features and the built-in lists. The diagnostic-reasoning layer
+            /// shows and compares this value: a stored 2 is LR 1.5, not exp(2 / 5) = 1.49.
+            var likelihoodRatio: Double? = nil
         }
     }
 }

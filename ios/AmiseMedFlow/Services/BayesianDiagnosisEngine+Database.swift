@@ -35,6 +35,9 @@ extension BayesianDiagnosisEngine {
             /// Masking contexts (BayesianDiagnosisEngine.MaskingContext raw values) under which this
             /// negative feature does not count (DiagnosticDatabase.json 2.1.0; optional).
             let maskedBy: [String]?
+            /// The likelihood ratio the weight was made from (curated features; logLR =
+            /// round(ln(likelihoodRatio) × 5)). Optional; read by the diagnostic-reasoning layer only.
+            let likelihoodRatio: Double?
         }
 
         func toCandidate() -> Candidate {
@@ -43,7 +46,8 @@ extension BayesianDiagnosisEngine {
                       features: features.map { f in
                           Candidate.Feature(key: f.key, value: f.value,
                                             logLR: f.logLR, evidenceLabel: f.evidenceLabel,
-                                            maskedBy: f.maskedBy, citation: f.citation)
+                                            maskedBy: f.maskedBy, citation: f.citation,
+                                            likelihoodRatio: f.likelihoodRatio)
                       },
                       applicability: applicability)
         }

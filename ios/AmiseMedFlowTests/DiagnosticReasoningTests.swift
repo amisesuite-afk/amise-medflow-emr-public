@@ -131,6 +131,58 @@ private struct DRLongCase: Decodable {
     let expected: DRLongExpected
 }
 
+private struct DRNode: Decodable {
+    let id: String
+    let label: String
+    let icd10: String
+}
+
+private struct DRFamilyCase: Decodable {
+    let a: DRNode
+    let b: DRNode
+    let expected: Bool
+}
+
+private struct DRLabelCase: Decodable {
+    let label: String
+    let text: String
+    let score: Double?
+    let fullyNamed: Bool
+}
+
+private struct DRWorkingNode: Decodable {
+    let label: String
+    let icd10: String
+    let probability: Double
+}
+
+private struct DRResolveCase: Decodable {
+    let nodes: [DRWorkingNode]
+    let label: String
+    let icd: String?
+    let expected: Int?
+}
+
+private struct DRCompetesCase: Decodable {
+    let name: String
+    let input: DiagnosticReasoning.Input
+    let leaderId: String
+    let workingId: String
+    let groups: [String: String]?
+    let expected: Bool
+}
+
+private struct DRAdapterClosureCase: Decodable {
+    let name: String
+    let input: DiagnosticReasoning.Input
+    let workingId: String?
+    let workingText: String
+    let familyIds: [String]
+    let news2Series: [Int]
+    let groups: [String: String]?
+    let expected: [DRAlert]
+}
+
 private struct DRVectors: Decodable {
     let explain: [DRExplainCase]
     let informationGain: [DRGainCase]
@@ -145,6 +197,11 @@ private struct DRVectors: Decodable {
     let zebras: [DRZebraCase]
     let derivedLabTerms: [DRLabCase]
     let longitudinal: [DRLongCase]
+    let families: [DRFamilyCase]
+    let labelMatch: [DRLabelCase]
+    let resolveWorking: [DRResolveCase]
+    let competes: [DRCompetesCase]
+    let adapterClosure: [DRAdapterClosureCase]
 }
 
 final class DiagnosticReasoningTests: XCTestCase {
@@ -216,6 +273,50 @@ final class DiagnosticReasoningTests: XCTestCase {
         for c in v.closure {
             let got = DiagnosticReasoning.prematureClosureAlerts(c.input, workingId: c.workingId, workingLabel: c.workingLabel,
                                                                 news2Series: c.news2Series)
+            XCTAssertEqual(got.map(\.key), c.expected.map(\.key), c.name)
+            XCTAssertEqual(got.map(\.kind.rawValue), c.expected.map(\.kind), c.name)
+            XCTAssertEqual(got.map(\.text), c.expected.map(\.text), c.name)
+        }
+    }
+
+    // MARK: - Shared adapter rules (DiagnosticReasoningRules.swift; rules file diagnostic-reasoning-rules.json)
+
+    func testFamilyAndLabelMatchVectors() throws {
+        let v = try Self.loadVectors()
+        XCTAssertNotNil(DiagnosticReasoningRules.ruleFile, "clinical-content/rules/diagnostic-reasoning-rules.json must be bundled and decode")
+        for c in v.families {
+            let a = DiagnosisFamilies.Node(id: c.a.id, label: c.a.label, icd10: c.a.icd10)
+            let b = DiagnosisFamilies.Node(id: c.b.id, label: c.b.label, icd10: c.b.icd10)
+            XCTAssertEqual(DiagnosisFamilies.sameFamily(a, b), c.expected, "\(c.a.label) ~ \(c.b.label)")
+        }
+        for c in v.labelMatch {
+            let score = DiagnosisFamilies.labelMatchScore(c.label, c.text)
+            XCTAssertEqual(score.isFinite ? score : nil, c.score, "\(c.label) / \(c.text)")
+            XCTAssertEqual(DiagnosisFamilies.labelFullyNamed(c.label, c.text), c.fullyNamed, "\(c.label) / \(c.text): named")
+        }
+        for c in v.resolveWorking {
+            let nodes = c.nodes.map { DiagnosisFamilies.WorkingCandidate(label: $0.label, icd10: $0.icd10, probability: $0.probability) }
+            XCTAssertEqual(DiagnosisFamilies.resolveWorkingIndex(nodes, label: c.label, icdCode: c.icd), c.expected, c.label)
+        }
+    }
+
+    func testTwoConditionsVectors() throws {
+        let v = try Self.loadVectors()
+        for c in v.competes {
+            let groups = c.groups ?? [:]
+            XCTAssertEqual(DiagnosticReasoning.competesForEvidence(c.input, leaderId: c.leaderId, workingId: c.workingId,
+                                                                   evidenceGroup: { groups[$0] ?? $0 }),
+                           c.expected, c.name)
+        }
+    }
+
+    func testAdapterClosureVectors() throws {
+        let v = try Self.loadVectors()
+        for c in v.adapterClosure {
+            let groups = c.groups ?? [:]
+            let got = DiagnosticReasoning.adapterClosureAlerts(c.input, workingId: c.workingId, workingText: c.workingText,
+                                                               familyIds: Set(c.familyIds), news2Series: c.news2Series,
+                                                               evidenceGroup: { groups[$0] ?? $0 })
             XCTAssertEqual(got.map(\.key), c.expected.map(\.key), c.name)
             XCTAssertEqual(got.map(\.kind.rawValue), c.expected.map(\.kind), c.name)
             XCTAssertEqual(got.map(\.text), c.expected.map(\.text), c.name)
@@ -324,6 +425,54 @@ final class DiagnosticReasoningTests: XCTestCase {
         XCTAssertEqual(DiagnosticReasoningAdapter.workingIndex(results, name: "Gallstone pancreatitis", icd: "K85.1"), 0)
         XCTAssertNil(DiagnosticReasoningAdapter.workingIndex(results, name: "Inguinal hernia", icd: "K40.90"))
         XCTAssertNil(DiagnosticReasoningAdapter.workingIndex(results, name: nil, icd: nil))
+    }
+
+    func testStatedLikelihoodRatioAndOneFindingPerLabel() {
+        // A stated LR 1.5 is stored as 2; exp(2 / 5) = 1.49 fell below the 1.5 "supports" threshold.
+        let stated = BayesianDiagnosisEngine.FiredFeature(key: "complaint", value: "vomit|nausea", logLR: 2, baseLogLR: 2,
+                                                          label: "Vomiting as the presenting complaint", sourceKey: "symptoms",
+                                                          citation: nil, documentedAbsent: false, statedLR: 1.5)
+        XCTAssertEqual(DiagnosticReasoningAdapter.lr(stated), 1.5, accuracy: 1e-12)
+        XCTAssertEqual(DiagnosticReasoningAdapter.lr(fired("finding", "vomit", 2, "Vomiting")), exp(0.4), accuracy: 1e-12)
+        // The same finding fired by two candidates under one label is one finding, supported by both.
+        let a = BayesianDiagnosisEngine.FiredFeature(key: "finding", value: "vomit", logLR: 2, baseLogLR: 2, label: "Vomiting",
+                                                     sourceKey: "symptoms", citation: nil, documentedAbsent: false, statedLR: 1.5)
+        let b = BayesianDiagnosisEngine.FiredFeature(key: "associations", value: "Vomiting", logLR: 3, baseLogLR: 3, label: "Vomiting",
+                                                     sourceKey: "symptoms", citation: nil, documentedAbsent: false, statedLR: 2)
+        let results = [
+            result("Acute Pancreatitis", icd: "K85.9", probability: 60, urgency: 2, fired: [a], features: []),
+            result("Small Bowel Obstruction", icd: "K56.609", probability: 30, urgency: 2, fired: [b], features: []),
+        ]
+        let built = DiagnosticReasoningAdapter.buildInput(results)
+        XCTAssertEqual(built.input.findings.map(\.label), ["Vomiting"])
+        XCTAssertEqual(DiagnosticReasoning.unexplainedFindings(built.input, hypothesisIds: built.input.hypotheses.map(\.id)), [])
+    }
+
+    func testWorkingDiagnosisBelowTheShownFiveIsCompared() {
+        // reasoning-closure-gastroenteritis-dka: the engine ranks gastroenteritis below the five shown.
+        let hpi = "Vomiting since yesterday with central abdominal pain and thirst. Type 1 diabetes on insulin; has been eating little. Breathing deep and fast."
+        let results = BayesianDiagnosisEngine.infer(
+            chiefComplaint: "Vomiting and abdominal pain", socratesSelections: ["associations": ["Vomiting"]],
+            pmhNotes: "CONDITIONS: Type 1 diabetes", surgicalHistory: nil,
+            examAbdo: "Diffusely tender, soft.", examGeneral: "Dry mucous membranes. Deep sighing respiration.",
+            investigations: [
+                InvestigationEntry(name: "Blood ketones", category: .blood, status: .resulted, result: "5.4 mmol/L"),
+                InvestigationEntry(name: "Bicarbonate", category: .blood, status: .resulted, result: "9 mmol/L"),
+            ],
+            ageYears: 23, sex: .female, hpi: hpi)
+        XCTAssertEqual(results.first?.name, "Diabetic Ketoacidosis")
+        XCTAssertFalse(results.first?.rankedBelow.isEmpty ?? true, "the other scored candidates ride on the first result")
+        XCTAssertTrue(results.first?.firedFeatures.contains { $0.statedLR != nil } ?? false, "curated features carry their stated LR")
+        let p = Patient(fullName: "Reasoning Test", sex: .female)
+        p.chiefComplaint = "Vomiting and abdominal pain"
+        p.hpi = hpi
+        p.workingDiagnosis = "Gastroenteritis"
+        p.workingDiagnosisICD = "A09"
+        let report = DiagnosticReasoningAdapter.report(results: results, patient: p)
+        XCTAssertNotNil(report.workingId, "gastroenteritis is found among every scored candidate")
+        XCTAssertTrue(report.closureAlerts.contains {
+            $0.kind == .lessLikely && $0.text.hasPrefix("Doesn't fit the working diagnosis") && $0.text.contains("Diabetic Ketoacidosis")
+        }, report.closureAlerts.map(\.text).joined(separator: " | "))
     }
 
     func testEngineRecordsFiredFeaturesWithoutChangingWeights() {

@@ -822,7 +822,8 @@ extension BayesianDiagnosisEngine {
                     fired.append(FiredFeature(
                         key: f.key, value: f.value, logLR: effectiveLR, baseLogLR: f.logLR,
                         label: f.evidenceLabel, sourceKey: sourceKey, citation: f.citation,
-                        documentedAbsent: f.key == "notFinding" && Self.anyAlternativeDocumentedAbsent(f.value, in: findingText)))
+                        documentedAbsent: f.key == "notFinding" && Self.anyAlternativeDocumentedAbsent(f.value, in: findingText),
+                        statedLR: effectiveLR == f.logLR ? f.likelihoodRatio : nil))
                     if effectiveLR > 0 && !f.evidenceLabel.isEmpty {
                         evidence.append(f.evidenceLabel)
                         // Suppress demographics from the evidence panel (age/sex are context, not findings)

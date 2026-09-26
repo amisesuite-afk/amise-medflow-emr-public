@@ -10,7 +10,7 @@
  *   CandidateSpec { name, icd: String; logPrior: Int; urgency: Int?; features: [FeatureSpec];
  *     applicability: Applicability?; supersedes: [String]? }
  *   FeatureSpec { key, value: String; logLR: Int; evidenceLabel: String; citation: String?;
- *     maskedBy: [String]? }
+ *     maskedBy: [String]?; likelihoodRatio: Double? }
  *   Applicability { sex: String?; minAgeYears, maxAgeYears: Int?; pregnancy: String? }
  *   MatrixSpec { version, authority: String; systemIndex, specialtyIndex, ccToSystems,
  *     urgencyIndex: [String: [String]] }
@@ -114,6 +114,7 @@ export function decodeProblems(db: unknown, rawText?: string): DecodeProblem[] {
           if (!isStr(f.evidenceLabel)) note('feature "evidenceLabel" missing or not a string', fat);
           if (!absent(f.citation) && !isStr(f.citation)) note('feature "citation" not a string', `${fat}.citation`);
           if (!absent(f.maskedBy) && !isStrArray(f.maskedBy)) note('feature "maskedBy" not an array of strings', `${fat}.maskedBy`);
+          if (!absent(f.likelihoodRatio) && typeof f.likelihoodRatio !== 'number') note('feature "likelihoodRatio" not a number', `${fat}.likelihoodRatio`);
         });
       });
     }

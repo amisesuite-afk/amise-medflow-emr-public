@@ -20,5 +20,8 @@ extension BayesianDiagnosisEngine {
         /// A "notFinding" feature whose finding is written in the record only as negated ("no
         /// neck stiffness"), not merely missing.
         let documentedAbsent: Bool
+        /// The likelihood ratio the database states for this feature (curated features), when the
+        /// full stored weight applied (no feature-network discount); nil otherwise.
+        var statedLR: Double? = nil
     }
 }
