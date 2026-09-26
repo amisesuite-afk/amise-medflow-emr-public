@@ -13,7 +13,10 @@
 //                        (CC + PMH/PSHx only, prefix 4); ConsultationView+Sheets.runPathway:
 //                        ClinicalAcuityEngine.assess (acuity raised, never lowered); run again after
 //                        the diagnosis is confirmed (step 5b) — that level is the graded one
-//   3. HPI / exam / Ix   ConsultationView+DiagnosisTab.refreshBayesian: ClinicalTextParser.parse →
+//   3. HPI / exam / Ix   The clinician's calculator results (vignette scoreForms) are saved on the
+//                        patient first, as ClinicalScoresView's save does (ScorePersistence.store),
+//                        so their decision-rule bands reach the differential as in the app.
+//                        ConsultationView+DiagnosisTab.refreshBayesian: ClinicalTextParser.parse →
 //                        feature augments → BayesianDiagnosisEngine.infer (top 5) + clinical alarms
 //   4. Pipeline          ClinicalPipelineOrchestrator.runNow (Diagnosis tab: Clinical Actions prefix 6,
 //                        EVPI prefix 5; decisions feed the actions)
@@ -47,9 +50,25 @@ enum ClinValIOSRunner {
         "wellsPE": "wells-pe", "curb65": "curb65", "cfs": "cfs", "childPugh": "child-pugh", "meld": "meld",
         "must": "must", "spesi": "spesi", "heart": "heart", "timi": "timi", "grace": "grace",
         "cha2ds2vasc": "cha2ds2-vasc", "hasBled": "has-bled", "stopBang": "stop-bang", "gcs": "gcs",
-        "shockIndex": "shock-index", "cci": "cci", "ckdEpi": "ckd-epi", "kdigo": "kdigo", "stone": "stone",
+        "shockIndex": "shock-index", "cci": "cci", "ckdEpi": "ckd-epi", "kdigo": "kdigo",
         "dasi": "dasi",
+        // Decision rules (decision-rules.json ids). "stone" is the published STONE score; the local
+        // 0–6 "Stone CT features" calculator (case `stone`) has no canonical key (ios:stone).
+        "stoneUreteric": "stone", "ottawaAnkle": "ottawa-ankle", "ottawaKnee": "ottawa-knee",
+        "canadianCTHead": "canadian-ct-head", "nexus": "nexus", "canadianCSpine": "canadian-c-spine",
+        "sfSyncope": "sf-syncope", "canadianSyncope": "canadian-syncope",
     ]
+
+    /// Canonical key → the calculator whose saved result the app stores for it (the inverse of
+    /// scoreKeyByCase; Glasgow-Imrie is the `glasgowImrie` calculator).
+    static let scoreCaseByKey: [String: ActiveScore] = {
+        var out: [String: ActiveScore] = [:]
+        for score in ActiveScore.allCases {
+            guard let key = scoreKeyByCase[String(describing: score)] else { continue }
+            if out[key] == nil || score == .glasgowImrie { out[key] = score }
+        }
+        return out
+    }()
 
     static func canonicalScore(_ score: ActiveScore) -> String {
         let name = String(describing: score)
@@ -253,7 +272,15 @@ enum ClinValIOSRunner {
         let earlyTriage = ClinicalAcuityEngine.assess(patient: p).triageResult
         if earlyTriage.suggestedAcuity < p.acuity { p.acuity = earlyTriage.suggestedAcuity }
 
-        // 3. refreshBayesian (ConsultationView+DiagnosisTab).
+        // 3. The clinician saved the calculators before the differential ran (ClinicalScoresView →
+        // ScorePersistence.store): the stored results are what refreshBayesian, the pipeline, the Exam
+        // step and the decision layer read. Before this, the harness graded the calculators after the
+        // differential without storing them, so a recorded rule (PERC, STONE, AIR, Ottawa …) never
+        // reached the iOS differential as it does in the app.
+        let calculators = calculatorResults(v)
+        storeRecordedScores(v, calculators, on: p, into: &out)
+
+        // refreshBayesian (ConsultationView+DiagnosisTab).
         let invResultsText = p.investigations
             .filter { $0.status == .resulted && !$0.result.isEmpty }
             .map { "\($0.name): \($0.result)" }
@@ -301,6 +328,14 @@ enum ClinValIOSRunner {
             airScore: p.airScore,
             percViolations: p.percViolations,
             centorScore: p.centorScore,
+            stoneUretericScore: p.stoneUretericScore,
+            ottawaAnkleScore: p.ottawaAnkleScore,
+            ottawaKneeScore: p.ottawaKneeScore,
+            canadianCTHeadScore: p.canadianCTHeadScore,
+            nexusScore: p.nexusScore,
+            canadianCSpineScore: p.canadianCSpineScore,
+            sfSyncopeScore: p.sfSyncopeScore,
+            canadianSyncopeScore: p.canadianSyncopeScore,
             latestHR: latestVitals?.heartRate,
             latestSBP: latestVitals?.bpSystolic,
             latestTemp: latestVitals?.temperatureCelsius,
@@ -433,7 +468,7 @@ enum ClinValIOSRunner {
             out.notes.append("Scores screen category from CC: \(cat.rawValue)")
         }
         autofillScores(p, into: &out)
-        calculatorScores(v, into: &out)
+        calculatorScores(v, calculators, into: &out)
 
         // 8. Draft plan (SOAP).
         let soap = SOAPDraftEngine.draft(patient: p)
@@ -538,20 +573,12 @@ enum ClinValIOSRunner {
     }
 
     /// ClinicalScoringEngine on the clinician-completed form (vignette scoreForms), mapped from the
-    /// canonical field names to the iOS input structs.
-    static func calculatorScores(_ v: ClinValVignette, into out: inout ClinValOutputs) {
+    /// canonical field names to the iOS input structs: canonical key → result, for the forms with a
+    /// calculator mapping (a form recorded only as a `total` has none).
+    static func calculatorResults(_ v: ClinValVignette) -> [(key: String, score: ClinicalScore)] {
         let forms = v.inputs.scoreForms ?? [:]
-        func add(_ key: String, _ s: ClinicalScore) {
-            out.scoreValues.append(ClinValScoreValue(score: key, mode: "calculator", source: "ios.scoreCalculator.\(key)",
-                                                     value: s.score, label: s.interpretation, pending: nil))
-            out.management.append(.init(source: "ios.scoreCalculator.\(key)", text: s.interpretation))
-            for r in s.recommendations {
-                out.management.append(.init(source: "ios.scoreCalculator.\(key)", text: r))
-            }
-            for f in s.redFlags {
-                out.redFlags.append(.init(source: "ios.scoreCalculator.\(key)", text: f))
-            }
-        }
+        var results: [(key: String, score: ClinicalScore)] = []
+        func add(_ key: String, _ s: ClinicalScore) { results.append((key: key, score: s)) }
         for key in forms.keys.sorted() {
             guard let f = forms[key] else { continue }
             let organs = Set(f.strings("organDysfunction"))
@@ -624,7 +651,47 @@ enum ClinValIOSRunner {
                 i.suspectedInfection = f.bool("suspectedInfection")
                 add(key, ClinicalScoringEngine.sirs(i))
             default:
+                break
+            }
+        }
+        return results
+    }
+
+    /// Saves each recorded calculator result on the patient where the app's save puts it
+    /// (ScorePersistence.store, the code ClinicalScoresView.persistScoreToPatient runs): the calculator
+    /// result for a form with a mapping, else the form's `total`.
+    static func storeRecordedScores(_ v: ClinValVignette, _ results: [(key: String, score: ClinicalScore)],
+                                    on p: Patient, into out: inout ClinValOutputs) {
+        let forms = v.inputs.scoreForms ?? [:]
+        for key in forms.keys.sorted() {
+            guard let score = scoreCaseByKey[key] else {
+                out.notes.append("Recorded score '\(key)' has no iOS calculator: not stored on the patient")
+                continue
+            }
+            if let computed = results.first(where: { $0.key == key }) {
+                ScorePersistence.store(score, computed.score, on: p)
+            } else if let form = forms[key], case .number(let n)? = form.fields["total"] {
+                ScorePersistence.store(score, ClinicalScore(name: key, score: n, risk: .low, interpretation: ""), on: p)
+            } else {
                 out.notes.append("No iOS calculator mapping for score form '\(key)'")
+                continue
+            }
+            out.notes.append("Recorded score '\(key)' saved on the patient (\(String(describing: score)))")
+        }
+    }
+
+    /// The calculator results as graded outputs (step 7).
+    static func calculatorScores(_ v: ClinValVignette, _ results: [(key: String, score: ClinicalScore)],
+                                 into out: inout ClinValOutputs) {
+        for (key, s) in results {
+            out.scoreValues.append(ClinValScoreValue(score: key, mode: "calculator", source: "ios.scoreCalculator.\(key)",
+                                                     value: s.score, label: s.interpretation, pending: nil))
+            out.management.append(.init(source: "ios.scoreCalculator.\(key)", text: s.interpretation))
+            for r in s.recommendations {
+                out.management.append(.init(source: "ios.scoreCalculator.\(key)", text: r))
+            }
+            for f in s.redFlags {
+                out.redFlags.append(.init(source: "ios.scoreCalculator.\(key)", text: f))
             }
         }
     }

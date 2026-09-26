@@ -117,9 +117,14 @@ text expectation to these prefixes; an expectation whose sources are all on the 
 `n/a` there.
 
 **Scores** use canonical keys: `alvarado`, `air`, `tg18-cholecystitis`, `tg18-cholangitis`, `qsofa`,
-`sirs`, `news2`, `bisap`, `ranson`, `glasgow-blatchford`, `rockall`, `asa`, `rcri`, `asge-cbd`.
+`sirs`, `news2`, `bisap`, `ranson`, `glasgow-blatchford`, `rockall`, `asa`, `rcri`, `asge-cbd`, and the
+decision-rules.json ids (`stone` = the published STONE score, `ottawa-ankle`, `ottawa-knee`,
+`canadian-ct-head`, `nexus`, `canadian-c-spine`, `sf-syncope`, `canadian-syncope`, `perc`, `wells-pe` …).
 TG18 values are the grade (1–3; 0 = criteria not met); the others are points. `inputs.scoreForms`
-holds the clinician's ticks for the calculator run, with these fields:
+holds the clinician's ticks for the calculator run (or a recorded `total`), with these fields. Both
+runners treat them as saved before the differential runs: on iOS each result is stored on the patient
+with `ScorePersistence.store` (what the app's save does), so a recorded decision rule reaches the
+differential as its band.
 
 | Score | Form fields |
 |---|---|
