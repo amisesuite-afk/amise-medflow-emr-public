@@ -6,8 +6,8 @@
 //
 // Flows (same on iPhone and iPad; the iPad opens the consultation from the record's single
 // "Consultation" section, the iPhone from the record's quick actions):
-//   a1 Today → patient → consultation → "First visit" pathway → steps 1–11 (typing in CC, HPI,
-//      exam, diagnosis search)
+//   a1 Today → patient → consultation → "First visit" pathway → visit-type chip in the step bar
+//      (consult.visitType) → steps 1–11 (typing in CC, HPI, exam, diagnosis search)
 //   a2 Today → patient → consultation → "First visit" → Plan step (type the plan) → Tools →
 //      Scores (compute + save one, over the step) → Vitals, Prescriptions → Save snapshot →
 //      Complete → review sheet (attest) → Complete visit. iPhone: the navigation bar holds
@@ -18,8 +18,9 @@
 //   b  Add a new patient (and check it shows on Today under "Added today")
 //   c  Record vitals
 //   d  Add a prescription that interacts with warfarin → interaction alert
-//   e  Front desk: hand-over questionnaire start screen (front-desk role; iPhone: the Check-In
-//      row's "Questionnaire" action)
+//   e  Front desk: the scheduler's visit-type chips (Schedule → + → Cancel; iPhone: Schedule is
+//      under the tab bar's More), then the hand-over questionnaire start screen (front-desk role;
+//      iPhone: the Check-In row's "Questionnaire" action)
 //
 // Run: ios/UIWalkthrough/run.sh (local) or .github/workflows/ios-ui-walkthrough.yml (CI).
 // Never calls AI features (AIService); nothing here touches real data or the network.
@@ -104,8 +105,17 @@ final class UXWalkthroughTests: XCTestCase, UXIssueReporting {
                             testCase: self)
         ux.run {
             try openFirstVisitConsultation(ux)
+            try checkVisitTypeChip(ux)
             try walkFirstVisitSteps(ux, through: "diagnosis")
         }
+    }
+
+    /// The patient's visit type beside the pathway pill, on both devices (one-tap menu).
+    @MainActor
+    private func checkVisitTypeChip(_ ux: UXRecorder) throws {
+        let chip = ux.element("consult.visitType")
+        try ux.waitFor(chip, "Step bar: visit type chip (consult.visitType)", timeout: 5)
+        ux.note("Visit type chip in the step bar: yes (\(ux.label(of: chip) ?? "no label"))")
     }
 
     /// a2: plan, the Tools menu, save and the review-and-complete sheet.
@@ -513,13 +523,14 @@ final class UXWalkthroughTests: XCTestCase, UXIssueReporting {
     func testE_FrontDeskHandover() throws {
         let app = launch(role: "front_desk")
         let ux = UXRecorder(app: app, flow: "e_frontdesk_handover",
-                            title: "Front desk → Questionnaire → find patient → hand-over start screen",
+                            title: "Front desk → Schedule: visit type → Questionnaire → find patient → hand-over start screen",
                             testCase: self)
         ux.run {
             if UXRecorder.isPad {
                 let questionnaireTab = ux.element("fd.tab.Questionnaire")
                 try ux.waitFor(questionnaireTab, "Front desk sidebar")
                 ux.screen("Front desk - Check-In")
+                try checkSchedulerVisitType(ux)
                 try ux.tap(questionnaireTab, "Sidebar: Questionnaire")
                 let search = ux.element("fd.questionnaire.search")
                 try ux.waitFor(search, "Questionnaire tab")
@@ -536,6 +547,8 @@ final class UXWalkthroughTests: XCTestCase, UXIssueReporting {
                 let search = app.textFields.firstMatch
                 try ux.waitFor(search, "Front desk Check-In")
                 ux.screen("Front desk (iPhone) - Check-In")
+                try checkSchedulerVisitType(ux)
+                try ux.tap(app.tabBars.buttons["Check-In"], "Tab: Check-In (back)")
                 try ux.type("Ave", into: search, "Find patient (3+ letters)")
                 ux.snapshot("Search result")
                 // The Check-In row's own "Questionnaire" action (UX review m3), as on the iPad.
@@ -546,6 +559,41 @@ final class UXWalkthroughTests: XCTestCase, UXIssueReporting {
                                "Hand-over questionnaire")
                 ux.screen("Hand-over questionnaire - start")
             }
+        }
+    }
+
+    /// The scheduler (Schedule → +) shows the visit-type chips, New Consult chosen when no patient
+    /// is picked yet; Cancel leaves without booking. Checked for the report; not counted. iPad:
+    /// the sidebar's Schedule tab (a missing chip row fails the flow). iPhone: Schedule is under
+    /// the tab bar's More; if the + button cannot be reached there, that is noted instead.
+    @MainActor
+    private func checkSchedulerVisitType(_ ux: UXRecorder) throws {
+        try ux.uncounted {
+            if UXRecorder.isPad {
+                try ux.tap(ux.element("fd.tab.Schedule"), "Sidebar: Schedule")
+            } else {
+                let tab = ux.app.tabBars.buttons["Schedule"]
+                if tab.waitForExistence(timeout: 2) {
+                    try ux.tap(tab, "Tab: Schedule")
+                } else {
+                    try ux.tap(ux.app.tabBars.buttons["More"], "Tab: More")
+                    try ux.tap(ux.app.cells.staticTexts["Schedule"], "More → Schedule")
+                }
+                if !ux.element("schedule.add").waitForExistence(timeout: 5) {
+                    ux.note("Scheduler visit type: not checked on iPhone (Schedule + not reachable)")
+                    ux.snapshot("Schedule (iPhone) - no + button")
+                    return
+                }
+            }
+            try ux.tap(ux.element("schedule.add"), "Schedule: + (new appointment)")
+            try ux.waitFor(ux.element("fd.scheduler.visitType"), "Scheduler: visit type chips")
+            let selected = ux.app.descendants(matching: .any)
+                .matching(NSPredicate(format: "identifier BEGINSWITH %@ AND selected == true",
+                                      "fd.scheduler.visitType."))
+                .firstMatch
+            ux.note("Scheduler shows the visit type: yes (chosen: \(ux.label(of: selected) ?? "none"))")
+            ux.snapshot("Scheduler - visit type")
+            try ux.tap(ux.element("fd.scheduler.cancel"), "Scheduler: Cancel")
         }
     }
 }
