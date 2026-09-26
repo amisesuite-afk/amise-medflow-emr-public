@@ -2329,8 +2329,8 @@ async function writeAuditLog(entry: {
   patientId?: string | null;
   details?: Record<string, unknown> | null;
   mode: string;
-}): Promise<void> {
-  if (!supabase) return;
+}): Promise<boolean> {
+  if (!supabase) return false;
   const { data: { session } } = await supabase.auth.getSession();
   const { error } = await supabase.from('audit_log').insert({
     user_id:       session?.user?.id ?? null,
@@ -2343,6 +2343,43 @@ async function writeAuditLog(entry: {
     mode:          entry.mode,
   });
   if (error) console.warn('[db] audit:', error.message);
+  return !error;
+}
+
+/**
+ * Audit-log one clinical sign-off decision (Clinical sign-off page, Migration 95). Awaitable so
+ * the page can say when the audit row could not be written; the decision row itself is the
+ * primary, append-only record.
+ */
+export async function logClinicalSignoff(details: {
+  signoffId: string | null;
+  itemId: string;
+  itemHash: string;
+  decision: string;
+  ruleSetIds: string[];
+  reviewerName: string;
+  reviewerRole: string;
+  amended: boolean;
+}): Promise<boolean> {
+  try {
+    return await writeAuditLog({
+      action:       'clinical_signoff',
+      resourceType: 'clinical_signoffs',
+      resourceId:   details.signoffId,
+      details: {
+        item_id: details.itemId,
+        item_hash: details.itemHash,
+        decision: details.decision,
+        rule_set_ids: details.ruleSetIds,
+        reviewer_name: details.reviewerName,
+        reviewer_role: details.reviewerRole,
+        amended: details.amended,
+      },
+      mode: 'signoff',
+    });
+  } catch {
+    return false;
+  }
 }
 
 /**
