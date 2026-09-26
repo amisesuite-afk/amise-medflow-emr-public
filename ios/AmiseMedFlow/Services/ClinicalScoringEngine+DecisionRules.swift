@@ -71,7 +71,7 @@ extension ClinicalScoringEngine {
         } else {
             risk = .moderate
             let series = [ankle ? "ankle series" : nil, foot ? "foot series" : nil].compactMap { $0 }.joined(separator: " and ")
-            interp = "Ottawa ankle rules positive (\(total) criterion\(total == 1 ? "" : "a")): X-ray indicated (\(series)). A positive rule is non-specific: most patients who need an X-ray have no fracture."
+            interp = "Ottawa ankle rules positive (\(total) \(total == 1 ? "criterion" : "criteria")): X-ray indicated (\(series)). A positive rule is non-specific: most patients who need an X-ray have no fracture."
             recs = ["X-ray: \(series)"]
         }
         return ClinicalScore(
@@ -108,7 +108,7 @@ extension ClinicalScoringEngine {
         let risk: ScoreRisk = total == 0 ? .low : .moderate
         let interp = total == 0
             ? "Ottawa knee rule negative: no criterion present. A knee X-ray is not needed."
-            : "Ottawa knee rule positive (\(total) criterion\(total == 1 ? "" : "a")): knee X-ray indicated. A positive rule is non-specific."
+            : "Ottawa knee rule positive (\(total) \(total == 1 ? "criterion" : "criteria")): knee X-ray indicated. A positive rule is non-specific."
         let recs = total == 0
             ? ["No X-ray needed on the Ottawa knee rule; soft-tissue injury management and review if not improving"]
             : ["Knee X-ray (AP and lateral)"]
@@ -214,7 +214,7 @@ extension ClinicalScoringEngine {
         let risk: ScoreRisk = total == 0 ? .low : .moderate
         let interp = total == 0
             ? "NEXUS: all five low-risk criteria met. Cervical spine imaging is not required."
-            : "NEXUS: \(total) low-risk criterion\(total == 1 ? "" : "a") not met. Cervical spine imaging is indicated; keep the spine immobilised until cleared."
+            : "NEXUS: \(total) low-risk \(total == 1 ? "criterion" : "criteria") not met. Cervical spine imaging is indicated; keep the spine immobilised until cleared."
         let recs = total == 0
             ? ["Clinical clearance of the cervical spine on NEXUS"]
             : ["Cervical spine imaging (CT in adults at high risk; NICE NG232)",

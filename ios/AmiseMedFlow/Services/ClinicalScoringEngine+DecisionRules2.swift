@@ -95,7 +95,7 @@ extension ClinicalScoringEngine {
         let total = items.filter(\.present).count
         let interp = total == 0
             ? "San Francisco syncope rule: no CHESS criterion. Lower risk of a serious outcome within 7 days; the rule is less sensitive in external validation, so clinical judgement and the Canadian syncope risk score still apply."
-            : "San Francisco syncope rule: \(total) CHESS criterion\(total == 1 ? "" : "a") present. Higher risk of a serious outcome within 7 days."
+            : "San Francisco syncope rule: \(total) CHESS \(total == 1 ? "criterion" : "criteria") present. Higher risk of a serious outcome within 7 days."
         let recs = total == 0
             ? ["ECG and orthostatic observations if not done; safety-net advice"]
             : ["ECG monitoring and senior review; consider admission or observation",
