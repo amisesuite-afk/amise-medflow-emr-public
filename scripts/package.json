@@ -20,7 +20,8 @@
     "clinval:report": "tsx ./src/clinval/report.ts",
     "outcomes:calibration": "tsx ./src/outcomes-calibration.ts",
     "test": "vitest run",
-    "gen:decision-vectors": "tsx ./src/gen-decision-vectors.ts"
+    "gen:decision-vectors": "tsx ./src/gen-decision-vectors.ts",
+    "gen:whats-missing-vectors": "tsx ./src/gen-whats-missing-vectors.ts"
   },
   "devDependencies": {
     "@electric-sql/pglite": "0.5.8",

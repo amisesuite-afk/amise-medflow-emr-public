@@ -33,3 +33,12 @@ export type {
   DecisionSupportResult, DecisionResult, OptionResult, ScoreActionCard, ResultActionCard, AppliedFactor, Band,
   LineFilter, FactorId, DecisionSummaryLine, Triple as DecisionTriple, SourceRef as DecisionSourceRef, LabAnalyte as DecisionLabAnalyte,
 } from './decision/index.js';
+export {
+  WHATS_MISSING_RULES, WHATS_MISSING_VERSION, whatsMissing, whatsMissingLines, termIn, termsFound, joinParts,
+  scoreRecordFill, filledValue, normaliseLabs, recordBmi, missingObservations, FILLABLE_SCORES, decisionGaps,
+} from './whats-missing/index.js';
+export type {
+  MissingRules, MissingGroupRule, NormalisedLabs, MissingRecord, MissingFacts, MissingAvpu, HistoryFlag, FindingFlag,
+  FilledField, FillSource, ScoreFill, DecisionGap, MissingDiscriminator, DiscriminatorKind, WhatsMissingInput,
+  WhatsMissingItem, WhatsMissingResult, MissingAction, MissingTier,
+} from './whats-missing/index.js';
