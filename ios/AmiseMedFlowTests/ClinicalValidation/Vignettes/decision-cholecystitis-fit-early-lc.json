@@ -121,9 +121,6 @@
             "web.decisions",
             "ios.decisions"
           ],
-          "unverified": [
-            "ios"
-          ],
           "guidelineRefs": [
             "tg18",
             "chocolate"

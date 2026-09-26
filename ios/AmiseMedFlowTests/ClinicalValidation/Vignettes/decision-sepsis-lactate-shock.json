@@ -97,9 +97,6 @@
             "web.decisions",
             "ios.decisions"
           ],
-          "unverified": [
-            "ios"
-          ],
           "guidelineRefs": [
             "ssc-2021"
           ]
@@ -113,9 +110,6 @@
           "sources": [
             "web.decisions",
             "ios.decisions"
-          ],
-          "unverified": [
-            "ios"
           ],
           "guidelineRefs": [
             "ssc-2021"

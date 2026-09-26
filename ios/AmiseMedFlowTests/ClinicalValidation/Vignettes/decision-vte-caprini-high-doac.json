@@ -110,9 +110,6 @@
             "web.decisions.notForPatient",
             "ios.decisions.notForPatient"
           ],
-          "unverified": [
-            "ios"
-          ],
           "guidelineRefs": [
             "nice-ng89"
           ]
@@ -126,9 +123,6 @@
           "sources": [
             "web.decisions.notForPatient",
             "ios.decisions.notForPatient"
-          ],
-          "unverified": [
-            "ios"
           ],
           "guidelineRefs": [
             "pause-2019"
@@ -147,9 +141,6 @@
           "sources": [
             "web.decisions",
             "ios.decisions"
-          ],
-          "unverified": [
-            "ios"
           ],
           "guidelineRefs": [
             "nice-ng89"

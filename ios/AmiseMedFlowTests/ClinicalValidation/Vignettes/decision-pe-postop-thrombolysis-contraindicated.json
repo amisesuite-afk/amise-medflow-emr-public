@@ -115,9 +115,6 @@
             "web.decisions",
             "ios.decisions"
           ],
-          "unverified": [
-            "ios"
-          ],
           "guidelineRefs": [
             "esc-pe-2019"
           ]
@@ -133,9 +130,6 @@
           "sources": [
             "web.decisions",
             "ios.decisions"
-          ],
-          "unverified": [
-            "ios"
           ],
           "guidelineRefs": [
             "esc-pe-2019"
@@ -154,9 +148,6 @@
           "sources": [
             "web.decisions.notForPatient",
             "ios.decisions.notForPatient"
-          ],
-          "unverified": [
-            "ios"
           ],
           "guidelineRefs": [
             "esc-pe-2019"

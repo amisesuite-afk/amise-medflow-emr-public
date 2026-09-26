@@ -90,9 +90,6 @@
             "web.decisions",
             "ios.decisions"
           ],
-          "unverified": [
-            "ios"
-          ],
           "guidelineRefs": [
             "accp-2012",
             "nice-ng89"
@@ -107,9 +104,6 @@
           "sources": [
             "web.decisions",
             "ios.decisions"
-          ],
-          "unverified": [
-            "ios"
           ],
           "guidelineRefs": [
             "accp-2012"

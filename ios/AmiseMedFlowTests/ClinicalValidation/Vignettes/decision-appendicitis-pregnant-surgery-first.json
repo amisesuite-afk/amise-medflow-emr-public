@@ -113,9 +113,6 @@
             "web.decisions",
             "ios.decisions"
           ],
-          "unverified": [
-            "ios"
-          ],
           "guidelineRefs": [
             "wses-2020"
           ]
@@ -129,9 +126,6 @@
           "sources": [
             "web.decisions",
             "ios.decisions"
-          ],
-          "unverified": [
-            "ios"
           ],
           "guidelineRefs": [
             "wses-2020",

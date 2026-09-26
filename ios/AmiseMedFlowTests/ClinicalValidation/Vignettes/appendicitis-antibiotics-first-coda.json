@@ -341,11 +341,7 @@
             "coda-2020"
           ],
           "note": "WSES 2020 and CODA: antibiotics-first is a safe alternative for CT-confirmed uncomplicated appendicitis without appendicolith, after shared decision-making (about 3 in 10 need appendicectomy by 90 days).",
-          "knownGapNote": "Web: No antibiotics-first option anywhere for CT-confirmed uncomplicated appendicitis; the protocol's only non-operative step is for an appendix mass. | iOS CI 2026-09-25 (run 36169134350, database mode): no management item matched among 24 (ios.pipeline.decisions, ios.pipeline.actions, ios.radiation.plan, ios.radiation.followUp, ios.scoreCalculator.air, ios.soap.plan)",
-          "proposedFix": "Add a 'conservative' step to the appendicitis protocol: antibiotics-first for CT-confirmed uncomplicated appendicitis without appendicolith after shared decision (WSES 2020, CODA), with the recurrence figure.",
-          "knownGap": [
-            "ios"
-          ]
+          "proposedFix": "Add a 'conservative' step to the appendicitis protocol: antibiotics-first for CT-confirmed uncomplicated appendicitis without appendicolith after shared decision (WSES 2020, CODA), with the recurrence figure."
         }
       ]
     },

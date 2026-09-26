@@ -128,9 +128,6 @@
             "web.decisions",
             "ios.decisions"
           ],
-          "unverified": [
-            "ios"
-          ],
           "guidelineRefs": [
             "atlanta-2012"
           ]
@@ -144,9 +141,6 @@
           "sources": [
             "web.decisions",
             "ios.decisions"
-          ],
-          "unverified": [
-            "ios"
           ],
           "guidelineRefs": [
             "iap-apa-2013"
@@ -165,9 +159,6 @@
           "sources": [
             "web.decisions.notForPatient",
             "ios.decisions.notForPatient"
-          ],
-          "unverified": [
-            "ios"
           ],
           "guidelineRefs": [
             "iap-apa-2013",

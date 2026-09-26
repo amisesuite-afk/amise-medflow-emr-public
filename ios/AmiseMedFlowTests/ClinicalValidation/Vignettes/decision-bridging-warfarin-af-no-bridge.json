@@ -100,9 +100,6 @@
             "web.decisions",
             "ios.decisions"
           ],
-          "unverified": [
-            "ios"
-          ],
           "guidelineRefs": [
             "bridge-2015",
             "accp-2022"
