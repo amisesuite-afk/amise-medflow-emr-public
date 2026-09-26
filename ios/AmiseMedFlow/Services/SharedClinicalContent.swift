@@ -6,7 +6,8 @@
 // Change the JSON, not a platform copy.
 //
 // Each engine decodes its file once with its own Codable structs (for example
-// `ZebraCheck.RuleFile`, `SupplementCatalogue.Content`, `LifestylePractices.Content`) through
+// `ZebraCheck.RuleFile`, `SupplementCatalogue.Content`, `LifestylePractices.Content`,
+// `ExamEvidenceCatalogue.SignsFile` / `.RulesFile`) through
 // `load(_:_:)`. A missing file or a decode failure never crashes and never guesses: the engine
 // gets nil and shows nothing (no zebra, no supplement prompt, no lifestyle prompt), the failure is
 // written to the unified log, and Settings → Diagnostics lists every file with its version or
@@ -31,6 +32,8 @@ enum SharedClinicalContent {
         case zebraRules = "zebra-rules"
         case supplementCatalogue = "supplement-catalogue"
         case lifestylePractices = "lifestyle-practices"
+        case examSigns = "exam-signs"
+        case decisionRules = "decision-rules"
 
         /// Row title in Settings → Diagnostics.
         var title: String {
@@ -38,6 +41,8 @@ enum SharedClinicalContent {
             case .zebraRules:          return "Zebra rules"
             case .supplementCatalogue: return "Supplement catalogue"
             case .lifestylePractices:  return "Lifestyle practices"
+            case .examSigns:           return "Examination signs"
+            case .decisionRules:       return "Decision rules"
             }
         }
     }
@@ -116,6 +121,10 @@ enum SharedClinicalContent {
             failure = errorText(decode(SupplementCatalogue.Content.self, file, bundle: bundle))
         case .lifestylePractices:
             failure = errorText(decode(LifestylePractices.Content.self, file, bundle: bundle))
+        case .examSigns:
+            failure = errorText(decode(ExamEvidenceCatalogue.SignsFile.self, file, bundle: bundle))
+        case .decisionRules:
+            failure = errorText(decode(ExamEvidenceCatalogue.RulesFile.self, file, bundle: bundle))
         }
         let fileURL = url(for: file, bundle: bundle)
         let stamp = fileURL

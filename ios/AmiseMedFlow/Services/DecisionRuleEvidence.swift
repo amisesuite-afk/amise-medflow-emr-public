@@ -3,7 +3,7 @@
 //
 // A diagnostic rule whose result is stored on the patient (Alvarado, AIR, Wells PE, PERC,
 // Wells DVT, HEART, Centor/McIsaac, LRINEC — the ones with an `ios` entry in
-// Resources/DecisionRules.json) becomes a DiagnosticDatabase.json 2.2.0 "rule" feature,
+// clinical-content/rules/decision-rules.json) becomes a DiagnosticDatabase.json 2.2.0 "rule" feature,
 // value "<rule id>:<band id>", with the band's likelihood ratio (logLR = round(5 × ln LR)).
 // Policy (decision-rules.json evidencePolicy):
 //   - a band below 1 counts only when the rule's absence is meaningful (LRINEC's low band never);

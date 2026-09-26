@@ -115,7 +115,7 @@ order-independent; iOS `DecisionRuleEvidence` + the scorer):
 
 | Area | Files |
 |---|---|
-| Content | `clinical-content/rules/{exam-signs,decision-rules}.json`, schemas `clinical-content/schemas/{exam-signs,decision-rules}.schema.json`; byte-identical copies `lib/pane-engine/src/evidence/*.json`, `ios/AmiseMedFlow/Resources/{ExamSigns,DecisionRules}.json` |
+| Content | Shared rule files `clinical-content/rules/{exam-signs,decision-rules}.json` with schemas `clinical-content/schemas/{exam-signs,decision-rules}.schema.json`, read by both platforms (web imports the JSON; iOS through `SharedClinicalContent`, `File.examSigns` / `.decisionRules`, shown in Settings → Diagnostics); registered in `SHARED_CONTENT` (`scripts/src/shared-content.ts`), checked by `lint:shared-content` |
 | PANE | `lib/pane-engine/src/evidence/{types,catalogue,register,features,relevance,index}.ts`, `engine/{evidenceLikelihood,evidenceGroups}.ts`; edits in `engine/{likelihood,bayes,infoGain}.ts`, `types.ts` (`askable`), `vademecum/index.ts`; new nodes `cirrhosis` (hepatobiliary), `abdominal_wall_pain` (general surgery); `constants.ts` `PANE_MODEL_VERSION = '1.1.0'` |
 | Web | `artifacts/dashboard/src/lib/{exam-evidence-features,decision-rule-scores,pane-reseed}.ts`, `socrates-to-features.ts` (evidence context), `diagnostic-reasoning.ts` (evidence moves); components `ExamSignsPanel.tsx`, `DecisionRuleCard.tsx`, `RecordScoreButton.tsx` (re-seed), `ScalesTab.tsx` (new rule cards), `ExaminationTab.tsx`, `DiagnosticReasoningPanel.tsx` |
 | iOS | `Services/{ExamEvidenceCatalogue,ExamSignRecord,DecisionRuleEvidence,DiagnosticReasoningAdapter+Evidence}.swift`, `Views/Consultation/ExamSignsSection.swift`; edits in `BayesianDiagnosisEngine.swift`, `+Scoring.swift`, `BayesianDecisionEngine+Scoring.swift`, `ConsultationView+{DiagnosisTab,ExamTab}.swift`, `DiagnosticReasoningCard.swift`; `Resources/DiagnosticDatabase.json` 2.2.0 |
@@ -168,8 +168,8 @@ Web differential, the same vignette without → with the recorded evidence (top 
 ## Needs sign-off
 
 Every value below is `fromMemory: true`: please check each against its source (McGee 5th ed. chapter or
-the cited RCE article / meta-analysis) and correct it in `clinical-content/rules/*.json` (then copy to the
-two bundles and run `gen-exam-evidence-db.ts`).
+the cited RCE article / meta-analysis) and correct it in the shared file `clinical-content/rules/*.json` (both platforms read it), then run
+`gen-exam-evidence-db.ts` to regenerate the iOS database features.
 
 Policy and new content:
 

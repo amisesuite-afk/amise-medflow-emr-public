@@ -1,14 +1,14 @@
-import signsJson from './exam-signs.json';
-import rulesJson from './decision-rules.json';
+import signsJson from '../../../../clinical-content/rules/exam-signs.json';
+import rulesJson from '../../../../clinical-content/rules/decision-rules.json';
 import type {
   DecisionRule, DecisionRulesContent, ExamSign, ExamSignsContent, LrValue, RuleBand, TargetGroup,
 } from './types.js';
 
 /**
- * The examination-sign and decision-rule catalogues. Canonical files:
- * clinical-content/rules/exam-signs.json and decision-rules.json; this folder and the iOS bundle
- * (ios/AmiseMedFlow/Resources/ExamSigns.json, DecisionRules.json) hold byte-identical copies
- * (scripts/src/exam-evidence-content.test.ts). Registered as `exam-signs` and `decision-rules`.
+ * The examination-sign and decision-rule catalogues: the shared clinical rule files
+ * clinical-content/rules/exam-signs.json and decision-rules.json, read by iOS too
+ * (ExamEvidenceCatalogue.swift through SharedClinicalContent). lint:shared-content checks them
+ * against their schemas and against these types. Registered as `exam-signs` and `decision-rules`.
  */
 export const EXAM_SIGNS = signsJson as unknown as ExamSignsContent;
 export const DECISION_RULES = rulesJson as unknown as DecisionRulesContent;

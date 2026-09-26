@@ -1,12 +1,13 @@
 // ExamEvidenceCatalogue.swift
 // Evidence-based examination signs and clinical decision rules (evidence-exam 1.0.0).
 //
-// Resources/ExamSigns.json and Resources/DecisionRules.json are byte-identical copies of
-// clinical-content/rules/exam-signs.json and decision-rules.json (the web engine reads the same
-// files; scripts/src/exam-evidence-content.test.ts keeps the copies identical). The likelihood
-// ratios reach the Bayesian engine as DiagnosticDatabase.json 2.2.0 "sign" and "rule" features
-// (scripts/src/gen-exam-evidence-db.ts); this catalogue supplies the names, how to elicit each
-// sign, the ranges, sources and the rule bands for the Exam step and the scorer.
+// The shared clinical rule files clinical-content/rules/exam-signs.json and decision-rules.json
+// (the web engine reads the same files), loaded through SharedClinicalContent; lint:shared-content
+// checks these Codable structs against the files' JSON Schemas. A missing or undecodable file
+// gives an empty catalogue (no chips, no rule features) and Settings → Diagnostics says why. The
+// likelihood ratios reach the Bayesian engine as DiagnosticDatabase.json 2.2.0 "sign" and "rule"
+// features (scripts/src/gen-exam-evidence-db.ts); this catalogue supplies the names, how to elicit
+// each sign, the ranges, sources and the rule bands for the Exam step and the scorer.
 //
 // Every value is unverified ("fromMemory") until checked against its source and signed off:
 // docs/clinical-validation/changes/evidence-exam.md. Registered as `exam-signs` and
@@ -127,14 +128,8 @@ enum ExamEvidenceCatalogue {
         let rules: [Rule]
     }
 
-    static let signsFile: SignsFile? = load("ExamSigns")
-    static let rulesFile: RulesFile? = load("DecisionRules")
-
-    private static func load<T: Decodable>(_ resource: String) -> T? {
-        guard let url = Bundle.main.url(forResource: resource, withExtension: "json"),
-              let data = try? Data(contentsOf: url) else { return nil }
-        return try? JSONDecoder().decode(T.self, from: data)
-    }
+    static let signsFile: SignsFile? = SharedClinicalContent.load(SignsFile.self, .examSigns)
+    static let rulesFile: RulesFile? = SharedClinicalContent.load(RulesFile.self, .decisionRules)
 
     static var signs: [Sign] { signsFile?.signs ?? [] }
     static var rules: [Rule] { rulesFile?.rules ?? [] }

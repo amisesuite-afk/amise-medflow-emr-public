@@ -20,7 +20,7 @@ describe('shared clinical content library', () => {
   it('passes lint:shared-content', () => {
     const { problems, checked } = checkSharedContent(REPO_ROOT);
     expect(problems).toEqual([]);
-    expect(checked).toEqual(['lifestyle-practices', 'supplement-catalogue', 'zebra-rules']);
+    expect(checked).toEqual(['decision-rules', 'exam-signs', 'lifestyle-practices', 'supplement-catalogue', 'zebra-rules']);
   });
 
   it('the web modules read the shared files', () => {

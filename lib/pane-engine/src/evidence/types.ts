@@ -1,7 +1,8 @@
 /**
- * Evidence-based examination signs and clinical decision rules (clinical-content/rules/*.json,
- * byte-identical copies in this folder and in the iOS bundle). Types mirror
- * clinical-content/schemas/exam-signs.schema.json and decision-rules.schema.json.
+ * Evidence-based examination signs and clinical decision rules (the shared files
+ * clinical-content/rules/exam-signs.json and decision-rules.json, also read by iOS). Types mirror
+ * clinical-content/schemas/exam-signs.schema.json and decision-rules.schema.json
+ * (lint:shared-content checks them).
  */
 
 export interface LrValue {
@@ -62,7 +63,8 @@ export interface Presentation {
 }
 
 export interface ExamSignsContent {
-  id: 'exam-signs';
+  /** Always "exam-signs" (the registry id; the schema pins it). */
+  id: string;
   version: string;
   title: string;
   updated: string;
@@ -70,7 +72,7 @@ export interface ExamSignsContent {
   reviewer: string;
   reference: string;
   conversion: string;
-  engineModes: Record<SignEngineMode, string>;
+  engineModes: { lr: string; twin: string; none: string };
   absencePolicy: string;
   presentations: Record<string, Presentation>;
   targetGroups: Record<string, TargetGroup>;
@@ -107,7 +109,8 @@ export interface DecisionRule {
 }
 
 export interface DecisionRulesContent {
-  id: 'decision-rules';
+  /** Always "decision-rules" (the registry id; the schema pins it). */
+  id: string;
   version: string;
   title: string;
   updated: string;

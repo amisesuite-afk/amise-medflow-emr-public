@@ -1920,9 +1920,7 @@
       "files": [
         "clinical-content/rules/exam-signs.json",
         "clinical-content/schemas/exam-signs.schema.json",
-        "lib/pane-engine/src/evidence/exam-signs.json",
         "lib/pane-engine/src/evidence/*.ts",
-        "ios/AmiseMedFlow/Resources/ExamSigns.json",
         "ios/AmiseMedFlow/Services/ExamEvidenceCatalogue.swift",
         "ios/AmiseMedFlow/Services/ExamSignRecord.swift",
         "ios/AmiseMedFlow/Services/DiagnosticReasoningAdapter+Evidence.swift",
@@ -1936,7 +1934,8 @@
         "ios/AmiseMedFlowTests/ExamEvidenceTests.swift"
       ],
       "ciChecks": [
-        "scripts vitest exam-evidence-content (JSON Schema; the pane-engine and iOS copies are byte-identical)",
+        "lint:shared-content (JSON Schema; Swift and TypeScript types)",
+        "scripts vitest exam-evidence-content (the web engine reads the shared file; cross-references; nothing marked reviewed)",
         "scripts vitest exam-evidence-db (DiagnosticDatabase.json 2.2.0 sign features are what the generator produces)",
         "pane-engine vitest evidence (the features carry the catalogue likelihood ratios; a superseded twin is never lost for a diagnosis that relies on it; grouping order-independent)",
         "clinval:web (13 exam-* permutation vignettes)"
@@ -1951,7 +1950,7 @@
       "reviewEvidence": "None. Every likelihood ratio is fromMemory (not checked against the source); listed under Needs sign-off in docs/clinical-validation/changes/evidence-exam.md.",
       "reviewPriority": "P1",
       "nextReviewDue": "2026-10-31",
-      "changeAuthority": "Any repository committer. Edit clinical-content/rules/exam-signs.json, copy it to lib/pane-engine/src/evidence/ and ios/AmiseMedFlow/Resources/ExamSigns.json, run scripts/src/gen-exam-evidence-db.ts, bump the version and add a changelog entry. Web ships on dashboard deploy; iOS with an app release.",
+      "changeAuthority": "Any repository committer. Edit the shared file clinical-content/rules/exam-signs.json (and its schema and the Swift / TypeScript types for a new field; lint:shared-content), run scripts/src/gen-exam-evidence-db.ts, bump the version and add a changelog entry. Web ships on dashboard deploy; iOS with an app release.",
       "notes": "67 signs: 48 with their own likelihood ratios (engine lr), 9 red-flag or severity signs recorded as their text finding (twin), 10 low-value or unquantified signs for documentation (none). An absent sign updates only when negativeMeaningful and the chip was set to absent. Nothing is pre-filled as normal. Clinician-facing only.",
       "changelog": [
         {"version": "1.0.0", "date": "2026-09-26", "change": "First version (evidence-exam). See docs/clinical-validation/changes/evidence-exam.md."}
@@ -1967,8 +1966,6 @@
       "files": [
         "clinical-content/rules/decision-rules.json",
         "clinical-content/schemas/decision-rules.schema.json",
-        "lib/pane-engine/src/evidence/decision-rules.json",
-        "ios/AmiseMedFlow/Resources/DecisionRules.json",
         "ios/AmiseMedFlow/Services/DecisionRuleEvidence.swift",
         "artifacts/dashboard/src/components/DecisionRuleCard.tsx",
         "artifacts/dashboard/src/lib/decision-rule-scores.ts"
@@ -1981,7 +1978,8 @@
         "ios/AmiseMedFlowTests/ExamEvidenceTests.swift"
       ],
       "ciChecks": [
-        "scripts vitest exam-evidence-content (JSON Schema; copies byte-identical)",
+        "lint:shared-content (JSON Schema; Swift and TypeScript types)",
+        "scripts vitest exam-evidence-content (the web engine reads the shared file; cross-references)",
         "dashboard vitest decision-rule-scores (the new calculators and their record pre-fill)",
         "pane-engine vitest evidence (band selection, AIR over Alvarado, PERC only with Wells PE 4 or less, LRINEC low band not applied, grouping)",
         "clinval:web (exam-perc-negative-low-wells, exam-ottawa-ankle-negative, exam-stone-score-high-renal-colic, exam-air-high-appendicitis)"
@@ -1995,7 +1993,7 @@
       "reviewEvidence": "None. Every band likelihood ratio and risk is fromMemory; listed under Needs sign-off in docs/clinical-validation/changes/evidence-exam.md. Existing score formulas unchanged.",
       "reviewPriority": "P1",
       "nextReviewDue": "2026-10-31",
-      "changeAuthority": "Any repository committer. Edit clinical-content/rules/decision-rules.json, copy it to lib/pane-engine/src/evidence/ and ios/AmiseMedFlow/Resources/DecisionRules.json, run scripts/src/gen-exam-evidence-db.ts, bump the version and add a changelog entry.",
+      "changeAuthority": "Any repository committer. Edit the shared file clinical-content/rules/decision-rules.json (and its schema and types for a new field; lint:shared-content), run scripts/src/gen-exam-evidence-db.ts, bump the version and add a changelog entry.",
       "notes": "24 rules (15 diagnostic, 9 prognostic). A rule counts only when its value is recorded by the clinician (web: Use in decision support; iOS: the stored calculator result). Prognostic rules never change the differential. Rules without a web target diagnosis (Ottawa, NEXUS, Canadian C-spine, Centor) show the finding's post-test probability. iOS has no calculator yet for Ottawa, Canadian CT head, NEXUS, Canadian C-spine, STONE (the iOS 'STONE' is a different score) or the syncope rules.",
       "changelog": [
         {"version": "1.0.0", "date": "2026-09-26", "change": "First version (evidence-exam), with the web calculators for AIR, PERC, Ottawa ankle / knee, Canadian CT head, NEXUS, Canadian C-spine, Centor/McIsaac, STONE, LRINEC, San Francisco syncope rule and the Canadian syncope risk score. See docs/clinical-validation/changes/evidence-exam.md."}

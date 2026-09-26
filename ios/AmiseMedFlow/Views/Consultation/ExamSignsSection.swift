@@ -2,7 +2,7 @@
 // Exam step — "High-yield signs" (evidence-exam 1.0.0). Deterministic; no AI.
 //
 // Offers the evidence-based signs for the complaint and the leading differential
-// (Resources/ExamSigns.json), those for the leading diagnoses first, then by the size of their
+// (clinical-content/rules/exam-signs.json), those for the leading diagnoses first, then by the size of their
 // likelihood ratio. Each sign is present / absent / not examined; tapping its name shows how to
 // elicit it and its likelihood ratios. Nothing is pre-filled: an unmarked sign was not examined,
 // and only an examined, absent sign whose absence is meaningful lowers a diagnosis. The choice is

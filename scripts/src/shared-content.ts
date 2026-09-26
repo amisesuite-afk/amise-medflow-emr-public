@@ -74,10 +74,38 @@ export const SHARED_CONTENT: SharedContentFile[] = [
     swift: { files: ['ios/AmiseMedFlow/Services/LifestylePractices.swift'], root: 'LifestylePractices.Content', ignore: HEADER_IGNORE },
     ts: { files: ['lib/triage-engine/src/lifestyle-practices.ts'], root: 'LifestyleContent', ignore: ['/$schema', '/$comment'] },
   },
+  // Evidence-exam catalogues. iOS ignores the review header and prose (shown on the web and in the
+  // change log), the PANE target ids (`pane`), `alsoTargets` / `supersedes` / `twins` (web mapper
+  // only: on iOS the secondary targets and superseded twins are already in DiagnosticDatabase.json,
+  // gen-exam-evidence-db.ts) and the web calculator key.
+  {
+    name: 'exam-signs',
+    regexLists: [],
+    swift: { files: ['ios/AmiseMedFlow/Services/ExamEvidenceCatalogue.swift'], root: 'ExamEvidenceCatalogue.SignsFile', ignore: [
+      ...HEADER_IGNORE, '/title', '/updated', '/lastReviewed', '/reviewer', '/reference', '/conversion', '/engineModes',
+      '/absencePolicy', '/targetGroups/*/pane', '/signs/*/alsoTargets', '/signs/*/supersedes', '/signs/*/twins',
+    ] },
+    ts: { files: ['lib/pane-engine/src/evidence/types.ts'], root: 'ExamSignsContent', ignore: ['/$schema', '/$comment'] },
+  },
+  {
+    name: 'decision-rules',
+    regexLists: [],
+    swift: { files: ['ios/AmiseMedFlow/Services/ExamEvidenceCatalogue.swift'], root: 'ExamEvidenceCatalogue.RulesFile', ignore: [
+      ...HEADER_IGNORE, '/title', '/updated', '/lastReviewed', '/reviewer', '/reference', '/evidencePolicy',
+      '/rules/*/target/pane', '/rules/*/target/ios', '/rules/*/web',
+    ] },
+    ts: { files: ['lib/pane-engine/src/evidence/types.ts'], root: 'DecisionRulesContent', ignore: ['/$schema', '/$comment'] },
+  },
 ];
 
 /** Platform copies replaced by a shared file: they must not come back. */
-export const RETIRED_COPIES = ['ios/AmiseMedFlow/Resources/ZebraRules.json'];
+export const RETIRED_COPIES = [
+  'ios/AmiseMedFlow/Resources/ZebraRules.json',
+  'ios/AmiseMedFlow/Resources/ExamSigns.json',
+  'ios/AmiseMedFlow/Resources/DecisionRules.json',
+  'lib/pane-engine/src/evidence/exam-signs.json',
+  'lib/pane-engine/src/evidence/decision-rules.json',
+];
 
 // ── JSON Schema helpers ──────────────────────────────────────────────────────────────────────
 
