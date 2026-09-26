@@ -26,6 +26,7 @@
  * clinical-content/registry.json (`supplement-catalogue`); bump the JSON `version` with a changelog.
  */
 import rawSupplementCatalogue from '../../../../clinical-content/rules/supplement-catalogue.json';
+import { activeBody } from './approved-content-store';
 import { DRUG_TERMS, containsWholeWord, parseMember } from './drug-classes';
 
 export interface SupplementItem {
@@ -73,7 +74,19 @@ const CONTENT = rawSupplementCatalogue as SupplementCatalogueContent;
 
 export const SUPPLEMENT_CATALOGUE_VERSION: string = CONTENT.version;
 
+/** The bundled catalogue items. Lookups use `activeSupplementItems()` (below). */
 export const SUPPLEMENT_ITEMS: SupplementItem[] = CONTENT.items;
+
+/**
+ * The catalogue items in force: an approved, verified release of supplement-catalogue.json
+ * (approved-content channel, docs/APPROVED-CONTENT-CHANNEL.md; only `items` may change through it,
+ * so the wording below — including the patient paragraph — is always the bundled, CI-linted text),
+ * else the bundled items.
+ */
+export function activeSupplementItems(): SupplementItem[] {
+  const items = activeBody(CONTENT.id)?.items;
+  return Array.isArray(items) ? (items as SupplementItem[]) : SUPPLEMENT_ITEMS;
+}
 
 // ── Shared wording (the same JSON fields on iOS) ─────────────────────────────────────────
 
@@ -111,10 +124,23 @@ export function supplementPrompt(id: string): SupplementPromptText {
 
 // ── Lookup ───────────────────────────────────────────────────────────────────────────────
 
-const byId = new Map(SUPPLEMENT_ITEMS.map(i => [i.id, i]));
+const bundledById = new Map(SUPPLEMENT_ITEMS.map(i => [i.id, i]));
+let activeIndex: { items: SupplementItem[]; byId: Map<string, SupplementItem> } = { items: SUPPLEMENT_ITEMS, byId: bundledById };
 
+function activeById(): Map<string, SupplementItem> {
+  const items = activeSupplementItems();
+  if (activeIndex.items !== items) activeIndex = { items, byId: new Map(items.map(i => [i.id, i])) };
+  return activeIndex.byId;
+}
+
+/** The item in force with this id (a release's version of it), else the bundled one. */
 export function supplementById(id: string | null | undefined): SupplementItem | undefined {
-  return id ? byId.get(id) : undefined;
+  return id ? activeById().get(id) ?? bundledById.get(id) : undefined;
+}
+
+/** A stored catalogue id is kept when either the bundled or the active catalogue knows it. */
+function knownCatalogueId(id: string): boolean {
+  return bundledById.has(id) || activeById().has(id);
 }
 
 /** Every name of an item (lowercased): the term's members, or the item's own `names`. */
@@ -127,14 +153,15 @@ export function supplementNames(item: SupplementItem): string[] {
 export function matchSupplements(text: string): SupplementItem[] {
   const lc = text.trim().toLowerCase();
   if (!lc) return [];
-  return SUPPLEMENT_ITEMS.filter(item => supplementNames(item).some(n => containsWholeWord(n, lc)));
+  return activeSupplementItems().filter(item => supplementNames(item).some(n => containsWholeWord(n, lc)));
 }
 
 /** Search for the picker: label or any name starting with / containing the query. */
 export function searchSupplements(query: string): SupplementItem[] {
   const q = query.trim().toLowerCase();
-  if (!q) return SUPPLEMENT_ITEMS;
-  return SUPPLEMENT_ITEMS.filter(item =>
+  const items = activeSupplementItems();
+  if (!q) return items;
+  return items.filter(item =>
     item.label.toLowerCase().includes(q) || supplementNames(item).some(n => n.includes(q)));
 }
 
@@ -183,7 +210,7 @@ export function normaliseSupplementHistory(raw: unknown): SupplementHistory {
         if (!name) return [];
         return [{
           id: typeof x.id === 'string' && x.id ? x.id : `entry-${i}`,
-          catalogueId: typeof x.catalogueId === 'string' && byId.has(x.catalogueId) ? x.catalogueId : null,
+          catalogueId: typeof x.catalogueId === 'string' && knownCatalogueId(x.catalogueId) ? x.catalogueId : null,
           name,
           details: typeof x.details === 'string' ? x.details : '',
         }];

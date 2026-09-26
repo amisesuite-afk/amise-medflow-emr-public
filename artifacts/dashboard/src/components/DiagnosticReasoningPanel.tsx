@@ -13,12 +13,13 @@
 import { useEffect, useMemo, useState } from 'react';
 import { DISEASES, applyModifiers } from '@workspace/pane-engine';
 import type { EvidenceLine, Explanation, LongitudinalInput, MeasurementPoint } from '@workspace/triage-engine/diagnostic-reasoning';
-import { fmtPct, formatLr, lowerFirst, TIME_OUT_SOURCES, ZEBRA_RULES_VERSION } from '@workspace/triage-engine/diagnostic-reasoning';
+import { fmtPct, formatLr, lowerFirst, TIME_OUT_SOURCES } from '@workspace/triage-engine/diagnostic-reasoning';
 import CollapsibleCard from '@/components/CollapsibleCard';
 import { useAppContext } from '@/context/AppContext';
 import { isConfirmedDiagnosis } from '@/lib/diagnosis-suggestion';
+import { useApprovedContentRevision } from '@/hooks/useApprovedContent';
 import {
-  buildDiagnosticReasoning, news2Series, numericLabs, reasoningRecordText,
+  activeZebraRulesVersion, buildDiagnosticReasoning, news2Series, numericLabs, reasoningRecordText,
 } from '@/lib/diagnostic-reasoning';
 import type { EvidenceMove, ExamEvidenceLine } from '@/lib/diagnostic-reasoning';
 import { paneContextFromConsultation } from '@/lib/socrates-to-features';
@@ -212,6 +213,9 @@ export default function DiagnosticReasoningPanel() {
     return () => { live = false; };
   }, [patientId, encounterId]);
 
+  // Changes when an approved zebra-rules release has loaded (approved-content channel).
+  const contentRevision = useApprovedContentRevision();
+
   const reasoning = useMemo(() => {
     if (!paneState || Object.keys(paneState.answered ?? {}).length === 0) return null;
     const diseases = applyModifiers(DISEASES, parseInt(age, 10) || null, sex, undefined, { pregnancyPossible });
@@ -270,7 +274,7 @@ export default function DiagnosticReasoningPanel() {
     });
   // `app` is read only for the consultation text fields; the listed values cover its changes.
   // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [paneState, age, sex, pregnancyPossible, workingDiagnosis, vitals, vitalRecords, labRecords, investigationResults,
+  }, [contentRevision, paneState, age, sex, pregnancyPossible, workingDiagnosis, vitals, vitalRecords, labRecords, investigationResults,
     symptoms, comorbidities, medications, surgicalHistory, supplementHistory, freeText, procedureData, encounters, labRows,
     encounterId, app.hpiNotes, app.pmhNotes, app.examAbdomen, app.examGeneral, app.examCardio, app.examResp, app.examNeuro,
     app.examNotes, app.medicationsText, app.toxicHabits, app.examFindings, app.clinicalScores]);
@@ -437,7 +441,7 @@ export default function DiagnosticReasoningPanel() {
             )}
 
             <div style={{ fontSize: 10.5, color: C.muted }}>
-              Diagnostic reasoning {reasoning.version} · zebra rules {ZEBRA_RULES_VERSION} · unreviewed content awaiting the surgeon&apos;s sign-off.
+              Diagnostic reasoning {reasoning.version} · zebra rules {activeZebraRulesVersion()} · unreviewed content awaiting the surgeon&apos;s sign-off.
               The clinician decides; the engine only explains its own numbers.
             </div>
           </>

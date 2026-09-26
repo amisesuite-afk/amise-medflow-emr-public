@@ -11,6 +11,7 @@ import LoginPage from '@/components/LoginPage';
 import IdleLock from '@/components/IdleLock';
 import MobileEncounterPage from '@/pages/MobileEncounterPage';
 import PwaUpdatePrompt from '@/components/PwaUpdatePrompt';
+import { loadApprovedContent } from '@/lib/approved-content';
 
 const IS_MOBILE_PATH = typeof window !== 'undefined' && window.location.pathname.startsWith('/mobile');
 
@@ -63,6 +64,13 @@ class ErrorBoundary extends React.Component<
 
 function AuthGuard() {
   const { profile, loading, sessionExpired, signedOutForInactivity } = useAuth();
+
+  // Approved-content channel: once per session after sign-in, pick up any verified, signed-off
+  // release of a shared rule file (Migration 98; absent table or any failure → bundled files).
+  const profileId = profile?.id ?? null;
+  React.useEffect(() => {
+    if (profileId) void loadApprovedContent();
+  }, [profileId]);
 
   if (loading) {
     return (

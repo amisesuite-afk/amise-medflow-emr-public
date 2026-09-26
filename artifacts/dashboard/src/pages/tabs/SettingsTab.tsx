@@ -4,6 +4,7 @@ import { useAuth } from '@/context/AuthContext';
 import { getApiOrigin } from '@/lib/api-origin';
 import AIProviderSettings from '@/components/AIProviderSettings';
 import ReferenceRangesSettings from '@/components/lab-feed/ReferenceRangesSettings';
+import ClinicalContentSettings from '@/components/ClinicalContentSettings';
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 
@@ -362,6 +363,7 @@ export default function SettingsTab() {
       <ProfileSection />
       <UserManagement />
       {profile.role === 'admin' && <ReferenceRangesSettings />}
+      <ClinicalContentSettings />
       <NotificationPrefs />
       <PracticeInfo />
     </div>

@@ -25,16 +25,35 @@ import {
   adapterClosureAlerts, classifyProbeCost, competesForEvidence as sharedCompetesForEvidence, derivedLabTerms, diagnosticTimeOut,
   discriminatorWhy, explain, fmtPct, longitudinalPatterns, matchZebras, namedInDiagnosis as sharedNamedInDiagnosis,
   rankDiscriminators, resolveWorkingIndex, unexplainedFindings, CONTRADICTION_MAX_LR, DIAGNOSTIC_REASONING_VERSION, REASONING_RULES,
+  ZEBRA_RULES, ZEBRA_RULES_VERSION,
 } from '@workspace/triage-engine/diagnostic-reasoning';
 import type {
   ClosureAlert, Explanation, FindingWeight, LabValue, LongitudinalInput, LongitudinalPatterns, LongitudinalVisit,
   ProbeCandidate, ProbeKind, RankedProbe, ReasoningFinding, ReasoningHypothesis, ReasoningInput, TimeOutResult,
-  ZebraMatch,
+  ZebraMatch, ZebraRule,
 } from '@workspace/triage-engine/diagnostic-reasoning';
 import { evaluateNews2, joinClauses } from '@workspace/triage-engine';
 import type { News2Avpu } from '@workspace/triage-engine';
 import { isSameProblem } from '@workspace/triage-engine/visit-continuity';
 import { familyOf } from './diagnosis-families';
+import { activeBody, activeVersion } from './approved-content-store';
+
+/** Content id of clinical-content/rules/zebra-rules.json (its `id`, the registry id). */
+export const ZEBRA_CONTENT_ID = 'diagnostic-reasoning-zebras';
+
+/**
+ * The zebra rules in force: an approved, verified release (approved-content channel,
+ * docs/APPROVED-CONTENT-CHANNEL.md), else the bundled rules. Read at call time.
+ */
+export function activeZebraRules(): ZebraRule[] {
+  const rules = activeBody(ZEBRA_CONTENT_ID)?.rules;
+  return Array.isArray(rules) ? (rules as ZebraRule[]) : ZEBRA_RULES;
+}
+
+/** Version of the zebra rules in force (shown on the reasoning panel). */
+export function activeZebraRulesVersion(): string {
+  return activeVersion(ZEBRA_CONTENT_ID, ZEBRA_RULES_VERSION);
+}
 
 /**
  * Version of the web adapter's own rules (PANE evidence: LRs from feature likelihoods and background
@@ -505,7 +524,7 @@ export function buildDiagnosticReasoning(req: ReasoningRequest): DiagnosticReaso
     pancreatitisVisits >= 1 ? 'History of pancreatitis (earlier visit)' : null,
   ]);
   const topIds = new Set(top.map(d => d.id));
-  const zebras = matchZebras(zebraText).map(z => ({ ...z, inDifferential: z.paneId !== null && topIds.has(z.paneId) }));
+  const zebras = matchZebras(zebraText, activeZebraRules()).map(z => ({ ...z, inDifferential: z.paneId !== null && topIds.has(z.paneId) }));
   const exam = examEvidenceLines(req.state, req.diseases, nodes, req.evidence);
 
   return {
