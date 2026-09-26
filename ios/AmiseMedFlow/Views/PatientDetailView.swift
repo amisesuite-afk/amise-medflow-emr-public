@@ -79,6 +79,9 @@ struct PatientDetailView: View {
                     .foregroundStyle(.secondary)
                     .lineLimit(1)
             }
+            // The whole tile is the target: with the plain style, the gap between icon and label
+            // (and the space beside a short icon) did not take a tap.
+            .contentShape(Rectangle())
         }
         .buttonStyle(.plain)
         .dynamicTypeSize(...DynamicTypeSize.accessibility2)
@@ -97,6 +100,19 @@ struct PatientDetailView: View {
 
     private var liveBody: some View {
         NavigationStack {
+          VStack(spacing: 0) {
+            // Safety strip under the name on every tab (UX review M3): NEWS2 with band colour and
+            // age, every allergy, the antithrombotic, at readable Dynamic Type sizes.
+            // A sibling ABOVE the TabView, not a .safeAreaInset on it: a TabView does not pass an
+            // outer inset on to its pages, so the strip was drawn over the top of the Overview tab
+            // and a tall strip (three items wrap onto three lines) covered the quick actions —
+            // a tap on "Prescriptions" landed on the strip and did nothing (walkthrough runs
+            // 36195058935 and 36200720807, patient on warfarin with an allergy).
+            RecordSafetyStrip(patient: patient)
+                .padding(.horizontal, 16).padding(.vertical, 6)
+                .frame(maxWidth: .infinity, alignment: .leading)
+                .background(.bar)
+            Divider()
             TabView(selection: $selectedTab) {
                 VStack(spacing: 0) {
                     quickActionsStrip
@@ -125,14 +141,7 @@ struct PatientDetailView: View {
                     .tag(PatientTab.demographics)
                     .tabItem { Label("Details", systemImage: "square.and.pencil") }
             }
-            // Safety strip under the name on every tab (UX review M3): NEWS2 with band colour and
-            // age, every allergy, the antithrombotic, at readable Dynamic Type sizes.
-            .safeAreaInset(edge: .top, spacing: 0) {
-                RecordSafetyStrip(patient: patient)
-                    .padding(.horizontal, 16).padding(.vertical, 6)
-                    .frame(maxWidth: .infinity, alignment: .leading)
-                    .background(.bar)
-            }
+          }
             .background(Color(.systemBackground))
             .navigationTitle(patient.fullName)
             .navigationBarTitleDisplayMode(.inline)

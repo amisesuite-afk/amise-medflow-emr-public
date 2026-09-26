@@ -393,7 +393,10 @@ struct ConsultationView: View {
                 } label: {
                     HStack(spacing: 4) {
                         Image(systemName: encounterSavedFeedback ? "archivebox.fill" : "archivebox")
-                        Text(encounterSavedFeedback ? "Saved" : "Save snapshot")
+                        // Same text before and after: changing it re-laid out the navigation bar
+                        // for two seconds, moving the Complete button just as it is reached for.
+                        // The filled green icon is the feedback (and "Saved" for VoiceOver).
+                        Text("Save snapshot")
                             .scaledFont(size: 13, weight: .semibold, relativeTo: .footnote)
                     }
                     .foregroundStyle(encounterSavedFeedback ? Color.green : AMColor.accent)
