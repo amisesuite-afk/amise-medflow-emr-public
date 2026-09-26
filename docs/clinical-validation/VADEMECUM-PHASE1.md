@@ -256,11 +256,18 @@ an investigation), and count "order the deciding test" as the stop for a can't-m
   "gallstones on imaging with no biliary symptoms" (gallstones present, RUQ / episodic pain, fever and
   jaundice absent) instead of a phrase match.
 
-## Production findings (not changed here)
+## Production findings (fixed 2026-09-26, after the merge)
 
-- The dashboard TG18 cholecystitis auto-fill reads "wall thickening" in any imaging report as gallbladder
-  wall thickening (criterion C), giving "definite" TG18 for an inflamed appendix on MRI and for a liver
-  abscess. Fix proposal in the change log.
-- The web PANE mapper sets some findings the record negates or does not support (`wound_discharge` with
-  "no wound discharge" in the negatives; `skin_necrosis` from "necrotising pancreatitis"). To investigate
-  in `socrates-to-features.ts`.
+- **TG18 wall thickening (fixed).** `tg18-autofill.ts` now reads "wall thickening", "thick-walled" and a
+  non-enhancing wall only in sentences about the gallbladder (`gallbladderSentences()`: the sentence names
+  the gallbladder / GB / pericholecystic, or follows one and names no other walled organ). An inflamed
+  appendix, a sigmoid colon or a liver abscess no longer auto-fills criterion C. Tests in `web-last-gaps.test.ts`.
+- **`skin_necrosis` from internal necrosis (fixed).** The mapper no longer reads "necrotising pancreatitis",
+  "pancreatic / walled-off necrosis", necrotic nodes or tumours, or "gangrenous cholecystitis / appendicitis /
+  bowel" as skin necrosis; skin necrosis, bullae, dusky skin, necrotising fasciitis and Fournier's gangrene
+  still set it. Tests in `socrates-to-features.test.ts`.
+- **`wound_discharge` (not a production bug).** It came from the shadow runner's own "Negatives" text; the
+  dashboard never builds that header. A clinician typing "Negatives: cough, fever, wound discharge." as a
+  header list would still set it, because the shared negation module has no list-header cue; adding one is
+  a web/iOS twin change (`negation.ts` / `NegationMatcher.swift`) left for the negation phase of the
+  shared-content plan.

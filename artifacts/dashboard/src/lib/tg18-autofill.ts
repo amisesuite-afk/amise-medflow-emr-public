@@ -132,6 +132,34 @@ export function tokyoCholangitisAutoFill(r: Tg18Record): Partial<TokyoCholangiti
   };
 }
 
+const GALLBLADDER = /\b(gall ?bladder|gb|cholecyst\w*|pericholecystic)\b/i;
+/** Organs whose wall a report may call thickened; a sentence naming one is not about the gallbladder. */
+const OTHER_WALLED = /\b(append\w*|caec\w*|cecum|colon\w*|sigmoid|rect\w*|ile\w*|jejun\w*|duoden\w*|stomach|gastric|antr\w*|oesophag\w*|esophag\w*|bowel|intestin\w*|small bowel|urinary bladder|bladder wall|uter\w*|endometri\w*|abscess|cyst\b|collection|aort\w*|cardiac|ventric\w*|bronch\w*|pleura\w*)\b/i;
+
+/**
+ * Sentences of an imaging report that describe the gallbladder: the sentence names it, or it
+ * follows a gallbladder sentence and names no other walled organ ("Gallbladder contains stones.
+ * Wall thickened to 6 mm."). Before 2026-09-26 a "wall thickening" anywhere in the report counted
+ * as gallbladder wall thickening, so an inflamed appendix on MRI or a thick-walled liver abscess
+ * auto-filled TG18 imaging (vademecum phase-1 shadow run).
+ */
+export function gallbladderSentences(report: string): string[] {
+  const sentences = report.split(/(?<!\d)\.(?!\d)|[;\n]/).map(s => s.trim()).filter(Boolean);
+  const out: string[] = [];
+  let previousWasGallbladder = false;
+  for (const s of sentences) {
+    const namesGb = GALLBLADDER.test(s);
+    const namesOther = OTHER_WALLED.test(s.replace(/\bgall ?bladder\b/gi, ''));
+    if (namesGb || (previousWasGallbladder && !namesOther)) {
+      out.push(s);
+      previousWasGallbladder = true;
+    } else {
+      previousWasGallbladder = false;
+    }
+  }
+  return out;
+}
+
 /** Tokyo cholecystitis inputs pre-filled from the record (Yokoe 2018). */
 export function tokyoCholecystitisAutoFill(r: Tg18Record): Partial<TokyoCholecystitisInputs> {
   const exam = r.examText;
@@ -148,14 +176,17 @@ export function tokyoCholecystitisAutoFill(r: Tg18Record): Partial<TokyoCholecys
     /\b(right upper quadrant|ruq)\b[^.;\n]{0,20}\bmass\b/,
   ]);
   const imaging = (terms: Array<string | RegExp>) => reports.some(rep => containsAnyAffirmed(rep, terms));
+  // Wall findings count only in sentences about the gallbladder.
+  const gbImaging = (terms: Array<string | RegExp>) =>
+    reports.some(rep => gallbladderSentences(rep).some(s => containsAnyAffirmed(s, terms)));
   return {
     murphy_sign: murphy,
     ruq_pain_mass_tenderness: ruq,
-    us_wall_thickening: imaging([/\bwall (thickened|thickening)\b/, /\bthick(ened)?[- ]walled\b/, /\bgallbladder wall\b[^.;\n]{0,20}\b(thick\w*|oedema\w*|edema\w*)\b/]),
+    us_wall_thickening: gbImaging([/\bwall (thickened|thickening)\b/, /\bthick(ened)?[- ]walled\b/, /\bgallbladder wall\b[^.;\n]{0,20}\b(thick\w*|oedema\w*|edema\w*)\b/]),
     us_pericholecystic_fluid: imaging(['pericholecystic fluid', 'pericholecystic collection']),
     us_gb_enlargement: imaging([/\b(distended|enlarged|hydropic) gallbladder\b/, /\bgallbladder\b[^.;\n]{0,15}\b(distended|enlarged)\b/]),
     us_echo_slurry: imaging(['sludge', 'debris', 'echogenic slurry']),
-    us_non_enhanced_area: imaging([/\bnon-?enhanc\w*\b[^.;\n]{0,30}\b(gallbladder )?wall\b/]),
+    us_non_enhanced_area: gbImaging([/\bnon-?enhanc\w*\b[^.;\n]{0,30}\b(gallbladder )?wall\b/]),
     palpable_tender_mass: mass,
     duration_over_72h: durationOver72h(r.historyText),
     marked_local_inflammation: imaging(['gangren', 'emphysematous', 'intramural gas', 'pericholecystic abscess', 'hepatic abscess', 'gallbladder perforation', 'perforated gallbladder'])

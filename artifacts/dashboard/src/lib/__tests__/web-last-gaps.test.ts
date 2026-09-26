@@ -94,6 +94,15 @@ describe('TG18 auto-fill from the record (mirrors iOS 1f50221)', () => {
     expect(auto.palpable_tender_mass).toBe(false);
     expect(scoreTokyoCholecystitis(auto, labs, { temperatureC: 38.2 }).score).toBe(1);
   });
+  it('wall thickening of another organ is not gallbladder wall thickening', () => {
+    const fill = (rep: string) => tokyoCholecystitisAutoFill(record({ imagingReports: [rep] })).us_wall_thickening;
+    expect(fill('Dilated appendix measuring 9 mm with wall thickening and periappendiceal fat stranding. Gallbladder normal.')).toBe(false);
+    expect(fill('Thick-walled abscess in segment 7 of the liver, 6 cm.')).toBe(false);
+    expect(fill('Sigmoid colon wall thickening with adjacent diverticula.')).toBe(false);
+    expect(fill('Gallbladder contains multiple stones. Wall thickened to 6 mm.')).toBe(true);
+    expect(fill('Gallbladder contains stones. Appendix shows wall thickening.')).toBe(false);
+    expect(fill('Thick-walled gallbladder, 5.5 mm, with sludge.')).toBe(true);
+  });
   it('an equivocal Murphy\'s sign is not auto-ticked', () => {
     expect(tokyoCholecystitisAutoFill(record({ examText: 'Murphy\'s sign equivocal.' })).murphy_sign).toBe(false);
   });

@@ -148,3 +148,20 @@ describe('paneContextFromConsultation', () => {
     expect(ctx.narrative).toEqual(['Referral: ?appendicitis', 'Soft', 'Throat red']);
   });
 });
+
+describe('skin necrosis is skin, not an internal organ (vademecum phase-1 shadow run)', () => {
+  const necrosis = (text: string) =>
+    extractFeaturesFromSocrates('Acute abdominal pain', {}, { narrative: [text] }).skin_necrosis;
+  it('pancreatic, nodal and bowel necrosis do not set it', () => {
+    expect(necrosis('CT: acute necrotising pancreatitis with 30% pancreatic necrosis.')).toBeUndefined();
+    expect(necrosis('Necrotic lymph nodes at the porta hepatis.')).toBeUndefined();
+    expect(necrosis('Gangrenous cholecystitis at operation.')).toBeUndefined();
+    expect(necrosis('Walled-off necrosis in the lesser sac.')).toBeUndefined();
+  });
+  it('skin and soft-tissue necrosis still do', () => {
+    expect(necrosis('Dusky skin over the flank with bullae.')).toBe(true);
+    expect(necrosis('Necrotic skin edges at the wound.')).toBe(true);
+    expect(necrosis('Necrotising fasciitis suspected; skin necrosis over the thigh.')).toBe(true);
+    expect(necrosis('Fournier\'s gangrene of the perineum.')).toBe(true);
+  });
+});

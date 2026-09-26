@@ -453,7 +453,9 @@ const TEXT_RULES: Rule[] = [
   r(/\bpus\b|\bpurulent\b|\bdischarging (pus|sinus)\b|\boozing pus\b/, 'discharge_pus'),
   r(/\b(tender|painful) (lump|swelling|area|red)\b|\bexquisitely tender\b|\bvery painful\b/, 'localised_pain'),
   r(/\bcrepitus\b|\bcrepitant\b|\bgas in (the )?(soft tissue|tissues|tissue planes)\b|\bsoft.tissue gas\b|\bsubcutaneous gas\b/, 'crepitus_soft_tissue'),
-  r(/\bnecros\w*|\bnecrotic\b|\bbullae\b|\bblack(ened)? skin\b|\bdusky\b|\bgangren\w*|\bskin (is )?(grey|gray|purple)\b/, 'skin_necrosis'),
+  // Necrosis of an internal organ or a tumour ("necrotising pancreatitis", "pancreatic necrosis",
+  // "necrotic lymph node") is not skin necrosis (vademecum phase-1 shadow run, 2026-09-26).
+  r(/\b(?<!(pancrea\w*|walled.off|fat|tubular|avascular|papillary|hepatic|bowel|intestinal|tumou?r|nodal|central) )(necros\w*|necrotic)\b(?![^.;\n]{0,25}\b(pancrea\w*|enterocol\w*|lymph|node|nodes|tumou?r|mass|centre|center|core|bowel|liver|kidney|renal|papilla\w*|femoral head|bone)\b)|\bbullae\b|\bblack(ened)? skin\b|\bdusky\b|\bgangren\w*\b(?! (cholecyst\w*|append\w*|gall ?bladder|bowel|small bowel|colon|colitis|intestin\w*|loop|segment|ischaemi\w*))|\bskin (is )?(grey|gray|purple)\b/, 'skin_necrosis'),
   r(/\bfoot (ulcer|infection|wound|swelling)\b|\b(ulcer|wound) (on|of) the (foot|toe|heel|sole)\b|\btoe (ulcer|infection)\b|\bdiabetic foot\b|\bplantar ulcer\b|\btoe \/ digit\b|\bforefoot\b/, 'foot_problem'),
   r(/\bfoot ulcer\b|\b(ulcer|wound) (on|of) the (foot|toe|heel|sole)\b|\btoe ulcer\b|\bplantar ulcer\b/, 'foot_ulcer'),
   r(/\bprobe.to.bone\b|\bprobes to bone\b|\bbone (is )?(exposed|visible)\b|\bexposed bone\b|\bosteomyelitis\b/, 'probe_to_bone'),
