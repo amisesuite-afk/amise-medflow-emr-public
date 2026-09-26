@@ -35,6 +35,8 @@
 
 import { joinClauses } from '@workspace/triage-engine';
 import { CURRENT_FEATURES, findRecordMatches, negationFreeGaps, notCurrentAt, recordHas, sentenceOf } from './record-text-match';
+import type { RecordedEvidence } from '@workspace/pane-engine';
+import { EXAM_SIGNS_KEY, recordedEvidence, withExamEvidence } from './exam-evidence-features';
 
 type FeatureMap = Record<string, boolean>;
 
@@ -61,6 +63,11 @@ export interface PaneFeatureContext {
   examFindings?: Record<string, string[]>;
   /** Clinician free text: intake / referral text, HPI narrative, examination notes. */
   narrative?: string[];
+  /**
+   * Exam-step sign chips and clinician-recorded decision rules (exam-evidence-features.ts,
+   * evidence-exam 1.0.0), applied last: a chip supersedes its free-text twin.
+   */
+  evidence?: RecordedEvidence;
 }
 
 /**
@@ -1208,7 +1215,9 @@ export function extractFeaturesFromSocrates(
   // unless something else says so; keep it but it is weak (base rate 0.04).
 
   // Only present findings, plus the explicit gate negatives set in extractFromContext.
-  return Object.fromEntries(Object.entries(out).filter(([, v]) => v === true || v === false));
+  const result = Object.fromEntries(Object.entries(out).filter(([, v]) => v === true || v === false));
+  // Examination signs (present, or examined and absent) and recorded decision rules come last.
+  return withExamEvidence(result, context?.evidence);
 }
 
 function extractFromContext(ctx: PaneFeatureContext, out: FeatureMap, cc: string): void {
@@ -1228,8 +1237,9 @@ function extractFromContext(ctx: PaneFeatureContext, out: FeatureMap, cc: string
   }
   // Examination chips (section: [chip, ...])
   for (const [section, chips] of Object.entries(ctx.examFindings ?? {})) {
+    // The sign chips are structured evidence (exam-evidence-features.ts), not free text.
+    if (section === EXAM_SIGNS_KEY) continue;
     for (const chip of chips) applyRules(`${chip}`, TEXT_RULES, out, cc);
-    void section;
   }
   // History lists
   for (const item of [...(ctx.comorbidities ?? []), ...(ctx.medications ?? []), ...(ctx.surgicalHistory ?? [])]) {
@@ -1310,6 +1320,8 @@ export interface ConsultationSnapshot {
   examWound: string;
   /** Other examination sections (AppContext.examNotes). */
   examNotes: Record<string, string>;
+  /** encounters.clinical_scores: the decision rules recorded for decision support. */
+  clinicalScores: Record<string, unknown> | null;
 }
 
 function optNum(v: string | undefined | null): number | null {
@@ -1343,6 +1355,7 @@ export function paneContextFromConsultation(s: Partial<ConsultationSnapshot>): P
     surgicalHistory: s.surgicalHistory ?? [],
     investigationResults: s.investigationResults ?? {},
     examFindings: s.examFindings ?? {},
+    evidence: recordedEvidence({ examFindings: s.examFindings, clinicalScores: s.clinicalScores, age: optNum(s.age ?? null) }),
     narrative: [
       s.freeText, s.hpiNotes, s.pmhNotes, ...(s.toxicHabits ?? []),
       s.examGeneral, s.examCardio, s.examResp, s.examAbdomen, s.examNeuro, s.examExtremities, s.examBreast, s.examWound,

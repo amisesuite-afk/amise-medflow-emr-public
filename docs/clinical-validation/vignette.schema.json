@@ -398,9 +398,14 @@
         },
         "nkda": { "type": "boolean", "description": "No known drug allergies explicitly recorded." },
         "socialHistory": { "type": "string" },
+        "examSigns": {
+          "type": "object",
+          "description": "Exam-step sign chips (clinical-content/rules/exam-signs.json ids): 'present', or 'absent' when examined and absent. An unlisted sign was not examined. Web: examFindings.signs lines; iOS: '[sign]' lines in examOther.",
+          "additionalProperties": { "enum": ["present", "absent"] }
+        },
         "scoreForms": {
           "type": "object",
-          "description": "Clinician-completed score forms keyed by canonical score key, using the canonical field names in the README (e.g. alvarado.migration, tg18-cholangitis.feverAtLeast39, organDysfunction: ['renal']).",
+          "description": "Clinician-completed score forms keyed by canonical score key, using the canonical field names in the README (e.g. alvarado.migration, tg18-cholangitis.feverAtLeast39, organDysfunction: ['renal']). A form with a numeric `total` is recorded for decision support; a decision rule in clinical-content/rules/decision-rules.json (by recordKey) is then also PANE evidence.",
           "additionalProperties": { "type": "object" }
         },
         "orders": {

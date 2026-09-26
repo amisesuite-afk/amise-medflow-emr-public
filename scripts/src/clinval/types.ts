@@ -152,6 +152,8 @@ export interface VignetteInputs {
   nkda?: boolean;
   socialHistory?: string;
   scoreForms?: Record<string, ScoreForm>;
+  /** Exam-step sign chips (clinical-content/rules/exam-signs.json ids): present, or examined and absent. */
+  examSigns?: Record<string, 'present' | 'absent'>;
   /** Planned in this visit, not yet resulted / given (investigations by name, prescriptions by drug). */
   orders?: { investigations?: string[]; prescriptions?: string[] };
   /** Herbs / supplements question: not asked (default), none, taking. */

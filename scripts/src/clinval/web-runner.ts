@@ -63,6 +63,7 @@ import {
 import { buildDecisionSupport, resultPosteriorShifts, shiftText, withRecordedScore } from '../../../artifacts/dashboard/src/lib/decision-support';
 import type { DecisionConsultation } from '../../../artifacts/dashboard/src/lib/decision-support';
 import { buildWhatsMissing } from '../../../artifacts/dashboard/src/lib/whats-missing-web';
+import { withSignState } from '../../../artifacts/dashboard/src/lib/exam-evidence-features';
 import type { MissingConsultation } from '../../../artifacts/dashboard/src/lib/whats-missing-web';
 import { whatsMissingLines } from '../../../lib/pane-engine/src/index';
 import type { DxItem, EngineOutputs, Level, ScoreForm, SourcedText, Vignette } from './types';
@@ -168,6 +169,60 @@ function socratesAnswers(v: Vignette): Record<string, string> {
   };
 }
 
+/**
+ * ExaminationTab chips plus the Exam-step sign chips (inputs.examSigns → examFindings.signs, as
+ * ExamSignsPanel writes them).
+ */
+function vignetteExamFindings(v: Vignette): Record<string, string[]> {
+  let out: Record<string, string[]> = { ...(v.inputs.platform?.web?.examFindings ?? {}) };
+  for (const [id, state] of Object.entries(v.inputs.examSigns ?? {})) out = withSignState(out, id, state);
+  return out;
+}
+
+/**
+ * The calculator values the clinician records for decision support ("Use in decision support"):
+ * the Alvarado and TG18 cholecystitis forms the harness computes, and every form with a `total`.
+ * The PANE mirror and the decision-support mirror read the same record (clinical_scores).
+ */
+function recordedScoreValues(v: Vignette): Record<string, number> {
+  const forms = v.inputs.scoreForms ?? {};
+  const out: Record<string, number> = {};
+  const alv = forms['alvarado'];
+  if (alv) {
+    out.alvarado = alvaradoScore({
+      migratoryPain: bool(alv, 'migration'), anorexia: bool(alv, 'anorexia'), nausea: bool(alv, 'nauseaVomiting'),
+      rifTenderness: bool(alv, 'rifTenderness'), rebound: bool(alv, 'rebound'), fever: bool(alv, 'temperatureRaised'),
+      wbcAbove10: bool(alv, 'wbcAbove10'), leftShift: bool(alv, 'neutrophilia'),
+    });
+  }
+  const tgk = forms['tg18-cholecystitis'];
+  if (tgk) {
+    const sv = scoringVitals(v);
+    const full = scoreTokyoCholecystitis({
+      murphy_sign: bool(tgk, 'localSigns'),
+      ruq_pain_mass_tenderness: bool(tgk, 'localSigns') || bool(tgk, 'palpableTenderRUQMass'),
+      fever: bool(tgk, 'systemicSigns') && (sv.temperatureC ?? 0) >= 38,
+      us_wall_thickening: bool(tgk, 'imagingCharacteristic'),
+      palpable_tender_mass: bool(tgk, 'palpableTenderRUQMass'),
+      duration_over_72h: bool(tgk, 'durationOver72h'),
+      marked_local_inflammation: bool(tgk, 'markedLocalInflammation'),
+      organ_dysfunction: organs(tgk),
+    }, extractedLabs(v), sv);
+    if (full.score >= 1) out['tg18-cholecystitis'] = full.score;
+  }
+  for (const key of Object.keys(forms)) {
+    const total = forms[key]?.total;
+    if (typeof total === 'number') out[key] = total;
+  }
+  return out;
+}
+
+function recordedClinicalScores(v: Vignette): Record<string, unknown> {
+  let scores: Record<string, unknown> = {};
+  for (const [key, value] of Object.entries(recordedScoreValues(v))) scores = withRecordedScore(scores, key, value, 'vignette');
+  return scores;
+}
+
 /** The AppContext fields paneContextFromConsultation reads, filled from the vignette record. */
 function consultationSnapshot(v: Vignette): Partial<ConsultationSnapshot> {
   const inp = v.inputs;
@@ -182,7 +237,8 @@ function consultationSnapshot(v: Vignette): Partial<ConsultationSnapshot> {
     postOpDays: inp.encounter.postOpDays === undefined || inp.encounter.postOpDays === null ? '' : String(inp.encounter.postOpDays),
     comorbidities: inp.comorbidities ?? [], medications: (inp.medications ?? []).map(m => m.drug),
     surgicalHistory: inp.surgicalHistory ?? [], toxicHabits: web.toxicHabits ?? [],
-    investigationResults: investigationResults(v), examFindings: web.examFindings ?? {},
+    investigationResults: investigationResults(v), examFindings: vignetteExamFindings(v),
+    clinicalScores: recordedClinicalScores(v),
     freeText: inp.chiefComplaint, hpiNotes: inp.hpi ?? '',
     examGeneral: inp.exam?.general ?? '', examCardio: inp.exam?.cardiovascular ?? '', examResp: inp.exam?.respiratory ?? '',
     examAbdomen: inp.exam?.abdomen ?? '', examNeuro: inp.exam?.neuro ?? '', examExtremities: inp.exam?.msk ?? '',
@@ -404,7 +460,7 @@ export function runWeb(v: Vignette): EngineOutputs {
   }
 
   const cdsCtx: CdsContext = {
-    symptoms, examFindings: web.examFindings ?? {}, vitals: vitalStrings(v), investigationResults: investigationResults(v),
+    symptoms, examFindings: vignetteExamFindings(v), vitals: vitalStrings(v), investigationResults: investigationResults(v),
     comorbidities: inp.comorbidities ?? [], assessment, rosFindings: {}, age: String(age), sex,
     isPostOp: inp.encounter.isPostOp ?? false, procedureData: {},
     workingDiagnosis: dx?.paneDiseaseId ? { diseaseId: dx.paneDiseaseId, source: 'clinician', locked: true } : undefined,
@@ -451,7 +507,7 @@ export function runWeb(v: Vignette): EngineOutputs {
   const scoreValues: EngineOutputs['scoreValues'] = [];
   const forms = inp.scoreForms ?? {};
   // Scores the clinician records for decision support ("Use in decision support" on the Scales step).
-  const recorded: Record<string, number> = {};
+  const recorded: Record<string, number> = recordedScoreValues(v);
   const labs = extractedLabs(v);
   const sv = scoringVitals(v);
   const tempAtLeast38 = (sv.temperatureC ?? 0) >= 38;
@@ -602,7 +658,7 @@ export function runWeb(v: Vignette): EngineOutputs {
   const missingConsultation: MissingConsultation = {
     ...decisionConsultation,
     allergies: allergyNames.length ? decisionConsultation.allergies : inp.nkda ? 'NKDA' : '',
-    plan: '', symptoms, examFindings: web.examFindings ?? {}, rosFindings: {},
+    plan: '', symptoms, examFindings: vignetteExamFindings(v), rosFindings: {},
     examGeneral: inp.exam?.general ?? '', examAbdomen: inp.exam?.abdomen ?? '', examCardio: inp.exam?.cardiovascular ?? '',
     examResp: inp.exam?.respiratory ?? '', examNeuro: inp.exam?.neuro ?? '', examExtremities: inp.exam?.msk ?? '',
     procedureData: { cc: ccEntries }, familyHistory: [], toxicHabits: web.toxicHabits ?? [],
