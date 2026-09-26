@@ -97,9 +97,6 @@
             "web.reasoning.zebra",
             "ios.reasoning.zebra"
           ],
-          "unverified": [
-            "ios"
-          ],
           "guidelineRefs": [
             "es-pa-2016"
           ],

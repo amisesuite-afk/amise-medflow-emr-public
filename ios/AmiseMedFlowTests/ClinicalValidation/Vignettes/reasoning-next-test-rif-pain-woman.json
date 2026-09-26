@@ -78,13 +78,14 @@
             "web.reasoning.discriminator",
             "ios.reasoning.discriminator"
           ],
-          "unverified": [
-            "ios"
-          ],
           "guidelineRefs": [
             "nice-ng126"
           ],
-          "note": "In a woman of reproductive age with lower abdominal pain, a pregnancy test comes before anything else (NICE NG126)."
+          "note": "In a woman of reproductive age with lower abdominal pain, a pregnancy test comes before anything else (NICE NG126).",
+          "knownGap": [
+            "ios"
+          ],
+          "knownGapNote": "iOS CI 2026-09-25 (run 36200720842): no reasoning line matched among 3 (ios.reasoning.discriminator)"
         }
       ]
     }

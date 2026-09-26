@@ -120,9 +120,6 @@
             "web.reasoning.alert",
             "ios.reasoning.alert"
           ],
-          "unverified": [
-            "ios"
-          ],
           "guidelineRefs": [
             "atlanta-2012"
           ],
@@ -137,9 +134,6 @@
           "sources": [
             "web.reasoning.alert",
             "ios.reasoning.alert"
-          ],
-          "unverified": [
-            "ios"
           ]
         }
       ]

@@ -113,9 +113,6 @@
             "web.reasoning.alert",
             "ios.reasoning.alert"
           ],
-          "unverified": [
-            "ios"
-          ],
           "guidelineRefs": [
             "rcp-news2-2017",
             "nice-ng156"

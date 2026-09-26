@@ -75,9 +75,6 @@
             "web.reasoning.discriminator",
             "ios.reasoning.discriminator"
           ],
-          "unverified": [
-            "ios"
-          ],
           "guidelineRefs": [
             "atlanta-2012"
           ],
@@ -95,10 +92,11 @@
             "web.reasoning.discriminator",
             "ios.reasoning.discriminator"
           ],
-          "unverified": [
+          "note": "No can't-miss diagnosis among the leading three: no CT, MRI or endoscopy as the next discriminator.",
+          "knownGap": [
             "ios"
           ],
-          "note": "No can't-miss diagnosis among the leading three: no CT, MRI or endoscopy as the next discriminator."
+          "knownGapNote": "iOS CI 2026-09-25 (run 36200720842): forbidden reasoning line present in ios.reasoning.discriminator: \"appendicitis on ultrasound or ct [advanced] - if positive: acute appendicitis 8% → 49%, acute pancreatitis 23% → 13%. if ne...\""
         }
       ]
     }

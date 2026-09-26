@@ -74,9 +74,6 @@
             "web.reasoning.zebra",
             "ios.reasoning.zebra"
           ],
-          "unverified": [
-            "ios"
-          ],
           "guidelineRefs": [
             "es-pheo-2014"
           ],
