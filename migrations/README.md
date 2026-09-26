@@ -507,3 +507,28 @@ are overridden here, so this step must stay after every step that creates those 
     the database update"; nothing returns a 500;
   - iOS keeps its snapshots and final diagnoses on the device (`Encounter.predictionSnapshotJson`
     / `finalDiagnosisJson`), sync-ready, with no push yet.
+
+### Migration 95 — `supabase-clinical-signoffs-migration.sql` (clinical sign-off register)
+
+- One new table, `clinical_signoffs`, for the in-app "Clinical sign-off" page (Insights →
+  Clinical sign-off; `docs/clinical-validation/changes/signoff-tool.md`). One row per decision on
+  one item of the sign-off catalogue (`artifacts/dashboard/src/data/clinical-signoff-catalogue.json`,
+  generated from every change log's "Needs sign-off" list and SURGEON-DECISIONS A–G and I):
+  `item_id` (`<changelog-slug>#<n>`), `item_hash` (the wording reviewed), `decision`
+  (`approved`, `approved_with_amendment`, `rejected`, `deferred`), `amendment` (required for an
+  amended approval, and only there), an optional `comment`, `attested` (must be true: "I have
+  reviewed this item against the cited source"), the reviewer's user id, name and role, the
+  related registry rule-set ids and a unique `client_ref` for idempotent retries.
+- Append-only for every caller, the service role included: BEFORE UPDATE / DELETE / TRUNCATE
+  triggers (`clinical_signoffs_append_only()`) raise `42501`, and a BEFORE INSERT trigger stamps
+  `decided_at` / `created_at` with the server clock. A correction is a new row; the latest row
+  for an item is its current decision.
+- RLS (Migration 89 model): doctor and admin may insert, and only as themselves
+  (`reviewer_user_id = auth.uid()`, `reviewer_role = auth_role()`); doctor, admin and nurse may
+  read; front desk and portal patients match no policy. Grants: `authenticated` SELECT/INSERT
+  only; `service_role` all four (the triggers still refuse its UPDATE / DELETE).
+- `lint:rls-policies` requires both policies. `scripts/src/signoff-migration.test.ts` checks the
+  roles, identity binding, append-only triggers and CHECKs on PGlite.
+- Independent of 87–94 and safe to apply on its own. Until it is applied the sign-off page shows
+  the catalogue read-only ("Recording decisions becomes available after the database update");
+  nothing returns a 500 and nothing is kept in the browser.

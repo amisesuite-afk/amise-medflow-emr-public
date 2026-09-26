@@ -73,6 +73,12 @@ const REQUIRED_POLICIES: Record<string, string[]> = {
     'clinicians_insert_diagnosis_outcomes',
     'clinicians_update_diagnosis_outcomes',
   ],
+  // Migration 95 (supabase-clinical-signoffs-migration.sql): nurse / doctor / admin read;
+  // doctor / admin insert as themselves; no UPDATE / DELETE policy (append-only).
+  clinical_signoffs: [
+    'clinicians_select_clinical_signoffs',
+    'reviewers_insert_clinical_signoffs',
+  ],
 };
 
 const DIRECT_ENABLE_RE =
