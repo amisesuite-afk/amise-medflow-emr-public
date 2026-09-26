@@ -1835,7 +1835,7 @@
       "citationStatus": "file-header",
       "lastReviewed": "unknown",
       "reviewer": "unknown",
-      "reviewEvidence": "None. The laboratory must confirm its codes against this table before go-live (docs/LAB-FEED.md).",
+      "reviewEvidence": "None. Sign-off list in docs/clinical-validation/changes/lab-feed.md (matching rule, LOINC map, flags). The laboratory must confirm its codes against this table before go-live (docs/LAB-FEED.md).",
       "reviewPriority": "P1",
       "nextReviewDue": "2026-12-31",
       "changeAuthority": "Any repository committer; ships on API deploy.",
