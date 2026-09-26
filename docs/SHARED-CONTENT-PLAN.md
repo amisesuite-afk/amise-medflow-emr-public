@@ -134,3 +134,14 @@ retires those twins for the migrated areas.
   `SHARED_CONTENT` entry in `shared-content.ts`, and the registry entry; `project.yml` needs nothing.
 - Regex strings must be valid in both ICU (`NSRegularExpression`) and JavaScript.
 - Patient-facing text stays under `lint:patient-instructions`, which reads the web export.
+- A new schema keyword: the approved-content channel's schema checker
+  (`lib/triage-engine/src/approved-content/schema-check.ts` and its Swift twin) is fail-closed, so
+  a keyword it does not implement makes every published release of that file fall back to the
+  bundled copy; add the keyword to both checkers (and a vector) in the same PR.
+
+## 5. Approved-content channel
+
+A signed-off version of a shared file can be published once (Migration 98,
+`clinical_content_releases`) and used by web and iOS without an app update; each platform verifies
+it and otherwise keeps the bundled file. Enabled for the zebra rules and the supplement catalogue
+items. See `docs/APPROVED-CONTENT-CHANNEL.md`.
