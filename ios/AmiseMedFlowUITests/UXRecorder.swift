@@ -285,7 +285,8 @@ final class UXRecorder {
             done.tap()
             record(["action": "tap", "target": what]) { taps += 1 }
         } else {
-            for label in ["Done", "done", "Return", "return"] {
+            // iPad: the keyboard's own "Hide keyboard" key comes before Return (which types a line).
+            for label in ["Done", "done", "Hide keyboard", "Dismiss keyboard", "Return", "return"] {
                 let key = keyboard.buttons[label]
                 if isHittableSafely(key) {
                     key.tap()

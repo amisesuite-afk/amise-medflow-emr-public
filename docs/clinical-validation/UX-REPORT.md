@@ -197,6 +197,16 @@ unchanged. The walkthrough puts the keyboard away with the keyboard toolbar's Do
 editor is multi-line, so Return only adds a line) before it reaches for Complete, and notes
 whether Complete was visible with the keyboard up.
 
+**CI run 36207742746** (branch `ux-seamless-5` follows up): every iPhone flow passed except a2,
+and Complete was visible in the navigation bar with the keyboard up and opened the review sheet.
+Both remaining failures were in the script. iPhone a2 waited for the attestation row, which the
+sheet's lazily built list had not created yet; the script now waits on what the sheet always
+builds (the patient row at the top, or "Back to visit" in its navigation bar), then scrolls to
+the attestation. The List gets no root identifier: on a container an identifier can replace
+the rows' own. iPad a2 found the Tools menu items but could not tap them while the
+keyboard was still up from typing the plan; the script now puts the keyboard away before
+opening Tools on both devices and reopens the menu once if an item is still not tappable.
+
 Other iOS flows, expected:
 
 - **(b) Add patient:** 4 taps and 1 text entry.

@@ -195,14 +195,29 @@ final class UXWalkthroughTests: XCTestCase, UXIssueReporting {
     /// navigation bar keeps Complete only, and the tools are in the step bar's More menu.
     @MainActor
     private func openTool(_ ux: UXRecorder, _ tool: String, label: String) throws {
-        if UXRecorder.isPad || ux.element("consult.tools").exists {
-            try ux.tap(ux.element("consult.tools"), "Tools menu")
-            // The menu item, never the iPad section-bar button with the same label.
-            try ux.tap(ux.menuItem(identifier: "consult.tools.\(tool)", label: label), "Tools: \(label)")
-        } else {
-            try ux.tap(ux.element("consult.more"), "More menu")
-            try ux.tap(ux.menuItem(identifier: "consult.more.\(tool)", label: label), "More → Tools: \(label)")
+        // Run 36207742746 (iPad): the keyboard was still up from typing the plan and the Tools
+        // menu's items were present but not tappable. Put it away first, as a user would.
+        if !ux.hideKeyboard() { ux.note("Keyboard still shown before Tools → \(label)") }
+        let (menu, menuWhat, itemId, itemWhat) = UXRecorder.isPad || ux.element("consult.tools").exists
+            ? ("consult.tools", "Tools menu", "consult.tools.\(tool)", "Tools: \(label)")
+            : ("consult.more", "More menu", "consult.more.\(tool)", "More → Tools: \(label)")
+        try ux.tap(ux.element(menu), menuWhat)
+        // The menu item by identifier, never the iPad section-bar button with the same label.
+        var item = ux.menuItem(identifier: itemId, label: label)
+        if !ux.isHittableSafely(item) {
+            // Still animating in, or covered: give it a moment, then reopen the menu once.
+            RunLoop.current.run(until: Date().addingTimeInterval(0.6))
+            if !ux.isHittableSafely(item) {
+                ux.note("\(itemWhat) was not tappable when the menu opened; menu reopened once")
+                ux.dismissTransientOverlays()
+                ux.hideKeyboard()
+                RunLoop.current.run(until: Date().addingTimeInterval(0.4))
+                // Reopen only if the menu closed; tapping Tools on an open menu would close it.
+                if !ux.element(itemId).exists { try ux.tap(ux.element(menu), "\(menuWhat) (again)") }
+                item = ux.menuItem(identifier: itemId, label: label)
+            }
         }
+        try ux.tap(item, itemWhat)
         // The tool is a sheet over the step, with Done (iPhone and iPad alike).
         try ux.waitFor(ux.element("consult.tools.done"), "Tools sheet (Done)", timeout: 6)
     }
@@ -274,7 +289,8 @@ final class UXWalkthroughTests: XCTestCase, UXIssueReporting {
                 + (ux.element("consult.actionsExplanation").exists ? "yes" : "no"))
         // Run 36205324814 (iPhone): with Save snapshot and Tools beside it, Complete was folded
         // into the navigation bar's "…" overflow. Now the iPhone bar holds Complete only.
-        ux.note("Complete visible in the navigation bar with the keyboard up: "
+        ux.note("Complete visible in the navigation bar"
+                + (ux.app.keyboards.firstMatch.exists ? " with the keyboard up: " : " (keyboard away): ")
                 + (ux.isHittableSafely(ux.element("consult.complete")) ? "yes" : "NO"))
         // The plan editor is multi-line (Return adds a line): put the keyboard away with the
         // keyboard toolbar's Done, as a user would before reaching for the bar.
@@ -296,7 +312,17 @@ final class UXWalkthroughTests: XCTestCase, UXIssueReporting {
         try ux.tap(ux.element("consult.complete"), "Complete")
         // Review and complete (UX review M8): missing steps, unedited auto-content, attestation.
         let attest = ux.element("consult.completeSheet.attest")
-        try ux.waitFor(attest, "Review and complete sheet")
+        // Run 36207742746 (iPhone): the attestation row is further down a lazily built list and
+        // does not exist until it is scrolled to, so wait on what is always built: the patient
+        // row at the top of the list, or the sheet's "Back to visit" in its navigation bar. (No
+        // identifier on the List itself: on a container it can replace the rows' own ones.)
+        let sheetPatient = ux.element("consult.completeSheet.patient")
+        let sheetBack = ux.element("consult.completeSheet.cancel")
+        let sheetDeadline = Date().addingTimeInterval(10)
+        while !sheetPatient.exists && !sheetBack.exists && Date() < sheetDeadline {
+            RunLoop.current.run(until: Date().addingTimeInterval(0.25))
+        }
+        try ux.waitFor(sheetPatient.exists ? sheetPatient : sheetBack, "Review and complete sheet", timeout: 1)
         ux.screen("Review and complete")
         let missing = ux.element("consult.completeSheet.missing")
         if let text = ux.label(of: missing) { ux.note("Review sheet, not yet documented: \(text)") }
