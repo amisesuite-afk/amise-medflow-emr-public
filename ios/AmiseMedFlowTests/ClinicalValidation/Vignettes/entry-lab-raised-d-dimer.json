@@ -106,10 +106,7 @@
             "pulmonary embol",
             "re:\\bpe\\b"
           ],
-          "k": 3,
-          "unverified": [
-            "ios"
-          ]
+          "k": 3
         }
       ],
       "mustNotMiss": [
@@ -119,9 +116,6 @@
           "match": [
             "pulmonary embol",
             "re:\\bpe\\b"
-          ],
-          "unverified": [
-            "ios"
           ]
         }
       ]

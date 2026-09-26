@@ -120,10 +120,7 @@
           "match": [
             "pancreatitis"
           ],
-          "k": 3,
-          "unverified": [
-            "ios"
-          ]
+          "k": 3
         }
       ],
       "mustNotMiss": [
@@ -136,10 +133,11 @@
             "aneurysm",
             "mesenteric"
           ],
-          "unverified": [
+          "note": "A raised lipase also comes with perforated ulcer, mesenteric ischaemia and a leaking aneurysm: at least one should stay on the list until examined or imaged.",
+          "knownGap": [
             "ios"
           ],
-          "note": "A raised lipase also comes with perforated ulcer, mesenteric ischaemia and a leaking aneurysm: at least one should stay on the list until examined or imaged."
+          "knownGapNote": "iOS CI (run 36246636651): not in top 5 of ios.bayes: 1. Acute Pancreatitis | 2. Chronic Pancreatitis | 3. Phaeochromocytoma | 4. Necrotising Pancreatitis | 5. Malignant Hypercalcaemia"
         }
       ]
     }

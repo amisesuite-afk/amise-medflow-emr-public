@@ -87,14 +87,12 @@
             "icd:D12"
           ],
           "k": 3,
-          "unverified": [
-            "ios"
-          ],
           "note": "The pathology is the diagnosis; the vademecum offers it to the outcomes loop as a final-diagnosis prompt (never written without the clinician).",
           "knownGap": [
-            "web"
+            "web",
+            "ios"
           ],
-          "knownGapNote": "Web PANE (2026-09-26): no adenoma diagnosis in PANE and the histology report is not read; the vademecum shadow treats the histology as definitive and prompts a final diagnosis."
+          "knownGapNote": "Web PANE (2026-09-26): no adenoma diagnosis in PANE and the histology report is not read; the vademecum shadow treats the histology as definitive and prompts a final diagnosis. | iOS CI (run 36246636651): not in top 3 of ios.bayes: 1. Oesophageal Variceal Bleeding | 2. Barrett's Oesophagus | 3. H. pylori Peptic Ulcer Disease | 4. Colorectal Polyp Adenoma | 5. Gastric Antral Vascular Ectasia; also in ios.ccEarly#4, ios.pipeline#4"
         }
       ]
     }

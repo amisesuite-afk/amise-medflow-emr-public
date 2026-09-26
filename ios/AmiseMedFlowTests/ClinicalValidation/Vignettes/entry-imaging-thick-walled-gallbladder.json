@@ -117,14 +117,12 @@
             "gallbladder cancer",
             "carcinoma of the gallbladder"
           ],
-          "unverified": [
-            "ios"
-          ],
           "note": "Focal mural thickening with weight loss: gallbladder cancer until proven otherwise (ESGAR 2022 polyp and wall-thickening guidance).",
           "knownGap": [
-            "web"
+            "web",
+            "ios"
           ],
-          "knownGapNote": "Web PANE (2026-09-26): top 3 are biliary colic, cholecystitis and CBD stones; the focal mural mass in the ultrasound report is not read. The vademecum shadow keeps gallbladder carcinoma on the list from the wall-thickening entry finding."
+          "knownGapNote": "Web PANE (2026-09-26): top 3 are biliary colic, cholecystitis and CBD stones; the focal mural mass in the ultrasound report is not read. The vademecum shadow keeps gallbladder carcinoma on the list from the wall-thickening entry finding. | iOS CI (run 36246636651): not in top 5 of ios.bayes: 1. Acute Cholecystitis | 2. Biliary Colic | 3. Non-Alcoholic Fatty Liver Disease (NAFLD/NASH) | 4. Ascending Cholangitis | 5. Acalculous Cholecystitis"
         }
       ]
     }

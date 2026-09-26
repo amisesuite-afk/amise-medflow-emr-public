@@ -106,13 +106,11 @@
             "icd:C34"
           ],
           "k": 3,
-          "unverified": [
+          "knownGap": [
+            "web",
             "ios"
           ],
-          "knownGap": [
-            "web"
-          ],
-          "knownGapNote": "Web PANE (2026-09-26): reads the complaint and history only, not the chest X-ray report, and ranks the hernia booked for repair; the vademecum shadow starts from the X-ray finding (cxr_mass) instead."
+          "knownGapNote": "Web PANE (2026-09-26): reads the complaint and history only, not the chest X-ray report, and ranks the hernia booked for repair; the vademecum shadow starts from the X-ray finding (cxr_mass) instead. | iOS CI (run 36246636651): not in top 3 of ios.bayes: 1. Community-Acquired Pneumonia | 2. Musculoskeletal Chest Wall Pain | 3. Gastro-oesophageal Reflux Disease | 4. Atrial Fibrillation | 5. Acute Coronary Syndrome; also in ios.pipeline#1"
         }
       ],
       "mustNotMiss": [
@@ -125,13 +123,11 @@
             "bronchial carcinoma",
             "icd:C34"
           ],
-          "unverified": [
+          "knownGap": [
+            "web",
             "ios"
           ],
-          "knownGap": [
-            "web"
-          ],
-          "knownGapNote": "Web PANE (2026-09-26): reads the complaint and history only, not the chest X-ray report, and ranks the hernia booked for repair; the vademecum shadow starts from the X-ray finding (cxr_mass) instead."
+          "knownGapNote": "Web PANE (2026-09-26): reads the complaint and history only, not the chest X-ray report, and ranks the hernia booked for repair; the vademecum shadow starts from the X-ray finding (cxr_mass) instead. | iOS CI (run 36246636651): not in top 5 of ios.bayes: 1. Community-Acquired Pneumonia | 2. Musculoskeletal Chest Wall Pain | 3. Gastro-oesophageal Reflux Disease | 4. Atrial Fibrillation | 5. Acute Coronary Syndrome; also in ios.pipeline#1"
         }
       ]
     }
