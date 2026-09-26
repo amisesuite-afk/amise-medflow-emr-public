@@ -7,6 +7,7 @@ import AnatomicalSketch from '@/components/AnatomicalSketch';
 import ExamPhotoPanel from '@/components/ExamPhotoPanel';
 import WoundAssessmentCard from '@/components/WoundAssessmentCard';
 import ExamGuidePanel from '@/components/ExamGuidePanel';
+import ExamSignsPanel from '@/components/ExamSignsPanel';
 import WheelPicker from '@/components/WheelPicker';
 import News2ObservationFields from '@/components/News2ObservationFields';
 import { computeRankedDifferentials } from '@/lib/symptom-inference';
@@ -778,6 +779,9 @@ export default function ExaminationTab() {
             {allNormalApplied ? '✓ Shown systems — Normal' : '◎ All Normal'}
           </button>
         </div>
+
+        {/* Evidence-based high-yield signs and decision rules (evidence-exam) */}
+        <ExamSignsPanel />
 
         {/* Hidden-systems summary + toggle */}
         {(() => {

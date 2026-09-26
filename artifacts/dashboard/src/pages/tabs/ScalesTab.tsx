@@ -59,6 +59,7 @@ import { missingRecordFromConsultation } from '@/lib/whats-missing-web';
 import { missingConsultationFromApp } from '@/lib/whats-missing-app';
 import { TokyoCholecystitisCard } from '@/components/ClinicalScoresPanel';
 import RecordScoreButton from '@/components/RecordScoreButton';
+import { DECISION_RULE_CARDS, DECISION_RULE_TITLES } from '@/components/DecisionRuleCard';
 
 // ── Context-derive helpers for pre-population ─────────────────────────────────
 // Cards call useAppContext() and use these to seed useState at mount (lazy init).
@@ -375,7 +376,7 @@ function HeartCard() {
         </select>
       </label>
       <ScoreRow label="HEART Score" value={`${score}/10`} />
-      <ResultBadge result={result} />
+      <ResultBadge result={result} recordKey="heart" recordValue={score} />
     </div>
   );
 }
@@ -2099,9 +2100,12 @@ const SCALE_COMPONENTS: Record<string, React.FC> = {
   barthelAdl:       BarthelAdlCard,
   iss:              IssCard,
   burns:            BurnsCard,
+  // Evidence-exam 1.0.0 decision rules (DecisionRuleCard.tsx): AIR, PERC, Ottawa, CT head, C-spine, Centor, STONE, LRINEC, syncope.
+  ...DECISION_RULE_CARDS,
 };
 
 const ALL_SCALE_TITLES: Record<string, string> = {
+  ...DECISION_RULE_TITLES,
   news2:            'NEWS2 — Early Warning Score',
   alvarado:         'Alvarado Score — Appendicitis',
   heart:            'HEART Score — Chest Pain',
@@ -2152,6 +2156,12 @@ const URGENCY_LABELS: Record<string, { tag: string; color: string; bg: string }>
   relevant: { tag: 'RELEVANT', color: '#b45309', bg: '#fffbeb' },
   consider: { tag: 'CONSIDER', color: '#1d4ed8', bg: '#eff6ff' },
 };
+
+/** One calculator by its registry key (the Exam step's decision-rule suggestions open it). */
+export function ScaleCalculator({ scaleKey }: { scaleKey: string }) {
+  const Comp = SCALE_COMPONENTS[scaleKey];
+  return Comp ? <Comp /> : <div style={{ fontSize: 13, color: '#6b7280' }}>No calculator for {scaleKey}.</div>;
+}
 
 // ── Main ScalesTab ────────────────────────────────────────────────────────────
 

@@ -20,6 +20,7 @@ import { isConfirmedDiagnosis } from '@/lib/diagnosis-suggestion';
 import {
   buildDiagnosticReasoning, news2Series, numericLabs, reasoningRecordText,
 } from '@/lib/diagnostic-reasoning';
+import type { EvidenceMove, ExamEvidenceLine } from '@/lib/diagnostic-reasoning';
 import { paneContextFromConsultation } from '@/lib/socrates-to-features';
 import { listPatientEncounters, loadPatientLabResults } from '@/lib/db';
 import type { EncounterSummary, ImportedLabResultRow } from '@/lib/db';
@@ -76,8 +77,44 @@ function EvidenceList({ title, items, fg, bg, empty, render }: {
   );
 }
 
-function HypothesisBlock({ e, rank, range, working, onAdd }: {
+/** " · 12 % → 28 %" for an examination-sign or decision-rule finding (the posterior it moved). */
+function moved(moves: Record<string, EvidenceMove> | undefined, findingId: string): string {
+  const m = moves?.[findingId];
+  return m ? ` · ${fmtPct(m.from)} → ${fmtPct(m.to)}` : '';
+}
+
+const EFFECT_LABEL: Record<string, string> = {
+  engine: 'applied', twin: 'recorded as a red-flag finding', display: 'shown only', 'not-applied': 'not applied',
+};
+
+/** Examination signs and decision rules recorded on the Exam / Scales steps, with what they did. */
+function ExamEvidenceList({ lines }: { lines: ExamEvidenceLine[] }) {
+  return (
+    <div data-testid="reasoning-exam-evidence" style={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
+      {lines.map(({ item, moves }) => (
+        <div key={`${item.kind}:${item.id}`} style={{ padding: '5px 10px', borderRadius: 6, border: `1px solid ${C.line}`, fontSize: 12, color: C.ink }}
+          title={`${item.source}${item.fromMemory ? ' — value not yet verified against the source' : ''} (${item.quality})`}>
+          <div style={{ display: 'flex', gap: 6, alignItems: 'baseline', flexWrap: 'wrap' }}>
+            <b>{item.label}</b>
+            <span>{item.lr === null ? 'LR not established' : <>LR <b>{item.lrText}</b></>} for {item.target}</span>
+            {moves.map(m => (
+              <Chip key={m.label} fg={m.to >= m.from ? C.forFg : C.againstFg} bg={m.to >= m.from ? C.forBg : C.againstBg}>
+                {m.label} {fmtPct(m.from)} → {fmtPct(m.to)}
+              </Chip>
+            ))}
+            <Chip fg={C.missingFg} bg={C.missingBg}>{EFFECT_LABEL[item.effect] ?? item.effect}</Chip>
+            {item.fromMemory && <Chip fg={C.fitFg} bg={C.fitBg} title="Awaiting verification against the source and the surgeon's sign-off">unverified</Chip>}
+          </div>
+          <div style={{ fontSize: 11, color: C.muted }}>{item.risk ? `${item.risk}. ` : ''}{item.reason}.</div>
+        </div>
+      ))}
+    </div>
+  );
+}
+
+function HypothesisBlock({ e, rank, range, working, onAdd, moves }: {
   e: Explanation; rank: number | null; range: { low: number; high: number } | undefined; working: boolean; onAdd: () => void;
+  moves?: Record<string, EvidenceMove>;
 }) {
   const band = range && (range.high - range.low) >= 0.01 ? ` (${fmtPct(range.low)}–${fmtPct(range.high)} leaving out any one finding)` : '';
   return (
@@ -96,9 +133,9 @@ function HypothesisBlock({ e, rank, range, working, onAdd }: {
       </div>
       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(170px, 1fr))', gap: 8 }}>
         <EvidenceList title="For" items={e.forFindings} fg={C.forFg} bg={C.forBg} empty="No recorded finding supports it"
-          render={x => <>{x.label} <b>LR {formatLr(x.lr)}</b></>} />
+          render={x => <>{x.label} <b>LR {formatLr(x.lr)}</b>{moved(moves, x.findingId)}</>} />
         <EvidenceList title="Against" items={e.against} fg={C.againstFg} bg={C.againstBg} empty="Nothing recorded against it"
-          render={x => <>{x.status === 'absent' ? `no ${lowerFirst(x.label)}` : x.label} <b>LR {formatLr(x.lr)}</b></>} />
+          render={x => <>{x.status === 'absent' ? `no ${lowerFirst(x.label)}` : x.label} <b>LR {formatLr(x.lr)}</b>{moved(moves, x.findingId)}</>} />
         <EvidenceList title="Expected, missing" items={e.missing} fg={C.missingFg} bg={C.missingBg} empty="Cardinal findings all recorded"
           render={x => <>{x.label} <i>{x.documented ? 'absent' : 'not recorded'}</i></>} />
         <EvidenceList title="Doesn't fit" items={e.doesntFit} fg={C.fitFg} bg={C.fitBg} empty="Every recorded finding fits"
@@ -229,13 +266,14 @@ export default function DiagnosticReasoningPanel() {
       labs: numericLabs(labMap),
       longitudinal,
       currentComplaint: complaint,
+      evidence: ctx.evidence ?? null,
     });
   // `app` is read only for the consultation text fields; the listed values cover its changes.
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [paneState, age, sex, pregnancyPossible, workingDiagnosis, vitals, vitalRecords, labRecords, investigationResults,
     symptoms, comorbidities, medications, surgicalHistory, supplementHistory, freeText, procedureData, encounters, labRows,
     encounterId, app.hpiNotes, app.pmhNotes, app.examAbdomen, app.examGeneral, app.examCardio, app.examResp, app.examNeuro,
-    app.examNotes, app.medicationsText, app.toxicHabits]);
+    app.examNotes, app.medicationsText, app.toxicHabits, app.examFindings, app.clinicalScores]);
 
   function addDifferential(name: string) {
     const current = differentials.trim();
@@ -315,8 +353,17 @@ export default function DiagnosticReasoningPanel() {
                 range={reasoning.ranges[e.hypothesisId]}
                 working={reasoning.workingId === e.hypothesisId}
                 onAdd={() => addDifferential(e.label)}
+                moves={reasoning.evidenceMoves[e.hypothesisId]}
               />
             ))}
+
+            {/* ── Examination signs and decision rules (Exam / Scales steps) ── */}
+            {reasoning.examEvidence.length > 0 && (
+              <>
+                {sectionTitle('Examination signs and decision rules', 'likelihood ratio and how far each moved the probability (without it → with it)')}
+                <ExamEvidenceList lines={reasoning.examEvidence} />
+              </>
+            )}
 
             {/* ── Best next discriminator ── */}
             {sectionTitle('Best next discriminator', reasoning.discriminators[0] ? `separates ${reasoning.discriminators[0].separates.join(' · ')}` : undefined)}

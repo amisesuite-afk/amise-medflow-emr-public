@@ -17,11 +17,12 @@
  */
 
 import {
-  DISEASES, FEATURES, baseRate, featureLikelihood, getDiseaseSpecialty, informationGain, updatePosterior,
+  DISEASES, FEATURES, baseRate, evidenceItems, featureLikelihood, getDiseaseSpecialty, informationGain, isEvidenceFeature,
+  updatePosterior,
 } from '@workspace/pane-engine';
-import type { DiseaseNode, Feature, PaneState } from '@workspace/pane-engine';
+import type { DiseaseNode, EvidenceItem, Feature, PaneState, RecordedEvidence } from '@workspace/pane-engine';
 import {
-  classifyProbeCost, derivedLabTerms, diagnosticTimeOut, discriminatorWhy, explain, longitudinalPatterns,
+  classifyProbeCost, derivedLabTerms, diagnosticTimeOut, discriminatorWhy, explain, fmtPct, longitudinalPatterns,
   matchZebras, prematureClosureAlerts, rankDiscriminators, unexplainedFindings,
   DIAGNOSTIC_REASONING_VERSION, REASONING_THRESHOLDS,
 } from '@workspace/triage-engine/diagnostic-reasoning';
@@ -230,6 +231,22 @@ export interface DiagnosticReasoning {
   findingsUsed: number;
   /** Posterior range of each hypothesis when any one recorded finding is left out. */
   ranges: Record<string, { low: number; high: number }>;
+  /**
+   * Examination signs and decision rules recorded on the Exam / Scales steps (evidence-exam):
+   * each with its likelihood ratio, what it did to the engine, and how far it moved the
+   * diagnoses it is evidence for.
+   */
+  examEvidence: ExamEvidenceLine[];
+  /** hypothesis id → evidence feature id → posterior without it (from) and with it (to). */
+  evidenceMoves: Record<string, Record<string, EvidenceMove>>;
+}
+
+export interface EvidenceMove { from: number; to: number }
+
+export interface ExamEvidenceLine {
+  item: EvidenceItem;
+  /** Diagnoses (or the finding) it moved: label, probability without it → with it. */
+  moves: { label: string; from: number; to: number }[];
 }
 
 export interface ReasoningRequest {
@@ -245,6 +262,8 @@ export interface ReasoningRequest {
   /** Earlier visits (not today) and results, for the longitudinal view and the time-out. */
   longitudinal?: LongitudinalInput | null;
   currentComplaint?: string;
+  /** Recorded examination signs and decision rules (exam-evidence-features.ts recordedEvidence). */
+  evidence?: RecordedEvidence | null;
 }
 
 function rankedDiseases(state: PaneState, diseases: DiseaseNode[]): DiseaseNode[] {
@@ -305,7 +324,8 @@ export function paneDiscriminators(
   };
   const candidates: ProbeCandidate[] = [];
   for (const f of FEATURES) {
-    if (f.id in state.answered) continue;
+    // Examination-sign and rule-band evidence is offered on the Exam step, not as a PANE question.
+    if (f.id in state.answered || f.askable === false) continue;
     const gain = informationGain(restricted, nodes, f.id);
     const kind = probeKind(f);
     candidates.push({
@@ -361,6 +381,61 @@ export function leaveOneOutRanges(
     }
   }
   return out;
+}
+
+/** The posterior replayed from the priors with every recorded finding except `skip`. */
+export function posteriorWithout(state: PaneState, diseases: DiseaseNode[], skip: string): Record<string, number> {
+  let s = initStateFrom(diseases);
+  for (const [id, present] of Object.entries(state.answered)) {
+    if (id !== skip && FEATURE_BY_ID.has(id)) s = updatePosterior(s, diseases, id, present);
+  }
+  return s.posteriors;
+}
+
+/**
+ * The examination-sign and decision-rule evidence lines, and for each evidence feature the
+ * hypotheses' probability without it → with it (leave-one-out replay through the same engine,
+ * so the rule / component grouping is included).
+ */
+export function examEvidenceLines(
+  state: PaneState, diseases: DiseaseNode[], nodes: DiseaseNode[], rec: RecordedEvidence | null | undefined,
+): { lines: ExamEvidenceLine[]; moves: Record<string, Record<string, EvidenceMove>> } {
+  const moves: Record<string, Record<string, EvidenceMove>> = {};
+  const without = new Map<string, Record<string, number>>();
+  for (const id of Object.keys(state.answered)) {
+    if (!isEvidenceFeature(id) || !FEATURE_BY_ID.has(id)) continue;
+    const before = posteriorWithout(state, diseases, id);
+    without.set(id, before);
+    for (const d of nodes) {
+      (moves[d.id] ??= {})[id] = { from: before[d.id] ?? 0, to: state.posteriors[d.id] ?? 0 };
+    }
+  }
+  const labelOf = new Map(diseases.map(d => [d.id, d.label]));
+  const lines: ExamEvidenceLine[] = [];
+  for (const item of rec ? evidenceItems(rec, state.answered) : []) {
+    const out: ExamEvidenceLine['moves'] = [];
+    const before = item.featureId ? without.get(item.featureId) : undefined;
+    if (before) {
+      // Its target diagnoses (the likeliest two), else the diagnoses it moved most (finding-level).
+      const ids = item.targetIds.length
+        ? [...item.targetIds].filter(id => labelOf.has(id)).sort((a, b) => (state.posteriors[b] ?? 0) - (state.posteriors[a] ?? 0)).slice(0, 2)
+        : nodes.map(d => d.id).sort((a, b) => Math.abs((state.posteriors[b] ?? 0) - (before[b] ?? 0)) - Math.abs((state.posteriors[a] ?? 0) - (before[a] ?? 0))).slice(0, 2);
+      for (const id of ids) out.push({ label: labelOf.get(id) ?? id, from: before[id] ?? 0, to: state.posteriors[id] ?? 0 });
+    } else if (item.pretest !== null && item.posttest !== null) {
+      out.push({ label: item.target, from: item.pretest, to: item.posttest });
+    }
+    lines.push({ item, moves: out });
+  }
+  return { lines, moves };
+}
+
+/** One evidence line as text: "Murphy's sign present — LR 2.8 (0.8–8.6) for Acute cholecystitis: Acute Cholecystitis 12 % → 28 %". */
+export function examEvidenceText(line: ExamEvidenceLine): string {
+  const { item } = line;
+  const lr = item.lr === null ? 'LR not established' : `LR ${item.lrText}`;
+  const moved = line.moves.map(m => `${m.label} ${fmtPct(m.from)} → ${fmtPct(m.to)}`).join('; ');
+  const risk = item.risk ? ` Risk: ${item.risk}.` : '';
+  return `${item.label} — ${lr} for ${item.target}${moved ? `: ${moved}` : ''} [${item.effect}]${risk}`;
 }
 
 function initStateFrom(diseases: DiseaseNode[]): PaneState {
@@ -490,6 +565,7 @@ export function buildDiagnosticReasoning(req: ReasoningRequest): DiagnosticReaso
   ]);
   const topIds = new Set(top.map(d => d.id));
   const zebras = matchZebras(zebraText).map(z => ({ ...z, inDifferential: z.paneId !== null && topIds.has(z.paneId) }));
+  const exam = examEvidenceLines(req.state, req.diseases, nodes, req.evidence);
 
   return {
     version: DIAGNOSTIC_REASONING_VERSION,
@@ -503,6 +579,8 @@ export function buildDiagnosticReasoning(req: ReasoningRequest): DiagnosticReaso
     longitudinal,
     findingsUsed: input.findings.filter(f => f.status !== 'unknown').length,
     ranges: leaveOneOutRanges(req.state, req.diseases, nodes.map(d => d.id)),
+    examEvidence: exam.lines,
+    evidenceMoves: exam.moves,
   };
 }
 
@@ -585,6 +663,7 @@ export function reasoningHarnessLines(r: DiagnosticReasoning, prefix: string): {
     for (const x of e.missing) out.push({ source: `${prefix}.missing`, text: `${e.label}: ${x.label}${x.documented ? ' (documented absent)' : ' (not recorded)'}` });
     for (const x of e.doesntFit) out.push({ source: `${prefix}.doesntfit`, text: `${e.label}: ${x.label}${x.favours ? ` (favours ${x.favours})` : ''}` });
   }
+  for (const line of r.examEvidence ?? []) out.push({ source: `${prefix}.evidence`, text: examEvidenceText(line) });
   if (r.longitudinal) {
     for (const x of r.longitudinal.recurring) out.push({ source: `${prefix}.longitudinal`, text: `Recurring: ${x.problem} × ${x.count}` });
     for (const x of r.longitudinal.trends) out.push({ source: `${prefix}.longitudinal`, text: x.text });

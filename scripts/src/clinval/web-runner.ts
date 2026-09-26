@@ -614,6 +614,7 @@ export function runWeb(v: Vignette): EngineOutputs {
     labs: numericLabs(results),
     longitudinal: null,
     currentComplaint: inp.chiefComplaint,
+    evidence: paneContextFromConsultation(consultationSnapshot(v)).evidence ?? null,
   });
   const reasoningLines: SourcedText[] = reasoningHarnessLines(reasoning, 'web.reasoning');
   // ── Decision support (PlanTab → DecisionSupportPanel) ──────────────────────
