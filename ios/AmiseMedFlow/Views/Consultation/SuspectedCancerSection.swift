@@ -1,6 +1,7 @@
 // SuspectedCancerSection.swift
 // Diagnosis-tab card for the NICE NG12 suspected-cancer screen (SuspectedCancerScreening). Shown
-// only when a 1.1.0 criterion is met (or a microcytic anaemia has no ferritin). The clinician can
+// only when a 1.1.0 criterion is met (the ferritin check for a microcytic anaemia is in the "What's
+// missing" row since 2026-09-26). The clinician can
 // add the investigations as Suggested, add the referral line to the plan, or dismiss the card for
 // this session; nothing is ordered or referred from here.
 
@@ -24,7 +25,11 @@ struct SuspectedCancerSection: View {
     @State private var addedPlan = false
 
     var body: some View {
-        if let prompt = SuspectedCancerScreening.prompt(for: patient), !dismissals.isDismissed(patient, prompt) {
+        // The ferritin check (microcytic anaemia, no ferritin) is shown by the "What's missing" row
+        // (WhatsMissingRow: what, why and "Add test" for Ferritin), so this card shows only the
+        // suspected-cancer referral prompt.
+        if let prompt = SuspectedCancerScreening.prompt(for: patient), prompt.kind == .suspectedCancer,
+           !dismissals.isDismissed(patient, prompt) {
             Section {
                 content(prompt)
             } header: {

@@ -126,8 +126,23 @@ enum ClinValIOSRunner {
         for m in inp.medications ?? [] {
             let rx = Prescription(drug: m.drug, dose: m.dose ?? "", frequency: m.frequency ?? "",
                                   indication: m.indication ?? "")
+            // Current medicines were prescribed before this visit (what's missing reads today's
+            // prescriptions as the ones planned now).
+            rx.prescribedAt = now.addingTimeInterval(-30 * 86_400)
             context.insert(rx)
             if !p.prescriptions.contains(where: { $0.id == rx.id }) { p.prescriptions.append(rx) }
+        }
+        // Planned in this visit (vignette orders): prescribed today.
+        for drug in inp.orders?.prescriptions ?? [] {
+            let rx = Prescription(drug: drug)
+            rx.prescribedAt = now
+            context.insert(rx)
+            if !p.prescriptions.contains(where: { $0.id == rx.id }) { p.prescriptions.append(rx) }
+        }
+        if let status = inp.supplements, let s = SupplementStatus(rawValue: status) {
+            var h = p.supplementHistory
+            h.status = s
+            p.supplementHistory = h
         }
 
         let vitalsInputs = inp.vitals ?? []
@@ -170,6 +185,12 @@ enum ClinValIOSRunner {
             e.orderedAt = at
             e.resultedAt = at
             investigations.append(e)
+        }
+        // Planned in this visit (vignette orders): suggested, not resulted.
+        for name in inp.orders?.investigations ?? [] {
+            let lower = name.lowercased()
+            let imaging = ["ct ", "ctpa", "mri", "x-ray", "ultrasound", "uss", "scan"].contains { lower.contains($0) } || lower.hasPrefix("ct")
+            investigations.append(InvestigationEntry(name: name, category: imaging ? .imaging : .blood, status: .suggested))
         }
         p.investigations = investigations
         try? context.save()
@@ -414,6 +435,14 @@ enum ClinValIOSRunner {
 
         // 9. Plan tab: DecisionSupportSection (BayesianDecisionEngine+Treatment.swift).
         decisionSupport(v, p, bayes: bayes, socrates: socrates, hint: hint, into: &out)
+
+        // 10. What's missing (ConsultationView → WhatsMissingRow): same differential, the recommended
+        // scores plus the calculator scores the vignette records.
+        var missingScores = out.recommendedScores.map { $0.score }
+        for key in (v.inputs.scoreForms ?? [:]).keys.sorted() where !missingScores.contains(key) { missingScores.append(key) }
+        if let r = WhatsMissingPatient.result(for: p, bayes: bayes, activeScores: missingScores, now: now) {
+            out.missing = WhatsMissing.lines(r).map { .init(source: "ios.missing", text: $0) }
+        }
         return out
     }
 

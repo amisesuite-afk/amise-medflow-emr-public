@@ -191,6 +191,14 @@ struct ClinValInputs: Decodable {
     let nkda: Bool?
     let socialHistory: String?
     let scoreForms: [String: ClinValScoreForm]?
+    struct Orders: Decodable {
+        let investigations: [String]?
+        let prescriptions: [String]?
+    }
+    /// Planned in this visit, not yet resulted / given (what's missing).
+    let orders: Orders?
+    /// Herbs / supplements question: "not_asked" (default), "none", "taking".
+    let supplements: String?
     let confirmedDiagnosis: ConfirmedDiagnosis?
     let platform: PlatformInputs?
 }
@@ -255,6 +263,13 @@ struct ClinValExpected: Decodable {
     let dxVariant: ClinValExpectation?
     /// Diagnostic reasoning lines (ios.reasoning.*), graded like the text expectations.
     let reasoning: IncludeExclude?
+    struct Missing: Decodable {
+        let top: ClinValExpectation?
+        let mustInclude: [ClinValExpectation]?
+        let mustExclude: [ClinValExpectation]?
+    }
+    /// What's missing lines (ios.missing), ranked; `top` grades the first line only.
+    let missing: Missing?
 
     /// Every expectation as (kind, expectation), in report order (same order as grade.ts).
     var all: [(String, ClinValExpectation)] {
@@ -275,6 +290,9 @@ struct ClinValExpected: Decodable {
         if let x = dxVariant { out.append(("dxVariant", x)) }
         for x in reasoning?.mustInclude ?? [] { out.append(("reasoningInclude", x)) }
         for x in reasoning?.mustExclude ?? [] { out.append(("reasoningExclude", x)) }
+        if let x = missing?.top { out.append(("missingTop", x)) }
+        for x in missing?.mustInclude ?? [] { out.append(("missingInclude", x)) }
+        for x in missing?.mustExclude ?? [] { out.append(("missingExclude", x)) }
         return out
     }
 }
@@ -339,6 +357,8 @@ struct ClinValOutputs: Encodable {
     var pathway: ClinValPathway?
     /// Diagnostic reasoning lines, source "ios.reasoning.<part>" (nil = not produced → n/a).
     var reasoning: [ClinValSourcedText]? = nil
+    /// What's missing lines in rank order, source "ios.missing" (nil = not produced → n/a).
+    var missing: [ClinValSourcedText]? = nil
     var engineInfo: [String: String] = [:]
     var notes: [String] = []
 }

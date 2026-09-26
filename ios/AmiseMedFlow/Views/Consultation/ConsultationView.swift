@@ -162,6 +162,10 @@ struct ConsultationView: View {
             if !embeddedInNav { patientIdentityHeader }
             // Red alert only for real allergies; NKDA neutral; empty = not recorded (UX review M2).
             allergyStatusBanner
+            // What's missing: the top gap, ranked (safety → decision → score); sheet for the list.
+            WhatsMissingRow(patient: patient, bayes: bayesianDx,
+                            onTab: { tab in withAnimation(.easeInOut(duration: 0.15)) { activeTab = tab } },
+                            onTool: { tool in activeTool = tool })
             // Clinical alarm banner — fires from free text parsing
             let activeAlarms = clinicalAlarms.filter { !dismissedAlarmIds.contains($0.id) }
             if !activeAlarms.isEmpty { clinicalAlarmBanner(activeAlarms) }

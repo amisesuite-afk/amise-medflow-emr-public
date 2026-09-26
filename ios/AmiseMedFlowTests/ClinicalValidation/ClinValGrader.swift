@@ -120,6 +120,8 @@ enum ClinValGrader {
         case "redFlags": return out.redFlags + alarms
         case "investigations": return out.investigations
         case "reasoning": return out.reasoning ?? []
+        case "missing": return out.missing ?? []
+        case "missingTop": return Array((out.missing ?? []).prefix(1))
         default: return out.management
         }
     }
@@ -131,6 +133,9 @@ enum ClinValGrader {
         if kind == "reasoning" && out.reasoning == nil {
             return Verdict(status: "na", detail: "no diagnostic-reasoning output on ios")
         }
+        if (kind == "missing" || kind == "missingTop") && out.missing == nil {
+            return Verdict(status: "na", detail: "no what's-missing output on ios")
+        }
         let items = textItems(kind, out).filter { sourceAllowed($0.source, e.sources) }
         let hits = items.filter { counts($0.text, match: e.match ?? [], unless: e.unless) }
         let label: String
@@ -139,6 +144,8 @@ enum ClinValGrader {
         case "redFlags": label = "red flag"
         case "investigations": label = "investigation"
         case "reasoning": label = "reasoning line"
+        case "missing": label = "what's-missing line"
+        case "missingTop": label = "top what's-missing item"
         default: label = "management item"
         }
         if include {
@@ -258,6 +265,9 @@ enum ClinValGrader {
                 }
             case "reasoningInclude": v = gradeText(e, include: true, kind: "reasoning", out)
             case "reasoningExclude": v = gradeText(e, include: false, kind: "reasoning", out)
+            case "missingTop": v = gradeText(e, include: true, kind: "missingTop", out)
+            case "missingInclude": v = gradeText(e, include: true, kind: "missing", out)
+            case "missingExclude": v = gradeText(e, include: false, kind: "missing", out)
             case "dxVariant":
                 v = Verdict(status: "na", detail: "no dx-variant engine on ios")
             default:
