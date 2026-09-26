@@ -23,7 +23,7 @@ import type { DiseaseNode, Feature, PaneState } from '@workspace/pane-engine';
 import {
   classifyProbeCost, derivedLabTerms, diagnosticTimeOut, discriminatorWhy, explain, longitudinalPatterns,
   matchZebras, prematureClosureAlerts, rankDiscriminators, unexplainedFindings,
-  DIAGNOSTIC_REASONING_VERSION,
+  DIAGNOSTIC_REASONING_VERSION, REASONING_THRESHOLDS,
 } from '@workspace/triage-engine/diagnostic-reasoning';
 import type {
   ClosureAlert, Explanation, FindingWeight, LabValue, LongitudinalInput, LongitudinalPatterns, LongitudinalVisit,
@@ -33,6 +33,32 @@ import type {
 import { evaluateNews2, joinClauses } from '@workspace/triage-engine';
 import type { News2Avpu } from '@workspace/triage-engine';
 import { isSameProblem } from '@workspace/triage-engine/visit-continuity';
+import { familyOf, labelFullyNamed, labelMatchScore } from './diagnosis-families';
+
+/**
+ * Version of the web adapter's own rules (working-diagnosis resolution, diagnosis families, the
+ * two-conditions rule and the time-out's coexisting states). Registered as
+ * `diagnostic-reasoning-web`; the shared core keeps DIAGNOSTIC_REASONING_VERSION (iOS twin).
+ */
+export const DIAGNOSTIC_REASONING_WEB_VERSION = '1.1.0';
+
+/**
+ * A label match (words found − words missing, diagnosis-families.ts labelMatchScore) picks the
+ * working node when it beats the ICD-10 match's own label score by LABEL_MATCH_MARGIN and scores
+ * at least LABEL_MATCH_MIN, or LABEL_MATCH_MIN_ALONE when the ICD-10 code matches no PANE node.
+ */
+export const LABEL_MATCH_MIN = 1;
+export const LABEL_MATCH_MIN_ALONE = 2;
+export const LABEL_MATCH_MARGIN = 2;
+
+/**
+ * Web: a single contradicting finding raises "Doesn't fit the working diagnosis" only when its
+ * likelihood ratio is at most this (moderate or strong evidence against: LR 0.1-0.2 moderate,
+ * < 0.1 large; Jaeschke, Guyatt & Sackett, JAMA 1994). The shared core (and iOS) flag LR <= 0.33;
+ * a single documented-absent cardinal finding at LR 0.26-0.32 ("no jaundice" in choledocholithiasis,
+ * "no guarding" in a stable stab wound) is small evidence. Registered; needs sign-off.
+ */
+export const WEB_CONTRADICTION_MAX_LR = 0.2;
 
 /** Hypotheses compared (the top of the PANE differential). */
 export const REASONING_TOP_K = 3;
@@ -128,25 +154,51 @@ function normIcd(code: string): string {
   return code.replace(/[.\s]/g, '').toUpperCase();
 }
 
-/** The PANE node for the confirmed working diagnosis: its disease id, else its ICD-10 code. */
+/**
+ * The PANE node for the confirmed working diagnosis: its disease id; else the node whose label
+ * matches the diagnosis text better than the ICD-10 match does (an ICD code can be shared or
+ * unspecific: K92.2 "GI haemorrhage" for a lower GI bleed, E11.1 for euglycaemic DKA in type 2
+ * diabetes, K60.3 anal fistula where PANE's only K60 node is anal fissure); else its ICD-10 code
+ * (exact, then the same category, most probable first); else the exact label.
+ */
 export function resolveWorkingNode(diseases: DiseaseNode[], ref: WorkingDiagnosisRef | null, state?: PaneState | null): DiseaseNode | null {
   if (!ref) return null;
   if (ref.diseaseId) {
     const byId = diseases.find(d => d.id === ref.diseaseId);
     if (byId) return byId;
   }
+  const candidates = diseases.filter(d => d.id !== '_other_');
+  const post = (d: DiseaseNode) => state?.posteriors[d.id] ?? 0;
+  let byIcd: DiseaseNode | null = null;
   if (ref.icdCode) {
     const code = normIcd(ref.icdCode);
-    const exact = diseases.find(d => d.id !== '_other_' && normIcd(d.icd10) === code);
-    if (exact) return exact;
-    const head = code.slice(0, 3);
-    const same = diseases.filter(d => d.id !== '_other_' && normIcd(d.icd10).slice(0, 3) === head);
-    if (same.length) {
-      return [...same].sort((a, b) => (state?.posteriors[b.id] ?? 0) - (state?.posteriors[a.id] ?? 0))[0];
+    byIcd = candidates.find(d => normIcd(d.icd10) === code) ?? null;
+    if (!byIcd) {
+      const head = code.slice(0, 3);
+      const same = candidates.filter(d => normIcd(d.icd10).slice(0, 3) === head);
+      if (same.length) byIcd = [...same].sort((a, b) => post(b) - post(a))[0];
     }
   }
-  const label = ref.label.trim().toLowerCase();
-  if (label) return diseases.find(d => d.id !== '_other_' && d.label.toLowerCase() === label) ?? null;
+  const label = ref.label.trim();
+  if (label) {
+    let best: DiseaseNode | null = null;
+    let bestScore = -Infinity;
+    const code = ref.icdCode ? normIcd(ref.icdCode) : '';
+    const icdRank = (d: DiseaseNode) => (!code ? 0 : normIcd(d.icd10) === code ? 2 : normIcd(d.icd10).slice(0, 3) === code.slice(0, 3) ? 1 : 0);
+    for (const d of candidates) {
+      const sc = labelMatchScore(d.label, label);
+      const better = best === null || sc > bestScore
+        || (sc === bestScore && (icdRank(d) > icdRank(best) || (icdRank(d) === icdRank(best) && post(d) > post(best))));
+      if (better) { best = d; bestScore = sc; }
+    }
+    const icdScore = byIcd ? labelMatchScore(byIcd.label, label) : -Infinity;
+    // A one-word match ("Fistula") only overrules an ICD match; without one it needs two words.
+    const min = byIcd ? LABEL_MATCH_MIN : LABEL_MATCH_MIN_ALONE;
+    if (best && bestScore >= min && bestScore >= icdScore + LABEL_MATCH_MARGIN) return best;
+  }
+  if (byIcd) return byIcd;
+  const lower = label.toLowerCase();
+  if (lower) return candidates.find(d => d.label.toLowerCase() === lower) ?? null;
   return null;
 }
 
@@ -320,6 +372,87 @@ function initStateFrom(diseases: DiseaseNode[]): PaneState {
   };
 }
 
+/**
+ * Findings for the time-out: specific symptoms, signs and results (history items are context;
+ * findings with a background rate above 5 % such as "severe pain" do not make a case complex)
+ * that neither the leading diagnoses nor a coexisting state (sepsis, AKI, electrolyte disorders:
+ * COEXISTING_DISEASE_IDS) explain. Raised creatinine, raised lactate or rigors in a septic patient
+ * with perforated diverticulitis are explained by the accompanying state, not unexplained.
+ */
+export function timeOutUnexplained(state: PaneState, diseases: DiseaseNode[], nodes: DiseaseNode[]): string[] {
+  const ids = new Set(nodes.map(d => d.id));
+  const explainers = [...nodes, ...diseases.filter(d => COEXISTING_DISEASE_IDS.has(d.id) && !ids.has(d.id))];
+  const input = buildReasoningInput(state, explainers);
+  return unexplainedFindings(
+    { ...input, findings: input.findings.filter(f => FEATURE_BY_ID.get(f.id)?.category !== 'history' && baseRate(f.id) <= TIME_OUT_MAX_BASE_RATE) },
+    explainers.map(d => d.id),
+  );
+}
+
+/**
+ * True when the leader and the working diagnosis compete for the same evidence: the working
+ * diagnosis has no support of its own (no present finding with LR >= favourLr), or at least one
+ * present finding supports both (LR >= supportLr in each). When they share nothing, the record
+ * shows a second condition beside a supported working diagnosis ("reducible inguinal hernia" in
+ * new atrial fibrillation, an incidental ureteric stone beside an adrenal incidentaloma): no
+ * "the record favours X" alert; X stays in the differential and the "doesn't fit" list.
+ */
+export function competesForEvidence(input: ReasoningInput, leaderId: string, workingId: string): boolean {
+  const T = REASONING_THRESHOLDS;
+  const present = input.findings.filter(f => f.status === 'present');
+  const lr = (h: string, f: string) => input.weights[h]?.[f]?.lrPresent ?? 1;
+  const ownSupport = present.some(f => lr(workingId, f.id) >= T.favourLr);
+  if (!ownSupport) return true;
+  return present.some(f => lr(workingId, f.id) >= T.supportLr && lr(leaderId, f.id) >= T.supportLr);
+}
+
+/**
+ * True when the working diagnosis text already names `label` (one of its alternatives, every
+ * word found): "Blunt abdominal trauma in pregnancy — suspected placental abruption" names
+ * "Placental Abruption".
+ */
+export function namedInDiagnosis(label: string, workingText: string): boolean {
+  return labelFullyNamed(label, workingText);
+}
+
+/**
+ * The shared core's premature-closure alerts (prematureClosureAlerts), with the web adapter's
+ * rules: diagnoses of the working diagnosis's family (diagnosis-families.ts: parent / child,
+ * e.g. inguinal hernia and incarcerated hernia) are compatible — never the leader of a "the record
+ * favours X" alert, and a finding that favours one of them does not alert; a leader that shares
+ * no evidence with a supported working diagnosis is a second condition (competesForEvidence).
+ * The NEWS2 alert is unchanged (it may name a family member: "Consider incarcerated hernia").
+ */
+export function webClosureAlerts(
+  input: ReasoningInput, diseases: DiseaseNode[], workingNode: DiseaseNode | null, workingLabel: string, news2: number[],
+): ClosureAlert[] {
+  const T = REASONING_THRESHOLDS;
+  const family = workingNode ? familyOf(workingNode, diseases) : new Set<string>();
+  const familyLabels = new Set(input.hypotheses.filter(h => family.has(h.id)).map(h => h.label));
+  const closureInput: ReasoningInput = {
+    ...input,
+    hypotheses: input.hypotheses.map(h => (family.has(h.id) ? { ...h, coexists: true } : h)),
+  };
+  const workingId = workingNode?.id ?? null;
+  const label = workingNode?.label ?? workingLabel;
+  // Only moderate or strong contradicting evidence alerts (LR <= WEB_CONTRADICTION_MAX_LR).
+  const findingAlerts = prematureClosureAlerts(closureInput, workingId, label, []).filter(a => {
+    if (a.kind === 'contradicting-finding') {
+      return a.lr !== null && a.lr <= WEB_CONTRADICTION_MAX_LR && !(a.favours && familyLabels.has(a.favours));
+    }
+    if (a.kind === 'less-likely' && workingId) {
+      const leaderId = a.key.slice('less-likely:'.length);
+      const leader = input.hypotheses.find(h => h.id === leaderId);
+      // The clinician already named it ("… — suspected placental abruption"): not premature closure.
+      if (leader && namedInDiagnosis(leader.label, workingLabel)) return false;
+      return competesForEvidence(input, leaderId, workingId);
+    }
+    return true;
+  });
+  const news2Alerts = prematureClosureAlerts(input, workingId, label, news2).filter(a => a.kind === 'news2-rising');
+  return [...findingAlerts, ...news2Alerts].slice(0, T.maxClosureAlerts);
+}
+
 /** Everything the panel shows. Pure; call it again whenever the record changes. */
 export function buildDiagnosticReasoning(req: ReasoningRequest): DiagnosticReasoning {
   const ranked = rankedDiseases(req.state, req.diseases);
@@ -334,7 +467,7 @@ export function buildDiagnosticReasoning(req: ReasoningRequest): DiagnosticReaso
   const discriminators = paneDiscriminators(req.state, req.diseases, discNodes);
 
   const closureAlerts = req.working
-    ? prematureClosureAlerts(input, workingNode?.id ?? null, workingNode?.label ?? req.working.label, req.news2Series)
+    ? webClosureAlerts(input, req.diseases, workingNode, req.working.label, req.news2Series)
     : [];
 
   const visits = req.longitudinal?.visits ?? [];
@@ -343,10 +476,7 @@ export function buildDiagnosticReasoning(req: ReasoningRequest): DiagnosticReaso
     // Specific symptoms, signs and results only: history items (risk factors, medicines) are
     // context, and common non-specific findings (background rate above 5 %: "severe pain", "pain
     // worse on movement") do not make a case complex.
-    unexplainedFindings: unexplainedFindings(
-      { ...input, findings: input.findings.filter(f => FEATURE_BY_ID.get(f.id)?.category !== 'history' && baseRate(f.id) <= TIME_OUT_MAX_BASE_RATE) },
-      nodes.map(d => d.id),
-    ),
+    unexplainedFindings: timeOutUnexplained(req.state, req.diseases, nodes),
     priorVisitsSameComplaint: history.count,
     priorDiagnosesSameComplaint: history.diagnoses,
   });
