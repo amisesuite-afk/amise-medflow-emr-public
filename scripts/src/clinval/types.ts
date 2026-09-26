@@ -81,6 +81,11 @@ export interface Expected {
    * (e.g. ["web.reasoning.alert", "ios.reasoning.alert"]).
    */
   reasoning?: { mustInclude?: TextExpectation[]; mustExclude?: TextExpectation[] };
+  /**
+   * "What's missing" strip (web.missing / ios.missing): ranked lines "1. [tier] What — why".
+   * `top` grades the first item only; mustInclude / mustExclude grade every line.
+   */
+  missing?: { top?: TextExpectation; mustInclude?: TextExpectation[]; mustExclude?: TextExpectation[] };
 }
 
 export interface VitalsInput {
@@ -147,6 +152,10 @@ export interface VignetteInputs {
   nkda?: boolean;
   socialHistory?: string;
   scoreForms?: Record<string, ScoreForm>;
+  /** Planned in this visit, not yet resulted / given (investigations by name, prescriptions by drug). */
+  orders?: { investigations?: string[]; prescriptions?: string[] };
+  /** Herbs / supplements question: not asked (default), none, taking. */
+  supplements?: 'not_asked' | 'none' | 'taking';
   confirmedDiagnosis?: { name: string; icd10?: string; paneDiseaseId?: string; assessmentText?: string };
   platform?: {
     ios?: { socratesSelections?: Record<string, string[]>; specialtyHint?: string };
@@ -220,6 +229,8 @@ export interface EngineOutputs {
    * produced before the reasoning layer existed (graded n/a).
    */
   reasoning?: SourcedText[];
+  /** "What's missing" lines in rank order, source '<platform>.missing'. Absent before the strip existed (n/a). */
+  missing?: SourcedText[];
   /**
    * Engine mode and content versions the run used, e.g. iOS
    * { bayesDatabase: 'fallback', databaseVersion: '…', databaseError: '…' }. Differential results
@@ -234,7 +245,8 @@ export type ExpectationKind =
   | 'mustRankTopK' | 'mustNotMiss' | 'emergencyLevel' | 'mustAlarm' | 'mustNotAlarm' | 'redFlags'
   | 'scoreRecommended' | 'scoreValue' | 'investigationInclude' | 'investigationExclude'
   | 'managementInclude' | 'managementExclude' | 'pathway' | 'dxVariant'
-  | 'reasoningInclude' | 'reasoningExclude';
+  | 'reasoningInclude' | 'reasoningExclude'
+  | 'missingTop' | 'missingInclude' | 'missingExclude';
 
 export type ExpectationStatus = 'pass' | 'fail' | 'na';
 

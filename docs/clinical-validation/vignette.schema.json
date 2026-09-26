@@ -222,6 +222,16 @@
             "mustInclude": { "type": "array", "items": { "$ref": "#/$defs/textExpectation" } },
             "mustExclude": { "type": "array", "items": { "$ref": "#/$defs/textExpectation" } }
           }
+        },
+        "missing": {
+          "type": "object",
+          "additionalProperties": false,
+          "description": "What's missing strip (web.missing / ios.missing): ranked lines '1. [tier] What — why'. `top` grades the first line only.",
+          "properties": {
+            "top": { "$ref": "#/$defs/textExpectation" },
+            "mustInclude": { "type": "array", "items": { "$ref": "#/$defs/textExpectation" } },
+            "mustExclude": { "type": "array", "items": { "$ref": "#/$defs/textExpectation" } }
+          }
         }
       }
     },
@@ -393,6 +403,16 @@
           "description": "Clinician-completed score forms keyed by canonical score key, using the canonical field names in the README (e.g. alvarado.migration, tg18-cholangitis.feverAtLeast39, organDysfunction: ['renal']).",
           "additionalProperties": { "type": "object" }
         },
+        "orders": {
+          "type": "object",
+          "additionalProperties": false,
+          "description": "Planned in this visit and not yet resulted or given: investigations by name (e.g. 'CT abdomen and pelvis with contrast'), prescriptions by drug (e.g. 'Ibuprofen 400 mg TDS'). Read by the what's-missing strip.",
+          "properties": {
+            "investigations": { "type": "array", "items": { "type": "string" } },
+            "prescriptions": { "type": "array", "items": { "type": "string" } }
+          }
+        },
+        "supplements": { "enum": ["not_asked", "none", "taking"], "description": "Herbs / supplements question (default not_asked)." },
         "confirmedDiagnosis": {
           "type": "object",
           "additionalProperties": false,

@@ -117,10 +117,12 @@ function gradeDx(exp: DxExpectation, kind: ExpectationKind, out: EngineOutputs, 
   };
 }
 
-type TextKind = 'alarms' | 'redFlags' | 'investigations' | 'management' | 'reasoning';
+type TextKind = 'alarms' | 'redFlags' | 'investigations' | 'management' | 'reasoning' | 'missing' | 'missingTop';
 
 function textItems(kind: TextKind, out: EngineOutputs): SourcedText[] {
   if (kind === 'reasoning') return out.reasoning ?? [];
+  if (kind === 'missing') return out.missing ?? [];
+  if (kind === 'missingTop') return (out.missing ?? []).slice(0, 1);
   if (kind === 'alarms') return out.alarms.map(a => ({ source: a.source, text: `${a.title} — ${a.detail}` }));
   if (kind === 'redFlags') {
     return [...out.redFlags, ...out.alarms.map(a => ({ source: a.source, text: `${a.title} — ${a.detail}` }))];
@@ -139,10 +141,14 @@ function gradeText(
   if (kind === 'reasoning' && out.reasoning === undefined) {
     return { status: 'na', detail: `no diagnostic-reasoning output on ${platform}` };
   }
+  if ((kind === 'missing' || kind === 'missingTop') && out.missing === undefined) {
+    return { status: 'na', detail: `no what's-missing output on ${platform}` };
+  }
   const items = textItems(kind, out).filter(i => sourceAllowed(i.source, exp.sources));
   const hits = items.filter(i => counts(i.text, exp.match, exp.unless));
   const label = kind === 'alarms' ? 'alarm' : kind === 'redFlags' ? 'red flag' : kind === 'investigations' ? 'investigation'
-    : kind === 'reasoning' ? 'reasoning line' : 'management item';
+    : kind === 'reasoning' ? 'reasoning line' : kind === 'missing' ? "what's-missing line"
+    : kind === 'missingTop' ? "top what's-missing item" : 'management item';
   if (mode === 'include') {
     if (hits.length) return { status: 'pass', detail: `${label} found in ${hits[0].source}: "${snippet(hits[0].text, exp.match)}"` };
     return {
@@ -232,6 +238,9 @@ export function listExpectations(v: Vignette): [ExpectationKind, ExpectationBase
   if (e.dxVariant) out.push(['dxVariant', e.dxVariant]);
   for (const x of e.reasoning?.mustInclude ?? []) out.push(['reasoningInclude', x]);
   for (const x of e.reasoning?.mustExclude ?? []) out.push(['reasoningExclude', x]);
+  if (e.missing?.top) out.push(['missingTop', e.missing.top]);
+  for (const x of e.missing?.mustInclude ?? []) out.push(['missingInclude', x]);
+  for (const x of e.missing?.mustExclude ?? []) out.push(['missingExclude', x]);
   return out;
 }
 
@@ -289,6 +298,9 @@ export function gradeVignette(v: Vignette, out: EngineOutputs, platform: Platfor
       }
       case 'reasoningInclude': verdict = gradeText(exp as TextExpectation, 'include', 'reasoning', out, platform); break;
       case 'reasoningExclude': verdict = gradeText(exp as TextExpectation, 'exclude', 'reasoning', out, platform); break;
+      case 'missingTop': verdict = gradeText(exp as TextExpectation, 'include', 'missingTop', out, platform); break;
+      case 'missingInclude': verdict = gradeText(exp as TextExpectation, 'include', 'missing', out, platform); break;
+      case 'missingExclude': verdict = gradeText(exp as TextExpectation, 'exclude', 'missing', out, platform); break;
       case 'dxVariant': {
         const want = (exp as EqualsExpectation).equals;
         verdict = !out.dxVariant

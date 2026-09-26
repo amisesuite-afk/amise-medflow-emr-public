@@ -22,6 +22,8 @@
  *   Reasoning           AssessmentTab DiagnosticReasoningPanel: buildDiagnosticReasoning over the same
  *                       PANE state, the confirmed diagnosis, the NEWS2 series of the vignette's
  *                       vitals (oldest first) and the record text (lib/diagnostic-reasoning.ts)
+ *   What's missing      Home WhatsMissingStrip: buildWhatsMissing (lib/whats-missing-web.ts) over the
+ *                       same consultation, PANE state and recommended / recorded scores
  *
  * The dashboard code itself is not modified or wrapped; if a call site changes, update the
  * mirror here (the vitest suite checks the signatures still line up).
@@ -60,6 +62,9 @@ import {
 } from '../../../artifacts/dashboard/src/lib/diagnostic-reasoning';
 import { buildDecisionSupport, resultPosteriorShifts, shiftText, withRecordedScore } from '../../../artifacts/dashboard/src/lib/decision-support';
 import type { DecisionConsultation } from '../../../artifacts/dashboard/src/lib/decision-support';
+import { buildWhatsMissing } from '../../../artifacts/dashboard/src/lib/whats-missing-web';
+import type { MissingConsultation } from '../../../artifacts/dashboard/src/lib/whats-missing-web';
+import { whatsMissingLines } from '../../../lib/pane-engine/src/index';
 import type { DxItem, EngineOutputs, Level, ScoreForm, SourcedText, Vignette } from './types';
 
 /** CDS scaleKey → canonical score key. Unlisted keys are reported as 'web:<key>'. */
@@ -592,13 +597,37 @@ export function runWeb(v: Vignette): EngineOutputs {
   }
   notes.push(`Decision support: ${decisions.decisions.map(d => d.id).join(', ') || '(no decision)'}; factors ${decisions.activeFactors.join(', ') || '(none)'}`);
 
+  // ── What's missing (Home → WhatsMissingStrip) ───────────────────────────────
+  const imagingOrders = (inp.orders?.investigations ?? []).filter(n => /\b(ct|ctpa|mri|x-?ray|ultrasound|uss?|scan)\b/i.test(n));
+  const missingConsultation: MissingConsultation = {
+    ...decisionConsultation,
+    allergies: allergyNames.length ? decisionConsultation.allergies : inp.nkda ? 'NKDA' : '',
+    plan: '', symptoms, examFindings: web.examFindings ?? {}, rosFindings: {},
+    examGeneral: inp.exam?.general ?? '', examAbdomen: inp.exam?.abdomen ?? '', examCardio: inp.exam?.cardiovascular ?? '',
+    examResp: inp.exam?.respiratory ?? '', examNeuro: inp.exam?.neuro ?? '', examExtremities: inp.exam?.msk ?? '',
+    procedureData: { cc: ccEntries }, familyHistory: [], toxicHabits: web.toxicHabits ?? [],
+    orderedInvestigations: (inp.orders?.investigations ?? []).filter(n => !imagingOrders.includes(n)),
+    radiologyRequests: [
+      ...(inp.imaging ?? []).map(i => ({ modality: i.modality, anatomicalRegion: i.region ?? '', resultReceived: true, resultNotes: i.result, indication: i.name })),
+      ...imagingOrders.map(n => ({ modality: n, anatomicalRegion: '', resultReceived: false, resultNotes: '', indication: '' })),
+    ],
+    pendingPrescriptions: (inp.orders?.prescriptions ?? []).map(drugName => ({ drugName })),
+    supplementHistory: { status: inp.supplements ?? 'not_asked' },
+    visitType: inp.encounter.visitType ?? '',
+    encounterType: inp.encounter.setting === 'emergency' ? 'major_emergency' : inp.encounter.setting === 'endoscopy' ? 'endoscopy' : 'surgical_consult',
+    encounterMode: inp.encounter.setting === 'inpatient' ? 'inpatient' : 'outpatient',
+  };
+  const missingScores = [...new Set([...recommendedScores.map(r => r.score), ...Object.keys(recorded)])];
+  const missing = buildWhatsMissing(missingConsultation, { paneState: pane, activeScores: missingScores });
+  const missingLines: SourcedText[] = whatsMissingLines(missing).map(text => ({ source: 'web.missing', text }));
+
   // ── Pathway registry (usePathway / matchPathways) — recorded for information ─
   const pathways = matchPathways({ symptoms, freeText: [inp.chiefComplaint, inp.hpi].join('. ') });
   if (pathways.length) notes.push(`matchPathways: ${pathways.slice(0, 3).map(p => `${p.pathway.name} (${p.score})`).join(', ')}`);
 
   return {
     differentials, alarms, redFlags, emergencyLevel, recommendedScores, scoreValues,
-    investigations, management, pathway: null, dxVariant, reasoning: reasoningLines,
+    investigations, management, pathway: null, dxVariant, reasoning: reasoningLines, missing: missingLines,
     engineInfo: {
       paneEngine: `pane-engine (${DISEASES.length} diseases, ${FEATURES.length} features)`,
       triageRulesVersion: RULES_VERSION,
