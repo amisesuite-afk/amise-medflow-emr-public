@@ -357,3 +357,230 @@ cholangitis, peptic ulcer and gastritis in H. pylori).
 - The mapper still records only present findings: a documented negative test ("pregnancy test
   negative") does not lower a diagnosis (e.g. ectopic pregnancy in the ruptured corpus luteum
   cyst vignette).
+
+## iOS parity (branch `ios-reasoning-parity`, 2026-09-26)
+
+The precision pass above was web only. This pass ports it to iOS, moves the rules both platforms
+apply into one shared rule set, and looks for the cause of the two iOS critical failures
+(`reasoning-closure-gastritis-troponin`, `reasoning-closure-gastroenteritis-dka`). **No
+DiagnosticDatabase entry, prior or weight and no PANE disease, prior or likelihood was changed; web
+behaviour is identical** (`clinval:web` byte-identical reasoning output for all 454 vignettes).
+
+### One shared rule set
+
+- **`clinical-content/rules/diagnostic-reasoning-rules.json`** (schema
+  `clinical-content/schemas/diagnostic-reasoning-rules.schema.json`, `lint:shared-content`) now
+  holds the core thresholds (unchanged values), the contradiction threshold (LR <= 0.2, Jaeschke
+  1994), the working-diagnosis label-matching thresholds and neutral / opposite words, the
+  diagnosis-family vocabulary (complication and grade modifiers, generic tail words, synonyms,
+  injury chapter) and the coexisting states (PANE ids for the web, name terms for iOS). The web reads
+  it through `lib/triage-engine/src/diagnostic-reasoning/reasoning-rules.ts`; iOS decodes it with
+  `DiagnosticReasoningRules.RuleFile` (bundled folder `rules`, Settings → Diagnostics row
+  "Diagnostic reasoning rules"). iOS keeps the core thresholds compiled into
+  `DiagnosticReasoningCore.swift`; `diagnostic-reasoning-parity.test.ts` pins them to the file.
+- The web precision-pass rules moved from the dashboard into the shared package:
+  `families.ts` (diagnosis families, label matching, `resolveWorkingIndex`) and `adapter-rules.ts`
+  (`adapterClosureAlerts`: families compatible, contradiction LR <= 0.2, already named, two
+  conditions via `competesForEvidence` with an optional evidence-group map). The dashboard's
+  `diagnosis-families.ts` and `webClosureAlerts` / `resolveWorkingNode` are thin wrappers. Swift twin:
+  `DiagnosticReasoningRules.swift` (`DiagnosisFamilies`, `DiagnosticReasoning.adapterClosureAlerts`).
+- Shared vectors: `DiagnosticReasoningVectors.json` gained `families` (14 pairs), `labelMatch` (11),
+  `resolveWorking` (9), `competes` (5) and `adapterClosure` (10 cases), run by
+  `diagnostic-reasoning-core.test.ts` and `DiagnosticReasoningTests.swift`.
+- Registry: `diagnostic-reasoning-rules` 1.0.0 → **1.1.0** (web + iOS; version stamp is the JSON's
+  `version`, `DIAGNOSTIC_REASONING_VERSION` and Swift `DiagnosticReasoning.version` read / pin it);
+  `diagnostic-reasoning-web` 1.1.0 → **1.2.0**, now only the web's way of reading PANE evidence (LRs
+  from likelihoods and background rates, cardinal findings, the can't-miss list, module sources, the
+  time-out's background-rate filter). The iOS way of reading DiagnosticDatabase evidence is listed in
+  the `diagnostic-reasoning-rules` notes. So: one shared rule set, two documented evidence readers.
+
+### Clause-aware record reading on iOS
+
+`lib/triage-engine/src/record-clauses.ts` (moved out of the dashboard's `record-text-match.ts`,
+which now imports it) has a Swift twin, `ios/AmiseMedFlow/Services/RecordClauses.swift`, with shared
+vectors `ios/AmiseMedFlowTests/Resources/RecordClauseVectors.json` (44 cases; `RecordClauseTests.swift`
+and `record-clauses.test.ts`) and its word lists and patterns pinned by the parity test. The same way
+as `cough-mention.ts` / `CoughMention.swift`.
+
+- **Database terms** (`BayesianDiagnosisEngine+FeatureTerms.swift`: `complaint`, `finding`,
+  `findingAbsent`, `notFinding`): an item of a negated list is negated ("never had pain, jaundice or
+  fever", "Urine dipstick: negative for blood, leucocytes and nitrites"); a relative's condition
+  ("Mother had breast cancer"), a lay or referrer's guess ("Mother thought it was a hernia") and a
+  query ("Referred by the GP as ?appendicitis", "query appendicitis", `queryAt`, new) are not
+  findings about the patient. A family-history or query mention no longer counts as "documented
+  absent" either.
+- **Not ported: "not current"** (a sentence dated years back, a condition repaired or awaiting
+  repair). PANE applies it only to symptom and sign features; the DiagnosticDatabase terms do not
+  say whether they mean "now" ("previous AAA repair", "gallstones" are history evidence). Applied to
+  every term it broke two critical differential expectations in the simulator
+  (`aortoenteric-fistula-herald-bleed` lost its graft history, "Open abdominal aortic aneurysm repair
+  with a tube graft six years ago"; `mscc-pain-only-breast-cancer` lost "Right breast cancer treated
+  … 4 years ago"), so iOS does not use it.
+- **Text parser** (`ClinicalTextParser.swift`, the iOS counterpart of the PANE mapper): a relieving
+  factor counts only in a clause that does not say it failed (`reliefFailedAt`, the web mapper's
+  `NO_HELP` pattern, now shared as `NO_HELP_RE`): "Took antacids with no relief" and "Gaviscon did
+  not help" are not relief by antacids. "At rest" ("pain started at rest", "breathless at rest")
+  and "rest pain" are not relief by rest. Burning pain no longer comes from a bare "acid" (it matched
+  "antacids").
+
+### iOS adapter (`DiagnosticReasoningAdapter.swift`)
+
+- **Stated likelihood ratios.** The database stores round(ln LR × 5); a curated feature with a
+  stated LR 1.5 is stored as 2 and read back as exp(2 / 5) = 1.49, just under the core's "supports"
+  threshold of 1.5 (and a stated LR 2, stored as 3, as 1.82, under "favours" 2). Every feature
+  written as LR 1.5 therefore counted as "unexplained": **202 of the 397 original vignettes (51 %)
+  suggested a diagnostic time-out on iOS** (iOS CI run 36223694617). The adapter now uses the
+  database's `likelihoodRatio` (decoded into `Candidate.Feature.likelihoodRatio`, carried as
+  `FiredFeature.statedLR` when the full weight applied) and exp(logLR / 5) only for features without
+  one (the older pools). `diagnostic-database-schema.ts` mirrors the new optional field.
+- **The working diagnosis is looked up among every scored candidate**, not only the five shown:
+  `topResults` attaches the rest of the ranked list to the first result
+  (`DiagnosisResult.rankedBelow`, most probable first; not displayed). Resolution: the same name,
+  else the shared `resolveWorkingIndex` (label match that beats an unspecific ICD-10 code, else the
+  ICD-10 code exact then category), else one name containing the other. (The old order put
+  containment first: "Hospital-acquired pneumonia … with sepsis" resolved to *Sepsis* and raised "the
+  record favours Community-Acquired Pneumonia over Sepsis".)
+- The shared closure rules: families (among the diagnoses compared), already named, contradiction
+  LR <= 0.2, two conditions. iOS evidence group: every candidate words the presenting complaint its
+  own way (a `complaint` feature per candidate), so those features form one evidence group for the
+  two-conditions rule; otherwise DKA and gastroenteritis would never "share evidence".
+- **One finding per evidence label**: the same finding fired by several candidates under one label
+  ("Tachypnoea", "Upper abdominal pain as the presenting complaint") is one finding (the first
+  feature's id; examination signs and decision rules keep their own ids), so it is explained when
+  any leading diagnosis supports it and is listed once.
+- **Time-out**: coexisting states (candidates named sepsis, AKI, electrolyte disorders, from the full
+  ranked list) explain findings, as on the web; history and score (decision-rule band) findings are
+  context, not "unexplained findings" (a score summarises findings already counted).
+- The best-next-discriminator list skips a test already recorded under another candidate's wording.
+
+### The two iOS critical failures
+
+The brief suspected that iOS does not turn a raised troponin or raised ketones into evidence. It
+does: in both vignettes the numeric result fires the curated feature (`elevated troponin` chip →
+ACS "Raised or rising troponin", database LR 8; "Blood ketones 5.4" → DKA "Ketonaemia or acidosis",
+LR 10; both appear in the iOS CI `ios.reasoning.for` lines). The causes were elsewhere:
+
+- **`reasoning-closure-gastroenteritis-dka` — fixed.** The iOS engine returns only the five shown
+  diagnoses (three most probable, two "do not miss" places); Acute Gastroenteritis was scored but
+  ranked below them, so the adapter had no working diagnosis and could only raise a NEWS2 alert. With
+  `rankedBelow` it now alerts: "Doesn't fit the working diagnosis: the record favours Diabetic
+  Ketoacidosis (98%) over Acute Gastroenteritis (<1%) — mainly Ketonaemia or acidosis (LR 10 vs
+  1.0)." The `knownGap: ios` flag is removed. Unit test: `testWorkingDiagnosisBelowTheShownFiveIsCompared`.
+- **`reasoning-closure-gastritis-troponin` — not fixed; the flag stays, with the cause.** (1) The
+  text parser gave peptic ulcer disease false evidence: "Took antacids with no relief" became relief
+  by antacids (+8) and burning pain (+8, "acid" in "antacids"), and "started at rest" relief by rest
+  for stable angina (+8). Fixed above: ACS now leads the iOS differential (log-posterior 14 against
+  5 for the next). (2) The iOS database has no gastritis candidate, so the confirmed "Gastritis"
+  (K29.70) cannot be compared with the leader (the web compares it with PANE's gastritis node). (3)
+  ACS is about 25–30 % on iOS (the displayed probability is a softmax over about 40 routed
+  candidates), under the core's 50 %, and its strongest finding (troponin, LR 8) is under the
+  core's driver ratio of 10. A rule for a working diagnosis the engine does not model at all ("the
+  record favours a can't-miss diagnosis with a finding of LR >= 5") was tried and rejected: 4 of its
+  5 alerts on the original vignettes were resolution misses, not closure (inferior STEMI vs ACS,
+  perforated duodenal ulcer vs perforated peptic ulcer, Crohn's abscess vs appendicitis, head injury
+  on apixaban vs atrial fibrillation). What would fix it is content, for sign-off (item 27): a
+  gastritis candidate in the database, and / or graded troponin evidence (a result above the ESC
+  0 h rule-in threshold carrying its own likelihood ratio).
+
+### Before / after (iOS)
+
+Swift cannot be compiled or run here. The iOS rates come from a TypeScript simulator of the iOS
+engine's `infer` path (routing, curated presentations, applicability, numeric lab and vital chips,
+scoring with the same term matching, softmax and the five shown; the text-parser augments are taken
+from the CI result notes) plus a TypeScript port of `DiagnosticReasoningAdapter.report` built on the
+shared core. Calibrated against iOS CI run 36223694617 (`docs/clinical-validation/results/ios-latest.jsonl`,
+commit 2866c9b): the simulated base adapter gives the same alert / no-alert result in 397 of 397
+original vignettes (identical alert texts) and the same time-out result in 395 of 397; the simulated
+five-diagnosis differential equals CI in 410 of 454 vignettes (the rest differ in places 4–5).
+The simulator and the port are scratch tools and are not committed; the numbers below are
+therefore estimates until the next iOS CI run.
+
+397 original vignettes (correct confirmed diagnoses); each row adds to the one above:
+
+| Step | "Doesn't fit" alerts | Time-out suggested |
+|---|---|---|
+| iOS CI, base (run 36223694617) | 7 (1.8 %) | 202 (50.9 %) |
+| Simulator, base adapter | 7 | 204 |
+| + stated likelihood ratios | 7 | 7 |
+| + clause-aware reading, text-parser relief rules | 5 | 7 |
+| + working diagnosis among every scored candidate | 9 | 7 |
+| + diagnosis families | 9 | 7 |
+| + two conditions (presenting complaint as one evidence group) | 6 | 7 |
+| + already named, contradiction LR <= 0.2 | 5 | 7 |
+| + one finding per evidence label | 5 | 3 |
+| + history / score findings as context, coexisting states: **final** | **5 (1.3 %)** | **2 (0.5 %)** |
+
+All 442 non-reasoning vignettes: alerts 7 → 5, time-outs 219 → 2. Web for comparison (unchanged):
+30 alerts and 48 time-outs of the 397.
+
+- Alerts gone: two "the record favours Acute Appendicitis" alerts driven by "Appendicitis on
+  ultrasound or CT" firing on the referral label "?appendicitis" (a child with right lower lobe
+  pneumonia; an ectopic pregnancy), "Community-Acquired Pneumonia over Sepsis" (the working
+  diagnosis was hospital-acquired pneumonia with sepsis, resolved to Sepsis by containment), and
+  "Thyroid Nodule / Goitre over Thyrotoxicosis" for a hot nodule (two conditions).
+- Alerts left (5): NEWS2 rising 2 → 5 (gastroenteritis with AKI) and 3 → 7 (unstable lower GI
+  bleed) — real deterioration; "Diabetic Ketoacidosis over Hyperemesis Gravidarum" (the DKA feature
+  reads urine "Ketones 3+" in starvation ketosis); "Colorectal Polyp Adenoma (K63.5) over Advanced
+  Colorectal Adenoma (D12.6)" (two database nodes for one condition, different ICD-10 chapters);
+  "Anastomotic Leak over Surgical Site Infection" for an organ-space collection after a right
+  hemicolectomy (a reasonable prompt).
+- Alerts gained on the reasoning vignettes: `reasoning-closure-gastroenteritis-dka`. The other three
+  closure vignettes behave as before (biliary colic + lipase: alert; renal colic + NEWS2 0 → 9:
+  alert; gastritis + troponin: none); the 8 zebra / next-test vignettes raise no alert.
+- The time-outs left (`acutemed-gastroenteritis-mimic-euglycaemic-dka`, `mimic-dka-abdominal-pain`)
+  list weak findings (LR 1.3) that the leading diagnoses do not model. iOS can only see findings the
+  displayed diagnoses model, so its time-out is structurally quieter than the web's (which counts
+  every recorded PANE feature with a background rate <= 5 %); counting findings from every scored
+  candidate was tried and gave 129–308 time-outs, mostly from loosely matched pool features
+  ("Stepladder fever pattern", "Collection on examination or ultrasound"), so it was not kept.
+
+Differential side effects (simulator, all 454 vignettes, against the CI expectations): no critical
+expectation changed; one quality expectation passes → fails:
+`appendicitis-pregnant-t2` / `mnm-pyelonephritis`, which passed on iOS only because "Negative for
+blood, leucocytes and nitrites" was read as leucocytes; it is now flagged `knownGap: ["web", "ios"]`
+with that note. The clause and parser rules move no other expectation.
+
+### Checks
+
+`pnpm run typecheck` ✓; `pnpm -r run test` ✓ (dashboard 1099, api-server 653, front-desk 112,
+pane-engine 259, scripts 133); all scripts lints ✓ (`scan:nav-lockout` prints only its existing
+warnings); dashboard build ✓; `clinval:web` (454 vignettes, 3190 expectations): 3018 pass, 78 fail
+(all quality; 76 known gaps), 94 n/a, **0 critical, 0 blocking — identical to the base**, and the
+reasoning output of every vignette is byte-identical. Results files restored, not committed. Swift
+was not compiled: every new call was symbol-checked, argument labels follow declaration order, the
+new Swift types were grepped for duplicates, and no `Color.opacity` was touched. The next iOS CI run
+must confirm `DiagnosticReasoningTests`, `RecordClauseTests`, `SharedClinicalContentTests` and the
+clinval `ios.reasoning` lines.
+
+### Needs sign-off (iOS parity)
+
+21. **Stated likelihood ratios in the iOS reasoning card**: the database's `likelihoodRatio` is what
+    the card shows and compares (LR 1.5 supports; LR 2 favours); exp(logLR / 5) only for features
+    without one.
+22. **iOS clause-aware reading of database terms**: negated-list items negated; family history,
+    lay / referrer guesses and queries ("?appendicitis", "query …") are not findings; "not current"
+    deliberately not applied on iOS.
+23. **iOS text-parser relief rules**: a remedy that "did not help" / gave "no relief" is not a
+    relieving factor; "at rest" and "rest pain" are not relief by rest; no bare "acid" for burning
+    pain.
+24. **iOS working diagnosis among every scored candidate** (not only the five shown), resolved by
+    exact name, then the shared label / ICD-10 rule, then containment.
+25. **iOS evidence identity**: one finding per evidence label; every candidate's presenting-complaint
+    feature is one piece of evidence for the two-conditions rule.
+26. **iOS time-out**: coexisting states from the full ranked list explain findings; history and
+    decision-rule findings are context. Resulting iOS rates: alerts 5 / 397 (1.3 %), time-outs
+    2 / 397 (0.5 %) — is the iOS time-out now too quiet?
+27. **The troponin gap**: add a gastritis candidate to DiagnosticDatabase.json and / or graded
+    troponin evidence (above the ESC 0 h rule-in threshold) with its own likelihood ratio — or
+    accept that the iOS card does not raise this alert.
+
+### Not done / follow-ups (iOS parity)
+
+- The web PANE mapper does not use the new query rule (`queryAt`); adopting it would change web
+  features and needs its own clinval measurement.
+- `reasoning-closure-gastritis-troponin` stays `knownGap: ios` (item 27).
+- The remaining iOS alerts include one caused by duplicate database nodes for one condition
+  (colorectal polyp / advanced adenoma in different ICD-10 chapters): a database clean-up, not a
+  reasoning rule.
+- The iOS rates are simulator estimates; replace them with the next iOS CI run's
+  `ios.reasoning` counts.

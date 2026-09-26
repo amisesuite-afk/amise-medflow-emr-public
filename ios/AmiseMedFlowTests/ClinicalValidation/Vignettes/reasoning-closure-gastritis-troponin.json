@@ -112,7 +112,7 @@
           "knownGap": [
             "ios"
           ],
-          "knownGapNote": "iOS CI 2026-09-25 (run 36200720842): no reasoning line output from web.reasoning.alert, ios.reasoning.alert on ios"
+          "knownGapNote": "iOS (CI 2026-09-25 run 36200720842; simulator after the iOS parity port, 2026-09-26): no alert. Not the laboratory conversion: the 480 ng/L troponin becomes the 'elevated troponin' chip and fires ACS 'Raised or rising troponin' (database LR 8). The iOS database has no gastritis candidate, so the confirmed 'Gastritis' (K29.70) cannot be compared with the leader (the web compares it with PANE's gastritis node), and ACS reaches about 25-30 % on iOS (softmax over about 40 routed candidates; the core needs the leader >= 50 % and a finding with an LR ratio >= 10). The text parser's false peptic-ulcer evidence ('Took antacids with no relief' read as relief by antacids and as burning pain) is fixed, so ACS now leads the iOS differential. Needs a content decision (a gastritis candidate and / or graded troponin evidence above the ESC 0 h rule-in threshold): docs/clinical-validation/changes/diagnostic-reasoning.md, iOS parity."
         }
       ]
     }

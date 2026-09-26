@@ -258,7 +258,20 @@ Suggested investigation).
   rules are not twinned: both read the shared `clinical-content/rules/zebra-rules.json` (see
   "Shared clinical rules").
 - `DiagnosticReasoningAdapter.swift` reads `DiagnosisResult.firedFeatures` / `candidateFeatures`
-  (filled by `score()` / `topResults`; they record evidence and never change a weight).
+  (filled by `score()` / `topResults`; they record evidence and never change a weight). LRs are the
+  database's stated `likelihoodRatio` (`FiredFeature.statedLR`, `Candidate.Feature.likelihoodRatio`),
+  else exp(logLR / 5). The working diagnosis is looked up among every scored candidate: the first
+  result carries the rest of the ranked list (`DiagnosisResult.rankedBelow`, not displayed). One
+  evidence label = one finding; every candidate's `complaint` feature is one evidence group.
+- Shared adapter rules: `DiagnosticReasoningRules.swift` (`DiagnosisFamilies`,
+  `DiagnosticReasoning.adapterClosureAlerts`), twin of `families.ts` / `adapter-rules.ts`, reading
+  `clinical-content/rules/diagnostic-reasoning-rules.json` (the core thresholds stay compiled in
+  `DiagnosticReasoningCore.swift`, pinned by the parity test). Missing file → core rules only.
+- Clause-aware reading: `RecordClauses.swift` (twin of `record-clauses.ts`, vectors
+  `RecordClauseVectors.json`, `RecordClauseTests.swift`) is used by `termOccurrences` /
+  `termAffirmed` (negated lists, family history, lay guesses, "?queries") and by `ClinicalTextParser`
+  (a remedy that "did not help" is not relief; "at rest" / "rest pain" are not relief by rest).
+  Offsets are Unicode scalars (`NegationMatcher.Source.scalars`).
 - Clinval: the iOS runner emits `ios.reasoning`; `expected.reasoning` is graded by `ClinValGrader`.
 
 ## Shared clinical rules (clinical-content/rules/*.json)
@@ -274,7 +287,7 @@ copy (there is none).
   or does not decode; the engine then shows nothing (never a guess, never a crash). Engines hold
   it in a `static let` (`ZebraCheck.ruleFile`, `SupplementCatalogue.content`,
   `LifestylePractices.content`) and expose computed `static var`s with the old names.
-- Visibility: Settings → Diagnostics → "Shared clinical rules: N of 3 loaded", one row per file with
+- Visibility: Settings → Diagnostics → "Shared clinical rules: N of M loaded", one row per file with
   its version or the decode error (`SharedRulesDiagnosticsRows` in
   `Views/ClinicalContentDiagnosticsRows.swift`, from `SharedClinicalContent.statuses()`).
 - Checks: `lint:shared-content` (web CI) validates each file against

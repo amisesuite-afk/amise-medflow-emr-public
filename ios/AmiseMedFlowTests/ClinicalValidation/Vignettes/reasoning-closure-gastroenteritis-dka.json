@@ -110,11 +110,7 @@
           "guidelineRefs": [
             "jbds-dka-2023"
           ],
-          "note": "Ketones >= 3 mmol/L with bicarbonate < 15 is DKA (JBDS-IP 2023); gastroenteritis does not explain the acidosis.",
-          "knownGap": [
-            "ios"
-          ],
-          "knownGapNote": "iOS CI 2026-09-25 (run 36200720842): no reasoning line output from web.reasoning.alert, ios.reasoning.alert on ios"
+          "note": "Ketones >= 3 mmol/L with bicarbonate < 15 is DKA (JBDS-IP 2023); gastroenteritis does not explain the acidosis."
         }
       ]
     }

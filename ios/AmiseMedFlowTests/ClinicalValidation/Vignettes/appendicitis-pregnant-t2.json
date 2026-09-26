@@ -134,8 +134,8 @@
           "id": "mnm-pyelonephritis",
           "severity": "quality",
           "match": ["pyelonephritis", "urinary tract infection", "uti", "urosepsis"],
-          "knownGap": ["web"],
-          "knownGapNote": "Not in PANE top 3. iOS: fallback mode: the built-in abdominalPain list (10 candidates) does not contain this diagnosis."
+          "knownGap": ["web", "ios"],
+          "knownGapNote": "Not in PANE top 3. iOS (simulator, 2026-09-26): it passed only because the dipstick \"Negative for blood, leucocytes and nitrites\" was read as leucocytes; with clause-aware reading (RecordClauses, negated list) pyelonephritis gets no urinary evidence and falls out of the five shown."
         }
       ]
     },
