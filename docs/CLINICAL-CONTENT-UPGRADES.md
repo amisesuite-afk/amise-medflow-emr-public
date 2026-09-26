@@ -115,6 +115,11 @@ Candidates to become packs, in order:
 Small, fully tested algorithms stay as code, with a version constant: NEWS2, and each score
 function in `ClinicalScoringEngine`. For code, the "pack" is the constant plus its registry entry.
 
+The first step towards packs is built (§10): rule sets that exist on both platforms move into
+**one shared JSON file** in `clinical-content/rules/`, with a JSON Schema, read by web and iOS
+alike. The file's `version` is the registry's version stamp. A pack manifest (content hash,
+engine range, sign-off file) can later wrap these files without moving them again.
+
 ### 2.2 Semantic versioning for clinical content
 
 | Bump | When | Examples |
@@ -598,3 +603,34 @@ in only after a real review by a named reviewer.
 6. **Safety-critical corrections** (for example a wrong urgent-care sign) follow the expedited
    path (§3.2): the surgeon's same-day sign-off, all CI checks, and a changelog line saying it
    was expedited. If the surgeon cannot be reached, set the article back to draft first.
+
+## 10. One shared rule library for web and iOS
+
+Built 2026-09-26 (phase 1; plan, survey and migration order in `docs/SHARED-CONTENT-PLAN.md`).
+
+Many rule sets had a TypeScript copy and a Swift copy kept in step by parity lints or hand-ported
+tests. A shared rule set now lives once, as data:
+
+- `clinical-content/rules/<name>.json`, with a JSON Schema in `clinical-content/schemas/`. The file
+  carries `id` (its registry id) and `version` (the registry's json-key version stamp).
+- The web imports the JSON; iOS bundles the whole `rules` folder (a folder reference in
+  `ios/project.yml`) and decodes it with Codable structs through `SharedClinicalContent.swift`. A
+  file that is missing or does not decode shows nothing on iOS and is listed in Settings →
+  Diagnostics (like `DiagnosticDatabase.json`).
+- `lint:shared-content` validates every file against its schema and checks the Swift Codable
+  structs and the TypeScript types against the schema (the same idea as the
+  `DiagnosticDatabase.json` decode check in §1.1).
+
+Moved in phase 1: `diagnostic-reasoning-zebras`, `supplement-catalogue`, `lifestyle-practices`
+(content; the logic stays twinned).
+
+**Update workflow for a shared file** (adds to §3):
+
+1. Edit the JSON on a branch. For a clinical value, bump `version` (§2.2) and add the registry
+   `changelog` line; the registry's `contentVersion` must equal the file's `version`.
+2. A new or renamed field: change the schema, the Swift struct and the TypeScript interface in the
+   same PR; `lint:shared-content` fails until all three agree.
+3. Run the platform tests (the behaviour vectors), `clinval:web` and the iOS unit tests
+   (`SharedClinicalContentTests` confirms the file is bundled and decodes on the simulator).
+4. Delivery is unchanged: web on deploy, iOS with the next app release (option A in §2.4). The
+   iOS workflows now also run when `clinical-content/rules/**` changes.

@@ -26,6 +26,7 @@ for core clinical work. AI features are **disabled** pending HIPAA BAA.
     ├── Services/                          ← business logic, sync, AI
     ├── Views/                             ← SwiftUI screens
     └── Resources/DiagnosticDatabase.json ← Bayesian pool/candidate/feature DB
+../clinical-content/rules/*.json            ← clinical rules shared with the web (bundled as "rules")
 ```
 
 Git remote: `origin` = `https://github.com/amisesuite-afk/amise-medflow-emr-public`
@@ -241,15 +242,42 @@ suggested differentials: for / against / missing / doesn't fit, best next discri
 "Doesn't fit the working diagnosis" alerts (dismissible), diagnostic time-out, zebra check,
 longitudinal patterns. Deterministic; adds to the record only on a tap (assessment line or a
 Suggested investigation).
-- Core `DiagnosticReasoningCore.swift` (`enum DiagnosticReasoning`), `ZebraCheck.swift` +
-  `Resources/ZebraRules.json`, `LongitudinalPatterns.swift` are twins of
-  `lib/triage-engine/src/diagnostic-reasoning/*`: same vectors
-  (`AmiseMedFlowTests/Resources/DiagnosticReasoningVectors.json`, `DiagnosticReasoningTests.swift`),
-  and `scripts/src/diagnostic-reasoning-parity.test.ts` pins the zebra JSON, thresholds, cost terms
-  and checklist to the TypeScript. Change both platforms together.
+- Core `DiagnosticReasoningCore.swift` (`enum DiagnosticReasoning`), `ZebraCheck.swift`,
+  `LongitudinalPatterns.swift` are twins of `lib/triage-engine/src/diagnostic-reasoning/*`: same
+  vectors (`AmiseMedFlowTests/Resources/DiagnosticReasoningVectors.json`,
+  `DiagnosticReasoningTests.swift`), and `scripts/src/diagnostic-reasoning-parity.test.ts` pins the
+  thresholds, cost terms and checklist to the TypeScript. Change both platforms together. The zebra
+  rules are not twinned: both read the shared `clinical-content/rules/zebra-rules.json` (see
+  "Shared clinical rules").
 - `DiagnosticReasoningAdapter.swift` reads `DiagnosisResult.firedFeatures` / `candidateFeatures`
   (filled by `score()` / `topResults`; they record evidence and never change a weight).
 - Clinval: the iOS runner emits `ios.reasoning`; `expected.reasoning` is graded by `ClinValGrader`.
+
+## Shared clinical rules (clinical-content/rules/*.json)
+
+Some clinical rule sets live once, as data, at the repository root in
+`clinical-content/rules/<name>.json`; the web imports the same files. Change the JSON, not a Swift
+copy (there is none).
+- Bundling: `project.yml` adds `../clinical-content/rules` to the app target as a **folder
+  reference** (`type: folder`, `buildPhase: resources`), so the app has `rules/<name>.json` and a
+  new file needs no per-file registration. Do not copy a rules file into `Resources/`.
+- Loading: `Services/SharedClinicalContent.swift`. `SharedClinicalContent.load(T.self, .file)`
+  decodes with the engine's own Codable struct and returns nil (logged) when the file is missing
+  or does not decode; the engine then shows nothing (never a guess, never a crash). Engines hold
+  it in a `static let` (`ZebraCheck.ruleFile`, `SupplementCatalogue.content`,
+  `LifestylePractices.content`) and expose computed `static var`s with the old names.
+- Visibility: Settings → Diagnostics → "Shared clinical rules: N of 3 loaded", one row per file with
+  its version or the decode error (`SharedRulesDiagnosticsRows` in
+  `Views/ClinicalContentDiagnosticsRows.swift`, from `SharedClinicalContent.statuses()`).
+- Checks: `lint:shared-content` (web CI) validates each file against
+  `clinical-content/schemas/<name>.schema.json` and reads the Codable structs from source: every
+  stored property must be a schema property, non-optional ⇒ required, `String`/`Int`/`Double`/`Bool`,
+  arrays, `[String: T]` and `String` enums must match. Keep the structs plain (`let` properties, no
+  `CodingKeys` or custom `init(from:)`). `AmiseMedFlowTests/SharedClinicalContentTests.swift` asserts
+  on the simulator that every file is bundled and decodes.
+- A new shared file: schema, a `SharedClinicalContent.File` case plus its `status(of:)` decode,
+  the `SHARED_CONTENT` entry in `scripts/src/shared-content.ts`, the registry entry. Plan and survey:
+  `docs/SHARED-CONTENT-PLAN.md`.
 
 ## What's missing (every consultation step)
 
