@@ -1923,8 +1923,10 @@
         "lib/pane-engine/src/evidence/*.ts",
         "ios/AmiseMedFlow/Services/ExamEvidenceCatalogue.swift",
         "ios/AmiseMedFlow/Services/ExamSignRecord.swift",
+        "ios/AmiseMedFlow/Services/ExamRegion.swift",
         "ios/AmiseMedFlow/Services/DiagnosticReasoningAdapter+Evidence.swift",
-        "artifacts/dashboard/src/lib/exam-evidence-features.ts"
+        "artifacts/dashboard/src/lib/exam-evidence-features.ts",
+        "artifacts/dashboard/src/lib/exam-frames.ts"
       ],
       "tests": [
         "lib/pane-engine/src/__tests__/evidence.test.ts",
@@ -1951,9 +1953,9 @@
       "reviewPriority": "P1",
       "nextReviewDue": "2026-10-31",
       "changeAuthority": "Any repository committer. Edit the shared file clinical-content/rules/exam-signs.json (and its schema and the Swift / TypeScript types for a new field; lint:shared-content), run scripts/src/gen-exam-evidence-db.ts, bump the version and add a changelog entry. Web ships on dashboard deploy; iOS with an app release.",
-      "notes": "67 signs: 48 with their own likelihood ratios (engine lr), 9 red-flag or severity signs recorded as their text finding (twin), 10 low-value or unquantified signs for documentation (none). An absent sign updates only when negativeMeaningful and the chip was set to absent. Nothing is pre-filled as normal. Clinician-facing only.",
+      "notes": "The Exam step picks its examination region (iOS ExamRegion.swift), web systems and high-yield signs from the complaint's history frame (the history step's own classifier; a cough is examined at the chest, an unrecognised complaint gets the general examination). 67 signs: 48 with their own likelihood ratios (engine lr), 9 red-flag or severity signs recorded as their text finding (twin), 10 low-value or unquantified signs for documentation (none). An absent sign updates only when negativeMeaningful and the chip was set to absent. Nothing is pre-filled as normal. Clinician-facing only.",
       "changelog": [
-        {"version": "1.0.0", "date": "2026-09-26", "change": "First version (evidence-exam). See docs/clinical-validation/changes/evidence-exam.md."}
+        {"version": "1.0.0", "date": "2026-09-26", "change": "First version (evidence-exam): 67 signs; the Exam step reads the complaint through its history frame (history-frames classifyComplaint, the history step's classifier) via \"frames\" (frame → iOS examination region, web systems, presentation tags), refined by presentation keywords. See docs/clinical-validation/changes/evidence-exam.md."}
       ]
     },
     {

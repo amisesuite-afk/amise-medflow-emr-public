@@ -1,6 +1,6 @@
 {
   "format": "amise-signoff-catalogue/1",
-  "catalogueHash": "849cd9294e70590d",
+  "catalogueHash": "e07608dbe514f7b5",
   "repoUrl": "https://github.com/amisesuite-afk/amise-medflow-emr-public/blob/main/",
   "sources": [
     {
@@ -206,6 +206,7 @@
         "evidence-exam#C3",
         "evidence-exam#C4",
         "evidence-exam#C5",
+        "evidence-exam#C6",
         "evidence-exam#S1",
         "evidence-exam#S2",
         "evidence-exam#S3",
@@ -872,6 +873,7 @@
         "evidence-exam#C3",
         "evidence-exam#C4",
         "evidence-exam#C5",
+        "evidence-exam#C6",
         "evidence-exam#S1",
         "evidence-exam#S2",
         "evidence-exam#S3",
@@ -1372,6 +1374,7 @@
         "evidence-exam#C3",
         "evidence-exam#C4",
         "evidence-exam#C5",
+        "evidence-exam#C6",
         "evidence-exam#S1",
         "evidence-exam#S2",
         "evidence-exam#S3",
@@ -2380,6 +2383,7 @@
         "evidence-exam#C3",
         "evidence-exam#C4",
         "evidence-exam#C5",
+        "evidence-exam#C6",
         "evidence-exam#S1",
         "evidence-exam#S2",
         "evidence-exam#S3",
@@ -2495,6 +2499,7 @@
         "evidence-exam#C3",
         "evidence-exam#C4",
         "evidence-exam#C5",
+        "evidence-exam#C6",
         "evidence-exam#S1",
         "evidence-exam#S2",
         "evidence-exam#S3",
@@ -4723,8 +4728,8 @@
       "number": "C3",
       "group": "Policy and new content",
       "title": "New iOS candidate \"Abdominal Wall Pain (Anterior Cutaneous Nerve Entrapment)\"",
-      "text": "**New iOS candidate \"Abdominal Wall Pain (Anterior Cutaneous Nerve Entrapment)\"** (G58.8), logPrior −5 (uncommon), urgency 0, in `coreConditions` and the abdominal-pain presentation; features: abdominal complaint logLR +1 (LR 1.3, expert estimate), pain at one fingertip-sized spot +5 (LR 3), pain for months +2 (LR 1.5), fever −6 (LR 0.3).",
-      "hash": "9d4fa2c63b315655",
+      "text": "**New iOS candidate \"Abdominal Wall Pain (Anterior Cutaneous Nerve Entrapment)\"** (G58.8), logPrior −5 (uncommon), urgency 0, in `coreConditions` and the abdominal-pain presentation; features: abdominal complaint logLR +1 (LR 1.3, expert estimate), pain at one fingertip-sized spot +5 (LR 3), fever −6 (LR 0.3) (no duration feature: the history step's duration chips are record-only on iOS).",
+      "hash": "9011a0338bcf8700",
       "doc": "docs/clinical-validation/changes/evidence-exam.md",
       "anchor": "needs-sign-off",
       "ruleSetIds": [
@@ -4759,6 +4764,23 @@
       "title": "Presentation keywords",
       "text": "**Presentation keywords** (which complaint shows which signs and rules) in `exam-signs.json` `presentations`.",
       "hash": "9dc817acd7819779",
+      "doc": "docs/clinical-validation/changes/evidence-exam.md",
+      "anchor": "needs-sign-off",
+      "ruleSetIds": [
+        "ios-bayesian-diagnostic-database",
+        "pane-engine-disease-model",
+        "exam-signs",
+        "decision-rules"
+      ]
+    },
+    {
+      "id": "evidence-exam#C6",
+      "source": "evidence-exam",
+      "number": "C6",
+      "group": "Policy and new content",
+      "title": "History frame → examination",
+      "text": "**History frame → examination** (`exam-signs.json` `frames`): for each of the 41 history frames, the iOS examination region and its chips (`ExamRegion.swift`), the web systems shown and the presentation tags offered (e.g. cough → chest / respiratory, CURB-65 and the pneumonia signs; groin lump → groin / hernia signs; lump elsewhere → local lump chips and lymph nodes; unrecognised complaint → general examination).",
+      "hash": "6ab674c45e08a0f2",
       "doc": "docs/clinical-validation/changes/evidence-exam.md",
       "anchor": "needs-sign-off",
       "ruleSetIds": [

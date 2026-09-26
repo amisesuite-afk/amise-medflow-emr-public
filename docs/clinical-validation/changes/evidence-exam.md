@@ -48,6 +48,30 @@ band and LR are shown. Rules without an iOS calculator say so.
 **iOS — Diagnosis step, Diagnostic reasoning card:** sign and rule findings show
 `(LR 2.8) · 22% → 41%` in the for / against lines.
 
+### The Exam step follows the history frame
+
+The history step classifies each chief complaint into a symptom type and history frame
+(`lib/triage-engine/src/history-frames` `classifyComplaint`, iOS twin `HistoryFrameClassifier`,
+including the clinician's frame switch). The Exam step reuses that classification instead of a
+second one: `exam-signs.json` `frames` maps every frame to
+
+- the **iOS examination region** (`ExamRegion.swift`): its label, one-tap chips and the record field
+  they belong to — a cough or breathlessness puts chest chips in Respiratory, chest pain,
+  palpitations and collapse cardiac chips in Cardiovascular, a neurological complaint neurological
+  chips in Neurological, a limb or the back in Musculoskeletal, skin, wounds and soft-tissue lumps
+  in Skin / Wound (these three fields then show in the short examination too). Groin, perianal,
+  urological, scrotal, neck, breast and swallowing regions keep the primary field as before. An
+  unrecognised complaint gets the general examination; **nothing defaults to the abdomen** any
+  more (before, every complaint the keyword list did not know — including cough — showed
+  abdominal chips in the primary field);
+- the **web examination systems** shown besides the core ones (`ExaminationTab`, `lib/exam-frames.ts`);
+- the **presentation tags** whose high-yield signs and decision rules are offered.
+
+Presentation keywords still add a tag when the complaint names a site, mechanism or condition the
+frame does not distinguish (right upper quadrant, an ankle or head injury, a sore throat).
+`scripts/src/exam-evidence-content.test.ts` fails when a history frame has no entry or a region has
+no iOS definition.
+
 ## How the evidence enters the engines
 
 ### Web (PANE)
@@ -117,8 +141,8 @@ order-independent; iOS `DecisionRuleEvidence` + the scorer):
 |---|---|
 | Content | Shared rule files `clinical-content/rules/{exam-signs,decision-rules}.json` with schemas `clinical-content/schemas/{exam-signs,decision-rules}.schema.json`, read by both platforms (web imports the JSON; iOS through `SharedClinicalContent`, `File.examSigns` / `.decisionRules`, shown in Settings → Diagnostics); registered in `SHARED_CONTENT` (`scripts/src/shared-content.ts`), checked by `lint:shared-content` |
 | PANE | `lib/pane-engine/src/evidence/{types,catalogue,register,features,relevance,index}.ts`, `engine/{evidenceLikelihood,evidenceGroups}.ts`; edits in `engine/{likelihood,bayes,infoGain}.ts`, `types.ts` (`askable`), `vademecum/index.ts`; new nodes `cirrhosis` (hepatobiliary), `abdominal_wall_pain` (general surgery); `constants.ts` `PANE_MODEL_VERSION = '1.1.0'` |
-| Web | `artifacts/dashboard/src/lib/{exam-evidence-features,decision-rule-scores,pane-reseed}.ts`, `socrates-to-features.ts` (evidence context), `diagnostic-reasoning.ts` (evidence moves); components `ExamSignsPanel.tsx`, `DecisionRuleCard.tsx`, `RecordScoreButton.tsx` (re-seed), `ScalesTab.tsx` (new rule cards), `ExaminationTab.tsx`, `DiagnosticReasoningPanel.tsx` |
-| iOS | `Services/{ExamEvidenceCatalogue,ExamSignRecord,DecisionRuleEvidence,DiagnosticReasoningAdapter+Evidence}.swift`, `Views/Consultation/ExamSignsSection.swift`; edits in `BayesianDiagnosisEngine.swift`, `+Scoring.swift`, `BayesianDecisionEngine+Scoring.swift`, `ConsultationView+{DiagnosisTab,ExamTab}.swift`, `DiagnosticReasoningCard.swift`; `Resources/DiagnosticDatabase.json` 2.2.0 |
+| Web | `artifacts/dashboard/src/lib/{exam-evidence-features,exam-frames,decision-rule-scores,pane-reseed}.ts`, `socrates-to-features.ts` (evidence context), `diagnostic-reasoning.ts` (evidence moves); components `ExamSignsPanel.tsx`, `DecisionRuleCard.tsx`, `RecordScoreButton.tsx` (re-seed), `ScalesTab.tsx` (new rule cards), `ExaminationTab.tsx`, `DiagnosticReasoningPanel.tsx` |
+| iOS | `Services/{ExamEvidenceCatalogue,ExamSignRecord,ExamRegion,DecisionRuleEvidence,DiagnosticReasoningAdapter+Evidence}.swift`, `Views/Consultation/ExamSignsSection.swift`; edits in `BayesianDiagnosisEngine.swift`, `+Scoring.swift`, `BayesianDecisionEngine+Scoring.swift`, `ConsultationView+{DiagnosisTab,ExamTab,HPITab}.swift` (the keyword region chain replaced by `ExamRegion`), `DiagnosticReasoningCard.swift`; `Resources/DiagnosticDatabase.json` 2.2.0 |
 | Generator | `scripts/src/gen-exam-evidence-db.ts`, `scripts/src/diagnostic-database-schema.ts` (`sign`, `rule` keys) |
 | Tests | `lib/pane-engine/src/__tests__/evidence.test.ts`, `artifacts/dashboard/src/lib/__tests__/{exam-evidence-features,decision-rule-scores}.test.ts`, `scripts/src/{exam-evidence-content,exam-evidence-db}.test.ts`, `ios/AmiseMedFlowTests/ExamEvidenceTests.swift` (not compiled here) |
 | Validation | 13 vignettes `ios/AmiseMedFlowTests/ClinicalValidation/Vignettes/exam-*.json` (`inputs.examSigns`, `inputs.scoreForms`); web runner and iOS runner read `examSigns` |
@@ -164,6 +188,16 @@ Web differential, the same vignette without → with the recorded evidence (top 
 - iOS has no calculator for Ottawa ankle / knee, Canadian CT head, NEXUS, Canadian C-spine or the syncope
   rules; the Exam step says "Calculator on the web Scales step (not yet on iOS)".
 - CLAUDE.md and the `ios-arch` skill still describe `DiagnosticDatabase.json` as 2.1.0.
+- iOS: the neck, breast, swallowing, groin, perianal, scrotal and urological regions are still
+  recorded in `Patient.examAbdo` (as before this change), which the PDFs and SOAP draft print under
+  "Abdomen". The chest, neurological, limb, back, skin, wound and lump regions now use their own
+  fields.
+- The iOS clinical-validation runner grades the scores of `scoreForms` after the differential and
+  does not store them on the patient first, so on iOS the `exam-*` vignettes with a recorded rule
+  (PERC, STONE, AIR, Ottawa) do not feed the rule band to the differential in the harness (the app
+  does, from the stored calculator result).
+- CLAUDE.md's shared-content gotcha lists the shared files as zebra rules, supplement catalogue and
+  lifestyle practices; `exam-signs` and `decision-rules` are now shared too.
 
 ## Needs sign-off
 
@@ -185,9 +219,10 @@ Policy and new content:
 - P10. **Secondary targets**: a sign's `alsoTargets` group gets sensitivity LR+ × (1 − specificity), capped at 0.95; rule-band base rate min(0.3, 0.9 / LR) and target probability min(0.99, LR × base rate) (web).
 - C1. **New PANE node `cirrhosis`** "Cirrhosis / Chronic Liver Disease (Decompensated)", ICD-10 K74.60, prior tier uncommon, course chronic; P(finding | cirrhosis): known liver disease 0.80, alcohol 0.55, jaundice 0.45, ascites 0.50, abdominal distension 0.50, bilateral leg oedema 0.35, spider naevi 0.45, fatigue 0.55, anorexia 0.40, weight loss 0.25, confusion 0.15, thrombocytopenia 0.60, pruritus 0.20, dark urine 0.30, haematemesis 0.05, melaena 0.05, fever 0.10, progressive course 0.40 (Udell 2012; EASL 2018; Baveno VII).
 - C2. **New PANE node `abdominal_wall_pain`** "Abdominal Wall Pain (e.g. Anterior Cutaneous Nerve Entrapment)", ICD-10 G58.8 (other specified mononeuropathy; please choose the code), prior tier uncommon, course chronic; localised pain 0.85, abdominal tenderness 0.95, RIF pain 0.30, RUQ 0.15, LIF 0.15, periumbilical 0.20, epigastric 0.10, worse on movement 0.50, episodic 0.40, previous surgery 0.30, nausea / vomiting 0.05, fever 0.02, raised WCC 0.02, anorexia 0.05 (Takada 2011; Scheltinga and Roumen 2018).
-- C3. **New iOS candidate "Abdominal Wall Pain (Anterior Cutaneous Nerve Entrapment)"** (G58.8), logPrior −5 (uncommon), urgency 0, in `coreConditions` and the abdominal-pain presentation; features: abdominal complaint logLR +1 (LR 1.3, expert estimate), pain at one fingertip-sized spot +5 (LR 3), pain for months +2 (LR 1.5), fever −6 (LR 0.3).
+- C3. **New iOS candidate "Abdominal Wall Pain (Anterior Cutaneous Nerve Entrapment)"** (G58.8), logPrior −5 (uncommon), urgency 0, in `coreConditions` and the abdominal-pain presentation; features: abdominal complaint logLR +1 (LR 1.3, expert estimate), pain at one fingertip-sized spot +5 (LR 3), fever −6 (LR 0.3) (no duration feature: the history step's duration chips are record-only on iOS).
 - C4. **Target groups** (which diagnoses a sign's LR applies to, web PANE ids and iOS name fragments) as listed in `clinical-content/rules/exam-signs.json` `targetGroups` — e.g. peritonism → appendicitis, perforated ulcer, diverticulitis, anastomotic leak, post-operative collection, toxic megacolon, abdominal trauma; nodal malignancy → gastric, oesophageal, pancreatic, thyroid, breast, melanoma, anal and skin SCC (and lymphoma on iOS).
 - C5. **Presentation keywords** (which complaint shows which signs and rules) in `exam-signs.json` `presentations`.
+- C6. **History frame → examination** (`exam-signs.json` `frames`): for each of the 41 history frames, the iOS examination region and its chips (`ExamRegion.swift`), the web systems shown and the presentation tags offered (e.g. cough → chest / respiratory, CURB-65 and the pneumonia signs; groin lump → groin / hernia signs; lump elsewhere → local lump chips and lymph nodes; unrecognised complaint → general examination).
 
 Examination signs (S1–S67; "Absence used" = the Absent chip changes the engines):
 

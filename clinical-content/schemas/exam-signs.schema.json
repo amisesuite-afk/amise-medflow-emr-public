@@ -2,10 +2,10 @@
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "$id": "https://amise-medflow.local/clinical-content/exam-signs.schema.json",
   "title": "Evidence-based examination signs",
-  "description": "clinical-content/rules/exam-signs.json: bedside signs with likelihood ratios, read by the web PANE engine (lib/pane-engine/src/evidence) and the iOS Bayesian engine (Resources/ExamSigns.json, a byte-identical copy; DiagnosticDatabase.json 'sign' features). Checked by scripts/src/exam-evidence-content.test.ts.",
+  "description": "clinical-content/rules/exam-signs.json: bedside signs with likelihood ratios, a shared clinical rule file read by the web PANE engine (lib/pane-engine/src/evidence) and iOS (ExamEvidenceCatalogue.swift through SharedClinicalContent; DiagnosticDatabase.json 'sign' features). Checked by lint:shared-content and scripts/src/exam-evidence-content.test.ts.",
   "type": "object",
   "additionalProperties": false,
-  "required": ["id", "version", "title", "updated", "lastReviewed", "reviewer", "reference", "conversion", "engineModes", "absencePolicy", "presentations", "targetGroups", "signs"],
+  "required": ["id", "version", "title", "updated", "lastReviewed", "reviewer", "reference", "conversion", "engineModes", "absencePolicy", "frames", "presentations", "targetGroups", "signs"],
   "properties": {
     "$schema": { "type": "string" },
     "id": { "const": "exam-signs" },
@@ -21,9 +21,22 @@
       "properties": { "lr": { "type": "string" }, "twin": { "type": "string" }, "none": { "type": "string" } }
     },
     "absencePolicy": { "type": "string" },
+    "frames": {
+      "type": "object",
+      "description": "The complaint's history frame (lib/triage-engine/src/history-frames classifyComplaint, the classifier the history step uses; iOS HistoryFrameClassifier) → the Exam step: the iOS primary examination region (ExamRegion.swift), the web examination systems to show (ExaminationTab) and the presentation tags whose signs and rules are offered. Keyed by frame id (\"pain.chest\", \"lump.hernia\") or symptom type (\"cough\"); scripts/src/exam-evidence-content.test.ts fails when a history frame has no entry.",
+      "propertyNames": { "pattern": "^[a-z_]+(\\.[a-z_]+)?$" },
+      "additionalProperties": {
+        "type": "object", "additionalProperties": false, "required": ["region", "systems", "presentations"],
+        "properties": {
+          "region": { "enum": ["abdomen", "chest-cardiac", "chest-respiratory", "neck", "breast", "groin", "oropharynx", "perianal", "skin", "wound", "lump", "scrotal", "urological", "neuro", "limb", "back", "general"] },
+          "systems": { "type": "array", "items": { "enum": ["general", "respiratory", "cardiovascular", "abdomen", "perineal", "anal", "genital", "neurological", "extremities", "breast", "wound", "skin"] } },
+          "presentations": { "type": "array", "items": { "type": "string" } }
+        }
+      }
+    },
     "presentations": {
       "type": "object",
-      "description": "Complaint tags: keywords (lower case, matched at word starts in the complaint, history and symptom chips) that make a sign or rule relevant.",
+      "description": "Presentation tags. A tag is offered when the complaint's history frame lists it (\"frames\"), or when one of its keywords (lower case, matched at word starts in the complaint, history and symptom chips) names a site, mechanism or condition the frame does not distinguish (right upper quadrant, an ankle injury, a sore throat).",
       "additionalProperties": {
         "type": "object", "additionalProperties": false, "required": ["label", "keywords"],
         "properties": {

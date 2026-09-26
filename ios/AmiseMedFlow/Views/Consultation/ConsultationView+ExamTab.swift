@@ -22,33 +22,43 @@ extension ConsultationView {
                         .font(.caption).foregroundStyle(AMColor.accent)
                 }
 
-                examField("General appearance",
+                // The region comes from the complaint's history frame (ExamRegion): its chips go in
+                // the field its findings belong to, so a cough is examined at the chest.
+                let region = examRegion
+                examField(region.label(for: .general),
                           text: Binding(get: { patient.examGeneral ?? "" },
                                         set: { patient.examGeneral = $0.isEmpty ? nil : $0; touch() }),
-                          chips: ["Alert, no distress.", "Cachexic.", "Jaundiced.", "Pallor.", "Ankle oedema.", "Unwell."])
-                examField("Cardiovascular",
+                          chips: region.chips(for: .general))
+                examField(region.label(for: .cvs),
                           text: Binding(get: { patient.examCVS ?? "" },
                                         set: { patient.examCVS = $0.isEmpty ? nil : $0; touch() }),
                           chips: primaryCVSChips)
-                examField("Respiratory",
+                examField(region.label(for: .resp),
                           text: Binding(get: { patient.examResp ?? "" },
                                         set: { patient.examResp = $0.isEmpty ? nil : $0; touch() }),
-                          chips: ["Clear to auscultation bilaterally.", "Reduced air entry.", "Fine crackles.", "Expiratory wheeze.", "Dull to percussion."])
+                          chips: region.chips(for: .resp))
                 examField(primaryExamLabel,
                           text: Binding(get: { patient.examAbdo ?? "" },
                                         set: { patient.examAbdo = $0.isEmpty ? nil : $0; touch() }),
                           chips: primaryExamChips)
 
-                if examMode == .full {
-                    examField("Neurological", text: Binding(
+                if examMode == .full || region.showsInShortExam(.neuro) {
+                    examField(region.label(for: .neuro), text: Binding(
                         get: { patient.examNeuro ?? "" },
-                        set: { patient.examNeuro = $0.isEmpty ? nil : $0; touch() }))
-                    examField("Musculoskeletal", text: Binding(
+                        set: { patient.examNeuro = $0.isEmpty ? nil : $0; touch() }),
+                        chips: region.chips(for: .neuro))
+                }
+                if examMode == .full || region.showsInShortExam(.msk) {
+                    examField(region.label(for: .msk), text: Binding(
                         get: { patient.examMSK ?? "" },
-                        set: { patient.examMSK = $0.isEmpty ? nil : $0; touch() }))
-                    examField("Skin / Wound", text: Binding(
+                        set: { patient.examMSK = $0.isEmpty ? nil : $0; touch() }),
+                        chips: region.chips(for: .msk))
+                }
+                if examMode == .full || region.showsInShortExam(.skin) {
+                    examField(region.label(for: .skin), text: Binding(
                         get: { patient.examSkin ?? "" },
-                        set: { patient.examSkin = $0.isEmpty ? nil : $0; touch() }))
+                        set: { patient.examSkin = $0.isEmpty ? nil : $0; touch() }),
+                        chips: region.chips(for: .skin))
                 }
 
                 examField("Other / Additional findings", text: Binding(
@@ -77,6 +87,7 @@ extension ConsultationView {
             // Evidence-based high-yield signs and decision rules (evidence-exam): chips written as
             // "[sign]" lines in Other / additional findings; nothing is pre-filled as normal.
             ExamSignsSection(patient: patient,
+                             frameIDs: examFrameIDs,
                              leadingDiagnoses: bayesianDx.prefix(3).map { $0.name },
                              onChange: {
                                  touch()

@@ -126,13 +126,6 @@ function acnesCandidate(): Obj {
         citation: takada,
       },
       {
-        key: 'finding',
-        value: 'months|years|chronic',
-        logLR: 2, likelihoodRatio: 1.5,
-        evidenceLabel: 'Pain for months',
-        citation: takada,
-      },
-      {
         key: 'associations',
         value: 'fever',
         logLR: -6, likelihoodRatio: 0.3,

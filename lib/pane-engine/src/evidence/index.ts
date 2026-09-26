@@ -12,5 +12,7 @@ export {
   applyRecordedEvidence, evidenceItems, ruleNotAppliedReason, signApplies, signResultLabel,
 } from './features.js';
 export type { RecordedEvidence, FeatureMap as EvidenceFeatureMap, EvidenceItem, EvidenceEffect } from './features.js';
-export { presentationsIn, relevantSigns, relevantRules, signDiagnosticValue } from './relevance.js';
+export {
+  examFrame, examSystemsFor, presentationsFor, presentationsIn, relevantSigns, relevantRules, signDiagnosticValue,
+} from './relevance.js';
 export type { RelevanceContext, RelevantSign, RelevantRule } from './relevance.js';

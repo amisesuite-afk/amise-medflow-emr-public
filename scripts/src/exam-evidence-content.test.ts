@@ -10,6 +10,7 @@ import { join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { describe, expect, it } from 'vitest';
 import { DECISION_RULES, EXAM_SIGNS } from '../../lib/pane-engine/src/evidence/catalogue';
+import { HISTORY_FRAMES, classifyComplaint } from '../../lib/triage-engine/src/history-frames/index';
 
 const REPO_ROOT = join(fileURLToPath(import.meta.url), '..', '..', '..');
 const readJson = (p: string) => JSON.parse(readFileSync(join(REPO_ROOT, p), 'utf8'));
@@ -39,6 +40,36 @@ describe('examination-sign and decision-rule catalogues', () => {
       if (r.appliesWhen) expect(ruleIds, `${r.id} appliesWhen`).toContain(r.appliesWhen.rule);
       for (const p of r.presentations) expect(signs.presentations[p], `${r.id} presentation ${p}`).toBeDefined();
     }
+  });
+
+  it('the Exam step reads the complaint through the history frames: every frame has an entry', () => {
+    const frames = signs.frames as Record<string, { region: string; presentations: string[] }>;
+    for (const f of HISTORY_FRAMES) {
+      expect(frames[f.id] ?? frames[f.type], `exam-signs.json frames has no entry for history frame ${f.id}`).toBeDefined();
+    }
+    for (const [id, f] of Object.entries(frames)) {
+      for (const t of f.presentations) expect(signs.presentations[t], `frames.${id}: presentation ${t}`).toBeDefined();
+    }
+    // Every region has its label and chips on iOS (ExamRegion.swift).
+    const swift = readFileSync(join(REPO_ROOT, 'ios/AmiseMedFlow/Services/ExamRegion.swift'), 'utf8');
+    for (const region of new Set(Object.values(frames).map(f => f.region))) {
+      expect(swift, `ExamRegion.swift has no region "${region}"`).toContain(`id: "${region}"`);
+    }
+  });
+
+  it('a cough or breathlessness is examined at the chest, never the abdomen by default', () => {
+    const regionOf = (complaint: string) => {
+      const c = classifyComplaint(complaint);
+      return (signs.frames[c.frameId] ?? signs.frames[c.type]).region;
+    };
+    expect(regionOf('Cough')).toBe('chest-respiratory');
+    expect(regionOf('Shortness of breath')).toBe('chest-respiratory');
+    expect(regionOf('Chest pain')).toBe('chest-cardiac');
+    expect(regionOf('Groin lump')).toBe('groin');
+    expect(regionOf('Lump on the back')).toBe('lump');
+    expect(regionOf('Neck lump')).toBe('neck');
+    expect(regionOf('Right iliac fossa pain')).toBe('abdomen');
+    expect(regionOf('Follow-up')).toBe('general');
   });
 
   it('nothing is marked reviewed or verified without a named reviewer', () => {

@@ -1,15 +1,20 @@
 import { DECISION_RULES, EXAM_SIGNS, targetGroup } from './catalogue.js';
 import { signApplies } from './features.js';
-import type { DecisionRule, ExamSign } from './types.js';
+import type { DecisionRule, ExamFrame, ExamSign, ExamSystemKey } from './types.js';
 
 /**
- * Which signs and rules the Exam step offers: those of the complaint's presentations (keywords
- * in the complaint, history and symptom chips) and those whose target is in the current
- * differential. Pure; ranking by information gain is done by the caller when a posterior exists.
+ * Which signs and rules the Exam step offers: those of the complaint's presentations and those
+ * whose target is in the current differential. The presentations come from the complaint's history
+ * frames (the history step's classifier, @workspace/triage-engine/history-frames: the caller passes
+ * the frame ids) through exam-signs.json "frames", plus the presentations whose keywords name a
+ * site, mechanism or condition the frame does not distinguish (right upper quadrant, an ankle
+ * injury). Pure; ranking by information gain is done by the caller when a posterior exists.
  */
 export interface RelevanceContext {
   /** Complaint, history and symptom chips as one text. */
   text: string;
+  /** History frame ids of the complaint(s), primary first ("cough", "pain.abdomen", "lump.hernia"). */
+  frames?: string[];
   ageYears?: number | null;
   /** PANE disease ids of the current differential, most likely first. */
   differential?: string[];
@@ -18,6 +23,24 @@ export interface RelevanceContext {
 function wordStart(text: string, keyword: string): boolean {
   const k = keyword.toLowerCase().replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
   return new RegExp(`(^|[^a-z0-9])${k}`).test(text);
+}
+
+/** The Exam step for a history frame id: the frame's own entry, else its symptom type's, else "general". */
+export function examFrame(frameId: string): ExamFrame {
+  const f = EXAM_SIGNS.frames;
+  return f[frameId] ?? f[frameId.split('.')[0] ?? ''] ?? f.general ?? { region: 'general', systems: [], presentations: [] };
+}
+
+/** Web examination systems to show for the complaint's history frames. */
+export function examSystemsFor(frameIds: string[]): Set<ExamSystemKey> {
+  return new Set(frameIds.flatMap(id => examFrame(id).systems));
+}
+
+/** Presentation tags of the history frames plus those whose keywords occur (at a word start) in `text`. */
+export function presentationsFor(ctx: Pick<RelevanceContext, 'text' | 'frames'>): Set<string> {
+  const out = presentationsIn(ctx.text);
+  for (const id of ctx.frames ?? []) for (const t of examFrame(id).presentations) out.add(t);
+  return out;
 }
 
 /** Presentation tags whose keywords occur (at a word start) in `text`. */
@@ -51,7 +74,7 @@ export interface RelevantSign {
 }
 
 export function relevantSigns(ctx: RelevanceContext): RelevantSign[] {
-  const tags = presentationsIn(ctx.text);
+  const tags = presentationsFor(ctx);
   const top = new Set((ctx.differential ?? []).slice(0, 3));
   const out: RelevantSign[] = [];
   for (const sign of EXAM_SIGNS.signs) {
@@ -72,7 +95,7 @@ export interface RelevantRule {
 }
 
 export function relevantRules(ctx: RelevanceContext): RelevantRule[] {
-  const tags = presentationsIn(ctx.text);
+  const tags = presentationsFor(ctx);
   const top = new Set((ctx.differential ?? []).slice(0, 3));
   const out: RelevantRule[] = [];
   for (const rule of DECISION_RULES.rules) {

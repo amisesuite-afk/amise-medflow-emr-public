@@ -14,6 +14,405 @@
     "none": "Low value or no usable likelihood ratio: documentation only; it does not change the differential."
   },
   "absencePolicy": "An absent sign updates the engines only when negativeMeaningful is true and the chip was set to 'absent' (examined and absent). Unrecorded signs are never read as absent.",
+  "frames": {
+    "pain.abdomen": {
+      "region": "abdomen",
+      "systems": [
+        "abdomen"
+      ],
+      "presentations": [
+        "abdominal-pain"
+      ]
+    },
+    "pain.chest": {
+      "region": "chest-cardiac",
+      "systems": [
+        "cardiovascular",
+        "respiratory"
+      ],
+      "presentations": [
+        "chest-pain",
+        "breathlessness"
+      ]
+    },
+    "pain.head": {
+      "region": "neuro",
+      "systems": [
+        "neurological"
+      ],
+      "presentations": [
+        "headache-meningism",
+        "neuro-deficit"
+      ]
+    },
+    "pain.neck": {
+      "region": "neck",
+      "systems": [
+        "general"
+      ],
+      "presentations": [
+        "neck-lump",
+        "sore-throat"
+      ]
+    },
+    "pain.back": {
+      "region": "back",
+      "systems": [
+        "neurological",
+        "anal"
+      ],
+      "presentations": [
+        "rectal",
+        "loin-pain"
+      ]
+    },
+    "pain.limb": {
+      "region": "limb",
+      "systems": [
+        "extremities"
+      ],
+      "presentations": [
+        "leg-swelling",
+        "limb-ischaemia"
+      ]
+    },
+    "pain.breast": {
+      "region": "breast",
+      "systems": [
+        "breast"
+      ],
+      "presentations": [
+        "breast"
+      ]
+    },
+    "pain.perineal": {
+      "region": "perianal",
+      "systems": [
+        "anal",
+        "perineal"
+      ],
+      "presentations": [
+        "rectal"
+      ]
+    },
+    "pain.joint": {
+      "region": "limb",
+      "systems": [
+        "extremities"
+      ],
+      "presentations": []
+    },
+    "pain.genital": {
+      "region": "scrotal",
+      "systems": [
+        "genital"
+      ],
+      "presentations": [
+        "groin-lump"
+      ]
+    },
+    "cough": {
+      "region": "chest-respiratory",
+      "systems": [
+        "respiratory",
+        "cardiovascular"
+      ],
+      "presentations": [
+        "cough-fever",
+        "breathlessness"
+      ]
+    },
+    "dyspnoea": {
+      "region": "chest-respiratory",
+      "systems": [
+        "respiratory",
+        "cardiovascular"
+      ],
+      "presentations": [
+        "breathlessness"
+      ]
+    },
+    "lump.neck": {
+      "region": "neck",
+      "systems": [
+        "general"
+      ],
+      "presentations": [
+        "neck-lump",
+        "lymph-nodes"
+      ]
+    },
+    "lump.hernia": {
+      "region": "groin",
+      "systems": [
+        "abdomen",
+        "genital"
+      ],
+      "presentations": [
+        "groin-lump"
+      ]
+    },
+    "lump.scrotal": {
+      "region": "scrotal",
+      "systems": [
+        "genital"
+      ],
+      "presentations": [
+        "groin-lump"
+      ]
+    },
+    "lump.abdominal": {
+      "region": "abdomen",
+      "systems": [
+        "abdomen"
+      ],
+      "presentations": [
+        "abdominal-pain",
+        "liver"
+      ]
+    },
+    "lump.soft_tissue": {
+      "region": "lump",
+      "systems": [
+        "skin"
+      ],
+      "presentations": [
+        "lymph-nodes"
+      ]
+    },
+    "lump.limb_swelling": {
+      "region": "limb",
+      "systems": [
+        "extremities"
+      ],
+      "presentations": [
+        "leg-swelling"
+      ]
+    },
+    "breast": {
+      "region": "breast",
+      "systems": [
+        "breast"
+      ],
+      "presentations": [
+        "breast",
+        "lymph-nodes"
+      ]
+    },
+    "bleeding.rectal": {
+      "region": "perianal",
+      "systems": [
+        "anal",
+        "abdomen"
+      ],
+      "presentations": [
+        "gi-bleed",
+        "rectal"
+      ]
+    },
+    "bleeding.upper_gi": {
+      "region": "abdomen",
+      "systems": [
+        "abdomen"
+      ],
+      "presentations": [
+        "gi-bleed",
+        "liver"
+      ]
+    },
+    "bleeding.urinary": {
+      "region": "urological",
+      "systems": [
+        "abdomen",
+        "genital"
+      ],
+      "presentations": [
+        "loin-pain",
+        "rectal"
+      ]
+    },
+    "bleeding.vaginal": {
+      "region": "abdomen",
+      "systems": [
+        "abdomen",
+        "perineal"
+      ],
+      "presentations": []
+    },
+    "bleeding.general": {
+      "region": "general",
+      "systems": [
+        "general",
+        "skin"
+      ],
+      "presentations": []
+    },
+    "bowel": {
+      "region": "abdomen",
+      "systems": [
+        "abdomen",
+        "anal"
+      ],
+      "presentations": [
+        "obstruction",
+        "rectal"
+      ]
+    },
+    "dysphagia": {
+      "region": "oropharynx",
+      "systems": [
+        "general"
+      ],
+      "presentations": [
+        "neck-lump",
+        "lymph-nodes"
+      ]
+    },
+    "jaundice": {
+      "region": "abdomen",
+      "systems": [
+        "abdomen",
+        "skin"
+      ],
+      "presentations": [
+        "jaundice",
+        "liver"
+      ]
+    },
+    "vomiting": {
+      "region": "abdomen",
+      "systems": [
+        "abdomen"
+      ],
+      "presentations": [
+        "obstruction",
+        "dehydration"
+      ]
+    },
+    "fever": {
+      "region": "general",
+      "systems": [
+        "general",
+        "respiratory",
+        "wound",
+        "skin"
+      ],
+      "presentations": [
+        "sepsis"
+      ]
+    },
+    "urinary": {
+      "region": "urological",
+      "systems": [
+        "abdomen",
+        "genital"
+      ],
+      "presentations": [
+        "loin-pain",
+        "rectal"
+      ]
+    },
+    "neuro.weakness": {
+      "region": "neuro",
+      "systems": [
+        "neurological"
+      ],
+      "presentations": [
+        "neuro-deficit"
+      ]
+    },
+    "neuro.numbness": {
+      "region": "neuro",
+      "systems": [
+        "neurological"
+      ],
+      "presentations": [
+        "neuro-deficit"
+      ]
+    },
+    "neuro.dizziness": {
+      "region": "neuro",
+      "systems": [
+        "neurological",
+        "cardiovascular"
+      ],
+      "presentations": [
+        "neuro-deficit",
+        "syncope"
+      ]
+    },
+    "skin.lesion": {
+      "region": "skin",
+      "systems": [
+        "skin"
+      ],
+      "presentations": [
+        "lymph-nodes"
+      ]
+    },
+    "skin.wound": {
+      "region": "wound",
+      "systems": [
+        "wound",
+        "skin"
+      ],
+      "presentations": [
+        "skin-infection"
+      ]
+    },
+    "skin.rash": {
+      "region": "skin",
+      "systems": [
+        "skin"
+      ],
+      "presentations": [
+        "skin-infection"
+      ]
+    },
+    "weight_loss": {
+      "region": "abdomen",
+      "systems": [
+        "general",
+        "abdomen"
+      ],
+      "presentations": [
+        "lymph-nodes",
+        "liver"
+      ]
+    },
+    "fatigue": {
+      "region": "general",
+      "systems": [
+        "general"
+      ],
+      "presentations": []
+    },
+    "palpitations": {
+      "region": "chest-cardiac",
+      "systems": [
+        "cardiovascular"
+      ],
+      "presentations": [
+        "syncope"
+      ]
+    },
+    "syncope": {
+      "region": "chest-cardiac",
+      "systems": [
+        "cardiovascular",
+        "neurological"
+      ],
+      "presentations": [
+        "syncope",
+        "neuro-deficit"
+      ]
+    },
+    "general": {
+      "region": "general",
+      "systems": [],
+      "presentations": []
+    }
+  },
   "presentations": {
     "abdominal-pain": {
       "label": "Abdominal pain",

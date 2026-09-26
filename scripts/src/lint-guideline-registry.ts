@@ -161,8 +161,10 @@ const KNOWN_RULE_SET_FILES: string[] = [
   'lib/pane-engine/src/evidence/*.ts',
   'ios/AmiseMedFlow/Services/ExamEvidenceCatalogue.swift',
   'ios/AmiseMedFlow/Services/ExamSignRecord.swift',
+  'ios/AmiseMedFlow/Services/ExamRegion.swift',
   'ios/AmiseMedFlow/Services/DecisionRuleEvidence.swift',
   'artifacts/dashboard/src/lib/exam-evidence-features.ts',
+  'artifacts/dashboard/src/lib/exam-frames.ts',
   'artifacts/dashboard/src/lib/decision-rule-scores.ts',
   // Dashboard
   'artifacts/dashboard/src/lib/drug-interactions.ts',

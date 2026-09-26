@@ -51,6 +51,40 @@ final class ExamEvidenceTests: XCTestCase {
         XCTAssertEqual(DecisionRuleEvidence.componentSigns(ofRules: ["alvarado"]), ["mcburney", "rebound"])
     }
 
+    /// The Exam step reads the complaint through the history step's classifier: a cough is examined
+    /// at the chest, never the abdomen by default (ExamRegion, exam-signs.json "frames").
+    func testExamRegionFollowsTheHistoryFrame() {
+        func region(_ complaint: String) -> ExamRegion {
+            ExamRegion.forFrame(HistoryFrameClassifier.classify(complaint).frameId, complaint: complaint)
+        }
+        XCTAssertEqual(region("Cough").id, "chest-respiratory")
+        XCTAssertEqual(region("Shortness of breath").id, "chest-respiratory")
+        XCTAssertEqual(region("Chest pain").id, "chest-cardiac")
+        XCTAssertEqual(region("Groin lump").label, "Groin / Hernia")
+        XCTAssertEqual(region("Lump on the back").id, "lump")
+        XCTAssertEqual(region("Parotid swelling").label, "Salivary Gland / Jaw")
+        XCTAssertEqual(region("Right iliac fossa pain").label, "Abdomen")
+        XCTAssertEqual(region("Follow-up").id, "general")
+        // A cough's chest chips go in the Respiratory field; the abdomen keeps its own label and chips.
+        let cough = region("Cough")
+        XCTAssertEqual(cough.field, .resp)
+        XCTAssertTrue(cough.chips(for: .resp).contains("Bronchial breathing."))
+        XCTAssertEqual(cough.label(for: .abdo), "Abdomen")
+        XCTAssertEqual(cough.chips(for: .abdo), ExamRegion.abdomen.chips)
+        // Neurological findings are shown in the short examination for a neurological complaint.
+        XCTAssertTrue(region("Weakness of the left arm").showsInShortExam(.neuro))
+        XCTAssertFalse(region("Right iliac fossa pain").showsInShortExam(.neuro))
+    }
+
+    func testCoughOffersChestSignsNotAbdominalOnes() {
+        let ids = ExamEvidenceCatalogue.relevantSigns(frameIDs: ["cough"], text: "Cough", ageYears: 50,
+                                                      leadingDiagnoses: []).map(\.id)
+        XCTAssertTrue(ids.contains("dullness_percussion"))
+        XCTAssertTrue(ids.contains("crackles"))
+        XCTAssertFalse(ids.contains("murphy"))
+        XCTAssertTrue(ExamEvidenceCatalogue.relevantRules(frameIDs: ["cough"], text: "Cough").contains { $0.id == "curb65" })
+    }
+
     func testMurphyChipFiresOnlyWhenRecorded() throws {
         func infer(_ examOther: String?) -> [BayesianDiagnosisEngine.DiagnosisResult] {
             BayesianDiagnosisEngine.infer(

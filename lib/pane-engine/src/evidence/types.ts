@@ -62,6 +62,27 @@ export interface Presentation {
   keywords: string[];
 }
 
+/** iOS primary examination field for a history frame (ExamRegion.swift). */
+export type ExamRegionId =
+  | 'abdomen' | 'chest-cardiac' | 'chest-respiratory' | 'neck' | 'breast' | 'groin' | 'oropharynx' | 'perianal'
+  | 'skin' | 'wound' | 'lump' | 'scrotal' | 'urological' | 'neuro' | 'limb' | 'back' | 'general';
+
+/** Web examination system key (ExaminationTab EXAM_SYSTEMS). */
+export type ExamSystemKey =
+  | 'general' | 'respiratory' | 'cardiovascular' | 'abdomen' | 'perineal' | 'anal' | 'genital' | 'neurological'
+  | 'extremities' | 'breast' | 'wound' | 'skin';
+
+/**
+ * The Exam step for a history frame (history-frames classifyComplaint: the classifier the history
+ * step uses), keyed by frame id or symptom type.
+ */
+export interface ExamFrame {
+  region: ExamRegionId;
+  systems: ExamSystemKey[];
+  /** Keys of ExamSignsContent.presentations. */
+  presentations: string[];
+}
+
 export interface ExamSignsContent {
   /** Always "exam-signs" (the registry id; the schema pins it). */
   id: string;
@@ -74,6 +95,7 @@ export interface ExamSignsContent {
   conversion: string;
   engineModes: { lr: string; twin: string; none: string };
   absencePolicy: string;
+  frames: Record<string, ExamFrame>;
   presentations: Record<string, Presentation>;
   targetGroups: Record<string, TargetGroup>;
   signs: ExamSign[];

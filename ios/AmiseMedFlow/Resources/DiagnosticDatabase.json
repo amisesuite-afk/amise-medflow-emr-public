@@ -141367,14 +141367,6 @@
               "citation": "Takada T et al. Carnett's sign in chronic abdominal pain, J Gen Intern Med 2011; Scheltinga MR, Roumen RM. Anterior cutaneous nerve entrapment syndrome (ACNES), Hernia 2018"
             },
             {
-              "key": "finding",
-              "value": "months|years|chronic",
-              "logLR": 2,
-              "likelihoodRatio": 1.5,
-              "evidenceLabel": "Pain for months",
-              "citation": "Takada T et al. Carnett's sign in chronic abdominal pain, J Gen Intern Med 2011; Scheltinga MR, Roumen RM. Anterior cutaneous nerve entrapment syndrome (ACNES), Hernia 2018"
-            },
-            {
               "key": "associations",
               "value": "fever",
               "logLR": -6,

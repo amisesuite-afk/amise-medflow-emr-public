@@ -2,7 +2,8 @@
  * Exam step — "High-yield signs" (evidence-exam 1.0.0). Deterministic; no AI.
  *
  * Offers the evidence-based signs for the complaint and the leading differential (clinical-content/
- * rules/exam-signs.json), highest diagnostic value first: expected information gain over the
+ * rules/exam-signs.json; the complaint is read through its history frame, the history step's own
+ * classifier: lib/exam-frames.ts), highest diagnostic value first: expected information gain over the
  * current PANE differential when there is one, else the size of the likelihood ratio. Each sign is
  * a three-way choice — present / absent / not examined — with how to elicit it and its likelihood
  * ratios on tap. Nothing is pre-filled: an unmarked sign was not examined, and only an examined,
@@ -19,6 +20,7 @@ import {
 import type { ExamSign, PaneState, SignState } from '@workspace/pane-engine';
 import { useAppContext } from '@/context/AppContext';
 import { examSignStates, recordedRuleValues, withSignState } from '@/lib/exam-evidence-features';
+import { complaintFrameIds } from '@/lib/exam-frames';
 import { paneStateFromConsultation } from '@/lib/pane-reseed';
 import { currentComplaintText } from '@/lib/visit-continuity-web';
 import { ScaleCalculator } from '@/pages/tabs/ScalesTab';
@@ -84,15 +86,18 @@ export default function ExamSignsPanel() {
   const states = examSignStates(examFindings);
   const recorded = recordedRuleValues(clinicalScores);
 
-  const text = [
-    currentComplaintText({ procedureData: app.procedureData as Record<string, unknown>, symptoms: app.symptoms, freeText: app.freeText }),
-    app.hpiNotes, ...app.symptoms,
-  ].filter(Boolean).join('. ');
+  const complaint = currentComplaintText({ procedureData: app.procedureData as Record<string, unknown>, symptoms: app.symptoms, freeText: app.freeText });
+  const text = [complaint, app.hpiNotes, ...app.symptoms].filter(Boolean).join('. ');
+  // The complaint's history frames (the history step's classifier): a cough offers chest signs.
+  const frames = useMemo(
+    () => complaintFrameIds(app.procedureData as Record<string, unknown>, complaint),
+    [app.procedureData, complaint],
+  );
   const differential = useMemo(() => Object.entries(paneState?.posteriors ?? {})
     .filter(([id, p]) => id !== '_other_' && p > 0).sort((a, b) => b[1] - a[1]).slice(0, 5).map(([id]) => id), [paneState]);
 
   const ranked = useMemo(() => {
-    const list = relevantSigns({ text, ageYears, differential });
+    const list = relevantSigns({ text, frames, ageYears, differential });
     // Signs already recorded stay visible even when no longer suggested.
     for (const id of Object.keys(states)) {
       if (!list.some(r => r.sign.id === id)) {
@@ -109,9 +114,9 @@ export default function ExamSignsPanel() {
       .map(r => ({ ...r, gain: gain(r.sign) }))
       .sort((a, b) => Number(b.inDifferential) - Number(a.inDifferential) || b.gain - a.gain || b.value - a.value);
   // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [text, ageYears, differential.join(','), Object.keys(states).join(','), paneState, sex, pregnancyPossible]);
+  }, [text, frames.join(','), ageYears, differential.join(','), Object.keys(states).join(','), paneState, sex, pregnancyPossible]);
 
-  const rules = useMemo(() => relevantRules({ text, ageYears, differential }), [text, ageYears, differential]);
+  const rules = useMemo(() => relevantRules({ text, frames, ageYears, differential }), [text, frames, ageYears, differential]);
 
   function setSign(id: string, state: SignState | null) {
     const next = withSignState(examFindings, id, state);

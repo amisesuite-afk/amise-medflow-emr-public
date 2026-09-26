@@ -2,7 +2,7 @@
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "$id": "https://amise-medflow.local/clinical-content/decision-rules.schema.json",
   "title": "Clinical decision rules as evidence",
-  "description": "clinical-content/rules/decision-rules.json: validated rules with band likelihood ratios (diagnostic) or risks (prognostic), read by the web PANE engine (lib/pane-engine/src/evidence) and iOS (Resources/DecisionRules.json, a byte-identical copy; DiagnosticDatabase.json 'rule' features). Checked by scripts/src/exam-evidence-content.test.ts.",
+  "description": "clinical-content/rules/decision-rules.json: validated rules with band likelihood ratios (diagnostic) or risks (prognostic), a shared clinical rule file read by the web PANE engine (lib/pane-engine/src/evidence) and iOS (ExamEvidenceCatalogue.swift through SharedClinicalContent; DiagnosticDatabase.json 'rule' features). Checked by scripts/src/exam-evidence-content.test.ts.",
   "type": "object",
   "additionalProperties": false,
   "required": ["id", "version", "title", "updated", "lastReviewed", "reviewer", "reference", "evidencePolicy", "rules"],

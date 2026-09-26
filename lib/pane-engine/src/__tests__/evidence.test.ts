@@ -2,7 +2,7 @@ import { describe, expect, it } from 'vitest';
 import {
   DISEASES, FEATURES, DECISION_RULES, EXAM_SIGNS, applyRecordedEvidence, baseRate, ruleBandFor, decisionRule, engineBands,
   evidenceItems, featureLikelihood, initPaneState, relevantRules, relevantSigns, ruleFeatureId, sensSpec, signFeatureId,
-  targetGroup, updatePosterior, MAX_SECOND_TARGET_SENSITIVITY,
+  targetGroup, updatePosterior, MAX_SECOND_TARGET_SENSITIVITY, examFrame, examSystemsFor,
 } from '../index.js';
 import type { DiseaseNode, PaneState } from '../index.js';
 
@@ -208,6 +208,24 @@ describe('relevance', () => {
     expect(signs).not.toContain('crt_child');
     const rules = relevantRules({ text: 'Right iliac fossa pain', differential: ['appendicitis'] }).map(r => r.rule.id);
     expect(rules).toEqual(expect.arrayContaining(['alvarado', 'air']));
+  });
+
+  it('follows the history frame: a cough offers chest signs and the pneumonia rule, not abdominal ones', () => {
+    // No keyword in the text names the chest: the frame (the history step's classifier) does.
+    const signs = relevantSigns({ text: 'Cough', frames: ['cough'] }).map(r => r.sign.id);
+    expect(signs).toEqual(expect.arrayContaining(['dullness_percussion', 'crackles', 'bronchial_breathing']));
+    expect(signs).not.toContain('murphy');
+    expect(signs).not.toContain('mcburney');
+    expect(relevantRules({ text: 'Cough', frames: ['cough'] }).map(r => r.rule.id)).toContain('curb65');
+    expect(relevantSigns({ text: 'Lump', frames: ['lump.hernia'] }).map(r => r.sign.id))
+      .toEqual(expect.arrayContaining(['cough_impulse', 'reducible', 'above_medial_tubercle', 'below_lateral_tubercle']));
+  });
+
+  it('maps a frame by id (else its symptom type, else the general frame)', () => {
+    expect(examFrame('cough').region).toBe('chest-respiratory');
+    expect(examFrame('lump.hernia').region).toBe('groin');
+    expect(examFrame('nonsense').region).toBe('general');
+    expect([...examSystemsFor(['cough'])]).toEqual(expect.arrayContaining(['respiratory', 'cardiovascular']));
   });
 
   it('puts signs for the current differential first', () => {

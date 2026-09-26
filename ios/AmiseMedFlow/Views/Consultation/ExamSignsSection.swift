@@ -1,8 +1,8 @@
 // ExamSignsSection.swift
 // Exam step — "High-yield signs" (evidence-exam 1.0.0). Deterministic; no AI.
 //
-// Offers the evidence-based signs for the complaint and the leading differential
-// (clinical-content/rules/exam-signs.json), those for the leading diagnoses first, then by the size of their
+// Offers the evidence-based signs for the complaint (read through its history frame, the history
+// step's own classification) and the leading differential (clinical-content/rules/exam-signs.json), those for the leading diagnoses first, then by the size of their
 // likelihood ratio. Each sign is present / absent / not examined; tapping its name shows how to
 // elicit it and its likelihood ratios. Nothing is pre-filled: an unmarked sign was not examined,
 // and only an examined, absent sign whose absence is meaningful lowers a diagnosis. The choice is
@@ -18,6 +18,9 @@ import SwiftData
 
 struct ExamSignsSection: View {
     @Bindable var patient: Patient
+    /// History frame ids of the complaint, primary first (ConsultationView.resolvedHistoryFrame: the
+    /// history step's own classification, including the clinician's frame switch).
+    let frameIDs: [String]
     /// Names of the current leading diagnoses (Bayesian differential, most likely first).
     let leadingDiagnoses: [String]
     /// Called after a sign changes or a calculator closes (save + refresh the differential).
@@ -36,8 +39,8 @@ struct ExamSignsSection: View {
     private var states: [String: String] { ExamSignRecord.states(in: patient.examOther) }
 
     private var signs: [ExamEvidenceCatalogue.Sign] {
-        var list = ExamEvidenceCatalogue.relevantSigns(text: relevanceText, ageYears: patient.ageYears,
-                                                       leadingDiagnoses: leadingDiagnoses)
+        var list = ExamEvidenceCatalogue.relevantSigns(frameIDs: frameIDs, text: relevanceText,
+                                                       ageYears: patient.ageYears, leadingDiagnoses: leadingDiagnoses)
         // A sign already recorded stays visible even when it is no longer suggested.
         for id in states.keys.sorted() where !list.contains(where: { $0.id == id }) {
             if let sign = ExamEvidenceCatalogue.sign(id) { list.append(sign) }
@@ -45,7 +48,9 @@ struct ExamSignsSection: View {
         return list
     }
 
-    private var rules: [ExamEvidenceCatalogue.Rule] { ExamEvidenceCatalogue.relevantRules(text: relevanceText) }
+    private var rules: [ExamEvidenceCatalogue.Rule] {
+        ExamEvidenceCatalogue.relevantRules(frameIDs: frameIDs, text: relevanceText)
+    }
 
     var body: some View {
         let all = signs

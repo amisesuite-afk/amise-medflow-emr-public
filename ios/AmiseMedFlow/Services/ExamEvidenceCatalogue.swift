@@ -66,8 +66,16 @@ enum ExamEvidenceCatalogue {
         let keywords: [String]
     }
 
+    /// The Exam step for a history frame (HistoryFrameClassifier, the classifier the history step
+    /// uses): the primary examination region (ExamRegion) and the presentation tags offered.
+    struct Frame: Codable {
+        let region: String
+        let presentations: [String]
+    }
+
     struct SignsFile: Codable {
         let version: String
+        let frames: [String: Frame]
         let presentations: [String: Presentation]
         let targetGroups: [String: Group]
         let signs: [Sign]
@@ -156,10 +164,21 @@ enum ExamEvidenceCatalogue {
         return true
     }
 
-    /// Presentation tags whose keywords occur at a word start in `text` (complaint and history).
-    static func presentations(in text: String) -> Set<String> {
+    /// The Exam step for a history frame id (HistoryFrameClassifier, the history step's classifier):
+    /// the frame's own entry, else its symptom type's ("lump.neck" → "lump"), else "general".
+    static func frame(_ frameID: String) -> Frame? {
+        let frames = signsFile?.frames ?? [:]
+        let type = frameID.split(separator: ".").first.map(String.init) ?? frameID
+        return frames[frameID] ?? frames[type] ?? frames["general"]
+    }
+
+    /// Presentation tags of the complaint's history frames, plus those whose keywords occur at a word
+    /// start in `text` (a site, mechanism or condition the frame does not distinguish: right upper
+    /// quadrant, an ankle injury).
+    static func presentations(frameIDs: [String], text: String) -> Set<String> {
         let lower = text.lowercased()
         var out = Set<String>()
+        for id in frameIDs { out.formUnion(frame(id)?.presentations ?? []) }
         for (tag, p) in signsFile?.presentations ?? [:] where p.keywords.contains(where: { wordStart(lower, $0) }) {
             out.insert(tag)
         }
@@ -184,10 +203,10 @@ enum ExamEvidenceCatalogue {
         return max(abs(log(pos.point)), neg)
     }
 
-    /// Signs for the complaint (presentations) or whose target is among the leading diagnoses,
-    /// highest diagnostic value first (those for the leading diagnoses before the rest).
-    static func relevantSigns(text: String, ageYears: Int?, leadingDiagnoses: [String]) -> [Sign] {
-        let tags = presentations(in: text)
+    /// Signs for the complaint (its history frames' presentations) or whose target is among the
+    /// leading diagnoses, highest diagnostic value first (those for the leading diagnoses first).
+    static func relevantSigns(frameIDs: [String], text: String, ageYears: Int?, leadingDiagnoses: [String]) -> [Sign] {
+        let tags = presentations(frameIDs: frameIDs, text: text)
         let leading = leadingDiagnoses.map { $0.lowercased() }
         func inDifferential(_ s: Sign) -> Bool {
             let fragments = group(s.target.group)?.ios ?? []
@@ -204,8 +223,8 @@ enum ExamEvidenceCatalogue {
     }
 
     /// Rules for the complaint (diagnostic before prognostic).
-    static func relevantRules(text: String) -> [Rule] {
-        let tags = presentations(in: text)
+    static func relevantRules(frameIDs: [String], text: String) -> [Rule] {
+        let tags = presentations(frameIDs: frameIDs, text: text)
         return rules.filter { $0.presentations.contains(where: tags.contains) }
             .sorted { ($0.kind == "diagnostic" ? 0 : 1) < ($1.kind == "diagnostic" ? 0 : 1) }
     }

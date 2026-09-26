@@ -12,6 +12,8 @@ import WheelPicker from '@/components/WheelPicker';
 import News2ObservationFields from '@/components/News2ObservationFields';
 import { computeRankedDifferentials } from '@/lib/symptom-inference';
 import { allNormalTargets, applyNormalTemplate, countDocumentedSystems, isSystemDocumented } from '@/lib/exam-documentation';
+import { complaintFrameIds, frameExamSystems } from '@/lib/exam-frames';
+import { currentComplaintText } from '@/lib/visit-continuity-web';
 
 // Systems always shown regardless of clinical context
 const CORE_SYSTEM_KEYS = new Set(['general', 'abdomen', 'cardiovascular', 'respiratory', 'extremities']);
@@ -374,11 +376,19 @@ export default function ExaminationTab() {
     return map;
   }, [leadingDxId]);
 
+  // The complaint's history frames (the history step's classifier) add the systems they call for:
+  // a cough the chest, a groin lump the genital / hernia examination (lib/exam-frames.ts).
+  const complaintText = currentComplaintText({ procedureData: ctx.procedureData as Record<string, unknown>, symptoms, freeText: ctx.freeText });
+  const frameSystems = useMemo(
+    () => frameExamSystems(complaintFrameIds(ctx.procedureData as Record<string, unknown>, complaintText)),
+    [ctx.procedureData, complaintText],
+  );
   const visibleSystemKeys = useMemo(() => {
     const keys = computeVisibleSystems(comorbidities, pmhNotes, surgicalHistory, symptoms, leadingDxId, recentSurgeryDate);
+    for (const k of frameSystems) keys.add(k);
     if (forceWound) keys.add('wound');
     return keys;
-  }, [comorbidities, pmhNotes, surgicalHistory, symptoms, leadingDxId, recentSurgeryDate, forceWound]);
+  }, [comorbidities, pmhNotes, surgicalHistory, symptoms, leadingDxId, recentSurgeryDate, forceWound, frameSystems]);
 
   const legacySetterMap: Record<string, (v: string) => void> = {
     general: ctx.setExamGeneral,
