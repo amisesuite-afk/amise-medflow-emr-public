@@ -1,0 +1,104 @@
+{
+  "schemaVersion": 1,
+  "id": "exam-ottawa-ankle-negative",
+  "condition": "Ankle inversion injury, Ottawa ankle rules negative",
+  "category": "trauma-burns",
+  "permutationOf": null,
+  "permutationLabel": "Ottawa ankle rules recorded negative",
+  "summary": "27-year-old man twisted his right ankle playing football; can walk, no bony tenderness at the malleoli, fifth metatarsal or navicular; Ottawa rules negative.",
+  "tags": [
+    "evidence-exam",
+    "ottawa",
+    "rule",
+    "trauma"
+  ],
+  "inputs": {
+    "patient": {
+      "ageYears": 27,
+      "sex": "male"
+    },
+    "encounter": {
+      "setting": "outpatient",
+      "visitType": "newConsult",
+      "acuity": "priority"
+    },
+    "chiefComplaint": "Twisted ankle",
+    "hpi": "Inversion injury of the right ankle playing football yesterday. Swelling over the outside of the ankle. Walked off the pitch and can walk now with a limp.",
+    "symptoms": [
+      "ankle pain"
+    ],
+    "exam": {
+      "msk": "Swelling and tenderness over the anterior talofibular ligament; no bony tenderness."
+    },
+    "vitals": [
+      {
+        "minutesAgo": 10,
+        "heartRate": 74,
+        "systolicBp": 124,
+        "diastolicBp": 76,
+        "respiratoryRate": 14,
+        "temperatureC": 36.7,
+        "spo2": 99,
+        "avpu": "A",
+        "onSupplementalO2": false
+      }
+    ],
+    "labs": [],
+    "imaging": [],
+    "comorbidities": [],
+    "surgicalHistory": [],
+    "medications": [],
+    "allergies": [],
+    "nkda": true,
+    "socialHistory": "",
+    "scoreForms": {
+      "ottawa-ankle": {
+        "total": 0
+      }
+    },
+    "platform": {
+      "web": {
+        "ccTemplate": "Other / general surgical",
+        "symptoms": [
+          "ankle pain"
+        ],
+        "durationDays": 1
+      }
+    }
+  },
+  "expected": {
+    "reasoning": {
+      "mustInclude": [
+        {
+          "id": "ottawa-post-test",
+          "severity": "quality",
+          "match": [
+            "re:Ottawa ankle and foot rules 0.*LR 0\\.08.*15% → 1%"
+          ],
+          "sources": [
+            "web.reasoning.evidence"
+          ],
+          "platforms": [
+            "web"
+          ]
+        }
+      ]
+    }
+  },
+  "guideline": [
+    {
+      "id": "bachmann-2003",
+      "name": "Bachmann LM et al. Accuracy of Ottawa ankle rules to exclude fractures of the ankle and mid-foot: systematic review",
+      "year": 2003,
+      "section": "Pooled sensitivity 97.6 %",
+      "citation": "BMJ 2003;326:417",
+      "verified": false
+    }
+  ],
+  "rationale": "A negative Ottawa ankle rule (LR about 0.08) takes a fracture probability of about 15 % below 2 %, so an X-ray is not needed; the reasoning panel must show the pre- and post-test probability.",
+  "authoring": {
+    "author": "Claude (evidence-exam, 2026-09-26)",
+    "date": "2026-09-26",
+    "notes": "Exam-sign / decision-rule permutation. Likelihood ratios fromMemory; awaiting surgeon sign-off."
+  }
+}

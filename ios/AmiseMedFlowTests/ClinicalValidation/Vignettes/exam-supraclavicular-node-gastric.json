@@ -1,0 +1,140 @@
+{
+  "schemaVersion": 1,
+  "id": "exam-supraclavicular-node-gastric",
+  "condition": "Gastric carcinoma with a left supraclavicular node",
+  "category": "upper-gi",
+  "permutationOf": null,
+  "permutationLabel": "Hard left supraclavicular node recorded",
+  "summary": "66-year-old man, 3 months of epigastric discomfort, early satiety and 8 kg weight loss; hard, fixed left supraclavicular node.",
+  "tags": [
+    "evidence-exam",
+    "lymph-node",
+    "virchow",
+    "gastric-cancer"
+  ],
+  "inputs": {
+    "patient": {
+      "ageYears": 66,
+      "sex": "male"
+    },
+    "encounter": {
+      "setting": "outpatient",
+      "visitType": "newConsult",
+      "acuity": "priority"
+    },
+    "chiefComplaint": "Weight loss and upper abdominal discomfort",
+    "hpi": "Three months of epigastric discomfort after food, feels full after a few mouthfuls, lost 8 kg. No dysphagia, no bleeding.",
+    "symptoms": [
+      "weight loss",
+      "epigastric pain",
+      "anorexia"
+    ],
+    "exam": {
+      "general": "Thin.",
+      "abdomen": "Vague epigastric fullness."
+    },
+    "vitals": [
+      {
+        "minutesAgo": 10,
+        "heartRate": 84,
+        "systolicBp": 128,
+        "diastolicBp": 78,
+        "respiratoryRate": 14,
+        "temperatureC": 36.8,
+        "spo2": 98,
+        "avpu": "A",
+        "onSupplementalO2": false
+      }
+    ],
+    "labs": [
+      {
+        "analyte": "haemoglobin",
+        "name": "Hb",
+        "value": 10.6,
+        "unit": "g/dL",
+        "minutesAgo": 60
+      }
+    ],
+    "imaging": [],
+    "comorbidities": [],
+    "surgicalHistory": [],
+    "medications": [],
+    "allergies": [],
+    "nkda": true,
+    "socialHistory": "",
+    "examSigns": {
+      "supraclavicular_node": "present",
+      "node_hard": "present",
+      "node_fixed": "present"
+    },
+    "platform": {
+      "web": {
+        "ccTemplate": "Unexplained weight loss",
+        "symptoms": [
+          "weight loss",
+          "epigastric pain",
+          "anorexia"
+        ],
+        "durationDays": 90
+      }
+    }
+  },
+  "expected": {
+    "differential": {
+      "mustRankTopK": [
+        {
+          "id": "gastric-top3",
+          "severity": "critical",
+          "match": [
+            "gastric carcinoma",
+            "gastric cancer",
+            "oesophageal / gastric"
+          ],
+          "k": 3,
+          "unverified": [
+            "ios"
+          ]
+        }
+      ]
+    },
+    "reasoning": {
+      "mustInclude": [
+        {
+          "id": "node-lr",
+          "severity": "quality",
+          "match": [
+            "re:Supraclavicular lymph node present - LR 3\\.2"
+          ],
+          "sources": [
+            "web.reasoning.evidence"
+          ],
+          "platforms": [
+            "web"
+          ]
+        }
+      ]
+    }
+  },
+  "guideline": [
+    {
+      "id": "mcgee-2022",
+      "name": "McGee S. Evidence-Based Physical Diagnosis, 5th ed.",
+      "year": 2022,
+      "section": "Abdominal pain and tenderness; hernia; lymphadenopathy; liver",
+      "verified": false
+    },
+    {
+      "id": "nice-ng12",
+      "name": "NICE NG12 Suspected cancer: recognition and referral",
+      "year": 2015,
+      "section": "Upper GI: weight loss with upper abdominal pain, aged 55 and over",
+      "verified": false
+    }
+  ],
+  "rationale": "A hard, fixed left supraclavicular node in an older man with weight loss and early satiety points to an upper-GI malignancy (Virchow's node).",
+  "authoring": {
+    "author": "Claude (evidence-exam, 2026-09-26)",
+    "date": "2026-09-26",
+    "notes": "Exam-sign / decision-rule permutation. Likelihood ratios fromMemory; awaiting surgeon sign-off."
+  }
+}

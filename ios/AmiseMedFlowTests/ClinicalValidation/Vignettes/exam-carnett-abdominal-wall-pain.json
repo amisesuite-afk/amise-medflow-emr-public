@@ -1,0 +1,144 @@
+{
+  "schemaVersion": 1,
+  "id": "exam-carnett-abdominal-wall-pain",
+  "condition": "Abdominal wall pain (anterior cutaneous nerve entrapment)",
+  "category": "other",
+  "permutationOf": null,
+  "permutationLabel": "Carnett's sign positive",
+  "summary": "36-year-old woman with 8 months of well-localised right-sided abdominal pain at a fingertip-sized spot, normal bloods, previous laparoscopy; Carnett's sign positive.",
+  "tags": [
+    "evidence-exam",
+    "carnett",
+    "acnes"
+  ],
+  "inputs": {
+    "patient": {
+      "ageYears": 36,
+      "sex": "female",
+      "pregnancy": {
+        "status": "not-pregnant"
+      }
+    },
+    "encounter": {
+      "setting": "outpatient",
+      "visitType": "newConsult",
+      "acuity": "priority"
+    },
+    "chiefComplaint": "Right-sided abdominal pain for months",
+    "hpi": "Eight months of sharp pain at one spot beside the right edge of the rectus, worse when twisting or sitting up. No fever, bowel change, weight loss or urinary symptoms. Laparoscopic appendicectomy 2 years ago. Two normal ultrasounds.",
+    "symptoms": [
+      "abdominal pain"
+    ],
+    "exam": {
+      "abdomen": "Soft. Pinpoint tenderness lateral to the right rectus at the level of the umbilicus."
+    },
+    "vitals": [
+      {
+        "minutesAgo": 10,
+        "heartRate": 72,
+        "systolicBp": 118,
+        "diastolicBp": 74,
+        "respiratoryRate": 14,
+        "temperatureC": 36.8,
+        "spo2": 99,
+        "avpu": "A",
+        "onSupplementalO2": false
+      }
+    ],
+    "labs": [
+      {
+        "analyte": "wbc",
+        "name": "WBC",
+        "value": 6.4,
+        "unit": "x10^9/L",
+        "minutesAgo": 60
+      },
+      {
+        "analyte": "crp",
+        "name": "CRP",
+        "value": 2,
+        "unit": "mg/L",
+        "minutesAgo": 60
+      }
+    ],
+    "imaging": [],
+    "comorbidities": [],
+    "surgicalHistory": [
+      "Laparoscopic appendicectomy (2 years ago)"
+    ],
+    "medications": [],
+    "allergies": [],
+    "nkda": true,
+    "socialHistory": "",
+    "examSigns": {
+      "carnett": "present",
+      "rebound": "absent"
+    },
+    "platform": {
+      "web": {
+        "ccTemplate": "Acute abdominal pain",
+        "symptoms": [
+          "abdominal pain"
+        ],
+        "durationDays": 240
+      }
+    }
+  },
+  "expected": {
+    "differential": {
+      "mustRankTopK": [
+        {
+          "id": "abdominal-wall-top3",
+          "severity": "quality",
+          "match": [
+            "abdominal wall"
+          ],
+          "k": 3,
+          "platforms": [
+            "web"
+          ]
+        }
+      ]
+    },
+    "reasoning": {
+      "mustInclude": [
+        {
+          "id": "carnett-lr",
+          "severity": "quality",
+          "match": [
+            "re:Carnett.*present - LR 6\\.5"
+          ],
+          "sources": [
+            "web.reasoning.evidence"
+          ],
+          "platforms": [
+            "web"
+          ]
+        }
+      ]
+    }
+  },
+  "guideline": [
+    {
+      "id": "mcgee-2022",
+      "name": "McGee S. Evidence-Based Physical Diagnosis, 5th ed.",
+      "year": 2022,
+      "section": "Abdominal pain and tenderness; hernia; lymphadenopathy; liver",
+      "verified": false
+    },
+    {
+      "id": "takada-2011",
+      "name": "Takada T et al. Carnett's sign in chronic abdominal pain",
+      "year": 2011,
+      "section": "Carnett's sign accuracy",
+      "citation": "J Gen Intern Med 2011",
+      "verified": false
+    }
+  ],
+  "rationale": "A positive Carnett's sign points to the abdominal wall rather than a viscus; with chronic, pinpoint pain and normal tests, abdominal-wall pain belongs in the top three.",
+  "authoring": {
+    "author": "Claude (evidence-exam, 2026-09-26)",
+    "date": "2026-09-26",
+    "notes": "Exam-sign / decision-rule permutation. Likelihood ratios fromMemory; awaiting surgeon sign-off."
+  }
+}

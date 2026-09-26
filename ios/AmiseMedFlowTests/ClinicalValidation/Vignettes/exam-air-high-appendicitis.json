@@ -1,0 +1,150 @@
+{
+  "schemaVersion": 1,
+  "id": "exam-air-high-appendicitis",
+  "condition": "Acute appendicitis with a high AIR score",
+  "category": "gi-emergency",
+  "permutationOf": null,
+  "permutationLabel": "AIR score 10 recorded; McBurney's point tenderness present",
+  "summary": "19-year-old man, 20 hours of periumbilical pain moving to the right iliac fossa, vomiting; McBurney's point tender with guarding; AIR 10 recorded.",
+  "tags": [
+    "evidence-exam",
+    "air",
+    "appendicitis",
+    "rule"
+  ],
+  "inputs": {
+    "patient": {
+      "ageYears": 19,
+      "sex": "male"
+    },
+    "encounter": {
+      "setting": "emergency",
+      "visitType": "urgentReview",
+      "acuity": "urgent"
+    },
+    "chiefComplaint": "Right iliac fossa pain",
+    "hpi": "Pain started around the umbilicus last night and moved to the right lower abdomen. Vomited twice, off food.",
+    "symptoms": [
+      "abdominal pain",
+      "vomiting",
+      "anorexia"
+    ],
+    "exam": {
+      "abdomen": "Tender right iliac fossa."
+    },
+    "vitals": [
+      {
+        "minutesAgo": 10,
+        "heartRate": 98,
+        "systolicBp": 126,
+        "diastolicBp": 78,
+        "respiratoryRate": 18,
+        "temperatureC": 38.1,
+        "spo2": 98,
+        "avpu": "A",
+        "onSupplementalO2": false
+      }
+    ],
+    "labs": [
+      {
+        "analyte": "wbc",
+        "name": "WBC",
+        "value": 15.6,
+        "unit": "x10^9/L",
+        "minutesAgo": 60
+      },
+      {
+        "analyte": "crp",
+        "name": "CRP",
+        "value": 64,
+        "unit": "mg/L",
+        "minutesAgo": 60
+      }
+    ],
+    "imaging": [],
+    "comorbidities": [],
+    "surgicalHistory": [],
+    "medications": [],
+    "allergies": [],
+    "nkda": true,
+    "socialHistory": "",
+    "examSigns": {
+      "mcburney": "present",
+      "guarding": "present"
+    },
+    "scoreForms": {
+      "air": {
+        "total": 10
+      }
+    },
+    "platform": {
+      "web": {
+        "ccTemplate": "Acute abdominal pain",
+        "symptoms": [
+          "abdominal pain",
+          "vomiting",
+          "anorexia"
+        ],
+        "durationDays": 1
+      }
+    }
+  },
+  "expected": {
+    "differential": {
+      "mustRankTopK": [
+        {
+          "id": "appendicitis-top1",
+          "severity": "critical",
+          "match": [
+            "appendic"
+          ],
+          "k": 1,
+          "unverified": [
+            "ios"
+          ]
+        }
+      ]
+    },
+    "reasoning": {
+      "mustInclude": [
+        {
+          "id": "air-lr",
+          "severity": "quality",
+          "match": [
+            "re:Appendicitis Inflammatory Response \\(AIR\\) score 10.*LR 8\\.0"
+          ],
+          "sources": [
+            "web.reasoning.evidence"
+          ],
+          "platforms": [
+            "web"
+          ]
+        }
+      ]
+    }
+  },
+  "guideline": [
+    {
+      "id": "wses-2020",
+      "name": "WSES Jerusalem guidelines on the diagnosis and treatment of acute appendicitis (2020 update)",
+      "year": 2020,
+      "section": "Clinical scores (AIR, AAS)",
+      "citation": "World J Emerg Surg 2020;15:27",
+      "verified": false
+    },
+    {
+      "id": "andersson-2008",
+      "name": "Andersson M, Andersson RE. The appendicitis inflammatory response score",
+      "year": 2008,
+      "section": "High probability 9-12",
+      "citation": "World J Surg 2008;32:1843-9",
+      "verified": false
+    }
+  ],
+  "rationale": "A high AIR score with McBurney's point tenderness and guarding makes appendicitis the leading diagnosis; the rule and its component signs must count once.",
+  "authoring": {
+    "author": "Claude (evidence-exam, 2026-09-26)",
+    "date": "2026-09-26",
+    "notes": "Exam-sign / decision-rule permutation. Likelihood ratios fromMemory; awaiting surgeon sign-off."
+  }
+}

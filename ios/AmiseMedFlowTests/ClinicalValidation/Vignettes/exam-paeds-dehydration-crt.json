@@ -1,0 +1,129 @@
+{
+  "schemaVersion": 1,
+  "id": "exam-paeds-dehydration-crt",
+  "condition": "Gastroenteritis with dehydration in a toddler (prolonged capillary refill)",
+  "category": "general-medicine",
+  "permutationOf": null,
+  "permutationLabel": "Prolonged capillary refill and reduced skin turgor recorded",
+  "summary": "2-year-old with 2 days of vomiting and watery diarrhoea, fewer wet nappies; capillary refill prolonged and skin turgor reduced.",
+  "tags": [
+    "evidence-exam",
+    "dehydration",
+    "paediatrics",
+    "capillary-refill"
+  ],
+  "inputs": {
+    "patient": {
+      "ageYears": 2,
+      "sex": "male"
+    },
+    "encounter": {
+      "setting": "emergency",
+      "visitType": "urgentReview",
+      "acuity": "urgent"
+    },
+    "chiefComplaint": "Vomiting and diarrhoea",
+    "hpi": "Two days of vomiting and watery diarrhoea, not keeping fluids down, fewer wet nappies today, sleepy. Nursery outbreak.",
+    "symptoms": [
+      "vomiting",
+      "diarrhoea",
+      "poor feeding"
+    ],
+    "exam": {
+      "general": "Tired, dry lips."
+    },
+    "vitals": [
+      {
+        "minutesAgo": 10,
+        "heartRate": 148,
+        "systolicBp": 90,
+        "diastolicBp": 55,
+        "respiratoryRate": 34,
+        "temperatureC": 37.8,
+        "spo2": 98,
+        "avpu": "A",
+        "onSupplementalO2": false
+      }
+    ],
+    "labs": [],
+    "imaging": [],
+    "comorbidities": [],
+    "surgicalHistory": [],
+    "medications": [],
+    "allergies": [],
+    "nkda": true,
+    "socialHistory": "",
+    "examSigns": {
+      "crt_child": "present",
+      "skin_turgor_child": "present"
+    },
+    "platform": {
+      "web": {
+        "ccTemplate": "Nausea / vomiting",
+        "symptoms": [
+          "vomiting",
+          "diarrhoea",
+          "poor feeding"
+        ],
+        "durationDays": 2
+      }
+    }
+  },
+  "expected": {
+    "differential": {
+      "mustRankTopK": [
+        {
+          "id": "gastroenteritis-top3",
+          "severity": "critical",
+          "match": [
+            "gastroenteritis"
+          ],
+          "k": 3,
+          "unverified": [
+            "ios"
+          ]
+        }
+      ]
+    },
+    "reasoning": {
+      "mustInclude": [
+        {
+          "id": "crt-lr",
+          "severity": "quality",
+          "match": [
+            "re:Prolonged capillary refill \\(child\\) present - LR 4\\.1.*30% → 64%"
+          ],
+          "sources": [
+            "web.reasoning.evidence"
+          ],
+          "platforms": [
+            "web"
+          ]
+        }
+      ]
+    }
+  },
+  "guideline": [
+    {
+      "id": "steiner-2004",
+      "name": "Steiner MJ et al. Is this child dehydrated? (JAMA Rational Clinical Examination)",
+      "year": 2004,
+      "section": "Prolonged capillary refill LR+ 4.1",
+      "citation": "JAMA 2004;291:2746-54",
+      "verified": false
+    },
+    {
+      "id": "nice-cg84",
+      "name": "NICE CG84 Diarrhoea and vomiting caused by gastroenteritis in under 5s",
+      "year": 2009,
+      "section": "Clinical dehydration",
+      "verified": false
+    }
+  ],
+  "rationale": "Prolonged capillary refill is the best single sign of 5 % dehydration in young children (LR+ 4.1); it must show the post-test probability of dehydration.",
+  "authoring": {
+    "author": "Claude (evidence-exam, 2026-09-26)",
+    "date": "2026-09-26",
+    "notes": "Exam-sign / decision-rule permutation. Likelihood ratios fromMemory; awaiting surgeon sign-off."
+  }
+}

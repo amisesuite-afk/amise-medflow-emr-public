@@ -415,14 +415,15 @@ export function examEvidenceLines(
   for (const item of rec ? evidenceItems(rec, state.answered) : []) {
     const out: ExamEvidenceLine['moves'] = [];
     const before = item.featureId ? without.get(item.featureId) : undefined;
+    // A finding-level sign or rule (dehydration, ascites, fracture): the finding's own probability
+    // from the reference pre-test probability first.
+    if (item.pretest !== null && item.posttest !== null) out.push({ label: item.target, from: item.pretest, to: item.posttest });
     if (before) {
       // Its target diagnoses (the likeliest two), else the diagnoses it moved most (finding-level).
       const ids = item.targetIds.length
         ? [...item.targetIds].filter(id => labelOf.has(id)).sort((a, b) => (state.posteriors[b] ?? 0) - (state.posteriors[a] ?? 0)).slice(0, 2)
         : nodes.map(d => d.id).sort((a, b) => Math.abs((state.posteriors[b] ?? 0) - (before[b] ?? 0)) - Math.abs((state.posteriors[a] ?? 0) - (before[a] ?? 0))).slice(0, 2);
-      for (const id of ids) out.push({ label: labelOf.get(id) ?? id, from: before[id] ?? 0, to: state.posteriors[id] ?? 0 });
-    } else if (item.pretest !== null && item.posttest !== null) {
-      out.push({ label: item.target, from: item.pretest, to: item.posttest });
+      for (const id of ids.slice(0, out.length ? 1 : 2)) out.push({ label: labelOf.get(id) ?? id, from: before[id] ?? 0, to: state.posteriors[id] ?? 0 });
     }
     lines.push({ item, moves: out });
   }
@@ -433,7 +434,7 @@ export function examEvidenceLines(
 export function examEvidenceText(line: ExamEvidenceLine): string {
   const { item } = line;
   const lr = item.lr === null ? 'LR not established' : `LR ${item.lrText}`;
-  const moved = line.moves.map(m => `${m.label} ${fmtPct(m.from)} → ${fmtPct(m.to)}`).join('; ');
+  const moved = line.moves.map(m => `${m.label === item.target ? '' : `${m.label} `}${fmtPct(m.from)} → ${fmtPct(m.to)}`).join('; ');
   const risk = item.risk ? ` Risk: ${item.risk}.` : '';
   return `${item.label} — ${lr} for ${item.target}${moved ? `: ${moved}` : ''} [${item.effect}]${risk}`;
 }
