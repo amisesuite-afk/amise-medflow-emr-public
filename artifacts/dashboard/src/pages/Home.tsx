@@ -94,6 +94,7 @@ import PreVisitStatusBanner from '@/components/PreVisitStatusBanner';
 import PathwayConfidenceBanner from '@/components/PathwayConfidenceBanner';
 import AdmissionEscalationBanner from '@/components/AdmissionEscalationBanner';
 import PatientContextBanner from '@/components/PatientContextBanner';
+import WhatsMissingStrip from '@/components/WhatsMissingStrip';
 import EncounterPresenceBanner from '@/components/EncounterPresenceBanner';
 import SaveConflictBanner from '@/components/SaveConflictBanner';
 import NoPatientQuickstart from '@/components/NoPatientQuickstart';
@@ -707,6 +708,10 @@ export default function HomePage() {
           setNotifyOpen={setNotifyOpen}
           setNotifyStatus={setNotifyStatus}
         />
+
+        {/* What's missing — ranked gaps (safety → decision → score), one tap to the field or a
+            suggested test; nothing is ordered or recorded automatically. Self-hides when empty. */}
+        {topSection === 'consultation' && (!!patientId || !!patientName) && <WhatsMissingStrip />}
 
         {/* Concurrent-editing awareness — who else has this encounter open right now */}
         <EncounterPresenceBanner />

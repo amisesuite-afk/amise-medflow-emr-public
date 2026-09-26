@@ -305,6 +305,14 @@ const MOCK_ENCOUNTER = {
   if (await page.locator('[data-testid="diagnostic-reasoning"]').count()) pass('Diagnostic reasoning panel on the Assessment step');
   else fail('Diagnostic reasoning panel', 'data-testid="diagnostic-reasoning" not found on the Assessment step');
 
+  // ── What's missing strip (under the patient header; the new patient has no allergy status) ──
+  {
+    const strip = page.locator('[data-testid="whats-missing-strip"]');
+    const text = (await strip.count()) ? await strip.first().innerText() : '';
+    if (/Allergy status not recorded/i.test(text)) pass("What's missing strip lists the allergy status (safety first)");
+    else fail("What's missing strip", `strip ${text ? `text: ${text.slice(0, 120)}` : 'not found'}`);
+  }
+
   // ── Pathognomonic detection → SUGGESTION, confirmed by the clinician ──────────
   // A sign only suggests the working diagnosis (UX review C4); nothing is recorded until
   // "Confirm diagnosis" is tapped.
