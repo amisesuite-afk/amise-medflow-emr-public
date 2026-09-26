@@ -1,4 +1,4 @@
-# Change log — `shared-content` (one shared rule and content library for web and iOS, phase 1)
+# Change log — `shared-content` (one shared rule and content library for web and iOS, phases 1 and 2)
 
 2026-09-26. Branch `shared-content` (from `claude/pr-37-gbg22z` at `f0e2c63`). Owner-approved item.
 Engineering change only: **no clinical value, wording, threshold or rule changed**, and no rule
@@ -100,3 +100,51 @@ Nothing clinical: no content changed. The existing sign-off lists still apply
 1. Governance only (behaviour-neutral move, identical outputs before and after). Confirm — clinical rules in
    `clinical-content/rules/*.json` are now the single source for both platforms, and edits there go
    through the same registry versioning and sign-off as before.
+
+## Phase 2 — relocations (branch `shared-content-p2`)
+
+2026-09-26. Branch `shared-content-p2` (from `claude/pr-37-gbg22z` at `d2f4694`). Same mechanism as
+phase 1. Engineering change only: **no clinical value, wording, grade or threshold changed**, and
+no rule set's content version was bumped. Where a JSON file moved, only its header changed
+(`$schema`, `id`, and the `$comment` that named the old copies); every other key and value is
+identical to the file it replaces (checked by a structural comparison before and after).
+
+### What changed (phase 2)
+
+| Rule set (registry id) | Shared file | Web reader | iOS reader | Duplicate removed |
+|---|---|---|---|---|
+| `treatment-decision-support` 1.0.0 | `treatment-decisions.json` (moved from `lib/pane-engine/src/decision/`) + `treatment-decisions.schema.json` | `lib/pane-engine/src/decision/index.ts` (`DECISION_CONTENT`, types in `types.ts`) | `TreatmentDecisionContent.swift` (`TreatmentDecisions.Content`, `SharedClinicalContent.File.treatmentDecisions`) | `ios/AmiseMedFlow/Resources/TreatmentDecisions.json` (byte-identical copy, deleted) |
+
+Lint additions (`scripts/src/shared-content.ts`, unit-tested in `shared-content.test.ts`): a
+TypeScript fixed-length tuple (`Triple = [number, number, number]`) is checked as an array whose
+schema fixes `minItems` / `maxItems`; a single string literal (`requires?: 'redParameter'`) is
+checked as a one-value enum; and a Swift type decoded by hand (`TreatmentDecisions.Triple`, whose
+`init(from:)` reads a `[low, point, high]` array) is declared in the mapping's `customDecoded` and
+checked as that JSON type. The TypeScript `defaults.uln` type is written as an object literal
+(`{ lipase; amylase; troponin }`) instead of the equivalent `Record<'lipase' | …, number>`.
+
+`decision-content-parity.test.ts` no longer compares two copies: it checks that the web engine's
+`DECISION_CONTENT` is the shared file, that neither old copy exists (both are also in
+`RETIRED_COPIES`), that iOS loads it through `SharedClinicalContent`, and that the shared vectors
+(`decision-vectors.json`) are current. The "Swift structs name every key" test is replaced by the
+typed schema check.
+
+### For the iOS CI to confirm (phase 2; Swift cannot be compiled here)
+
+1. The app bundle has `rules/treatment-decisions.json` and no `TreatmentDecisions.json` at the
+   root; `TreatmentDecisionContent.swift` (`load(from:)` now calls `SharedClinicalContent.load`)
+   and `SharedClinicalContent.swift` (new `File` case and `status(of:)` decode) compile.
+2. `TreatmentDecisionTests` (shared `decision-vectors.json`), `WhatsMissingTests` (reads
+   `TreatmentDecisions.content`), `SharedClinicalContentTests` (every file bundled and decodes;
+   `TreatmentDecisions.content` loaded) and the iOS clinical-validation run (`ios.decisions`) pass
+   unchanged.
+3. On a device: Settings → Diagnostics → "Shared clinical rules" lists "Treatment decisions 1.0.0".
+
+### Needs sign-off (phase 2)
+
+Nothing clinical: no content changed. The existing sign-off lists still apply
+(`bayes-treatment.md`).
+
+2. Governance only (behaviour-neutral move). Confirm — the treatment-decision table is now one
+   shared file (`clinical-content/rules/treatment-decisions.json`) instead of two byte-identical
+   copies.

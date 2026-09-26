@@ -50,7 +50,7 @@ final class TreatmentDecisionTests: XCTestCase {
     }
 
     func testContentDecodesFromTheAppBundle() throws {
-        let content = try XCTUnwrap(TreatmentDecisions.content, "Resources/TreatmentDecisions.json missing or not decoding")
+        let content = try XCTUnwrap(TreatmentDecisions.content, "rules/treatment-decisions.json missing or not decoding")
         XCTAssertEqual(content.status, "needs-sign-off")
         XCTAssertFalse(content.decisions.isEmpty)
         XCTAssertEqual(try loadVectors().contentVersion, content.version)

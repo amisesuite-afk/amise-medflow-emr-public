@@ -515,7 +515,7 @@ enum ClinValIOSRunner {
             input.patient.recentSurgeryDays = Double(d)
         }
         guard let content = TreatmentDecisions.content else {
-            out.notes.append("Decision support: TreatmentDecisions.json missing or not decoding")
+            out.notes.append("Decision support: rules/treatment-decisions.json missing or not decoding")
             return
         }
         let r = TreatmentDecisions.decisionSupport(input, content, DecisionSupportPatient.lineFilter(for: p))

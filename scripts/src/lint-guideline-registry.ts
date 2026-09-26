@@ -143,8 +143,7 @@ const KNOWN_RULE_SET_FILES: string[] = [
   'artifacts/dashboard/src/lib/plan-builder.ts',
   // Decision support (score / result actions, treatment thresholds) — web and iOS twins
   'lib/pane-engine/src/decision/*.ts',
-  'lib/pane-engine/src/decision/treatment-decisions.json',
-  'ios/AmiseMedFlow/Resources/TreatmentDecisions.json',
+  'clinical-content/rules/treatment-decisions.json',
   'ios/AmiseMedFlow/Services/TreatmentDecisionContent.swift',
   'ios/AmiseMedFlow/Services/DecisionSupportPatient.swift',
   'artifacts/dashboard/src/lib/decision-support.ts',

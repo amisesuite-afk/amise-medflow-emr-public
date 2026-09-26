@@ -1,8 +1,9 @@
 /**
  * Decision support (score → action, result → action, treatment thresholds) — types.
  *
- * The content (treatment-decisions.json) is shared with iOS byte for byte
- * (ios/AmiseMedFlow/Resources/TreatmentDecisions.json); the Swift twin of this module is
+ * The content is the shared clinical rule file clinical-content/rules/treatment-decisions.json,
+ * read by iOS too (TreatmentDecisionContent.swift); lint:shared-content checks these interfaces
+ * against its JSON Schema. The Swift twin of this module is
  * ios/AmiseMedFlow/Services/BayesianDecisionEngine+Treatment*.swift. Both run the same test
  * vectors (ios/AmiseMedFlowTests/DecisionSupport/decision-vectors.json). Change both together.
  */
@@ -156,7 +157,7 @@ export interface DecisionContent {
     confirmedFloor: number;
     minEngineProbability: number;
     maxDecisions: number;
-    uln: Record<'lipase' | 'amylase' | 'troponin', number>;
+    uln: { lipase: number; amylase: number; troponin: number };
     ulnNote: string;
   };
   sources: Record<string, SourceInfo>;

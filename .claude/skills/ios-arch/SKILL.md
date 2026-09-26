@@ -286,7 +286,8 @@ copy (there is none).
   decodes with the engine's own Codable struct and returns nil (logged) when the file is missing
   or does not decode; the engine then shows nothing (never a guess, never a crash). Engines hold
   it in a `static let` (`ZebraCheck.ruleFile`, `SupplementCatalogue.content`,
-  `LifestylePractices.content`) and expose computed `static var`s with the old names.
+  `LifestylePractices.content`, `TreatmentDecisions.content`) and expose computed `static var`s
+  with the old names.
 - Visibility: Settings → Diagnostics → "Shared clinical rules: N of M loaded", one row per file with
   its version or the decode error (`SharedRulesDiagnosticsRows` in
   `Views/ClinicalContentDiagnosticsRows.swift`, from `SharedClinicalContent.statuses()`).
@@ -294,7 +295,8 @@ copy (there is none).
   `clinical-content/schemas/<name>.schema.json` and reads the Codable structs from source: every
   stored property must be a schema property, non-optional ⇒ required, `String`/`Int`/`Double`/`Bool`,
   arrays, `[String: T]` and `String` enums must match. Keep the structs plain (`let` properties, no
-  `CodingKeys` or custom `init(from:)`). `AmiseMedFlowTests/SharedClinicalContentTests.swift` asserts
+  `CodingKeys` or custom `init(from:)`); the one exception is a small value type decoded by hand from
+  another JSON shape, declared in `customDecoded` (`TreatmentDecisions.Triple` from `[low, point, high]`). `AmiseMedFlowTests/SharedClinicalContentTests.swift` asserts
   on the simulator that every file is bundled and decodes.
 - A new shared file: schema, a `SharedClinicalContent.File` case plus its `status(of:)` decode,
   the `SHARED_CONTENT` entry in `scripts/src/shared-content.ts`, the registry entry. Plan and survey:

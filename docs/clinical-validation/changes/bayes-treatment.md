@@ -111,7 +111,7 @@ above the lifestyle section. It has three parts:
 
 | Part | Web | iOS |
 |---|---|---|
-| Content (byte-identical) | `lib/pane-engine/src/decision/treatment-decisions.json` | `ios/AmiseMedFlow/Resources/TreatmentDecisions.json` |
+| Content (one shared file, both read it) | `clinical-content/rules/treatment-decisions.json` (schema `clinical-content/schemas/treatment-decisions.schema.json`) | same file, bundled in the `rules` folder (`SharedClinicalContent`) |
 | Engine | `lib/pane-engine/src/decision/{types,engine,index}.ts` | `Services/BayesianDecisionEngine+Treatment.swift`, `+TreatmentTypes.swift`, `TreatmentDecisionContent.swift` |
 | Record adapter | `artifacts/dashboard/src/lib/decision-support.ts`, `decision-support-links.ts` | `Services/DecisionSupportPatient.swift` |
 | UI | `components/DecisionSupportPanel.tsx`, `RecordScoreButton.tsx`; `PlanTab`, `ManagementPanel`, `ScalesTab`, `ClinicalScoresPanel` | `Views/Consultation/DecisionSupportSection.swift`, in `ConsultationView+PlanTab.swift` |

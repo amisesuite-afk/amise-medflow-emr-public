@@ -53,6 +53,11 @@ export interface TypeMapping {
   root: string;
   /** Schema properties this platform does not read, as JSON pointers into the data ("/id"). */
   ignore: string[];
+  /**
+   * Swift only: types decoded by hand (`init(from:)`) from another JSON shape, by simple type name,
+   * with the JSON type the schema must give them (e.g. `Triple` from a [low, point, high] array).
+   */
+  customDecoded?: Record<string, string>;
 }
 
 export interface SharedContentFile {
@@ -141,6 +146,17 @@ export const SHARED_CONTENT: SharedContentFile[] = [
     ] },
     ts: { files: ['lib/pane-engine/src/vademecum-loop/types.ts'], root: 'VademecumAreaFile', ignore: ['/$schema', '/$comment'] },
   })),
+  // Decision support (score / result actions, treatment options, modifiers). Every field is read on
+  // both platforms; `Triple` is decoded by hand on iOS from its [low, point, high] array.
+  {
+    name: 'treatment-decisions',
+    regexLists: [],
+    swift: {
+      files: ['ios/AmiseMedFlow/Services/TreatmentDecisionContent.swift'], root: 'TreatmentDecisions.Content', ignore: HEADER_IGNORE,
+      customDecoded: { Triple: 'array' },
+    },
+    ts: { files: ['lib/pane-engine/src/decision/types.ts'], root: 'DecisionContent', ignore: HEADER_IGNORE },
+  },
 ];
 
 /** Key of a configured file in the problem list and `checked` ("zebra-rules", "vademecum/findings"). */
@@ -155,6 +171,8 @@ export const RETIRED_COPIES = [
   'ios/AmiseMedFlow/Resources/DecisionRules.json',
   'lib/pane-engine/src/evidence/exam-signs.json',
   'lib/pane-engine/src/evidence/decision-rules.json',
+  'ios/AmiseMedFlow/Resources/TreatmentDecisions.json',
+  'lib/pane-engine/src/decision/treatment-decisions.json',
 ];
 
 // ── JSON Schema helpers ──────────────────────────────────────────────────────────────────────
@@ -449,7 +467,10 @@ function compareFields(
 }
 
 /** Problems between a Swift Codable root struct and a schema node (empty = consistent). */
-export function compareSwift(root: Schema, types: SwiftTypes, rootType: string, ignore: string[], node: unknown = root): string[] {
+export function compareSwift(
+  root: Schema, types: SwiftTypes, rootType: string, ignore: string[], node: unknown = root,
+  customDecoded: Record<string, string> = {},
+): string[] {
   const problems: string[] = [];
   const ignored = new Set(ignore);
   const visiting = new Set<string>();
@@ -491,6 +512,11 @@ export function compareSwift(root: Schema, types: SwiftTypes, rootType: string, 
       return;
     }
     const simple = t.split('.').pop()!;
+    const custom = customDecoded[simple];
+    if (custom) {
+      if (!within(nonNull, [custom])) out.push(`${where}: Swift ${type} is decoded by hand from a JSON ${custom}, but the schema says ${[...types_].join('|') || 'any'}`);
+      return;
+    }
     const rawValues = types.stringEnums.get(simple);
     if (rawValues) {
       if (!within(nonNull, ['string'])) { out.push(`${where}: Swift String enum ${type} but the schema says ${[...types_].join('|')}`); return; }
@@ -550,6 +576,24 @@ export function compareTs(root: Schema, types: TsTypes, rootType: string, ignore
       const items = arrayItems(root, n);
       if (!items) { out.push(`${where}: TypeScript ${type} but the schema has no items`); return; }
       check(`${where}[]`, arr[1]!, false, items, out, `${pointer}/*`);
+      return;
+    }
+    const tuple = /^\[([\s\S]*)\]$/.exec(t);
+    if (tuple) {
+      // A fixed-length tuple ([number, number, number]): an array of exactly that many items.
+      if (!within(nonNull, ['array'])) { out.push(`${where}: TypeScript tuple ${type} but the schema says ${[...types_].join('|')}`); return; }
+      const elems = tsUnion(tuple[1]!.replace(/,/g, '|'));
+      const a = deref(root, n);
+      if (a.minItems !== elems.length || a.maxItems !== elems.length) {
+        out.push(`${where}: TypeScript tuple of ${elems.length} but the schema does not fix minItems / maxItems at ${elems.length}`);
+      }
+      const prefix = Array.isArray(a.prefixItems) ? a.prefixItems : null;
+      const items = arrayItems(root, n);
+      elems.forEach((e, i) => {
+        const itemNode = prefix ? prefix[i] : items;
+        if (itemNode === undefined || itemNode === null) { out.push(`${where}[${i}]: the schema has no item schema`); return; }
+        check(`${where}[${i}]`, e, false, itemNode, out, `${pointer}/*`);
+      });
       return;
     }
     const scalar: Record<string, string[]> = { string: ['string'], number: ['number', 'integer'], boolean: ['boolean'] };
@@ -700,7 +744,7 @@ export function checkSharedContent(repoRoot: string): { problems: string[]; chec
 
     // 5. Swift Codable structs and TypeScript interfaces agree with the schema.
     for (const [platform, m, compare] of [
-      ['Swift', cfg.swift, (s: string[]) => compareSwift(schema, parseSwift(s), cfg.swift.root, cfg.swift.ignore)],
+      ['Swift', cfg.swift, (s: string[]) => compareSwift(schema, parseSwift(s), cfg.swift.root, cfg.swift.ignore, schema, cfg.swift.customDecoded)],
       ['TypeScript', cfg.ts, (s: string[]) => compareTs(schema, parseTs(s), cfg.ts.root, cfg.ts.ignore)],
     ] as const) {
       const missing = m.files.filter(f => !exists(f));

@@ -1,0 +1,237 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://amise-medflow.local/clinical-content/treatment-decisions.schema.json",
+  "title": "Decision support: score and result actions, treatment options, patient modifiers",
+  "description": "clinical-content/rules/treatment-decisions.json: score -> guideline action, result -> action, and the treatment decisions (observe / test / treat thresholds, benefit and harm, patient modifiers). A shared clinical rule file read by the web (lib/pane-engine/src/decision, types.ts) and iOS (TreatmentDecisionContent.swift through SharedClinicalContent). Registered as treatment-decision-support. A triple is [low, point, high].",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["id", "version", "status", "defaults", "sources", "scoreActions", "resultActions", "modifiers", "decisions", "missingInputs"],
+  "properties": {
+    "$schema": { "type": "string" },
+    "$comment": { "type": "string" },
+    "id": { "const": "treatment-decision-support" },
+    "version": { "type": "string", "pattern": "^\\d+\\.\\d+\\.\\d+$" },
+    "status": { "type": "string" },
+    "defaults": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["confirmedFloor", "minEngineProbability", "maxDecisions", "uln", "ulnNote"],
+      "properties": {
+        "confirmedFloor": { "type": "number", "minimum": 0, "maximum": 1 },
+        "minEngineProbability": { "type": "number", "minimum": 0, "maximum": 1 },
+        "maxDecisions": { "type": "integer", "minimum": 1 },
+        "uln": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["lipase", "amylase", "troponin"],
+          "properties": {
+            "lipase": { "type": "number", "exclusiveMinimum": 0 },
+            "amylase": { "type": "number", "exclusiveMinimum": 0 },
+            "troponin": { "type": "number", "exclusiveMinimum": 0 }
+          }
+        },
+        "ulnNote": { "type": "string" }
+      }
+    },
+    "sources": {
+      "type": "object",
+      "additionalProperties": { "$ref": "#/$defs/source" }
+    },
+    "scoreActions": { "type": "array", "items": { "$ref": "#/$defs/scoreActionSet" } },
+    "resultActions": { "type": "array", "items": { "$ref": "#/$defs/resultRule" } },
+    "modifiers": { "type": "array", "items": { "$ref": "#/$defs/modifier" } },
+    "decisions": { "type": "array", "minItems": 1, "items": { "$ref": "#/$defs/decision" } },
+    "missingInputs": {
+      "type": "object",
+      "additionalProperties": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["label", "effect"],
+        "properties": {
+          "label": { "type": "string" },
+          "effect": { "type": "string" }
+        }
+      }
+    }
+  },
+  "$defs": {
+    "triple": {
+      "description": "[low, point, high].",
+      "type": "array",
+      "items": { "type": "number" },
+      "minItems": 3,
+      "maxItems": 3
+    },
+    "sourceIds": { "type": "array", "items": { "type": "string" } },
+    "evidence": { "enum": ["guideline", "moderate", "low", "estimate"] },
+    "level": { "enum": ["low", "moderate", "high", "critical"] },
+    "addAs": { "enum": ["plan", "test"] },
+    "optionKind": {
+      "enum": ["operation", "procedure", "endoscopy", "antibiotic", "anticoagulant", "thrombolysis", "admission", "prophylaxis-drug", "prophylaxis-mechanical"]
+    },
+    "factor": {
+      "enum": [
+        "age65to79", "age80plus", "cfs5to6", "cfs7plus", "asa3", "asa4plus",
+        "egfr30to59", "egfrBelow30", "anticoagulated", "doacOnly", "antiplatelet", "hasBled3plus",
+        "pregnant", "penicillinAllergy", "diabetes", "immunosuppressed", "bmi40plus",
+        "news2High", "shock", "recentSurgery21d", "appendicolith", "predictedSeverePancreatitis",
+        "mechanicalValve", "recentVte3m"
+      ]
+    },
+    "source": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["citation", "year", "fromMemory"],
+      "properties": {
+        "citation": { "type": "string" },
+        "year": { "type": "integer" },
+        "fromMemory": { "type": "boolean" }
+      }
+    },
+    "scoreBand": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["min", "max", "band", "level", "action", "addAs", "sources", "evidence"],
+      "properties": {
+        "min": { "type": "number" },
+        "max": { "type": "number" },
+        "requires": { "const": "redParameter" },
+        "band": { "type": "string" },
+        "level": { "$ref": "#/$defs/level" },
+        "action": { "type": "string" },
+        "addAs": { "$ref": "#/$defs/addAs" },
+        "risk": { "$ref": "#/$defs/triple" },
+        "sources": { "$ref": "#/$defs/sourceIds" },
+        "evidence": { "$ref": "#/$defs/evidence" }
+      }
+    },
+    "scoreActionSet": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["score", "label", "chip", "bands"],
+      "properties": {
+        "score": { "type": "string" },
+        "label": { "type": "string" },
+        "chip": { "type": "string" },
+        "riskLabel": { "type": "string" },
+        "bands": { "type": "array", "minItems": 1, "items": { "$ref": "#/$defs/scoreBand" } }
+      }
+    },
+    "resultRule": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["id", "analyte", "unit", "label", "thresholdText", "action", "addAs", "level", "sources"],
+      "properties": {
+        "id": { "type": "string" },
+        "analyte": { "enum": ["lipase", "amylase", "troponin", "lactate", "potassium", "haemoglobin"] },
+        "unit": { "type": "string" },
+        "ulnMultiple": { "type": "number" },
+        "strictLower": { "type": "boolean" },
+        "lower": { "type": "number" },
+        "upperExclusive": { "type": "number" },
+        "label": { "type": "string" },
+        "thresholdText": { "type": "string" },
+        "action": { "type": "string" },
+        "addAs": { "$ref": "#/$defs/addAs" },
+        "level": { "$ref": "#/$defs/level" },
+        "diagnosisHint": { "type": "string" },
+        "supersededBy": { "type": "string" },
+        "sources": { "$ref": "#/$defs/sourceIds" }
+      }
+    },
+    "modifier": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["id", "factor", "label", "reason", "sources", "evidence"],
+      "properties": {
+        "id": { "type": "string" },
+        "factor": { "$ref": "#/$defs/factor" },
+        "label": { "type": "string" },
+        "reason": { "type": "string" },
+        "sources": { "$ref": "#/$defs/sourceIds" },
+        "evidence": { "$ref": "#/$defs/evidence" },
+        "kinds": { "type": "array", "items": { "$ref": "#/$defs/optionKind" } },
+        "options": { "type": "array", "items": { "type": "string" } },
+        "harmOR": { "$ref": "#/$defs/triple" },
+        "benefitX": { "$ref": "#/$defs/triple" },
+        "benefitAdd": { "$ref": "#/$defs/triple" },
+        "exclude": { "type": "boolean" },
+        "requiresAllergyClass": { "type": "string" }
+      }
+    },
+    "option": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["id", "label", "kind", "planLine", "observeText", "benefit", "harm", "sources", "evidence", "addAs"],
+      "properties": {
+        "id": { "type": "string" },
+        "label": { "type": "string" },
+        "kind": { "$ref": "#/$defs/optionKind" },
+        "planLine": { "type": "string" },
+        "observeText": { "type": "string" },
+        "benefit": { "$ref": "#/$defs/triple" },
+        "harm": { "$ref": "#/$defs/triple" },
+        "sources": { "$ref": "#/$defs/sourceIds" },
+        "evidence": { "$ref": "#/$defs/evidence" },
+        "addAs": { "$ref": "#/$defs/addAs" },
+        "allergyClasses": { "type": "array", "items": { "type": "string" } },
+        "note": { "type": "string" },
+        "harmInDiseased": { "type": "boolean" }
+      }
+    },
+    "test": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["label", "sensitivity", "specificity", "harm", "sources"],
+      "properties": {
+        "label": { "type": "string" },
+        "sensitivity": { "type": "number", "minimum": 0, "maximum": 1 },
+        "specificity": { "type": "number", "minimum": 0, "maximum": 1 },
+        "harm": { "type": "number", "minimum": 0, "maximum": 1 },
+        "sources": { "$ref": "#/$defs/sourceIds" }
+      }
+    },
+    "match": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["diseaseIds", "icd10", "keywords", "excludeKeywords"],
+      "properties": {
+        "diseaseIds": { "type": "array", "items": { "type": "string" } },
+        "icd10": { "type": "array", "items": { "type": "string" } },
+        "keywords": { "type": "array", "items": { "type": "string" } },
+        "excludeKeywords": { "type": "array", "items": { "type": "string" } }
+      }
+    },
+    "riskFactor": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["factor", "risk", "label"],
+      "properties": {
+        "factor": { "$ref": "#/$defs/factor" },
+        "risk": { "$ref": "#/$defs/triple" },
+        "label": { "type": "string" }
+      }
+    },
+    "decision": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["id", "label", "type", "match", "options", "modifiers"],
+      "properties": {
+        "id": { "type": "string" },
+        "label": { "type": "string" },
+        "type": { "enum": ["diagnosis", "risk"] },
+        "match": { "$ref": "#/$defs/match" },
+        "test": { "$ref": "#/$defs/test" },
+        "pretestScore": { "type": "string" },
+        "riskScore": { "type": "string" },
+        "triggerScore": { "type": "string" },
+        "trigger": { "const": "anticoagulatedWithProcedure" },
+        "baselineRisk": { "$ref": "#/$defs/triple" },
+        "riskFactors": { "type": "array", "items": { "$ref": "#/$defs/riskFactor" } },
+        "riskLabel": { "type": "string" },
+        "options": { "type": "array", "items": { "$ref": "#/$defs/option" } },
+        "modifiers": { "type": "array", "items": { "$ref": "#/$defs/modifier" } }
+      }
+    }
+  }
+}

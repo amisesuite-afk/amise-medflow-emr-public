@@ -1,10 +1,12 @@
 // TreatmentDecisionContent.swift
 // Decision support content — score → action, result → action, treatment options with benefit /
-// harm and patient modifiers — decoded from Resources/TreatmentDecisions.json.
-//
-// DRIFT NOTE: the JSON is a byte-identical copy of lib/pane-engine/src/decision/treatment-decisions.json
-// (scripts/src/decision-content-parity.test.ts fails if they differ, and checks that every key the
-// web engine reads is named here). These structs mirror lib/pane-engine/src/decision/types.ts.
+// harm and patient modifiers — decoded from the shared clinical rule file
+// clinical-content/rules/treatment-decisions.json (the web engine reads the same file), loaded
+// through SharedClinicalContent (File.treatmentDecisions). lint:shared-content checks these Codable
+// structs against the file's JSON Schema (clinical-content/schemas/treatment-decisions.schema.json);
+// `Triple` is decoded by hand from a [low, point, high] array and is checked as that array. These
+// structs mirror lib/pane-engine/src/decision/types.ts. A missing or undecodable file gives nil
+// content: the Plan step shows no decision support, and Settings → Diagnostics says why.
 // Every number awaits surgeon sign-off (docs/clinical-validation/changes/bayes-treatment.md).
 
 import Foundation
@@ -197,14 +199,12 @@ enum TreatmentDecisions {
 
     // MARK: - Loading
 
-    /// The bundled content (nil only if the resource is missing or does not decode — the Plan step
-    /// then shows no decision support, and TreatmentDecisionTests fails).
+    /// The shared content (nil only if the file is missing or does not decode — the Plan step then
+    /// shows no decision support, Settings → Diagnostics says why, and TreatmentDecisionTests fails).
     static let content: Content? = load(from: Bundle.main)
 
     static func load(from bundle: Bundle) -> Content? {
-        guard let url = bundle.url(forResource: "TreatmentDecisions", withExtension: "json"),
-              let data = try? Data(contentsOf: url) else { return nil }
-        return try? decode(data)
+        SharedClinicalContent.load(Content.self, .treatmentDecisions, bundle: bundle)
     }
 
     static func decode(_ data: Data) throws -> Content {

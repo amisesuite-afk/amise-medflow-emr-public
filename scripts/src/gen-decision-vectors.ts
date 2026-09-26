@@ -8,7 +8,7 @@
  * (ios/AmiseMedFlowTests/TreatmentDecisionTests.swift) assert the same expected values, so a change
  * to either engine that moves a band, a threshold or a ranking fails on that platform.
  *
- * Regenerate after a deliberate content change (version bump in treatment-decisions.json):
+ * Regenerate after a deliberate content change (version bump in clinical-content/rules/treatment-decisions.json):
  *   pnpm --filter @workspace/scripts run gen:decision-vectors
  * and review the diff before committing.
  */

@@ -168,4 +168,41 @@ describe('lint:shared-content catches drift', () => {
     const swift = SWIFT_OK.replace('struct Item: Codable', 'struct Item: Equatable');
     expect(compareSwift(SCHEMA, parseSwift([swift]), 'Outer.File', ignore).join('\n')).toMatch(/Item is not Codable/);
   });
+  // A [low, point, high] triple: a TypeScript tuple, a Swift struct decoded by hand from the array.
+  const TRIPLE_SCHEMA: Schema = {
+    type: 'object',
+    required: ['risk', 'kind'],
+    properties: {
+      risk: { $ref: '#/$defs/triple' },
+      kind: { const: 'only' },
+    },
+    $defs: { triple: { type: 'array', items: { type: 'number' }, minItems: 3, maxItems: 3 } },
+  };
+  const TS_TRIPLE = `
+export type Triple = [number, number, number];
+export interface File { risk: Triple; kind: 'only' }`;
+  const SWIFT_TRIPLE = `
+enum Outer {
+    struct Triple: Decodable {
+        let low: Double
+        init(from decoder: Decoder) throws { low = 0 }
+    }
+    struct File: Decodable {
+        let risk: Triple
+        let kind: String
+    }
+}`;
+
+  it('a tuple, a single string literal, a type decoded by hand', () => {
+    expect(compareTs(TRIPLE_SCHEMA, parseTs([TS_TRIPLE]), 'File', [])).toEqual([]);
+    expect(compareTs(TRIPLE_SCHEMA, parseTs([TS_TRIPLE.replace('[number, number, number]', '[number, number]')]), 'File', []).join('\n'))
+      .toMatch(/tuple of 2/);
+    expect(compareTs(TRIPLE_SCHEMA, parseTs([TS_TRIPLE.replace("'only'", "'other'")]), 'File', []).join('\n'))
+      .toMatch(/literals \[other\] differ/);
+    expect(compareSwift(TRIPLE_SCHEMA, parseSwift([SWIFT_TRIPLE]), 'Outer.File', [], TRIPLE_SCHEMA, { Triple: 'array' })).toEqual([]);
+    // Without the declaration the hand-written init(from:) cannot be checked.
+    expect(compareSwift(TRIPLE_SCHEMA, parseSwift([SWIFT_TRIPLE]), 'Outer.File', []).join('\n')).toMatch(/Swift Triple but the schema says array/);
+    expect(compareSwift(TRIPLE_SCHEMA, parseSwift([SWIFT_TRIPLE]), 'Outer.File', [], TRIPLE_SCHEMA, { Triple: 'object' }).join('\n'))
+      .toMatch(/decoded by hand from a JSON object/);
+  });
 });

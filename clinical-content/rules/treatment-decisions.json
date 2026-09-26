@@ -1,5 +1,7 @@
 {
-  "$comment": "Decision-support content (score -> action, result -> action, treatment options with benefit/harm and patient modifiers). Shared by the web (lib/pane-engine/src/decision) and iOS (ios/AmiseMedFlow/Resources/TreatmentDecisions.json, byte-identical copy checked by scripts/src/decision-content-parity.test.ts). EVERY number and wording NEEDS SURGEON SIGN-OFF: sources are cited from memory (fromMemory: true) and effect sizes marked evidence 'estimate' are the author's estimates from the cited trials, not trial results. Clinician-facing suggestions only.",
+  "$schema": "../schemas/treatment-decisions.schema.json",
+  "$comment": "Decision-support content (score -> action, result -> action, treatment options with benefit/harm and patient modifiers). A shared clinical rule file: the web (lib/pane-engine/src/decision) and iOS (TreatmentDecisionContent.swift through SharedClinicalContent) read this one file; lint:shared-content checks it against clinical-content/schemas/treatment-decisions.schema.json and both platforms' types. EVERY number and wording NEEDS SURGEON SIGN-OFF: sources are cited from memory (fromMemory: true) and effect sizes marked evidence 'estimate' are the author's estimates from the cited trials, not trial results. Clinician-facing suggestions only.",
+  "id": "treatment-decision-support",
   "version": "1.0.0",
   "status": "needs-sign-off",
   "defaults": {
