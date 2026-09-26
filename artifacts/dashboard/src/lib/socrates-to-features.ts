@@ -33,7 +33,7 @@
  * abdominal distension and others (tests: __tests__/pane-mapper-false-positives.test.ts).
  */
 
-import { joinClauses } from '@workspace/triage-engine';
+import { coughMentionKindAt, joinClauses } from '@workspace/triage-engine';
 import { CURRENT_FEATURES, findRecordMatches, negationFreeGaps, notCurrentAt, recordHas, sentenceOf } from './record-text-match';
 import type { RecordedEvidence } from '@workspace/pane-engine';
 import { EXAM_SIGNS_KEY, recordedEvidence, withExamEvidence } from './exam-evidence-features';
@@ -76,7 +76,11 @@ export interface PaneFeatureContext {
  * the CC / symptom (e.g. a urinary word for a bare "urgency"). Gaps written "[^.]{0,N}" cannot
  * cross a negation cue (negationFreeGaps: "DRE: no mass" is not a rectal mass).
  */
-interface Rule { pattern: RegExp; features: string[]; requires?: RegExp; near?: RegExp }
+interface Rule {
+  pattern: RegExp; features: string[]; requires?: RegExp; near?: RegExp;
+  /** A match counts only when this accepts it (offset into the lower-cased text). */
+  accept?: (lower: string, index: number) => boolean;
+}
 const r = (pattern: RegExp, ...features: string[]): Rule => ({ pattern: negationFreeGaps(pattern), features });
 const rq = (requires: RegExp, pattern: RegExp, ...features: string[]): Rule => ({ pattern: negationFreeGaps(pattern), features, requires });
 const rn = (near: RegExp, pattern: RegExp, ...features: string[]): Rule => ({ pattern: negationFreeGaps(pattern), features, near });
@@ -215,7 +219,9 @@ const TEXT_RULES: Rule[] = [
   r(/\bshort(ness)? of breath|\bbreathless\w*|\bdyspno\w*|\bdifficulty breathing\b|\bstruggling to breathe\b|\bout of breath\b/, 'dyspnoea'),
   r(/\bsudden(ly)?\b[^.]{0,20}\b(breathless|short of breath|shortness of breath|dyspno\w*)/, 'dyspnoea_pe'),
   r(/\borthopno\w*|\bparoxysmal nocturnal|\bpnd\b|\b(two|three|four|\d) pillows\b|\bnocturnal dyspno\w*/, 'orthopnoea'),
-  r(/\bcough(ing|s)?\b/, 'cough'),
+  // A cough, not coughing as a manoeuvre ("pain worse on coughing") or a sign ("cough impulse"):
+  // cough-mention.ts, twin of the iOS CoughMention used by ClinicalTextParser.
+  { ...r(/\bcough(ing|s|ed)?\b/, 'cough'), accept: (lower, i) => coughMentionKindAt(lower, i) === 'symptom' },
   r(/\bproductive cough|\bsputum\b|\bphlegm\b/, 'productive_cough'),
   r(/\b(green|yellow|purulent|rusty)\b[^.]{0,10}\b(sputum|phlegm)/, 'purulent_sputum'),
   r(/\bha?emoptysis\b|\bcoughing (up )?blood\b/, 'haemoptysis'),
@@ -963,6 +969,10 @@ function applyRules(text: string, rules: Rule[], out: FeatureMap, contextText = 
     // `requires` (e.g. breast context for "hard", "cyclical") may be met by the CC template.
     if (rule.requires && !recordHas(text, rule.requires) && !recordHas(contextText, rule.requires)) continue;
     let matches = findRecordMatches(text, rule.pattern);
+    if (rule.accept) {
+      const accept = rule.accept;
+      matches = matches.filter(m => accept(lower, m.index));
+    }
     if (rule.near) {
       const near = rule.near;
       const inContext = recordHas(contextText, near);

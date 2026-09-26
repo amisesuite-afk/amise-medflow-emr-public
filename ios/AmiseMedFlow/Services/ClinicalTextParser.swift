@@ -123,7 +123,18 @@ enum ClinicalTextParser {
         if any(["fatty food", "fatty meal", "fried food", "greasy food"]) { add("exacerbating", "Fatty food") }
         if any(["lying flat", "lying down", "supine", "worse lying"]) { add("exacerbating", "Lying flat") }
         if any(["deep breath", "inspiration", "pleuritic", "breathing worsens"]) { add("exacerbating", "Deep breathing") }
-        if any(["cough", "coughing", "worse on cough"]) { add("exacerbating", "Coughing") }
+        // A typed "cough" / "productive cough" / "coughing up blood" is the symptom; "worse on
+        // coughing" / "aggravated by coughing" is an aggravating factor; "cough impulse" is an
+        // examination sign (neither). CoughMention (twin of the web cough-mention.ts) reads the
+        // clause; a typed cough used to become the aggravating factor "Coughing".
+        let coughMentions = CoughMention.mentions(in: text.lower)
+        func coughAffirmed(_ kind: CoughMention.Kind) -> Bool {
+            coughMentions.contains { m in
+                m.kind == kind && !text.isNegated(start: m.index, end: m.index + m.word.unicodeScalars.count)
+            }
+        }
+        if coughAffirmed(.symptom) { add("associations", "Cough") }
+        if coughAffirmed(.aggravating) { add("exacerbating", "Coughing") }
         if any(["straining", "valsalva", "straining worsens"]) { add("exacerbating", "Straining") }
         if any(["alcohol", "alcohol worsens", "after drinking"]) { add("exacerbating", "Alcohol") }
         if any(["nsaid", "ibuprofen worsens", "aspirin worsens"]) { add("exacerbating", "NSAIDs") }
