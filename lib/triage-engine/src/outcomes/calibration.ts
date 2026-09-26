@@ -69,9 +69,9 @@ export function joinCases(snapshots: PredictionSnapshot[], outcomes: FinalDiagno
  * Closed encounters that still need a final diagnosis: an operation or pathology was expected,
  * completion was at least `dueDays` days before `now`, and no confirmed final diagnosis exists.
  */
-export function pendingOutcomes(
-  snapshots: PredictionSnapshot[], outcomes: FinalDiagnosis[], now: Date, dueDays: number,
-): PredictionSnapshot[] {
+export function pendingOutcomes<T extends PredictionSnapshot>(
+  snapshots: T[], outcomes: FinalDiagnosis[], now: Date, dueDays: number,
+): T[] {
   const done = new Set(outcomes.filter(o => o.status === 'confirmed').map(o => o.encounterRef));
   const cutoff = now.getTime() - dueDays * 86_400_000;
   return snapshots
