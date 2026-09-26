@@ -94,6 +94,13 @@ jobs:
       - name: Lint clinical sign-off catalogue (stale vs the sign-off lists)
         run: pnpm --filter @workspace/scripts run lint:signoff-catalogue
 
+      # History frames (complaint -> history questions, web + iOS): fails on a complaint vector that
+      # changed frame, radiation outside a pain frame, a site outside its region, contradictory or
+      # duplicate chips, a chip that reaches no engine feature and is not listed record only, or a
+      # stale generated Swift twin. Fix: `pnpm --filter @workspace/scripts run gen:history-frames`.
+      - name: Lint history frames (chips match the complaint and reach the engines)
+        run: pnpm --filter @workspace/scripts run lint:history-frames
+
       - name: Build all packages
         env:
           VITE_SUPABASE_URL: https://placeholder.supabase.co

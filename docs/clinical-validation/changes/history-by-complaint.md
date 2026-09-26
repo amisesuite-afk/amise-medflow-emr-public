@@ -217,11 +217,15 @@ abdominal pain secondary; short iOS finding terms matching inside words (reporte
 
 ## Checks
 
-- `pnpm run typecheck`, `pnpm -r run test`, dashboard build: pass.
-- `lint:history-frames`, `lint:guideline-registry`, `lint:signoff-catalogue` and the other scripts
-  lints: pass.
-- `e2e/emr-walkthrough.mjs` and the second web e2e script: pass.
-- `clinval:web`: 0 blocking; no expectation went pass → fail against the pre-change baseline.
+- `pnpm run typecheck`, `pnpm -r run test` (dashboard 938, pane-engine 236, scripts 99, api-server
+  607, front-desk 109), dashboard build: pass.
+- `lint:history-frames` (new CI step in `ci.yml`), `lint:guideline-registry`, `lint:signoff-catalogue`,
+  `lint:grants`, `lint:rls-policies`, `check:migrations-fresh`, `lint:dx-phases`,
+  `lint:patient-instructions`, `lint:no-external-qr`, `lint:interaction-parity`,
+  `lint:report-import-parity`: pass.
+- `e2e/emr-walkthrough.mjs` (30 pass) and `e2e/encounter-switch.mjs` (11 pass).
+- `clinval:web`: 3,164 expectations, 0 blocking, 0 critical; no expectation went pass → fail against
+  the pre-change baseline (26 new expectations from the 8 new vignettes).
 
 ### New vignettes (`hpi-frame-*`, web run, iOS `unverified`)
 
