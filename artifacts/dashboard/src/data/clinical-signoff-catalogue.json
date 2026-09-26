@@ -1,6 +1,6 @@
 {
   "format": "amise-signoff-catalogue/1",
-  "catalogueHash": "7fa0a1acfa1a84cc",
+  "catalogueHash": "bdf35126f5a64f48",
   "repoUrl": "https://github.com/amisesuite-afk/amise-medflow-emr-public/blob/main/",
   "sources": [
     {
@@ -655,6 +655,28 @@
         "web-plan-filter-everywhere#10",
         "web-plan-filter-everywhere#11"
       ]
+    },
+    {
+      "id": "whats-missing",
+      "title": "Change log — `whats-missing` (one ranked \"What's missing\" strip, web and iOS; score auto-fill from the record)",
+      "doc": "docs/clinical-validation/changes/whats-missing.md",
+      "anchor": "needs-sign-off",
+      "ruleSetIds": [
+        "whats-missing"
+      ],
+      "itemIds": [
+        "whats-missing#1",
+        "whats-missing#2",
+        "whats-missing#3",
+        "whats-missing#4",
+        "whats-missing#5",
+        "whats-missing#6",
+        "whats-missing#7",
+        "whats-missing#8",
+        "whats-missing#9",
+        "whats-missing#10",
+        "whats-missing#11"
+      ]
     }
   ],
   "ruleSets": [
@@ -1233,6 +1255,26 @@
         "bayes-treatment#10",
         "bayes-treatment#11",
         "bayes-treatment#12"
+      ]
+    },
+    {
+      "id": "whats-missing",
+      "title": "What's missing — one ranked strip of the missing inputs the engines know about (safety basics, decision-layer inputs that flip a band, NG12 ferritin, best next discriminator, score completeness) and score auto-fill from the record",
+      "reviewPriority": "P1",
+      "lastReviewed": "unknown",
+      "reviewer": "unknown",
+      "itemIds": [
+        "whats-missing#1",
+        "whats-missing#2",
+        "whats-missing#3",
+        "whats-missing#4",
+        "whats-missing#5",
+        "whats-missing#6",
+        "whats-missing#7",
+        "whats-missing#8",
+        "whats-missing#9",
+        "whats-missing#10",
+        "whats-missing#11"
       ]
     },
     {
@@ -7939,6 +7981,160 @@
       "ruleSetIds": [
         "pane-engine-management-protocols",
         "plan-safety-filters"
+      ]
+    },
+    {
+      "id": "whats-missing#1",
+      "source": "whats-missing",
+      "number": "1",
+      "group": null,
+      "title": "Ranking rule",
+      "text": "**Ranking rule**: safety → decision → score; within safety the fixed order weight (under 16) →\nallergy → pregnancy → renal function → anticoagulant last dose → supplements. In particular:\n**weight before allergy status in a child**, and the supplements question and the anticoagulant's\nlast dose counted as safety-critical (they top 136 of 433 vignettes).",
+      "hash": "c52a99135facfccc",
+      "doc": "docs/clinical-validation/changes/whats-missing.md",
+      "anchor": "needs-sign-off",
+      "ruleSetIds": [
+        "whats-missing"
+      ]
+    },
+    {
+      "id": "whats-missing#2",
+      "source": "whats-missing",
+      "number": "2",
+      "group": null,
+      "title": "Decision-gap probe values",
+      "text": "**Decision-gap probe values** (the \"worst plausible\" value used to ask \"would it change the\nanswer?\"): CFS 7, ASA IV, eGFR 25, pregnant, BMI 42, HAS-BLED 3, NEWS2 7; a probe that changes no band\ndemotes the input to score completeness (\"Refines …\").",
+      "hash": "932cdd6da24ad074",
+      "doc": "docs/clinical-validation/changes/whats-missing.md",
+      "anchor": "needs-sign-off",
+      "ruleSetIds": [
+        "whats-missing"
+      ]
+    },
+    {
+      "id": "whats-missing#3",
+      "source": "whats-missing",
+      "number": "3",
+      "group": null,
+      "title": "Discriminator placement",
+      "text": "**Discriminator placement**: in the decision tier only while no working diagnosis is confirmed; after\nconfirmation it ranks after score completeness.",
+      "hash": "2d4f52a1aa8f53c3",
+      "doc": "docs/clinical-validation/changes/whats-missing.md",
+      "anchor": "needs-sign-off",
+      "ruleSetIds": [
+        "whats-missing"
+      ]
+    },
+    {
+      "id": "whats-missing#4",
+      "source": "whats-missing",
+      "number": "4",
+      "group": null,
+      "title": "NEWS2 rule",
+      "text": "**NEWS2 rule**: a partial set always lists the missing parameters; no observations at all are listed\nonly in an emergency, inpatient or post-operative setting. ACVPU and air / oxygen count as parameters\n(not recorded = missing, as H-04 already decided).",
+      "hash": "a23ec2faf1b2b9bd",
+      "doc": "docs/clinical-validation/changes/whats-missing.md",
+      "anchor": "needs-sign-off",
+      "ruleSetIds": [
+        "whats-missing"
+      ]
+    },
+    {
+      "id": "whats-missing#5",
+      "source": "whats-missing",
+      "number": "5",
+      "group": null,
+      "title": "Safety thresholds and scopes",
+      "text": "**Safety thresholds and scopes**: pregnancy 12–55 (female) with ionising imaging, a planned medicine\nor a planned procedure; weight under 16 regardless of a planned drug; allergy status always; what counts\nas a recorded pregnancy status (a pregnancy test result, \"not pregnant\", post-partum, hysterectomy,\npost-menopausal).",
+      "hash": "0ed0fd8379243714",
+      "doc": "docs/clinical-validation/changes/whats-missing.md",
+      "anchor": "needs-sign-off",
+      "ruleSetIds": [
+        "whats-missing"
+      ]
+    },
+    {
+      "id": "whats-missing#6",
+      "source": "whats-missing",
+      "number": "6",
+      "group": null,
+      "title": "Term lists",
+      "text": "**Term lists** in the rules JSON: renally cleared / NSAID drugs (including morphine, tramadol,\ngabapentin, pregabalin, DOACs, LMWH, metformin, aminoglycosides, vancomycin, nitrofurantoin, lithium,\ndigoxin, aciclovir, trimethoprim, co-trimoxazole, methotrexate), anticoagulants, ionising imaging and\ncontrast terms, \"last dose\" wording, insulin names, the history and examination-finding terms used for\nauto-fill (read negation-aware; ≤ 4-character terms as whole words).",
+      "hash": "3c5429dfb0b34e54",
+      "doc": "docs/clinical-validation/changes/whats-missing.md",
+      "anchor": "needs-sign-off",
+      "ruleSetIds": [
+        "whats-missing"
+      ]
+    },
+    {
+      "id": "whats-missing#7",
+      "source": "whats-missing",
+      "number": "7",
+      "group": null,
+      "title": "Auto-fill thresholds",
+      "text": "**Auto-fill thresholds** (from each score's source; formulas unchanged): Alvarado temperature\n≥ 37.3 °C (web label changed from \"> 37.3\" to \"≥ 37.3\", Alvarado 1986), WBC > 10, neutrophils > 75 %;\nAIR temperature ≥ 38.5 °C, PMN 70–84 / ≥ 85 %, WBC 10–14.9 / ≥ 15, CRP 10–49 / ≥ 50; Glasgow-Blatchford HR\n> 100; CURB-65 urea > 7, RR ≥ 30, SBP < 90 or DBP ≤ 60, age ≥ 65, ACVPU other than Alert = confusion;\nWells PE HR > 100; Caprini BMI > 25 and age bands 41–60 / 61–74 / ≥ 75; RCRI creatinine > 177 µmol/L;\nBISAP urea > 8.9 mmol/L, age > 60, SIRS decided from the known criteria (temperature < 36 / > 38, HR > 90,\nRR > 20, WBC < 4 / > 12). Units read as the iOS populators already did (WBC > 100 → cells/µL,\nHb > 25 → g/L, creatinine < 15 → mg/dL, urea > 50 → BUN mg/dL); a neutrophil count ≤ 20 is read as\n×10⁹/L and converted with the WBC. Recent surgery: ≤ 28 days (Wells PE), ≤ 84 days (Wells DVT).",
+      "hash": "c7e5170e8e9fd8d9",
+      "doc": "docs/clinical-validation/changes/whats-missing.md",
+      "anchor": "needs-sign-off",
+      "ruleSetIds": [
+        "whats-missing"
+      ]
+    },
+    {
+      "id": "whats-missing#8",
+      "source": "whats-missing",
+      "number": "8",
+      "group": null,
+      "title": "Findings filled from text",
+      "text": "**Findings filled from text** (affirmed only, never \"false\"): migration, anorexia, nausea / vomiting,\nRIF pain / tenderness, rebound, melaena, syncope, haemoptysis, DVT signs, confusion; history: cancer,\nDVT / PE, heart failure, IHD, cerebrovascular disease, insulin-treated diabetes, liver disease, IBD,\nvaricose veins, OCP / HRT, immobility.",
+      "hash": "02dab694c5d3cf9c",
+      "doc": "docs/clinical-validation/changes/whats-missing.md",
+      "anchor": "needs-sign-off",
+      "ruleSetIds": [
+        "whats-missing"
+      ]
+    },
+    {
+      "id": "whats-missing#9",
+      "source": "whats-missing",
+      "number": "9",
+      "group": null,
+      "title": "Actions",
+      "text": "**Actions**: \"Add test\" names — \"Urine pregnancy test (β-hCG)\", \"U&E with creatinine and eGFR\",\n\"Full blood count (FBC)\", \"C-reactive protein (CRP)\", \"Liver function tests (LFTs)\",\n\"Prothrombin time (PT/INR)\", \"Ultrasound abdomen (RUQ)\", \"Ferritin\" — added as suggested (web: the\nsuggested-order path; iOS: an investigation with status \"Suggested\", noted \"(what's missing)\").",
+      "hash": "8eb5835af4b95112",
+      "doc": "docs/clinical-validation/changes/whats-missing.md",
+      "anchor": "needs-sign-off",
+      "ruleSetIds": [
+        "whats-missing"
+      ]
+    },
+    {
+      "id": "whats-missing#10",
+      "source": "whats-missing",
+      "number": "10",
+      "group": null,
+      "title": "Wording",
+      "text": "**Wording** of every what / why line (`text` and `groups` in the rules JSON).",
+      "hash": "788a2b8e24371b99",
+      "doc": "docs/clinical-validation/changes/whats-missing.md",
+      "anchor": "needs-sign-off",
+      "ruleSetIds": [
+        "whats-missing"
+      ]
+    },
+    {
+      "id": "whats-missing#11",
+      "source": "whats-missing",
+      "number": "11",
+      "group": null,
+      "title": "Replacement",
+      "text": "**Replacement**: the iOS NG12 card no longer shows the ferritin check (the row carries it).",
+      "hash": "d44533c2d55e31dc",
+      "doc": "docs/clinical-validation/changes/whats-missing.md",
+      "anchor": "needs-sign-off",
+      "ruleSetIds": [
+        "whats-missing"
       ]
     }
   ]
