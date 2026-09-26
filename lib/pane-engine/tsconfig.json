@@ -1,6 +1,6 @@
 {
   "extends": "../../tsconfig.base.json",
-  "include": ["src/**/*", "src/**/*.json", "../../clinical-content/rules/*.json"],
+  "include": ["src/**/*", "src/**/*.json", "../../clinical-content/rules/*.json", "../../clinical-content/vademecum/*.json"],
   "exclude": ["node_modules", "dist", "**/*.test.ts"],
   "compilerOptions": {
     "outDir": "./dist",
