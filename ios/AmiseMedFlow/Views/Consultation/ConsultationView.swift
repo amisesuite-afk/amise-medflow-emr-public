@@ -518,6 +518,8 @@ struct ConsultationView: View {
                                                  && Calendar.current.isDateInToday($0.encounterDate) }) {
             saveEncounter()
         }
+        // Outcomes loop: freeze the engines' outputs (codes only) on today's visit.
+        recordOutcomeSnapshot()
         AuditLog.record("state_transition", "encounter", patient: patient,
                         details: ["to": "complete", "attested": "true"])
         patient.encounterStatus = .complete

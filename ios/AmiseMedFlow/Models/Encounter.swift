@@ -61,6 +61,12 @@ final class Encounter {
     // MARK: - Pathway forms at time of visit (burns, ward round, screening) — readable text
     var pathwaySummary: String?
 
+    // MARK: - Outcomes loop (coded data only; OutcomeSnapshot.swift)
+    // JSON: OutcomePredictionRecord, frozen when the visit is completed (first completion wins).
+    var predictionSnapshotJson: String?
+    // JSON: [OutcomeFinalDiagnosisRecord] — confirmed later; a correction retracts, never deletes.
+    var finalDiagnosisJson: String?
+
     // MARK: - Back-reference to owning patient
     var patient: Patient?
 

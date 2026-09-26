@@ -38,6 +38,8 @@ struct EncounterDetailSheet: View {
                 if !diff.isEmpty {
                     differentialSection(diff)
                 }
+                // Outcomes loop: the final diagnosis confirmed later (nurse / doctor / admin).
+                EncounterFinalDiagnosisSection(encounter: encounter)
                 if let pmh = encounter.pmhNotes, !pmh.isEmpty {
                     Section("History at Visit") {
                         readRow("Past Medical History", value: pmh)

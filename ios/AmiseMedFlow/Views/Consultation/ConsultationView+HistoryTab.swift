@@ -302,6 +302,12 @@ private struct EncounterHistoryRow: View {
                     .foregroundStyle(.tertiary)
                     .lineLimit(2)
             }
+            // Outcomes loop: a gentle reminder, only after an operation or pathology (> 14 days).
+            if encounter.finalDiagnosisDue {
+                Label("Final diagnosis not yet recorded", systemImage: "clock.badge.exclamationmark")
+                    .font(.caption2.weight(.semibold))
+                    .foregroundStyle(.orange)
+            }
         }
         .padding(.vertical, 4)
     }

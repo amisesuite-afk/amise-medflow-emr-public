@@ -92,6 +92,9 @@ struct CompleteEncounterSheet: View {
                     }
                 } header: {
                     Text("Diagnosis and orders")
+                } footer: {
+                    // Outcomes loop (ConsultationView+OutcomeSnapshot.swift).
+                    Text("Completing saves the engines' leading diagnoses and your ICD-10 code on this device (codes only), so their accuracy can be measured once the final diagnosis is recorded.")
                 }
 
                 Section {
