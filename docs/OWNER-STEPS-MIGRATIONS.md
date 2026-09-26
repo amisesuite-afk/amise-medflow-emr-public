@@ -34,8 +34,15 @@ Expect 7 rows. If fewer, send the screenshot before running 87 (88, 90 and 91 ca
 | 2 | 88 NEWS2 Scale 2 | `patients.news2_spo2_scale2` (default off), so the SpO₂ Scale 2 choice syncs between devices. | [supabase-news2-scale2-migration.sql](https://raw.githubusercontent.com/amisesuite-afk/amise-medflow-emr-public/claude/pr-37-gbg22z/supabase-news2-scale2-migration.sql) |
 | 3 | 90 Deferred references | A portal policy that already exists on production; a no-op there. Run it for completeness. | [supabase-deferred-forward-refs-migration.sql](https://raw.githubusercontent.com/amisesuite-afk/amise-medflow-emr-public/claude/pr-37-gbg22z/supabase-deferred-forward-refs-migration.sql) |
 | 4 | 91 Web vitals NEWS2 fields | `avpu` and `on_supplemental_o2` on the web `vitals` table, so web NEWS2 is complete. | [supabase-web-vitals-news2-fields-migration.sql](https://raw.githubusercontent.com/amisesuite-afk/amise-medflow-emr-public/claude/pr-37-gbg22z/supabase-web-vitals-news2-fields-migration.sql) |
+| 5 | 94 Outcomes and calibration | Two new tables, `prediction_snapshots` and `diagnosis_outcomes` (nurse, doctor and admin only; front desk and portal see nothing), so completed visits keep what the engines predicted and the final diagnosis can be recorded later. Until it runs, visits still close normally and the screens say the feature waits for this update. | [supabase-outcomes-calibration-migration.sql](https://raw.githubusercontent.com/amisesuite-afk/amise-medflow-emr-public/claude/pr-37-gbg22z/supabase-outcomes-calibration-migration.sql) |
 
 After Part 1, on the iPhone: Settings → Sync Now. Nothing else changes for users.
+
+After 94: close one test encounter on the web, then check a row appears:
+
+```sql
+select encounter_id, created_at from prediction_snapshots order by created_at desc limit 1;
+```
 
 ## Part 2 — Migration 89, staff-only access (on deploy day)
 

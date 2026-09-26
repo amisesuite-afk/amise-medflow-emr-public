@@ -174,6 +174,7 @@ approved. Reply with the file and item numbers you approve (for example "fix-web
 | [diagnostic-reasoning](changes/diagnostic-reasoning.md#needs-sign-off) | "Dr House" reasoning panel (web + iOS): for/against, best next test, doesn't-fit alerts, 16 zebra rules, longitudinal view | Evidence and alert thresholds (web LR ≤ 0.2, iOS 0.33), acceptable alert rate (now 7.6% on web), can't-miss list, zebra rules and citations, time-out triggers |
 | [outcomes-calibration](changes/outcomes-calibration.md#needs-sign-off) | Real-outcomes loop (web + iOS): prediction snapshots, final diagnoses, calibration report, proposed adjustments | Governance defaults in I2 (retention, minimum counts, who sees and exports), the 14-day reminder, the triage mapping to a common scale, the ICD-category match rule, the pathology/operation triggers (8 items) |
 | [bayes-treatment](changes/bayes-treatment.md#needs-sign-off) | Score → action, result → posterior shift, personalised treat / test / observe decisions (web + iOS) | Every effect size and harm (74 sources, all written from memory), 43 patient modifiers and 4 hard exclusions, risk bands, lab upper limits (need the practice's own ranges), confirmed-diagnosis ≥ 95% rule |
+| [outcomes-calibration](changes/outcomes-calibration.md#needs-sign-off) | Real-outcomes loop: prediction snapshots, final diagnosis, calibration report and proposals (Migration 94) | Retention, proposal minimum counts (10 prior / 20 LR), admin-only report and export, 14-day reminder, whether iOS should push outcomes (see also I2) |
 
 Decided so far:
 
