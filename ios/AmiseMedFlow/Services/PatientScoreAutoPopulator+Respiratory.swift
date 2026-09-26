@@ -151,6 +151,7 @@ extension PatientScoreAutoPopulator {
                 source: "Measure at bedside")
         }
 
+        mergeRecord(&i, &f, patient: patient)   // record fill (WhatsMissingCore+Fill)
         return (i, f)
     }
 

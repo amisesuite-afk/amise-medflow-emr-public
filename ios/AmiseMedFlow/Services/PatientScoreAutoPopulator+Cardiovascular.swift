@@ -75,6 +75,7 @@ extension PatientScoreAutoPopulator {
             label: "PE is the most likely / principal diagnosis",
             source: "Clinical judgement")
 
+        mergeRecord(&i, &f, patient: patient)   // record fill (WhatsMissingCore+Fill)
         return (i, f)
     }
 

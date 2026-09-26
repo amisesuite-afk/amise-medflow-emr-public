@@ -47,6 +47,7 @@ extension PatientScoreAutoPopulator {
         f.addPending(key: "wbc", label: "WBC — check FBC total white cell count", source: "Haematology")
         f.addPending(key: "crp", label: "CRP (mg/L) — check inflammatory markers", source: "Biochemistry")
 
+        mergeRecord(&i, &f, patient: patient)   // record fill (WhatsMissingCore+Fill)
         return (i, f)
     }
 

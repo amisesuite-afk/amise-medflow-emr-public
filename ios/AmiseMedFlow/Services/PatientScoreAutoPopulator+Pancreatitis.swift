@@ -133,6 +133,7 @@ extension PatientScoreAutoPopulator {
         f.addPending(key: "impairedMentalStatus", label: "Impaired mental status (disorientation / stupor)", source: "Clinical assessment")
         f.addPending(key: "pleuralEffusion",      label: "Pleural effusion on imaging",                 source: "CXR / CT thorax")
 
+        mergeRecord(&i, &f, patient: patient)   // record fill (WhatsMissingCore+Fill)
         return (i, f)
     }
 

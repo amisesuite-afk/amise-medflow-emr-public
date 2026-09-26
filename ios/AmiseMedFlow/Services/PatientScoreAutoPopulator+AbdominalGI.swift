@@ -22,6 +22,7 @@ extension PatientScoreAutoPopulator {
             if val > 10 { i.wbcElevated = true; f.autoFieldKeys.insert("wbcElevated") }
         }
 
+        mergeRecord(&i, &f, patient: patient)   // record fill (WhatsMissingCore+Fill)
         return (i, f)
     }
 
@@ -150,6 +151,7 @@ extension PatientScoreAutoPopulator {
             i.heartRateOver100 = true; f.autoFieldKeys.insert("heartRateOver100")
         }
 
+        mergeRecord(&i, &f, patient: patient)   // record fill (WhatsMissingCore+Fill)
         return (i, f)
     }
 
