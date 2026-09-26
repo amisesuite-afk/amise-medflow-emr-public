@@ -1,6 +1,6 @@
 {
   "format": "amise-signoff-catalogue/1",
-  "catalogueHash": "c86f5cb0995642ec",
+  "catalogueHash": "a78e47b790ee5a42",
   "repoUrl": "https://github.com/amisesuite-afk/amise-medflow-emr-public/blob/main/",
   "sources": [
     {
@@ -151,6 +151,8 @@
       "doc": "docs/clinical-validation/changes/diagnostic-reasoning.md",
       "anchor": "needs-sign-off",
       "ruleSetIds": [
+        "ios-bayesian-engine",
+        "ios-bayesian-input-mapping",
         "pane-engine-disease-model",
         "diagnostic-reasoning-zebras",
         "diagnostic-reasoning-rules",
@@ -176,7 +178,14 @@
         "diagnostic-reasoning#17",
         "diagnostic-reasoning#18",
         "diagnostic-reasoning#19",
-        "diagnostic-reasoning#20"
+        "diagnostic-reasoning#20",
+        "diagnostic-reasoning#21",
+        "diagnostic-reasoning#22",
+        "diagnostic-reasoning#23",
+        "diagnostic-reasoning#24",
+        "diagnostic-reasoning#25",
+        "diagnostic-reasoning#26",
+        "diagnostic-reasoning#27"
       ]
     },
     {
@@ -1065,6 +1074,33 @@
       "lastReviewed": "unknown",
       "reviewer": "unknown",
       "itemIds": [
+        "diagnostic-reasoning#1",
+        "diagnostic-reasoning#2",
+        "diagnostic-reasoning#3",
+        "diagnostic-reasoning#4",
+        "diagnostic-reasoning#5",
+        "diagnostic-reasoning#6",
+        "diagnostic-reasoning#7",
+        "diagnostic-reasoning#8",
+        "diagnostic-reasoning#9",
+        "diagnostic-reasoning#10",
+        "diagnostic-reasoning#11",
+        "diagnostic-reasoning#12",
+        "diagnostic-reasoning#13",
+        "diagnostic-reasoning#14",
+        "diagnostic-reasoning#15",
+        "diagnostic-reasoning#16",
+        "diagnostic-reasoning#17",
+        "diagnostic-reasoning#18",
+        "diagnostic-reasoning#19",
+        "diagnostic-reasoning#20",
+        "diagnostic-reasoning#21",
+        "diagnostic-reasoning#22",
+        "diagnostic-reasoning#23",
+        "diagnostic-reasoning#24",
+        "diagnostic-reasoning#25",
+        "diagnostic-reasoning#26",
+        "diagnostic-reasoning#27",
         "fix-ios-differential#1",
         "fix-ios-differential#2",
         "fix-ios-differential#3",
@@ -1140,6 +1176,33 @@
       "lastReviewed": "unknown",
       "reviewer": "unknown",
       "itemIds": [
+        "diagnostic-reasoning#1",
+        "diagnostic-reasoning#2",
+        "diagnostic-reasoning#3",
+        "diagnostic-reasoning#4",
+        "diagnostic-reasoning#5",
+        "diagnostic-reasoning#6",
+        "diagnostic-reasoning#7",
+        "diagnostic-reasoning#8",
+        "diagnostic-reasoning#9",
+        "diagnostic-reasoning#10",
+        "diagnostic-reasoning#11",
+        "diagnostic-reasoning#12",
+        "diagnostic-reasoning#13",
+        "diagnostic-reasoning#14",
+        "diagnostic-reasoning#15",
+        "diagnostic-reasoning#16",
+        "diagnostic-reasoning#17",
+        "diagnostic-reasoning#18",
+        "diagnostic-reasoning#19",
+        "diagnostic-reasoning#20",
+        "diagnostic-reasoning#21",
+        "diagnostic-reasoning#22",
+        "diagnostic-reasoning#23",
+        "diagnostic-reasoning#24",
+        "diagnostic-reasoning#25",
+        "diagnostic-reasoning#26",
+        "diagnostic-reasoning#27",
         "followups-history#1",
         "followups-history#2",
         "followups-history#3",
@@ -1439,6 +1502,13 @@
         "diagnostic-reasoning#18",
         "diagnostic-reasoning#19",
         "diagnostic-reasoning#20",
+        "diagnostic-reasoning#21",
+        "diagnostic-reasoning#22",
+        "diagnostic-reasoning#23",
+        "diagnostic-reasoning#24",
+        "diagnostic-reasoning#25",
+        "diagnostic-reasoning#26",
+        "diagnostic-reasoning#27",
         "evidence-exam#P1",
         "evidence-exam#P2",
         "evidence-exam#P3",
@@ -2367,12 +2437,19 @@
         "diagnostic-reasoning#17",
         "diagnostic-reasoning#18",
         "diagnostic-reasoning#19",
-        "diagnostic-reasoning#20"
+        "diagnostic-reasoning#20",
+        "diagnostic-reasoning#21",
+        "diagnostic-reasoning#22",
+        "diagnostic-reasoning#23",
+        "diagnostic-reasoning#24",
+        "diagnostic-reasoning#25",
+        "diagnostic-reasoning#26",
+        "diagnostic-reasoning#27"
       ]
     },
     {
       "id": "diagnostic-reasoning-rules",
-      "title": "Diagnostic reasoning — for/against thresholds, best-next-discriminator cost tiers, premature-closure guard, diagnostic time-out, longitudinal patterns",
+      "title": "Diagnostic reasoning — shared web + iOS rules: for/against thresholds, best-next-discriminator cost tiers, premature-closure guard and its adapter filters (diagnosis families, working-diagnosis label matching, two conditions, already named, contradiction LR <= 0.2), coexisting states, diagnostic time-out, longitudinal patterns",
       "reviewPriority": "P1",
       "lastReviewed": "unknown",
       "reviewer": "unknown",
@@ -2396,12 +2473,19 @@
         "diagnostic-reasoning#17",
         "diagnostic-reasoning#18",
         "diagnostic-reasoning#19",
-        "diagnostic-reasoning#20"
+        "diagnostic-reasoning#20",
+        "diagnostic-reasoning#21",
+        "diagnostic-reasoning#22",
+        "diagnostic-reasoning#23",
+        "diagnostic-reasoning#24",
+        "diagnostic-reasoning#25",
+        "diagnostic-reasoning#26",
+        "diagnostic-reasoning#27"
       ]
     },
     {
       "id": "diagnostic-reasoning-web",
-      "title": "Diagnostic reasoning — web PANE adapter rules: working-diagnosis resolution, diagnosis families, two-conditions and already-named rules, web contradiction threshold, time-out coexisting states, can't-miss and coexisting lists",
+      "title": "Diagnostic reasoning — web PANE adapter: evidence from PANE (LRs from feature likelihoods and background rates, cardinal findings), can't-miss list, PANE module sources, time-out filters; applies the shared adapter rules of diagnostic-reasoning-rules",
       "reviewPriority": "P1",
       "lastReviewed": "unknown",
       "reviewer": "unknown",
@@ -2425,7 +2509,14 @@
         "diagnostic-reasoning#17",
         "diagnostic-reasoning#18",
         "diagnostic-reasoning#19",
-        "diagnostic-reasoning#20"
+        "diagnostic-reasoning#20",
+        "diagnostic-reasoning#21",
+        "diagnostic-reasoning#22",
+        "diagnostic-reasoning#23",
+        "diagnostic-reasoning#24",
+        "diagnostic-reasoning#25",
+        "diagnostic-reasoning#26",
+        "diagnostic-reasoning#27"
       ]
     },
     {
@@ -4300,6 +4391,8 @@
       "doc": "docs/clinical-validation/changes/diagnostic-reasoning.md",
       "anchor": "needs-sign-off",
       "ruleSetIds": [
+        "ios-bayesian-engine",
+        "ios-bayesian-input-mapping",
         "pane-engine-disease-model",
         "diagnostic-reasoning-zebras",
         "diagnostic-reasoning-rules",
@@ -4317,6 +4410,8 @@
       "doc": "docs/clinical-validation/changes/diagnostic-reasoning.md",
       "anchor": "needs-sign-off",
       "ruleSetIds": [
+        "ios-bayesian-engine",
+        "ios-bayesian-input-mapping",
         "pane-engine-disease-model",
         "diagnostic-reasoning-zebras",
         "diagnostic-reasoning-rules",
@@ -4334,6 +4429,8 @@
       "doc": "docs/clinical-validation/changes/diagnostic-reasoning.md",
       "anchor": "needs-sign-off",
       "ruleSetIds": [
+        "ios-bayesian-engine",
+        "ios-bayesian-input-mapping",
         "pane-engine-disease-model",
         "diagnostic-reasoning-zebras",
         "diagnostic-reasoning-rules",
@@ -4351,6 +4448,8 @@
       "doc": "docs/clinical-validation/changes/diagnostic-reasoning.md",
       "anchor": "needs-sign-off",
       "ruleSetIds": [
+        "ios-bayesian-engine",
+        "ios-bayesian-input-mapping",
         "pane-engine-disease-model",
         "diagnostic-reasoning-zebras",
         "diagnostic-reasoning-rules",
@@ -4368,6 +4467,8 @@
       "doc": "docs/clinical-validation/changes/diagnostic-reasoning.md",
       "anchor": "needs-sign-off",
       "ruleSetIds": [
+        "ios-bayesian-engine",
+        "ios-bayesian-input-mapping",
         "pane-engine-disease-model",
         "diagnostic-reasoning-zebras",
         "diagnostic-reasoning-rules",
@@ -4385,6 +4486,8 @@
       "doc": "docs/clinical-validation/changes/diagnostic-reasoning.md",
       "anchor": "needs-sign-off",
       "ruleSetIds": [
+        "ios-bayesian-engine",
+        "ios-bayesian-input-mapping",
         "pane-engine-disease-model",
         "diagnostic-reasoning-zebras",
         "diagnostic-reasoning-rules",
@@ -4402,6 +4505,8 @@
       "doc": "docs/clinical-validation/changes/diagnostic-reasoning.md",
       "anchor": "needs-sign-off",
       "ruleSetIds": [
+        "ios-bayesian-engine",
+        "ios-bayesian-input-mapping",
         "pane-engine-disease-model",
         "diagnostic-reasoning-zebras",
         "diagnostic-reasoning-rules",
@@ -4419,6 +4524,8 @@
       "doc": "docs/clinical-validation/changes/diagnostic-reasoning.md",
       "anchor": "needs-sign-off",
       "ruleSetIds": [
+        "ios-bayesian-engine",
+        "ios-bayesian-input-mapping",
         "pane-engine-disease-model",
         "diagnostic-reasoning-zebras",
         "diagnostic-reasoning-rules",
@@ -4436,6 +4543,8 @@
       "doc": "docs/clinical-validation/changes/diagnostic-reasoning.md",
       "anchor": "needs-sign-off",
       "ruleSetIds": [
+        "ios-bayesian-engine",
+        "ios-bayesian-input-mapping",
         "pane-engine-disease-model",
         "diagnostic-reasoning-zebras",
         "diagnostic-reasoning-rules",
@@ -4453,6 +4562,8 @@
       "doc": "docs/clinical-validation/changes/diagnostic-reasoning.md",
       "anchor": "needs-sign-off",
       "ruleSetIds": [
+        "ios-bayesian-engine",
+        "ios-bayesian-input-mapping",
         "pane-engine-disease-model",
         "diagnostic-reasoning-zebras",
         "diagnostic-reasoning-rules",
@@ -4470,6 +4581,8 @@
       "doc": "docs/clinical-validation/changes/diagnostic-reasoning.md",
       "anchor": "needs-sign-off",
       "ruleSetIds": [
+        "ios-bayesian-engine",
+        "ios-bayesian-input-mapping",
         "pane-engine-disease-model",
         "diagnostic-reasoning-zebras",
         "diagnostic-reasoning-rules",
@@ -4487,6 +4600,8 @@
       "doc": "docs/clinical-validation/changes/diagnostic-reasoning.md",
       "anchor": "needs-sign-off",
       "ruleSetIds": [
+        "ios-bayesian-engine",
+        "ios-bayesian-input-mapping",
         "pane-engine-disease-model",
         "diagnostic-reasoning-zebras",
         "diagnostic-reasoning-rules",
@@ -4504,6 +4619,8 @@
       "doc": "docs/clinical-validation/changes/diagnostic-reasoning.md",
       "anchor": "needs-sign-off-additions-to-the-list-above",
       "ruleSetIds": [
+        "ios-bayesian-engine",
+        "ios-bayesian-input-mapping",
         "pane-engine-disease-model",
         "diagnostic-reasoning-zebras",
         "diagnostic-reasoning-rules",
@@ -4521,6 +4638,8 @@
       "doc": "docs/clinical-validation/changes/diagnostic-reasoning.md",
       "anchor": "needs-sign-off-additions-to-the-list-above",
       "ruleSetIds": [
+        "ios-bayesian-engine",
+        "ios-bayesian-input-mapping",
         "pane-engine-disease-model",
         "diagnostic-reasoning-zebras",
         "diagnostic-reasoning-rules",
@@ -4538,6 +4657,8 @@
       "doc": "docs/clinical-validation/changes/diagnostic-reasoning.md",
       "anchor": "needs-sign-off-additions-to-the-list-above",
       "ruleSetIds": [
+        "ios-bayesian-engine",
+        "ios-bayesian-input-mapping",
         "pane-engine-disease-model",
         "diagnostic-reasoning-zebras",
         "diagnostic-reasoning-rules",
@@ -4555,6 +4676,8 @@
       "doc": "docs/clinical-validation/changes/diagnostic-reasoning.md",
       "anchor": "needs-sign-off-additions-to-the-list-above",
       "ruleSetIds": [
+        "ios-bayesian-engine",
+        "ios-bayesian-input-mapping",
         "pane-engine-disease-model",
         "diagnostic-reasoning-zebras",
         "diagnostic-reasoning-rules",
@@ -4572,6 +4695,8 @@
       "doc": "docs/clinical-validation/changes/diagnostic-reasoning.md",
       "anchor": "needs-sign-off-additions-to-the-list-above",
       "ruleSetIds": [
+        "ios-bayesian-engine",
+        "ios-bayesian-input-mapping",
         "pane-engine-disease-model",
         "diagnostic-reasoning-zebras",
         "diagnostic-reasoning-rules",
@@ -4589,6 +4714,8 @@
       "doc": "docs/clinical-validation/changes/diagnostic-reasoning.md",
       "anchor": "needs-sign-off-additions-to-the-list-above",
       "ruleSetIds": [
+        "ios-bayesian-engine",
+        "ios-bayesian-input-mapping",
         "pane-engine-disease-model",
         "diagnostic-reasoning-zebras",
         "diagnostic-reasoning-rules",
@@ -4606,6 +4733,8 @@
       "doc": "docs/clinical-validation/changes/diagnostic-reasoning.md",
       "anchor": "needs-sign-off-additions-to-the-list-above",
       "ruleSetIds": [
+        "ios-bayesian-engine",
+        "ios-bayesian-input-mapping",
         "pane-engine-disease-model",
         "diagnostic-reasoning-zebras",
         "diagnostic-reasoning-rules",
@@ -4623,6 +4752,141 @@
       "doc": "docs/clinical-validation/changes/diagnostic-reasoning.md",
       "anchor": "needs-sign-off-additions-to-the-list-above",
       "ruleSetIds": [
+        "ios-bayesian-engine",
+        "ios-bayesian-input-mapping",
+        "pane-engine-disease-model",
+        "diagnostic-reasoning-zebras",
+        "diagnostic-reasoning-rules",
+        "diagnostic-reasoning-web"
+      ]
+    },
+    {
+      "id": "diagnostic-reasoning#21",
+      "source": "diagnostic-reasoning",
+      "number": "21",
+      "group": null,
+      "title": "Stated likelihood ratios in the iOS reasoning card",
+      "text": "**Stated likelihood ratios in the iOS reasoning card**: the database's `likelihoodRatio` is what\nthe card shows and compares (LR 1.5 supports; LR 2 favours); exp(logLR / 5) only for features\nwithout one.",
+      "hash": "9bcfdc659cbd7e32",
+      "doc": "docs/clinical-validation/changes/diagnostic-reasoning.md",
+      "anchor": "needs-sign-off-ios-parity",
+      "ruleSetIds": [
+        "ios-bayesian-engine",
+        "ios-bayesian-input-mapping",
+        "pane-engine-disease-model",
+        "diagnostic-reasoning-zebras",
+        "diagnostic-reasoning-rules",
+        "diagnostic-reasoning-web"
+      ]
+    },
+    {
+      "id": "diagnostic-reasoning#22",
+      "source": "diagnostic-reasoning",
+      "number": "22",
+      "group": null,
+      "title": "iOS clause-aware reading of database terms",
+      "text": "**iOS clause-aware reading of database terms**: negated-list items negated; family history,\nlay / referrer guesses and queries (\"?appendicitis\", \"query …\") are not findings; \"not current\"\ndeliberately not applied on iOS.",
+      "hash": "f297b02f96a98e08",
+      "doc": "docs/clinical-validation/changes/diagnostic-reasoning.md",
+      "anchor": "needs-sign-off-ios-parity",
+      "ruleSetIds": [
+        "ios-bayesian-engine",
+        "ios-bayesian-input-mapping",
+        "pane-engine-disease-model",
+        "diagnostic-reasoning-zebras",
+        "diagnostic-reasoning-rules",
+        "diagnostic-reasoning-web"
+      ]
+    },
+    {
+      "id": "diagnostic-reasoning#23",
+      "source": "diagnostic-reasoning",
+      "number": "23",
+      "group": null,
+      "title": "iOS text-parser relief rules",
+      "text": "**iOS text-parser relief rules**: a remedy that \"did not help\" / gave \"no relief\" is not a\nrelieving factor; \"at rest\" and \"rest pain\" are not relief by rest; no bare \"acid\" for burning\npain.",
+      "hash": "30fbd5b2e99da9a0",
+      "doc": "docs/clinical-validation/changes/diagnostic-reasoning.md",
+      "anchor": "needs-sign-off-ios-parity",
+      "ruleSetIds": [
+        "ios-bayesian-engine",
+        "ios-bayesian-input-mapping",
+        "pane-engine-disease-model",
+        "diagnostic-reasoning-zebras",
+        "diagnostic-reasoning-rules",
+        "diagnostic-reasoning-web"
+      ]
+    },
+    {
+      "id": "diagnostic-reasoning#24",
+      "source": "diagnostic-reasoning",
+      "number": "24",
+      "group": null,
+      "title": "iOS working diagnosis among every scored candidate",
+      "text": "**iOS working diagnosis among every scored candidate** (not only the five shown), resolved by\nexact name, then the shared label / ICD-10 rule, then containment.",
+      "hash": "338fec5cc8611a91",
+      "doc": "docs/clinical-validation/changes/diagnostic-reasoning.md",
+      "anchor": "needs-sign-off-ios-parity",
+      "ruleSetIds": [
+        "ios-bayesian-engine",
+        "ios-bayesian-input-mapping",
+        "pane-engine-disease-model",
+        "diagnostic-reasoning-zebras",
+        "diagnostic-reasoning-rules",
+        "diagnostic-reasoning-web"
+      ]
+    },
+    {
+      "id": "diagnostic-reasoning#25",
+      "source": "diagnostic-reasoning",
+      "number": "25",
+      "group": null,
+      "title": "iOS evidence identity",
+      "text": "**iOS evidence identity**: one finding per evidence label; every candidate's presenting-complaint\nfeature is one piece of evidence for the two-conditions rule.",
+      "hash": "7deb56ab3cb71a5e",
+      "doc": "docs/clinical-validation/changes/diagnostic-reasoning.md",
+      "anchor": "needs-sign-off-ios-parity",
+      "ruleSetIds": [
+        "ios-bayesian-engine",
+        "ios-bayesian-input-mapping",
+        "pane-engine-disease-model",
+        "diagnostic-reasoning-zebras",
+        "diagnostic-reasoning-rules",
+        "diagnostic-reasoning-web"
+      ]
+    },
+    {
+      "id": "diagnostic-reasoning#26",
+      "source": "diagnostic-reasoning",
+      "number": "26",
+      "group": null,
+      "title": "iOS time-out",
+      "text": "**iOS time-out**: coexisting states from the full ranked list explain findings; history and\ndecision-rule findings are context. Resulting iOS rates: alerts 5 / 397 (1.3 %), time-outs\n2 / 397 (0.5 %) — is the iOS time-out now too quiet?",
+      "hash": "fe621548186493a4",
+      "doc": "docs/clinical-validation/changes/diagnostic-reasoning.md",
+      "anchor": "needs-sign-off-ios-parity",
+      "ruleSetIds": [
+        "ios-bayesian-engine",
+        "ios-bayesian-input-mapping",
+        "pane-engine-disease-model",
+        "diagnostic-reasoning-zebras",
+        "diagnostic-reasoning-rules",
+        "diagnostic-reasoning-web"
+      ]
+    },
+    {
+      "id": "diagnostic-reasoning#27",
+      "source": "diagnostic-reasoning",
+      "number": "27",
+      "group": null,
+      "title": "The troponin gap",
+      "text": "**The troponin gap**: add a gastritis candidate to DiagnosticDatabase.json and / or graded\ntroponin evidence (above the ESC 0 h rule-in threshold) with its own likelihood ratio — or\naccept that the iOS card does not raise this alert.",
+      "hash": "e121141596e2be08",
+      "doc": "docs/clinical-validation/changes/diagnostic-reasoning.md",
+      "anchor": "needs-sign-off-ios-parity",
+      "ruleSetIds": [
+        "ios-bayesian-engine",
+        "ios-bayesian-input-mapping",
         "pane-engine-disease-model",
         "diagnostic-reasoning-zebras",
         "diagnostic-reasoning-rules",
