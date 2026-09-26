@@ -169,6 +169,24 @@ block if XCTest still ends a test early.
 - iPhone b_add_patient: the "Added today" row was below the fold (rows are built lazily). The
   group now sits right after "Waiting", has a summary tile, and the script scrolls to look.
 
+**CI run 36200720807** (branch `ux-seamless-3` follows up):
+- iPhone record quick actions (a real app bug, not only the script): the safety strip was a
+  `.safeAreaInset` on the record's TabView, which a TabView does not pass on to its pages, so the
+  strip was drawn over the top of the Overview tab. For a patient with an allergy and an
+  anticoagulant the strip wraps onto three lines and covered the quick actions: a tap on
+  "Prescriptions" landed on the strip and nothing opened. The strip is now a normal row above
+  the TabView, and each quick-action tile takes a tap anywhere on it (content shape).
+- a_consultation ("Interrupted by XCTest") was not a time-out (iPhone: 468 s of a 25-minute
+  allowance; the jobs took 22 and 34 of their 75 minutes). The test log shows the cause:
+  "Failed to get matching snapshot … consult.complete": reading a property of an element that
+  had just gone ends the test. After Save snapshot the toolbar button's text changed to "Saved"
+  for two seconds and the bar re-laid out as Complete was reached for; the iPad hit the same
+  kind of read on the review sheet's lazily built "Complete visit" row. The button text no
+  longer changes (the icon shows it was saved), the recorder reads element properties only
+  through snapshots (a missing element is a Swift error it can handle), and an interrupted flow
+  now records the XCTest failure text in its metrics. The consultation is also split into two
+  tests, a1 (steps 1–11) and a2 (plan, Tools, save, review and complete), 15 minutes each.
+
 Other iOS flows, expected:
 
 - **(b) Add patient:** 4 taps and 1 text entry.

@@ -34,6 +34,11 @@ struct UXSkip: Error {
     let reason: String
 }
 
+/// A test case that remembers the last XCTest issue, so an interrupted flow's metrics say why.
+protocol UXIssueReporting: AnyObject {
+    var lastIssueDescription: String? { get }
+}
+
 @MainActor
 final class UXRecorder {
 
@@ -66,7 +71,11 @@ final class UXRecorder {
         testCase.addTeardownBlock { [weak self] in
             MainActor.assumeIsolated {
                 guard let self, !self.finished else { return }
-                self.note("Interrupted by XCTest before the flow finished")
+                // An XCTest failure (not a thrown UXError) ended the test: a time-out, or a
+                // property read on an element that had gone. The test log names which.
+                let cause = (self.testCase as? UXIssueReporting)?.lastIssueDescription
+                self.note("Interrupted by XCTest before the flow finished"
+                          + (cause.map { ": \($0)" } ?? " (see the test log for the XCTest failure)"))
                 self.finish(outcome: "interrupted")
             }
         }
@@ -196,11 +205,29 @@ final class UXRecorder {
         return element
     }
 
+    // MARK: - Safe reads
+    //
+    // Reading a property (`identifier`, `frame`, `label`, `isEnabled`, `isSelected`) of an element
+    // that has just gone (a toolbar re-laid out, a sheet dismissed, a lazy row not built yet)
+    // records "Failed to get matching snapshot … No matches found" as an XCTest failure that ends
+    // the test on the spot: run 36200720807 lost a_consultation on both devices that way (the
+    // recorder then wrote "Interrupted by XCTest"; it was not a time-out: 468 s on iPhone). A
+    // snapshot that cannot be taken throws a Swift error instead, so every read goes through one.
+
+    /// The element's current snapshot, nil when it is not there (never an XCTest failure).
+    func snap(_ element: XCUIElement) -> XCUIElementSnapshot? {
+        try? element.snapshot()
+    }
+
+    func label(of element: XCUIElement) -> String? { snap(element)?.label }
+
+    func isEnabled(_ element: XCUIElement) -> Bool? { snap(element)?.isEnabled }
+
     /// Waits until `element` reports the selected trait (e.g. the active consultation step).
     func isSelectedSoon(_ element: XCUIElement, timeout: TimeInterval = 4) -> Bool {
         let deadline = Date().addingTimeInterval(timeout)
         while Date() < deadline {
-            if element.exists && element.isSelected { return true }
+            if snap(element)?.isSelected == true { return true }
             RunLoop.current.run(until: Date().addingTimeInterval(0.2))
         }
         return false
@@ -212,8 +239,7 @@ final class UXRecorder {
     /// before the metrics are written (run 36181523764, iPad a_consultation: why that flow was
     /// missing from the metrics). Off-screen or zero-size means "not hittable" here.
     func isHittableSafely(_ element: XCUIElement) -> Bool {
-        guard element.exists else { return false }
-        let f = element.frame
+        guard let f = snap(element)?.frame else { return false }
         guard !f.isEmpty, f.width > 0, f.height > 0 else { return false }
         let screen = app.frame
         guard screen.contains(CGPoint(x: f.midX, y: f.midY)) else { return false }
@@ -242,8 +268,9 @@ final class UXRecorder {
         var target = element
         // The same identifier can exist twice, e.g. the visit-pathway cards in a sheet and in the
         // consultation underneath it: prefer a copy the user can actually tap.
-        if !isHittableSafely(target), !element.identifier.isEmpty,
-           let visible = app.descendants(matching: .any).matching(identifier: element.identifier)
+        let identifier = snap(element)?.identifier ?? ""
+        if !isHittableSafely(target), !identifier.isEmpty,
+           let visible = app.descendants(matching: .any).matching(identifier: identifier)
                .allElementsBoundByIndex.first(where: { isHittableSafely($0) }) {
             target = visible
         }
@@ -259,11 +286,10 @@ final class UXRecorder {
     /// Waits (up to `timeout`) until the element's frame is the same on two reads 0.25 s apart.
     func waitForStableFrame(_ element: XCUIElement, timeout: TimeInterval = 2) {
         let deadline = Date().addingTimeInterval(timeout)
-        var last = element.exists ? element.frame : .zero
+        var last = snap(element)?.frame ?? .zero
         while Date() < deadline {
             RunLoop.current.run(until: Date().addingTimeInterval(0.25))
-            guard element.exists else { return }
-            let now = element.frame
+            guard let now = snap(element)?.frame else { return }
             if now == last { return }
             last = now
         }
@@ -274,7 +300,7 @@ final class UXRecorder {
     func dismissTransientOverlays() {
         for id in ["PopoverDismissRegion", "dismiss popup"] {
             let region = app.descendants(matching: .any).matching(identifier: id).firstMatch
-            if region.exists && region.isHittable {
+            if isHittableSafely(region) {
                 region.tap()
                 RunLoop.current.run(until: Date().addingTimeInterval(0.4))
                 note("Closed an open menu or popover before continuing")
@@ -373,8 +399,7 @@ final class UXRecorder {
         var gestures = 0
         while gestures < maxGestures {
             if isHittableSafely(element) { break }
-            if element.exists {
-                let f = element.frame
+            if let f = snap(element)?.frame {
                 let verticallyVisible = f.midY > screen.minY + 40 && f.midY < screen.maxY - 40
                 if verticallyVisible && (f.maxX > screen.maxX || f.minX < screen.minX) {
                     let leftwards = f.maxX > screen.maxX
@@ -406,14 +431,15 @@ final class UXRecorder {
     /// The form or list to scroll when the element is not built yet: the front-most collection
     /// view or table (a sheet or popover form), else the whole app.
     private var scrollContainer: XCUIElement {
-        let keyboard = app.keyboards.firstMatch
-        let keyboardFrame = keyboard.exists ? keyboard.frame : .null
-        let lists = (app.collectionViews.allElementsBoundByIndex + app.tables.allElementsBoundByIndex)
+        let keyboardFrame = snap(app.keyboards.firstMatch)?.frame ?? .null
+        let lists: [(element: XCUIElement, frame: CGRect)] =
+            (app.collectionViews.allElementsBoundByIndex + app.tables.allElementsBoundByIndex)
             .filter { isHittableSafely($0) }
+            .compactMap { e in snap(e).map { (e, $0.frame) } }
             // The keyboard has its own collection views (suggestions, emoji): never scroll those.
             .filter { keyboardFrame.isNull || !keyboardFrame.contains($0.frame) }
         // The largest list on screen is the form or page, not a chip strip inside it.
-        return lists.max(by: { $0.frame.width * $0.frame.height < $1.frame.width * $1.frame.height }) ?? app
+        return lists.max(by: { $0.frame.width * $0.frame.height < $1.frame.width * $1.frame.height })?.element ?? app
     }
 
     /// Scrolls until `element` is visible (for fields low in long forms, or above with `upwards`).

@@ -6,9 +6,13 @@
 //
 // Flows (same on iPhone and iPad; the iPad opens the consultation from the record's single
 // "Consultation" section, the iPhone from the record's quick actions):
-//   a  Today → patient → consultation → "First visit" pathway → every step (typing in CC, HPI,
-//      exam, diagnosis, plan) → Tools → Scores (compute + save one, over the current step) →
-//      Save snapshot → Complete → review sheet (attest) → Complete visit
+//   a1 Today → patient → consultation → "First visit" pathway → steps 1–11 (typing in CC, HPI,
+//      exam, diagnosis search)
+//   a2 Today → patient → consultation → "First visit" → Plan step (type the plan) → Tools →
+//      Scores (compute + save one, over the step) → Vitals, Prescriptions → Save snapshot →
+//      Complete → review sheet (attest) → Complete visit
+//   (a used to be one test; split so each half finishes well inside its time allowance and
+//   writes its own metrics even if the other half fails.)
 //   b  Add a new patient (and check it shows on Today under "Added today")
 //   c  Record vitals
 //   d  Add a prescription that interacts with warfarin → interaction alert
@@ -20,7 +24,15 @@
 
 import XCTest
 
-final class UXWalkthroughTests: XCTestCase {
+final class UXWalkthroughTests: XCTestCase, UXIssueReporting {
+
+    /// Last XCTest issue recorded in this test (written into the metrics of an interrupted flow).
+    private(set) var lastIssueDescription: String?
+
+    override func record(_ issue: XCTIssue) {
+        lastIssueDescription = issue.compactDescription
+        super.record(issue)
+    }
 
     /// The "First visit" pathway steps (ConsultPathway.firstVisit.steps), as ConsultTab case names.
     private static let firstVisitSteps: [(tab: String, label: String)] = [
@@ -45,49 +57,67 @@ final class UXWalkthroughTests: XCTestCase {
 
     // MARK: - a. Consultation
 
+    /// Today → Avery → consultation → "First visit" pathway, with the identity / allergy notes.
     @MainActor
-    func testA_ConsultationFlow() throws {
-        // Twelve steps with typing, a score, three tools, save and the review sheet take longer
-        // than XCTest's default 10-minute allowance on a CI simulator (run 36195058935, iPhone:
-        // "Interrupted by XCTest"). run.sh allows up to 30 minutes; this test asks for 25.
-        executionTimeAllowance = 25 * 60
+    private func openFirstVisitConsultation(_ ux: UXRecorder) throws {
+        let row = ux.element("today.patientRow", labelContains: "Avery Sample")
+        try ux.waitFor(row, "Today: Avery Sample")
+        ux.screen("Today")
+        try ux.tap(row, "Today row: Avery Sample")
+        ux.screen("Patient record")
+
+        if UXRecorder.isPad {
+            // One consultation entry in the section bar (UX review M4).
+            try ux.tap(ux.element("patient.section.consultation"), "Section bar: Consultation")
+        } else {
+            try ux.tap(ux.element("patient.quick.Consultation"), "Quick action: Consultation")
+        }
+
+        let firstVisit = ux.element("pathway.card.firstVisit")
+        try ux.waitFor(firstVisit, "Visit pathway picker (first door)")
+        ux.screen("Visit pathway picker")
+        try ux.tap(firstVisit, "Pathway: First visit")
+
+        try ux.waitFor(ux.element("consult.step.risk"), "Consultation step bar")
+        ux.note("Allergy banner visible in the consultation: "
+                + (ux.element("consult.allergyBanner").exists ? "yes (real allergy)"
+                   : ux.element("consult.allergyNKDA").exists ? "no — neutral NKDA line"
+                   : ux.element("consult.allergyNotRecorded").exists ? "no — allergies not recorded" : "NO"))
+        // Patient identity on the consultation (UX review M1): header on iPhone and the iPad
+        // full-screen consultation; inside the iPad record the record header shows it.
+        let identity = ux.element("consult.patientHeader").exists
+            ? "yes (consultation header)"
+            : ux.element("patient.header.identity").exists
+                ? "yes (record header directly above the consultation)" : "NO"
+        ux.note("Patient identity on the consultation screen: " + identity)
+    }
+
+    /// a1: the history-to-diagnosis half of the consultation.
+    @MainActor
+    func testA1_ConsultationSteps() throws {
+        executionTimeAllowance = 15 * 60
         let app = launch()
-        let ux = UXRecorder(app: app, flow: "a_consultation",
-                            title: "Today → patient → consultation (First visit, all 12 steps) → Tools: score → save & review/complete",
+        let ux = UXRecorder(app: app, flow: "a1_consultation_steps",
+                            title: "Today → patient → consultation (First visit) → steps 1–11: CC, HPI, exam, diagnosis",
                             testCase: self)
         ux.run {
-            let row = ux.element("today.patientRow", labelContains: "Avery Sample")
-            try ux.waitFor(row, "Today: Avery Sample")
-            ux.screen("Today")
-            try ux.tap(row, "Today row: Avery Sample")
-            ux.screen("Patient record")
+            try openFirstVisitConsultation(ux)
+            try walkFirstVisitSteps(ux, through: "diagnosis")
+        }
+    }
 
-            if UXRecorder.isPad {
-                // One consultation entry in the section bar (UX review M4).
-                try ux.tap(ux.element("patient.section.consultation"), "Section bar: Consultation")
-            } else {
-                try ux.tap(ux.element("patient.quick.Consultation"), "Quick action: Consultation")
-            }
-
-            let firstVisit = ux.element("pathway.card.firstVisit")
-            try ux.waitFor(firstVisit, "Visit pathway picker (first door)")
-            ux.screen("Visit pathway picker")
-            try ux.tap(firstVisit, "Pathway: First visit")
-
-            try ux.waitFor(ux.element("consult.step.risk"), "Consultation step bar")
-            ux.note("Allergy banner visible in the consultation: "
-                    + (ux.element("consult.allergyBanner").exists ? "yes (real allergy)"
-                       : ux.element("consult.allergyNKDA").exists ? "no — neutral NKDA line"
-                       : ux.element("consult.allergyNotRecorded").exists ? "no — allergies not recorded" : "NO"))
-            // Patient identity on the consultation (UX review M1): header on iPhone and the iPad
-            // full-screen consultation; inside the iPad record the record header shows it.
-            let identity = ux.element("consult.patientHeader").exists
-                ? "yes (consultation header)"
-                : ux.element("patient.header.identity").exists
-                    ? "yes (record header directly above the consultation)" : "NO"
-            ux.note("Patient identity on the consultation screen: " + identity)
-
-            try walkFirstVisitSteps(ux)
+    /// a2: plan, the Tools menu, save and the review-and-complete sheet.
+    @MainActor
+    func testA2_ConsultationPlanToolsComplete() throws {
+        executionTimeAllowance = 15 * 60
+        let app = launch()
+        let ux = UXRecorder(app: app, flow: "a2_consultation_complete",
+                            title: "Consultation (First visit) → Plan → Tools: score, vitals, Rx → save snapshot → review & complete",
+                            testCase: self)
+        ux.run {
+            try openFirstVisitConsultation(ux)
+            try ux.tap(ux.element("consult.step.plan"), "Step bar → Plan")
+            try walkFirstVisitSteps(ux, from: "plan")
             try computeScore(ux)
             probeOtherTools(ux)
             try saveAndComplete(ux)
@@ -95,10 +125,13 @@ final class UXWalkthroughTests: XCTestCase {
         }
     }
 
+    /// Walks the "First visit" steps from `from` through `through` (tab names), inclusive.
     @MainActor
-    private func walkFirstVisitSteps(_ ux: UXRecorder) throws {
+    private func walkFirstVisitSteps(_ ux: UXRecorder, from: String = "risk", through: String = "plan") throws {
         let steps = Self.firstVisitSteps
-        for (i, step) in steps.enumerated() {
+        guard let first = steps.firstIndex(where: { $0.tab == from }),
+              let last = steps.firstIndex(where: { $0.tab == through }) else { return }
+        for (i, step) in steps.enumerated() where i >= first && i <= last {
             let stepButton = ux.element("consult.step.\(step.tab)")
             if !ux.isSelectedSoon(stepButton) {
                 ux.note("Step \(step.label) was not active after advancing; tapped it in the step bar")
@@ -137,7 +170,7 @@ final class UXWalkthroughTests: XCTestCase {
             }
 
             ux.screen("Consultation step \(i + 1) - \(step.label)")
-            if i + 1 < steps.count { try advance(ux, to: steps[i + 1]) }
+            if i < last { try advance(ux, to: steps[i + 1]) }
         }
     }
 
@@ -179,7 +212,7 @@ final class UXWalkthroughTests: XCTestCase {
         let suggested = ux.element(identifierPrefix: "scores.card.")
         var usedNEWS2 = false
         if suggested.waitForExistence(timeout: 3) {
-            ux.note("Diagnosis-driven score chosen: \(suggested.label)")
+            ux.note("Diagnosis-driven score chosen: \(ux.label(of: suggested) ?? "?")")
             try ux.tap(suggested, "Score: first diagnosis-driven suggestion")
         } else {
             ux.note("No diagnosis-driven score offered; NEWS2 used")
@@ -240,11 +273,13 @@ final class UXWalkthroughTests: XCTestCase {
         try ux.waitFor(attest, "Review and complete sheet")
         ux.screen("Review and complete")
         let missing = ux.element("consult.completeSheet.missing")
-        if missing.exists { ux.note("Review sheet, not yet documented: \(missing.label)") }
+        if let text = ux.label(of: missing) { ux.note("Review sheet, not yet documented: \(text)") }
         ux.note("Review sheet lists unedited app-filled content: "
                 + (ux.element("consult.completeSheet.unconfirmed").exists ? "yes" : "none"))
         let confirm = ux.element("consult.completeSheet.confirm")
-        ux.note("Complete visit enabled before the attestation: " + (confirm.isEnabled ? "YES" : "no"))
+        if let enabled = ux.isEnabled(confirm) {
+            ux.note("Complete visit enabled before the attestation: " + (enabled ? "YES" : "no"))
+        }
         try ux.scrollTo(attest, "Attestation")
         try ux.tap(attest, "Tick: I have reviewed this record")
         try ux.scrollTo(confirm, "Complete visit")
@@ -343,7 +378,7 @@ final class UXWalkthroughTests: XCTestCase {
             // The live NEWS2 preview sits at the top of the form: capture it while it is on screen
             // (scrolling the sheet back up could dismiss it).
             let preview = ux.element("vitals.news2Preview")
-            ux.note("Live NEWS2 preview after BP and HR: " + (preview.exists ? preview.label : "not shown"))
+            ux.note("Live NEWS2 preview after BP and HR: " + (ux.label(of: preview) ?? "not shown"))
             ux.snapshot("Live NEWS2 preview")
             try ux.type("16", into: ux.element("vitals.respiratoryRate"), "Respiratory rate")
             try ux.type("36.9", into: ux.element("vitals.temperature"), "Temperature")
@@ -409,13 +444,13 @@ final class UXWalkthroughTests: XCTestCase {
 
             let live = ux.element("rx.liveInteraction")
             try ux.scrollTo(live, "Interaction warning while prescribing")
-            ux.note("Warning while prescribing: \(live.label)")
+            ux.note("Warning while prescribing: \(ux.label(of: live) ?? "?")")
             ux.screen("Add prescription - interaction warning")
 
             try ux.tap(ux.element("rx.save"), "Add")
             let alert = ux.element("rx.interactionAlert")
             try ux.waitFor(alert, "Interaction alert on the prescription list")
-            ux.note("Alert on the list: \(alert.label)")
+            ux.note("Alert on the list: \(ux.label(of: alert) ?? "?")")
             ux.screen("Prescriptions - interaction alert")
         }
     }

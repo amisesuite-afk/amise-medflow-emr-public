@@ -17,8 +17,9 @@
 #         <out>/<device>/result.xcresult, <out>/<device>/test.log,
 #         <out>/ux-metrics.json (all devices and flows), <out>/ux-summary.md
 # Exit status: non-zero if the build or any device's UI tests failed (whatever ran is exported).
-# Test time: 10 minutes per flow by default; the long consultation flow (a) asks for 25 minutes
-# (executionTimeAllowance), capped here at 30.
+# Test time: 10 minutes per flow by default; the two consultation halves (a1, a2) ask for 15
+# minutes each (executionTimeAllowance), capped here at 30. A flow that ends "interrupted" in
+# the metrics was stopped by an XCTest failure, not necessarily a time-out: see the test log.
 # Works with the macOS system bash (3.2).
 set -uo pipefail
 cd "$(dirname "$0")/.."        # ios/
