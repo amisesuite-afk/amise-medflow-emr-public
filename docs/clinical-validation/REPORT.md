@@ -1,10 +1,10 @@
 # Clinical validation report — consultation engines vs guidelines
 
-Generated 2026-09-26T04:09:46.091Z.
+Generated 2026-09-26T04:38:20.879Z.
 
-- iOS: 433 vignette results from `docs/clinical-validation/results/ios-latest.jsonl` (generated 2026-09-26T03:40:36Z).
+- iOS: 433 vignette results from `docs/clinical-validation/results/ios-latest.jsonl` (generated 2026-09-26T04:20:28Z).
 - iOS differential engine mode: database (BayesianDiagnosisEngine used DiagnosticDatabase.json).
-- Web: 433 vignette results from `docs/clinical-validation/results/web-latest.json` (generated 2026-09-26T04:08:02.056Z, clinval-web/1).
+- Web: 441 vignette results from `docs/clinical-validation/results/web-latest.json` (generated 2026-09-26T04:35:25.980Z, clinval-web/1).
 
 Status legend: PASS; FAIL — BLOCKING (critical, not flagged: fails the test run); FAIL (known gap) and
 FAIL (unverified) are reported only; "PASS (gap resolved)" means the flag can be removed from the vignette;
@@ -14,8 +14,8 @@ n/a = the expectation does not apply to that platform or the engine has no such 
 
 | Platform | Vignettes | Expectations | Pass | Fail | n/a | Critical fail | Blocking | Known-gap fail | Unverified fail | Gap resolved |
 |---|---|---|---|---|---|---|---|---|---|---|
-| ios | 433 | 3149 | 2811 | 222 | 116 | 2 | 0 | 218 | 0 | 12 |
-| web | 433 | 3149 | 2981 | 76 | 92 | 0 | 0 | 74 | 0 | 0 |
+| ios | 433 | 3149 | 2811 | 222 | 116 | 2 | 0 | 218 | 0 | 0 |
+| web | 441 | 3164 | 2992 | 78 | 94 | 0 | 0 | 76 | 0 | 0 |
 
 ## Blocking failures
 
@@ -1412,7 +1412,7 @@ Guidelines:
 | dx-appendicitis-top1 | mustRankTopK | quality | PASS | PASS |  |  |
 | score-rec-alvarado | scoreRecommended | quality | PASS | PASS | Alvarado score (MANTRELS) 1986 |  |
 | score-rec-air | scoreRecommended | quality | PASS | FAIL (known gap) | WSES Jerusalem guidelines 2020; Appendicitis Inflammatory Response (AIR) score 2008 |  |
-| score-alvarado-autofill | scoreValue | quality | PASS (gap resolved) | n/a |  |  |
+| score-alvarado-autofill | scoreValue | quality | PASS | n/a |  |  |
 | inv-fbc | investigationInclude | quality | PASS | PASS | WSES Jerusalem guidelines 2020 |  |
 | inv-crp | investigationInclude | quality | PASS | PASS | WSES Jerusalem guidelines 2020 |  |
 | inv-imaging-us-or-ct | investigationInclude | quality | PASS | PASS | WSES Jerusalem guidelines 2020 |  |
@@ -1425,7 +1425,6 @@ Guidelines:
 
 Failure details:
 
-- **score-alvarado-autofill** (ios): ≥ 7: ios.autofill.alvarado=9 (Score 9/10 — appendicitis probable/very probable; surgical r)
 - **score-rec-air** (web): air not recommended; recommended: alvarado, tg18-cholangitis, ranson, qsofa, news2 [known gap: Web CDS has no AIR rule (and no AIR calculator); Alvarado only.]
 
 Guidelines:
@@ -3381,8 +3380,8 @@ Guidelines:
 Failure details:
 
 - **dx-crohn-top3** (ios): not in top 3 of ios.bayes: 1. Acute Appendicitis \| 2. Skin Abscess \| 3. Typhoid Fever \| 4. Infective Endocarditis \| 5. Acute Pancreatitis [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): not in top 3 of ios.bayes: 1. Acute Appendicitis \| 2. Skin Abscess \| 3. Typhoid Fever \| 4. Infective Endocarditis \| 5. Acute Pancreatitis]
-- **flag-immunosuppressed** (ios): no red flag matched among 10 (ios.visitRisk, ios.allergyBanner, ios.triage, ios.radiation.redFlags, ios.pipeline.alert) [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): no red flag matched among 8 (ios.visitRisk, ios.allergyBanner, ios.triage, ios.radiation.redFlags, ios.pipeline.alert)]
-- **mgmt-resection-plan** (ios): no management item matched among 24 (ios.pipeline.decisions, ios.pipeline.actions, ios.radiation.plan, ios.radiation.followUp, ios.soap.plan, ios.decisions, ios.decisions.shift) [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): no management item matched among 11 (ios.pipeline.decisions, ios.pipeline.actions, ios.radiation.plan, ios.radiation.followUp, ios.soap.plan)]
+- **flag-immunosuppressed** (ios): no red flag matched among 9 (ios.visitRisk, ios.allergyBanner, ios.triage, ios.radiation.redFlags, ios.pipeline.alert) [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): no red flag matched among 8 (ios.visitRisk, ios.allergyBanner, ios.triage, ios.radiation.redFlags, ios.pipeline.alert)]
+- **mgmt-resection-plan** (ios): no management item matched among 25 (ios.pipeline.decisions, ios.pipeline.actions, ios.radiation.plan, ios.radiation.followUp, ios.soap.plan, ios.decisions, ios.decisions.shift) [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): no management item matched among 11 (ios.pipeline.decisions, ios.pipeline.actions, ios.radiation.plan, ios.radiation.followUp, ios.soap.plan)]
 
 Guidelines:
 
@@ -4109,6 +4108,21 @@ Guidelines:
 
 - **nice-ng12** — NICE NG12 — Suspected cancer: recognition and referral (oesophageal and stomach cancer) (2015), Offer urgent direct access upper GI endoscopy (within 2 weeks) to assess for oesophageal or stomach cancer in people with dysphagia (any age), or aged ≥55 with weight loss and any of upper abdominal pain, reflux or dyspepsia. National Institute for Health and Care Excellence. NICE guideline NG12. London: NICE; 2015 (last updated 2023). *(statement wording/numbering not yet verified against the source)*
 - **nice-cg184** — NICE CG184 — Gastro-oesophageal reflux disease and dyspepsia in adults: investigation and management (2014), People with alarm features are referred under NG12 rather than managed with empirical PPI. National Institute for Health and Care Excellence. Clinical guideline CG184. London: NICE; 2014 (last updated 2019). *(statement wording/numbering not yet verified against the source)*
+
+#### `hpi-frame-dysphagia-solids-progressive` — Typed complaint, dysphagia frame
+
+66-year-old man: 2 months of food sticking, solids then soft food, progressive, 6 kg weight loss.
+
+Permutation of `dysphagia-progressive-over55`.
+
+| Expectation | Kind | Severity | ios | web | Guideline | Proposed fix |
+|---|---|---|---|---|---|---|
+| dx-oesophageal-cancer-top3 | mustRankTopK | critical | not run | PASS | NICE NG12 2015 |  |
+| inv-ogd | investigationInclude | quality | not run | PASS | NICE NG12 2015 |  |
+
+Guidelines:
+
+- **nice-ng12** — NICE NG12 — Suspected cancer: recognition and referral (2015), Lung (1.1), upper GI (1.2), pancreatic (1.2.2), lower GI (1.3) and breast (1.4) cancer referral criteria. National Institute for Health and Care Excellence. NICE guideline NG12. London: NICE; 2015 (last updated 2023). *(statement wording/numbering not yet verified against the source)*
 
 ### Benign peptic oesophageal stricture (progressive dysphagia)
 
@@ -5052,6 +5066,130 @@ Guidelines:
 - **jbds-hhs-2022** — JBDS-IP — The management of the hyperosmolar hyperglycaemic state (HHS) in adults (2022), Diagnosis (hypovolaemia, marked hyperglycaemia, high osmolality, without significant ketonaemia or acidosis); fluid replacement with 0.9% sodium chloride first; insulin (fixed rate 0.05 units/kg/h) only once glucose stops falling with fluids alone, unless significant ketonaemia; monitor osmolality and avoid rapid falls; VTE prophylaxis; foot protection. Mustafa OG, Haq M, Dashora U, Castro E, Dhatariya KK; Joint British Diabetes Societies for Inpatient Care. Management of hyperosmolar hyperglycaemic state (HHS) in adults: an updated guideline from the JBDS for Inpatient Care Group. Diabet Med. 2023;40:e15005. *(statement wording/numbering not yet verified against the source)*
 - **ada-hhc-2024** — Hyperglycaemic crises in adults with diabetes — consensus report (ADA/EASD/JBDS/AACE/DTS) (2024), DKA diagnosis (glucose or prior diabetes, ketones, pH/bicarbonate) including euglycaemic DKA with SGLT2 inhibitors; HHS diagnosis (marked hyperglycaemia, hyperosmolality, no significant ketoacidosis); IV fluids, insulin, potassium; search for precipitant. Umpierrez GE, Davis GM, ElSayed NA, et al. Hyperglycemic crises in adults with diabetes: a consensus report. Diabetes Care. 2024;47:1257–75. *(statement wording/numbering not yet verified against the source)*
 
+### Fibroadenoma (breast lump under 30)
+
+#### `hpi-frame-breast-lump-mobile` — Typed complaint, breast frame
+
+26-year-old woman: 2 months of a smooth, mobile, non-tender lump in the upper outer right breast; no nipple or skin change.
+
+Permutation of `breast-lump-under-30`.
+
+| Expectation | Kind | Severity | ios | web | Guideline | Proposed fix |
+|---|---|---|---|---|---|---|
+| dx-fibroadenoma-top3 | mustRankTopK | quality | not run | PASS | NICE NG12 2015 |  |
+| dx-breast-cancer-listed | mustNotMiss | quality | not run | PASS | NICE NG12 2015 |  |
+
+Guidelines:
+
+- **nice-ng12** — NICE NG12 — Suspected cancer: recognition and referral (2015), Lung (1.1), upper GI (1.2), pancreatic (1.2.2), lower GI (1.3) and breast (1.4) cancer referral criteria. National Institute for Health and Care Excellence. NICE guideline NG12. London: NICE; 2015 (last updated 2023). *(statement wording/numbering not yet verified against the source)*
+
+### ACE-inhibitor cough
+
+#### `hpi-frame-cough-chronic-acei` — 
+
+58-year-old woman, non-smoker: 10 weeks of dry, tickly nocturnal cough that began a few weeks after ramipril was started. No haemoptysis, fever or weight loss. The HPI step offers the cough history, not abdominal SOCRATES.
+
+| Expectation | Kind | Severity | ios | web | Guideline | Proposed fix |
+|---|---|---|---|---|---|---|
+| dx-acei-cough-top3-ios | mustRankTopK | critical | not run | n/a | ERS guidelines on the diagnosis and treatment of chronic cough in adults and children 2020 |  |
+| dx-acei-cough-top3-web | mustRankTopK | quality | not run | FAIL (known gap) | ERS guidelines on the diagnosis and treatment of chronic cough in adults and children 2020 |  |
+
+Failure details:
+
+- **dx-acei-cough-top3-web** (web): not in top 3 of web.pane: 1. GORD / Reflux Oesophagitis \| 2. Peptic Ulcer Disease \| 3. Lipoma [known gap: pane-engine models no ACE-inhibitor cough (or any chronic-cough cause): the cough frame answers reach acei_arb_use, cough and chronic_course, and PANE ranks GORD / peptic ulcer / lipoma. Needs a pane cough module (sign-off list, history-by-complaint.md).]
+
+Guidelines:
+
+- **ers-cough-2020** — ERS guidelines on the diagnosis and treatment of chronic cough in adults and children (2020), Chronic cough > 8 weeks; ACE-inhibitor cough: stop the ACE inhibitor (resolves within weeks). Morice AH, et al. Eur Respir J 2020;55:1901136. *(statement wording/numbering not yet verified against the source)*
+- **bts-cough-2006** — BTS guidelines: Recommendations for the management of cough in adults (2006), Duration bands: acute < 3 weeks, subacute 3–8 weeks, chronic > 8 weeks. Morice AH, et al. Thorax 2006;61 Suppl 1:i1–24. *(statement wording/numbering not yet verified against the source)*
+
+### Lung carcinoma (suspected)
+
+#### `hpi-frame-cough-haemoptysis-smoker` — Smoker, haemoptysis and weight loss
+
+64-year-old man, 45 pack-years: 6 weeks of cough with blood-streaked sputum and 6 kg weight loss. NICE NG12: urgent chest X-ray / suspected lung cancer pathway.
+
+Permutation of `hpi-frame-cough-chronic-acei`.
+
+| Expectation | Kind | Severity | ios | web | Guideline | Proposed fix |
+|---|---|---|---|---|---|---|
+| dx-lung-cancer-top3-ios | mustRankTopK | critical | not run | n/a | NICE NG12 2015 |  |
+| dx-lung-cancer-top3-picker | mustRankTopK | quality | not run | PASS | NICE NG12 2015 |  |
+| dx-lung-cancer-top3-pane | mustRankTopK | quality | not run | FAIL (known gap) | NICE NG12 2015 |  |
+| flag-haemoptysis | redFlags | quality | not run | PASS | NICE NG12 2015 |  |
+
+Failure details:
+
+- **dx-lung-cancer-top3-pane** (web): not in top 3 of web.pane: 1. Community-acquired Pneumonia (Adult / Child) \| 2. Oesophageal Carcinoma \| 3. COPD Exacerbation (Chronic Obstructive Pulmonary Disease); also in web.symptomInference#3, web.passive#2 [known gap: pane-engine models no lung cancer: with haemoptysis, weight loss and smoking it ranks pneumonia, oesophageal carcinoma and COPD. The SmartSymptomPicker ranking lists lung carcinoma (see dx-lung-cancer-top3-picker).]
+
+Guidelines:
+
+- **nice-ng12** — NICE NG12 — Suspected cancer: recognition and referral (2015), Lung (1.1), upper GI (1.2), pancreatic (1.2.2), lower GI (1.3) and breast (1.4) cancer referral criteria. National Institute for Health and Care Excellence. NICE guideline NG12. London: NICE; 2015 (last updated 2023). *(statement wording/numbering not yet verified against the source)*
+
+### Chronic heart failure
+
+#### `hpi-frame-dyspnoea-orthopnoea` — 
+
+74-year-old man with hypertension and a previous MI: 3 months of progressive exertional breathlessness (MRC 3), orthopnoea on 3 pillows, PND and ankle swelling.
+
+| Expectation | Kind | Severity | ios | web | Guideline | Proposed fix |
+|---|---|---|---|---|---|---|
+| dx-heart-failure-top3 | mustRankTopK | critical | not run | PASS | NICE NG106 2018 |  |
+
+Guidelines:
+
+- **nice-ng106** — NICE NG106 — Chronic heart failure in adults: diagnosis and management (2018), 1.2 Diagnosis: measure NT-proBNP in suspected heart failure; transthoracic echocardiography. National Institute for Health and Care Excellence. NICE guideline NG106. London: NICE; 2018. *(statement wording/numbering not yet verified against the source)*
+- **mrc-dyspnoea** — MRC dyspnoea scale (1959), Grades 1–5. Fletcher CM, et al. BMJ 1959;2:257–66. *(statement wording/numbering not yet verified against the source)*
+
+### Inguinal hernia
+
+#### `hpi-frame-groin-lump-cough-impulse` — Typed complaint, lump frame with reducibility
+
+45-year-old man: 4 months of a lump in the right groin that goes back on lying down, with a cough impulse; aches after heavy lifting.
+
+Permutation of `hernia-inguinal-elective-minimal-symptoms`.
+
+| Expectation | Kind | Severity | ios | web | Guideline | Proposed fix |
+|---|---|---|---|---|---|---|
+| dx-inguinal-hernia-top1 | mustRankTopK | critical | not run | PASS | International guidelines for groin hernia management (HerniaSurge) 2018 |  |
+| level-routine | emergencyLevel | quality | not run | PASS | International guidelines for groin hernia management (HerniaSurge) 2018 |  |
+
+Guidelines:
+
+- **herniasurge-2018** — International guidelines for groin hernia management (HerniaSurge) (2018), Diagnosis is clinical; reducible hernia with a cough impulse; elective repair. HerniaSurge Group. Hernia 2018;22:1–165. *(statement wording/numbering not yet verified against the source)*
+
+### Pancreatic head carcinoma
+
+#### `hpi-frame-painless-jaundice` — Typed complaint, jaundice frame
+
+71-year-old man: 3 weeks of painless jaundice with dark urine, pale stools, itch and 7 kg weight loss.
+
+Permutation of `painless-jaundice-pancreatic-head`.
+
+| Expectation | Kind | Severity | ios | web | Guideline | Proposed fix |
+|---|---|---|---|---|---|---|
+| dx-pancreatic-cancer-top3 | mustRankTopK | critical | not run | PASS | NICE NG12 2015 |  |
+
+Guidelines:
+
+- **nice-ng12** — NICE NG12 — Suspected cancer: recognition and referral (2015), Lung (1.1), upper GI (1.2), pancreatic (1.2.2), lower GI (1.3) and breast (1.4) cancer referral criteria. National Institute for Health and Care Excellence. NICE guideline NG12. London: NICE; 2015 (last updated 2023). *(statement wording/numbering not yet verified against the source)*
+
+### Haemorrhoids
+
+#### `hpi-frame-rectal-bleeding-on-paper` — Typed complaint, bleeding frame (colour, relation to stool)
+
+32-year-old woman: 2 months of bright red blood on the toilet paper after straining, separate from the stool; no change in bowel habit or weight loss.
+
+Permutation of `rectal-bleeding-young-haemorrhoidal`.
+
+| Expectation | Kind | Severity | ios | web | Guideline | Proposed fix |
+|---|---|---|---|---|---|---|
+| dx-haemorrhoids-top3 | mustRankTopK | quality | not run | PASS | ASCRS Clinical Practice Guidelines for the Management of Hemorrhoids 2024 |  |
+
+Guidelines:
+
+- **ascrs-haem-2024** — ASCRS Clinical Practice Guidelines for the Management of Hemorrhoids (2024), Outlet-type bleeding; conservative management first. Hawkins AT, et al. Dis Colon Rectum 2024;67:614–23. *(statement wording/numbering not yet verified against the source)*
+
 ### Hypercalcaemia of malignancy
 
 #### `hypercalcaemia-malignancy-bone-mets` — Bone metastases, PTH suppressed, AKI
@@ -5960,11 +6098,7 @@ Guidelines:
 
 | Expectation | Kind | Severity | ios | web | Guideline | Proposed fix |
 |---|---|---|---|---|---|---|
-| missing-top-anticoag | missingTop | quality | PASS (verify: was unverified) | PASS | BSG/ESGE 2021 |  |
-
-Failure details:
-
-- **missing-top-anticoag** (ios): top what's-missing item found in ios.missing: "1. [safety] anticoagulant last dose not recorded - apixaban: the last dose times the procedure (and any reversal)"
+| missing-top-anticoag | missingTop | quality | PASS | PASS | BSG/ESGE 2021 |  |
 
 Guidelines:
 
@@ -5978,13 +6112,8 @@ Guidelines:
 
 | Expectation | Kind | Severity | ios | web | Guideline | Proposed fix |
 |---|---|---|---|---|---|---|
-| missing-top-weight | missingTop | quality | PASS (verify: was unverified) | PASS | BNF for Children 2024 |  |
-| missing-allergy-listed | missingInclude | quality | PASS (verify: was unverified) | PASS | NICE CG183 2014 |  |
-
-Failure details:
-
-- **missing-top-weight** (ios): top what's-missing item found in ios.missing: "1. [safety] height and weight not recorded - under 16: every dose is per kilogram - weigh before prescribing"
-- **missing-allergy-listed** (ios): what's-missing line found in ios.missing: "2. [safety] allergy status not recorded - needed before prescribing - record the allergies or nkda"
+| missing-top-weight | missingTop | quality | PASS | PASS | BNF for Children 2024 |  |
+| missing-allergy-listed | missingInclude | quality | PASS | PASS | NICE CG183 2014 |  |
 
 Guidelines:
 
@@ -5999,15 +6128,9 @@ Guidelines:
 
 | Expectation | Kind | Severity | ios | web | Guideline | Proposed fix |
 |---|---|---|---|---|---|---|
-| missing-top-fbc-tg18 | missingTop | quality | PASS (verify: was unverified) | PASS | Tokyo Guidelines 2018 2018 |  |
-| missing-crp-listed | missingInclude | quality | PASS (verify: was unverified) | PASS | Tokyo Guidelines 2018 2018 |  |
-| missing-no-imaging-item | missingExclude | quality | PASS (verify: was unverified) | PASS |  |  |
-
-Failure details:
-
-- **missing-top-fbc-tg18** (ios): top what's-missing item found in ios.missing: "1. [score] full blood count: wbc not on file - needed for tg18 cholecystitis and tg18 cholangitis"
-- **missing-crp-listed** (ios): what's-missing line found in ios.missing: "2. [score] crp not on file - needed for tg18 cholecystitis and tg18 cholangitis"
-- **missing-no-imaging-item** (ios): none of 4 what's-missing lines matched
+| missing-top-fbc-tg18 | missingTop | quality | PASS | PASS | Tokyo Guidelines 2018 2018 |  |
+| missing-crp-listed | missingInclude | quality | PASS | PASS | Tokyo Guidelines 2018 2018 |  |
+| missing-no-imaging-item | missingExclude | quality | PASS | PASS |  |  |
 
 Guidelines:
 
@@ -6021,11 +6144,7 @@ Guidelines:
 
 | Expectation | Kind | Severity | ios | web | Guideline | Proposed fix |
 |---|---|---|---|---|---|---|
-| missing-top-ferritin | missingTop | quality | PASS (verify: was unverified) | PASS | BSG guidelines for the management of iron deficiency anaemia in adults 2021 |  |
-
-Failure details:
-
-- **missing-top-ferritin** (ios): top what's-missing item found in ios.missing: "1. [decision] ferritin not on file - microcytic anaemia - ferritin confirms iron deficiency, which decides the ng1..."
+| missing-top-ferritin | missingTop | quality | PASS | PASS | BSG guidelines for the management of iron deficiency anaemia in adults 2021 |  |
 
 Guidelines:
 
@@ -6039,11 +6158,7 @@ Guidelines:
 
 | Expectation | Kind | Severity | ios | web | Guideline | Proposed fix |
 |---|---|---|---|---|---|---|
-| missing-top-obs | missingTop | quality | PASS (verify: was unverified) | PASS | Royal College of Physicians 2017 |  |
-
-Failure details:
-
-- **missing-top-obs** (ios): top what's-missing item found in ios.missing: "1. [score] observations not recorded: rr and spo₂ - news2 is incomplete and may under-estimate risk"
+| missing-top-obs | missingTop | quality | PASS | PASS | Royal College of Physicians 2017 |  |
 
 Guidelines:
 
@@ -6057,11 +6172,7 @@ Guidelines:
 
 | Expectation | Kind | Severity | ios | web | Guideline | Proposed fix |
 |---|---|---|---|---|---|---|
-| missing-top-renal | missingTop | quality | PASS (verify: was unverified) | PASS | NICE NG148 2019 |  |
-
-Failure details:
-
-- **missing-top-renal** (ios): top what's-missing item found in ios.missing: "1. [safety] renal function: egfr not on file - needed before ibuprofen (renally cleared / nsaid)"
+| missing-top-renal | missingTop | quality | PASS | PASS | NICE NG148 2019 |  |
 
 Guidelines:
 
@@ -6075,11 +6186,7 @@ Guidelines:
 
 | Expectation | Kind | Severity | ios | web | Guideline | Proposed fix |
 |---|---|---|---|---|---|---|
-| missing-top-supplements | missingTop | quality | PASS (verify: was unverified) | PASS | SPAQI consensus 2021 |  |
-
-Failure details:
-
-- **missing-top-supplements** (ios): top what's-missing item found in ios.missing: "1. [safety] herbs and supplements not asked - procedure planned: herbs and supplements can add bleeding, sedation or glucos..."
+| missing-top-supplements | missingTop | quality | PASS | PASS | SPAQI consensus 2021 |  |
 
 Guidelines:
 
@@ -6093,11 +6200,7 @@ Guidelines:
 
 | Expectation | Kind | Severity | ios | web | Guideline | Proposed fix |
 |---|---|---|---|---|---|---|
-| missing-top-pregnancy | missingTop | quality | PASS (verify: was unverified) | PASS | RCR / SCoR / BIR 2019 |  |
-
-Failure details:
-
-- **missing-top-pregnancy** (ios): top what's-missing item found in ios.missing: "1. [safety] pregnancy status not recorded - female aged 30: confirm before ionising imaging (ct abdomen and pelvis with c..."
+| missing-top-pregnancy | missingTop | quality | PASS | PASS | RCR / SCoR / BIR 2019 |  |
 
 Guidelines:
 
@@ -7001,7 +7104,7 @@ Permutation of `pancreatitis-gallstone-mild`.
 
 Failure details:
 
-- **mgmt-abdominal-compartment** (ios): no management item matched among 28 (ios.pipeline.decisions, ios.pipeline.actions, ios.radiation.plan, ios.radiation.referral, ios.radiation.followUp, ios.soap.plan, ios.decisions, ios.decisions.shift) [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): no management item matched among 19 (ios.pipeline.decisions, ios.pipeline.actions, ios.radiation.plan, ios.radiation.referral, ios.radiation.followUp, ios.soap.plan)]
+- **mgmt-abdominal-compartment** (ios): no management item matched among 29 (ios.pipeline.decisions, ios.pipeline.actions, ios.radiation.plan, ios.radiation.referral, ios.radiation.followUp, ios.soap.plan, ios.decisions, ios.decisions.shift) [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): no management item matched among 19 (ios.pipeline.decisions, ios.pipeline.actions, ios.radiation.plan, ios.radiation.referral, ios.radiation.followUp, ios.soap.plan)]
 
 Guidelines:
 
@@ -9491,7 +9594,7 @@ Guidelines:
 Failure details:
 
 - **mnm-volvulus** (ios): not in top 5 of ios.bayes: 1. Small Bowel Obstruction \| 2. Acute Diverticulitis \| 3. Irritable Bowel Syndrome \| 4. Acute Appendicitis \| 5. Acute Pancreatitis; also in ios.triage#4 [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): not in top 5 of ios.bayes: 1. Small Bowel Obstruction \| 2. Acute Diverticulitis \| 3. Irritable Bowel Syndrome \| 4. Acute Appendicitis \| 5. Non-Occlusive Mesenteric Ischaemia (NOMI); also in ios.triage#4]
-- **mgmt-potassium** (ios): no management item matched among 30 (ios.pipeline.decisions, ios.pipeline.actions, ios.radiation.plan, ios.radiation.followUp, ios.soap.plan, ios.decisions, ios.decisions.shift) [known gap: Web: No potassium replacement despite K 3.2. \| iOS CI 2026-09-25 (run 36169134350, database mode): no management item matched among 17 (ios.pipeline.decisions, ios.pipeline.actions, ios.radiation.plan, ios.radiation.followUp, ios.soap.plan)]
+- **mgmt-potassium** (ios): no management item matched among 29 (ios.pipeline.decisions, ios.pipeline.actions, ios.radiation.plan, ios.radiation.followUp, ios.soap.plan, ios.decisions, ios.decisions.shift) [known gap: Web: No potassium replacement despite K 3.2. \| iOS CI 2026-09-25 (run 36169134350, database mode): no management item matched among 17 (ios.pipeline.decisions, ios.pipeline.actions, ios.radiation.plan, ios.radiation.followUp, ios.soap.plan)]
 
 Guidelines:
 
@@ -10765,8 +10868,8 @@ Guidelines:
 | `choledocholithiasis-elderly-warfarin` | mnm-malignant-obstruction | ios | quality | known gap | not in top 5 of ios.bayes: 1. Choledocholithiasis \| 2. Ascending Cholangitis \| 3. Liver Cirrhosis (Decompensated) \| 4. Acute Pancreatitis \| 5. Acute Appendicitis [known gap: PANE top 3: choledocholithiasis, inguinal hernia, cholecystiti |
 | `crc-young-onset-34` | mnm-ibd | ios | quality | known gap | not in top 5 of ios.bayes: 1. Inguinal Hernia \| 2. Perianal Abscess \| 3. Colorectal Carcinoma \| 4. Upper GI Bleeding (Peptic Ulcer) \| 5. Ischaemic Colitis [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): not in top 5 of i |
 | `crohns-ileocaecal-abscess` | dx-crohn-top3 | ios | quality | known gap | not in top 3 of ios.bayes: 1. Acute Appendicitis \| 2. Skin Abscess \| 3. Typhoid Fever \| 4. Infective Endocarditis \| 5. Acute Pancreatitis [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): not in top 3 of ios.bayes: 1. Acut |
-| `crohns-ileocaecal-abscess` | flag-immunosuppressed | ios | quality | known gap | no red flag matched among 10 (ios.visitRisk, ios.allergyBanner, ios.triage, ios.radiation.redFlags, ios.pipeline.alert) [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): no red flag matched among 8 (ios.visitRisk, ios.allergyB |
-| `crohns-ileocaecal-abscess` | mgmt-resection-plan | ios | quality | known gap | no management item matched among 24 (ios.pipeline.decisions, ios.pipeline.actions, ios.radiation.plan, ios.radiation.followUp, ios.soap.plan, ios.decisions, ios.decisions.shift) [known gap: iOS CI 2026-09-25 (run 36169134350, database mode) |
+| `crohns-ileocaecal-abscess` | flag-immunosuppressed | ios | quality | known gap | no red flag matched among 9 (ios.visitRisk, ios.allergyBanner, ios.triage, ios.radiation.redFlags, ios.pipeline.alert) [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): no red flag matched among 8 (ios.visitRisk, ios.allergyBa |
+| `crohns-ileocaecal-abscess` | mgmt-resection-plan | ios | quality | known gap | no management item matched among 25 (ios.pipeline.decisions, ios.pipeline.actions, ios.radiation.plan, ios.radiation.followUp, ios.soap.plan, ios.decisions, ios.decisions.shift) [known gap: iOS CI 2026-09-25 (run 36169134350, database mode) |
 | `dfu-ischaemic-calcified-abpi` | flag-incompressible | ios | quality | known gap | no red flag matched among 7 (ios.visitRisk, ios.allergyBanner, ios.triage, ios.acuity) [known gap: The arterial-ulcer protocol mentions TBI in investigations but no red flag says the ABPI of 1.4 is falsely reassuring. \| iOS CI 2026-09-25 ( |
 | `dka-type1-young-typical` | mgmt-continue-basal-insulin | ios | quality | known gap | no management item matched among 24 (ios.pipeline.actions, ios.radiation.plan, ios.radiation.followUp, ios.soap.plan, ios.decisions, ios.decisions.shift) [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): no management item mat |
 | `dvt-wells-likely` | flag-oestrogen | ios | quality | known gap | no red flag matched among 6 (ios.visitRisk, ios.allergyBanner, ios.triage, ios.radiation.redFlags, ios.radiation.urgencyNote) [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): no red flag matched among 6 (ios.visitRisk, ios.al |
@@ -10815,7 +10918,7 @@ Guidelines:
 | `paed-nai-duodenal-haematoma` | pathway-trauma | ios | quality | known gap | recommended firstVisit (No previous visits on record); expected trauma [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): recommended firstVisit (No previous visits on record); expected trauma] |
 | `painless-jaundice-pancreatic-head` | mnm-cholangiocarcinoma-ampullary | ios | quality | known gap | not in top 5 of ios.bayes: 1. Pancreatic Carcinoma \| 2. Non-Alcoholic Fatty Liver Disease (NAFLD/NASH) \| 3. Hepatitis B (Chronic Active) \| 4. Ascending Cholangitis \| 5. Acute Pancreatitis [known gap: iOS CI 2026-09-25 (run 36169134350,  |
 | `pancreatitis-gallstone-mild` | mgmt-no-routine-nbm | ios | quality | known gap | forbidden management item present in ios.pipeline.decisions: "...ine - ignore old advice); anti-emetic: ondansetron 4 mg iv; nil by mouth initially (clear fluids once pain improves - within 24-48 h in mild cases); oxy..." (+1 more) [known g |
-| `pancreatitis-severe-organ-failure` | mgmt-abdominal-compartment | ios | quality | known gap | no management item matched among 28 (ios.pipeline.decisions, ios.pipeline.actions, ios.radiation.plan, ios.radiation.referral, ios.radiation.followUp, ios.soap.plan, ios.decisions, ios.decisions.shift) [known gap: iOS CI 2026-09-25 (run 361 |
+| `pancreatitis-severe-organ-failure` | mgmt-abdominal-compartment | ios | quality | known gap | no management item matched among 29 (ios.pipeline.decisions, ios.pipeline.actions, ios.radiation.plan, ios.radiation.referral, ios.radiation.followUp, ios.soap.plan, ios.decisions, ios.decisions.shift) [known gap: iOS CI 2026-09-25 (run 361 |
 | `parathyroid-primary-hpt-surgical-indications` | dx-hyperparathyroid-top3 | ios | quality | known gap | not in top 3 of ios.bayes: 1. Hypercalcaemia \| 2. Obstructive Sleep Apnoea \| 3. Iron Deficiency Anaemia \| 4. Acute Kidney Injury \| 5. Malignant Hypercalcaemia; also in ios.pipeline#1 [known gap: iOS CI 2026-09-25 (run 36169134350, datab |
 | `perianal-abscess-diabetic-cellulitis` | mnm-nsti | ios | quality | known gap | not in top 5 of ios.bayes: 1. Skin Abscess \| 2. Perianal Abscess \| 3. Cellulitis \| 4. Infective Endocarditis \| 5. Acute Pyelonephritis [known gap: PANE does not carry necrotising infection for diabetic perianal sepsis (top 3: perianal a |
 | `perianal-abscess-hiv` | mnm-anal-neoplasia | ios | quality | known gap | not in top 5 of ios.bayes: 1. Skin Abscess \| 2. Perianal Abscess \| 3. Inguinal Hernia \| 4. Deep Vein Thrombosis \| 5. Incarcerated / Strangulated Hernia [known gap: Anal cancer is not a PANE disease; symptom inference ranks anal SCC #2.  |
@@ -10885,7 +10988,7 @@ Guidelines:
 | `screen-post-hysterectomy-no-cervical-52` | mgmt-crc-screening-due | ios | quality | known gap | no management item matched among 7 (ios.pipeline.actions, ios.soap.plan, ios.decisions) [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): no management item matched among 3 (ios.pipeline.actions, ios.soap.plan)] |
 | `screen-prostate-58-shared-decision` | mgmt-shared-decision | ios | quality | known gap | no management item matched among 5 (ios.pipeline.actions, ios.soap.plan, ios.decisions) [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): no management item matched among 3 (ios.pipeline.actions, ios.soap.plan)] |
 | `sigmoid-volvulus-base` | mnm-volvulus | ios | quality | known gap | not in top 5 of ios.bayes: 1. Small Bowel Obstruction \| 2. Acute Diverticulitis \| 3. Irritable Bowel Syndrome \| 4. Acute Appendicitis \| 5. Acute Pancreatitis; also in ios.triage#4 [known gap: iOS CI 2026-09-25 (run 36169134350, database |
-| `sigmoid-volvulus-base` | mgmt-potassium | ios | quality | known gap | no management item matched among 30 (ios.pipeline.decisions, ios.pipeline.actions, ios.radiation.plan, ios.radiation.followUp, ios.soap.plan, ios.decisions, ios.decisions.shift) [known gap: Web: No potassium replacement despite K 3.2. \| iO |
+| `sigmoid-volvulus-base` | mgmt-potassium | ios | quality | known gap | no management item matched among 29 (ios.pipeline.decisions, ios.pipeline.actions, ios.radiation.plan, ios.radiation.followUp, ios.soap.plan, ios.decisions, ios.decisions.shift) [known gap: Web: No potassium replacement despite K 3.2. \| iO |
 | `stroke-acute-fast-positive` | mgmt-swallow-screen | ios | quality | known gap | no management item matched among 37 (ios.pipeline.actions, ios.radiation.plan, ios.radiation.referral, ios.radiation.followUp, ios.soap.plan, ios.decisions, ios.decisions.shift) [known gap: iOS CI 2026-09-25 (run 36169134350, database mode) |
 | `tia-transient-weakness-dysarthria` | mgmt-defer-elective-surgery | ios | quality | known gap | no management item matched among 35 (ios.pipeline.actions, ios.radiation.plan, ios.radiation.referral, ios.radiation.followUp, ios.soap.plan, ios.decisions) [known gap: Web: The pending hernia repair is not deferred (no TIA rule). \| iOS CI |
 | `trauma-blunt-polytrauma-class3-shock` | dx-abdominal-trauma-top3 | ios | quality | known gap | not in top 3 of ios.bayes: 1. Sepsis \| 2. Community-Acquired Pneumonia \| 3. Hypertensive Emergency \| 4. Bacterial Meningitis / Meningococcal Sepsis \| 5. Acute Kidney Injury [known gap: iOS CI 2026-09-25 (run 36169134350, database mode): |
@@ -10954,6 +11057,8 @@ Guidelines:
 | `hernia-incisional-midline-elective` | level-routine | web | quality | known gap | web.triage: urgent (acuity=priority, action=same_day_call, score=34); expected ≤ priority [known gap: Triage emergency_now (score 49): adaptiveTriage RED_FLAGS regexes have no negation handling ("No vomiting" → +15); "Hartmann's … reversed" |
 | `hernia-parastomal-symptomatic` | level-routine | web | quality | known gap | web.triage: urgent (acuity=priority, action=same_day_call, score=44); expected ≤ priority [known gap: Triage emergency_now (score 59): adaptiveTriage RED_FLAGS regexes have no negation handling ("No vomiting"); "rectal cancer" history → "Po |
 | `hernia-paraumbilical-incarcerated-obese` | variant-incarcerated-or-worse | web | quality | known gap | detected hernia_strangulated in group Hernia; expected hernia_incarcerated [known gap: Web, since the engine-matching fixes (2026-09): "strangulation not excluded" is a hedge, not a negation, so the strangulated variant is now detected (the |
+| `hpi-frame-cough-chronic-acei` | dx-acei-cough-top3-web | web | quality | known gap | not in top 3 of web.pane: 1. GORD / Reflux Oesophagitis \| 2. Peptic Ulcer Disease \| 3. Lipoma [known gap: pane-engine models no ACE-inhibitor cough (or any chronic-cough cause): the cough frame answers reach acei_arb_use, cough and chroni |
+| `hpi-frame-cough-haemoptysis-smoker` | dx-lung-cancer-top3-pane | web | quality | known gap | not in top 3 of web.pane: 1. Community-acquired Pneumonia (Adult / Child) \| 2. Oesophageal Carcinoma \| 3. COPD Exacerbation (Chronic Obstructive Pulmonary Disease); also in web.symptomInference#3, web.passive#2 [known gap: pane-engine mod |
 | `infective-colitis-bloody-diarrhoea` | mnm-ibd | web | quality | known gap | not in top 3 of web.pane: 1. Acute Gastroenteritis / Infective Colitis \| 2. Toxic Megacolon (Acute Severe Colitis) / Colonic Perforation Risk \| 3. Clostridioides difficile Colitis (C. diff infection); also in web.symptomInference#4, web.p |
 | `lgib-diverticular-apixaban` | score-rec-oakland | web | quality | known gap | oakland not recommended; recommended: cha2ds2-vasc, news2, rockall, has-bled, cfs [known gap: No Oakland score on web (no CDS rule, no calculator); web suggests Rockall (an upper GI score) instead. iOS has one (ClinicalScoringEngine.oakland |
 | `lgib-oakland-low-risk-discharge` | level-not-emergency | web | quality | known gap | web.triage: emergency (acuity=urgent, action=emergency_now, score=65); expected ≤ urgent [known gap: Web adaptiveTriage has no negation handling and treats any "bleed/bleeding" as an urgent red flag (RED_FLAGS "GI or other bleeding" → emerg |

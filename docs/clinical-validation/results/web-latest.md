@@ -1,8 +1,8 @@
 # Clinical validation — web engines (latest local run)
 
-Generated 2026-09-26T04:08:02.056Z.
+Generated 2026-09-26T04:35:25.980Z.
 
-- Harness clinval-web/1; 433 vignettes from ios/AmiseMedFlowTests/ClinicalValidation/Vignettes/.
+- Harness clinval-web/1; 441 vignettes from ios/AmiseMedFlowTests/ClinicalValidation/Vignettes/.
 
 Status legend: PASS; FAIL — BLOCKING (critical, not flagged: fails the test run); FAIL (known gap) and
 FAIL (unverified) are reported only; "PASS (gap resolved)" means the flag can be removed from the vignette;
@@ -12,7 +12,7 @@ n/a = the expectation does not apply to that platform or the engine has no such 
 
 | Platform | Vignettes | Expectations | Pass | Fail | n/a | Critical fail | Blocking | Known-gap fail | Unverified fail | Gap resolved |
 |---|---|---|---|---|---|---|---|---|---|---|
-| web | 433 | 3149 | 2981 | 76 | 92 | 0 | 0 | 74 | 0 | 0 |
+| web | 441 | 3164 | 2992 | 78 | 94 | 0 | 0 | 76 | 0 | 0 |
 
 ## Blocking failures
 
@@ -2596,7 +2596,7 @@ Guidelines:
 - recommended scores: alvarado, tg18-cholangitis, ranson, qsofa, news2
 - score values: alvarado/calculator@web.scaleCalculator.alvarado=9
 - dx variant: appendicitis_uncomplicated (Acute Appendicitis)
-- note: PANE features applied: abdominal_pain, acute_onset, periumbilical_pain, rlq_pain, fever, nausea_vomiting, anorexia, pain_worse_movement, cough, severe_pain, guarding, rebound_tenderness, pain_migration, abdominal_tenderness, elevated_wbc, raised_crp, tachycardia, trauma_mechanism, recent_surgery, aortic_graft, stoma
+- note: PANE features applied: abdominal_pain, acute_onset, periumbilical_pain, rlq_pain, fever, nausea_vomiting, anorexia, pain_worse_movement, severe_pain, cough, guarding, rebound_tenderness, pain_migration, abdominal_tenderness, elevated_wbc, raised_crp, tachycardia, trauma_mechanism, recent_surgery, aortic_graft, stoma
 - note: AssessmentTab ManagementPanel protocol: appendicitis (from the confirmed diagnosis)
 - note: PlanTab protocol: appendicitis (from the confirmed diagnosis)
 - note: Seeded investigations: appendicitis (confirmed); 0 stat test(s) held back
@@ -2806,7 +2806,7 @@ Guidelines:
 - recommended scores: alvarado, tg18-cholangitis, ranson, qsofa, news2
 - score values: (none)
 - dx variant: appendicitis_generalised_peritonitis (Acute Appendicitis)
-- note: PANE features applied: abdominal_pain, diffuse_abdominal_pain, rlq_pain, sudden_onset, acute_onset, fever, rigors, nausea_vomiting, anorexia, pain_worse_movement, cough, severe_pain, guarding, rebound_tenderness, absent_bowel_sounds, dehydration, elevated_wbc, raised_crp, raised_lactate, raised_urea, pelvic_free_fluid, tachycardia, haemodynamic_instability, tachypnoea, trauma_mechanism, recent_surgery, aortic_graft, stoma
+- note: PANE features applied: abdominal_pain, diffuse_abdominal_pain, rlq_pain, sudden_onset, acute_onset, fever, rigors, nausea_vomiting, anorexia, pain_worse_movement, severe_pain, guarding, rebound_tenderness, absent_bowel_sounds, dehydration, elevated_wbc, raised_crp, raised_lactate, raised_urea, pelvic_free_fluid, tachycardia, haemodynamic_instability, tachypnoea, trauma_mechanism, recent_surgery, aortic_graft, stoma
 - note: AssessmentTab ManagementPanel protocol: appendicitis (from the confirmed diagnosis)
 - note: PlanTab protocol: appendicitis (from the confirmed diagnosis)
 - note: Seeded investigations: appendicitis (confirmed); 0 stat test(s) held back
@@ -7364,6 +7364,42 @@ Guidelines:
 
 </details>
 
+#### `hpi-frame-dysphagia-solids-progressive` — Typed complaint, dysphagia frame
+
+66-year-old man: 2 months of food sticking, solids then soft food, progressive, 6 kg weight loss.
+
+Permutation of `dysphagia-progressive-over55`.
+
+| Expectation | Kind | Severity | web | Guideline | Proposed fix |
+|---|---|---|---|---|---|
+| dx-oesophageal-cancer-top3 | mustRankTopK | critical | PASS | NICE NG12 2015 |  |
+| inv-ogd | investigationInclude | quality | PASS | NICE NG12 2015 |  |
+
+Guidelines:
+
+- **nice-ng12** — NICE NG12 — Suspected cancer: recognition and referral (2015), Lung (1.1), upper GI (1.2), pancreatic (1.2.2), lower GI (1.3) and breast (1.4) cancer referral criteria. National Institute for Health and Care Excellence. NICE guideline NG12. London: NICE; 2015 (last updated 2023). *(statement wording/numbering not yet verified against the source)*
+
+<details><summary>web engine outputs</summary>
+
+- engine: paneEngine=pane-engine (188 diseases, 426 features); triageRulesVersion=1.4.0
+- differential web.pane: 1. Oesophageal Carcinoma; 2. Oesophageal Stricture (Benign); 3. Achalasia
+- differential web.symptomInference: 1. Oesophageal / gastric carcinoma; 2. Occult malignancy / systemic disease; 3. Gastric carcinoma; 4. Colorectal carcinoma; 5. GORD / acid reflux / oesophagitis
+- differential web.passive: 1. Oesophageal / gastric carcinoma; 2. Occult malignancy / systemic disease; 3. GORD / acid reflux / oesophagitis; 4. Gastric carcinoma; 5. Colorectal carcinoma
+- differential web.triageSurgical: 1. Dysphagia / oesophageal stricture; 2. Unexplained weight loss / GI alarm symptoms — endoscopy workup
+- emergency level: emergency (acuity=urgent, action=emergency_now, score=87)
+- alarms: Emergency now [web.triage.emergency]; Unintentional weight loss (alarm symptom) [web.clinicalPrompts.safety]; Pre-operative assessment [web.clinicalPrompts.safety]; Herbs, teas, bush remedies & supplements not asked [web.clinicalPrompts.safety]
+- recommended scores: news2, web:gerdq, cfs
+- score values: (none)
+- dx variant: (none) (no group)
+- note: PANE features applied: dysphagia, dysphagia_progressive, dysphagia_solids, chest_pain_oesophageal, epigastric_pain, chronic_course, regurgitation, weight_loss, smoker, vascular_risk, alcohol_use, trauma_mechanism, recent_surgery, aortic_graft, stoma
+- note: AssessmentTab ManagementPanel protocol: oesophageal_carcinoma (from the confirmed diagnosis)
+- note: PlanTab protocol: oesophageal_carcinoma (from the confirmed diagnosis)
+- note: Seeded investigations: oesophageal_carcinoma (confirmed); 0 stat test(s) held back
+- note: Decision support: (no decision); factors age65to79
+- note: matchPathways: Upper GI Endoscopy (Dyspepsia / GORD / Dysphagia) (10)
+
+</details>
+
 ### Benign peptic oesophageal stricture (progressive dysphagia)
 
 #### `dysphagia-progressive-under55` — Age 38, no weight loss (NG12 applies at any age)
@@ -9134,6 +9170,279 @@ Guidelines:
 - note: Seeded investigations: hyperosmolar_hyperglycaemic_state (confirmed); 0 stat test(s) held back
 - note: Decision support: (no decision); factors age80plus, diabetes, news2High
 - note: matchPathways: Wound Management (Acute / Chronic / SSI) (5)
+
+</details>
+
+### Fibroadenoma (breast lump under 30)
+
+#### `hpi-frame-breast-lump-mobile` — Typed complaint, breast frame
+
+26-year-old woman: 2 months of a smooth, mobile, non-tender lump in the upper outer right breast; no nipple or skin change.
+
+Permutation of `breast-lump-under-30`.
+
+| Expectation | Kind | Severity | web | Guideline | Proposed fix |
+|---|---|---|---|---|---|
+| dx-fibroadenoma-top3 | mustRankTopK | quality | PASS | NICE NG12 2015 |  |
+| dx-breast-cancer-listed | mustNotMiss | quality | PASS | NICE NG12 2015 |  |
+
+Guidelines:
+
+- **nice-ng12** — NICE NG12 — Suspected cancer: recognition and referral (2015), Lung (1.1), upper GI (1.2), pancreatic (1.2.2), lower GI (1.3) and breast (1.4) cancer referral criteria. National Institute for Health and Care Excellence. NICE guideline NG12. London: NICE; 2015 (last updated 2023). *(statement wording/numbering not yet verified against the source)*
+
+<details><summary>web engine outputs</summary>
+
+- engine: paneEngine=pane-engine (188 diseases, 426 features); triageRulesVersion=1.4.0
+- differential web.pane: 1. Fibroadenoma; 2. Phyllodes Tumour; 3. Breast Carcinoma (Invasive Ductal / Lobular)
+- differential web.symptomInference: 1. Fibroadenoma / benign breast lump; 2. Breast carcinoma; 3. Systemic lupus erythematosus; 4. Acute cholecystitis; 5. Uterine fibroids
+- differential web.passive: 1. Fibroadenoma / benign breast lump; 2. Breast carcinoma; 3. Acute cholecystitis; 4. CBD stone / obstructive jaundice; 5. Peptic ulcer disease
+- differential web.triageSurgical: 1. Breast lump / mass
+- emergency level: urgent (acuity=priority, action=same_day_call, score=25)
+- alarms: Breast lump / mass on examination [web.clinicalPrompts.safety]; Pre-operative assessment [web.clinicalPrompts.safety]; Herbs, teas, bush remedies & supplements not asked [web.clinicalPrompts.safety]
+- recommended scores: news2
+- score values: (none)
+- dx variant: breast_triple_assessment (Breast)
+- note: PANE features applied: breast_lump, chronic_course, breast_lump_mobile, trauma_mechanism, recent_surgery, aortic_graft, stoma
+- note: AssessmentTab ManagementPanel protocol: fibroadenoma (from the confirmed diagnosis)
+- note: PlanTab protocol: fibroadenoma (from the confirmed diagnosis)
+- note: Seeded investigations: fibroadenoma (confirmed); 0 stat test(s) held back
+- note: Decision support: (no decision); factors (none)
+- note: matchPathways: Breast Lump / Breast Disease (15)
+
+</details>
+
+### ACE-inhibitor cough
+
+#### `hpi-frame-cough-chronic-acei` — 
+
+58-year-old woman, non-smoker: 10 weeks of dry, tickly nocturnal cough that began a few weeks after ramipril was started. No haemoptysis, fever or weight loss. The HPI step offers the cough history, not abdominal SOCRATES.
+
+| Expectation | Kind | Severity | web | Guideline | Proposed fix |
+|---|---|---|---|---|---|
+| dx-acei-cough-top3-ios | mustRankTopK | critical | n/a | ERS guidelines on the diagnosis and treatment of chronic cough in adults and children 2020 |  |
+| dx-acei-cough-top3-web | mustRankTopK | quality | FAIL (known gap) | ERS guidelines on the diagnosis and treatment of chronic cough in adults and children 2020 |  |
+
+Failure details:
+
+- **dx-acei-cough-top3-web** (web): not in top 3 of web.pane: 1. GORD / Reflux Oesophagitis \| 2. Peptic Ulcer Disease \| 3. Lipoma [known gap: pane-engine models no ACE-inhibitor cough (or any chronic-cough cause): the cough frame answers reach acei_arb_use, cough and chronic_course, and PANE ranks GORD / peptic ulcer / lipoma. Needs a pane cough module (sign-off list, history-by-complaint.md).]
+
+Guidelines:
+
+- **ers-cough-2020** — ERS guidelines on the diagnosis and treatment of chronic cough in adults and children (2020), Chronic cough > 8 weeks; ACE-inhibitor cough: stop the ACE inhibitor (resolves within weeks). Morice AH, et al. Eur Respir J 2020;55:1901136. *(statement wording/numbering not yet verified against the source)*
+- **bts-cough-2006** — BTS guidelines: Recommendations for the management of cough in adults (2006), Duration bands: acute < 3 weeks, subacute 3–8 weeks, chronic > 8 weeks. Morice AH, et al. Thorax 2006;61 Suppl 1:i1–24. *(statement wording/numbering not yet verified against the source)*
+
+<details><summary>web engine outputs</summary>
+
+- engine: paneEngine=pane-engine (188 diseases, 426 features); triageRulesVersion=1.4.0
+- differential web.pane: 1. GORD / Reflux Oesophagitis; 2. Peptic Ulcer Disease; 3. Lipoma
+- differential web.symptomInference: 1. Upper respiratory tract infection (URTI); 2. Asthma / reactive airways disease; 3. Lung carcinoma; 4. COPD / chronic bronchitis exacerbation; 5. Laryngitis / vocal cord pathology
+- differential web.passive: 1. Upper respiratory tract infection (URTI); 2. Asthma / reactive airways disease; 3. Croup / laryngotracheobronchitis; 4. Bronchiolitis (RSV); 5. Laryngitis / vocal cord pathology
+- differential web.triageSurgical: (empty)
+- emergency level: routine (acuity=routine, action=routine_booking, score=0)
+- alarms: Pre-operative assessment [web.clinicalPrompts.safety]; Herbs, teas, bush remedies & supplements not asked [web.clinicalPrompts.safety]
+- recommended scores: news2, caprini, asa, curb65, rcri
+- score values: (none)
+- dx variant: (none) (no group)
+- note: PANE features applied: chronic_course, cough, acei_arb_use, known_hypertension, vascular_risk, nocturnal_pain, trauma_mechanism, recent_surgery, aortic_graft, stoma
+- note: AssessmentTab ManagementPanel protocol: (none) (from the confirmed diagnosis)
+- note: PlanTab protocol: (none) (from the confirmed diagnosis)
+- note: Seeded investigations: gord (leading differential); 0 stat test(s) held back
+- note: Decision support: (no decision); factors (none)
+- note: matchPathways: Cancer Screening (Age/Sex Appropriate) (7), Colonoscopy Diagnostic (Rectal Bleeding / Bowel Habit Change / Iron Deficiency) (7), IBD — Surgical Complications (Crohn's / UC) (7)
+
+</details>
+
+### Lung carcinoma (suspected)
+
+#### `hpi-frame-cough-haemoptysis-smoker` — Smoker, haemoptysis and weight loss
+
+64-year-old man, 45 pack-years: 6 weeks of cough with blood-streaked sputum and 6 kg weight loss. NICE NG12: urgent chest X-ray / suspected lung cancer pathway.
+
+Permutation of `hpi-frame-cough-chronic-acei`.
+
+| Expectation | Kind | Severity | web | Guideline | Proposed fix |
+|---|---|---|---|---|---|
+| dx-lung-cancer-top3-ios | mustRankTopK | critical | n/a | NICE NG12 2015 |  |
+| dx-lung-cancer-top3-picker | mustRankTopK | quality | PASS | NICE NG12 2015 |  |
+| dx-lung-cancer-top3-pane | mustRankTopK | quality | FAIL (known gap) | NICE NG12 2015 |  |
+| flag-haemoptysis | redFlags | quality | PASS | NICE NG12 2015 |  |
+
+Failure details:
+
+- **dx-lung-cancer-top3-pane** (web): not in top 3 of web.pane: 1. Community-acquired Pneumonia (Adult / Child) \| 2. Oesophageal Carcinoma \| 3. COPD Exacerbation (Chronic Obstructive Pulmonary Disease); also in web.symptomInference#3, web.passive#2 [known gap: pane-engine models no lung cancer: with haemoptysis, weight loss and smoking it ranks pneumonia, oesophageal carcinoma and COPD. The SmartSymptomPicker ranking lists lung carcinoma (see dx-lung-cancer-top3-picker).]
+
+Guidelines:
+
+- **nice-ng12** — NICE NG12 — Suspected cancer: recognition and referral (2015), Lung (1.1), upper GI (1.2), pancreatic (1.2.2), lower GI (1.3) and breast (1.4) cancer referral criteria. National Institute for Health and Care Excellence. NICE guideline NG12. London: NICE; 2015 (last updated 2023). *(statement wording/numbering not yet verified against the source)*
+
+<details><summary>web engine outputs</summary>
+
+- engine: paneEngine=pane-engine (188 diseases, 426 features); triageRulesVersion=1.4.0
+- differential web.pane: 1. Community-acquired Pneumonia (Adult / Child); 2. Oesophageal Carcinoma; 3. COPD Exacerbation (Chronic Obstructive Pulmonary Disease)
+- differential web.symptomInference: 1. Pulmonary tuberculosis; 2. Occult malignancy / systemic disease; 3. Lung carcinoma; 4. Colorectal carcinoma; 5. Oesophageal / gastric carcinoma
+- differential web.passive: 1. Pulmonary tuberculosis; 2. Lung carcinoma; 3. Lymphoma (Hodgkin / non-Hodgkin); 4. Lung abscess; 5. HIV / AIDS presentation
+- differential web.triageSurgical: 1. Unexplained weight loss / GI alarm symptoms — endoscopy workup
+- emergency level: emergency (acuity=urgent, action=emergency_now, score=72)
+- alarms: Emergency now [web.triage.emergency]; Unintentional weight loss (alarm symptom) [web.clinicalPrompts.safety]; Pre-operative assessment [web.clinicalPrompts.safety]; Herbs, teas, bush remedies & supplements not asked [web.clinicalPrompts.safety]
+- recommended scores: wells-pe, news2, web:gerdq, curb65, ecog
+- score values: (none)
+- dx variant: (none) (no group)
+- note: PANE features applied: weight_loss, chronic_course, productive_cough, cough, haemoptysis, smoker, night_sweats, hoarseness, reduced_breath_sounds, vascular_risk, trauma_mechanism, recent_surgery, aortic_graft, stoma
+- note: AssessmentTab ManagementPanel protocol: (none) (from the confirmed diagnosis)
+- note: PlanTab protocol: (none) (from the confirmed diagnosis)
+- note: Seeded investigations: pneumonia (leading differential); 0 stat test(s) held back
+- note: Decision support: (no decision); factors (none)
+- note: matchPathways: IBD — Surgical Complications (Crohn's / UC) (12), Cancer Screening (Age/Sex Appropriate) (7), Colonoscopy Diagnostic (Rectal Bleeding / Bowel Habit Change / Iron Deficiency) (7)
+
+</details>
+
+### Chronic heart failure
+
+#### `hpi-frame-dyspnoea-orthopnoea` — 
+
+74-year-old man with hypertension and a previous MI: 3 months of progressive exertional breathlessness (MRC 3), orthopnoea on 3 pillows, PND and ankle swelling.
+
+| Expectation | Kind | Severity | web | Guideline | Proposed fix |
+|---|---|---|---|---|---|
+| dx-heart-failure-top3 | mustRankTopK | critical | PASS | NICE NG106 2018 |  |
+
+Guidelines:
+
+- **nice-ng106** — NICE NG106 — Chronic heart failure in adults: diagnosis and management (2018), 1.2 Diagnosis: measure NT-proBNP in suspected heart failure; transthoracic echocardiography. National Institute for Health and Care Excellence. NICE guideline NG106. London: NICE; 2018. *(statement wording/numbering not yet verified against the source)*
+- **mrc-dyspnoea** — MRC dyspnoea scale (1959), Grades 1–5. Fletcher CM, et al. BMJ 1959;2:257–66. *(statement wording/numbering not yet verified against the source)*
+
+<details><summary>web engine outputs</summary>
+
+- engine: paneEngine=pane-engine (188 diseases, 426 features); triageRulesVersion=1.4.0
+- differential web.pane: 1. Acute Heart Failure / Pulmonary Oedema; 2. Atrial Fibrillation / Flutter; 3. Acute Coronary Syndrome (STEMI / NSTEMI / Unstable Angina)
+- differential web.symptomInference: 1. Heart failure; 2. Cardiac tamponade; 3. COPD / chronic bronchitis exacerbation; 4. Tension pneumothorax; 5. Acute respiratory distress syndrome (ARDS)
+- differential web.passive: 1. Heart failure; 2. Cardiac tamponade; 3. Tension pneumothorax; 4. Acute respiratory distress syndrome (ARDS); 5. Bronchiolitis (RSV)
+- differential web.triageSurgical: (empty)
+- emergency level: urgent (acuity=priority, action=same_day_call, score=24)
+- alarms: Acute heart failure / pulmonary oedema [web.clinicalPrompts.safety]; Pre-operative assessment [web.clinicalPrompts.safety]; Herbs, teas, bush remedies & supplements not asked [web.clinicalPrompts.safety]
+- recommended scores: wells-pe, wells-dvt, news2, caprini, asa, curb65, rcri, cfs
+- score values: (none)
+- dx variant: (none) (no group)
+- note: PANE features applied: dyspnoea, chronic_course, exertional_symptoms, orthopnoea, progressive_course, leg_swelling, bilateral_leg_oedema, known_hypertension, vascular_risk, known_heart_disease, antiplatelet_use, irregular_pulse, raised_jvp, crackles, raised_bp, trauma_mechanism, recent_surgery, aortic_graft, stoma
+- note: AssessmentTab ManagementPanel protocol: acute_heart_failure (from the confirmed diagnosis)
+- note: PlanTab protocol: acute_heart_failure (from the confirmed diagnosis)
+- note: Seeded investigations: acute_heart_failure (confirmed); 0 stat test(s) held back
+- note: Decision support: (no decision); factors age65to79, antiplatelet
+- note: matchPathways: Chest Pain — Emergency Redirect (5)
+
+</details>
+
+### Inguinal hernia
+
+#### `hpi-frame-groin-lump-cough-impulse` — Typed complaint, lump frame with reducibility
+
+45-year-old man: 4 months of a lump in the right groin that goes back on lying down, with a cough impulse; aches after heavy lifting.
+
+Permutation of `hernia-inguinal-elective-minimal-symptoms`.
+
+| Expectation | Kind | Severity | web | Guideline | Proposed fix |
+|---|---|---|---|---|---|
+| dx-inguinal-hernia-top1 | mustRankTopK | critical | PASS | International guidelines for groin hernia management (HerniaSurge) 2018 |  |
+| level-routine | emergencyLevel | quality | PASS | International guidelines for groin hernia management (HerniaSurge) 2018 |  |
+
+Guidelines:
+
+- **herniasurge-2018** — International guidelines for groin hernia management (HerniaSurge) (2018), Diagnosis is clinical; reducible hernia with a cough impulse; elective repair. HerniaSurge Group. Hernia 2018;22:1–165. *(statement wording/numbering not yet verified against the source)*
+
+<details><summary>web engine outputs</summary>
+
+- engine: paneEngine=pane-engine (188 diseases, 426 features); triageRulesVersion=1.4.0
+- differential web.pane: 1. Inguinal / Femoral Hernia; 2. Femoral Hernia; 3. Incarcerated / Strangulated Hernia (Groin, Umbilical or Incisional)
+- differential web.symptomInference: 1. Reducible groin / abdominal hernia; 2. Obstructed / strangulated hernia; 3. Varicocele; 4. Benign prostatic hyperplasia (BPH); 5. Inguinal hernia (paediatric)
+- differential web.passive: 1. Inguinal hernia (paediatric); 2. Reducible groin / abdominal hernia; 3. Obstructed / strangulated hernia; 4. Varicocele; 5. Acute cholecystitis
+- differential web.triageSurgical: 1. Inguinal hernia
+- emergency level: routine (acuity=routine, action=routine_booking, score=0)
+- alarms: Acute abdominal presentation [web.clinicalPrompts.safety]; Pre-operative assessment [web.clinicalPrompts.safety]; Hernia — elective repair indicated [web.clinicalPrompts.safety]; Operative plan — VTE risk assessment [web.clinicalPrompts.safety]; Herbs, teas, bush remedies & supplements not asked [web.clinicalPrompts.safety]
+- recommended scores: news2
+- score values: (none)
+- dx variant: (none) (Hernia)
+- note: PANE features applied: groin_swelling, hernia_swelling, chronic_course, localised_pain, cough_impulse, groin_lump_reducible, hernia_compressible, cough, worse_straining, soft_tissue_lump, trauma_mechanism, recent_surgery, aortic_graft, stoma
+- note: AssessmentTab ManagementPanel protocol: inguinal_hernia (from the confirmed diagnosis)
+- note: PlanTab protocol: inguinal_hernia (from the confirmed diagnosis)
+- note: Seeded investigations: inguinal_hernia (confirmed); 0 stat test(s) held back
+- note: Decision Inguinal hernia (reducible, minimally symptomatic) — missing: Record ASA grade to refine: ASA III-IV raises operative harm (elective inguinal hernia repair).
+- note: Decision Inguinal hernia (reducible, minimally symptomatic) — missing: Record eGFR to refine: eGFR below 30 raises operative and anticoagulant harm (elective inguinal hernia repair).
+- note: Decision support: inguinal-hernia; factors (none)
+- note: matchPathways: Hernia (Inguinal / Umbilical / Incisional / Femoral) (10), IBD — Surgical Complications (Crohn's / UC) (5), Wound Management (Acute / Chronic / SSI) (5)
+
+</details>
+
+### Pancreatic head carcinoma
+
+#### `hpi-frame-painless-jaundice` — Typed complaint, jaundice frame
+
+71-year-old man: 3 weeks of painless jaundice with dark urine, pale stools, itch and 7 kg weight loss.
+
+Permutation of `painless-jaundice-pancreatic-head`.
+
+| Expectation | Kind | Severity | web | Guideline | Proposed fix |
+|---|---|---|---|---|---|
+| dx-pancreatic-cancer-top3 | mustRankTopK | critical | PASS | NICE NG12 2015 |  |
+
+Guidelines:
+
+- **nice-ng12** — NICE NG12 — Suspected cancer: recognition and referral (2015), Lung (1.1), upper GI (1.2), pancreatic (1.2.2), lower GI (1.3) and breast (1.4) cancer referral criteria. National Institute for Health and Care Excellence. NICE guideline NG12. London: NICE; 2015 (last updated 2023). *(statement wording/numbering not yet verified against the source)*
+
+<details><summary>web engine outputs</summary>
+
+- engine: paneEngine=pane-engine (188 diseases, 426 features); triageRulesVersion=1.4.0
+- differential web.pane: 1. Pancreatic Carcinoma; 2. Cholangiocarcinoma; 3. Biliary Stricture
+- differential web.symptomInference: 1. CBD stone / obstructive jaundice; 2. Cholangiocarcinoma; 3. Pancreatic adenocarcinoma; 4. Acute cholangitis; 5. Liver disease / hepatitis / cirrhosis
+- differential web.passive: 1. CBD stone / obstructive jaundice; 2. Cholangiocarcinoma; 3. Pancreatic adenocarcinoma; 4. Biliary atresia; 5. Liver disease / hepatitis / cirrhosis
+- differential web.triageSurgical: 1. Unexplained weight loss / GI alarm symptoms — endoscopy workup
+- emergency level: emergency (acuity=urgent, action=emergency_now, score=119)
+- alarms: Emergency now [web.triage.emergency]; Courvoisier's sign (palpable non-tender gallbladder + jaundice) [web.clinicalPrompts.safety]; Jaundice [web.clinicalPrompts.safety]; Unintentional weight loss (alarm symptom) [web.clinicalPrompts.safety]; Pre-operative assessment [web.clinicalPrompts.safety]; Herbs, teas, bush remedies & supplements not asked [web.clinicalPrompts.safety]
+- recommended scores: asge-cbd, web:wagner, news2, caprini, asa, rcri, cfs, ecog
+- score values: (none)
+- dx variant: (none) (no group)
+- note: PANE features applied: painless_jaundice, chronic_course, pruritus, steatorrhoea, dark_urine, anorexia, weight_loss, jaundice, known_diabetes, trauma_mechanism, recent_surgery, aortic_graft, stoma
+- note: AssessmentTab ManagementPanel protocol: pancreatic_carcinoma (from the confirmed diagnosis)
+- note: PlanTab protocol: pancreatic_carcinoma (from the confirmed diagnosis)
+- note: Seeded investigations: pancreatic_carcinoma (confirmed); 0 stat test(s) held back
+- note: Decision support: (no decision); factors age65to79, diabetes
+- note: matchPathways: Jaundice Workup (30), ERCP (Obstructive Jaundice / Bile Duct Stones / Pancreatic Duct) (10), Gallbladder Disease (Biliary Colic / Cholecystitis / Choledocholithiasis) (10)
+
+</details>
+
+### Haemorrhoids
+
+#### `hpi-frame-rectal-bleeding-on-paper` — Typed complaint, bleeding frame (colour, relation to stool)
+
+32-year-old woman: 2 months of bright red blood on the toilet paper after straining, separate from the stool; no change in bowel habit or weight loss.
+
+Permutation of `rectal-bleeding-young-haemorrhoidal`.
+
+| Expectation | Kind | Severity | web | Guideline | Proposed fix |
+|---|---|---|---|---|---|
+| dx-haemorrhoids-top3 | mustRankTopK | quality | PASS | ASCRS Clinical Practice Guidelines for the Management of Hemorrhoids 2024 |  |
+
+Guidelines:
+
+- **ascrs-haem-2024** — ASCRS Clinical Practice Guidelines for the Management of Hemorrhoids (2024), Outlet-type bleeding; conservative management first. Hawkins AT, et al. Dis Colon Rectum 2024;67:614–23. *(statement wording/numbering not yet verified against the source)*
+
+<details><summary>web engine outputs</summary>
+
+- engine: paneEngine=pane-engine (188 diseases, 426 features); triageRulesVersion=1.4.0
+- differential web.pane: 1. Anal Fissure; 2. Haemorrhoids; 3. Ulcerative Colitis
+- differential web.symptomInference: 1. Lower GI bleed / colorectal; 2. Anal fissure; 3. Haemorrhoids / anorectal disease; 4. Large bowel obstruction; 5. Rectal prolapse
+- differential web.passive: 1. Lower GI bleed / colorectal; 2. Anal fissure; 3. Haemorrhoids / anorectal disease; 4. Large bowel obstruction; 5. Hirschsprung's disease
+- differential web.triageSurgical: 1. Change in bowel habit / lower GI bleed — investigation
+- emergency level: emergency (acuity=urgent, action=emergency_now, score=65)
+- alarms: Emergency now [web.triage.emergency]; GI bleeding — haemodynamically stable [web.clinicalPrompts.safety]; Pre-operative assessment [web.clinicalPrompts.safety]; Herbs, teas, bush remedies & supplements not asked [web.clinicalPrompts.safety]
+- recommended scores: news2, rockall
+- score values: (none)
+- dx variant: (none) (no group)
+- note: PANE features applied: pr_bleeding, abnormal_uterine_bleeding, chronic_course, constipation, change_bowel_habit, trauma_mechanism, recent_surgery, aortic_graft, stoma
+- note: AssessmentTab ManagementPanel protocol: haemorrhoids (from the confirmed diagnosis)
+- note: PlanTab protocol: haemorrhoids (from the confirmed diagnosis)
+- note: Seeded investigations: haemorrhoids (confirmed); 0 stat test(s) held back
+- note: Decision support: (no decision); factors (none)
+- note: matchPathways: Colonoscopy Diagnostic (Rectal Bleeding / Bowel Habit Change / Iron Deficiency) (29), IBD — Surgical Complications (Crohn's / UC) (19), Cancer Screening (Age/Sex Appropriate) (7)
 
 </details>
 
@@ -13796,7 +14105,7 @@ Guidelines:
 - recommended scores: alvarado, tg18-cholangitis, ranson, cha2ds2-vasc, qsofa, news2, caprini, has-bled, asa, rcri, cfs
 - score values: (none)
 - dx variant: diverticulitis_peritonitis (Diverticulitis)
-- note: PANE features applied: abdominal_pain, sudden_onset, acute_onset, diffuse_abdominal_pain, lif_pain, fever, nausea_vomiting, anorexia, pain_worse_movement, cough, severe_pain, known_af, known_hypertension, vascular_risk, anticoagulant_use, confusion, abdominal_distension, oliguria, guarding, rebound_tenderness, absent_bowel_sounds, elevated_wbc, raised_crp, raised_lactate, raised_creatinine, raised_urea, free_gas, pelvic_free_fluid, tachycardia, tachypnoea, trauma_mechanism, recent_surgery, aortic_graft, stoma
+- note: PANE features applied: abdominal_pain, sudden_onset, acute_onset, diffuse_abdominal_pain, lif_pain, fever, nausea_vomiting, anorexia, pain_worse_movement, severe_pain, known_af, known_hypertension, vascular_risk, anticoagulant_use, confusion, abdominal_distension, oliguria, guarding, rebound_tenderness, absent_bowel_sounds, elevated_wbc, raised_crp, raised_lactate, raised_creatinine, raised_urea, free_gas, pelvic_free_fluid, tachycardia, tachypnoea, trauma_mechanism, recent_surgery, aortic_graft, stoma
 - note: AssessmentTab ManagementPanel protocol: diverticulitis (from the confirmed diagnosis)
 - note: PlanTab protocol: diverticulitis (from the confirmed diagnosis)
 - note: Seeded investigations: diverticulitis (confirmed); 0 stat test(s) held back
@@ -13885,7 +14194,7 @@ Guidelines:
 <details><summary>web engine outputs</summary>
 
 - engine: paneEngine=pane-engine (188 diseases, 426 features); triageRulesVersion=1.4.0
-- differential web.pane: 1. Anastomotic Leak; 2. Post-operative Intra-abdominal Collection / Abscess / Bile Leak; 3. Post-operative Pneumonia / Atelectasis
+- differential web.pane: 1. Anastomotic Leak; 2. Post-operative Intra-abdominal Collection / Abscess / Bile Leak; 3. Perforated Peptic Ulcer / Perforated Viscus
 - differential web.symptomInference: 1. Typhoid fever; 2. Fournier's gangrene; 3. Sepsis / systemic infection; 4. Malaria; 5. Infective endocarditis
 - differential web.passive: 1. Acute appendicitis (paediatric); 2. Typhoid fever; 3. Sepsis / systemic infection; 4. Malaria; 5. Pyelonephritis
 - differential web.triageSurgical: 1. Rectal cancer
@@ -13894,7 +14203,7 @@ Guidelines:
 - recommended scores: alvarado, wells-pe, wells-dvt, tg18-cholangitis, qsofa, news2, caprini, clavien-dindo, ecog
 - score values: (none)
 - dx variant: (none) (no group)
-- note: PANE features applied: abdominal_pain, acute_onset, diffuse_abdominal_pain, suprapubic_pain, fever, rigors, nausea_vomiting, anorexia, pain_worse_movement, cough, severe_pain, anticoagulant_use, previous_surgery, abdominal_distension, guarding, recent_surgery, bowel_resection, elevated_wbc, raised_crp, raised_lactate, postop_fever, tachycardia, tachypnoea, trauma_mechanism, aortic_graft, stoma
+- note: PANE features applied: abdominal_pain, acute_onset, diffuse_abdominal_pain, suprapubic_pain, fever, rigors, nausea_vomiting, anorexia, pain_worse_movement, severe_pain, anticoagulant_use, previous_surgery, abdominal_distension, guarding, recent_surgery, bowel_resection, elevated_wbc, raised_crp, raised_lactate, postop_fever, tachycardia, tachypnoea, trauma_mechanism, aortic_graft, stoma
 - note: AssessmentTab ManagementPanel protocol: anastomotic_leak (from the confirmed diagnosis)
 - note: PlanTab protocol: anastomotic_leak (from the confirmed diagnosis)
 - note: Seeded investigations: anastomotic_leak (confirmed); 0 stat test(s) held back
@@ -14760,7 +15069,7 @@ Guidelines:
 - recommended scores: alvarado, ranson, cha2ds2-vasc, news2, has-bled
 - score values: (none)
 - dx variant: appendicitis_uncomplicated (Acute Appendicitis)
-- note: PANE features applied: abdominal_pain, acute_onset, rlq_pain, nausea_vomiting, anorexia, pain_worse_movement, cough, previous_surgery, periumbilical_pain, guarding, elevated_wbc, raised_crp, trauma_mechanism, recent_surgery, aortic_graft, stoma
+- note: PANE features applied: abdominal_pain, acute_onset, rlq_pain, nausea_vomiting, anorexia, pain_worse_movement, previous_surgery, periumbilical_pain, guarding, elevated_wbc, raised_crp, trauma_mechanism, recent_surgery, aortic_graft, stoma
 - note: AssessmentTab ManagementPanel protocol: appendicitis (from the confirmed diagnosis)
 - note: PlanTab protocol: appendicitis (from the confirmed diagnosis)
 - note: Seeded investigations: appendicitis (confirmed); 0 stat test(s) held back
@@ -18075,7 +18384,7 @@ Guidelines:
 - recommended scores: heart, wells-pe, cha2ds2-vasc, qsofa, curb65, news2, caprini, has-bled, asa, rcri, cfs
 - score values: (none)
 - dx variant: (none) (no group)
-- note: PANE features applied: sudden_onset, acute_onset, chest_pain, dyspnoea, pain_worse_movement, pleuritic_chest_pain, cough, severe_pain, pallor, reduced_breath_sounds, bronchial_breathing, known_af, known_hypertension, vascular_risk, known_heart_disease, anticoagulant_use, luq_pain, crepitus_soft_tissue, trauma_mechanism, mechanism_blunt, anaemia, raised_lactate, tachypnoea, hypoxia, recent_surgery, aortic_graft, stoma
+- note: PANE features applied: sudden_onset, acute_onset, chest_pain, dyspnoea, pain_worse_movement, pleuritic_chest_pain, severe_pain, pallor, reduced_breath_sounds, bronchial_breathing, known_af, known_hypertension, vascular_risk, known_heart_disease, anticoagulant_use, luq_pain, crepitus_soft_tissue, trauma_mechanism, mechanism_blunt, anaemia, raised_lactate, tachypnoea, hypoxia, recent_surgery, aortic_graft, stoma
 - note: AssessmentTab ManagementPanel protocol: rib_fractures (from the confirmed diagnosis)
 - note: PlanTab protocol: rib_fractures (from the confirmed diagnosis)
 - note: Seeded investigations: rib_fractures (confirmed); 0 stat test(s) held back
@@ -19398,6 +19707,8 @@ Guidelines:
 | `hernia-incisional-midline-elective` | level-routine | web | quality | known gap | web.triage: urgent (acuity=priority, action=same_day_call, score=34); expected ≤ priority [known gap: Triage emergency_now (score 49): adaptiveTriage RED_FLAGS regexes have no negation handling ("No vomiting" → +15); "Hartmann's … reversed" |
 | `hernia-parastomal-symptomatic` | level-routine | web | quality | known gap | web.triage: urgent (acuity=priority, action=same_day_call, score=44); expected ≤ priority [known gap: Triage emergency_now (score 59): adaptiveTriage RED_FLAGS regexes have no negation handling ("No vomiting"); "rectal cancer" history → "Po |
 | `hernia-paraumbilical-incarcerated-obese` | variant-incarcerated-or-worse | web | quality | known gap | detected hernia_strangulated in group Hernia; expected hernia_incarcerated [known gap: Web, since the engine-matching fixes (2026-09): "strangulation not excluded" is a hedge, not a negation, so the strangulated variant is now detected (the |
+| `hpi-frame-cough-chronic-acei` | dx-acei-cough-top3-web | web | quality | known gap | not in top 3 of web.pane: 1. GORD / Reflux Oesophagitis \| 2. Peptic Ulcer Disease \| 3. Lipoma [known gap: pane-engine models no ACE-inhibitor cough (or any chronic-cough cause): the cough frame answers reach acei_arb_use, cough and chroni |
+| `hpi-frame-cough-haemoptysis-smoker` | dx-lung-cancer-top3-pane | web | quality | known gap | not in top 3 of web.pane: 1. Community-acquired Pneumonia (Adult / Child) \| 2. Oesophageal Carcinoma \| 3. COPD Exacerbation (Chronic Obstructive Pulmonary Disease); also in web.symptomInference#3, web.passive#2 [known gap: pane-engine mod |
 | `infective-colitis-bloody-diarrhoea` | mnm-ibd | web | quality | known gap | not in top 3 of web.pane: 1. Acute Gastroenteritis / Infective Colitis \| 2. Toxic Megacolon (Acute Severe Colitis) / Colonic Perforation Risk \| 3. Clostridioides difficile Colitis (C. diff infection); also in web.symptomInference#4, web.p |
 | `lgib-diverticular-apixaban` | score-rec-oakland | web | quality | known gap | oakland not recommended; recommended: cha2ds2-vasc, news2, rockall, has-bled, cfs [known gap: No Oakland score on web (no CDS rule, no calculator); web suggests Rockall (an upper GI score) instead. iOS has one (ClinicalScoringEngine.oakland |
 | `lgib-oakland-low-risk-discharge` | level-not-emergency | web | quality | known gap | web.triage: emergency (acuity=urgent, action=emergency_now, score=65); expected ≤ urgent [known gap: Web adaptiveTriage has no negation handling and treats any "bleed/bleeding" as an urgent red flag (RED_FLAGS "GI or other bleeding" → emerg |

@@ -1,6 +1,6 @@
 {
   "format": "amise-signoff-catalogue/1",
-  "catalogueHash": "81dd39ab7ae937b7",
+  "catalogueHash": "528b96b775d9d570",
   "repoUrl": "https://github.com/amisesuite-afk/amise-medflow-emr-public/blob/main/",
   "sources": [
     {
@@ -396,6 +396,27 @@
         "followups-prep-h10#3",
         "followups-prep-h10#4",
         "followups-prep-h10#5"
+      ]
+    },
+    {
+      "id": "history-by-complaint",
+      "title": "Change log — `history-frames` (the history questions follow the chief complaint, web and iOS)",
+      "doc": "docs/clinical-validation/changes/history-by-complaint.md",
+      "anchor": "needs-sign-off",
+      "ruleSetIds": [
+        "history-frames",
+        "pane-engine-disease-model"
+      ],
+      "itemIds": [
+        "history-by-complaint#1",
+        "history-by-complaint#2",
+        "history-by-complaint#3",
+        "history-by-complaint#4",
+        "history-by-complaint#5",
+        "history-by-complaint#6",
+        "history-by-complaint#7",
+        "history-by-complaint#8",
+        "history-by-complaint#9"
       ]
     },
     {
@@ -824,6 +845,24 @@
       ]
     },
     {
+      "id": "history-frames",
+      "title": "History frames: chief complaint (+ system) -> symptom type -> the history questions asked (SOCRATES for pain only; cough, dyspnoea, lump, bleeding, bowel, dysphagia, jaundice and other frames), their chip options and the chip -> engine-feature mapping",
+      "reviewPriority": "P1",
+      "lastReviewed": "unknown",
+      "reviewer": "unknown",
+      "itemIds": [
+        "history-by-complaint#1",
+        "history-by-complaint#2",
+        "history-by-complaint#3",
+        "history-by-complaint#4",
+        "history-by-complaint#5",
+        "history-by-complaint#6",
+        "history-by-complaint#7",
+        "history-by-complaint#8",
+        "history-by-complaint#9"
+      ]
+    },
+    {
       "id": "ios-clinical-scoring-engine",
       "title": "Clinical scores and thresholds (101 score functions)",
       "reviewPriority": "P2",
@@ -1102,7 +1141,16 @@
         "fix-web-differential#8",
         "fix-web-differential#9",
         "fix-web-differential#10",
-        "fix-web-differential#11"
+        "fix-web-differential#11",
+        "history-by-complaint#1",
+        "history-by-complaint#2",
+        "history-by-complaint#3",
+        "history-by-complaint#4",
+        "history-by-complaint#5",
+        "history-by-complaint#6",
+        "history-by-complaint#7",
+        "history-by-complaint#8",
+        "history-by-complaint#9"
       ]
     },
     {
@@ -5887,6 +5935,141 @@
       "anchor": "open-points-noticed-not-changed",
       "ruleSetIds": [
         "front-desk-patient-instructions"
+      ]
+    },
+    {
+      "id": "history-by-complaint#1",
+      "source": "history-by-complaint",
+      "number": "1",
+      "group": null,
+      "title": "The frame list and the question set per frame",
+      "text": "**The frame list and the question set per frame** (table above; chip text in `frames.ts`),\nincluding that SOCRATES is used for pain only and that a lump is never asked about radiation.",
+      "hash": "f3a603da999073f7",
+      "doc": "docs/clinical-validation/changes/history-by-complaint.md",
+      "anchor": "needs-sign-off",
+      "ruleSetIds": [
+        "history-frames",
+        "pane-engine-disease-model"
+      ]
+    },
+    {
+      "id": "history-by-complaint#2",
+      "source": "history-by-complaint",
+      "number": "2",
+      "group": null,
+      "title": "Classifier precedence",
+      "text": "**Classifier precedence**: lump / breast before symptoms before administrative words; then the\nearliest keyword. E.g. \"painful lump\" → lump history, \"cough and chest pain\" → cough history with\nchest pain as a secondary symptom, \"Reflux / Heartburn\" → chest pain SOCRATES, \"Rectal prolapse\" →\nbowel habit history, \"Leg swelling\" → limb swelling history.",
+      "hash": "6aba38be015f6d86",
+      "doc": "docs/clinical-validation/changes/history-by-complaint.md",
+      "anchor": "needs-sign-off",
+      "ruleSetIds": [
+        "history-frames",
+        "pane-engine-disease-model"
+      ]
+    },
+    {
+      "id": "history-by-complaint#3",
+      "source": "history-by-complaint",
+      "number": "3",
+      "group": null,
+      "title": "Pain region defaults by specialty group",
+      "text": "**Pain region defaults by specialty group** when the complaint names no region (Musculoskeletal →\njoint, Cardiovascular / Respiratory → chest, Neurology → head, Dermatology → limb, otherwise\nabdomen).",
+      "hash": "965f121fda06405d",
+      "doc": "docs/clinical-validation/changes/history-by-complaint.md",
+      "anchor": "needs-sign-off",
+      "ruleSetIds": [
+        "history-frames",
+        "pane-engine-disease-model"
+      ]
+    },
+    {
+      "id": "history-by-complaint#4",
+      "source": "history-by-complaint",
+      "number": "4",
+      "group": null,
+      "title": "Cough duration bands",
+      "text": "**Cough duration bands** (under 3 weeks, 3–8 weeks, over 8 weeks; BTS 2006 / ERS 2020) and the\nchoice to store subacute and chronic under the engine's existing `>3 weeks` value.",
+      "hash": "54aded5a2fa25692",
+      "doc": "docs/clinical-validation/changes/history-by-complaint.md",
+      "anchor": "needs-sign-off",
+      "ruleSetIds": [
+        "history-frames",
+        "pane-engine-disease-model"
+      ]
+    },
+    {
+      "id": "history-by-complaint#5",
+      "source": "history-by-complaint",
+      "number": "5",
+      "group": null,
+      "title": "MRC dyspnoea grades 1–5",
+      "text": "**MRC dyspnoea grades 1–5** wording and their mapping to exertional breathlessness.",
+      "hash": "95fcbba26d1e8f4c",
+      "doc": "docs/clinical-validation/changes/history-by-complaint.md",
+      "anchor": "needs-sign-off",
+      "ruleSetIds": [
+        "history-frames",
+        "pane-engine-disease-model"
+      ]
+    },
+    {
+      "id": "history-by-complaint#6",
+      "source": "history-by-complaint",
+      "number": "6",
+      "group": null,
+      "title": "Engine values given to renamed chips",
+      "text": "**Engine values given to renamed chips** (e.g. \"Started after an ACE inhibitor\" → `After starting\nACEi`; \"Lying flat\" (cough) → `Worse lying flat`; \"Post-nasal drip\" → `Post-nasal drip sensation`)\nand the web `FRAME_KEY_RULES` feature mapping (pane model 1.0.2).",
+      "hash": "3662f3d9875cb278",
+      "doc": "docs/clinical-validation/changes/history-by-complaint.md",
+      "anchor": "needs-sign-off",
+      "ruleSetIds": [
+        "history-frames",
+        "pane-engine-disease-model"
+      ]
+    },
+    {
+      "id": "history-by-complaint#7",
+      "source": "history-by-complaint",
+      "number": "7",
+      "group": null,
+      "title": "Record-only chips",
+      "text": "**Record-only chips** (561 iOS, 408 web): accept that these are recorded without an engine feature,\nor name the ones that need a feature (which would be new engine content, not this change).",
+      "hash": "a40250fad2e29757",
+      "doc": "docs/clinical-validation/changes/history-by-complaint.md",
+      "anchor": "needs-sign-off",
+      "ruleSetIds": [
+        "history-frames",
+        "pane-engine-disease-model"
+      ]
+    },
+    {
+      "id": "history-by-complaint#8",
+      "source": "history-by-complaint",
+      "number": "8",
+      "group": null,
+      "title": "Anticoagulant questions",
+      "text": "**Anticoagulant questions** in the bleeding frames record use only; no instruction is given.",
+      "hash": "c44b860cdccbab34",
+      "doc": "docs/clinical-validation/changes/history-by-complaint.md",
+      "anchor": "needs-sign-off",
+      "ruleSetIds": [
+        "history-frames",
+        "pane-engine-disease-model"
+      ]
+    },
+    {
+      "id": "history-by-complaint#9",
+      "source": "history-by-complaint",
+      "number": "9",
+      "group": null,
+      "title": "Pane-engine gaps",
+      "text": "**Pane-engine gaps** shown by the new vignettes: no ACE-inhibitor cough / chronic-cough module and\nno lung cancer node on the web.",
+      "hash": "4f9521b6cc287bd3",
+      "doc": "docs/clinical-validation/changes/history-by-complaint.md",
+      "anchor": "needs-sign-off",
+      "ruleSetIds": [
+        "history-frames",
+        "pane-engine-disease-model"
       ]
     },
     {
