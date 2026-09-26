@@ -71,6 +71,36 @@ const GENERIC_DURATION: Opt[] = [
   'Over 6 months',
 ];
 
+// ── Sites with a side ──────────────────────────────────────────────────────────
+// The side follows a dash, not a parenthetical: the web removes a parenthetical when it stores a
+// chip, so "Upper outer (right)" and "Upper outer (left)" were one answer there. The earlier
+// labels stay readable as aliases (stored encounters, vignettes). The side does not lead: iOS
+// reads "right upper …" as the right upper quadrant.
+
+const BREAST_SITES: Opt[] = [
+  'Upper outer — right', 'Upper inner — right', 'Lower outer — right', 'Lower inner — right',
+  'Upper outer — left', 'Upper inner — left', 'Lower outer — left', 'Lower inner — left',
+  'Central / areola', 'Axilla — right', 'Axilla — left', 'Bilateral',
+];
+const BREAST_SITE_ALIASES: NonNullable<HistoryFrame['aliases']> = [
+  ['Upper outer (right)', 'Upper outer — right'], ['Upper outer (left)', 'Upper outer — left'],
+  ['Upper inner (right)', 'Upper inner — right'], ['Upper inner (left)', 'Upper inner — left'],
+  ['Lower outer (right)', 'Lower outer — right'], ['Lower outer (left)', 'Lower outer — left'],
+  ['Lower inner (right)', 'Lower inner — right'], ['Lower inner (left)', 'Lower inner — left'],
+  ['Axilla (right)', 'Axilla — right'], ['Axilla (left)', 'Axilla — left'],
+].map(([legacy, current]) => ({ key: 'site', legacy: legacy!, current: current! }));
+
+const NECK_SITES: Opt[] = [
+  'Right anterior triangle', 'Left anterior triangle', 'Right posterior triangle', 'Left posterior triangle',
+  'Midline', 'Submandibular', 'Submental', 'Parotid region', 'Thyroid right lobe', 'Thyroid left lobe',
+  'Thyroid isthmus', 'Supraclavicular', 'Occipital', 'Diffuse neck',
+];
+const NECK_SITE_ALIASES: NonNullable<HistoryFrame['aliases']> = [
+  ['Anterior triangle (right)', 'Right anterior triangle'], ['Anterior triangle (left)', 'Left anterior triangle'],
+  ['Posterior triangle (right)', 'Right posterior triangle'], ['Posterior triangle (left)', 'Left posterior triangle'],
+  ['Thyroid (right lobe)', 'Thyroid right lobe'], ['Thyroid (left lobe)', 'Thyroid left lobe'],
+].map(([legacy, current]) => ({ key: 'site', legacy: legacy!, current: current! }));
+
 // ── Pain (SOCRATES) by region ──────────────────────────────────────────────────
 
 interface PainRegionSpec {
@@ -226,15 +256,14 @@ const PAIN_FRAMES: HistoryFrame[] = [
   painFrame({
     region: 'breast', label: 'breast', sample: 'Breast pain',
     iosPools: ['breastLump', 'breastDisease', 'coreConditions'],
-    site: ['Upper outer (right)', 'Upper outer (left)', 'Upper inner (right)', 'Upper inner (left)',
-      'Lower outer (right)', 'Lower outer (left)', 'Lower inner (right)', 'Lower inner (left)', 'Central / areola',
-      'Axilla (right)', 'Axilla (left)', 'Bilateral'],
+    site: BREAST_SITES,
     character: ['Aching', 'Burning', 'Sharp', 'Heaviness', 'Tender'],
     radiation: ['No radiation', 'Axilla', 'Arm'],
     associations: ['Lump', 'Nipple discharge', 'Skin redness', 'Swelling', 'Fever', 'Breastfeeding'],
     timing: ['Cyclical variation', 'Non-cyclical', 'Premenstrual'],
     exacerbating: ['Movement', 'Touch', 'Before periods'],
     relieving: ['Supportive bra', 'Analgesics', 'Nothing'],
+    aliases: BREAST_SITE_ALIASES,
   }),
   painFrame({
     region: 'perineal', label: 'anal / perineal', sample: 'Anal pain',
@@ -441,9 +470,8 @@ const LUMP_FRAMES: HistoryFrame[] = [
     variant: 'neck', label: 'neck', sample: 'Neck lump',
     iosPools: ['neckLump', 'thyroidPathology', 'thyroidNoduleAssessment', 'headNeckSurgical', 'parotidSalivary',
       'endocrineSurgical', 'haematologicalMalignancy', 'coreConditions'],
-    site: ['Anterior triangle (right)', 'Anterior triangle (left)', 'Posterior triangle (right)',
-      'Posterior triangle (left)', 'Midline', 'Submandibular', 'Submental', 'Parotid region', 'Thyroid (right lobe)',
-      'Thyroid (left lobe)', 'Thyroid isthmus', 'Supraclavicular', 'Occipital', 'Diffuse neck'],
+    site: NECK_SITES,
+    aliases: NECK_SITE_ALIASES,
     extra: [
       d('movement', 'Movement', 'Moves on swallowing or tongue protrusion?', I.pattern, true, [
         'Moves on swallowing', 'Moves on tongue protrusion',
@@ -541,11 +569,7 @@ const BREAST: HistoryFrame = {
   id: 'breast', type: 'breast', label: 'Breast', title: 'Breast history', sampleComplaint: 'Breast lump',
   iosPools: ['breastLump', 'breastDisease', 'coreConditions'],
   dimensions: [
-    d('site', 'Site', 'Which breast and quadrant?', I.site, true, [
-      'Upper outer (right)', 'Upper outer (left)', 'Upper inner (right)', 'Upper inner (left)',
-      'Lower outer (right)', 'Lower outer (left)', 'Lower inner (right)', 'Lower inner (left)', 'Central / areola',
-      'Axilla (right)', 'Axilla (left)', 'Bilateral',
-    ], { webKey: 'breast_site' }),
+    d('site', 'Site', 'Which breast and quadrant?', I.site, true, BREAST_SITES, { webKey: 'breast_site' }),
     LUMP_DURATION,
     d('character', 'Lump', 'What is the lump like?', I.character, true, [
       'Smooth', 'Irregular', 'Firm', 'Hard', 'Soft', 'Rubbery', 'Cystic', 'Mobile', 'Fixed to skin',
@@ -573,6 +597,7 @@ const BREAST: HistoryFrame = {
   ],
   secondaryDims: ['character', 'discharge'],
   aliases: [
+    ...BREAST_SITE_ALIASES,
     { key: 'associations', legacy: 'Skin changes / dimpling', current: 'Skin dimpling' },
     { key: 'associations', legacy: 'Mastalgia', current: 'Breast pain' },
     { key: 'associations', legacy: 'Cyclical changes', current: 'Cyclical variation' },

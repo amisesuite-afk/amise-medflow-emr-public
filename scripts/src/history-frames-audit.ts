@@ -275,10 +275,14 @@ export function checkFrameStructure(): Problem[] {
         problems.push({ check: 'radiation-not-pain', where, detail: 'only a pain history asks about radiation' });
       }
       const inDim = new Set<string>();
+      const webInDim = new Set<string>();
       for (const opt of dim.options) {
         const w = `${where} › ${opt.label}`;
         if (/[,·→]/.test(opt.label)) problems.push({ check: 'label-chars', where: w, detail: 'no comma, · or → in a label (web answers are comma-joined)' });
         if (inDim.has(opt.label)) problems.push({ check: 'duplicate-chip', where: w, detail: 'label twice in one question' });
+        const webLabel = webStoredLabel(opt.label);
+        if (webInDim.has(webLabel)) problems.push({ check: 'duplicate-chip', where: w, detail: `the web stores "${webLabel}" for two chips of this question (parenthetical removed)` });
+        webInDim.add(webLabel);
         inDim.add(opt.label);
         const prev = labelsInFrame.get(opt.label);
         if (prev && prev !== dim.id && !crossDimOk(prev, dim.id)) {

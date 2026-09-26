@@ -1122,7 +1122,7 @@
   {
    "complaint": "Rectal prolapse",
    "source": "web.ccTemplate",
-   "expectedFrame": "pain.perineal"
+   "expectedFrame": "bowel"
   },
   {
    "complaint": "Diabetic foot / infected foot",
@@ -1836,10 +1836,7 @@
   {
    "complaint": "wound pain",
    "source": "web.symptom",
-   "expectedFrame": "skin.wound",
-   "secondary": [
-    "pain.abdomen"
-   ]
+   "expectedFrame": "skin.wound"
   },
   {
    "complaint": "wound swelling",
@@ -2350,7 +2347,7 @@
   {
    "complaint": "rectal prolapse",
    "source": "web.symptom",
-   "expectedFrame": "pain.perineal"
+   "expectedFrame": "bowel"
   },
   {
    "complaint": "pulsatile mass",

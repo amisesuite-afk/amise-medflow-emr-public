@@ -158,6 +158,12 @@ enum HistoryFrameClassifier {
         return set.fallback
     }
 
+    /// A pain region keyword anywhere in the complaint.
+    static func hasPainRegion(_ text: [Character]) -> Bool {
+        guard let set = HistoryFrameData.variantSets.first(where: { $0.type == "pain" }) else { return false }
+        return set.rules.contains { firstPosition(text, $0.keywords) != nil }
+    }
+
     private struct RuleMatch {
         let rule: HistoryClassifierRuleSpec
         let pos: Int
@@ -187,6 +193,9 @@ enum HistoryFrameClassifier {
         var seen: Set<String> = [type]
         let byPosition = matches.sorted { a, b in a.pos != b.pos ? a.pos < b.pos : a.order < b.order }
         for m in byPosition where m.rule.tier != 3 && !seen.contains(m.rule.type) {
+            // Pain is a secondary symptom only with a region of its own ("vomiting and abdominal
+            // pain"); in "wound pain" the pain belongs to the primary symptom.
+            if m.rule.type == "pain" && !hasPainRegion(text) { continue }
             seen.insert(m.rule.type)
             secondary.append(frameId(m.rule.type, variantFor(m.rule.type, text, system)))
         }

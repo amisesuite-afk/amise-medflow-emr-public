@@ -13,7 +13,9 @@
  *   3. Primary = lowest tier, then earliest position, then rule order.
  *   4. Variant (pain region, lump site …) = the variant rule with the earliest keyword; else the
  *      system default (pain only), else the type's default variant.
- *   5. Secondary = the other matched types (tiers 1–2), earliest first, one frame per type.
+ *   5. Secondary = the other matched types (tiers 1–2), earliest first, one frame per type. Pain
+ *      is a secondary symptom only with a region of its own ("vomiting and abdominal pain"); in
+ *      "wound pain" or "painful lump" the pain belongs to the primary symptom.
  *   6. Nothing matched: the general frame (fallback).
  */
 
@@ -49,7 +51,7 @@ export const CLASSIFIER_RULES: ClassifierRule[] = [
   { type: 'bowel', tier: 2, keywords: ['bowel habit*', 'bowel obstruct*', 'diarrhoea', 'diarrhea', 'constipat*',
     'loose stool*', 'bloating', 'bloated', 'distension', 'obstipation', 'faecal incontinence', 'fecal incontinence',
     'tenesmus', 'colorectal cancer', 'colorectal malignan*', 'colon cancer', 'rectal cancer', 'inflammatory bowel',
-    'colitis', 'crohn*', 'incomplete evacuation', 'faecal urgency', 'mucus'] },
+    'colitis', 'crohn*', 'incomplete evacuation', 'faecal urgency', 'mucus', 'prolapse*'] },
   { type: 'urinary', tier: 2, keywords: ['urin*', 'dysuria', 'frequency', 'nocturia', 'luts', 'retention', 'hesitancy',
     'prostat*', 'uti', 'cystitis', 'incontinence', 'bladder'],
     unless: ['faecal incontinence', 'fecal incontinence'] },
@@ -76,7 +78,7 @@ export const CLASSIFIER_RULES: ClassifierRule[] = [
     'colicky', 'cramp*', 'sore', 'soreness', 'tenderness', 'angina', 'sciatica', 'mastalgia', 'dysmenorrh*',
     'dyspareunia', 'claudication', 'peripheral arterial', 'heartburn', 'reflux', 'indigestion', 'dyspepsia',
     'haemorrhoid*', 'hemorrhoid*', 'piles', 'fissure*', 'perianal', 'appendicitis', 'cholecystitis', 'pancreatitis',
-    'diverticulitis', 'gallstone*', 'gord', 'gerd', 'tightness', 'perforat*', 'mesenteric', 'anastomotic', 'prolapse*',
+    'diverticulitis', 'gallstone*', 'gord', 'gerd', 'tightness', 'perforat*', 'mesenteric', 'anastomotic',
     'cold foot', 'cold leg', 'cold limb', 'cold extremit*', 'stiffness', 'joint swelling', 'swollen joint*'] },
   // Tier 3 — administrative visits: the general frame, unless a symptom is named.
   { type: 'general', tier: 3, keywords: ['follow-up', 'follow up', 'review', 'screening', 'check-up', 'check up',
@@ -237,6 +239,7 @@ export function classifyComplaint(complaint: string, system?: string): FrameChoi
   const seen = new Set<SymptomType>([type]);
   for (const m of [...matches].sort((a, b) => a.pos - b.pos || a.order - b.order)) {
     if (m.rule.tier === 3 || seen.has(m.rule.type)) continue;
+    if (m.rule.type === 'pain' && !PAIN_REGION_RULES.some(r => firstPosition(text, r.keywords) >= 0)) continue;
     seen.add(m.rule.type);
     secondary.push(frameIdFor(m.rule.type, variantFor(m.rule.type, text, system)));
   }
