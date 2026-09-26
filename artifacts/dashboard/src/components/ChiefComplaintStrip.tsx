@@ -3,11 +3,14 @@ import { useAppContext } from '@/context/AppContext';
 import { CC_TEMPLATES, CC_BY_CATEGORY, getMatrixByName, type CCCategory, type CCTemplate } from '@/lib/cc-matrices';
 import { SYMPTOM_BRANCHES } from '@/lib/symptom-branches';
 import { extractFeaturesFromSocrates, paneContextFromConsultation } from '@/lib/socrates-to-features';
+import { historyPrompts } from '@/lib/hpi-fields';
+import { toggleWebAnswer } from '@workspace/triage-engine/history-frames';
 import { DISEASES, FEATURES, applyModifiers, initPaneState, updatePosterior, isConverged } from '@workspace/pane-engine';
 
 // ── Types ─────────────────────────────────────────────────────────────────────
 
-interface CCEntry { complaint: string; answers: Record<string, string> }
+/** `frame`: the clinician's history-frame choice (HpiTab); absent = from the complaint. */
+interface CCEntry { complaint: string; answers: Record<string, string>; frame?: string }
 
 // Maps triage branch question labels → SOCRATES answer keys (same as HpiTab)
 const BRANCH_KEY: Record<string, string> = {
@@ -267,9 +270,9 @@ export default function ChiefComplaintStrip({ questionsInline = true }: ChiefCom
     if (expanded === null) return;
     const entry = entries[expanded];
     if (!entry) return;
-    const tpl = getMatrixByName(entry.complaint);
-    const first = tpl.prompts.findIndex(p => !entry.answers[p.key]?.trim());
-    setOpenFieldIdx(first >= 0 ? first : tpl.prompts.length);
+    const prompts = historyPrompts(entry.complaint, entry.frame);
+    const first = prompts.findIndex(p => !entry.answers[p.key]?.trim());
+    setOpenFieldIdx(first >= 0 ? first : prompts.length);
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [expanded]);
 
@@ -322,10 +325,11 @@ export default function ChiefComplaintStrip({ questionsInline = true }: ChiefCom
   const alreadyAdded:  CCTemplate[] = CC_TEMPLATES.filter(t => matchesCriteria(t) &&  entries.some(e => e.complaint === t.name));
 
   // Progress for each entry
+  // A curated template's prompts, or the history frame's questions (lib/hpi-fields.ts).
   function progress(entry: CCEntry): { answered: number; total: number } {
-    const tpl = getMatrixByName(entry.complaint);
-    const answered = tpl.prompts.filter(p => entry.answers[p.key]?.trim()).length;
-    return { answered, total: tpl.prompts.length };
+    const prompts = historyPrompts(entry.complaint, entry.frame);
+    const answered = prompts.filter(p => entry.answers[p.key]?.trim()).length;
+    return { answered, total: prompts.length };
   }
 
   return (
@@ -419,6 +423,7 @@ export default function ChiefComplaintStrip({ questionsInline = true }: ChiefCom
       {expanded !== null && entries[expanded] && (() => {
         const entry = entries[expanded]!;
         const tpl   = getMatrixByName(entry.complaint);
+        const prompts = historyPrompts(entry.complaint, entry.frame);
         const prog  = progress(entry);
         const allDone = prog.answered === prog.total && prog.total > 0;
 
@@ -476,7 +481,7 @@ export default function ChiefComplaintStrip({ questionsInline = true }: ChiefCom
                 display: 'flex', gap: 5, overflowX: 'auto', padding: '7px 14px',
                 borderBottom: '1px solid #1e293b', scrollbarWidth: 'none',
               }}>
-                {tpl.prompts.map((p, idx) => {
+                {prompts.map((p, idx) => {
                   const v = entry.answers[p.key] ?? '';
                   if (!v.trim()) return null;
                   return (
@@ -504,7 +509,7 @@ export default function ChiefComplaintStrip({ questionsInline = true }: ChiefCom
 
             {/* Progress dots */}
             <div style={{ display: 'flex', alignItems: 'center', gap: 4, padding: '7px 14px 4px' }}>
-              {tpl.prompts.map((p, idx) => {
+              {prompts.map((p, idx) => {
                 const v = entry.answers[p.key] ?? '';
                 const answered = v.trim().length > 0;
                 const isCurrent = idx === openFieldIdx;
@@ -530,12 +535,13 @@ export default function ChiefComplaintStrip({ questionsInline = true }: ChiefCom
             {/* Single active question card */}
             <div style={{ padding: '8px 14px 10px' }}>
               {(() => {
-                const p = tpl.prompts[openFieldIdx];
+                const p = prompts[openFieldIdx];
                 if (!p) return null;
                 const value   = entry.answers[p.key] ?? '';
-                const isMulti = MULTI_KEYS.has(p.key.toLowerCase().replace(/\s+/g, '_'));
+                const isMulti = 'multi' in p && p.multi !== undefined ? p.multi : MULTI_KEYS.has(p.key.toLowerCase().replace(/\s+/g, '_'));
+                const dim     = 'dim' in p ? p.dim : undefined;
                 const options = parseChipOptions(p.hint ?? '');
-                const isLast  = openFieldIdx === tpl.prompts.length - 1;
+                const isLast  = openFieldIdx === prompts.length - 1;
                 return (
                   <div style={{
                     display: 'flex', flexDirection: 'column', gap: 8,
@@ -563,7 +569,7 @@ export default function ChiefComplaintStrip({ questionsInline = true }: ChiefCom
                               key={opt}
                               type="button"
                               onClick={() => {
-                                const newVal = toggleChip(value, chipLabel(opt), isMulti);
+                                const newVal = dim ? toggleWebAnswer(value, dim, chipLabel(opt)) : toggleChip(value, chipLabel(opt), isMulti);
                                 setAnswer(expanded!, p.key, newVal);
                                 if (!isMulti && newVal.trim()) {
                                   setTimeout(() => setOpenFieldIdx(openFieldIdx + 1), 300);
