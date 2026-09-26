@@ -114,6 +114,15 @@ the formulas move.
 **Not moved (by decision).** Lab analyte catalogue / reference ranges (another agent is editing
 them), `DiagnosticDatabase.json`, pane-engine disease weights.
 
+### Vademecum (2026-09-26, shadow)
+
+The disease-centred vademecum (`clinical-content/vademecum/*.json`) is born shared in a second
+folder: `SharedClinicalContent.File` has `vademecumFindings`, `vademecumAbdominalPain` and
+`vademecumCoughBreathlessness` (folder `vademecum`), `lint:shared-content` checks both folders and
+the per-folder `project.yml` reference. In phase 4 of `docs/VADEMECUM-PLAN.md` it becomes the source
+the iOS `DiagnosticDatabase.json` pools and the PANE disease modules are generated from, which
+retires those twins for the migrated areas.
+
 ## 4. Rules for a shared file
 
 - Change the JSON, not a platform copy. Bump its `version` with the registry entry (and a
