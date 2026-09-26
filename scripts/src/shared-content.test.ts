@@ -7,6 +7,9 @@ import { readFileSync } from 'node:fs';
 import { join } from 'node:path';
 import { describe, expect, it } from 'vitest';
 import { ZEBRA_RULES, ZEBRA_RULES_VERSION } from '../../lib/triage-engine/src/diagnostic-reasoning/zebra-rules';
+import {
+  HERBAL_PREOP_PATIENT_TEXT, SUPPLEMENT_CATALOGUE_VERSION, SUPPLEMENT_ITEMS, SUPPLEMENT_PROMPTS, SUPPLEMENT_TRIGGER_TERMS,
+} from '../../artifacts/dashboard/src/lib/supplement-catalogue';
 import { REPO_ROOT } from './clinval/load';
 import { checkSharedContent, compareSwift, compareTs, parseSwift, parseTs, type Schema } from './shared-content';
 
@@ -16,13 +19,22 @@ describe('shared clinical content library', () => {
   it('passes lint:shared-content', () => {
     const { problems, checked } = checkSharedContent(REPO_ROOT);
     expect(problems).toEqual([]);
-    expect(checked).toEqual(['zebra-rules']);
+    expect(checked).toEqual(['supplement-catalogue', 'zebra-rules']);
   });
 
   it('the web modules read the shared files', () => {
     const zebra = readJson('clinical-content/rules/zebra-rules.json');
     expect(ZEBRA_RULES).toEqual(zebra.rules);
     expect(ZEBRA_RULES_VERSION).toBe(zebra.version);
+
+    const supplements = readJson('clinical-content/rules/supplement-catalogue.json') as {
+      version: string; items: unknown; prompts: unknown; triggerTerms: unknown; text: { herbalPreOpPatientText: string };
+    };
+    expect(SUPPLEMENT_CATALOGUE_VERSION).toBe(supplements.version);
+    expect(SUPPLEMENT_ITEMS).toEqual(supplements.items);
+    expect(SUPPLEMENT_PROMPTS).toEqual(supplements.prompts);
+    expect(SUPPLEMENT_TRIGGER_TERMS).toEqual(supplements.triggerTerms);
+    expect(HERBAL_PREOP_PATIENT_TEXT).toBe(supplements.text.herbalPreOpPatientText);
   });
 });
 

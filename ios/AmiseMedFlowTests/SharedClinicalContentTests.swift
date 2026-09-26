@@ -31,6 +31,12 @@ final class SharedClinicalContentTests: XCTestCase {
         XCTAssertNotNil(ZebraCheck.ruleFile)
         XCTAssertFalse(ZebraCheck.rules.isEmpty)
         XCTAssertNotEqual(ZebraCheck.version, "unavailable")
+
+        XCTAssertNotNil(SupplementCatalogue.content)
+        XCTAssertFalse(SupplementCatalogue.items.isEmpty)
+        XCTAssertFalse(SupplementCatalogue.prompts.isEmpty)
+        XCTAssertFalse(SupplementCatalogue.triggerTerms.isEmpty)
+        XCTAssertNotEqual(SupplementCatalogue.catalogueVersion, "unavailable")
     }
 
     func testAMissingFileIsReportedNotGuessed() {

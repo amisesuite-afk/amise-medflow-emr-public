@@ -1,8 +1,9 @@
 // SupplementAlerts.swift
 // Herbs, teas, bush remedies and supplements — clinician-facing alerts and "ask about" prompts for
 // the risk snapshot (VisitRiskAssessment) and the pre-op checklist. Twin of the dashboard's
-// `artifacts/dashboard/src/lib/supplement-prompts.ts`: same prompt ids, wording
-// (SupplementCatalogue.prompts / triggerTerms, parity-linted) and thresholds.
+// `artifacts/dashboard/src/lib/supplement-prompts.ts`: same prompt ids, wording and trigger words
+// (SupplementCatalogue.prompts / triggerTerms, read from the shared
+// clinical-content/rules/supplement-catalogue.json) and thresholds.
 //
 // Deterministic; display only. Nothing is stopped, ordered or written to the record: the
 // clinician decides. AIService is not used.
@@ -61,6 +62,12 @@ enum SupplementAlerts {
     // MARK: - Prompts
 
     static func prompts(_ i: Inputs) -> [Prompt] {
+        // The shared rules file did not load (Settings → Diagnostics says why): say so once
+        // instead of showing prompts without their wording. Unchanged when it loads.
+        guard SupplementCatalogue.content != nil else {
+            return [Prompt(id: "rules_unavailable", level: .info, title: "Supplement rules not loaded",
+                           detail: "supplement-catalogue.json could not be read; see Settings → Diagnostics.")]
+        }
         var out: [Prompt] = []
         let text = NegationMatcher.Source(i.clinicalText)
         let conditions = NegationMatcher.Source(i.conditionsText)

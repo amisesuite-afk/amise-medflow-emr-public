@@ -62,6 +62,12 @@ export const SHARED_CONTENT: SharedContentFile[] = [
     swift: { files: ['ios/AmiseMedFlow/Services/ZebraCheck.swift'], root: 'ZebraCheck.RuleFile', ignore: HEADER_IGNORE },
     ts: { files: ['lib/triage-engine/src/diagnostic-reasoning/zebra-rules.ts'], root: 'ZebraRuleFile', ignore: ['/$schema', '/$comment'] },
   },
+  {
+    name: 'supplement-catalogue',
+    regexLists: [],
+    swift: { files: ['ios/AmiseMedFlow/Services/SupplementCatalogue.swift'], root: 'SupplementCatalogue.Content', ignore: HEADER_IGNORE },
+    ts: { files: ['artifacts/dashboard/src/lib/supplement-catalogue.ts'], root: 'SupplementCatalogueContent', ignore: ['/$schema', '/$comment'] },
+  },
 ];
 
 /** Platform copies replaced by a shared file: they must not come back. */

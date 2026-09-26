@@ -404,8 +404,10 @@
       "platforms": ["ios", "web", "front-desk", "api"],
       "kind": "reference-catalogue",
       "contentVersion": "1.0.0",
-      "versionStamp": { "file": "artifacts/dashboard/src/lib/supplement-catalogue.ts", "type": "regex", "pattern": "SUPPLEMENT_CATALOGUE_VERSION\\s*=\\s*'([^']+)'" },
+      "versionStamp": { "file": "clinical-content/rules/supplement-catalogue.json", "type": "json-key", "key": "version" },
       "files": [
+        "clinical-content/rules/supplement-catalogue.json",
+        "clinical-content/schemas/supplement-catalogue.schema.json",
         "artifacts/dashboard/src/lib/supplement-catalogue.ts",
         "artifacts/dashboard/src/lib/supplement-prompts.ts",
         "ios/AmiseMedFlow/Services/SupplementCatalogue.swift",
@@ -414,9 +416,11 @@
       "tests": [
         "artifacts/dashboard/src/lib/__tests__/supplements.test.ts",
         "ios/AmiseMedFlowTests/SupplementTests.swift",
-        "artifacts/api-server/src/test/outbound-safety.test.ts"
+        "artifacts/api-server/src/test/outbound-safety.test.ts",
+        "ios/AmiseMedFlowTests/SharedClinicalContentTests.swift",
+        "scripts/src/shared-content.test.ts"
       ],
-      "ciChecks": ["lint:interaction-parity", "lint:patient-instructions"],
+      "ciChecks": ["lint:shared-content", "lint:interaction-parity", "lint:patient-instructions"],
       "guidelines": [
         { "name": "Owner's evidence briefing (Kabiye, 'Ancient Remedy, Modern Market', Sept 2026)", "version": "Sept 2026", "section": "§5 supplements and herbal products; §7 perioperative checklist", "citation": "Each catalogue item names its source" },
         { "name": "Ang-Lee MK et al. Herbal medicines and perioperative care", "version": "JAMA 2001;286:208-16", "section": "stop times", "citation": "per item" },

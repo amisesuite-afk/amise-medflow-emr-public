@@ -29,11 +29,13 @@ enum SharedClinicalContent {
     /// lint:shared-content fails when a clinical-content/rules/*.json file has no case here.
     enum File: String, CaseIterable {
         case zebraRules = "zebra-rules"
+        case supplementCatalogue = "supplement-catalogue"
 
         /// Row title in Settings → Diagnostics.
         var title: String {
             switch self {
             case .zebraRules:          return "Zebra rules"
+            case .supplementCatalogue: return "Supplement catalogue"
             }
         }
     }
@@ -108,6 +110,8 @@ enum SharedClinicalContent {
         switch file {
         case .zebraRules:
             failure = errorText(decode(ZebraCheck.RuleFile.self, file, bundle: bundle))
+        case .supplementCatalogue:
+            failure = errorText(decode(SupplementCatalogue.Content.self, file, bundle: bundle))
         }
         let fileURL = url(for: file, bundle: bundle)
         let stamp = fileURL

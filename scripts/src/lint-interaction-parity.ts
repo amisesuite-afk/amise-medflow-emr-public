@@ -20,12 +20,11 @@
  *  3. Grade: the same pair has a different severity on each platform, unless it is on
  *     GRADE_ALLOWLIST (reported, not failed). An allow-list entry that no longer matches a real
  *     difference also fails, so the list cannot go stale.
- *  4. Herbal products and supplements (supplement-catalogue.ts / SupplementCatalogue.swift):
- *     every catalogue item and field, the shared wording (patient question, disclosure
- *     rationale, surgeon-approved herbal pre-op text, prompt texts, trigger words) and the
- *     catalogue version must be identical; every catalogue `term` must exist on both platforms;
- *     and every rule naming a supplement term must exist on both platforms with the SAME effect
- *     and action (iOS clinicalEffect / management).
+ *  4. Herbal products and supplements: the catalogue, its shared wording, prompt texts and trigger
+ *     words are ONE file both platforms read (clinical-content/rules/supplement-catalogue.json,
+ *     validated by lint:shared-content). Here: every catalogue `term` must exist on both
+ *     platforms, and every rule naming a supplement term must exist on both platforms with the
+ *     SAME effect and action (iOS clinicalEffect / management).
  *
  * Wording of the drug-only rules is not compared: the original iOS rules have their own (longer)
  * wording. The tests on each platform pin the wording of the rules ported for parity.
@@ -46,8 +45,7 @@ const FILES = {
   webTerms: 'artifacts/dashboard/src/lib/drug-classes.ts',
   iosRules: 'ios/AmiseMedFlow/Services/DrugInteractionService.swift',
   iosTerms: 'ios/AmiseMedFlow/Services/DrugClasses.swift',
-  webSupplements: 'artifacts/dashboard/src/lib/supplement-catalogue.ts',
-  iosSupplements: 'ios/AmiseMedFlow/Services/SupplementCatalogue.swift',
+  supplementCatalogue: 'clinical-content/rules/supplement-catalogue.json',
 };
 
 /** Known grade differences awaiting a clinical decision. Reported, never failed. */
@@ -349,60 +347,25 @@ function coveringRule(from: Platform, a: string, b: string, other: Platform): Ru
   });
 }
 
-/** Plain JSON-like value of a parsed literal (strings, arrays, objects / call arguments). */
-function plain(v: Val | undefined): unknown {
-  if (!v) return undefined;
-  if (v.k === 'str') return v.v;
-  if (v.k === 'arr') return v.v.map(plain);
-  if (v.k === 'obj') return Object.fromEntries([...v.v].map(([k, x]) => [k, plain(x)]));
-  if (v.k === 'enum') return `.${v.v}`;
-  return undefined;
-}
-const same = (a: unknown, b: unknown) => JSON.stringify(a) === JSON.stringify(b);
-
-/** Compare the supplement catalogues; returns the lowercased interaction terms they name. */
+/**
+ * The supplement catalogue is one shared file (clinical-content/rules/supplement-catalogue.json,
+ * read by both platforms and schema-checked by lint:shared-content). Here: every item's
+ * interaction `term` must exist on both platforms. Returns the lowercased terms it names.
+ */
 function checkSupplements(web: Platform, ios: Platform, errors: string[]): Set<string> {
-  const w = new Source(FILES.webSupplements);
-  const i = new Source(FILES.iosSupplements);
-  const scalars: [string, string][] = [
-    ['SUPPLEMENT_CATALOGUE_VERSION', 'catalogueVersion'],
-    ['SUPPLEMENT_SECTION_TITLE', 'sectionTitle'],
-    ['SUPPLEMENT_PATIENT_QUESTION', 'patientQuestion'],
-    ['SUPPLEMENT_DISCLOSURE_RATIONALE', 'disclosureRationale'],
-    ['HERBAL_PREOP_PATIENT_TEXT', 'herbalPreOpPatientText'],
-  ];
-  for (const [wn, iname] of scalars) {
-    const a = str(w.value(wn), wn);
-    const b = str(i.value(iname), iname);
-    if (a !== b) errors.push(`supplements: ${wn} (web) and ${iname} (iOS) differ\n      web: ${a}\n      iOS: ${b}`);
-  }
-  const itemsOf = (v: unknown) => new Map((v as Record<string, string>[]).map(x => [x.id, x]));
-  const wi = itemsOf(plain(w.value('SUPPLEMENT_ITEMS')));
-  const ii = itemsOf(plain(i.value('items')));
-  const FIELDS = ['label', 'term', 'names', 'concern', 'stopTime', 'harms', 'evidence', 'source'];
+  const catalogue = JSON.parse(readFileSync(join(REPO_ROOT, FILES.supplementCatalogue), 'utf8')) as {
+    items?: { id: string; term: string }[];
+  };
   const terms = new Set<string>();
-  for (const [id, x] of wi) {
-    const y = ii.get(id);
-    if (!y) { errors.push(`supplements: item "${id}" is on web only`); continue; }
-    for (const f of FIELDS) {
-      if (x[f] !== y[f]) errors.push(`supplements: item "${id}" field ${f} differs\n      web: ${x[f]}\n      iOS: ${y[f]}`);
-    }
-    if (x.term) {
-      terms.add(x.term.toLowerCase());
-      if (!web.terms.has(x.term.toLowerCase()) || !ios.terms.has(x.term.toLowerCase())) {
-        errors.push(`supplements: item "${id}" names interaction term "${x.term}", which is not defined on both platforms`);
-      }
+  for (const item of catalogue.items ?? []) {
+    if (!item.term) continue;
+    const term = item.term.toLowerCase();
+    terms.add(term);
+    if (!web.terms.has(term) || !ios.terms.has(term)) {
+      errors.push(`supplements: item "${item.id}" names interaction term "${item.term}", which is not defined on both platforms`);
     }
   }
-  for (const id of ii.keys()) if (!wi.has(id)) errors.push(`supplements: item "${id}" is on iOS only`);
-  if (wi.size === 0) errors.push('supplements: parser found no catalogue items');
-  const wp = plain(w.value('SUPPLEMENT_PROMPTS'));
-  const ip = plain(i.value('prompts'));
-  if (!same(wp, ip)) errors.push('supplements: prompt texts differ (SUPPLEMENT_PROMPTS vs SupplementCatalogue.prompts)');
-  const sortKeys = (o: unknown) => Object.fromEntries(Object.entries(o as Record<string, unknown>).sort(([a], [b]) => a.localeCompare(b)));
-  if (!same(sortKeys(plain(w.value('SUPPLEMENT_TRIGGER_TERMS'))), sortKeys(plain(i.value('triggerTerms'))))) {
-    errors.push('supplements: trigger words differ (SUPPLEMENT_TRIGGER_TERMS vs SupplementCatalogue.triggerTerms)');
-  }
+  if (!catalogue.items?.length) errors.push(`supplements: no catalogue items in ${FILES.supplementCatalogue}`);
   return terms;
 }
 
