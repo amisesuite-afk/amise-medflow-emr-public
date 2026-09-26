@@ -5,7 +5,7 @@
  * and detects pathognomonic findings for immediate flagging.
  */
 
-import { containsAffirmed, findAffirmed } from '@workspace/triage-engine';
+import { CURRENT_FEATURES, findRecordMatches } from './record-text-match';
 
 export interface ObservedFeature {
   featureId: string;
@@ -433,12 +433,17 @@ export function extractFeaturesFromTranscript(text: string): ObservedFeature[] {
     for (const kw of keywords) {
       if (!lower.includes(kw)) continue;
 
-      // Present when any mention is affirmed; absent when every mention is negated
-      // ("no vomiting", "Murphy's sign negative") — shared rule in negation.ts.
-      const negated = !containsAffirmed(lower, kw);
+      // Present when any mention is about the patient now (record-text-match.ts: negation.ts,
+      // negated lists, family history, and for symptoms / signs historical or background
+      // mentions); absent when every mention is negated ("no vomiting", "Murphy's sign negative",
+      // "never had jaundice, pain or fever"). A mention that is only family history or history
+      // ("mother had gallstones") records nothing: the next keyword is tried.
+      const current = findRecordMatches(lower, kw, { current: CURRENT_FEATURES.has(featureId) }).length > 0;
+      const negated = !current && findRecordMatches(lower, kw, { negationOnly: true }).length === 0;
+      if (!current && !negated) continue;
 
       if (!seen.has(featureId)) {
-        results.push({ featureId, observed: !negated });
+        results.push({ featureId, observed: current });
         seen.add(featureId);
       }
       break; // first matching keyword wins for this feature
@@ -482,8 +487,9 @@ export function detectPathognomonic(text: string): PathognomicMatch[] {
   const matches: PathognomicMatch[] = [];
 
   for (const pattern of PATHOGNOMONIC_PATTERNS) {
-    // Negation-aware: "no Rovsing's sign", "psoas sign negative" suggest nothing.
-    const match = findAffirmed(text, pattern.regex);
+    // Negation-aware (record-text-match.ts): "no Rovsing's sign", "psoas sign negative", "no
+    // Rovsing's, psoas or obturator sign" suggest nothing.
+    const match = findRecordMatches(text, pattern.regex, { current: true })[0];
     if (!match) continue;
     if (seen.has(pattern.diseaseId)) continue;
     seen.add(pattern.diseaseId);

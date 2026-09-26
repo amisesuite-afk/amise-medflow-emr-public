@@ -1,8 +1,12 @@
 /**
- * Maps the consultation record → pane-engine feature IDs (pane model 1.0.0).
+ * Maps the consultation record → pane-engine feature IDs (pane model 1.0.1).
  *
- * Sources, all read through the negation-aware matcher (lib/triage-engine negation.ts; whole-word
- * regexes only):
+ * Sources, all read through record-text-match.ts (whole-word regexes only): the shared
+ * negation-aware matcher (lib/triage-engine negation.ts), plus negated lists ("never had pain,
+ * jaundice or fever"), family history ("mother had …") and, for symptoms and signs, historical,
+ * background-operation and lay-guess mentions ("hernia repair 6 weeks ago", "awaiting repair of
+ * a femoral hernia", "Mother thought it was a hernia"). A "[^.]{0,N}" gap in a rule cannot cross
+ * a negation cue ("DRE: no mass"):
  *  1. CC template hints — the complaint template implies a finding (e.g. "Dysphagia" → dysphagia).
  *  2. SOCRATES answers — key-specific rules (site, radiation, character, onset, timing, triggers,
  *     relief, severity) plus the general symptom vocabulary on every answer.
@@ -22,9 +26,15 @@
  * vomiting / chest-pain / neurological / urinary / pregnancy findings had no rules, "Burning"
  * always meant heartburn, "after meals" meant a fatty-food trigger, "Neck" meant a neck lump and
  * "Groin" a groin swelling (clinval C6, upper-gi 10, colorectal 19, soft-tissue mapper notes).
+ * Model 1.0.1 (precision pass, docs/clinical-validation/changes/diagnostic-reasoning.md) removed
+ * false features the diagnostic-reasoning panel exposed: fever in a negated list, hernia features
+ * from a repaired or planned hernia, "flame haemorrhages" as a burn, "pale stools" as pallor,
+ * rheumatoid arthritis as joint pain, faecal urgency as urinary, "distended neck veins" as
+ * abdominal distension and others (tests: __tests__/pane-mapper-false-positives.test.ts).
  */
 
-import { joinClauses, testAffirmed } from '@workspace/triage-engine';
+import { joinClauses } from '@workspace/triage-engine';
+import { CURRENT_FEATURES, findRecordMatches, negationFreeGaps, notCurrentAt, recordHas, sentenceOf } from './record-text-match';
 
 type FeatureMap = Record<string, boolean>;
 
@@ -53,9 +63,16 @@ export interface PaneFeatureContext {
   narrative?: string[];
 }
 
-interface Rule { pattern: RegExp; features: string[]; requires?: RegExp }
-const r = (pattern: RegExp, ...features: string[]): Rule => ({ pattern, features });
-const rq = (requires: RegExp, pattern: RegExp, ...features: string[]): Rule => ({ pattern, features, requires });
+/**
+ * A mapping rule. `requires`: context that must be affirmed in the same text or the CC / symptom
+ * (e.g. breast context for "hard"). `near`: context that must be affirmed in the same sentence or
+ * the CC / symptom (e.g. a urinary word for a bare "urgency"). Gaps written "[^.]{0,N}" cannot
+ * cross a negation cue (negationFreeGaps: "DRE: no mass" is not a rectal mass).
+ */
+interface Rule { pattern: RegExp; features: string[]; requires?: RegExp; near?: RegExp }
+const r = (pattern: RegExp, ...features: string[]): Rule => ({ pattern: negationFreeGaps(pattern), features });
+const rq = (requires: RegExp, pattern: RegExp, ...features: string[]): Rule => ({ pattern: negationFreeGaps(pattern), features, requires });
+const rn = (near: RegExp, pattern: RegExp, ...features: string[]): Rule => ({ pattern: negationFreeGaps(pattern), features, near });
 
 // ── 1. CC template hints ────────────────────────────────────────────────────────
 // Keyed by the template name (substring). Hints state only what the template itself asserts;
@@ -114,15 +131,19 @@ const NEURO_CTX = /weak|numb|speech|slurr|dysarthr|vision|visual|deficit|droop|s
 const BREAST_CTX = /breast|nipple|areola|mastalg/i;
 const GROIN_CTX = /groin|inguinal|femoral/i;
 const WOUND_CTX = /\bwound\b|\bincision\b|post.?op|surgical site/i;
+/** An adrenal mass named in the record or an imaging report. */
+const ADRENAL_MASS = /\badrenal (mass|lesion|nodule|lump|tumou?r|incidentaloma|adenoma)\b/;
+const URINARY_CTX = /\burin\w*|\bmicturi\w*|\bbladder\b|\bpee\w*|\bvoid\w*|\bdysuri\w*|\bnocturia\b|\bpassing water\b|\buti\b|\bcystitis\b|\bprostat\w*/;
+const LEG_SYMPTOM_CTX = /\bpain\w*|\bache\w*|\bnumb\w*|\bweak\w*|\btingl\w*|\bsciatica\b|\bparaesthesi\w*|\bpins and needles\b|\bheav(y|iness)\b|\bcramp\w*/;
 
 const TEXT_RULES: Rule[] = [
   // Abdominal pain and site
   r(/\babdominal (pain|cramps?|discomfort)|\bpain in (the|his|her) (abdomen|tummy|belly)|\b(tummy|belly|stomach) ?ache\b/, 'abdominal_pain'),
-  r(/\b(rlq|rif)\b|right (lower quadrant|iliac fossa)/, 'rlq_pain'),
-  r(/\bruq\b|right upper quadrant|right hypochondri/, 'ruq_pain'),
+  r(/(\b(rlq|rif)\b|right (lower quadrant|iliac fossa))(?! (scar|incision|port|drain|stoma))/, 'rlq_pain'),
+  r(/(\bruq\b|right upper quadrant|right hypochondri\w*\b)(?! (scar|incision|port|drain|stoma))/, 'ruq_pain'),
   r(/\bepigastri(c|um)\b/, 'epigastric_pain'),
-  r(/\b(llq|lif)\b|left (lower quadrant|iliac fossa)/, 'lif_pain'),
-  r(/\bluq\b|left upper quadrant|left hypochondri/, 'luq_pain'),
+  r(/(\b(llq|lif)\b|left (lower quadrant|iliac fossa))(?! (scar|incision|port|drain|stoma))/, 'lif_pain'),
+  r(/(\bluq\b|left upper quadrant|left hypochondri\w*\b)(?! (scar|incision|port|drain|stoma))/, 'luq_pain'),
   r(/\bperi-?umbilical\b|\baround the (navel|umbilicus|belly button)|\bcentral abdominal pain/, 'periumbilical_pain'),
   r(/\b(diffuse|generali[sz]ed) (abdominal )?(pain|tenderness|peritonitis)|\bpain all over (the|his|her) (abdomen|tummy)/, 'diffuse_abdominal_pain'),
   r(/\bsuprapubic\b/, 'suprapubic_pain'),
@@ -168,19 +189,19 @@ const TEXT_RULES: Rule[] = [
   r(/\b(ankle|leg|pedal|peripheral) (o?edema|swelling)|\bswollen (ankles|legs?)\b|\bpitting o?edema\b|\bleg swelling\b/, 'leg_swelling'),
   r(/\bbilateral\b[^.]{0,20}\b(leg|ankle|pedal|lower limb)?\s*(o?edema|swelling)|\bboth (legs|ankles)\b[^.]{0,20}\b(swollen|swelling|o?edema)|\bswollen ankles\b|\bankle o?edema\b/, 'bilateral_leg_oedema'),
   r(/\b(left|right|one) (leg|calf)\b[^.]{0,25}\b(swollen|swelling)|\bunilateral\b[^.]{0,15}\b(leg|calf|swelling|o?edema)|\bswollen (left|right) (leg|calf)/, 'unilateral_leg_swelling', 'leg_swelling'),
-  r(/\bcalf (tenderness|pain|tender)|\btender calf\b/, 'calf_tenderness'),
+  r(/\bcalf (tenderness|tender)|\bcalf (is |was )?tender\b|\btender calf\b/, 'calf_tenderness'),
   r(/\b(leg|arm|limb|calf|thigh|foot) pain\b|\bpain in (the|his|her) (left |right )?(leg|arm|calf|thigh|foot)\b|\blimb pain\b/, 'limb_pain'),
   r(/\bcold (leg|foot|feet|limb|arm|hand)\b|\b(leg|foot|limb) (is |was |felt )?cold\b|\bperishingly cold\b/, 'cold_limb'),
   r(/\b(white|pale|mottled) (leg|foot|limb)\b|\b(leg|foot|limb) (is |was )?(white|pale|mottled)\b/, 'pale_limb'),
-  r(/\b(absent|no|impalpable|weak|reduced|diminished|poor) (\w+ )?(pulses?|pedal pulses|foot pulses)\b|\bpulses? (are |were )?(absent|impalpable|not palpable|not felt)|\bpulseless\b/, 'absent_pulses'),
+  r(/\b(absent|no|impalpable|weak|reduced|diminished|poor) (\w+ )?(pulses?|pedal pulses|foot pulses)\b(?![-\s]?ox)|\bpulses? (are |were )?(absent|impalpable|not palpable|not felt)|\bpulseless\b/, 'absent_pulses'),
   r(/\bclaudicat\w*|\bcalf pain (on|when) walking/, 'claudication'),
   r(/\brest pain\b/, 'rest_pain'),
   r(/\bpulsatile\b|\bexpansile\b/, 'pulsatile_mass'),
   r(/\bvaricos\w*/, 'varicosities'),
-  r(/\b(tender|palpable|hard|red)\b[^.]{0,12}\b(cord|superficial vein)\b|\bcord.like\b/, 'tender_cord'),
+  r(/\b(tender|palpable|hard|red)\b[^.]{0,12}\b(cord|superficial vein)\b(?! (towards|to|into) the (anal|anus|rectum|external opening))|\bcord.like\b/, 'tender_cord'),
   r(/\b(leg|venous|arterial|non.?healing) ulcer|\bulcer (on|of) the (leg|shin|ankle|gaiter)/, 'skin_ulceration'),
   r(/\bmottl\w*|\bashen\b|\bcold peripher\w*|\bcold extremit\w*|\b(crt|capillary refill( time)?)\s*(of\s*)?(>\s*)?[3-9]\s*(s|sec|seconds)\b/, 'mottled_skin'),
-  r(/\bpale\b|\bpallor\b|\bpasty\b|\bwhite as a sheet\b/, 'pallor'),
+  r(/\bpale\b(?! (stools?|faeces|feces|motions|urine|coloured stools?))|\bpallor\b|\bpasty\b|\bwhite as a sheet\b/, 'pallor'),
   r(/\bpapill?o?edema\b|\bretinal ha?emorrhag\w*/, 'papilloedema'),
 
   // Respiratory
@@ -224,11 +245,12 @@ const TEXT_RULES: Rule[] = [
   r(/\bgcs\s*(of\s*)?(1[0-4]|[3-9])\b|\bunconscious\b|\bresponds (only )?to (voice|pain)\b|\bunresponsive\b/, 'gcs_drop', 'confusion'),
   r(/\bback pain\b|\bpain in (the|his|her) (lower |upper |mid )?back\b|\blumbar pain\b|\bbackache\b|\bthoracic (spine |back )?pain\b|\bspinal pain\b|\blumbar \(lower back\)|\bthoracic \(upper back\)/, 'back_pain'),
   r(/\bsciatica\b|\bpain (radiating |shooting )?down (the |both |his |her )?(left |right )?legs?\b|\bradiat\w* (down|into) (the |both )?legs?\b|\bdown leg\b/, 'sciatica'),
-  r(/\bboth legs\b|\bbilateral (sciatica|leg|legs|lower limb)\b|\bbilateral legs\b/, 'bilateral_leg_symptoms'),
+  rn(LEG_SYMPTOM_CTX, /\bboth legs\b|\bbilateral (leg|legs|lower limbs?)\b|\bbilateral legs\b/, 'bilateral_leg_symptoms'),
+  r(/\bbilateral sciatica\b/, 'bilateral_leg_symptoms'),
   r(/\bsaddle (an)?a?esthesia|\bsaddle numbness|\bnumb\w* (in|around) (the )?(saddle|perineum|buttocks|genitals|back passage)|\bperineal numbness|\bperianal numbness/, 'saddle_anaesthesia'),
   r(/\b(reduced|lax|poor|decreased) anal tone|\banal tone (is )?(reduced|lax|decreased)/, 'reduced_anal_tone'),
   r(/\bbladder \/ bowel dysfunction\b|\bsphincter (dysfunction|disturbance)/, 'urinary_retention_symptoms'),
-  r(/\bincontinen\w*|\bwet (himself|herself)\b/, 'urinary_incontinence'),
+  r(/(?<!(flatus|faecal|fecal|bowel|anal|double|stool) )\bincontinen\w*\b(?! (of|to) (flatus|faeces|feces|stool))|\bwet (himself|herself)\b/, 'urinary_incontinence'),
 
   // Systemic
   r(/\bfever\w*|\bfebrile\b|\bpyrexi\w*|\bhigh temperature\b|\bhot to touch\b/, 'fever'),
@@ -236,7 +258,7 @@ const TEXT_RULES: Rule[] = [
   r(/\bnight sweats?\b|\bdrenching sweats?\b/, 'night_sweats'),
   r(/\bfatigue\b|\btired\w*\b|\blethargy\b|\bmalaise\b|\bgenerali[sz]ed weakness\b|\bgenerally unwell\b|\bexhaust\w*/, 'fatigue'),
   r(/\bmuscle (aches?|pain)\b|\bmyalgi\w*/, 'myalgia'),
-  r(/\bjoint (pain|swelling|swollen)|\barthralgi\w*|\barthritis\b|\bswollen (knee|ankle|joint)s?\b/, 'joint_pain'),
+  r(/\bjoint (pain|swelling|swollen)|\barthralgi\w*|(?<!(rheumatoid|psoriatic|reactive|enteropathic|juvenile|inflammatory) )\barthritis\b|\bswollen (knee|ankle|joint)s?\b/, 'joint_pain'),
   r(/\bbone pain\b|\bbony pain\b/, 'bone_pain'),
   r(/\bdehydrat\w*|\bdry mucous|\bdry mouth\b|\bsunken (eyes|fontanelle)|\breduced skin turgor/, 'dehydration'),
   r(/\bpolyuri\w*|\bpolydipsi\w*|\bexcessive thirst\b|\bvery thirsty\b|\bthirst\w*|\bpassing (a lot of|lots of|large volumes of) urine/, 'polyuria_polydipsia'),
@@ -283,7 +305,7 @@ const TEXT_RULES: Rule[] = [
   r(/\bdiarrho?ea\b|\bloose stools?\b|\bwatery stools?\b/, 'diarrhoea'),
   r(/\bconstipat\w*/, 'constipation'),
   r(/\babsolute constipation\b|\bnot passed (flatus|wind|stool)\b|\bno flatus\b|\bobstipation\b|\b(unable to|can'?t) pass (wind|flatus|gas|stool)\b/, 'absolute_constipation'),
-  r(/\bdistend\w*|\bdistension\b|\bbloat\w*|\bswollen (abdomen|belly|tummy)\b/, 'abdominal_distension'),
+  r(/\bdistend\w*\b(?! (neck veins|jugular|veins?|bladder))|\bdistension\b|\bbloat\w*|\bswollen (abdomen|belly|tummy)\b/, 'abdominal_distension'),
   r(/\btympanitic\b|\btympanic\b|\bhugely distended\b|\bmassive(ly)? distend\w*|\bgrossly distended\b|\bcoffee.bean\b/, 'tympanic_abdomen'),
   r(/\banorexi\w*|\bloss of appetite\b|\bpoor appetite\b|\boff (his|her) food\b|\bnot eating\b/, 'anorexia'),
   r(/\bweight loss\b|\blost (\d+|a lot of|some) ?(kg|kilo\w*|pounds|lbs?|stones?)\b|\blosing weight\b|\blost weight\b/, 'weight_loss'),
@@ -291,7 +313,7 @@ const TEXT_RULES: Rule[] = [
   r(/\btenesmus\b|\bincomplete evacuation\b|\bfa?ecal urgency\b/, 'tenesmus'),
   r(/\bmucus\b|\bslime\b/, 'mucus_pr'),
   r(/\b(anal|perianal|rectal) pain\b|\bpain (at|around|in) the (anus|bottom|back passage)\b|\bpainful (bottom|anus)\b|\bpain on (defa?ecation|opening (his|her|the) bowels)/, 'anal_pain'),
-  r(/\bpain on (defa?ecation|opening (his|her|the) bowels)|\bpainful (defa?ecation|bowel motions)|\bdefa?ecation\b/, 'pain_on_defaecation'),
+  r(/\bpain (on|during|with|after) (defa?ecation|opening (his|her|the) bowels|passing (a )?stools?)|\bpainful (defa?ecation|bowel motions)|\b(defa?ecation|opening (his|her|the) bowels) (is |was )?painful\b/, 'pain_on_defaecation'),
   r(/\bperianal (lump|swelling|mass)|\blump (at|near|around) the anus\b|\banal (lump|swelling)\b/, 'perianal_swelling'),
   r(/\banal (mass|ulcer|lesion|tumou?r|induration)|\bindurated\b[^.]{0,20}\b(anal|margin|lesion|ulcer)|\bnon-?healing (anal )?(ulcer|fissure)/, 'anal_mass_ulcer'),
   r(/\brectal mass\b|\bmass (on|at) (dre|pr|digital rectal)|\bdre\b[^.]{0,30}\bmass\b|\bmass\b[^.]{0,30}\b(on|at) (dre|pr)\b/, 'rectal_mass'),
@@ -314,19 +336,20 @@ const TEXT_RULES: Rule[] = [
 
   // Urinary / genital
   r(/\bdysuri\w*|\bburning (on|when|with) (passing urine|urinat\w*|micturition|peeing)|\bpain(ful)? (on|when) (passing urine|urinat\w*|micturition)|\bstinging (on|when) passing urine/, 'dysuria'),
-  r(/(?<!fa?ecal |bowel )\b(urinary )?frequency\b|(?<!fa?ecal |bowel )\burgency\b|\bpassing urine (more )?often\b|\burinary symptoms\b|\bwith urination\b/, 'frequency_urgency'),
+  r(/\burinary (frequency|urgency)\b|\bpassing urine (more )?often\b|\burinary symptoms\b|\bwith urination\b|\bfrequency of micturition\b/, 'frequency_urgency'),
+  rn(URINARY_CTX, /(?<!fa?ecal |bowel )\b(frequency|urgency)\b/, 'frequency_urgency'),
   r(/\bnocturia\b|\b(gets |getting )?up (\w+ times )?(at night )?to pass urine\b/, 'nocturia'),
   r(/\bhesitan\w*|\bpoor (urinary )?stream\b|\bweak stream\b|\bterminal dribbl\w*|\bpost.micturition dribbl\w*|\bluts\b/, 'prostate_symptoms'),
-  r(/\b(unable|can'?t|cannot) (to )?(pass|pee|void|urinate)\b(?! (wind|flatus|gas|stool))|\burinary retention\b|\bretention of urine\b|\bincomplete (bladder )?emptying\b|\bnot passed urine\b/, 'urinary_retention_symptoms'),
+  r(/\b(unable|can'?t|cannot) (to )?(pass|pee|void|urinate)\b(?! (wind|flatus|gas|stool))|\burinary retention\b|\bretention of urine\b|\bincomplete (bladder )?emptying\b/, 'urinary_retention_symptoms'),
   r(/\b(palpable|distended|enlarged) bladder\b|\bbladder (is )?(palpable|distended)\b|\bresidual (volume )?(of )?\d{3,4}\b/, 'palpable_bladder'),
   r(/\boverflow\b|\bdribbling\b/, 'overflow_incontinence'),
-  r(/\boliguri\w*|\banuri\w*|\breduced urine output\b|\bpassing (little|less) urine\b|\blow urine output\b/, 'oliguria'),
+  r(/\boliguri\w*|\banuri\w*|\breduced urine output\b|\bpassing (little|less) urine\b|\blow urine output\b|\bnot passed (any )?urine\b/, 'oliguria'),
   r(/\bha?ematuri\w*|\bblood (in|on) (the |his |her )?urine\b|\b(red|pink|blood.stained) urine\b/, 'haematuria'),
   r(/\bvisible ha?ematuria|\bfrank ha?ematuria|\bmacroscopic ha?ematuria|\bblood in (the |his |her )?urine\b|\b(red|pink) urine\b/, 'visible_haematuria'),
   r(/\bpainless (visible |frank )?ha?ematuria\b/, 'painless_haematuria'),
   r(/\bhydronephros\w*|\bhydroureter\w*|\bdilated (renal )?(pelvis|collecting system)|\bpelvicalyceal dilat\w*/, 'hydronephrosis'),
   r(/\b(ureteric|renal|kidney|vuj|pui|obstructing) (stone|calcul\w*)|\bnephrolithiasis\b|\burolithiasis\b/, 'known_stone'),
-  r(/\brestless\b|\bwrithing\b|\b(cannot|can'?t) (lie|keep) still\b|\bcan'?t get comfortable\b|\bpacing\b/, 'restless_writhing'),
+  r(/(?<!(confused|agitated|drowsy|disorientated|disoriented),? (and )?)\brestless\b(?!,? (and )?(disorientat\w*|disorient\w*|confus\w*|agitat\w*|drows\w*))|\bwrithing\b|\b(cannot|can'?t) (lie|keep) still\b|\bcan'?t get comfortable\b|\bpacing\b/, 'restless_writhing'),
   r(/\b(urethral|penile) discharge\b/, 'urethral_discharge'),
   r(/\btestic\w* pain\b|\bpain(ful)? (in )?(the |his )?(left |right )?(testis|testicle|scrotum)\b|\bscrotal pain\b/, 'testicular_pain'),
   r(/\bscrotal swelling\b|\bswollen (testicle|testis|scrotum|hemiscrotum)\b|\bswelling of the (testicle|testis|scrotum)\b/, 'scrotal_swelling'),
@@ -377,7 +400,7 @@ const TEXT_RULES: Rule[] = [
   r(/\banterior triangle\b/, 'anterior_triangle_lump'),
   r(/\bparotid\b|\bsubmandibular (gland|swelling)\b/, 'parotid_swelling'),
   r(/\bneck pain\b/, 'neck_pain'),
-  r(/\badrenal (mass|lesion|nodule|tumou?r|incidentaloma)\b/, 'adrenal_mass'),
+  r(ADRENAL_MASS, 'adrenal_mass'),
 
   // Groin / hernia
   r(/\bcough impulse\b|\bimpulse on cough(ing)?\b/, 'cough_impulse'),
@@ -413,7 +436,7 @@ const TEXT_RULES: Rule[] = [
   r(/\bpunctum\b/, 'punctum'),
   r(/\berythema\w*|\berythematous\b|\bcellulitis\b|\bredness\b|\binflamed\b|\bred,? (hot|warm|swollen)\b|\bhot,? red\b/, 'erythema_surrounding'),
   r(/\bspreading (redness|erythema|cellulitis|infection)\b|\b(redness|erythema|cellulitis)\b[^.]{0,20}\bspreading\b|\btracking (redness|up the)\b/, 'spreading_redness'),
-  r(/\bfluctuan\w*|\babscess\b|\bcollection of pus\b|\bpointing\b/, 'swelling_fluctuant_soft'),
+  r(/\bfluctuan\w*|(?<!(drainage|drained|incision and drainage) of (an |a |the )?)\babscess\b|\bcollection of pus\b|\bpointing\b/, 'swelling_fluctuant_soft'),
   r(/\bpus\b|\bpurulent\b|\bdischarging (pus|sinus)\b|\boozing pus\b/, 'discharge_pus'),
   r(/\b(tender|painful) (lump|swelling|area|red)\b|\bexquisitely tender\b|\bvery painful\b/, 'localised_pain'),
   r(/\bcrepitus\b|\bcrepitant\b|\bgas in (the )?(soft tissue|tissues|tissue planes)\b|\bsoft.tissue gas\b|\bsubcutaneous gas\b/, 'crepitus_soft_tissue'),
@@ -421,7 +444,7 @@ const TEXT_RULES: Rule[] = [
   r(/\bfoot (ulcer|infection|wound|swelling)\b|\b(ulcer|wound) (on|of) the (foot|toe|heel|sole)\b|\btoe (ulcer|infection)\b|\bdiabetic foot\b|\bplantar ulcer\b|\btoe \/ digit\b|\bforefoot\b/, 'foot_problem'),
   r(/\bfoot ulcer\b|\b(ulcer|wound) (on|of) the (foot|toe|heel|sole)\b|\btoe ulcer\b|\bplantar ulcer\b/, 'foot_ulcer'),
   r(/\bprobe.to.bone\b|\bprobes to bone\b|\bbone (is )?(exposed|visible)\b|\bexposed bone\b|\bosteomyelitis\b/, 'probe_to_bone'),
-  r(/\bneuropath\w*|\bloss of (protective )?sensation\b|\bmonofilament\b|\bnumb feet\b|\bnumbness (in|of)? ?(the |both )?feet\b/, 'peripheral_neuropathy'),
+  r(/\bneuropath\w*\b(?! pain)|\bloss of (protective )?sensation\b|\bmonofilament\b|\bnumb feet\b|\bnumbness (in|of)? ?(the |both )?feet\b/, 'peripheral_neuropathy'),
   r(/\b(hot|warm)\b[^.]{0,20}\bswollen\b[^.]{0,15}\bfoot\b|\bswollen\b[^.]{0,15}\b(hot|warm)\b[^.]{0,15}\bfoot\b|\bfoot\b[^.]{0,25}\b(hot|warm)\b[^.]{0,15}\bswollen\b|\b\d(\.\d)? ?°?c warmer\b/, 'warm_swollen_foot'),
 
   // Trauma / burns
@@ -432,7 +455,7 @@ const TEXT_RULES: Rule[] = [
   r(/\beviscerat\w*|\bomentum protruding\b|\bbowel protruding\b/, 'evisceration'),
   r(/\bchest wall tender\w*|\btender (over the )?ribs?\b|\brib (tenderness|fracture)/, 'chest_wall_tenderness'),
   r(/\bparadoxical (movement|breathing|chest)\b|\bflail\b/, 'paradoxical_breathing'),
-  r(/\bburns?\b(?! (on|when|with) (passing|micturition|urinat))|\bburnt\b|\bscald\w*|\bflame\b|\bfire\b|\bchemical (injury|splash)\b|\balkali\b/, 'burn_wound'),
+  r(/\bburns?\b(?! (on|when|with) (passing|micturition|urinat))|\bburnt\b|\bscald\w*|\bflame\b(?!(-| )(shaped|haemorrhag\w*|hemorrhag\w*))|\bfire\b|\bchemical (injury|splash)\b|\balkali\b/, 'burn_wound'),
   r(/\belectric\w* (injury|shock|burn)|\belectrocut\w*|\bhigh.voltage\b|\blightning\b/, 'electrical_injury'),
   r(/\b[2-9]\d\s?%\s?(tbsa|total body surface|body surface)|\btbsa\s*(of\s*)?[2-9]\d\s?%/, 'tbsa_significant'),
   r(/\binhalation (injury)?\b|\bsoot\w*\b|\bsinged\b|\benclosed space\b|\bsmoke inhal\w*/, 'inhalation_injury'),
@@ -507,8 +530,8 @@ const HISTORY_RULES: Rule[] = [
 
 // ── 4. SOCRATES key-specific rules (picker options and typed answers) ─────────────
 const SITE_RULES: Rule[] = [
-  r(/\bdiffuse\b|\bgenerali[sz]ed\b|\ball over\b/, 'diffuse_abdominal_pain'),
-  r(/\bperiumbilical\b|\baround (the )?(navel|belly button)\b|\bcentral\b/, 'periumbilical_pain'),
+  r(/\b(diffuse|generali[sz]ed)\b(?! (neck|chest|breast|thyroid|goitre|goiter|rash|skin|body|limbs?|legs?|arms?|swelling|lymphadenopathy|itch\w*))|\ball over\b(?! (the |his |her )?(body|skin|place))/, 'diffuse_abdominal_pain'),
+  r(/\bperiumbilical\b|\baround (the )?(navel|belly button)\b|\bcentral\b(?!\s*(\/|or|and)?\s*(areol\w*|nipple|breast|chest|neck))/, 'periumbilical_pain'),
   r(/\brlq\b|\bright (lower|iliac)\b|\bright iliac fossa\b/, 'rlq_pain'),
   r(/\bruq\b|\bright (upper|hypochondr)/, 'ruq_pain'),
   r(/\bepigastri\w*|\bupper (abdomen|belly)\b|\bstomach\b/, 'epigastric_pain'),
@@ -698,14 +721,28 @@ const DETAIL_RULES: Record<string, Rule[]> = {
 
 // ── Helpers ──────────────────────────────────────────────────────────────────────
 
+/**
+ * Apply `rules` to `text` (record-text-match.ts: negation, negated lists and family history for
+ * every feature; historical / background / guessed mentions also for current findings).
+ */
 function applyRules(text: string, rules: Rule[], out: FeatureMap, contextText = ''): void {
   if (!text.trim()) return;
+  const lower = text.toLowerCase();
   for (const rule of rules) {
     if (!rule.features.length || !rule.features[0]) continue;
     // `requires` (e.g. breast context for "hard", "cyclical") may be met by the CC template.
-    if (rule.requires && !rule.requires.test(`${text} ${contextText}`)) continue;
-    // Negation-aware (negation.ts): "no fever, no vomiting" extracts neither.
-    if (testAffirmed(rule.pattern, text)) for (const f of rule.features) out[f] = true;
+    if (rule.requires && !recordHas(text, rule.requires) && !recordHas(contextText, rule.requires)) continue;
+    let matches = findRecordMatches(text, rule.pattern);
+    if (rule.near) {
+      const near = rule.near;
+      const inContext = recordHas(contextText, near);
+      matches = matches.filter(m => inContext || recordHas(sentenceOf(lower, m.index, m.index + m.text.length), near));
+    }
+    if (!matches.length) continue;
+    for (const f of rule.features) {
+      if (CURRENT_FEATURES.has(f) && matches.every(m => notCurrentAt(lower, m.index, m.index + m.text.length))) continue;
+      out[f] = true;
+    }
   }
 }
 
@@ -835,6 +872,7 @@ const RESULT_TEXT_RULES: Rule[] = [
   r(/\bwhirlpool\b|\bcorkscrew\b|\babnormal (sma|smv|sma\/smv) (relationship|orientation)\b|\bduodenojejunal flexure (is )?(low|abnormal|right)\b/, 'whirlpool_sign'),
   r(/\bfree fluid\b|\bha?emoperitoneum\b/, 'pelvic_free_fluid'),
   r(/\b(adnexal|ovarian) (mass|cyst)\b|\bdermoid\b|\benlarged (left |right )?ovary\b/, 'adnexal_mass'),
+  r(ADRENAL_MASS, 'adrenal_mass'),
   r(/\bpneumatosis\b|\bportal venous gas\b|\bmesenteric (artery |vessel |vein )?(occlusion|thromb\w*|embol\w*)\b|\bsma (occlusion|thromb\w*|embol\w*)\b|\bnon.?enhancing (bowel|small bowel)\b/, 'mesenteric_ct_signs'),
   r(/\bgas in the soft tissues?\b|\bsoft.?tissue (gas|emphysema)\b|\bsubcutaneous gas\b/, 'crepitus_soft_tissue'),
   r(/\bosteomyelitis\b|\bcortical (erosion|destruction)\b|\bperiosteal reaction\b/, 'probe_to_bone'),
@@ -858,7 +896,7 @@ function resultFeatures(results: Record<string, string>, out: FeatureMap): void 
     const text = `${name}: ${value}`;
     const v = firstNumber(value);
     if (v !== null) for (const lab of LAB_RULES) if (lab.name.test(n)) lab.apply(v, out);
-    if (/troponin/i.test(n) && testAffirmed(/\b(raised|elevated|positive|rising|high)\b/, value)) out.raised_troponin = true;
+    if (/troponin/i.test(n) && recordHas(value, /\b(raised|elevated|positive|rising|high)\b/)) out.raised_troponin = true;
     applyRules(text, RESULT_TEXT_RULES, out);
   }
 }
@@ -902,21 +940,21 @@ export function extractFeaturesFromSocrates(
     applyRules(text, TEXT_RULES, out, cc);
     if (head === 'site' || head === 'location') {
       for (const s of SITE_PAIN_OR_LUMP) {
-        if (testAffirmed(s.pattern, text)) for (const f of (isLump ? s.lump : s.pain)) out[f] = true;
+        if (recordHas(text, s.pattern)) for (const f of (isLump ? s.lump : s.pain)) out[f] = true;
       }
     }
     if (head === 'onset' || head === 'duration') {
-      if (testAffirmed(ONSET_ACUTE, text)) out.acute_onset = true;
-      if (testAffirmed(ONSET_CHRONIC, text)) out.chronic_course = true;
+      if (recordHas(text, ONSET_ACUTE)) out.acute_onset = true;
+      if (recordHas(text, ONSET_CHRONIC)) out.chronic_course = true;
     }
-    if (head === 'severity' && /\b(worst|10\s*\/\s*10|\(10\))/i.test(text)) out.severe_pain = true;
+    if (head === 'severity' && recordHas(text, /\b(worst|10\s*\/\s*10|\(10\))/)) out.severe_pain = true;
     if (head === 'relief' || head === 'relieving' || head === 'triggers') {
-      if (testAffirmed(ANTACID, text) && !NO_HELP.test(text.toLowerCase())) out.antacid_relief = true;
+      if (recordHas(text, ANTACID) && !NO_HELP.test(text.toLowerCase())) out.antacid_relief = true;
     }
-    if (head === 'character' && /\bburning\b/i.test(text) && /\b(epigastri|retrosternal|chest|upper)/i.test(siteText)) {
+    if (head === 'character' && recordHas(text, /\bburning\b/) && /\b(epigastri|retrosternal|chest|upper)/i.test(siteText)) {
       out.heartburn = true;
     }
-    if (head === 'character' && /\bpressure\b|\bcrushing\b|\bheavy\b/i.test(text) && /\b(chest|retrosternal|central)\b/i.test(siteText)) {
+    if (head === 'character' && recordHas(text, /\bpressure\b|\bcrushing\b|\bheavy\b/) && /\b(chest|retrosternal|central)\b/i.test(siteText)) {
       out.chest_pain_pressure = true;
     }
     if (head === 'lmp' && /\b([5-9]|1\d)\s*weeks\b/i.test(text)) out.missed_period = true;
@@ -959,7 +997,7 @@ function extractFromContext(ctx: PaneFeatureContext, out: FeatureMap, cc: string
     applyRules(item, HISTORY_RULES, out);
   }
   for (const c of ctx.comorbidities ?? []) {
-    if (/\b(cancer|carcinoma|malignan\w*|lymphoma|myeloma|leuka?emia|metasta\w*)\b/i.test(c)) out.known_malignancy = true;
+    if (recordHas(c, /\b(cancer|carcinoma|malignan\w*|lymphoma|myeloma|leuka?emia|metasta\w*)\b/)) out.known_malignancy = true;
     if (/^\s*af\s*$/i.test(c)) out.known_af = true;
   }
   if ((ctx.surgicalHistory ?? []).some(s => s.trim())) {
