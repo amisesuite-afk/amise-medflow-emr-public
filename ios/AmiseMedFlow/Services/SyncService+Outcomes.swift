@@ -86,7 +86,7 @@ extension SyncService {
                 continue
             }
             do {
-                let rows: [IdRow]
+                var rows: [IdRow] = []
                 if let remoteId = SyncRemoteId.serverId(record.sync.remoteId) {
                     // Already inserted (the confirmation was lost or the record changed meanwhile):
                     // read the row back instead of inserting again.
@@ -227,7 +227,7 @@ extension SyncService {
                             if !record.isConfirmed { retractionPending = true }
                             continue
                         }
-                        let inserted: [IdRow]
+                        var inserted: [IdRow] = []
                         do {
                             inserted = try await SupabaseConfig.client
                                 .from("diagnosis_outcomes").insert(row).select("id")
