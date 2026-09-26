@@ -9,6 +9,8 @@ import {
   formatEct, fromEctInputValue, labReviewCanSave, labSaveTitle, rowIsCritical, toEctInputValue,
 } from '@/lib/report-import-save';
 import { webMisreaders } from '@/lib/lab-reader-keywords';
+import { useReferenceRanges } from '@/hooks/useReferenceRanges';
+import type { RangeContext } from '@workspace/triage-engine/reference-ranges';
 
 const PICKER = [...LAB_ANALYTES].sort((a, b) => a.name.localeCompare(b.name, 'en', { sensitivity: 'base' }));
 const pickerName = (key: string, name: string) => (key === 'bun' ? 'Urea (from BUN)' : name);
@@ -23,7 +25,7 @@ const input: React.CSSProperties = { fontSize: 12, padding: '4px 6px', width: '1
  */
 export default function LabReview({
   draft, onChange, readers, existing, canSaveResults, hasPdf, identityCard, identityNeedsConfirmation,
-  onViewPdf, onSave, saving,
+  onViewPdf, onSave, saving, rangeContext,
 }: {
   draft: LabImportDraft;
   onChange: (d: LabImportDraft) => void;
@@ -36,7 +38,10 @@ export default function LabReview({
   onViewPdf: (() => void) | null;
   onSave: () => void;
   saving: boolean;
+  /** Patient sex / age for the practice critical limits. */
+  rangeContext?: RangeContext;
 }) {
+  const referenceRanges = useReferenceRanges();
   const included = includedLabRows(draft);
   const flaggedCount = flaggedIncludedCount(draft, readers, existing);
   const needsCheckTick = flaggedCount > 0 || draft.origin === 'ocr';
@@ -44,7 +49,7 @@ export default function LabReview({
     () => new Map(draft.rows.map(r => [r.id, labRowAssessment(r, readers, existing)])),
     [draft.rows, readers, existing],
   );
-  const criticalIds = new Set(included.filter(r => rowIsCritical(r, assessments.get(r.id)!)).map(r => r.id));
+  const criticalIds = new Set(included.filter(r => rowIsCritical(r, assessments.get(r.id)!, referenceRanges, rangeContext)).map(r => r.id));
   const canSave = !saving && labReviewCanSave({
     identityNeedsConfirmation, identityConfirmed: draft.identityConfirmed, canSaveResults,
     includedCount: included.length, needsCheckTick, flaggedChecked: draft.flaggedChecked, hasPdf,

@@ -58,6 +58,8 @@ enum LabReferenceRangeDefaults {
     static let all: [LabReferenceRange] = [
         // Haematology
         row("WBC", "×10⁹/L", .either, 4.0, 11.0, nil, nil),
+        // Sex not recorded: the critical limit still applies (the normal range needs the sex).
+        row("Haemoglobin", "g/dL", .either, nil, nil, 8.0, nil),
         row("Haemoglobin", "g/dL", .male, 13.0, 17.0, 8.0, nil),
         row("Haemoglobin", "g/dL", .female, 12.0, 15.5, 8.0, nil),
         row("Platelets", "×10⁹/L", .either, 150, 400, 50, nil),
@@ -69,6 +71,7 @@ enum LabReferenceRangeDefaults {
         row("Sodium", "mmol/L", .either, 135, 145, 120, 155),
         row("Potassium", "mmol/L", .either, 3.5, 5.3, 2.5, 6.0),
         row("Urea", "mmol/L", .either, 2.5, 7.8, nil, nil),
+        row("Creatinine", "µmol/L", .either, nil, nil, nil, 300),
         row("Creatinine", "µmol/L", .male, 59, 104, nil, 300),
         row("Creatinine", "µmol/L", .female, 45, 84, nil, 300),
         row("eGFR", "mL/min/1.73m²", .either, 60, nil, nil, nil),

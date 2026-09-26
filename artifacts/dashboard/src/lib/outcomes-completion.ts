@@ -7,6 +7,7 @@ import type { useAppContext } from '@/context/AppContext';
 import { buildDecisionSupport, decisionScores } from '@/lib/decision-support';
 import type { DecisionConsultation } from '@/lib/decision-support';
 import { buildWebPredictionSnapshot } from '@/lib/outcomes-snapshot';
+import { currentPracticeRanges } from '@/lib/reference-ranges-store';
 import type { PredictionSnapshot } from '@workspace/triage-engine/outcomes';
 
 type App = ReturnType<typeof useAppContext>;
@@ -26,6 +27,8 @@ export function decisionConsultationFromApp(app: App): DecisionConsultation {
     icdCodes: app.icdCodes, paneTop: app.paneTop,
     imagingText: app.radiologyRequests.filter(r => r.resultReceived).map(r => r.resultNotes ?? '').join('.\n'),
     today: stLuciaToday(),
+    // Same ULNs as the Plan-step panel (practice reference ranges, when loaded).
+    referenceRanges: currentPracticeRanges(),
   };
 }
 

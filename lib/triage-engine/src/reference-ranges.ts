@@ -65,6 +65,8 @@ type Row = [analyte: string, unit: string, sex: RangeSex, lower: number | null, 
 const ADULT_DEFAULTS: Row[] = [
   // Haematology
   ['WBC', '×10⁹/L', 'any', 4.0, 11.0, null, null],
+  // Sex not recorded: the critical limit still applies (the normal range needs the sex).
+  ['Haemoglobin', 'g/dL', 'any', null, null, 8.0, null],
   ['Haemoglobin', 'g/dL', 'male', 13.0, 17.0, 8.0, null],
   ['Haemoglobin', 'g/dL', 'female', 12.0, 15.5, 8.0, null],
   ['Platelets', '×10⁹/L', 'any', 150, 400, 50, null],
@@ -76,6 +78,7 @@ const ADULT_DEFAULTS: Row[] = [
   ['Sodium', 'mmol/L', 'any', 135, 145, 120, 155],
   ['Potassium', 'mmol/L', 'any', 3.5, 5.3, 2.5, 6.0],
   ['Urea', 'mmol/L', 'any', 2.5, 7.8, null, null],
+  ['Creatinine', 'µmol/L', 'any', null, null, null, 300],
   ['Creatinine', 'µmol/L', 'male', 59, 104, null, 300],
   ['Creatinine', 'µmol/L', 'female', 45, 84, null, 300],
   ['eGFR', 'mL/min/1.73m²', 'any', 60, null, null, null],

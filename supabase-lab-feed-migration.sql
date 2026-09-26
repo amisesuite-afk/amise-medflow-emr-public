@@ -241,6 +241,7 @@ select v.analyte, v.unit, v.sex, 18, null, v.lo, v.hi, v.clo, v.chi,
        'default — replace with your laboratory''s ranges', date '2026-09-26', true
 from (values
   ('WBC',            '×10⁹/L',        'any',    4.0::numeric, 11.0::numeric, null::numeric, null::numeric),
+  ('Haemoglobin',    'g/dL',          'any',    null, null, 8.0,  null),
   ('Haemoglobin',    'g/dL',          'male',   13.0, 17.0, 8.0,  null),
   ('Haemoglobin',    'g/dL',          'female', 12.0, 15.5, 8.0,  null),
   ('Platelets',      '×10⁹/L',        'any',    150,  400,  50,   null),
@@ -250,6 +251,7 @@ from (values
   ('Sodium',         'mmol/L',        'any',    135,  145,  120,  155),
   ('Potassium',      'mmol/L',        'any',    3.5,  5.3,  2.5,  6.0),
   ('Urea',           'mmol/L',        'any',    2.5,  7.8,  null, null),
+  ('Creatinine',     'µmol/L',        'any',    null, null, null, 300),
   ('Creatinine',     'µmol/L',        'male',   59,   104,  null, 300),
   ('Creatinine',     'µmol/L',        'female', 45,   84,   null, 300),
   ('eGFR',           'mL/min/1.73m²', 'any',    60,   null, null, null),

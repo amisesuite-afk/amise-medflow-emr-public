@@ -34,6 +34,8 @@ import {
 } from '@/lib/report-import-save';
 import IdentityCard from './IdentityCard';
 import LabReview from './LabReview';
+import { useReferenceRanges } from '@/hooks/useReferenceRanges';
+import { ageInYears, type RangeContext } from '@workspace/triage-engine/reference-ranges';
 import ImagingReview from './ImagingReview';
 
 type Stage = 'idle' | 'reading' | 'noText' | 'paste' | 'setup' | 'review' | 'done';
@@ -51,6 +53,11 @@ export default function ReportImportPanel({ onSaved }: { onSaved?: () => void })
   } = useAppContext();
   const { profile, session } = useAuth();
   const { showToast } = useToast();
+  const referenceRanges = useReferenceRanges();
+  // Sex and age for the practice's sex- / age-specific critical limits (today, ECT).
+  const rangeContext: RangeContext = {
+    sex, ageYears: ageInYears(dob, new Date(Date.now() - 4 * 3600_000).toISOString().slice(0, 10)),
+  };
   const canSaveResults = canSaveReportResults(profile?.role);
 
   const [stage, setStage] = useState<Stage>('idle');
@@ -189,6 +196,7 @@ export default function ReportImportPanel({ onSaved }: { onSaved?: () => void })
         const save = buildLabImportSave({
           draft: labDraft, readers, patientId, encounterId,
           source: labSource(labDraft.origin, pdf !== null), documentId: docId,
+          referenceRanges, rangeContext,
         });
         if (save.count > 0) {
           const { id, error: err } = await insertImportedLabResult({ ...save.row });
@@ -381,6 +389,7 @@ export default function ReportImportPanel({ onSaved }: { onSaved?: () => void })
         <>
           <LabReview
             draft={labDraft}
+            rangeContext={rangeContext}
             onChange={setLabDraft}
             readers={readers}
             existing={existing}

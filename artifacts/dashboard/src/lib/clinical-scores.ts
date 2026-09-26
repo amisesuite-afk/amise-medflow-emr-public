@@ -5,6 +5,7 @@
  */
 
 import { evaluateNews2, type News2Avpu, type News2Band } from '@workspace/triage-engine';
+import { upperLimitOfNormal, type RangeContext, type ReferenceRange } from '@workspace/triage-engine/reference-ranges';
 
 // ── Extracted lab values ──────────────────────────────────────────────────────
 export interface ExtractedLabs {
@@ -87,10 +88,24 @@ export interface TokyoCholangitisInputs {
   organ_dysfunction?: Array<'cardiovascular' | 'neurological' | 'respiratory' | 'renal' | 'hepatic' | 'haematological'>;
 }
 
+/** Upper limits of normal for TG18 criterion B2 ("> 1.5 × STD"), U/L. */
+export type LiverEnzymeUln = Record<'alp' | 'ggt' | 'ast' | 'alt', number>;
+
+/**
+ * ALP / GGT / AST / ALT ULNs from the practice reference ranges (Settings → Reference ranges),
+ * else the built-in defaults (ALP 130, GGT 65, AST 40, ALT 40 U/L: the numbers this score used
+ * before). lib/triage-engine/src/reference-ranges.ts.
+ */
+export function liverEnzymeUln(practice: ReadonlyArray<ReferenceRange> = [], ctx: RangeContext = {}): LiverEnzymeUln {
+  const u = (name: string, fallback: number) => upperLimitOfNormal(practice, name, ctx)?.value ?? fallback;
+  return { alp: u('ALP', 130), ggt: u('GGT', 65), ast: u('AST', 40), alt: u('ALT', 40) };
+}
+
 export function scoreTokyoCholangitis(
   inputs: Partial<TokyoCholangitisInputs>,
   labs: ExtractedLabs,
   vitals: ScoringVitals,
+  uln: LiverEnzymeUln = liverEnzymeUln(),
 ): ScoreResult {
   const missing: string[] = [];
 
@@ -118,7 +133,7 @@ export function scoreTokyoCholangitis(
   if (jaundice === null) missing.push('Bilirubin');
   const bilirubinHigh = bilirubin !== null ? bilirubin >= 85 : inputs.bilirubin_high ?? false;
 
-  const alkphosULN = 130; const ggtULN = 65; const astULN = 40; const altULN = 40;
+  const alkphosULN = uln.alp; const ggtULN = uln.ggt; const astULN = uln.ast; const altULN = uln.alt;
   const enzymeElevated = (labs.alp && labs.alp > alkphosULN * 1.5)
     || (labs.ggt && labs.ggt > ggtULN * 1.5)
     || (labs.ast && labs.ast > astULN * 1.5)

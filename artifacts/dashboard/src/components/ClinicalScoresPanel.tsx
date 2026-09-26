@@ -13,7 +13,7 @@
 import React, { useState, useMemo } from 'react';
 import { useAppContext } from '@/context/AppContext';
 import {
-  scoreTokyoCholangitis, scoreTokyoCholecystitis,
+  scoreTokyoCholangitis, scoreTokyoCholecystitis, liverEnzymeUln,
   scoreRanson, scoreBisap, scorePepRisk, scoreNews2,
   type TokyoCholangitisInputs, type TokyoCholecystitisInputs,
   type RansonAdmissionInputs, type Ranson48hInputs,
@@ -24,6 +24,7 @@ import { NEWS2_AVPU_LABELS, type News2Avpu } from '@workspace/triage-engine';
 import { tokyoCholangitisAutoFill, tokyoCholecystitisAutoFill, type Tg18Record } from '@/lib/tg18-autofill';
 import { news2OptionsFromVitals, resolveNews2Scale2 } from '@/lib/vitals-news2-fields';
 import { usePatientNews2Scale2 } from '@/hooks/usePatientNews2Scale2';
+import { useReferenceRanges } from '@/hooks/useReferenceRanges';
 import RecordScoreButton from '@/components/RecordScoreButton';
 
 // ── Colour tokens ─────────────────────────────────────────────────────────────
@@ -144,7 +145,8 @@ function useTg18Record(): Tg18Record {
 }
 
 function TokyoCholangitisCard() {
-  const { extractedLabs, vitals } = useAppContext();
+  const { extractedLabs, vitals, sex } = useAppContext();
+  const referenceRanges = useReferenceRanges();
   const record = useTg18Record();
   // Pre-filled from the record (TG18 A/B/C criteria and organ dysfunction); the clinician's
   // toggles override the auto-filled values.
@@ -164,7 +166,9 @@ function TokyoCholangitisCard() {
     spo2:            vitals.spo2           ? +vitals.spo2           : undefined,
   };
 
-  const result = useMemo(() => scoreTokyoCholangitis(inputs, labs, sv), [inputs, labs, sv]);
+  // TG18 B2 "> 1.5 × ULN": the practice's ALP / GGT / AST / ALT ranges, else the defaults.
+  const uln = useMemo(() => liverEnzymeUln(referenceRanges, { sex }), [referenceRanges, sex]);
+  const result = useMemo(() => scoreTokyoCholangitis(inputs, labs, sv, uln), [inputs, labs, sv, uln]);
 
   const orgOptions = ['cardiovascular', 'neurological', 'respiratory', 'renal', 'hepatic', 'haematological'] as const;
   const toggleOrgan = (o: string) => {

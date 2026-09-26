@@ -3,6 +3,7 @@ import type { CSSProperties } from 'react';
 import { DECISION_CONTENT, diagnosisMatches, formatPercent } from '@workspace/pane-engine';
 import type { Band, DecisionResult, DecisionSourceRef, OptionResult } from '@workspace/pane-engine';
 import { useAppContext } from '@/context/AppContext';
+import { useReferenceRanges } from '@/hooks/useReferenceRanges';
 import { buildDecisionSupport, resultPosteriorShifts, shiftText } from '@/lib/decision-support';
 import type { DecisionConsultation } from '@/lib/decision-support';
 import { bestNextTest } from '@/lib/decision-support-links';
@@ -166,6 +167,7 @@ export default function DecisionSupportPanel({ diseaseId, compact = false }: { d
     encounterStatus, procedureData, paneState,
   } = app;
   const [dismissed, setDismissed] = useState<Set<string>>(new Set());
+  const referenceRanges = useReferenceRanges();
 
   const consultation: DecisionConsultation = {
     age: app.age, sex: app.sex, pregnancyPossible: app.pregnancyPossible, allergies: app.allergies,
@@ -177,6 +179,7 @@ export default function DecisionSupportPanel({ diseaseId, compact = false }: { d
     icdCodes: app.icdCodes, paneTop: app.paneTop,
     imagingText: app.radiologyRequests.filter(r => r.resultReceived).map(r => r.resultNotes ?? '').join('.\n'),
     today: stLuciaToday(),
+    referenceRanges,
   };
   const key = JSON.stringify(consultation);
   // eslint-disable-next-line react-hooks/exhaustive-deps

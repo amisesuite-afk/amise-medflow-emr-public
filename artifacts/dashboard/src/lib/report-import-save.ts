@@ -25,37 +25,41 @@ import {
   type ImagingImportDraft, type ImagingModality, type LabImportDraft, type LabImportRow,
   type LabRowAssessment, type NameReaders,
 } from '@workspace/triage-engine/report-import';
+import { isCriticalInAppUnit, type RangeContext, type ReferenceRange } from '@workspace/triage-engine/reference-ranges';
 import { webMisreaders } from './lab-reader-keywords';
 import { hasRole } from './roles';
 import type { UserRole } from './supabase';
 
-// ── Critical values (iOS LabPanel.hasCriticalValues thresholds, app units) ──────────────────
+// ── Critical values (practice reference ranges, app units) ──────────────────────────────────
 
-const TROPONIN_KEYS = new Set(['troponinI', 'troponinT', 'troponin']);
-
-/** A value in the app unit that meets a pre-operative critical threshold (same as iOS). */
-export function isCriticalLabValue(analyteKey: string | null, value: number): boolean {
-  switch (analyteKey) {
-    case 'haemoglobin': return value < 8.0;
-    case 'platelets': return value < 50;
-    case 'creatinine': return value > 300;
-    case 'inr': return value > 2.5;
-    case 'sodium': return value < 120 || value > 155;
-    case 'potassium': return value < 2.5 || value > 6.0;
-    case 'lactate': return value >= 4.0;
-    case 'glucose': return value < 3.0 || value > 20.0;
-    case 'calcium': return value < 1.75 || value > 3.0;
-    default: return analyteKey !== null && TROPONIN_KEYS.has(analyteKey) && value > 52;
-  }
+/**
+ * A value in the app unit beyond a critical limit: the practice's own limit when one is set
+ * (Settings → Reference ranges), else the built-in default — which equals the iOS
+ * LabPanel.hasCriticalValues thresholds (Hb < 8, platelets < 50, creatinine > 300, INR > 2.5,
+ * Na < 120 / > 155, K < 2.5 / > 6.0, lactate ≥ 4 (stored as > 3.9), glucose < 3 / > 20,
+ * Ca < 1.75 / > 3.0, troponin > 52). lib/triage-engine/src/reference-ranges.ts.
+ */
+export function isCriticalLabValue(
+  analyteKey: string | null,
+  value: number,
+  practice: ReadonlyArray<ReferenceRange> = [],
+  ctx: RangeContext = {},
+): boolean {
+  return isCriticalInAppUnit(practice, analyteKey, value, ctx);
 }
 
 const CRITICAL_FLAGS = new Set(['C', 'CRIT', 'CRITICAL']);
 
-/** The row's saved value is critical (threshold on the stored value, or a printed critical flag). */
-export function rowIsCritical(row: LabImportRow, a: LabRowAssessment): boolean {
+/** The row's saved value is critical (limit on the stored value, or a printed critical flag). */
+export function rowIsCritical(
+  row: LabImportRow,
+  a: LabRowAssessment,
+  practice: ReadonlyArray<ReferenceRange> = [],
+  ctx: RangeContext = {},
+): boolean {
   if (CRITICAL_FLAGS.has(row.flag.trim().toUpperCase())) return true;
   const n = numberFromValueText(a.storedValue);
-  return n !== null && isCriticalLabValue(row.analyteKey, n.value);
+  return n !== null && isCriticalLabValue(row.analyteKey, n.value, practice, ctx);
 }
 
 // ── Score inputs (extractedLabs) ────────────────────────────────────────────────────────────
@@ -187,8 +191,14 @@ export function buildLabImportSave(input: {
   encounterId: string | null;
   source: string;
   documentId: string | null;
+  /** Practice reference ranges (Settings); empty → the built-in defaults. */
+  referenceRanges?: ReadonlyArray<ReferenceRange>;
+  /** Patient sex / age for sex- or age-specific limits. */
+  rangeContext?: RangeContext;
 }): LabImportSave {
   const { draft, readers, patientId, encounterId, source, documentId } = input;
+  const practice = input.referenceRanges ?? [];
+  const rangeCtx = input.rangeContext ?? {};
   const rows = includedLabRows(draft);
   const analytes: ImportedAnalyte[] = [];
   const sessionResults: Record<string, string> = {};
@@ -201,7 +211,7 @@ export function buildLabImportSave(input: {
     const a = labRowAssessment(row, readers);
     const name = labRowSavedName(row);
     const flag = savedFlag(row, a);
-    const critical = rowIsCritical(row, a);
+    const critical = rowIsCritical(row, a, practice, rangeCtx);
     const abnormal = abnormalityIsAbnormal(a.abnormality) || critical;
     anyAbnormal ||= abnormal;
     anyCritical ||= critical;

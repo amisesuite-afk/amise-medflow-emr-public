@@ -1,6 +1,8 @@
 import { useState, useMemo, useEffect, useRef } from 'react';
 import CollapsibleCard from '@/components/CollapsibleCard';
 import { useAppContext } from '@/context/AppContext';
+import { useReferenceRanges } from '@/hooks/useReferenceRanges';
+import { upperLimitOfNormal } from '@workspace/triage-engine/reference-ranges';
 import {
   evaluateNews2, NEWS2_AVPU_LABELS, NEWS2_PARAMETER_LABELS,
   type News2Avpu, type News2Band,
@@ -348,9 +350,20 @@ function BlatchfordCalc() {
 // Light's Criteria — Pleural Fluid Analysis
 // ══════════════════════════════════════════════════════════════════════════════
 
-const LDHULN = 200;
+/** Serum LDH upper limit of normal: the practice range (Settings → Reference ranges), else the
+ *  built-in default (200 U/L), through lib/triage-engine/src/reference-ranges.ts. */
+function useLdhUln(): number {
+  const practice = useReferenceRanges();
+  const { sex, age } = useAppContext();
+  const ageYears = parseInt(age, 10);
+  return useMemo(() => {
+    const u = upperLimitOfNormal(practice, 'LDH', { sex, ageYears: Number.isFinite(ageYears) ? ageYears : null });
+    return u?.value ?? 200;
+  }, [practice, sex, ageYears]);
+}
 
 function LightsCriteriaCalc() {
+  const LDHULN = useLdhUln();
   const [plLDH,  setPlLDH]  = useState('');
   const [seLDH,  setSeLDH]  = useState('');
   const [plProt, setPlProt] = useState('');
@@ -379,7 +392,7 @@ function LightsCriteriaCalc() {
     }
 
     return { c1, c2, c3, verdict };
-  }, [plLDH, seLDH, plProt, seProt]);
+  }, [plLDH, seLDH, plProt, seProt, LDHULN]);
 
   const verdictBg   = result.verdict === 'exudate' ? '#fef2f2' : result.verdict === 'transudate' ? '#eff6ff' : '#f9fafb';
   const verdictClr  = result.verdict === 'exudate' ? '#991b1b' : result.verdict === 'transudate' ? '#1e40af' : '#6b7280';

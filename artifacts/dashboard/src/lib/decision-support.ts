@@ -20,6 +20,7 @@ import type {
 import { evaluateNews2, joinClauses, testAffirmed } from '@workspace/triage-engine';
 import type { News2Avpu } from '@workspace/triage-engine';
 import { ALIAS_INDEX } from '@workspace/triage-engine/report-import';
+import { decisionUlnFromRanges, type ReferenceRange } from '@workspace/triage-engine/reference-ranges';
 import { qSofaScore } from './clinical-scales';
 import { planPatientContext } from './plan-builder';
 import type { PlanContextSource } from './plan-builder';
@@ -47,6 +48,10 @@ export interface DecisionConsultation extends PlanContextSource {
   news2Scale2?: boolean;
   /** Today's date (YYYY-MM-DD, America/St_Lucia) for the days since surgery. */
   today?: string;
+  /** Practice reference ranges (Settings → Reference ranges). Their upper limits replace the
+   *  decision layer's placeholder ULNs (lipase, amylase, troponin); without them the engine keeps
+   *  its defaults and says "assumed — use the local reference range". */
+  referenceRanges?: ReadonlyArray<ReferenceRange>;
 }
 
 // ── Recorded scores (ScalesTab "Use in decision support") ───────────────────────────────────
@@ -256,9 +261,27 @@ export function planSafetyLineFilter(ctx: PlanPatientContext): LineFilter {
   };
 }
 
+/** The catalogue analyte the troponin value came from (same order as decisionLabs). */
+function troponinSource(c: DecisionConsultation): 'troponin' | 'troponinT' | 'troponinI' {
+  const x = c.extractedLabs ?? {};
+  const has = (k: string) => (typeof x[k] === 'number' && Number.isFinite(x[k])) || labFromResults(c.investigationResults, k) !== null;
+  return has('troponin') ? 'troponin' : has('troponinT') ? 'troponinT' : has('troponinI') ? 'troponinI' : 'troponin';
+}
+
+/** ULNs from the practice's own ranges only (reference-ranges.ts decisionUlnFromRanges). */
+export function decisionUln(c: DecisionConsultation, patient: DecisionPatient): DecisionInput['uln'] {
+  if (!c.referenceRanges || c.referenceRanges.length === 0) return undefined;
+  const uln = decisionUlnFromRanges(c.referenceRanges, {
+    sex: patient.sex === 'unknown' ? null : patient.sex, ageYears: patient.ageYears, onDate: c.today ?? null,
+  }, troponinSource(c));
+  return Object.keys(uln).length > 0 ? uln : undefined;
+}
+
 export function decisionInput(c: DecisionConsultation): DecisionInput {
   const scores = decisionScores(c);
-  return { patient: decisionPatient(c, scores), diagnoses: decisionDiagnoses(c), scores, labs: decisionLabs(c) };
+  const patient = decisionPatient(c, scores);
+  const uln = decisionUln(c, patient);
+  return { patient, diagnoses: decisionDiagnoses(c), scores, labs: decisionLabs(c), ...(uln ? { uln } : {}) };
 }
 
 export function buildDecisionSupport(c: DecisionConsultation): DecisionSupportResult {
