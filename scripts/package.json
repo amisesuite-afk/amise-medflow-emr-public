@@ -29,7 +29,9 @@
     "outcomes:calibration": "tsx ./src/outcomes-calibration.ts",
     "test": "vitest run",
     "gen:decision-vectors": "tsx ./src/gen-decision-vectors.ts",
-    "gen:whats-missing-vectors": "tsx ./src/gen-whats-missing-vectors.ts"
+    "gen:whats-missing-vectors": "tsx ./src/gen-whats-missing-vectors.ts",
+    "gen:approved-content-vectors": "tsx ./src/gen-approved-content-vectors.ts",
+    "content:publish": "tsx ./src/content-publish.ts"
   },
   "devDependencies": {
     "@electric-sql/pglite": "0.5.8",

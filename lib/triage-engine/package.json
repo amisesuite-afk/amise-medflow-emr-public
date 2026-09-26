@@ -15,7 +15,8 @@
     "./lifestyle-questions": "./src/lifestyle-questions.ts",
     "./outcomes": "./src/outcomes/index.ts",
     "./reference-ranges": "./src/reference-ranges.ts",
-    "./history-frames": "./src/history-frames/index.ts"
+    "./history-frames": "./src/history-frames/index.ts",
+    "./approved-content": "./src/approved-content/index.ts"
   },
   "scripts": {
     "typecheck": "tsc -p tsconfig.json --noEmit",
