@@ -36,6 +36,8 @@ struct ConsultationView: View {
     @State var generatedLetterText = ""
     @State var socratesSelections: [String: Set<String>] = [:]
     @State var socratesExpandedDim: String? = "onset"
+    /// History frame chosen by the clinician (nil: from the chief complaint; HistoryFrames.swift).
+    @State var historyFrameOverride: String? = nil
     @State var pmhChipSelections: Set<String> = []
     @State var pmhBypassConfirmed = false
     @State var pshxChipSelections: Set<String> = []

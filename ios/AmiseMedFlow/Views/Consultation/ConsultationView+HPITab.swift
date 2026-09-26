@@ -1,17 +1,13 @@
 // ConsultationView+HPITab.swift
-// HPI tab: SOCRATES chip builder, exam adaptive chips, prose generation.
+// HPI tab: the history builder (frame chosen from the complaint: ConsultationView+HistoryFrame.swift),
+// exam adaptive chips, prose generation.
 
 import SwiftUI
 import SwiftData
 
 extension ConsultationView {
 
-    // MARK: - HPI tab (SOCRATES chip builder)
-
-    // Chip sets re-evaluated whenever the CC changes
-    var adaptedSocrateDimensions: [SOCRATESDimension] {
-        socrateDimensions(for: patient.chiefComplaint ?? "")
-    }
+    // MARK: - HPI tab (history builder)
 
     // MARK: - Exam adaptive chips
 
@@ -75,27 +71,14 @@ extension ConsultationView {
 
     var hpiTab: some View {
         List {
-            // Specialty early form: targeted discriminating chips before full SOCRATES
+            // Specialty early form: targeted discriminating chips before the history builder
             specialtyEarlyFormSection
 
-            // SOCRATES builder accordion
-            Section {
-                ForEach(adaptedSocrateDimensions) { dim in
-                    socratesDimRow(dim)
-                }
-            } header: {
-                let filled = adaptedSocrateDimensions.filter { !(socratesSelections[$0.id] ?? []).isEmpty }.count
-                HStack {
-                    Label("SOCRATES Builder", systemImage: "square.grid.2x2")
-                    Spacer()
-                    Text("\(filled)/\(adaptedSocrateDimensions.count)")
-                        .font(.caption.weight(.semibold).monospacedDigit())
-                        .foregroundStyle(filled == adaptedSocrateDimensions.count ? .green : .secondary)
-                }
-            }
+            // History builder: SOCRATES for pain, the complaint's own questions otherwise
+            historyFrameSection
 
             // Live preview + apply
-            if let preview = socratesPreview {
+            if let preview = historyPreview {
                 Section {
                     Text(preview)
                         .font(.callout)
@@ -149,80 +132,7 @@ extension ConsultationView {
         }
     }
 
-    // MARK: - SOCRATES dimension accordion row
-
-    @ViewBuilder
-    func socratesDimRow(_ dim: SOCRATESDimension) -> some View {
-        let selections = socratesSelections[dim.id] ?? []
-        let isExpanded = socratesExpandedDim == dim.id
-
-        VStack(alignment: .leading, spacing: 0) {
-            Button {
-                withAnimation(.easeInOut(duration: 0.18)) {
-                    socratesExpandedDim = isExpanded ? nil : dim.id
-                }
-            } label: {
-                HStack(spacing: 8) {
-                    Image(systemName: dim.icon)
-                        .foregroundStyle(selections.isEmpty ? .secondary : AMColor.accent)
-                        .frame(width: 20, alignment: .center)
-                    VStack(alignment: .leading, spacing: 1) {
-                        Text(dim.title)
-                            .font(.system(size: 13, weight: .semibold))
-                            .foregroundStyle(.primary)
-                        if !selections.isEmpty {
-                            Text(selections.sorted().joined(separator: " · "))
-                                .font(.caption)
-                                .foregroundStyle(AMColor.accent)
-                                .lineLimit(1)
-                        } else if !isExpanded {
-                            Text(dim.question)
-                                .font(.caption)
-                                .foregroundStyle(.tertiary)
-                        }
-                    }
-                    Spacer()
-                    if !selections.isEmpty {
-                        Text("\(selections.count)")
-                            .font(.system(size: 10, weight: .bold))
-                            .foregroundStyle(.white)
-                            .frame(width: 18, height: 18)
-                            .background(AMColor.accent, in: Circle())
-                    }
-                    Image(systemName: isExpanded ? "chevron.up" : "chevron.down")
-                        .font(.system(size: 11))
-                        .foregroundStyle(.tertiary)
-                }
-                .padding(.vertical, 6)
-                .contentShape(Rectangle())
-            }
-            .buttonStyle(.plain)
-
-            if isExpanded {
-                ChipFlow(hSpacing: 8, vSpacing: 8) {
-                    ForEach(dim.chips, id: \.self) { chip in
-                        let isSelected = selections.contains(chip)
-                        Button {
-                            toggleSOCRATES(dimId: dim.id, chip: chip, multiSelect: dim.multiSelect)
-                        } label: {
-                            Text(chip)
-                                .font(.system(size: 12, weight: isSelected ? .semibold : .regular))
-                                .padding(.horizontal, 10)
-                                .padding(.vertical, 5)
-                                .background(isSelected ? AMColor.accent : AMColor.accentLt, in: Capsule())
-                                .foregroundStyle(isSelected ? Color.white : AMColor.accent)
-                                .animation(.easeInOut(duration: 0.12), value: isSelected)
-                        }
-                        .buttonStyle(.plain)
-                    }
-                }
-                .padding(.top, 10)
-                .padding(.bottom, 4)
-            }
-        }
-    }
-
-    // MARK: - SOCRATES chip toggle + auto-advance
+    // MARK: - Quick Clinical Flags toggle + auto-advance (specialty early-form chips)
 
     func toggleSOCRATES(dimId: String, chip: String, multiSelect: Bool) {
         var current = socratesSelections[dimId] ?? []
@@ -235,19 +145,14 @@ extension ConsultationView {
 
         // Auto-advance to next dim on single-select
         if !multiSelect && !current.isEmpty {
-            let ids = adaptedSocrateDimensions.map(\.id)
+            let ids = resolvedHistoryFrame.dimensions.map(\.id)
             if let idx = ids.firstIndex(of: dimId), idx + 1 < ids.count {
                 withAnimation(.easeInOut(duration: 0.18)) { socratesExpandedDim = ids[idx + 1] }
             }
         }
     }
 
-    // MARK: - HPI prose generation from SOCRATES chips
-
-    var socratesPreview: String? {
-        guard adaptedSocrateDimensions.contains(where: { !(socratesSelections[$0.id] ?? []).isEmpty }) else { return nil }
-        return buildHpiProse()
-    }
+    // MARK: - HPI prose generation from SOCRATES chips (pain frames; historyPreview chooses)
 
     func buildHpiProse() -> String {
         let cc   = patient.chiefComplaint ?? "presenting complaint"

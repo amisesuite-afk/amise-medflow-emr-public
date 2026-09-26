@@ -46,20 +46,10 @@ struct PreConsultEntrySheet: View {
     // Derived CC for assoc chip list
     private var ccForChips: String { selectedCC.isEmpty ? customCC : selectedCC }
 
+    /// Associated-symptom chips of the complaint's history frame (HistoryFrames.swift): a cough
+    /// offers breathlessness, haemoptysis, night sweats …, not the abdominal list.
     private var assocChips: [String] {
-        let lc = ccForChips.lowercased()
-        if lc.contains("neck") || lc.contains("thyroid")       { return SOCRATESChips.assocNeck }
-        if lc.contains("breast")                               { return SOCRATESChips.assocBreast }
-        if lc.contains("chest") || lc.contains("cardiac") ||
-           lc.contains("palpitat")                             { return SOCRATESChips.assocChest }
-        if lc.contains("rectal") || lc.contains("anal") ||
-           lc.contains("haemorrhoid") || lc.contains("bowel")  { return SOCRATESChips.assocAnorectal }
-        if lc.contains("dysphagia") || lc.contains("swallow") ||
-           lc.contains("reflux") || lc.contains("heartburn")   { return SOCRATESChips.assocDysphagia }
-        if lc.contains("urin") || lc.contains("haematuria")    { return SOCRATESChips.assocUrology }
-        if lc.contains("skin") || lc.contains("lesion") ||
-           lc.contains("mole") || lc.contains("melanoma")      { return SOCRATESChips.assocSkin }
-        return SOCRATESChips.assocAbdominal
+        HistoryFrames.associatedChips(forComplaint: ccForChips)
     }
 
     var body: some View {

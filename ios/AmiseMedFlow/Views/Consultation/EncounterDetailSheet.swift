@@ -156,20 +156,19 @@ struct EncounterDetailSheet: View {
 
     // MARK: - SOCRATES
 
+    /// Structured history as stored (socratesSelections keys are lower case: "site", "onset" …).
+    /// The earlier version looked up "Site", "Onset" … and so never showed anything. Every stored key
+    /// is shown, including the non-pain history frames' and legacy values (HistoryFrames.swift).
     private func socratesSection(_ socr: [String: [String]]) -> some View {
-        let order = ["Site","Onset","Character","Radiation",
-                     "Associated","Time","Exacerbating","Severity"]
-        let present = order.filter { key in
-            !(socr[key]?.isEmpty ?? true)
-        }
-        return Section("SOCRATES") {
+        let present = HistoryFrames.orderedKeys(socr.keys.filter { !(socr[$0]?.isEmpty ?? true) })
+        return Section("History (structured)") {
             ForEach(present, id: \.self) { key in
                 if let chips = socr[key], !chips.isEmpty {
                     VStack(alignment: .leading, spacing: 4) {
-                        Text(key)
+                        Text(HistoryFrames.keyTitle(key))
                             .font(.caption)
                             .foregroundStyle(.secondary)
-                        Text(chips.joined(separator: " · "))
+                        Text(chips.sorted().map { HistoryFrames.displayLabel(key: key, value: $0) }.joined(separator: " · "))
                             .font(.subheadline)
                     }
                     .padding(.vertical, 2)

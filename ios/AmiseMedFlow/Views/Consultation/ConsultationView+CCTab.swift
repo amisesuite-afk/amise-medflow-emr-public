@@ -48,7 +48,7 @@ extension ConsultationView {
                 // Free-text override
                 TextField("Type a complaint or select below…",
                           text: Binding(get: { patient.chiefComplaint ?? "" },
-                                        set: { patient.chiefComplaint = $0.isEmpty ? nil : $0; selectedSpecialtyHint = nil; touch() }),
+                                        set: { patient.chiefComplaint = $0.isEmpty ? nil : $0; selectedSpecialtyHint = nil; historyFrameOverride = nil; touch() }),
                           axis: .vertical)
                     .font(.callout)
                     .lineLimit(3...)
@@ -80,6 +80,7 @@ extension ConsultationView {
                         Button {
                             patient.chiefComplaint = chip.label
                             selectedSpecialtyHint = group.name
+                            historyFrameOverride = nil
                             touch()
                         } label: {
                             HStack(spacing: 10) {
