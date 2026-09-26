@@ -1,6 +1,6 @@
 {
   "format": "amise-signoff-catalogue/1",
-  "catalogueHash": "0da0da5de6a579bf",
+  "catalogueHash": "c86f5cb0995642ec",
   "repoUrl": "https://github.com/amisesuite-afk/amise-medflow-emr-public/blob/main/",
   "sources": [
     {
@@ -595,6 +595,30 @@
       ]
     },
     {
+      "id": "ios-outcomes-calculators",
+      "title": "Change log — `ios-outcomes-calculators` (iOS outcomes sync, iOS decision-rule calculators, iOS validation runner)",
+      "doc": "docs/clinical-validation/changes/ios-outcomes-calculators.md",
+      "anchor": "needs-sign-off",
+      "ruleSetIds": [
+        "ios-bayesian-diagnostic-database",
+        "decision-rules"
+      ],
+      "itemIds": [
+        "ios-outcomes-calculators#1",
+        "ios-outcomes-calculators#2",
+        "ios-outcomes-calculators#3",
+        "ios-outcomes-calculators#4",
+        "ios-outcomes-calculators#5",
+        "ios-outcomes-calculators#6",
+        "ios-outcomes-calculators#7",
+        "ios-outcomes-calculators#8",
+        "ios-outcomes-calculators#9",
+        "ios-outcomes-calculators#10",
+        "ios-outcomes-calculators#11",
+        "ios-outcomes-calculators#12"
+      ]
+    },
+    {
       "id": "ios-parity-web-last-gaps",
       "title": "Change log — `ios-parity-web-last-gaps` (the web-last-gaps fixes on iOS)",
       "doc": "docs/clinical-validation/changes/ios-parity-web-last-gaps.md",
@@ -1019,7 +1043,19 @@
         "ios-last-criticals#18",
         "ios-last-criticals#19",
         "ios-last-criticals#20",
-        "ios-last-criticals#21"
+        "ios-last-criticals#21",
+        "ios-outcomes-calculators#1",
+        "ios-outcomes-calculators#2",
+        "ios-outcomes-calculators#3",
+        "ios-outcomes-calculators#4",
+        "ios-outcomes-calculators#5",
+        "ios-outcomes-calculators#6",
+        "ios-outcomes-calculators#7",
+        "ios-outcomes-calculators#8",
+        "ios-outcomes-calculators#9",
+        "ios-outcomes-calculators#10",
+        "ios-outcomes-calculators#11",
+        "ios-outcomes-calculators#12"
       ]
     },
     {
@@ -2653,7 +2689,19 @@
         "evidence-exam#R21",
         "evidence-exam#R22",
         "evidence-exam#R23",
-        "evidence-exam#R24"
+        "evidence-exam#R24",
+        "ios-outcomes-calculators#1",
+        "ios-outcomes-calculators#2",
+        "ios-outcomes-calculators#3",
+        "ios-outcomes-calculators#4",
+        "ios-outcomes-calculators#5",
+        "ios-outcomes-calculators#6",
+        "ios-outcomes-calculators#7",
+        "ios-outcomes-calculators#8",
+        "ios-outcomes-calculators#9",
+        "ios-outcomes-calculators#10",
+        "ios-outcomes-calculators#11",
+        "ios-outcomes-calculators#12"
       ]
     }
   ],
@@ -8948,6 +8996,186 @@
       ]
     },
     {
+      "id": "ios-outcomes-calculators#1",
+      "source": "ios-outcomes-calculators",
+      "number": "1",
+      "group": null,
+      "title": "The eight iOS calculators as mirrored from the web",
+      "text": "**The eight iOS calculators as mirrored from the web**: items, points and recorded values. Three are\nsimplified:\n- Ottawa ankle counts any criterion, without the pain-in-the-zone precondition;\n- the Canadian CT head rule is recorded as 0 / 1 / 2;\n- the Canadian C-spine rule is recorded as 0 / 1.",
+      "hash": "a60f77d25f8265a5",
+      "doc": "docs/clinical-validation/changes/ios-outcomes-calculators.md",
+      "anchor": "needs-sign-off",
+      "ruleSetIds": [
+        "ios-bayesian-diagnostic-database",
+        "decision-rules"
+      ]
+    },
+    {
+      "id": "ios-outcomes-calculators#2",
+      "source": "ios-outcomes-calculators",
+      "number": "2",
+      "group": null,
+      "title": "STONE \"origin: non-black\" item",
+      "text": "**STONE \"origin: non-black\" item** in a Caribbean population. It is kept as derived, never pre-filled,\nand flagged \"not validated in Caribbean populations\": keep, drop, or mark the result unreliable?",
+      "hash": "91d7739d2a2b9a1d",
+      "doc": "docs/clinical-validation/changes/ios-outcomes-calculators.md",
+      "anchor": "needs-sign-off",
+      "ruleSetIds": [
+        "ios-bayesian-diagnostic-database",
+        "decision-rules"
+      ]
+    },
+    {
+      "id": "ios-outcomes-calculators#3",
+      "source": "ios-outcomes-calculators",
+      "number": "3",
+      "group": null,
+      "title": "STONE as iOS evidence",
+      "text": "**STONE as iOS evidence.** Its bands apply to the six renal / ureteric colic candidates: low 0–5\n(LR 0.10, −12 log units) and high 10–13 (LR 7.8, +10). The moderate band (LR 1.0) has no effect.",
+      "hash": "421d5f6f15220485",
+      "doc": "docs/clinical-validation/changes/ios-outcomes-calculators.md",
+      "anchor": "needs-sign-off",
+      "ruleSetIds": [
+        "ios-bayesian-diagnostic-database",
+        "decision-rules"
+      ]
+    },
+    {
+      "id": "ios-outcomes-calculators#4",
+      "source": "ios-outcomes-calculators",
+      "number": "4",
+      "group": null,
+      "title": "Canadian CT head iOS targets narrowed",
+      "text": "**Canadian CT head iOS targets narrowed** to subdural, extradural and cerebral contusion; concussion /\nmild traumatic brain injury is excluded. A negative rule applies LR 0.03 (−18 log units) to those five\ncandidates.",
+      "hash": "14f1b0d4cfea2d07",
+      "doc": "docs/clinical-validation/changes/ios-outcomes-calculators.md",
+      "anchor": "needs-sign-off",
+      "ruleSetIds": [
+        "ios-bayesian-diagnostic-database",
+        "decision-rules"
+      ]
+    },
+    {
+      "id": "ios-outcomes-calculators#5",
+      "source": "ios-outcomes-calculators",
+      "number": "5",
+      "group": null,
+      "title": "Rules with no iOS target",
+      "text": "**Rules with no iOS target** (Ottawa ankle / knee, NEXUS, Canadian C-spine) are recorded and shown\nonly. Should fracture and cervical-spine injury candidates be added to the iOS database?",
+      "hash": "8243c53ecfdc64e6",
+      "doc": "docs/clinical-validation/changes/ios-outcomes-calculators.md",
+      "anchor": "needs-sign-off",
+      "ruleSetIds": [
+        "ios-bayesian-diagnostic-database",
+        "decision-rules"
+      ]
+    },
+    {
+      "id": "ios-outcomes-calculators#6",
+      "source": "ios-outcomes-calculators",
+      "number": "6",
+      "group": null,
+      "title": "Syncope rules are display only",
+      "text": "**Syncope rules are display only** (prognostic), and the Canadian syncope risk percentages come from\n`decision-rules.json` (written from memory).",
+      "hash": "022df531672941fb",
+      "doc": "docs/clinical-validation/changes/ios-outcomes-calculators.md",
+      "anchor": "needs-sign-off",
+      "ruleSetIds": [
+        "ios-bayesian-diagnostic-database",
+        "decision-rules"
+      ]
+    },
+    {
+      "id": "ios-outcomes-calculators#7",
+      "source": "ios-outcomes-calculators",
+      "number": "7",
+      "group": null,
+      "title": "The old iOS \"STONE\" calculator",
+      "text": "**The old iOS \"STONE\" calculator:**\n- it is relabelled \"Stone CT features (local 0–6, not STONE)\" rather than removed;\n- its legacy engine boost (score ≥ 4: +7, or +9 at 5) is unchanged;\n- decide whether to keep it, retire it, or remove its boost.",
+      "hash": "e78c40d1d9c97d98",
+      "doc": "docs/clinical-validation/changes/ios-outcomes-calculators.md",
+      "anchor": "needs-sign-off",
+      "ruleSetIds": [
+        "ios-bayesian-diagnostic-database",
+        "decision-rules"
+      ]
+    },
+    {
+      "id": "ios-outcomes-calculators#8",
+      "source": "ios-outcomes-calculators",
+      "number": "8",
+      "group": null,
+      "title": "Pre-fill",
+      "text": "**Pre-fill.** The web's regular expressions are used on iOS, negation-aware. The age comes only from a\nrecorded date of birth. Every pre-filled item is labelled \"from record\", and nothing is assumed normal.",
+      "hash": "aeb55310815809be",
+      "doc": "docs/clinical-validation/changes/ios-outcomes-calculators.md",
+      "anchor": "needs-sign-off",
+      "ruleSetIds": [
+        "ios-bayesian-diagnostic-database",
+        "decision-rules"
+      ]
+    },
+    {
+      "id": "ios-outcomes-calculators#9",
+      "source": "ios-outcomes-calculators",
+      "number": "9",
+      "group": null,
+      "title": "Recommendation wording",
+      "text": "**Recommendation wording** in each calculator. For example:\n- NICE NG232 CT within 1 h (high risk) or 8 h (medium risk);\n- a high STONE score: \"consider limiting imaging to ultrasound or low-dose CT KUB\";\n- syncope: \"senior review; consider cardiac monitoring and admission\".",
+      "hash": "4e267aa873f59f25",
+      "doc": "docs/clinical-validation/changes/ios-outcomes-calculators.md",
+      "anchor": "needs-sign-off",
+      "ruleSetIds": [
+        "ios-bayesian-diagnostic-database",
+        "decision-rules"
+      ]
+    },
+    {
+      "id": "ios-outcomes-calculators#10",
+      "source": "ios-outcomes-calculators",
+      "number": "10",
+      "group": null,
+      "title": "Scores suggested for the working diagnosis",
+      "text": "**Scores suggested for the working diagnosis:** STONE before the local score for kidney stones; Ottawa\nfor ankle / knee injuries; the Canadian CT head rule for head injury or concussion; the Canadian C-spine\nrule and NEXUS for neck injury or whiplash; both syncope rules for syncope or faint.",
+      "hash": "f8804078558ee5ce",
+      "doc": "docs/clinical-validation/changes/ios-outcomes-calculators.md",
+      "anchor": "needs-sign-off",
+      "ruleSetIds": [
+        "ios-bayesian-diagnostic-database",
+        "decision-rules"
+      ]
+    },
+    {
+      "id": "ios-outcomes-calculators#11",
+      "source": "ios-outcomes-calculators",
+      "number": "11",
+      "group": null,
+      "title": "iOS outcomes push",
+      "text": "**iOS outcomes push:**\n- `confirmed_at` is the device's time of confirmation, not the server's;\n- a diagnosis confirmed and retracted before it was sent is stored on the server as retracted;\n- a final diagnosis recorded on the web for an iOS visit is pulled onto the device;\n- the six-hour back-off while Migration 94 is missing;\n- front desk excluded.",
+      "hash": "147fcb4f986275e5",
+      "doc": "docs/clinical-validation/changes/ios-outcomes-calculators.md",
+      "anchor": "needs-sign-off",
+      "ruleSetIds": [
+        "ios-bayesian-diagnostic-database",
+        "decision-rules"
+      ]
+    },
+    {
+      "id": "ios-outcomes-calculators#12",
+      "source": "ios-outcomes-calculators",
+      "number": "12",
+      "group": null,
+      "title": "Validation runner",
+      "text": "**Validation runner.** Recorded scores are now stored before the differential, as in the app. Review\nthe iOS differential changes in the vignettes with calculator forms at the next iOS run.",
+      "hash": "dfa9656697d4e97b",
+      "doc": "docs/clinical-validation/changes/ios-outcomes-calculators.md",
+      "anchor": "needs-sign-off",
+      "ruleSetIds": [
+        "ios-bayesian-diagnostic-database",
+        "decision-rules"
+      ]
+    },
+    {
       "id": "ios-parity-web-last-gaps#1",
       "source": "ios-parity-web-last-gaps",
       "number": "1",
@@ -10173,9 +10401,9 @@
       "source": "outcomes-calibration",
       "number": "8",
       "group": null,
-      "title": "iOS push",
-      "text": "**iOS push:** confirm iOS stays local for now, or ask for the push loop as a follow-up (needs\ndevice testing).",
-      "hash": "670779e4c916f8a9",
+      "title": "iOS push (now built)",
+      "text": "**iOS push (now built):** iOS predictions and final diagnoses go to Supabase for nurse, doctor and\nadmin accounts; a record confirmed and retracted before it was sent is stored on the server as\nretracted; the device's clock sets `confirmed_at` (the time the clinician confirmed it, possibly\noffline) where the web lets the database set it. Needs a device test once Migration 94 is applied\n(`docs/clinical-validation/changes/ios-outcomes-calculators.md`).",
+      "hash": "32110c9b69739a9e",
       "doc": "docs/clinical-validation/changes/outcomes-calibration.md",
       "anchor": "needs-sign-off",
       "ruleSetIds": []

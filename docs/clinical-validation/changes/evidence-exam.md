@@ -181,12 +181,15 @@ Web differential, the same vignette without → with the recorded evidence (top 
 ## Findings (not changed here)
 
 - The iOS "STONE" calculator is a different score (0–6), so the STONE rule is not mapped on iOS.
+  *Done in [ios-outcomes-calculators](ios-outcomes-calculators.md): relabelled "Stone CT features (local 0–6,
+  not STONE)"; the published STONE score added and mapped.*
 - The web HEART card defaults History to 1 (not 0), so an untouched card already scores 1.
 - `HpiTab` re-applies the context features for each chief-complaint entry.
 - PANE ranks intussusception above gastroenteritis in a toddler with vomiting and diarrhoea (the
   dehydration vignette's gastroenteritis expectation is top 3, not top 1).
 - iOS has no calculator for Ottawa ankle / knee, Canadian CT head, NEXUS, Canadian C-spine or the syncope
-  rules; the Exam step says "Calculator on the web Scales step (not yet on iOS)".
+  rules; the Exam step says "Calculator on the web Scales step (not yet on iOS)". *Done in
+  [ios-outcomes-calculators](ios-outcomes-calculators.md) (decision-rules 1.1.0, iOS database 2.3.0).*
 - CLAUDE.md and the `ios-arch` skill still describe `DiagnosticDatabase.json` as 2.1.0.
 - iOS: the neck, breast, swallowing, groin, perianal, scrotal and urological regions are still
   recorded in `Patient.examAbdo` (as before this change), which the PDFs and SOAP draft print under
@@ -195,7 +198,8 @@ Web differential, the same vignette without → with the recorded evidence (top 
 - The iOS clinical-validation runner grades the scores of `scoreForms` after the differential and
   does not store them on the patient first, so on iOS the `exam-*` vignettes with a recorded rule
   (PERC, STONE, AIR, Ottawa) do not feed the rule band to the differential in the harness (the app
-  does, from the stored calculator result).
+  does, from the stored calculator result). *Fixed in [ios-outcomes-calculators](ios-outcomes-calculators.md):
+  the runner stores them first.*
 - CLAUDE.md's shared-content gotcha lists the shared files as zebra rules, supplement catalogue and
   lifestyle practices; `exam-signs` and `decision-rules` are now shared too.
 
