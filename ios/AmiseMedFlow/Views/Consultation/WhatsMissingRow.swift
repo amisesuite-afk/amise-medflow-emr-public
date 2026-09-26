@@ -29,7 +29,10 @@ struct WhatsMissingRow: View {
     }
 
     var body: some View {
-        Group {
+        // Never an empty container: the zero-height spacer keeps the view in the hierarchy so the
+        // refresh task runs even while nothing is missing (an empty Group would never appear).
+        VStack(spacing: 0) {
+            Color.clear.frame(height: 0)
             if let first = items.first {
                 row(first)
             }
