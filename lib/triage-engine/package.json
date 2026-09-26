@@ -14,7 +14,8 @@
     "./lifestyle-practices": "./src/lifestyle-practices.ts",
     "./lifestyle-questions": "./src/lifestyle-questions.ts",
     "./outcomes": "./src/outcomes/index.ts",
-    "./reference-ranges": "./src/reference-ranges.ts"
+    "./reference-ranges": "./src/reference-ranges.ts",
+    "./history-frames": "./src/history-frames/index.ts"
   },
   "scripts": {
     "typecheck": "tsc -p tsconfig.json --noEmit",
