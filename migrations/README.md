@@ -532,3 +532,31 @@ are overridden here, so this step must stay after every step that creates those 
 - Independent of 87–94 and safe to apply on its own. Until it is applied the sign-off page shows
   the catalogue read-only ("Recording decisions becomes available after the database update");
   nothing returns a 500 and nothing is kept in the browser.
+
+### Migration 96 — `supabase-lab-feed-migration.sql` (laboratory results feed + reference ranges)
+
+- Number 96, after the sign-off register (95). Independent of 94 and 95.
+- `lab_reference_ranges`: analyte (catalogue saved name), unit, sex, age band, lower / upper,
+  critical low / high, laboratory source, effective date, `is_default`, retire columns. Seeded
+  with the built-in defaults of `lib/triage-engine/src/reference-ranges.ts` (adults 18+,
+  `lab_source = 'default — replace with your laboratory''s ranges'`, `is_default = true`);
+  `scripts/src/lab-feed-migration.test.ts` fails if the seed and the code differ. CHECKs: limits
+  non-negative and ordered (critical low ≤ lower ≤ upper ≤ critical high), at least one limit,
+  sex in any/male/female, a default row always carries the default source text and a practice
+  row never does. One live row per analyte / sex / age band / effective date.
+- `lab_feed_messages`: one row per inbound message — laboratory id, message id (unique per
+  laboratory: idempotency), format, status, counts, error code, SHA-256 and size of the body.
+  **No message body** (the choice and its reasons are in the file header).
+- `lab_results_to_reconcile`: reports that did not match exactly one patient on MRN + date of
+  birth, with the identity as the laboratory sent it and the normalised observations; `status`
+  open / matched / dismissed (a match records the patient and the result row; a dismissal needs a
+  note). `report_ref` unique.
+- `investigation_results`: `source` (`'lab-feed'`), `lab_feed_message_id` (FK, set null),
+  `lab_report_ref` (unique when set, only with `source = 'lab-feed'`).
+- RLS (Migration 89 model): ranges — every staff role reads, only admin inserts (never an
+  `is_default` row) and updates, no DELETE for `authenticated`; feed log and reconciliation queue —
+  nurse, doctor and admin read, front desk and portal patients match no policy, no client writes
+  (the API writes as service role). `lint:rls-policies` requires the five policies.
+- Clients tolerate its absence: `POST /api/lab-feed/inbound` answers 503 / HL7 `AE` (the laboratory
+  retries); the dashboard uses the built-in default ranges and shows "available after the database
+  update" in the Lab feed tab and in Settings; nothing returns a 500.

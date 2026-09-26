@@ -34,6 +34,11 @@ services:
       # CRON_SECRET and logs a warning.
       - key: STAFF_MACHINE_TOKEN
         sync: false
+      # Laboratory results feed (docs/LAB-FEED.md): "labid:secret" pairs, comma-separated,
+      # secrets >= 32 characters. No value here: set it in the Render dashboard at go-live.
+      # While unset, POST /api/lab-feed/inbound answers 503 (feed off).
+      - key: LAB_FEED_SECRETS
+        sync: false
       # ── Cron job URLs (set in Render dashboard → Cron Jobs, or use
       #    an external cron service like cron-job.org to POST to these) ──
       # POST /api/cron/reminders         — every 30 min (48h SMS + 24h email + post-visit)

@@ -152,6 +152,8 @@ says otherwise. iOS content ships only with an app release. Web content ships on
 | `surgical-dictionary` (P2) | `lib/triage-engine/src/surgical-dictionary.ts` | Keyword → pathology | None | Some | |
 | `coding-catalogues` (P3) | `lib/triage-engine/src/condition-codes.ts`, `surgical-catalog.ts` | Code lists | None | ICD-10 (edition not recorded) | |
 | `lab-report-import-catalog` (P3) | `lib/triage-engine/src/report-import/catalog.ts`, `ios/AmiseMedFlow/Services/LabAnalyteCatalog.swift` | Analyte names, units, exact conversion factors, plausible ranges | None | None | `lint:report-import-parity` |
+| `lab-reference-ranges` (P1) | `lib/triage-engine/src/reference-ranges.ts`, `ios/AmiseMedFlow/Services/LabReferenceRanges.swift` (read-only defaults); practice rows in `lab_reference_ranges` (Migration 96) | Adult default normal and critical limits; practice ranges by sex, age band and effective date | **`REFERENCE_RANGES_VERSION = '1.0.0'`** | None (placeholders; see `lab-feed.md`) | `lint:reference-range-parity`. Read by the lab feed, the report-import critical flag, the decision layer's ULNs, TG18 cholangitis, tumour markers and Light's criteria |
+| `lab-feed-loinc-map` (P1) | `artifacts/api-server/src/lib/lab-feed/loinc.ts`, `normalise.ts`, `matching.ts` | LOINC → catalogue analyte; label fallback; exact MRN + DOB matching | **`LAB_FEED_LOINC_MAP_VERSION = '1.0.0'`** | LOINC | Web / API only |
 
 ### 3.7 Adjacent content, not registered
 

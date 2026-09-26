@@ -1779,6 +1779,70 @@
         { "version": "1.0.0", "date": "2026-09-25", "change": "First version (part of diagnostic-reasoning-rules 1.0.0): PANE LRs, cardinal P >= 0.6 and LR >= 2, can't-miss list (50 PANE diseases), coexisting states (sepsis, AKI, hyperkalaemia, hypercalcaemia, hyponatraemia, hypoglycaemia), time-out filters (no history items; background rate <= 5 %), working diagnosis by disease id then ICD-10 (exact, then category)." },
         { "version": "1.1.0", "date": "2026-09-26", "change": "Precision pass against alert fatigue. Diagnosis families (diagnosis-families.ts, from PANE ids, labels and ICD-10): same ICD-10 category and head noun; injuries of one body region (S2x, S3x); complication or grade modifier (incarcerated, strangulated, perforated, gangrene, necrotising, infected, obstructed, toxic, major, minor, late, early) with a shared head noun in the same ICD-10 chapter or named in the parenthesis. Family members are compatible: never the leader of 'the record favours X', and a finding that favours one does not alert. Working node matched by label when it beats the ICD-10 match by 2 (words found minus missing; 1 word needs an ICD match, else 2; acute/chronic contradict). 'The record favours X' only when X shares evidence (LR >= 1.5 in both) with a working diagnosis that has support of its own (LR >= 2), and X is not already named in the working diagnosis. A single contradicting finding alerts at LR <= 0.2 (core 0.33). Time-out: findings explained by a coexisting state are explained. Alerts 77 -> 30 / 397, time-outs 103 -> 49 / 397." }
       ]
+    },
+    {
+      "id": "lab-reference-ranges",
+      "title": "Practice laboratory reference ranges — built-in adult defaults (normal and critical limits) and the lookup every range / ULN / critical-limit consumer uses; iOS read-only twin, parity enforced",
+      "platforms": ["web", "ios"],
+      "kind": "reference-catalogue",
+      "contentVersion": "1.0.0",
+      "versionStamp": { "file": "lib/triage-engine/src/reference-ranges.ts", "type": "regex", "pattern": "REFERENCE_RANGES_VERSION\\s*=\\s*'([^']+)'" },
+      "files": [
+        "lib/triage-engine/src/reference-ranges.ts",
+        "ios/AmiseMedFlow/Services/LabReferenceRanges.swift"
+      ],
+      "tests": [
+        "artifacts/dashboard/src/lib/__tests__/reference-ranges.test.ts",
+        "scripts/src/reference-range-parity.test.ts",
+        "scripts/src/lab-feed-migration.test.ts"
+      ],
+      "ciChecks": ["lint:reference-range-parity", "dashboard vitest (the defaults reproduce the previous hard-coded numbers)", "scripts vitest (Migration 96 seed equals the code defaults)"],
+      "guidelines": [
+        { "name": "Local laboratory reference ranges (to be supplied by the laboratory)", "version": "not yet supplied", "section": "Every analyte in the table", "citation": "Defaults are placeholders reproducing the numbers the app used before (iOS LabPanel.hasCriticalValues, decision-layer ULNs, TG18 ULNs, tumour-marker ULNs, Light's LDH ULN) and common adult ranges; each is marked 'default — replace with your laboratory's ranges'" }
+      ],
+      "citationStatus": "none",
+      "lastReviewed": "unknown",
+      "reviewer": "unknown",
+      "reviewEvidence": "None. Sign-off list in docs/clinical-validation/changes/lab-feed.md (default ranges, critical limits, escalation).",
+      "reviewPriority": "P1",
+      "nextReviewDue": "2026-12-31",
+      "changeAuthority": "Defaults: repository committers, both platforms and the Migration 96 seed in the same PR (lint:reference-range-parity, lab-feed-migration.test.ts). The practice's own ranges: an admin in Settings → Reference ranges (audit-logged), no deploy.",
+      "notes": "Adults (18+) only; children get no default (the laboratory's own flag applies). iOS reads the defaults only; syncing practice ranges to iOS is a follow-up.",
+      "changelog": [
+        { "version": "1.0.0", "date": "2026-09-26", "change": "First version: 37 adult default rows; practice ranges from Migration 96 override them per sex / age band / effective date." }
+      ]
+    },
+    {
+      "id": "lab-feed-loinc-map",
+      "title": "Laboratory feed — LOINC to catalogue analyte map, label fallback, exact MRN + date-of-birth matching, and 'flags never downgrade the laboratory'",
+      "platforms": ["web"],
+      "kind": "reference-catalogue",
+      "contentVersion": "1.0.0",
+      "versionStamp": { "file": "artifacts/api-server/src/lib/lab-feed/loinc.ts", "type": "regex", "pattern": "LAB_FEED_LOINC_MAP_VERSION\\s*=\\s*'([^']+)'" },
+      "files": [
+        "artifacts/api-server/src/lib/lab-feed/loinc.ts",
+        "artifacts/api-server/src/lib/lab-feed/normalise.ts",
+        "artifacts/api-server/src/lib/lab-feed/matching.ts"
+      ],
+      "tests": [
+        "artifacts/api-server/src/test/lab-feed-parsers.test.ts",
+        "artifacts/api-server/src/test/lab-feed-route.test.ts"
+      ],
+      "ciChecks": ["api-server vitest"],
+      "guidelines": [
+        { "name": "LOINC", "version": "codes as listed in loinc.ts", "section": "Blood / serum / plasma codes only", "citation": "Regenstrief Institute, LOINC (loinc.org)" }
+      ],
+      "citationStatus": "file-header",
+      "lastReviewed": "unknown",
+      "reviewer": "unknown",
+      "reviewEvidence": "None. The laboratory must confirm its codes against this table before go-live (docs/LAB-FEED.md).",
+      "reviewPriority": "P1",
+      "nextReviewDue": "2026-12-31",
+      "changeAuthority": "Any repository committer; ships on API deploy.",
+      "notes": "A code that disagrees with the printed label is not trusted (the result is kept unmapped under its label). Automatic filing only on exact MRN + date of birth (matching.ts).",
+      "changelog": [
+        { "version": "1.0.0", "date": "2026-09-26", "change": "First version." }
+      ]
     }
   ],
   "excluded": [

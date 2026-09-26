@@ -4,7 +4,7 @@
 
 | | |
 |---|---|
-| Status | Draft v0.3, 2026-09-26 (v0.2: 2026-09-25; v0.1: 2026-09-24). v0.3 adds the real-outcomes loop (§1, §2.1, §2.2, §2.5, §3, §4, §8) |
+| Status | Draft v0.4, 2026-09-26 (v0.3 and earlier: 2026-09-24 to 26). v0.4 adds the laboratory results feed and practice reference ranges (§1, §2.1, §2.5, §2.6, §3, §4, §5 row 21, §7, §9). v0.3 added the real-outcomes loop (§1, §2.1, §2.2, §2.5, §3, §4, §8) |
 | Scope | Dashboard (`artifacts/dashboard`), API server (`artifacts/api-server`), front-desk / patient portal (`artifacts/front-desk`), iOS app (`ios/`), Supabase schema (`supabase-*.sql`), backup and CI workflows (`.github/workflows/`) |
 | Code baseline | v0.1: `c9a7293` (the tip of `claude/pr-37-gbg22z` when this was written). v0.2 refresh: `cc83845`, plus `23904fd` (questionnaire hand-over mode). Citations added in v0.2 carry a commit; older line numbers refer to `c9a7293` and may have drifted. |
 | Out of scope | `artifacts/tax-planner*` and the finance auditor. They hold practice financial data, not patient data, and have not been reviewed. |
@@ -27,6 +27,8 @@
 | **Billing** | Fee codes, invoices, insurance details | Staff | Tables `patient_billing_items`, `billing_charges` |
 | **Staff data** | Staff name, email, role, default site, login events | Supabase Auth | Table `user_profiles`. `audit_log` (user id and email, and IP and user-agent via `logAudit()`). After Migration 89, profiles revoked from portal patients are kept in the admin-only `user_profiles_revoked` (`supabase-staff-only-rls-migration.sql`) |
 | **Engine predictions and final diagnoses (outcomes loop, v0.3)** | At encounter completion: the engines' top differential (PANE disease ids / ICD-10 codes and probabilities), triage level, score values, decision-layer bands, PANE feature ids, the working ICD-10 code, model versions, and whether an operation or pathology makes a final diagnosis expected. Later: the clinician-confirmed final ICD-10 (+ PANE id), its source type (histology, report, operative findings or note, discharge summary, follow-up) and date, what was done per decision option, and the retrospective urgency. **Coded data only, no free text** | Web sign-off dialog (sent with `POST /api/visit/complete`); dashboard patient summary "Final diagnosis"; iOS Review and complete and the saved-visit sheet | Tables `prediction_snapshots`, `diagnosis_outcomes` (Migration 94, `supabase-outcomes-calibration-migration.sql`); `artifacts/api-server/src/lib/prediction-snapshots.ts`; `artifacts/dashboard/src/lib/outcomes-snapshot.ts`, `outcomes-db.ts`; iOS `Services/OutcomeSnapshot.swift` (`Encounter.predictionSnapshotJson`, `finalDiagnosisJson`) |
+| **Laboratory results feed (v0.4)** | Lab results sent by the laboratory's system: the patient identity the laboratory holds (MRN, family and given names, date of birth, sex), test names and codes (LOINC), values, units, reference ranges, abnormal flags, comments, collection / report times, the laboratory's report id | `POST /api/lab-feed/inbound` (HL7 v2 ORU^R01 or FHIR R4), authenticated per laboratory | Tables `investigation_results` (+ `source`, `lab_feed_message_id`, `lab_report_ref`), `lab_results_to_reconcile`, `lab_feed_messages` (no body) (Migration 96, `supabase-lab-feed-migration.sql`); `artifacts/api-server/src/lib/lab-feed/*`, `routes/lab-feed.ts` |
+| **Practice reference ranges (v0.4)** | Analyte, unit, sex, age band, normal and critical limits, laboratory source, effective date. Not patient data | Settings → Reference ranges (admin) | Table `lab_reference_ranges` (Migration 96); `lib/triage-engine/src/reference-ranges.ts` |
 | **Patient-portal credentials** | Supabase Auth user for each portal patient, SMS login codes | Portal invite and login | `routes/portal.ts:57-80` (`auth.admin.inviteUserByEmail`). `patient-auth-migration.sql` (`patient_accounts`: scrypt hashes, 72-hour temporary passwords) |
 
 ---
@@ -44,6 +46,7 @@
   Note: `artifacts/dashboard/src/lib/db.ts:181` calls `getPublicUrl()` on the private `patient-photos` bucket and stores that URL in `patients.photo_url`. Whether that URL resolves at all, or only behind a signed URL, is **to confirm**.
 - **Encryption at rest.** This depends on Supabase platform defaults. The repo itself adds no column-level encryption. **To confirm** from Supabase's security documentation or contract.
 - **Outcomes loop (v0.3, Migration 94, not yet applied).** `prediction_snapshots` (one row per completed web encounter, first completion wins) and `diagnosis_outcomes` (confirmed final diagnoses; immutable except for retraction). Linked to `patients.id` and, for web encounters, `encounters.id`. Coded values only; CHECK constraints refuse free text in the code columns. Until the migration is applied, snapshots are skipped (the encounter still closes) and the final-diagnosis screens say "available after the database update".
+- **Laboratory results feed (v0.4, Migration 96, not yet applied).** A report matched to a patient (exact MRN **and** date of birth, nothing fuzzier) becomes an `investigation_results` row (`source = 'lab-feed'`, status `resulted` = received, awaiting clinician review). Anything else goes to `lab_results_to_reconcile` with the identity **as the laboratory sent it** (MRN, names, date of birth, sex) and the normalised results, until a nurse, doctor or admin matches or dismisses it; the row is kept afterwards as the reconciliation record. `lab_feed_messages` logs each message (laboratory id, message id, format, status, counts, error code, SHA-256 and size of the body) and **never the body**: the laboratory keeps the source message and a resend is idempotent. Until the migration runs the endpoint answers 503 (the laboratory retries) and nothing is stored.
 - **Point-in-time recovery is disabled.** Verified 2026-08-16 per `docs/INCIDENT-RUNBOOK.md`. The recovery point is daily backups only.
 
 ### 2.2 iOS device (SwiftData)
@@ -106,9 +109,12 @@ There are two separate mechanisms.
   - iOS bowel-prep sheet exports (`abda6b2`);
   - questionnaire hand-over open, staff exit, and the note written from the answers, with fixed labels only and no answers (`23904fd`);
   - quarantined AI reminder drafts, with the matched rule names (`e094063`);
+  - (v0.4) the **laboratory feed**: `create` for every result filed or queued (`resource_type` `investigation_result` / `lab_result_to_reconcile`, with laboratory id, message and report ids, counts and flags; no values or names), `review` (clinician marks a lab-feed result reviewed), `reconcile` (filed by hand: which identifiers matched, whether a mismatch was confirmed), `dismiss` (with the reason), `lab_alert_sent` (critical-result email: counts and the MODE outcome only), and `create` / `update` / `retire` of a reference range (values before and after, no patient data);
   - (v0.3) the **de-identified research export** (`GET /api/outcomes/research-export`): `action = 'export'`, `resource_type = 'research_export'`, format and counts only. The row is written **before** the export is released; if it cannot be written the export is refused (503). The prediction snapshot's status (`saved` / `exists` / `unavailable`) is added to the existing encounter-close audit payload. iOS audits `create prediction_snapshot`, `create final_diagnosis` and `update final_diagnosis` (retracted), with fixed labels only.
 
 ### 2.6 Logs and telemetry
+
+- **Lab feed (v0.4).** The API logs the laboratory id, message id, counts, status and error codes only; message bodies, identifiers and values are never logged. Refused requests (bad or missing key) are logged without the body, which is not read before the key is checked.
 
 - **API logs.** Pino JSON goes to Render stdout, and there is no external log sink (`docs/INCIDENT-RUNBOOK.md`). Only `authorization`, `cookie` and `set-cookie` are redacted (`artifacts/api-server/src/lib/logger.ts:13-17`). The SMS helper logs recipient phone numbers and, in dry-run mode, the first 60 characters of the message body (`artifacts/api-server/src/lib/sms.ts:58`). **Render log retention: to confirm.**
 - **Sentry.** See `subprocessors.md`. Web and API initialise Sentry with default options and no `beforeSend` scrubbing:
@@ -131,6 +137,8 @@ There are two separate mechanisms.
 | Soft-deleted rows (`clinical_notes`, `prescriptions`, `patient_vitals`, `patient_billing_items`, `patient_documents`) | Indefinite. Migration 87 sets `deleted_at`; nothing purges the row | Deletion hides a record; it does not erase it. The retention schedule (A-17) must say when, if ever, soft-deleted rows are purged |
 | `prediction_snapshots`, `diagnosis_outcomes` (v0.3) | Indefinite, like the clinical record they measure. No DELETE grant for `authenticated`; outcomes are retracted, not deleted | Proposed default for the surgeon's decision (SURGEON-DECISIONS.md I2). Deleting a patient cascades to both tables |
 | Research exports (v0.3) | Outside the system once downloaded; the audit row is kept indefinitely | De-identified, but small cells (a rare diagnosis with an age band and a month) remain. The holder's retention and use follow the practice's data-protection terms (I2) |
+| `lab_feed_messages`, `lab_results_to_reconcile` (v0.4) | Indefinite. No DELETE grant for `authenticated`; queue rows are resolved (matched / dismissed), not deleted | The queue holds identity as the laboratory sent it, including for people who are not patients of the practice (dismissed rows). **Retention of dismissed rows to decide** (docs/clinical-validation/changes/lab-feed.md) |
+| `lab_reference_ranges` (v0.4) | Indefinite; rows are retired, never deleted | Not patient data |
 | `user_profiles_revoked` | Indefinite (Migration 89) | Kept so an admin can restore a wrongly revoked staff profile |
 | Portal temporary passwords | 72 hours (`patient-auth-migration.sql` header) | |
 | Server NAS backups | 30 daily, 12 monthly, 7 yearly (`.github/workflows/backup.yml:6`) | Yearly backups outlive any deletion made in the live database |
@@ -158,6 +166,7 @@ Source: `CLAUDE.md` ("Auth model is single-tenant, role-based"), `supabase-schem
   - `patients` UPDATE: front desk may change identity, contact, next-of-kin, insurance, scheduling and patient-reported intake columns only; a portal patient only their own contact and profile fields. Anything else fails with `42501`;
   - soft deletes go through `soft_delete()` (Migration 87), which checks the role per table and refuses front desk.
 - **Outcomes loop (v0.3, Migration 94).** `prediction_snapshots` and `diagnosis_outcomes`: nurse, doctor and admin may read and insert, and retract an outcome; front desk and portal patients match no policy. No DELETE for `authenticated`. The dashboard's "Engine accuracy" page (aggregate report and proposals) is shown to **admin only**; the de-identified research export is **admin only** on the server (a signed-in admin session; the machine token is refused) and is audit-logged before release.
+- **Laboratory feed and reference ranges (v0.4, Migration 96).** `lab_feed_messages` and `lab_results_to_reconcile`: nurse, doctor and admin read; front desk and portal patients match no policy; no client writes (only the API, as service role). The clinician endpoints (`/api/lab-feed/inbox`, `/review`, `/reconcile`) accept a signed-in nurse, doctor or admin only; the machine token is refused. `lab_reference_ranges`: every staff role reads; only admin writes (through the audit-logged API). The laboratory itself authenticates with its own secret (`LAB_FEED_SECRETS`) and can only submit results. Note: lab-feed results are ordinary `investigation_results` rows, which every staff role (front desk included) can read under the existing policy.
 - **There is no per-patient or per-tenant isolation**, before or after Migration 89. Every staff user can read every patient. See `docs/MULTI-TENANCY-PLAN.md`.
 - **API server.** It connects as `service_role` and bypasses RLS (and the Migration 89 column guards). Its route gate, `requireStaffAuth()` (`artifacts/api-server/src/lib/supabase.ts`), accepts a Supabase user JWT whose user has a staff `user_profiles` role (`f3338ca`), or `x-staff-token` equal to `STAFF_MACHINE_TOKEN` (or to `CRON_SECRET` while `STAFF_MACHINE_TOKEN` is unset; `e6cbf09`). Only one route checks for a *specific* role on the server: `routes/visit-lifecycle.ts`, which requires `doctor`.
 - **Patient-portal users are Supabase Auth users in the same project** (`routes/portal.ts:65`). They have "own record" policies (`supabase-patient-portal-migration.sql:41-87`). Postgres combines permissive policies with OR, so until Migration 89 is applied the staff policy `auth.uid() is not null` **does** give portal patients read access to all patient, document and booking rows and bucket objects. This was confirmed in a local emulator, not in production. See `security-controls.md` S-2.
@@ -192,6 +201,7 @@ Source: `CLAUDE.md` ("Auth model is single-tenant, role-based"), `supabase-schem
 | 18 | **Google Fonts** ✅ | Browser IP and user-agent only | Page load | Font links in the web apps |
 | 19 | **Ollama (self-hosted, optional)** ⚙️ | Clinical narrative text, sent to a user-configured LAN or loopback model | The user selects "ollama" in Settings. The default is `cloud` | `artifacts/dashboard/src/lib/ai-provider.ts:24-43` |
 | 20 | **Railway** ❓ | `railway.json` exists. Whether it is used in production is **unknown / to confirm** | n/a | `railway.json` |
+| 21 | **Clinical laboratory (e.g. Laboratory Services Ltd)** ⚙️ | **Inbound only**: lab results with the patient identity the laboratory holds, sent to `POST /api/lab-feed/inbound`. Nothing is sent back except an acknowledgement (HL7 ACK / JSON) with the message id and counts, never patient data | `LAB_FEED_SECRETS` set for that laboratory, and Migration 96 applied | `routes/lab-feed.ts`, `lib/lab-feed/*`, `docs/LAB-FEED.md` |
 
 ---
 
@@ -265,6 +275,8 @@ The dashboard has no server-side AI calls. Its in-browser Whisper.js dictation r
 7. (v0.2) The `MODE` value on the front-desk Vercel project. Its email sender sends unless `MODE` is exactly `dry_run` (`security-controls.md` G-17).
 8. (v0.2) When Migrations 87–90 will be applied to production. Until Migration 89 runs, the portal-patient exposure in §4 stands.
 9. (v0.3) Whether a de-identified research export (age band, sex, months, coded diagnoses) may leave the practice, to whom, under what agreement, and whether small cells must be suppressed first. Until decided, exports are for the practice's own analysis (SURGEON-DECISIONS.md I2).
+10. (v0.4) A data-sharing / processing agreement with each laboratory that sends results through the feed, and how the laboratory secures the connection (HTTPS only; secret rotation). The critical-result email goes to `DOCTOR_NOTIFY_EMAIL` without patient details; whether that address is Google Workspace (see 2) still matters.
+11. (v0.4) Retention of dismissed reconciliation rows (identity of people who may not be patients of the practice).
 
 ---
 
@@ -275,3 +287,11 @@ The dashboard has no server-side AI calls. Its in-browser Whisper.js dictation r
 - **Where it is processed.** Supabase (storage), the dashboard (the admin page computes the report in the browser and caches nothing), the API server (snapshot insert, research export), and optionally an operator's machine running `pnpm --filter @workspace/scripts run outcomes:calibration` (its output folder `outcomes-calibration-out/` is excluded from the repository). No AI and no third party.
 - **Access and retention.** See §4 and §3.
 
+---
+
+## 9. Laboratory results feed (v0.4)
+
+- **Purpose.** Direct care: results reach the patient's record and the reviewing clinician without re-typing, with abnormal and critical flags from the practice's own reference ranges, and a critical result raises an alert.
+- **Minimisation.** No message bodies are stored; a matched report keeps only the normalised results; an unmatched report keeps only what hand-matching needs. The critical-result email carries no patient data. No AI, no third party beyond the sending laboratory.
+- **Safety.** Automatic filing only on an exact MRN plus date of birth; everything else waits for a person. Flags never lower the laboratory's own flag. Nothing is sent to patients.
+- **Where it is processed.** The API server (Render) and Supabase. The dashboard reads the inbox through the API.

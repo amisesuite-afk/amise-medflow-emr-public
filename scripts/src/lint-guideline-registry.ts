@@ -112,6 +112,9 @@ const KNOWN_RULE_SET_FILES: string[] = [
   'lib/triage-engine/src/surgical-catalog.ts',
   'lib/triage-engine/src/formulary.ts',
   'lib/triage-engine/src/report-import/catalog.ts',
+  'lib/triage-engine/src/reference-ranges.ts',
+  'ios/AmiseMedFlow/Services/LabReferenceRanges.swift',
+  'artifacts/api-server/src/lib/lab-feed/loinc.ts',
   'lib/triage-engine/src/lifestyle-practices.ts',
   'lib/triage-engine/src/lifestyle-questions.ts',
   // Diagnostic reasoning layer (web + iOS twins)

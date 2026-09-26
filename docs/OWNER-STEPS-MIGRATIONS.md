@@ -3,7 +3,7 @@
 Done so far on the live database (Amise-frontdesk, production): Migration 92 (`patients.visit_type`)
 and Migration 93 (iOS sync columns), both on 2026-09-25.
 
-Still to apply: Migrations 87, 88, 90, 91, 94, 95 (safe, additive) and 89 (staff-only access; needs checks
+Still to apply: Migrations 87, 88, 90, 91, 94, 95, 96 (safe, additive) and 89 (staff-only access; needs checks
 first and should go with the deploy to `main`).
 
 How to run one file, every time:
@@ -36,6 +36,7 @@ Expect 7 rows. If fewer, send the screenshot before running 87 (88, 90 and 91 ca
 | 4 | 91 Web vitals NEWS2 fields | `avpu` and `on_supplemental_o2` on the web `vitals` table, so web NEWS2 is complete. | [supabase-web-vitals-news2-fields-migration.sql](https://raw.githubusercontent.com/amisesuite-afk/amise-medflow-emr-public/claude/pr-37-gbg22z/supabase-web-vitals-news2-fields-migration.sql) |
 | 5 | 94 Outcomes and calibration | Two new tables, `prediction_snapshots` and `diagnosis_outcomes` (nurse, doctor and admin only; front desk and portal see nothing), so completed visits keep what the engines predicted and the final diagnosis can be recorded later. Until it runs, visits still close normally and the screens say the feature waits for this update. | [supabase-outcomes-calibration-migration.sql](https://raw.githubusercontent.com/amisesuite-afk/amise-medflow-emr-public/claude/pr-37-gbg22z/supabase-outcomes-calibration-migration.sql) |
 | 6 | 95 Clinical sign-off | One new table, `clinical_signoffs` (doctor and admin record decisions in their own name; nurses can read them; front desk and portal see nothing; decisions can never be changed or deleted, only followed by a new one), so the Insights → Clinical sign-off page can record your approvals. Until it runs, the page shows the items read-only. | [supabase-clinical-signoffs-migration.sql](https://raw.githubusercontent.com/amisesuite-afk/amise-medflow-emr-public/claude/pr-37-gbg22z/supabase-clinical-signoffs-migration.sql) |
+| 7 | 96 Lab results feed and reference ranges | Three new tables: `lab_reference_ranges` (seeded with the built-in defaults, each marked "default — replace with your laboratory's ranges"; staff read, admin edits in Settings), `lab_feed_messages` (log of messages from the laboratory, no message bodies) and `lab_results_to_reconcile` (results that did not match a patient exactly; nurse, doctor and admin only — front desk sees nothing), plus three provenance columns on `investigation_results`. Until it runs, the laboratory's messages are refused with "retry later" and the app uses the built-in default ranges. Independent of 94 and 95. | [supabase-lab-feed-migration.sql](https://raw.githubusercontent.com/amisesuite-afk/amise-medflow-emr-public/claude/pr-37-gbg22z/supabase-lab-feed-migration.sql) |
 
 After Part 1, on the iPhone: Settings → Sync Now. Nothing else changes for users.
 
@@ -50,6 +51,13 @@ database update" should be gone. Optionally, this should return one row with `rl
 
 ```sql
 select relname, relrowsecurity as rls_enabled from pg_class where relname = 'clinical_signoffs';
+```
+
+After 96: check the default ranges are there (expect 37), then follow the go-live checklist in
+`docs/LAB-FEED.md` §8 before giving the laboratory its secret:
+
+```sql
+select count(*) from lab_reference_ranges where is_default;
 ```
 
 ## Part 2 — Migration 89, staff-only access (on deploy day)

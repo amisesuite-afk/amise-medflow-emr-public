@@ -8,7 +8,11 @@
  * label, unmapped, for the clinician (normalise.ts `resolveAnalyte`).
  *
  * The same table is printed in docs/LAB-FEED.md for the laboratory.
+ * Registered as `lab-feed-loinc-map` in clinical-content/registry.json: bump this version with
+ * any change to the table, together with the registry entry.
  */
+export const LAB_FEED_LOINC_MAP_VERSION = '1.0.0';
+
 export const LOINC_TO_ANALYTE: Readonly<Record<string, string>> = {
   // Full blood count
   '6690-2': 'wbc', '26464-8': 'wbc', '804-5': 'wbc',
