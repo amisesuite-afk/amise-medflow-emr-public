@@ -56,7 +56,7 @@ See `vignette.schema.json` for every field. The top level:
 | `condition`, `category` | The true diagnosis and a grouping (`hpb`, `colorectal`, `upper-gi`, `vascular`, …) |
 | `permutationOf`, `permutationLabel` | The base vignette id this one varies (absent on a base case) and what changed |
 | `summary` | One-line presentation, shown in the report |
-| `inputs` | The patient record: demographics (with `pregnancy`), encounter, CC, HPI, iOS SOCRATES chip labels, symptoms and negatives, exam text, vitals, labs, imaging, comorbidities, surgical history, medications, allergies (`nkda`), social history, score form ticks (`scoreForms`), the diagnosis the surgeon confirms (`confirmedDiagnosis`), and per-platform inputs (`platform.web`: CC template, SmartSymptomPicker chips and details, exam chips, PANE answers; `platform.ios`) |
+| `inputs` | The patient record: demographics (with `pregnancy`), encounter, CC, HPI, iOS SOCRATES chip labels, symptoms and negatives, exam text, vitals, labs, imaging, comorbidities, surgical history, medications, allergies (`nkda`), social history, score form ticks (`scoreForms`), orders planned in this visit (`orders.investigations`, `orders.prescriptions`) and the supplements answer (`supplements`: not_asked / none / taking), the diagnosis the surgeon confirms (`confirmedDiagnosis`), and per-platform inputs (`platform.web`: CC template, SmartSymptomPicker chips and details, exam chips, PANE answers; `platform.ios`) |
 | `expected` | What a guideline-concordant consultation should produce (below) |
 | `guideline` | Citations: `id`, `name`, `year`, `section`, `citation`, `verified` (true only after a clinician has checked the source) |
 | `rationale` | Why the expectations are what they are |
@@ -88,6 +88,7 @@ If you cannot tie a number to a guideline, make it `quality`.
 | `pathway` | `equals` | iOS `ConsultPathway` (iOS only by default) |
 | `dxVariant` | `equals` | Web `detectDxVariants` id (web only by default) |
 | `reasoning.mustInclude` / `mustExclude` | `match`, `unless`, `sources` | A diagnostic-reasoning line matches / none does. Sources `<platform>.reasoning.<part>` with part `alert` ("Doesn't fit the working diagnosis"), `zebra`, `discriminator` (best next question / test), `timeout`, `for`, `against`, `missing`, `doesntfit`, `longitudinal`. n/a when a results file has no reasoning output |
+| `missing.top` / `missing.mustInclude` / `mustExclude` | `match`, `unless` | What's missing strip (`web.missing` / `ios.missing`, lines `1. [tier] What — why` in rank order): `top` grades the first line only; the others any line. n/a when a results file has no what's-missing output |
 
 Common optional fields: `platforms` (limit to `ios` or `web`), `guidelineRefs` (ids from
 `guideline`), `note`, `knownGap`, `knownGapNote`, `unverified`, `proposedFix`.

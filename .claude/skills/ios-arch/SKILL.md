@@ -251,6 +251,24 @@ Suggested investigation).
   (filled by `score()` / `topResults`; they record evidence and never change a weight).
 - Clinval: the iOS runner emits `ios.reasoning`; `expected.reasoning` is graded by `ClinValGrader`.
 
+## What's missing (every consultation step)
+
+`WhatsMissingRow` (`Views/Consultation/WhatsMissingRow.swift`) sits under the allergy status in
+`ConsultationView.baseContent`: the top gap and "+N" (sheet with the ranked list, top 5 then "More…").
+Actions jump to a step (`onTab`) or tool (`onTool`), or add a test as a `.suggested` investigation;
+nothing is ordered or recorded automatically; "Dismiss" is per consultation view.
+- Core `WhatsMissingCore.swift` (+`Fill`, +`Probe`), rules `WhatsMissingRules.swift` +
+  `Resources/WhatsMissingRules.json` are twins of `lib/pane-engine/src/whats-missing/*`: same JSON
+  (byte-identical, `scripts/src/whats-missing-parity.test.ts`), same vectors
+  (`AmiseMedFlowTests/WhatsMissing/whats-missing-vectors.json`, `WhatsMissingTests.swift`). Change both
+  platforms together and run `gen:whats-missing-vectors`.
+- Adapter `WhatsMissingPatient.swift` reads the Patient (prescriptions dated today count as planned).
+  The populators Alvarado, AIR, BISAP, Wells PE, Blatchford and CURB-65 call
+  `mergeRecord(&i, &f, patient:)` (`PatientScoreAutoPopulator+RecordFill.swift`): record-derived
+  fields are marked auto and drop out of the pending list. No formula changes.
+- The NG12 card (`SuspectedCancerSection`) no longer shows the ferritin check: the row carries it.
+- Clinval: the iOS runner emits `ios.missing`; `expected.missing` is graded by `ClinValGrader`.
+
 ## Ward round flow
 
 `WardRoundView` → tap patient → `WardRoundProgressSheet` (lightweight, SOAP
