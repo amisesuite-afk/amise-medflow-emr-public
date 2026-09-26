@@ -4,7 +4,7 @@
 
 | | |
 |---|---|
-| Status | Draft v0.2, 2026-09-25 (v0.1: 2026-09-24) |
+| Status | Draft v0.3, 2026-09-26 (v0.2: 2026-09-25; v0.1: 2026-09-24). v0.3 adds the real-outcomes loop (§1, §2.1, §2.2, §2.5, §3, §4, §8) |
 | Scope | Dashboard (`artifacts/dashboard`), API server (`artifacts/api-server`), front-desk / patient portal (`artifacts/front-desk`), iOS app (`ios/`), Supabase schema (`supabase-*.sql`), backup and CI workflows (`.github/workflows/`) |
 | Code baseline | v0.1: `c9a7293` (the tip of `claude/pr-37-gbg22z` when this was written). v0.2 refresh: `cc83845`, plus `23904fd` (questionnaire hand-over mode). Citations added in v0.2 carry a commit; older line numbers refer to `c9a7293` and may have drifted. |
 | Out of scope | `artifacts/tax-planner*` and the finance auditor. They hold practice financial data, not patient data, and have not been reviewed. |
@@ -26,6 +26,7 @@
 | **Scheduling** | Appointment requests, confirmed slots, theatre lists | Intake flows, staff, Google Calendar | Tables `appointment_requests`, `confirmed_appointments`, `theatre_sessions`, `theatre_cases`, `calendar_event_cache` |
 | **Billing** | Fee codes, invoices, insurance details | Staff | Tables `patient_billing_items`, `billing_charges` |
 | **Staff data** | Staff name, email, role, default site, login events | Supabase Auth | Table `user_profiles`. `audit_log` (user id and email, and IP and user-agent via `logAudit()`). After Migration 89, profiles revoked from portal patients are kept in the admin-only `user_profiles_revoked` (`supabase-staff-only-rls-migration.sql`) |
+| **Engine predictions and final diagnoses (outcomes loop, v0.3)** | At encounter completion: the engines' top differential (PANE disease ids / ICD-10 codes and probabilities), triage level, score values, decision-layer bands, PANE feature ids, the working ICD-10 code, model versions, and whether an operation or pathology makes a final diagnosis expected. Later: the clinician-confirmed final ICD-10 (+ PANE id), its source type (histology, report, operative findings or note, discharge summary, follow-up) and date, what was done per decision option, and the retrospective urgency. **Coded data only, no free text** | Web sign-off dialog (sent with `POST /api/visit/complete`); dashboard patient summary "Final diagnosis"; iOS Review and complete and the saved-visit sheet | Tables `prediction_snapshots`, `diagnosis_outcomes` (Migration 94, `supabase-outcomes-calibration-migration.sql`); `artifacts/api-server/src/lib/prediction-snapshots.ts`; `artifacts/dashboard/src/lib/outcomes-snapshot.ts`, `outcomes-db.ts`; iOS `Services/OutcomeSnapshot.swift` (`Encounter.predictionSnapshotJson`, `finalDiagnosisJson`) |
 | **Patient-portal credentials** | Supabase Auth user for each portal patient, SMS login codes | Portal invite and login | `routes/portal.ts:57-80` (`auth.admin.inviteUserByEmail`). `patient-auth-migration.sql` (`patient_accounts`: scrypt hashes, 72-hour temporary passwords) |
 
 ---
@@ -42,6 +43,7 @@
 
   Note: `artifacts/dashboard/src/lib/db.ts:181` calls `getPublicUrl()` on the private `patient-photos` bucket and stores that URL in `patients.photo_url`. Whether that URL resolves at all, or only behind a signed URL, is **to confirm**.
 - **Encryption at rest.** This depends on Supabase platform defaults. The repo itself adds no column-level encryption. **To confirm** from Supabase's security documentation or contract.
+- **Outcomes loop (v0.3, Migration 94, not yet applied).** `prediction_snapshots` (one row per completed web encounter, first completion wins) and `diagnosis_outcomes` (confirmed final diagnoses; immutable except for retraction). Linked to `patients.id` and, for web encounters, `encounters.id`. Coded values only; CHECK constraints refuse free text in the code columns. Until the migration is applied, snapshots are skipped (the encounter still closes) and the final-diagnosis screens say "available after the database update".
 - **Point-in-time recovery is disabled.** Verified 2026-08-16 per `docs/INCIDENT-RUNBOOK.md`. The recovery point is daily backups only.
 
 ### 2.2 iOS device (SwiftData)
@@ -63,6 +65,7 @@
   - **Local notifications** show the patient's name and appointment type on the lock screen (`Services/NotificationService.swift:49, 71`).
   - **Calendar events** created through EventKit carry the patient's name and procedure (`Services/CalendarService.swift:81-84, 110, 139`). They sync to whichever calendar account the device uses: iCloud, Google or Exchange.
 
+- **Outcomes loop (v0.3).** Two optional JSON fields on the SwiftData `Encounter`: `predictionSnapshotJson` (engine outputs at "Complete visit", codes only) and `finalDiagnosisJson` (confirmed final diagnoses; a correction retracts, nothing is deleted). They are **not pushed to Supabase yet** (sync-ready records with `clientRef` / `pendingSync`), and Encounters are not in peer sync or the NAS backup, so these records exist only on the device that completed the visit.
 - **Questionnaire hand-over (v0.2, `23904fd`).** While a patient holds the device, walk-in answers are kept **in memory only** and attached to a record, or discarded, after the staff exit. Nothing is written for a walk-in until then.
 
 ### 2.3 NAS backups
@@ -102,7 +105,8 @@ There are two separate mechanisms.
   - iOS billing-item and document deletes (`48ac9f7`);
   - iOS bowel-prep sheet exports (`abda6b2`);
   - questionnaire hand-over open, staff exit, and the note written from the answers, with fixed labels only and no answers (`23904fd`);
-  - quarantined AI reminder drafts, with the matched rule names (`e094063`).
+  - quarantined AI reminder drafts, with the matched rule names (`e094063`);
+  - (v0.3) the **de-identified research export** (`GET /api/outcomes/research-export`): `action = 'export'`, `resource_type = 'research_export'`, format and counts only. The row is written **before** the export is released; if it cannot be written the export is refused (503). The prediction snapshot's status (`saved` / `exists` / `unavailable`) is added to the existing encounter-close audit payload. iOS audits `create prediction_snapshot`, `create final_diagnosis` and `update final_diagnosis` (retracted), with fixed labels only.
 
 ### 2.6 Logs and telemetry
 
@@ -125,6 +129,8 @@ There are two separate mechanisms.
 | `audit_log` | Indefinite. Append-only (no UPDATE or DELETE grant) | |
 | Questionnaire links | 7 days (`supabase-questionnaire-token-expiry-migration.sql:10`) | |
 | Soft-deleted rows (`clinical_notes`, `prescriptions`, `patient_vitals`, `patient_billing_items`, `patient_documents`) | Indefinite. Migration 87 sets `deleted_at`; nothing purges the row | Deletion hides a record; it does not erase it. The retention schedule (A-17) must say when, if ever, soft-deleted rows are purged |
+| `prediction_snapshots`, `diagnosis_outcomes` (v0.3) | Indefinite, like the clinical record they measure. No DELETE grant for `authenticated`; outcomes are retracted, not deleted | Proposed default for the surgeon's decision (SURGEON-DECISIONS.md I2). Deleting a patient cascades to both tables |
+| Research exports (v0.3) | Outside the system once downloaded; the audit row is kept indefinitely | De-identified, but small cells (a rare diagnosis with an age band and a month) remain. The holder's retention and use follow the practice's data-protection terms (I2) |
 | `user_profiles_revoked` | Indefinite (Migration 89) | Kept so an admin can restore a wrongly revoked staff profile |
 | Portal temporary passwords | 72 hours (`patient-auth-migration.sql` header) | |
 | Server NAS backups | 30 daily, 12 monthly, 7 yearly (`.github/workflows/backup.yml:6`) | Yearly backups outlive any deletion made in the live database |
@@ -151,6 +157,7 @@ Source: `CLAUDE.md` ("Auth model is single-tenant, role-based"), `supabase-schem
   - a new auth user gets a staff profile only when an admin creates one, or sets `app_metadata.staff_role` through the admin API. Portal patients no longer get an automatic `front_desk` profile;
   - `patients` UPDATE: front desk may change identity, contact, next-of-kin, insurance, scheduling and patient-reported intake columns only; a portal patient only their own contact and profile fields. Anything else fails with `42501`;
   - soft deletes go through `soft_delete()` (Migration 87), which checks the role per table and refuses front desk.
+- **Outcomes loop (v0.3, Migration 94).** `prediction_snapshots` and `diagnosis_outcomes`: nurse, doctor and admin may read and insert, and retract an outcome; front desk and portal patients match no policy. No DELETE for `authenticated`. The dashboard's "Engine accuracy" page (aggregate report and proposals) is shown to **admin only**; the de-identified research export is **admin only** on the server (a signed-in admin session; the machine token is refused) and is audit-logged before release.
 - **There is no per-patient or per-tenant isolation**, before or after Migration 89. Every staff user can read every patient. See `docs/MULTI-TENANCY-PLAN.md`.
 - **API server.** It connects as `service_role` and bypasses RLS (and the Migration 89 column guards). Its route gate, `requireStaffAuth()` (`artifacts/api-server/src/lib/supabase.ts`), accepts a Supabase user JWT whose user has a staff `user_profiles` role (`f3338ca`), or `x-staff-token` equal to `STAFF_MACHINE_TOKEN` (or to `CRON_SECRET` while `STAFF_MACHINE_TOKEN` is unset; `e6cbf09`). Only one route checks for a *specific* role on the server: `routes/visit-lifecycle.ts`, which requires `doctor`.
 - **Patient-portal users are Supabase Auth users in the same project** (`routes/portal.ts:65`). They have "own record" policies (`supabase-patient-portal-migration.sql:41-87`). Postgres combines permissive policies with OR, so until Migration 89 is applied the staff policy `auth.uid() is not null` **does** give portal patients read access to all patient, document and booking rows and bucket objects. This was confirmed in a local emulator, not in production. See `security-controls.md` S-2.
@@ -257,3 +264,14 @@ The dashboard has no server-side AI calls. Its in-browser Whisper.js dictation r
 6. Whether `photo_url` public URLs from a private bucket are reachable without authentication.
 7. (v0.2) The `MODE` value on the front-desk Vercel project. Its email sender sends unless `MODE` is exactly `dry_run` (`security-controls.md` G-17).
 8. (v0.2) When Migrations 87–90 will be applied to production. Until Migration 89 runs, the portal-patient exposure in §4 stands.
+9. (v0.3) Whether a de-identified research export (age band, sex, months, coded diagnoses) may leave the practice, to whom, under what agreement, and whether small cells must be suppressed first. Until decided, exports are for the practice's own analysis (SURGEON-DECISIONS.md I2).
+
+---
+
+## 8. Purpose of the outcomes data (v0.3)
+
+- **Purpose.** Measure how accurate the decision-support engines are on the practice's own patients (top-k accuracy, calibration, Brier score, per-diagnosis sensitivity and PPV, triage over- and under-triage, decision-band agreement), and propose model changes for the surgeon's review. Clinical audit and quality improvement: nothing changes an engine automatically (`docs/CLINICAL-CONTENT-UPGRADES.md` §4.6).
+- **Minimisation.** Codes, numbers and versions only; no names, notes or free text. The calibration report and the proposals are aggregates. The research export removes identifiers and exact dates (age bands, months, per-export random case ids).
+- **Where it is processed.** Supabase (storage), the dashboard (the admin page computes the report in the browser and caches nothing), the API server (snapshot insert, research export), and optionally an operator's machine running `pnpm --filter @workspace/scripts run outcomes:calibration` (its output folder `outcomes-calibration-out/` is excluded from the repository). No AI and no third party.
+- **Access and retention.** See §4 and §3.
+

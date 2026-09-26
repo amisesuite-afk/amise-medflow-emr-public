@@ -360,6 +360,48 @@ The UI shows a compact waterfall with a "Sources" link. This is also what the FD
 - **Output.** A *proposal*: a content change request with the diff and the vignette A/B. It goes through the full §3 workflow, signed by the surgeon and the CSO. **Never automatic, never applied on the device, never continuous.** Each accepted proposal is a new locked pack version.
 - **Privacy.** Only aggregated, de-identified counts leave the database. Record the analysis in the DPIA and the data inventory.
 
+#### 4.6.1 What is built (outcomes loop, 2026-09-26, owner-approved)
+
+Change log: `docs/clinical-validation/changes/outcomes-calibration.md`. Storage: Migration 94.
+
+1. **Prediction snapshot at completion.** Web: the sign-off dialog shows what is recorded, and
+   `POST /api/visit/complete` stores it in `prediction_snapshots` (PANE top 5 with posteriors,
+   triage level, decision-layer scores and bands, PANE feature ids, the confirmed working
+   diagnosis and ICD-10 codes, every version stamp: `pane`, `rules`, `emergency`, `decision`,
+   `management`, `planSafety`, `reasoning`). The first completion wins, so a reopened encounter
+   keeps the prediction made before any later result. iOS: "Complete visit" freezes the same
+   shape on the Encounter (database version and whether the database or the fallback lists
+   ran), kept on the device for now.
+2. **Final diagnosis.** A nurse, doctor or admin confirms it later (ICD-10, PANE id where the
+   code maps to exactly one node), with the source type and date. Verification = this
+   confirmation; unconfirmed suggestions are never counted. A correction retracts the row and
+   confirms a new one. "Final diagnosis not yet recorded" marks completed encounters older than
+   14 days that had an operation or pathology.
+3. **Report.** `@workspace/triage-engine/outcomes` computes top-1/3/5 accuracy per engine and
+   model version (Wilson intervals), a decile reliability table, the multi-class and leader
+   Brier scores, per-diagnosis sensitivity and PPV, triage over/under-triage against the
+   clinician's retrospective urgency, and decision-band agreement with what was done. Shown on
+   the admin "Engine accuracy" page (Insights) and written by
+   `pnpm --filter @workspace/scripts run outcomes:calibration`.
+4. **Proposals** (PANE only for now). Dirichlet shrinkage of the prior shares towards the
+   current tiers (concentration 200, ≥ 10 cases, a proposal only when the 95% interval excludes
+   the current share and the tier changes; one beyond the tier scale is flagged), and Beta
+   shrinkage of P(feature | disease) towards the current value (20 pseudo-cases, ≥ 20 recorded
+   cases, interval excludes the current value, change ≥ 0.10). Output: JSON and a Markdown diff
+   with counts, credible intervals and a sign-off table. iOS weights are not proposed until the
+   log-unit fixes (C-2 to C-4) are done.
+
+**How a proposal reaches the model** (never automatically):
+
+1. The admin downloads the proposals (page or script) and attaches them to a content-change PR.
+2. The PR edits the content by hand (`vademecum` priors / features), bumps
+   `PANE_MODEL_VERSION` and the registry entry with a changelog line (§2.2, §3).
+3. The vignette suite runs A (main) against B (the PR) (§4.7); the must-not-miss gate holds.
+4. The surgeon (and the CSO, once in post) signs each line in the proposal's sign-off table, and
+   the decision is recorded in `SURGEON-DECISIONS.md`.
+5. After release, new snapshots carry the new model version, so the report compares versions
+   side by side. Never on the device, never at runtime, never continuous.
+
 ### 4.7 Versioned models and A/B comparison
 
 - **The pair.** Every result carries an engine version (the code) and a pack version (the data).
@@ -430,7 +472,7 @@ or an M&M case to the exact content that was on screen.
 | 1. Correctness | C-1 to C-5 (decode, units, priors, LR recomputation), each A/B'd on the vignette suite and signed off. Fix C-9 (deterministic dosing lookup). Differential disclaimer and bands (L1, L2). `CODEOWNERS` from the registry. Sign-off records. Restrict `clinical_guidelines` writes | Next |
 | 2. Packs | Pack manifest and `content:diff`; `citations.json`; the LR schema (4.1); interactions as one shared data pack; formulary and dosing data out of components | |
 | 3. Calibration and explanation | Calibration metrics in the harness (4.2); the contribution waterfall (4.3); three-state findings (4.4); setting priors (4.5); provenance footnotes and content versions recorded with outputs (§5) | |
-| 4. Optional | Signed remote packs (2.4 B) once the preconditions hold; local-learning proposals (4.6) once there are enough audited outcomes | |
+| 4. Optional | Signed remote packs (2.4 B) once the preconditions hold; local-learning proposals (4.6) once there are enough audited outcomes | Outcomes capture, calibration report and proposal tooling built 2026-09-26 (§4.6.1); needs Migration 94 applied and enough confirmed cases before any proposal |
 
 ## 8. Decisions needed from the surgeon
 

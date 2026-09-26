@@ -172,6 +172,7 @@ approved. Reply with the file and item numbers you approve (for example "fix-web
 | [ios-last-criticals](changes/ios-last-criticals.md#needs-sign-off) | iOS differential (DiagnosticDatabase 2.1.0) and triage level 1.1.0 | NEWS2 by urgency tier, diagnoses added from report evidence, post-operative day and masking rules, new Gastric Outlet Obstruction, new and tightened likelihood ratios for 20 conditions, NG12 card sets priority, acute-clause rule, domestic-abuse red flag (21 items) |
 | [ios-parity-web-last-gaps](changes/ios-parity-web-last-gaps.md#needs-sign-off) | iOS: the web-last-gaps fixes (plan filter 1.1.0, cards 1.3.0, acuity 1.2.0) | NSAID exclusions on every plan line, stable GI bleed needs recorded vitals, UKKA bands with a recorded K⁺, D-dimer / occult-malignancy CT withheld in pregnancy, injury on an anticoagulant, operative-template lines and plan default, relatives' history entries, TG18 age ≥ 75, NG19 diabetic foot terms (gangrene stays emergency) (17 items) |
 | [diagnostic-reasoning](changes/diagnostic-reasoning.md#needs-sign-off) | "Dr House" reasoning panel (web + iOS): for/against, best next test, doesn't-fit alerts, 16 zebra rules, longitudinal view | Evidence and alert thresholds (web LR ≤ 0.2, iOS 0.33), acceptable alert rate (now 7.6% on web), can't-miss list, zebra rules and citations, time-out triggers |
+| [outcomes-calibration](changes/outcomes-calibration.md#needs-sign-off) | Real-outcomes loop (web + iOS): prediction snapshots, final diagnoses, calibration report, proposed adjustments | Governance defaults in I2 (retention, minimum counts, who sees and exports), the 14-day reminder, the triage mapping to a common scale, the ICD-category match rule, the pathology/operation triggers (8 items) |
 | [bayes-treatment](changes/bayes-treatment.md#needs-sign-off) | Score → action, result → posterior shift, personalised treat / test / observe decisions (web + iOS) | Every effect size and harm (74 sources, all written from memory), 43 patient modifiers and 4 hard exclusions, risk bands, lab upper limits (need the practice's own ranges), confirmed-diagnosis ≥ 95% rule |
 
 Decided so far:
@@ -232,3 +233,30 @@ necrotising-fasciitis alarm on iOS) and "Heartburn" opening the Burns pathway on
 - **Still open (not decided):** vitamin E and fish oil (not in the briefing); wording for emergency
   / urgent surgery; whether the pre-op assessment visit and minor procedures under local
   anaesthetic should carry the paragraph.
+
+### I2. Real-outcomes loop: governance — ITEM APPROVED 2026-09-26; DEFAULTS BELOW AWAIT CONFIRMATION
+
+- **Owner:** practice owner (Dr Dawit Daniel Kabiye) approved building the loop: record each
+  patient's final diagnosis, compare it with what the engines predicted, and propose model
+  changes from real data, applied only with the surgeon's approval. **Nothing changes the
+  engines automatically.** Change log: [outcomes-calibration](changes/outcomes-calibration.md).
+- **Defaults built in (confirm or change each):**
+  1. **Retention.** Prediction snapshots and final diagnoses are kept indefinitely, like the
+     clinical record they measure; outcomes are retracted, never deleted; deleting a patient
+     deletes both. Revisit with the records retention schedule (compliance A-17).
+  2. **Who records.** Nurse, doctor or admin confirm (and retract) final diagnoses; front desk has
+     no access (database policies, Migration 94).
+  3. **Who sees the report.** The "Engine accuracy" page is admin only. (Option: open it to
+     doctors, since it holds aggregates only.)
+  4. **Who exports.** The de-identified research export is admin only, needs a signed-in admin
+     session, and is refused unless the audit-log row is written first. It stays inside the
+     practice until you decide who may receive it and under what agreement; small cells (a rare
+     diagnosis with an age band and a month) are not suppressed yet.
+  5. **Minimum counts for proposals.** Prior tier: ≥ 10 confirmed cases of the diagnosis, a 95%
+     interval that excludes the current share, and a change of tier (Dirichlet concentration 200).
+     Likelihood: ≥ 20 recorded cases, a 95% interval that excludes the current value and a change
+     ≥ 0.10 (Beta, 20 pseudo-cases). iOS weights: none until the log-unit fixes (C-2 to C-4).
+  6. **Reminder.** "Final diagnosis not yet recorded" after 14 days, only for encounters with an
+     operation or pathology.
+- **Always:** a proposal is applied only through a content-change PR with a version bump, a
+  vignette A/B run and your signature on each line (`docs/CLINICAL-CONTENT-UPGRADES.md` §4.6.1).
