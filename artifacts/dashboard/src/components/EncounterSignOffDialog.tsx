@@ -3,6 +3,7 @@ import { useAppContext } from '@/context/AppContext';
 import { getMatrix } from '@/lib/cc-matrices';
 import { computeSectionDone } from '@/lib/workflow-completion';
 import { buildSignOffSummary, DEFAULT_SIGNOFF_STEPS } from '@/lib/encounter-signoff';
+import CompletionSnapshotNote from '@/components/outcomes/CompletionSnapshotNote';
 
 interface Props {
   open: boolean;
@@ -85,6 +86,8 @@ export default function EncounterSignOffDialog({ open, completing, onCancel, onC
             All pathway steps documented, allergy status recorded and a diagnosis confirmed.
           </div>
         )}
+
+        <CompletionSnapshotNote />
 
         <label style={{ display: 'flex', alignItems: 'flex-start', gap: 8, fontSize: 13, color: '#334155', marginBottom: 14, cursor: 'pointer' }}>
           <input type="checkbox" checked={reviewed} onChange={e => setReviewed(e.target.checked)} style={{ marginTop: 2 }} />

@@ -101,6 +101,7 @@ import PatientNotifyModal from '@/components/PatientNotifyModal';
 import ConsultationNav from '@/components/ConsultationNav';
 import AmbientConsultation from '@/components/AmbientConsultation';
 import EncounterSignOffDialog from '@/components/EncounterSignOffDialog';
+import { completionSnapshotFromApp } from '@/lib/outcomes-completion';
 import ConsultToolDrawer from '@/components/ConsultToolDrawer';
 import { availableTools, type ConsultToolId } from '@/lib/consult-steps';
 import { getMatrix } from '@/lib/cc-matrices';
@@ -215,6 +216,10 @@ export default function HomePage() {
   const prevPatientIdRef = useRef<string | null>(null);
 
   const [completing, setCompleting] = useState(false);
+  // Outcomes loop: the engines' outputs are snapshotted (codes only) when the encounter closes.
+  const appCtx = useAppContext();
+  const appCtxRef = useRef(appCtx);
+  appCtxRef.current = appCtx;
   const [apiDown, setApiDown] = useState(false);
   // Timestamp until which the banner is suppressed after the user dismisses it.
   // Seeded from sessionStorage so a page refresh within the 5-min window keeps it hidden.
@@ -269,6 +274,7 @@ export default function HomePage() {
         body: JSON.stringify({
           description: plan ?? undefined,
           chiefComplaint: currentComplaintText({ procedureData, symptoms, freeText }) || undefined,
+          predictionSnapshot: completionSnapshotFromApp(appCtxRef.current, encounterId) ?? undefined,
         }),
       });
       if (res.ok) {

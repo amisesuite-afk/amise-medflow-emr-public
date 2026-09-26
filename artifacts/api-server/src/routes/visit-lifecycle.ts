@@ -2,6 +2,7 @@ import { Router } from 'express';
 import { getSupabaseAdmin, audit, requireStaffAuth, getStaffUserId } from '../lib/supabase.js';
 import { logger, errStr } from '../lib/logger.js';
 import { logAudit } from '../lib/audit.js';
+import { storePredictionSnapshot } from '../lib/prediction-snapshots.js';
 
 const router = Router();
 
@@ -209,11 +210,20 @@ router.post('/api/visit/complete/:encounterId', async (req, res) => {
 
     if (closeErr) throw closeErr;
 
+    // Outcomes loop (Migration 94): what the engines predicted at completion, coded data only.
+    // Never fails the completion: a missing table or a bad snapshot is reported as a status.
+    const snapshot = await storePredictionSnapshot(supa, {
+      body: (req.body ?? {}).predictionSnapshot,
+      encounterId,
+      patientId: encounter.patient_id,
+      createdBy: (req as { staffUser?: { userId?: string } }).staffUser?.userId ?? null,
+    });
+
     await audit({
       action: 'book',
       entityType: 'encounter',
       entityId: encounterId,
-      payload: { status: 'closed', plan_type: resolvedPlanType, has_follow_up: !!followUpDate, has_referral: !!referralTo },
+      payload: { status: 'closed', plan_type: resolvedPlanType, has_follow_up: !!followUpDate, has_referral: !!referralTo, prediction_snapshot: snapshot },
     });
     void logAudit(req, 'update', 'appointment', encounterId, encounter.patient_id ?? undefined, {
       action: 'complete',
@@ -223,7 +233,7 @@ router.post('/api/visit/complete/:encounterId', async (req, res) => {
     });
 
     logger.info({ encounterId, planType: resolvedPlanType, followUpDate }, '[visit/complete] encounter closed');
-    res.json({ encounterId, status: 'closed', planType: resolvedPlanType });
+    res.json({ encounterId, status: 'closed', planType: resolvedPlanType, predictionSnapshot: snapshot });
   } catch (err) {
     logger.error({ err }, '[visit/complete] error');
     res.status(502).json({ error: errStr(err) });
