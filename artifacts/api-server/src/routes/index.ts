@@ -46,6 +46,7 @@ import patientsStaffRouter from "./patients-staff";
 import problemsRouter from "./problems";
 import notifyRouter from "./notify";
 import outcomesRouter from "./outcomes";
+import labFeedRouter from "./lab-feed";
 
 const router: IRouter = Router();
 
@@ -96,5 +97,6 @@ router.use(patientsStaffRouter);
 router.use(problemsRouter);
 router.use(notifyRouter);
 router.use(outcomesRouter);
+router.use(labFeedRouter);
 
 export default router;

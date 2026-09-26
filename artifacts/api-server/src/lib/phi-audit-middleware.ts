@@ -37,6 +37,8 @@ const PHI_ROUTES: Array<{ prefix: string; resourceType: string }> = [
   { prefix: '/api/summary',              resourceType: 'patient'              },
   { prefix: '/api/portal',               resourceType: 'patient'              },
   { prefix: '/api/fhir',                 resourceType: 'patient'              },
+  { prefix: '/api/lab-feed/inbox',       resourceType: 'investigation_result' },
+  { prefix: '/api/lab-feed/reconcile',   resourceType: 'lab_result_to_reconcile' },
 ];
 
 // Non-PHI paths that match prefixes above — exclude

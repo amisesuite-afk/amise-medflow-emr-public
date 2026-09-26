@@ -236,10 +236,11 @@ function sexMatches(rangeSex: RangeSex, patientSex: string | null | undefined): 
 
 function ageMatches(r: ReferenceRange, age: number | null | undefined): boolean {
   if (r.ageMinYears === null && r.ageMaxYears === null) return true;
-  // A banded range never applies to a patient of unknown age, except the adult default band
-  // (18+), which applies when the age is unknown: the practice sees adults.
+  // A banded range never applies to a patient of unknown age, except an open adult band
+  // (from 18 or younger, no maximum), which applies when the age is unknown: the practice sees
+  // adults.
   if (age === null || age === undefined || !Number.isFinite(age)) {
-    return r.isDefault && r.ageMinYears === 18 && r.ageMaxYears === null;
+    return r.ageMaxYears === null && (r.ageMinYears === null || r.ageMinYears <= 18);
   }
   if (r.ageMinYears !== null && age < r.ageMinYears) return false;
   if (r.ageMaxYears !== null && age >= r.ageMaxYears) return false;
@@ -259,7 +260,8 @@ function pick(candidates: ReferenceRange[], analyte: string, ctx: RangeContext):
   const on = ctx.onDate ? ctx.onDate.slice(0, 10) : null;
   const matching = candidates.filter(r =>
     r.analyte === analyte && sexMatches(r.sex, ctx.sex as string | null | undefined) && ageMatches(r, ctx.ageYears)
-    && (on === null || r.effectiveFrom <= on));
+    // The built-in defaults apply on every date; a practice range from its effective date.
+    && (on === null || r.isDefault || r.effectiveFrom <= on));
   if (matching.length === 0) return null;
   // Most specific first (sex, then narrowest age band), then the latest effective date.
   matching.sort((a, b) => (specificity(b) - specificity(a)) || b.effectiveFrom.localeCompare(a.effectiveFrom));
