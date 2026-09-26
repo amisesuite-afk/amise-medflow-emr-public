@@ -24,6 +24,8 @@
 //                        (PatientScoreAutoPopulator.* inside ScoreAutoPopulateContext) = "autofill";
 //                        ClinicalScoringEngine on the clinician-completed form = "calculator"
 //   8. Draft plan        ConsultationView+Sheets.draftPlan: SOAPDraftEngine.draft(patient:)
+//   9. Decision support  ConsultationView+PlanTab DecisionSupportSection: DecisionSupportPatient.support
+//                        (BayesianDecisionEngine+Treatment.swift) → ios.decisions / ios.decisions.shift
 
 import Foundation
 import SwiftData
@@ -409,7 +411,52 @@ enum ClinValIOSRunner {
             let text = line.trimmingCharacters(in: .whitespaces)
             if !text.isEmpty { out.management.append(.init(source: "ios.soap.plan", text: text)) }
         }
+
+        // 9. Plan tab: DecisionSupportSection (BayesianDecisionEngine+Treatment.swift).
+        decisionSupport(v, p, bayes: bayes, socrates: socrates, hint: hint, into: &out)
         return out
+    }
+
+    /// DecisionSupportSection: the calculator results the clinician saved (here the vignette's
+    /// calculator forms, and a `total` for scores recorded as a number), the record, the working
+    /// diagnosis and the Bayesian differential → ios.decisions (summary lines), ios.decisions.notForPatient
+    /// (red flags), ios.decisions.shift (result → differential), missing inputs in the notes.
+    static func decisionSupport(_ v: ClinValVignette, _ p: Patient, bayes: [BayesianDiagnosisEngine.DiagnosisResult],
+                                socrates: [String: Set<String>], hint: String?, into out: inout ClinValOutputs) {
+        var extra: [TreatmentDecisions.Score] = []
+        for sv in out.scoreValues where sv.mode == "calculator" {
+            if let value = sv.value, ["alvarado", "tg18-cholecystitis", "tg18-cholangitis"].contains(sv.score),
+               !extra.contains(where: { $0.key == sv.score }), sv.score == "alvarado" || value >= 1 {
+                extra.append(TreatmentDecisions.Score(key: sv.score, value: value, source: "calculator", redParameter: nil))
+            }
+        }
+        let forms = v.inputs.scoreForms ?? [:]
+        for key in forms.keys.sorted() {
+            if let form = forms[key], case .number(let n)? = form.fields["total"] {
+                extra.append(TreatmentDecisions.Score(key: key, value: n, source: "calculator", redParameter: nil))
+            }
+        }
+        var input = DecisionSupportPatient.input(for: p, bayes: bayes, extraScores: extra)
+        // The harness does not set an operation date; the web reads the encounter's post-op day.
+        if input.patient.recentSurgeryDays == nil, let d = v.inputs.encounter.postOpDays {
+            input.patient.recentSurgeryDays = Double(d)
+        }
+        guard let content = TreatmentDecisions.content else {
+            out.notes.append("Decision support: TreatmentDecisions.json missing or not decoding")
+            return
+        }
+        let r = TreatmentDecisions.decisionSupport(input, content, DecisionSupportPatient.lineFilter(for: p))
+        for line in TreatmentDecisions.summaryLines(r) {
+            switch line.kind {
+            case "safety": out.redFlags.append(.init(source: "ios.decisions.notForPatient", text: line.text))
+            case "info": out.notes.append(line.text)
+            default: out.management.append(.init(source: "ios.decisions", text: line.text))
+            }
+        }
+        out.notes.append("Decision support: \(r.decisions.map { $0.id }.joined(separator: ", ")); factors \(r.activeFactors.joined(separator: ", "))")
+        for s in DecisionSupportPatient.posteriorShifts(for: p, socratesSelections: socrates, specialtyHint: hint) {
+            out.management.append(.init(source: "ios.decisions.shift", text: "Posterior shift — \(s.text)"))
+        }
     }
 
     // MARK: - Helpers

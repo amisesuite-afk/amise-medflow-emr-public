@@ -63,6 +63,11 @@ extension ConsultationView {
                               filled: !(patient.managementPlan ?? "").isEmpty)
             }
 
+            // Decision support — clinician decides: score / result actions and the treatment options
+            // for the leading diagnoses (BayesianDecisionEngine+Treatment.swift). Suggestions only.
+            DecisionSupportSection(patient: patient, bayesianDx: bayesianDx, socratesSelections: socratesSelections,
+                                   specialtyHint: selectedSpecialtyHint, onEdit: { touch() })
+
             // Fasting / sleep safety prompts and evidence-graded non-drug options (tap to add)
             LifestylePracticesSection(patient: patient, onEdit: { touch() })
 
