@@ -53,8 +53,10 @@ struct AddPatientView: View {
     init(initialSetting: ClinicalSetting = .outpatient,
          initialName: String = "",
          initialProcedure: String = "",
-         operationDate: Date? = nil) {
+         operationDate: Date? = nil,
+         initialVisitType: VisitType = .newConsult) {
         self.initialSetting = initialSetting
+        _visitType = State(initialValue: initialVisitType)
         _setting = State(initialValue: initialSetting)
         _fullName = State(initialValue: initialName)
         _appointmentType = State(initialValue: initialProcedure)

@@ -227,6 +227,8 @@ struct ScheduleView: View {
                         }
                     }
                     Button { showAdd = true } label: { Image(systemName: "plus") }
+                        .accessibilityLabel("Schedule appointment")
+                        .accessibilityIdentifier("schedule.add")
                 }
             }
         }

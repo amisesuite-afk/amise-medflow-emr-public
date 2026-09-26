@@ -60,6 +60,8 @@ struct AppointmentSchedulerView: View {
     @State private var selectedPatient: Patient?
     @State private var patientSearch = ""
     @State private var apptType: ApptType = .followUp
+    /// Saved to `patient.visitType`: the patient's current type once one is chosen, else New Consult.
+    @State private var visitType: VisitType = .newConsult
     @State private var apptDate = Calendar.ect.date(byAdding: .day, value: 1, to: Calendar.ect.startOfDay(for: .now)) ?? .now
     @State private var customDuration: TimeInterval = 1800
     @State private var usesCustomDuration = false
@@ -120,6 +122,7 @@ struct AppointmentSchedulerView: View {
         NavigationStack {
             Form {
                 patientSection
+                visitTypeSection
                 appointmentSection
                 calendarSection
                 outboundSection
@@ -130,11 +133,13 @@ struct AppointmentSchedulerView: View {
             .toolbar {
                 ToolbarItem(placement: .cancellationAction) {
                     Button("Cancel") { dismiss() }
+                        .accessibilityIdentifier("fd.scheduler.cancel")
                 }
                 ToolbarItem(placement: .confirmationAction) {
                     Button("Save") { Task { await save() } }
                         .disabled(!canSave || isSaving)
                         .fontWeight(.semibold)
+                        .accessibilityIdentifier("fd.scheduler.save")
                 }
             }
             .sheet(isPresented: $showMailComposer) {
@@ -172,14 +177,15 @@ struct AppointmentSchedulerView: View {
                 AddPatientView(
                     initialSetting: impliedSetting ?? .outpatient,
                     initialProcedure: apptType == .procedure || apptType == .endoscopy ? apptType.rawValue : "",
-                    operationDate: apptDate
+                    operationDate: apptDate,
+                    initialVisitType: visitType
                 )
             }
             .onAppear {
                 // Opened from a patient card: start with that patient, so staff never need to
                 // search for someone already on screen.
                 if selectedPatient == nil, let p = initialPatient, p.isLive {
-                    selectedPatient = p
+                    select(p)
                 }
             }
         }
@@ -215,8 +221,7 @@ struct AppointmentSchedulerView: View {
                 if !filteredPatients.isEmpty {
                     ForEach(filteredPatients) { patient in
                         Button {
-                            selectedPatient = patient
-                            patientSearch = ""
+                            select(patient)
                         } label: {
                             VStack(alignment: .leading, spacing: 1) {
                                 Text(patient.fullName).foregroundStyle(.primary)
@@ -241,6 +246,28 @@ struct AppointmentSchedulerView: View {
         } footer: {
             if selectedPatient?.isLive != true {
                 Text("For privacy, no patient list is shown. At most \(QuestionnairePatientSearch.maxResults) matches appear.")
+            }
+        }
+    }
+
+    /// A chosen patient brings their current visit type (New Consult when none is recorded).
+    private func select(_ patient: Patient) {
+        selectedPatient = patient
+        patientSearch = ""
+        visitType = patient.visitType ?? .newConsult
+    }
+
+    private var visitTypeSection: some View {
+        Section {
+            VisitTypeChipRow(selection: $visitType, identifier: "fd.scheduler.visitType") { vt in
+                // The booking type follows (duration, theatre / scope list); staff can change it.
+                if let suggested = ApptType.suggested(for: vt) { apptType = suggested }
+            }
+        } header: {
+            Text("Visit Type")
+        } footer: {
+            if let p = selectedPatient, p.isLive, p.visitType != visitType {
+                Text("Saved to the record with the appointment (now: \(p.visitType?.rawValue ?? "not set")).")
             }
         }
     }
@@ -344,8 +371,9 @@ struct AppointmentSchedulerView: View {
         savedError = nil
 
         do {
+            // Practice calendar (staff only): booking type and visit type in the title.
             let event = try await calendarService.createTheatreBooking(
-                procedure: apptType.rawValue,
+                procedure: ApptType.eventLabel(apptType, visitType: visitType),
                 patientName: patient.fullName,
                 date: apptDate,
                 duration: effectiveDuration,
@@ -354,13 +382,27 @@ struct AppointmentSchedulerView: View {
             )
             savedEvent = event
 
-            // Update patient record so they appear in the correct clinical list
-            if let setting = impliedSetting {
+            // Update patient record so they appear in the correct clinical list. The record may
+            // have been removed or merged by sync during the calendar request.
+            let live = patient.isLive
+            var edited = false
+            if live, let setting = impliedSetting {
                 patient.setting = setting
                 patient.operationDate = apptDate
                 if patient.appointmentType == nil || patient.appointmentType?.isEmpty == true {
                     patient.appointmentType = apptType.rawValue
                 }
+                edited = true
+            }
+            // Visit type: decides the consultation pathway and the record sections. Front desk
+            // may set it (visit_type is on the Migration 89 allow-list, FrontDeskPatientColumns).
+            if live, patient.visitType != visitType {
+                AuditLog.record("update", "patient", patient: patient,
+                                details: ["field": "visit_type", "to": visitType.rawValue])
+                patient.visitType = visitType
+                edited = true
+            }
+            if edited {
                 patient.updatedAt = .now
                 patient.pendingSync = true
                 try? context.save()
