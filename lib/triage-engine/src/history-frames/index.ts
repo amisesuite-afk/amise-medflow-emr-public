@@ -70,8 +70,9 @@ export interface ResolvedFrame {
 export function resolveFrame(complaint: string, system?: string, overrideFrameId?: string | null): ResolvedFrame {
   const choice = classifyComplaint(complaint, system);
   const frame = (overrideFrameId && BY_ID.get(overrideFrameId)) || BY_ID.get(choice.frameId) || BY_ID.get('general')!;
+  // Same algorithm as HistoryFrames.resolve (Swift). lint:history-frames checks that a secondary
+  // question's web key never collides with another frame's.
   const dims: ResolvedDimension[] = frame.dimensions.map(dm => ({ ...dm, frameId: frame.id, secondary: false }));
-  const usedWebKeys = new Set(dims.map(webKeyFor));
   for (const secId of choice.secondary) {
     if (secId === frame.id) continue;
     const sec = BY_ID.get(secId);
@@ -79,16 +80,34 @@ export function resolveFrame(complaint: string, system?: string, overrideFrameId
     for (const id of sec.secondaryDims) {
       const dm = sec.dimensions.find(x => x.id === id);
       if (!dm) continue;
-      const webKey = webKeyFor(dm);
-      if (usedWebKeys.has(webKey)) continue;
-      usedWebKeys.add(webKey);
       dims.push({
-        ...dm, id: `${sec.id}.${dm.id}`, key: dimensionKey(dm), webKey,
+        ...dm, id: `${sec.id}.${dm.id}`, key: dimensionKey(dm), webKey: webKeyFor(dm),
         title: `${sec.label} — ${dm.title}`, frameId: sec.id, secondary: true,
       });
     }
   }
   return { choice, frame, dimensions: dims };
+}
+
+/**
+ * A web answer (comma-joined labels, as HpiTab stores it) after tapping `label` in `dim`: toggles
+ * it; a single-select question keeps one label; labels it excludes (or that exclude it) are
+ * removed. Twin of HistoryFrames.toggled (Swift).
+ */
+export function toggleWebAnswer(current: string, dim: FrameDimension, label: string): string {
+  const parts = current.split(',').map(s => s.trim()).filter(Boolean);
+  if (parts.includes(label)) return parts.filter(p => p !== label).join(', ');
+  const option = dim.options.find(o => webStoredLabel(o.label) === label);
+  const clash = (other: string): boolean => {
+    if (!dim.multiSelect) return true;
+    const o = dim.options.find(x => webStoredLabel(x.label) === other);
+    const ex = (a: FrameOption | undefined, b: string) =>
+      !!a?.excludes && (a.excludes.includes('*') || a.excludes.map(webStoredLabel).includes(b));
+    return ex(option, other) || ex(o, label);
+  };
+  // Free text the clinician typed (not a chip of this question) is kept.
+  const kept = parts.filter(p => !dim.options.some(o => webStoredLabel(o.label) === p) || !clash(p));
+  return [...kept, label].join(', ');
 }
 
 /** Frames offered by the one-tap switch, in display order. */

@@ -878,7 +878,7 @@ const NEURO_FRAMES: HistoryFrame[] = [
         'Urinary retention', 'Back pain', 'Seizure',
       ], { webKey: 'neuro_assoc' }),
     ],
-    secondaryDims: ['distribution', 'onset'],
+    secondaryDims: ['distribution'],
   },
   {
     id: 'neuro.numbness', type: 'neuro', variant: 'numbness', label: 'Numbness', title: 'Numbness history',

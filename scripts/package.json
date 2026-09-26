@@ -16,6 +16,8 @@
     "lint:report-import-parity": "tsx ./src/lint-report-import-parity.ts",
     "lint:reference-range-parity": "tsx ./src/lint-reference-range-parity.ts",
     "lint:guideline-registry": "tsx ./src/lint-guideline-registry.ts",
+    "lint:history-frames": "tsx ./src/lint-history-frames.ts",
+    "gen:history-frames": "tsx ./src/gen-history-frames.ts",
     "lint:signoff-catalogue": "tsx ./src/signoff-catalogue.ts --check",
     "signoff:catalogue": "tsx ./src/signoff-catalogue.ts",
     "signoff:apply": "tsx ./src/signoff-apply.ts",
