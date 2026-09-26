@@ -16,7 +16,7 @@ export {
 export type { PatientInfo, ResolvedLink, LoadedDisease, Vademecum, Tri, CriteriaContext } from './model.js';
 export {
   evaluate, displayList, scoreDisease, bandFor, seedCandidates, complaintAreas, questionsAt, questionGain, bestQuestion, runLoop, signFor,
-  decidingFindings, deferredCantMiss, inPlayAt,
+  decidingFindings, deferredCantMiss, inPlayAt, LEVEL_QUESTION_BUDGET,
 } from './loop.js';
 export type {
   Band, LoopInput, CriteriaLevelStatus, CriteriaStatus, Contribution, DiseaseResult, Exclusion, Conflict, FinalDiagnosisPrompt,

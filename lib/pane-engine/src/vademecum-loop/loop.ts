@@ -789,6 +789,14 @@ export interface PendingWorkup {
   tests: { id: string; label: string; level: VademecumLevel }[];
 }
 
+/**
+ * Questions per level before the loop moves on (engineering default, for sign-off with the other
+ * loop numbers): a clinician takes a focused history, examines, scores, then investigates, instead of
+ * asking every history question that could nudge an unlikely diagnosis. The overall cap
+ * (policy.maxQuestions) still applies; investigations have no own budget.
+ */
+export const LEVEL_QUESTION_BUDGET: Partial<Record<VademecumLevel, number>> = { history: 8, exam: 5, score: 3 };
+
 /** Likelihood ratios strong enough for an investigation to decide a diagnosis on its own. */
 const DECIDING_LR_POSITIVE = 10;
 const DECIDING_LR_NEGATIVE = 0.1;
@@ -910,8 +918,13 @@ export function runLoop(
     if (steps.length >= v.policy.maxQuestions) return { candidates, steps, stop: 'question-cap', final: ev, level: levels[li]! };
     let q: Question | null = null;
     while (li < levels.length) {
-      q = bestQuestion(v, candidates.ids, input(), levels[li]!, asked, ev, inPlayAt(v, ev, levels[li]!));
-      if (q?.changesBand) break;
+      const level = levels[li]!;
+      const budget = LEVEL_QUESTION_BUDGET[level];
+      const askedHere = steps.filter(st => st.question.level === level).length;
+      if (budget === undefined || askedHere < budget) {
+        q = bestQuestion(v, candidates.ids, input(), level, asked, ev, inPlayAt(v, ev, level));
+        if (q?.changesBand) break;
+      }
       q = null;
       li++;
     }
