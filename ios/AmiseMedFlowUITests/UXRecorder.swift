@@ -263,6 +263,45 @@ final class UXRecorder {
         }
     }
 
+    /// Puts the keyboard away from a multi-line editor, where Return only adds a new line: taps
+    /// the keyboard toolbar's "Done" (the dictation toolbar on every consultation text editor),
+    /// one tap. Falls back to the keyboard's own Done/Return keys. Returns whether the keyboard
+    /// went away. No-op (true) when no keyboard is shown.
+    @discardableResult
+    func hideKeyboard(_ what: String = "Keyboard toolbar: Done") -> Bool {
+        let keyboard = app.keyboards.firstMatch
+        guard keyboard.exists else { return true }
+        let keyboardTop = snap(keyboard)?.frame.minY ?? app.frame.maxY
+        // The toolbar sits on the keyboard's top edge (just above it, or inside the keyboard's
+        // frame on some iOS versions): of the hittable "Done" buttons, take the one nearest to
+        // that edge, never a sheet's Done higher up the screen.
+        let dones = app.buttons.matching(NSPredicate(format: "label == 'Done'")).allElementsBoundByIndex
+            .compactMap { el -> (XCUIElement, CGFloat)? in
+                guard isHittableSafely(el), let f = snap(el)?.frame else { return nil }
+                let distance = abs(f.midY - keyboardTop)
+                return distance <= 80 ? (el, distance) : nil
+            }
+        if let done = dones.min(by: { $0.1 < $1.1 })?.0 {
+            done.tap()
+            record(["action": "tap", "target": what]) { taps += 1 }
+        } else {
+            for label in ["Done", "done", "Return", "return"] {
+                let key = keyboard.buttons[label]
+                if isHittableSafely(key) {
+                    key.tap()
+                    record(["action": "tap", "target": "Keyboard: \(label)"]) { taps += 1 }
+                    break
+                }
+            }
+        }
+        let deadline = Date().addingTimeInterval(3)
+        while Date() < deadline {
+            if !app.keyboards.firstMatch.exists { return true }
+            RunLoop.current.run(until: Date().addingTimeInterval(0.2))
+        }
+        return false
+    }
+
     func tap(_ element: XCUIElement, _ what: String, timeout: TimeInterval = 10) throws {
         try waitFor(element, what, timeout: timeout)
         var target = element

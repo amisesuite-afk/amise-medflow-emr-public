@@ -19,7 +19,7 @@ Branch `ux-review`, based on `claude/pr-37-gbg22z` at `60e2b15`.
 > | M1, M2 | Identity, NKDA banner | n/a | ✓ fixed (`ux-safety-fixes`) |
 > | M3 | Header safety strip | n/a | ✓ fixed: NEWS2 with band colour and age, every allergy (not only severe), antithrombotic by name, footnote size or larger, on the iPad header and under the iPhone record's title (`RecordSafetyStrip`) |
 > | M4 | iPad: two navigation systems, two Save Visit | n/a | ✓ fixed: one "Consultation" section-bar entry (the 11 step items are gone; Overview links still open a step), the pathway step bar is the only step navigation; header "Save Visit" removed; "Save snapshot" and "Complete" labelled and explained on screen |
-> | M5 / top-10 #10 | Scores, Vitals, Rx outside the consultation | ✓ fixed: Tools menu in every navigation mode opens Scores, Vitals, Prescriptions (and Notes, Tasks) in a side panel over the step; Scores is also a step in the pathway bar | ✓ fixed: Tools in the consultation toolbar (and in More) opens Clinical Scores, Vitals, Prescriptions as a sheet over the step, patient identity and safety strip on it |
+> | M5 / top-10 #10 | Scores, Vitals, Rx outside the consultation | ✓ fixed: Tools menu in every navigation mode opens Scores, Vitals, Prescriptions (and Notes, Tasks) in a side panel over the step; Scores is also a step in the pathway bar | ✓ fixed: Tools in the consultation toolbar on iPad, and in the step bar's More menu on both, opens Clinical Scores, Vitals, Prescriptions as a sheet over the step, patient identity and safety strip on it |
 > | M6 | Three navigation layers, 17 pills, Scores disappears | ✓ fixed: one bar — phase as group labels inside it (✓ only when every step in it is documented), actions in its header; 15 pills (Notes, Monitor, Tasks moved to Tools, Scores added); 44 px targets on touch; "+N ›" overflow cue | n/a |
 > | M7 | Web start-up friction | open | n/a |
 > | M8 | Completion without sign-off | ✓ fixed (`ux-safety-fixes`) | ✓ fixed: "Review and complete" sheet — steps not documented, allergy status, unedited template / questionnaire content, diagnosis and orders, attestation; "Complete visit" only after the tick |
@@ -186,6 +186,16 @@ block if XCTest still ends a test early.
   through snapshots (a missing element is a Swift error it can handle), and an interrupted flow
   now records the XCTest failure text in its metrics. The consultation is also split into two
   tests, a1 (steps 1–11) and a2 (plan, Tools, save, review and complete), 15 minutes each.
+
+**CI run 36205324814** (branch `ux-seamless-4` follows up): the iPad passed every flow; the
+iPhone passed d, a1, b, c and e. iPhone a2 failed "not found: Complete": with "Save snapshot"
+and Tools beside it, iOS folded Complete into the navigation bar's "…" overflow, and the
+keyboard was still up after typing the plan. On iPhone (compact width) the navigation bar now
+holds Complete only; Save snapshot and the tools are in the step bar's More menu, and Save
+snapshot is also a button next to the explanation on the last step. The iPad toolbar is
+unchanged. The walkthrough puts the keyboard away with the keyboard toolbar's Done (the plan
+editor is multi-line, so Return only adds a line) before it reaches for Complete, and notes
+whether Complete was visible with the keyboard up.
 
 Other iOS flows, expected:
 

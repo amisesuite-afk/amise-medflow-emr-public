@@ -10,7 +10,9 @@
 //      exam, diagnosis search)
 //   a2 Today → patient → consultation → "First visit" → Plan step (type the plan) → Tools →
 //      Scores (compute + save one, over the step) → Vitals, Prescriptions → Save snapshot →
-//      Complete → review sheet (attest) → Complete visit
+//      Complete → review sheet (attest) → Complete visit. iPhone: the navigation bar holds
+//      Complete only; Tools and Save snapshot are in the step bar's More menu (Save snapshot
+//      also on the last step, next to the explanation).
 //   (a used to be one test; split so each half finishes well inside its time allowance and
 //   writes its own metrics even if the other half fails.)
 //   b  Add a new patient (and check it shows on Today under "Added today")
@@ -189,12 +191,18 @@ final class UXWalkthroughTests: XCTestCase, UXIssueReporting {
         }
     }
 
-    /// Opens a tool from the consultation toolbar's Tools menu (over the current step).
+    /// Opens a tool over the current step: the toolbar's Tools menu on iPad; on iPhone the
+    /// navigation bar keeps Complete only, and the tools are in the step bar's More menu.
     @MainActor
     private func openTool(_ ux: UXRecorder, _ tool: String, label: String) throws {
-        try ux.tap(ux.element("consult.tools"), "Tools menu")
-        // The menu item, never the iPad section-bar button with the same label.
-        try ux.tap(ux.menuItem(identifier: "consult.tools.\(tool)", label: label), "Tools: \(label)")
+        if UXRecorder.isPad || ux.element("consult.tools").exists {
+            try ux.tap(ux.element("consult.tools"), "Tools menu")
+            // The menu item, never the iPad section-bar button with the same label.
+            try ux.tap(ux.menuItem(identifier: "consult.tools.\(tool)", label: label), "Tools: \(label)")
+        } else {
+            try ux.tap(ux.element("consult.more"), "More menu")
+            try ux.tap(ux.menuItem(identifier: "consult.more.\(tool)", label: label), "More → Tools: \(label)")
+        }
         // The tool is a sheet over the step, with Done (iPhone and iPad alike).
         try ux.waitFor(ux.element("consult.tools.done"), "Tools sheet (Done)", timeout: 6)
     }
@@ -234,7 +242,7 @@ final class UXWalkthroughTests: XCTestCase, UXIssueReporting {
         ux.snapshot("Score saved to Assessment")
 
         try ux.tap(ux.element("consult.tools.done"), "Done (back to the consultation)")
-        try ux.waitFor(ux.element("consult.saveVisit"), "Consultation toolbar")
+        try ux.waitFor(ux.element("consult.complete"), "Consultation toolbar (Complete)")
         ux.note("Consultation step after closing Scores: "
                 + (ux.isSelectedSoon(ux.element("consult.step.plan"), timeout: 3) ? "still Plan (kept)" : "NOT Plan"))
         ux.screen("Consultation (back on the same step)")
@@ -264,7 +272,25 @@ final class UXWalkthroughTests: XCTestCase, UXIssueReporting {
     private func saveAndComplete(_ ux: UXRecorder) throws {
         ux.note("On-screen Save snapshot / Complete explanation on the last step: "
                 + (ux.element("consult.actionsExplanation").exists ? "yes" : "no"))
-        try ux.tap(ux.element("consult.saveVisit"), "Save snapshot")
+        // Run 36205324814 (iPhone): with Save snapshot and Tools beside it, Complete was folded
+        // into the navigation bar's "…" overflow. Now the iPhone bar holds Complete only.
+        ux.note("Complete visible in the navigation bar with the keyboard up: "
+                + (ux.isHittableSafely(ux.element("consult.complete")) ? "yes" : "NO"))
+        // The plan editor is multi-line (Return adds a line): put the keyboard away with the
+        // keyboard toolbar's Done, as a user would before reaching for the bar.
+        if !ux.hideKeyboard() { ux.note("Keyboard still shown after Done") }
+        let toolbarSave = ux.element("consult.saveVisit")
+        let lastStepSave = ux.element("consult.actions.saveVisit")
+        if ux.isHittableSafely(toolbarSave) {
+            try ux.tap(toolbarSave, "Save snapshot")
+        } else if lastStepSave.exists {
+            // iPhone: next to the explanation on the last step (above the step's content).
+            try ux.tap(lastStepSave, "Save snapshot (last step)")
+        } else {
+            try ux.tap(ux.element("consult.more"), "More menu")
+            try ux.tap(ux.menuItem(identifier: "consult.more.saveVisit", label: "Save snapshot"),
+                       "More → Save snapshot")
+        }
         try ux.tapDialogButton("Save Visit")
         ux.snapshot("Visit snapshot saved")
         try ux.tap(ux.element("consult.complete"), "Complete")
