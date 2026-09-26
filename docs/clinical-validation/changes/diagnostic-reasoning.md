@@ -312,6 +312,12 @@ next-test vignettes raise no alert, as before.
 either direction (no pass → fail; no fail → pass, so no `web` knownGap flag became removable).
 Results files were restored, not committed.
 
+Checks on the final tree: `pnpm run typecheck` ✓; `pnpm -r run test` ✓ (dashboard 849 — 48 new —,
+api-server 600, front-desk 109, pane-engine 126, scripts 41); all scripts lints ✓
+(`lint:guideline-registry` with the new `diagnostic-reasoning-web` entry; `scan:nav-lockout` only
+its existing warnings); dashboard build ✓; `e2e/emr-walkthrough.mjs` 26/26 and
+`e2e/encounter-switch.mjs` 11/11 ✓.
+
 The remaining 30: 28 "the record favours X" (one vignette also "no LIF pain", LR 0.15) and 2 NEWS2
 rising (3 → 7, 2 → 5: real deterioration). Many are the alert doing its job on a mimic the
 vignette was written for (AAA vs renal colic, pseudoachalasia, early Fournier's in a perianal
