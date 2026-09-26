@@ -18,6 +18,12 @@
 // Schema (clinical-content/schemas/) and checks the Codable field names, optionality and types
 // against it, that `File` lists every file, and that project.yml bundles the folder.
 // Registry: clinical-content/registry.json. Design: docs/SHARED-CONTENT-PLAN.md.
+//
+// Approved-content channel (docs/APPROVED-CONTENT-CHANNEL.md): for the files the channel is enabled
+// for (ApprovedContent.policy), a signed-off release published in Supabase and kept on the device by
+// ApprovedContentStore replaces the bundled copy — only after it is verified again against this
+// build's bundled file and schema, and only if the engine's own Codable structs decode it. Any
+// failure falls back to the bundled file. Settings → Diagnostics shows which copy each file uses.
 
 import Foundation
 import os
@@ -93,8 +99,24 @@ enum SharedClinicalContent {
         let loaded: Bool
         let version: String
         let error: String?
+        /// Which copy is in use: bundled, or an approved release (Settings → Diagnostics).
+        var source: ContentSource = .bundled
+        /// Version of the bundled file (differs from `version` when a release is in use).
+        var bundledVersion: String = "—"
+        /// The approved-content channel is enabled for this file (ApprovedContent.policy).
+        var channelEnabled: Bool = false
 
         var id: String { file }
+
+        /// "Bundled 1.0.0", or "Approved release 1.0.1 · sha 1a2b3c4d (bundled 1.0.0)".
+        var sourceText: String {
+            switch source {
+            case .bundled:
+                return "Bundled \(bundledVersion)"
+            case .release(let version, let sha256):
+                return "Approved release \(version) · sha \(sha256.prefix(8)) (bundled \(bundledVersion))"
+            }
+        }
 
         var valueText: String {
             guard found else { return "Not in this build" }
@@ -111,15 +133,40 @@ enum SharedClinicalContent {
             ?? bundle.url(forResource: file.rawValue, withExtension: "json")
     }
 
-    /// Decodes a shared rule file with the engine's Codable type.
+    /// Decodes a shared rule file with the engine's Codable type: the verified approved release when
+    /// there is one and it decodes (ApprovedContentStore), otherwise the bundled file.
     static func decode<T: Decodable>(_ type: T.Type, _ file: File, bundle: Bundle = .main) -> Result<T, LoadError> {
+        decodeWithSource(type, file, bundle: bundle).result
+    }
+
+    /// Which copy a file uses: the bundled file, or an approved release (version and hash).
+    enum ContentSource: Sendable, Equatable {
+        case bundled
+        case release(version: String, sha256: String)
+    }
+
+    /// decode, and which copy it used. A release that the engine's structs cannot decode is skipped
+    /// (logged) and the bundled file is decoded instead.
+    static func decodeWithSource<T: Decodable>(_ type: T.Type, _ file: File,
+                                               bundle: Bundle = .main) -> (result: Result<T, LoadError>, source: ContentSource) {
         guard let fileURL = url(for: file, bundle: bundle), let data = try? Data(contentsOf: fileURL) else {
-            return .failure(LoadError(text: "\(file.rawValue).json is not in the app bundle"))
+            return (.failure(LoadError(text: "\(file.rawValue).json is not in the app bundle")), .bundled)
+        }
+        if let active = ApprovedContentStore.activeRelease(for: file, bundledData: data, bundle: bundle) {
+            do {
+                let value = try JSONDecoder().decode(type, from: active.data)
+                return (.success(value), .release(version: active.release.version, sha256: active.release.sha256))
+            } catch {
+                let name = file.rawValue
+                let version = active.release.version
+                let reason = DiagnosticDatabaseInfo.describe(error)
+                log.error("Approved release \(version, privacy: .public) of \(name, privacy: .public) does not decode, bundled file used: \(reason, privacy: .public)")
+            }
         }
         do {
-            return .success(try JSONDecoder().decode(type, from: data))
+            return (.success(try JSONDecoder().decode(type, from: data)), .bundled)
         } catch {
-            return .failure(LoadError(text: DiagnosticDatabaseInfo.describe(error)))
+            return (.failure(LoadError(text: DiagnosticDatabaseInfo.describe(error))), .bundled)
         }
     }
 
@@ -139,31 +186,37 @@ enum SharedClinicalContent {
 
     /// Status of one file, decoded with the same type its engine uses.
     static func status(of file: File, bundle: Bundle = .main) -> Status {
-        let failure: String?
+        let checked: (failure: String?, source: ContentSource)
         switch file {
         case .zebraRules:
-            failure = errorText(decode(ZebraCheck.RuleFile.self, file, bundle: bundle))
+            checked = errorAndSource(decodeWithSource(ZebraCheck.RuleFile.self, file, bundle: bundle))
         case .supplementCatalogue:
-            failure = errorText(decode(SupplementCatalogue.Content.self, file, bundle: bundle))
+            checked = errorAndSource(decodeWithSource(SupplementCatalogue.Content.self, file, bundle: bundle))
         case .lifestylePractices:
-            failure = errorText(decode(LifestylePractices.Content.self, file, bundle: bundle))
+            checked = errorAndSource(decodeWithSource(LifestylePractices.Content.self, file, bundle: bundle))
         case .examSigns:
-            failure = errorText(decode(ExamEvidenceCatalogue.SignsFile.self, file, bundle: bundle))
+            checked = errorAndSource(decodeWithSource(ExamEvidenceCatalogue.SignsFile.self, file, bundle: bundle))
         case .decisionRules:
-            failure = errorText(decode(ExamEvidenceCatalogue.RulesFile.self, file, bundle: bundle))
+            checked = errorAndSource(decodeWithSource(ExamEvidenceCatalogue.RulesFile.self, file, bundle: bundle))
         case .diagnosticReasoningRules:
-            failure = errorText(decode(DiagnosticReasoningRules.RuleFile.self, file, bundle: bundle))
+            checked = errorAndSource(decodeWithSource(DiagnosticReasoningRules.RuleFile.self, file, bundle: bundle))
         case .vademecumFindings:
-            failure = errorText(decode(VademecumContent.FindingsFile.self, file, bundle: bundle))
+            checked = errorAndSource(decodeWithSource(VademecumContent.FindingsFile.self, file, bundle: bundle))
         case .vademecumAbdominalPain, .vademecumCoughBreathlessness:
-            failure = errorText(decode(VademecumContent.AreaFile.self, file, bundle: bundle))
+            checked = errorAndSource(decodeWithSource(VademecumContent.AreaFile.self, file, bundle: bundle))
         }
+        let failure = checked.failure
+        let source = checked.source
         let fileURL = url(for: file, bundle: bundle)
         let stamp = fileURL
             .flatMap { try? Data(contentsOf: $0) }
             .flatMap { try? JSONDecoder().decode(Stamp.self, from: $0) }
+        let bundledVersion = stamp?.version ?? "—"
+        var version = bundledVersion
+        if case .release(let releaseVersion, _) = source { version = releaseVersion }
         return Status(file: file.rawValue, title: file.title, found: fileURL != nil, loaded: failure == nil,
-                      version: stamp?.version ?? "—", error: failure)
+                      version: version, error: failure, source: source, bundledVersion: bundledVersion,
+                      channelEnabled: ApprovedContentStore.isEnabled(file, bundle: bundle))
     }
 
     /// Every shared rule file (Settings → Diagnostics).
@@ -174,5 +227,11 @@ enum SharedClinicalContent {
     private static func errorText<T>(_ result: Result<T, LoadError>) -> String? {
         if case .failure(let failure) = result { return failure.text }
         return nil
+    }
+
+    private static func errorAndSource<T>(
+        _ decoded: (result: Result<T, LoadError>, source: ContentSource)
+    ) -> (failure: String?, source: ContentSource) {
+        (errorText(decoded.result), decoded.source)
     }
 }

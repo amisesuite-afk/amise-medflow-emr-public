@@ -79,6 +79,12 @@ struct SharedRulesDiagnosticsRows: View {
                     Text(status.valueText)
                         .foregroundStyle(status.loaded ? Color.secondary : Color.orange)
                 }
+                // Approved-content channel (docs/APPROVED-CONTENT-CHANNEL.md): which copy is in use.
+                if status.channelEnabled {
+                    Text("Source: \(status.sourceText)")
+                        .font(.caption)
+                        .foregroundStyle(.secondary)
+                }
                 if let error = status.error {
                     VStack(alignment: .leading, spacing: 4) {
                         Text("This build could not read \(status.file).json, so this feature shows nothing. Please report this to support.")
@@ -91,6 +97,9 @@ struct SharedRulesDiagnosticsRows: View {
                     .padding(.vertical, 2)
                 }
             }
+            Text("Zebra rules and the supplement catalogue can be updated by an approved release published by the practice; a new release is used from the next launch. Any release that fails its checks is ignored and the bundled file is used.")
+                .font(.caption)
+                .foregroundStyle(.secondary)
         }
     }
 }

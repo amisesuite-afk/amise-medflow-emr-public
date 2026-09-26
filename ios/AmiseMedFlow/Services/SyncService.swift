@@ -111,6 +111,7 @@ final class SyncService: ObservableObject {
             SyncTombstones.clearRefused()   // the role may have changed since the last launch
             SyncRefusals.clearAll()
             SyncService.clearOutcomesUnavailable()   // Migration 94 may have been applied since
+            SyncService.clearApprovedContentChecked()   // check for approved content releases at launch
             startRealtime()
             // Race-condition fix: setModelContext() may have run before restoreSession()
             // completed (isSignedIn was false at that point), so sync was silently skipped.
@@ -131,6 +132,7 @@ final class SyncService: ObservableObject {
         SyncTombstones.clearRefused()   // a different user may be allowed to delete
         SyncRefusals.clearAll()         // ... or to make the refused edits
         SyncService.clearOutcomesUnavailable()
+        SyncService.clearApprovedContentChecked()
         await syncIfAuthenticated()
         startRealtime()
     }
@@ -236,6 +238,10 @@ final class SyncService: ObservableObject {
         // final diagnoses, nurse / doctor / admin only. Own requests, never throws; a missing table
         // is skipped quietly and retried hours later (SyncService+Outcomes.swift).
         await syncOutcomes(context: context)
+        // Approved releases of shared rule files (Migration 98, read-only, every staff role): at most
+        // every six hours; own request, never throws; used from the next launch
+        // (SyncService+ApprovedContent.swift, docs/APPROVED-CONTENT-CHANNEL.md).
+        await syncApprovedContent()
         await AuditLog.flush()
         if syncError == nil { lastSyncedAt = .now }
         recountPending(context: context)

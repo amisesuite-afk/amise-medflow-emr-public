@@ -38,6 +38,12 @@ targets:
       - path: ../clinical-content/vademecum
         type: folder
         buildPhase: resources
+      # Their JSON Schemas, bundled as the "schemas" folder reference: the approved-content channel
+      # (ApprovedContentStore.swift, docs/APPROVED-CONTENT-CHANNEL.md) checks a published release
+      # against the schema of this build before it may replace a bundled rule file.
+      - path: ../clinical-content/schemas
+        type: folder
+        buildPhase: resources
 
     resources:
       - path: AmiseMedFlow/Assets.xcassets

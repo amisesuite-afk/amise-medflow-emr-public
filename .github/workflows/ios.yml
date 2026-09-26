@@ -8,6 +8,8 @@ on:
       # Shared clinical rules bundled into the app (project.yml folder reference "rules").
       - 'clinical-content/rules/**'
       - 'clinical-content/vademecum/**'
+      # Their schemas, bundled as "schemas" (approved-content channel).
+      - 'clinical-content/schemas/**'
       - '.github/workflows/ios.yml'
   workflow_dispatch:
     inputs:
