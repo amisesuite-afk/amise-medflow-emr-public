@@ -33,7 +33,7 @@
  * abdominal distension and others (tests: __tests__/pane-mapper-false-positives.test.ts).
  */
 
-import { coughMentionKindAt, joinClauses } from '@workspace/triage-engine';
+import { NO_HELP_RE, coughMentionKindAt, joinClauses } from '@workspace/triage-engine';
 import { CURRENT_FEATURES, findRecordMatches, negationFreeGaps, notCurrentAt, recordHas, sentenceOf } from './record-text-match';
 import type { RecordedEvidence } from '@workspace/pane-engine';
 import { EXAM_SIGNS_KEY, recordedEvidence, withExamEvidence } from './exam-evidence-features';
@@ -627,7 +627,8 @@ const RELIEF_RULES: Rule[] = [
 ];
 /** "Antacids", "Gaviscon helps" — but not "antacids did not help" / "no help" / "nothing helps". */
 const ANTACID = /\b(antacids?|gaviscon|omeprazole|lansoprazole|ppi|ranitidine|rennie)\b/;
-const NO_HELP = /\b(not|no|didn'?t|did not|doesn'?t|does not|nothing|without|never)\b[^.]{0,15}\b(help|helps|helped|relie\w*|benefit|effect|work\w*)\b|\bno (help|relief|benefit|effect)\b|\bunhelpful\b/;
+/** Shared with the iOS text parser (record-clauses.ts NO_HELP_RE, RecordClauses.swift). */
+const NO_HELP = NO_HELP_RE;
 
 /** Answer keys whose text describes what changes a symptom, not a symptom of its own. */
 const TRIGGER_HEADS = new Set(['triggers', 'exacerbating', 'aggravating', 'relief', 'relieving']);

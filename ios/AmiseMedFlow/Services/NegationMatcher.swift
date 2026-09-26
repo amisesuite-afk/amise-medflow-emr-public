@@ -69,6 +69,9 @@ enum NegationMatcher {
             tokens = NegationMatcher.tokenize(scalars)
         }
 
+        /// The lower-cased text as Unicode scalars (the unit of `Match.index`); RecordClauses reads it.
+        var scalars: [Unicode.Scalar] { s }
+
         /// Every occurrence of `term`, affirmed or not.
         func occurrences(of term: String, wholeWord: Bool = false, wordStart: Bool = false) -> [Match] {
             let t = Array(term.lowercased().unicodeScalars)

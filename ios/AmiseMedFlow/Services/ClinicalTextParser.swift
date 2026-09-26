@@ -79,7 +79,10 @@ enum ClinicalTextParser {
         if any(["sharp", "stabbing", "lancinating", "knife-like"]) { add("character", "Sharp"); add("character", "Stabbing") }
         if any(["dull", "aching", "heavy", "deep ache"]) { add("character", "Dull"); add("character", "Aching") }
         if any(["colicky", "colic", "cramp", "cramping", "spasm"]) { add("character", "Colicky"); add("character", "Cramping") }
-        if any(["burning", "heartburn", "acid", "fire"]) { add("character", "Burning") }
+        // No bare "acid": "antacids" (and "lactic acid") is not burning pain.
+        if any(["burning", "heartburn", "acid reflux", "acid brash", "acid regurg", "acid taste", "acidic", "fire"]) {
+            add("character", "Burning")
+        }
         if any(["throbbing", "pulsating", "pulsatile"]) { add("character", "Throbbing") }
         if any(["pressure", "tightness", "tight", "constricting", "squeezing"]) { add("character", "Pressure") }
         if any(["bloating", "bloated", "distension", "distended"]) { add("character", "Bloating") }
@@ -140,13 +143,35 @@ enum ClinicalTextParser {
         if any(["nsaid", "ibuprofen worsens", "aspirin worsens"]) { add("exacerbating", "NSAIDs") }
 
         // MARK: Relieving
-        if any(["antacid", "gaviscon", "omeprazole relieves", "ppi relieves"]) { add("relieving", "Antacids") }
-        if any(["sitting forward", "leaning forward", "forward lean"]) { add("relieving", "Sitting forward") }
-        if any(["opening bowels", "defaecation", "defecation", "after bowel movement"]) { add("relieving", "Defaecation") }
+        // A remedy counts only in a clause that does not say it failed: "Took antacids with no
+        // relief", "Gaviscon did not help" are not relief by antacids (RecordClauses.reliefFailedAt,
+        // the pattern the web PANE mapper uses for antacid relief).
+        let scalars = text.scalars
+        func relief(_ kws: [String], wholeWord: Bool = false,
+                    where extra: ((NegationMatcher.Match) -> Bool)? = nil) -> Bool {
+            kws.contains { kw in
+                text.findAll(kw, wholeWord: wholeWord).contains { m in
+                    if RecordClauses.reliefFailedAt(scalars: scalars, m.index, m.index + m.text.unicodeScalars.count) { return false }
+                    return extra?(m) ?? true
+                }
+            }
+        }
+        if relief(["antacid", "gaviscon", "omeprazole relieves", "ppi relieves"]) { add("relieving", "Antacids") }
+        if relief(["sitting forward", "leaning forward", "forward lean"]) { add("relieving", "Sitting forward") }
+        if relief(["opening bowels", "defaecation", "defecation", "after bowel movement"]) { add("relieving", "Defaecation") }
         if any(["vomiting relieves", "better after vomiting"]) { add("relieving", "Vomiting") }
         if any(["nothing relieves", "nothing makes it better", "no relief"]) { add("relieving", "Nothing") }
         // Whole word: "rest" used to match inside "arrest" ("cardiac arrest" read as relieved by rest).
-        if text.contains("rest", wholeWord: true) || any(["resting", "bed rest", "better with rest"]) { add("relieving", "Rest") }
+        // "At rest" is when it started or a severity ("pain started at rest", "breathless at rest")
+        // and "rest pain" is limb ischaemia: neither is relief by rest.
+        let restRelief = relief(["rest"], wholeWord: true) { m in
+            let before = String(String.UnicodeScalarView(scalars[max(0, m.index - 12)..<m.index]))
+            let endIndex = m.index + m.text.unicodeScalars.count
+            let after = String(String.UnicodeScalarView(scalars[min(endIndex, scalars.count)..<min(endIndex + 5, scalars.count)]))
+            let atRest = before.range(of: #"\bat (?:complete )?$"#, options: .regularExpression) != nil
+            return !atRest && !after.hasPrefix(" pain")
+        }
+        if restRelief || relief(["resting", "bed rest", "better with rest"]) { add("relieving", "Rest") }
 
         // MARK: Severity (numeric pain scores in text)
         let severityPhrases = ["1/10", "2/10", "3/10"]

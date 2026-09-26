@@ -10,6 +10,9 @@
 //    Terms written short on purpose as word stems (`stems`: "dizz" → dizziness, "smok" → smoker,
 //    "numb" → numbness …) keep word-start matching. The database content is unchanged
 //    (docs/clinical-validation/changes/followups-history.md).
+//  - CLAUSES: an occurrence about a relative, a lay guess or a query ("?appendicitis") does not
+//    count, and an item of a negated list ("no pain, jaundice or fever") is negated
+//    (RecordClauses, twin of lib/triage-engine/src/record-clauses.ts).
 //  - COUGH: a symptom term ("cough", "cough …") counts only a cough mention that records the
 //    symptom, and "coughing" (the manoeuvre, as in "movement|twisting|lifting|strain|coughing") only
 //    one that records an aggravating factor (CoughMention): "pain worse on coughing", a chip read as
@@ -67,13 +70,25 @@ extension BayesianDiagnosisEngine {
         if let kind = FeatureTerm.coughKind(of: term), !found.isEmpty {
             found = found.filter { CoughMention.kind(inLowercased: source.lower, at: $0.index) == kind }
         }
+        // Clause-aware reading (RecordClauses, twin of record-clauses.ts): a relative's condition
+        // ("mother had breast cancer"), a lay or referrer's guess ("thought it was a hernia") and a
+        // query ("referred as ?appendicitis") are not findings about the patient.
+        if !found.isEmpty {
+            let scalars = source.scalars
+            found = found.filter { m in
+                !RecordClauses.notAboutPatientAt(scalars: scalars, m.index, m.index + m.text.unicodeScalars.count)
+            }
+        }
         return found
     }
 
-    /// True when a database term occurs in `source` at least once without being negated.
+    /// True when a database term occurs in `source` at least once without being negated (by
+    /// NegationMatcher, or as an item of a negated list: "never had pain, jaundice or fever",
+    /// "Negative for blood, leucocytes and nitrites").
     static func termAffirmed(_ term: String, in source: NegationMatcher.Source) -> Bool {
         termOccurrences(term, in: source).contains { m in
             !source.isNegated(start: m.index, end: m.index + m.text.unicodeScalars.count)
+                && !RecordClauses.listNegatedAt(scalars: source.scalars, m.index)
         }
     }
 }
