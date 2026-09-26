@@ -17,6 +17,7 @@ import { examNoteLines } from '@/lib/exam-documentation';
 import { lifestyleSummary } from '@workspace/triage-engine/lifestyle-practices';
 import { supplementNoteLine } from '@/lib/supplement-catalogue';
 import { dedupePlanAgainstOrders } from '@/lib/plan-dedupe';
+import FinalDiagnosisPanel from '@/components/outcomes/FinalDiagnosisPanel';
 
 // ── helpers ────────────────────────────────────────────────────────────────
 
@@ -1613,6 +1614,9 @@ export default function SummaryTab() {
 
       {/* ── Print / Export — always visible compact bar ── */}
       <DirectExportPanel />
+
+      {/* ── Final diagnosis (outcomes loop; nurse / doctor / admin) ── */}
+      <FinalDiagnosisPanel />
 
       {/* ── AI Summary — secondary, collapsed by default ── */}
       <CollapsibleCard title="AI Clinical Summary (optional)" defaultOpen={false}>
