@@ -7,6 +7,7 @@ on:
       - 'ios/**'
       # Shared clinical rules bundled into the app (project.yml folder reference "rules").
       - 'clinical-content/rules/**'
+      - 'clinical-content/vademecum/**'
       - '.github/workflows/ios.yml'
   workflow_dispatch:
     inputs:

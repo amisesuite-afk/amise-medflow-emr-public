@@ -19,6 +19,7 @@ on:
       - '!ios/AmiseMedFlowTests/**'
       # Shared clinical rules bundled into the app (project.yml folder reference "rules").
       - 'clinical-content/rules/**'
+      - 'clinical-content/vademecum/**'
       - '.github/workflows/ios-ui-walkthrough.yml'
 
 concurrency:

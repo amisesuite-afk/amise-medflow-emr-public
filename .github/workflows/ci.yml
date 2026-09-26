@@ -81,6 +81,13 @@ jobs:
       - name: Lint shared clinical content (schema + Swift/TS types)
         run: pnpm --filter @workspace/scripts run lint:shared-content
 
+      # Disease-centred vademecum (clinical-content/vademecum/*.json, phase 1 SHADOW: nothing in
+      # production reads it): fails on a broken reference (finding, exam sign, rule band, analyte,
+      # PANE id, iOS candidate, decision, history frame), malformed criteria logic, or content
+      # marked reviewed. docs/VADEMECUM-PLAN.md.
+      - name: Lint vademecum references
+        run: pnpm --filter @workspace/scripts run lint:vademecum
+
       # Checks clinical-content/registry.json: fails if a registered path is missing, a known
       # clinical rule-set file is unregistered or a version stamp disagrees; prints (warns) the
       # review-due list and whether DiagnosticDatabase.json decodes with the iOS Codable structs.

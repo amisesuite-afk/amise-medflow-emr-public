@@ -20,7 +20,10 @@ describe('shared clinical content library', () => {
   it('passes lint:shared-content', () => {
     const { problems, checked } = checkSharedContent(REPO_ROOT);
     expect(problems).toEqual([]);
-    expect(checked).toEqual(['decision-rules', 'diagnostic-reasoning-rules', 'exam-signs', 'lifestyle-practices', 'supplement-catalogue', 'zebra-rules']);
+    expect(checked).toEqual([
+      'decision-rules', 'diagnostic-reasoning-rules', 'exam-signs', 'lifestyle-practices', 'supplement-catalogue',
+      'vademecum/abdominal-pain', 'vademecum/cough-breathlessness', 'vademecum/findings', 'zebra-rules',
+    ]);
   });
 
   it('the web modules read the shared files', () => {
