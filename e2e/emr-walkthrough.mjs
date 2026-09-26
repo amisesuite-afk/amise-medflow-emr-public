@@ -517,6 +517,39 @@ const MOCK_ENCOUNTER = {
     fail('Auto-save indicator', 'Not visible and localStorage key missing');
   }
 
+  // ── Clinical sign-off page (Insights; doctor / admin) ────────────────────────
+  // Renders the catalogue with per-rule-set progress; keyboard j moves the selection. The mock
+  // Supabase returns no rows, so nothing is recorded here (no decision is ever written by e2e).
+  {
+    // Leave the consultation focus rail (patient list) so the full navigation shows.
+    const patientList = page.locator('nav[aria-label="Consultation phases"] [title="Patient list"]').first();
+    if (await patientList.count()) { await patientList.click().catch(() => {}); await page.waitForTimeout(800); }
+    const nav = page.locator('nav[aria-label="Navigation"] button', { hasText: 'Analytics & QI' })
+      .or(page.locator('nav[aria-label="Navigation"] [title="Analytics & QI"]')).first();
+    if (await nav.count()) {
+      await nav.click(); await page.waitForTimeout(800);
+      const tab = page.locator('[data-testid="insights-tab-signoff"]');
+      if (await tab.count()) {
+        await tab.click();
+        await page.locator('[data-testid="clinical-signoff"]').waitFor({ timeout: 10000 }).catch(() => {});
+        const body = (await page.locator('[data-testid="clinical-signoff"]').textContent().catch(() => '')) ?? '';
+        if (/treatment-decision-support/.test(body) && /\d+\/\d+ approved/.test(body)) pass('Clinical sign-off page shows items and rule-set progress');
+        else fail('Clinical sign-off page', `catalogue or progress missing (got: "${body.slice(0, 80)}")`);
+        const selBefore = await page.locator('[role="option"][aria-selected="true"]').first().getAttribute('data-signoff-item').catch(() => null);
+        await page.locator('body').click({ position: { x: 5, y: 5 } }).catch(() => {});
+        await page.keyboard.press('j'); await page.waitForTimeout(200);
+        const selAfter = await page.locator('[role="option"][aria-selected="true"]').first().getAttribute('data-signoff-item').catch(() => null);
+        if (selBefore && selAfter && selBefore !== selAfter) pass(`Sign-off keyboard: j moves ${selBefore} → ${selAfter}`);
+        else fail('Sign-off keyboard', `selection did not move (${selBefore} → ${selAfter})`);
+        await shot(page, '12-clinical-signoff');
+      } else {
+        fail('Clinical sign-off tab', 'Not shown to a doctor in Analytics & QI');
+      }
+    } else {
+      fail('Clinical sign-off', 'Analytics & QI navigation not found');
+    }
+  }
+
   // ── JS errors ─────────────────────────────────────────────────────────────────
   if (jsErrors.length === 0) pass('No unexpected JS console errors');
   else fail('JS errors', jsErrors.slice(0,3).join(' | '));

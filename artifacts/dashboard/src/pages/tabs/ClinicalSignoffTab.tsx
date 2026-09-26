@@ -225,7 +225,7 @@ export default function ClinicalSignoffTab() {
           </button>
           {ruleSet && <button style={{ ...btn, padding: '2px 8px' }} onClick={() => setRuleSet(null)}>Showing {ruleSet} only — clear</button>}
         </div>
-        {showProgress && <RuleSetProgressList progress={progress} active={ruleSet} onPick={setRuleSet} />}
+        {showProgress && <div style={{ maxHeight: 140, overflowY: 'auto' }}><RuleSetProgressList progress={progress} active={ruleSet} onPick={setRuleSet} /></div>}
       </div>
 
       <div style={{ display: 'flex', gap: 8, alignItems: 'center', flexWrap: 'wrap' }}>
@@ -249,10 +249,10 @@ export default function ClinicalSignoffTab() {
       </div>
 
       <div style={{ display: 'grid', gridTemplateColumns: 'minmax(320px, 2fr) minmax(360px, 3fr)', gap: 10, alignItems: 'start' }}>
-        <div style={{ ...panel, maxHeight: 'calc(100vh - 290px)', minHeight: 240, overflowY: 'auto' }}>
+        <div style={{ ...panel, height: 'min(72vh, 760px)', minHeight: 360, overflowY: 'auto' }}>
           <ItemList groups={groups} selectedId={selectedId} onSelect={setSelectedId} />
         </div>
-        <div style={{ ...panel, padding: 12, maxHeight: 'calc(100vh - 290px)', minHeight: 240, overflowY: 'auto' }}>
+        <div style={{ ...panel, padding: 12, height: 'min(72vh, 760px)', minHeight: 360, overflowY: 'auto' }}>
           {selected ? (
             <ItemDetail item={selected} status={statuses.get(selected.id) ?? 'pending'} history={historyFor(records, selected.id)} repoUrl={catalogue.repoUrl}>
               <DecisionForm
