@@ -94,6 +94,8 @@ extension WhatsMissing {
         /// "ask" | "bedside" | "lab" | "imaging" | "advanced"
         var kind: String
         var separates: [String]
+        /// A working diagnosis is confirmed: the discriminator ranks after score completeness.
+        var confirmed: Bool
     }
 
     struct Flip: Decodable, Equatable {
@@ -398,7 +400,8 @@ extension WhatsMissing {
             let label = d.label.trimmingCharacters(in: .whitespacesAndNewlines)
             if !label.isEmpty {
                 let test = d.kind == "lab" || d.kind == "imaging" || d.kind == "advanced"
-                out.append(Signal(group: "discriminator", tier: "decision", sub: 3, secondary: 0, parts: [],
+                out.append(Signal(group: "discriminator", tier: d.confirmed ? "score" : "decision", sub: d.confirmed ? 2 : 3,
+                                  secondary: 0, parts: [],
                                   why: fill(tx.discriminatorWhy, ["separates": joinParts(d.separates)]), source: "reasoning",
                                   what: fill(tx.discriminatorWhat, ["label": label]),
                                   action: test ? Action(kind: "test", test: label)

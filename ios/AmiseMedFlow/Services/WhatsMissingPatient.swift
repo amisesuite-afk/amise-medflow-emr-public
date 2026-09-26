@@ -177,7 +177,9 @@ enum WhatsMissingPatient {
     static func discriminator(_ p: Patient, bayes: [BayesianDiagnosisEngine.DiagnosisResult]) -> WhatsMissing.Discriminator? {
         guard bayes.count >= 2,
               let d = DiagnosticReasoningAdapter.report(results: bayes, patient: p).discriminators.first else { return nil }
-        return WhatsMissing.Discriminator(label: d.probe.label, kind: d.probe.cost.rawValue, separates: d.separates)
+        let confirmed = !(p.workingDiagnosis ?? "").trimmingCharacters(in: .whitespacesAndNewlines).isEmpty
+        return WhatsMissing.Discriminator(label: d.probe.label, kind: d.probe.cost.rawValue, separates: d.separates,
+                                          confirmed: confirmed)
     }
 
     static func input(for p: Patient, bayes: [BayesianDiagnosisEngine.DiagnosisResult], rules: WhatsMissing.Rules,

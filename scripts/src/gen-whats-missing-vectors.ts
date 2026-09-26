@@ -161,16 +161,21 @@ const RANK: { id: string; description: string; input: WhatsMissingInput }[] = [
   { id: 'risk-score-gap', description: 'Decision needs a risk score (Glasgow-Blatchford) and the reasoning discriminator is a lab.',
     input: inp(rec({ ageYears: 60, sex: 'male', vitals: FULL_VITALS, labs: { urea: 7, hb: 11 } }), {}, {
       decisionGaps: [{ key: 'score:glasgow-blatchford', decisionId: 'upper-gi-bleed', decisionLabel: 'Upper GI bleeding', effect: '', flip: null, distance: null }],
-      discriminator: { label: 'Serum lipase', kind: 'lab', separates: ['Acute pancreatitis', 'Peptic ulcer disease', 'Biliary colic'] },
+      discriminator: { label: 'Serum lipase', kind: 'lab', separates: ['Acute pancreatitis', 'Peptic ulcer disease', 'Biliary colic'], confirmed: false },
     }) },
   { id: 'ferritin', description: 'NG12 ferritin prompt and an "ask" discriminator.',
     input: inp(rec({ ageYears: 66, sex: 'female', vitals: FULL_VITALS, labs: { hb: 9.8 } }), { pregnancyStatusRecorded: true }, {
       ferritinMissing: true,
-      discriminator: { label: 'Change in bowel habit', kind: 'ask', separates: ['Colorectal cancer', 'Iron deficiency anaemia'] },
+      discriminator: { label: 'Change in bowel habit', kind: 'ask', separates: ['Colorectal cancer', 'Iron deficiency anaemia'], confirmed: false },
     }) },
   { id: 'pregnancy-merge', description: 'Pregnancy from safety (procedure) and from the decision layer: one item, safety tier.',
     input: inp(rec({ ageYears: 30, sex: 'female', vitals: FULL_VITALS, labs: { egfr: 100 } }), { procedurePlanned: true }, {
       decisionGaps: [flipGap('pregnancy', 'appendicitis', 'Appendicitis', 'Appendicectomy', 'treat', 'test', 0.3)],
+    }) },
+  { id: 'discriminator-after-confirmation', description: 'Confirmed diagnosis: the discriminator ranks after score completeness.',
+    input: inp(rec({ ageYears: 50, sex: 'male', vitals: FULL_VITALS }), {}, {
+      activeScores: ['tg18-cholecystitis'],
+      discriminator: { label: 'Episodic / intermittent pain', kind: 'ask', separates: ['Acute cholecystitis', 'Biliary colic'], confirmed: true },
     }) },
   { id: 'bmi-refine', description: 'BMI missing without a flip: score tier, height and weight.',
     input: inp(rec({ ageYears: 50, sex: 'male', vitals: FULL_VITALS }), {}, {
@@ -182,7 +187,7 @@ const RANK: { id: string; description: string; input: WhatsMissingInput }[] = [
       allergyStatusRecorded: false, supplementsAsked: false, procedurePlanned: true, plannedMedications: ['Ibuprofen'],
       plannedInvestigations: ['CT abdomen'], medications: [],
     }, { activeScores: ['alvarado', 'air'], ferritinMissing: false,
-      discriminator: { label: 'Ultrasound abdomen', kind: 'imaging', separates: ['Acute appendicitis', 'Ovarian torsion'] } }) },
+      discriminator: { label: 'Ultrasound abdomen', kind: 'imaging', separates: ['Acute appendicitis', 'Ovarian torsion'], confirmed: false } }) },
 ];
 
 const TERMS: { text: string; term: string }[] = [

@@ -300,7 +300,7 @@ export function bestDiscriminator(c: MissingConsultation, state: PaneState | nul
   const nodes = working && !top.some(d => d.id === working.id) ? [...top.slice(0, 2), working] : top;
   const first = paneDiscriminators(state, diseases, nodes, 1)[0];
   if (!first) return null;
-  return { label: first.probe.label, kind: first.probe.cost, separates: first.separates };
+  return { label: first.probe.label, kind: first.probe.cost, separates: first.separates, confirmed: !!wd || (c.icdCodes ?? []).length > 0 };
 }
 
 export interface MissingOptions {

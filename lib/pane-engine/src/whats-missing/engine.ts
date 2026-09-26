@@ -8,9 +8,10 @@
  *             anticoagulant's last dose before a procedure
  *   decision  the decision layer's missing inputs whose adverse probe flips a band
  *             (decision-probe.ts), a risk score the decision needs, the NG12 / BSG ferritin prompt,
- *             the reasoning panel's best next discriminator
+ *             the reasoning panel's best next discriminator (while no diagnosis is confirmed)
  *   score     NEWS2 parameters not recorded, record inputs of the recommended / recorded scores
- *             (record-fill.ts), decision inputs that refine but do not flip
+ *             (record-fill.ts), decision inputs that refine but do not flip, and the best next
+ *             discriminator once a working diagnosis is confirmed
  *
  * Ranking (explainable, lexicographic):
  *   1. tier: safety (cannot prescribe or dose safely without it) → decision → score completeness;
@@ -83,7 +84,7 @@ function fill(template: string, values: Record<string, string>): string {
 interface Signal {
   group: string;
   tier: MissingTier;
-  /** Order inside the tier (safety order; decision: 0 flip, 1 risk score, 2 ferritin, 3 discriminator; score: 0 gap, 1 refine). */
+  /** Order inside the tier (safety order; decision: 0 flip, 1 risk score, 2 ferritin, 3 discriminator; score: 0 gap, 1 refine, 2 discriminator after confirmation). */
   sub: number;
   /** Decision flip: distance to the threshold (smaller first). */
   secondary: number;
@@ -231,7 +232,7 @@ function decisionSignals(input: WhatsMissingInput, rules: MissingRules): Signal[
   if (d && d.label.trim()) {
     const test = d.kind === 'lab' || d.kind === 'imaging' || d.kind === 'advanced';
     out.push({
-      group: 'discriminator', tier: 'decision', sub: 3, secondary: 0, parts: [], source: 'reasoning',
+      group: 'discriminator', tier: d.confirmed ? 'score' : 'decision', sub: d.confirmed ? 2 : 3, secondary: 0, parts: [], source: 'reasoning',
       what: fill(tx.discriminatorWhat, { label: d.label.trim() }),
       why: fill(tx.discriminatorWhy, { separates: joinParts(d.separates) }),
       action: test ? { kind: 'test', test: d.label.trim() } : { kind: 'field', field: d.kind === 'ask' ? 'history' : 'exam' },

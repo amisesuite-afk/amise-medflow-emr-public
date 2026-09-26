@@ -108,6 +108,11 @@ export interface MissingDiscriminator {
   kind: DiscriminatorKind;
   /** Labels of the diagnoses it separates. */
   separates: string[];
+  /**
+   * The clinician has confirmed a working diagnosis: the discriminator then ranks after score
+   * completeness (it no longer decides the leading diagnosis; the reasoning card still shows it).
+   */
+  confirmed: boolean;
 }
 
 /** A decision-layer missing input, probed with an adverse value (decision-probe.ts). */

@@ -3899,7 +3899,8 @@
             "Acute pancreatitis",
             "Peptic ulcer disease",
             "Biliary colic"
-          ]
+          ],
+          "confirmed": false
         }
       },
       "expected": {
@@ -4024,7 +4025,8 @@
           "separates": [
             "Colorectal cancer",
             "Iron deficiency anaemia"
-          ]
+          ],
+          "confirmed": false
         }
       },
       "expected": {
@@ -4181,6 +4183,164 @@
             "sources": [
               "safety",
               "decision:appendicitis"
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "id": "discriminator-after-confirmation",
+      "description": "Confirmed diagnosis: the discriminator ranks after score completeness.",
+      "input": {
+        "record": {
+          "ageYears": 50,
+          "sex": "male",
+          "weightKg": null,
+          "heightCm": null,
+          "vitals": {
+            "hr": 88,
+            "sbp": 128,
+            "dbp": 76,
+            "rr": 16,
+            "tempC": 36.9,
+            "spo2": 98,
+            "avpu": "A",
+            "onOxygen": false
+          },
+          "labs": {
+            "wbc": null,
+            "neutrophils": null,
+            "crp": null,
+            "urea": null,
+            "hb": null,
+            "creatinine": null,
+            "egfr": null,
+            "bilirubin": null,
+            "albumin": null,
+            "inr": null
+          },
+          "imagingReported": false,
+          "pleuralEffusion": false,
+          "history": {
+            "cancer": false,
+            "priorDvt": false,
+            "priorPe": false,
+            "chf": false,
+            "ihd": false,
+            "cva": false,
+            "insulin": false,
+            "liverDisease": false,
+            "ibd": false,
+            "varicoseVeins": false,
+            "ocpHrt": false,
+            "immobile": false,
+            "pregnant": false,
+            "recentSurgery4w": false,
+            "recentSurgery12w": false
+          },
+          "findings": {
+            "migration": false,
+            "anorexia": false,
+            "nausea": false,
+            "vomiting": false,
+            "rifPain": false,
+            "rifTenderness": false,
+            "rebound": false,
+            "melaena": false,
+            "syncope": false,
+            "haemoptysis": false,
+            "dvtSigns": false,
+            "confusion": false
+          }
+        },
+        "facts": {
+          "allergyStatusRecorded": true,
+          "pregnancyStatusRecorded": false,
+          "supplementsAsked": true,
+          "medications": [],
+          "plannedMedications": [],
+          "medicationNotes": "",
+          "plannedInvestigations": [],
+          "procedurePlanned": false,
+          "acute": false
+        },
+        "activeScores": [
+          "tg18-cholecystitis"
+        ],
+        "decisionGaps": [],
+        "ferritinMissing": false,
+        "discriminator": {
+          "label": "Episodic / intermittent pain",
+          "kind": "ask",
+          "separates": [
+            "Acute cholecystitis",
+            "Biliary colic"
+          ],
+          "confirmed": true
+        }
+      },
+      "expected": {
+        "version": "1.0.0",
+        "topN": 5,
+        "items": [
+          {
+            "id": "fbc",
+            "tier": "score",
+            "what": "Full blood count not on file: WBC",
+            "why": "Needed for TG18 cholecystitis",
+            "also": [],
+            "action": {
+              "kind": "test",
+              "test": "Full blood count (FBC)"
+            },
+            "alt": null,
+            "sources": [
+              "score:tg18-cholecystitis"
+            ]
+          },
+          {
+            "id": "crp",
+            "tier": "score",
+            "what": "CRP not on file",
+            "why": "Needed for TG18 cholecystitis",
+            "also": [],
+            "action": {
+              "kind": "test",
+              "test": "C-reactive protein (CRP)"
+            },
+            "alt": null,
+            "sources": [
+              "score:tg18-cholecystitis"
+            ]
+          },
+          {
+            "id": "imaging-us",
+            "tier": "score",
+            "what": "No ultrasound report on file",
+            "why": "Needed for TG18 cholecystitis",
+            "also": [],
+            "action": {
+              "kind": "test",
+              "test": "Ultrasound abdomen (RUQ)"
+            },
+            "alt": null,
+            "sources": [
+              "score:tg18-cholecystitis"
+            ]
+          },
+          {
+            "id": "discriminator",
+            "tier": "score",
+            "what": "Best next discriminator: Episodic / intermittent pain",
+            "why": "Best separates Acute cholecystitis and Biliary colic",
+            "also": [],
+            "action": {
+              "kind": "field",
+              "field": "history"
+            },
+            "alt": null,
+            "sources": [
+              "reasoning"
             ]
           }
         ]
@@ -4395,7 +4555,8 @@
           "separates": [
             "Acute appendicitis",
             "Ovarian torsion"
-          ]
+          ],
+          "confirmed": false
         }
       },
       "expected": {
