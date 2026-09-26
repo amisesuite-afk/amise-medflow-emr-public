@@ -46,11 +46,12 @@ struct AdaptiveQuestionnaireSheet: View {
     // MARK: Step sequencing
 
     enum QPhase: Equatable {
-        case cc, socrates, symptoms, redFlags, pmhx, social
+        case cc, socrates, lump, symptoms, redFlags, pmhx, social
         var title: String {
             switch self {
             case .cc:       "Chief Complaint"
             case .socrates: "Pain Details"
+            case .lump:     "Lump or Swelling"
             case .symptoms: "Associated Symptoms"
             case .redFlags: "Red Flags"
             case .pmhx:     "Medical History"
@@ -61,6 +62,7 @@ struct AdaptiveQuestionnaireSheet: View {
             switch self {
             case .cc:       "text.bubble"
             case .socrates: "waveform.path.ecg"
+            case .lump:     "hand.raised"
             case .symptoms: "checklist"
             case .redFlags: "exclamationmark.triangle"
             case .pmhx:     "cross.case"
@@ -72,7 +74,13 @@ struct AdaptiveQuestionnaireSheet: View {
     var phases: [QPhase] {
         var result: [QPhase] = [.cc]
         if let cc = answers.ccCategory {
-            if cc.isPainType { result.append(.socrates) }
+            // The complaint's symptom type (history frames) chooses the questions: pain
+            // questions for pain, lump questions for a lump or hernia.
+            switch cc.questionSet {
+            case .pain: result.append(.socrates)
+            case .lump: result.append(.lump)
+            case .other: break
+            }
             result += [.symptoms, .redFlags]
         }
         result += [.pmhx, .social]
@@ -111,6 +119,10 @@ struct AdaptiveQuestionnaireSheet: View {
                     case .socrates:
                         if let cc = answers.ccCategory, cc.isPainType {
                             phase2SocratesSection(cc: cc)
+                        }
+                    case .lump:
+                        if let cc = answers.ccCategory, cc.isLumpType {
+                            phase2LumpSection(cc: cc)
                         }
                     case .symptoms:
                         phase3AssociatedSection

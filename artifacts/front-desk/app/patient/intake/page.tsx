@@ -7,6 +7,7 @@ import { useRouter } from 'next/navigation';
 import { getPatientClient } from '@/lib/patient-supabase';
 import { API_BASE as API } from '@/lib/constants';
 import { SUPPLEMENT_PATIENT_QUESTION, supplementAnswerLine, type SupplementAnswer } from '@/lib/supplements-question';
+import { intakeSymptom } from '@/lib/intake-question-set';
 
 const TEAL = '#0d9488';
 
@@ -24,6 +25,8 @@ interface Step3Answers {
   reducible?: 'yes' | 'no' | 'sometimes'; stuck?: boolean;
   lastScope?: 'never' | '1-5yr' | 'over5yr'; familyHistoryColon?: boolean;
   severity?: number; durationDays?: string;
+  lumpGrowing?: boolean; lumpTender?: boolean; lumpSkinRed?: boolean;
+  lumpBiggerOnCough?: boolean; lumpMovesOnSwallowing?: boolean;
 }
 
 interface DetailQ {
@@ -121,7 +124,13 @@ function getDetailQuestions(visitType: VisitType | '', complaintTrack: string, c
   const isGastric        = ['gastric','peptic-ulcer','stomach-pain'].includes(complaintTrack);
   const isRectalBleeding = ['rectal-bleeding','lower-gi-bleeding','endo-rectal-bleeding'].includes(complaintTrack) || complaint === 'rectal-bleeding';
   const isDysphagia      = ['mechanical-dysphagia','severe-dysphagia','odynophagia','swallowing'].includes(complaintTrack);
-  const isHernia         = complaintTrack.includes('hernia');
+  // The complaint's history-frames symptom type chooses the questions (lib/intake-question-set.ts):
+  // a lump or hernia gets lump questions, not a pain score.
+  const complaintLabel = [...SURGICAL_COMPLAINTS, ...ENDOSCOPY_COMPLAINTS].find(c => c.value === complaint)?.label ?? complaint;
+  const detailLabel    = [...LUMP_LOCATIONS, ...HERNIA_TYPES].find(o => o.track === complaintTrack)?.label ?? '';
+  const symptom        = intakeSymptom(complaintLabel, detailLabel);
+  const isLump         = symptom.set === 'lump';
+  const isHernia       = complaintTrack.includes('hernia') || (isLump && symptom.variant === 'hernia');
   const isWeightLoss     = complaint === 'weight-loss' || complaintTrack === 'weight-loss';
   const isAppendix       = complaintTrack === 'appendix';
   const isBowel          = ['diarrhoea','constipation','ibs-like','mass-effect','bowel-change'].includes(complaintTrack);
@@ -129,7 +138,7 @@ function getDetailQuestions(visitType: VisitType | '', complaintTrack: string, c
   // themselves a pain/discomfort symptom — weight loss, rectal bleeding and
   // bowel-habit changes get their own clinically-relevant yes/no questions
   // below instead of a pain score that doesn't describe what they reported.
-  const isPainless       = isWeightLoss || isRectalBleeding || (isBowel && !isHernia) || isScreening;
+  const isPainless       = isLump || isWeightLoss || isRectalBleeding || (isBowel && !isHernia) || isScreening;
 
   if (!isPainless)
     qs.push({ id:'severity', question:'How severe is your discomfort?', hint:'1 = very mild · 10 = worst imaginable', type:'severity', stateKey:'severity' });
@@ -160,8 +169,16 @@ function getDetailQuestions(visitType: VisitType | '', complaintTrack: string, c
     qs.push({ id:'wl-dys',   question:'Are you losing weight because eating has become difficult?', type:'yesno', stateKey:'weightLossDue' });
     qs.push({ id:'regurg',   question:'Do you sometimes regurgitate undigested food?',          type:'yesno', stateKey:'regurgitation' });
   }
+  if (isLump) {
+    qs.push({ id:'lump-grow',  question:'Has the lump got bigger since you first noticed it?',   type:'yesno', stateKey:'lumpGrowing' });
+    qs.push({ id:'lump-tender',question:'Is the lump painful or tender to touch?',               type:'yesno', stateKey:'lumpTender' });
+    qs.push({ id:'lump-skin',  question:'Is the skin over the lump red or hot?',                 type:'yesno', stateKey:'lumpSkinRed' });
+    if (symptom.variant === 'neck')
+      qs.push({ id:'lump-swallow', question:'Does the lump move up and down when you swallow?', type:'yesno', stateKey:'lumpMovesOnSwallowing' });
+  }
   if (isHernia) {
-    qs.push({ id:'reducible',question:'Can you push the hernia back in?',                       type:'reducible', stateKey:'reducible' });
+    qs.push({ id:'reducible',question:'Can you push it back in, or does it go away when you lie down?', type:'reducible', stateKey:'reducible' });
+    qs.push({ id:'cough',    question:'Does it get bigger when you cough, strain or stand up?', type:'yesno', stateKey:'lumpBiggerOnCough' });
     qs.push({ id:'stuck',    question:'Has it ever been stuck out and you could not push it back in?', type:'yesno', stateKey:'stuck' });
   }
   if (isScreening)

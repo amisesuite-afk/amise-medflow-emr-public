@@ -1,3 +1,5 @@
+import { classifyComplaint } from './history-frames/classify';
+import type { SymptomType } from './history-frames/types';
 import { LIFESTYLE_QUESTIONS, placeLifestyleQuestions } from './lifestyle-questions';
 
 export { LIFESTYLE_QUESTION_KEYS } from './lifestyle-questions';
@@ -76,7 +78,7 @@ export const QUESTION_BANK: Record<string, Question> = {
       { value: 'blood_in_vomit_stool', label: 'Blood in vomit or stool (haematemesis/melaena)', triggersKeys: ['hematemesis_volume', 'rectal_bleeding_character', 'alarm_features'], isRedFlag: true, urgencyIfSelected: 'urgent' },
       { value: 'difficulty_swallowing', label: 'Difficulty swallowing (dysphagia)', triggersKeys: ['dysphagia_severity', 'odynophagia', 'alarm_features'], isRedFlag: true, urgencyIfSelected: 'priority' },
       { value: 'acid_reflux', label: 'Acid reflux/heartburn (GERD)', triggersKeys: ['gerd_frequency', 'alarm_features', 'odynophagia'] },
-      { value: 'lump_or_mass', label: 'Lump or mass', triggersKeys: ['breast_lump_duration', 'breast_lump_change', 'skin_changes'] },
+      { value: 'lump_or_mass', label: 'Lump or mass', triggersKeys: ['lump_location', 'lump_duration', 'lump_change', 'lump_tender', 'lump_skin'] },
       { value: 'breast_concern', label: 'Breast concern', triggersKeys: ['breast_lump_duration', 'breast_lump_change', 'nipple_discharge', 'skin_changes', 'breast_pain', 'mammogram_history', 'family_history_breast'] },
       { value: 'change_in_bowel_habit', label: 'Change in bowel habit', triggersKeys: ['bowel_habit_change', 'rectal_bleeding_character', 'colonoscopy_history', 'family_history_cancer', 'alarm_features'] },
       { value: 'nausea_vomiting', label: 'Nausea/vomiting', triggersKeys: ['nausea_vomiting', 'associated_fever', 'last_bowel_movement'] },
@@ -541,6 +543,59 @@ export const QUESTION_BANK: Record<string, Question> = {
       { value: 'crampy_waves', label: 'Pain coming in waves/cramping' },
       { value: 'none', label: 'None of the above' },
     ],
+  },
+
+  // Lump or swelling (the chief complaint's history-frames symptom type is "lump": a lump gets lump
+  // questions, not pain or breast questions). Plain wording; administrative intake only.
+  lump_location: {
+    key: 'lump_location',
+    text: 'Where is the lump or swelling?',
+    type: 'single_choice',
+    options: [
+      { value: 'groin', label: 'Groin or top of the leg', triggersKeys: ['hernia_symptoms'] },
+      { value: 'belly_button', label: 'Belly button or tummy wall', triggersKeys: ['hernia_symptoms'] },
+      { value: 'scar', label: 'At or near an old operation scar', triggersKeys: ['hernia_symptoms'] },
+      { value: 'neck', label: 'Neck' },
+      { value: 'breast', label: 'Breast', triggersKeys: ['nipple_discharge', 'breast_pain', 'mammogram_history', 'family_history_breast'] },
+      { value: 'armpit', label: 'Armpit' },
+      { value: 'elsewhere', label: 'Somewhere else' },
+    ],
+  },
+
+  lump_duration: {
+    key: 'lump_duration',
+    text: 'How long have you noticed the lump or swelling?',
+    type: 'single_choice',
+    options: [
+      { value: 'under_1_month', label: 'Less than 1 month' },
+      { value: '1_3_months', label: '1–3 months' },
+      { value: 'over_3_months', label: 'More than 3 months' },
+      { value: 'not_sure', label: 'Not sure' },
+    ],
+  },
+
+  lump_change: {
+    key: 'lump_change',
+    text: 'Has the lump changed since you first noticed it?',
+    type: 'single_choice',
+    options: [
+      { value: 'getting_larger', label: 'Getting larger', isRedFlag: true, urgencyIfSelected: 'priority' },
+      { value: 'stayed_same', label: 'Stayed the same' },
+      { value: 'getting_smaller', label: 'Getting smaller' },
+      { value: 'comes_and_goes', label: 'Comes and goes' },
+    ],
+  },
+
+  lump_tender: {
+    key: 'lump_tender',
+    text: 'Is the lump painful or tender to touch?',
+    type: 'boolean',
+  },
+
+  lump_skin: {
+    key: 'lump_skin',
+    text: 'Is the skin over the lump red, hot or broken?',
+    type: 'boolean',
   },
 
   // Hernia-specific
@@ -1208,6 +1263,15 @@ const UPPER_GI_KEYS = [
   'alarm_features',
 ];
 
+/** Lump or swelling (history-frames symptom type "lump"). */
+const LUMP_KEYS = [
+  'lump_location',
+  'lump_duration',
+  'lump_change',
+  'lump_tender',
+  'lump_skin',
+];
+
 const BREAST_KEYS = [
   'breast_lump_duration',
   'breast_lump_change',
@@ -1312,6 +1376,18 @@ export function detectSpecialty(chiefComplaintValues: string[]): Specialty {
   return 'general_medical';
 }
 
+/** Question keys by the history-frames symptom type of a chief-complaint option. */
+const SYMPTOM_TYPE_KEYS: Partial<Record<SymptomType, string[]>> = {
+  lump: LUMP_KEYS,
+  breast: BREAST_KEYS,
+};
+
+/** History-frames symptom type of a chief-complaint option (by its label). */
+export function complaintSymptomType(value: string): SymptomType {
+  const label = QUESTION_BANK.chief_complaint!.options?.find(o => o.value === value)?.label ?? value;
+  return classifyComplaint(label).type;
+}
+
 function applyChiefComplaintBranching(
   values: string[],
   currentQueue: string[],
@@ -1348,10 +1424,11 @@ function applyChiefComplaintBranching(
         additions.push('alcohol_binge');
       }
     }
-    if (v === 'breast_concern' || v === 'lump_or_mass') {
-      additions.push(...BREAST_KEYS);
-      additions.push('hormone_use');
-    }
+    // The complaint's history-frames symptom type chooses the lump or breast question set: "Lump or
+    // mass" used to get the breast questions ("How long have you noticed the breast lump…?").
+    const typeKeys = SYMPTOM_TYPE_KEYS[complaintSymptomType(v)];
+    if (typeKeys) additions.push(...typeKeys);
+    if (v === 'breast_concern') additions.push('hormone_use');
     if (v === 'post_op_concern') {
       additions.push(...POST_OP_KEYS);
       additions.push('dvt_symptoms', 'post_op_mobility', 'urinary_retention');

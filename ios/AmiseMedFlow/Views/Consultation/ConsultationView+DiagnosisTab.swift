@@ -36,8 +36,11 @@ extension ConsultationView {
                 result["exacerbating"] = Set(val.components(separatedBy: ",").map { $0.trimmingCharacters(in: .whitespaces) })
             case "better":
                 result["relieving"] = Set(val.components(separatedBy: ",").map { $0.trimmingCharacters(in: .whitespaces) })
-            case "associated":
-                result["associations"] = Set(val.components(separatedBy: ",").map { $0.trimmingCharacters(in: .whitespaces) })
+            case "associated", "size change", "reducibility", "movement", "skin":
+                // Lump answers (size change, reducibility, movement, skin) are lump-frame chips
+                // stored under associations with the associated symptoms.
+                result["associations", default: []].formUnion(
+                    val.components(separatedBy: ",").map { $0.trimmingCharacters(in: .whitespaces) })
             default:
                 break
             }

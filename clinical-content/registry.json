@@ -1095,8 +1095,8 @@
       "platforms": ["web", "api", "front-desk"],
       "kind": "triage-rules",
       "contentVersion": "unversioned",
-      "files": ["lib/triage-engine/src/apcq.ts"],
-      "tests": ["artifacts/api-server/src/test/triage-apcq.test.ts"],
+      "files": ["lib/triage-engine/src/apcq.ts", "artifacts/front-desk/lib/intake-question-set.ts"],
+      "tests": ["artifacts/api-server/src/test/triage-apcq.test.ts", "artifacts/front-desk/test/intake-question-set.test.ts", "ios/AmiseMedFlowTests/QuestionnaireQuestionSetTests.swift"],
       "ciChecks": ["api-server vitest"],
       "guidelines": [],
       "citationStatus": "none",
@@ -1108,7 +1108,8 @@
       "changeAuthority": "Any repository committer. Ships on web/API/front-desk deploy.",
       "notes": "62 red-flag options; 'emergency' answers drive the patient-facing ER/911 redirect. The information-only lifestyle questions (religious fasting + timing, complementary treatments) live in lib/triage-engine/src/lifestyle-questions.ts (registry entry lifestyle-practices) and are always asked last, only under the question cap.",
       "changelog": [
-        { "version": "unversioned", "date": "2026-09-25", "change": "QUESTION_BANK includes the lifestyle questions from lifestyle-questions.ts; createSession/processAnswer place them last (placeLifestyleQuestions), so they never displace a clinical question." }
+        { "version": "unversioned", "date": "2026-09-25", "change": "QUESTION_BANK includes the lifestyle questions from lifestyle-questions.ts; createSession/processAnswer place them last (placeLifestyleQuestions), so they never displace a clinical question." },
+        { "version": "unversioned", "date": "2026-09-26", "change": "Lump or mass gets lump questions (lump_location, lump_duration, lump_change, lump_tender, lump_skin; groin / belly button / scar add hernia_symptoms, breast adds the breast questions), chosen by the complaint's history-frames symptom type (complaintSymptomType); it used to get the breast questions. detectSpecialty unchanged. The patient intake page (front-desk app/patient/intake, lib/intake-question-set.ts) asks a lump or hernia lump questions instead of a discomfort score. docs/clinical-validation/changes/followups-history.md." }
       ]
     },
     {

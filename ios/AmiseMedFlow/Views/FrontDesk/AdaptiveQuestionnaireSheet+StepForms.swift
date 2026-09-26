@@ -71,6 +71,10 @@ extension AdaptiveQuestionnaireSheet {
                 return ("1.circle.fill",
                         "What brings you in today?",
                         "Choose the option that best describes your main reason for this visit. If your complaint isn't listed, select \"Other\" and describe it in the text box below.")
+            case .lump:
+                return ("hand.raised",
+                        "Tell us about the lump or swelling",
+                        "Answer as many questions as you can. Tap a choice to select it. If you are not sure, leave it blank.")
             case .socrates:
                 return ("waveform.path.ecg",
                         "Tell us about your pain",
@@ -166,6 +170,7 @@ extension AdaptiveQuestionnaireSheet {
                 answers.painRelievedBy = []
                 answers.painRadiates = false
                 answers.painRadiationSite = ""
+                answers.resetLumpAnswers()
             }
 
             let placeholder = answers.ccCategory == .other
@@ -263,6 +268,67 @@ extension AdaptiveQuestionnaireSheet {
             Label("Exacerbating & Relieving Factors", systemImage: "arrow.up.arrow.down")
                 .textCase(nil).scaledFont(size: 11, weight: .semibold)
         }
+    }
+
+    // ── Phase 2 (lump / hernia): lump questions ──────────────────────────────
+    // Chosen by the complaint's history-frames symptom type (CCCategory.questionSet). Plain wording;
+    // the answers are stored as the lump frame's chips (EncounterAnswers.socratesSelections).
+
+    @ViewBuilder
+    func phase2LumpSection(cc: CCCategory) -> some View {
+        Section {
+            TextField("Where is it? (e.g. right groin, belly button, left side of the neck)",
+                      text: $answers.lumpSite, axis: .vertical)
+                .lineLimit(1...)
+
+            Picker("When did you first notice it?", selection: $answers.lumpDuration) {
+                Text("Select…").tag(Optional<LumpDuration>.none)
+                ForEach(LumpDuration.allCases, id: \.self) { d in Text(d.rawValue).tag(Optional(d)) }
+            }
+
+            Picker("Has it changed in size?", selection: $answers.lumpSizeChange) {
+                Text("Select…").tag(Optional<LumpSizeChange>.none)
+                ForEach(LumpSizeChange.allCases, id: \.self) { c in Text(c.rawValue).tag(Optional(c)) }
+            }
+
+            Picker("Is it painful or tender?", selection: $answers.lumpPain) {
+                Text("Select…").tag(Optional<LumpPain>.none)
+                ForEach(LumpPain.allCases, id: \.self) { p in Text(p.rawValue).tag(Optional(p)) }
+            }
+
+            Toggle("Is the skin over it red?", isOn: $answers.lumpSkinRed)
+        } header: {
+            Label("The Lump or Swelling", systemImage: "2.circle.fill")
+                .textCase(nil).scaledFont(size: 11, weight: .semibold)
+        }
+
+        if cc.lumpVariant == "hernia" {
+            Section {
+                QCheckboxGrid(label: "Tick any that apply",
+                              options: LumpBehaviour.allCases.map(\.rawValue),
+                              selection: lumpBehaviourLabels)
+            } header: {
+                Label("Does It Go Back In?", systemImage: "3.circle.fill")
+                    .textCase(nil).scaledFont(size: 11, weight: .semibold)
+            }
+        }
+
+        if cc.lumpVariant == "neck" {
+            Section {
+                Toggle("Does it move up and down when you swallow?", isOn: $answers.lumpMovesOnSwallowing)
+            } header: {
+                Label("Swallowing", systemImage: "3.circle.fill")
+                    .textCase(nil).scaledFont(size: 11, weight: .semibold)
+            }
+        }
+    }
+
+    /// The hernia answers as the checkbox grid's labels.
+    var lumpBehaviourLabels: Binding<Set<String>> {
+        Binding(
+            get: { Set(answers.lumpBehaviour.map(\.rawValue)) },
+            set: { labels in answers.lumpBehaviour = Set(labels.compactMap { LumpBehaviour(rawValue: $0) }) }
+        )
     }
 
     // ── Phase 3: Associated symptoms (CC-specific list, with type-to-search) ───
