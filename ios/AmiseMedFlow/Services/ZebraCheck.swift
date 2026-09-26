@@ -1,8 +1,10 @@
 // ZebraCheck.swift
 // Zebra check — rare but real conditions that explain an unusual combination of findings.
 //
-// Rules: Resources/ZebraRules.json, a copy of lib/triage-engine/src/diagnostic-reasoning/zebra-rules.ts
-// (scripts/src/diagnostic-reasoning-parity.test.ts fails when they differ). Matching mirrors
+// Rules: clinical-content/rules/zebra-rules.json, the single source the web reads too
+// (lib/triage-engine/src/diagnostic-reasoning/zebra-rules.ts), bundled as the "rules" folder and
+// loaded by SharedClinicalContent. Change the JSON, not a platform copy; lint:shared-content checks
+// the Codable structs below against clinical-content/schemas/zebra-rules.schema.json. Matching mirrors
 // zebras.ts: negation-aware at word starts (NegationMatcher). A rule matches when every `all`
 // group has an affirmed term, at least `atLeast.count` of `atLeast.groups` do, and no `none` term
 // is affirmed. Registered rule set `diagnostic-reasoning-zebras`; unreviewed, needs sign-off.
@@ -45,12 +47,10 @@ enum ZebraCheck {
         let matched: [String]
     }
 
-    /// The bundled rules (empty when the file is missing or does not decode; Settings shows nothing then).
-    static let ruleFile: RuleFile? = {
-        guard let url = Bundle.main.url(forResource: "ZebraRules", withExtension: "json"),
-              let data = try? Data(contentsOf: url) else { return nil }
-        return try? JSONDecoder().decode(RuleFile.self, from: data)
-    }()
+    /// The shared rules (clinical-content/rules/zebra-rules.json, bundled folder "rules"); nil when
+    /// the file is missing or does not decode — no zebra is shown then, and Settings → Diagnostics
+    /// says why (SharedClinicalContent).
+    static let ruleFile: RuleFile? = SharedClinicalContent.load(RuleFile.self, .zebraRules)
 
     static var rules: [Rule] { ruleFile?.rules ?? [] }
     static var version: String { ruleFile?.version ?? "unavailable" }

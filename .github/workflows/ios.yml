@@ -5,6 +5,8 @@ on:
     branches: [main]
     paths:
       - 'ios/**'
+      # Shared clinical rules bundled into the app (project.yml folder reference "rules").
+      - 'clinical-content/rules/**'
       - '.github/workflows/ios.yml'
   workflow_dispatch:
     inputs:

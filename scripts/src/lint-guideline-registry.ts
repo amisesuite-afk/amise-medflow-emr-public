@@ -121,7 +121,7 @@ const KNOWN_RULE_SET_FILES: string[] = [
   'lib/triage-engine/src/diagnostic-reasoning/*.ts',
   'artifacts/dashboard/src/lib/diagnostic-reasoning.ts',
   'artifacts/dashboard/src/lib/diagnosis-families.ts',
-  'ios/AmiseMedFlow/Resources/ZebraRules.json',
+  'clinical-content/rules/*.json',
   'ios/AmiseMedFlow/Services/ZebraCheck.swift',
   'ios/AmiseMedFlow/Services/DiagnosticReasoning*.swift',
   'ios/AmiseMedFlow/Services/LongitudinalPatterns.swift',

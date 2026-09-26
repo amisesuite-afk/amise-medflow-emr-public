@@ -17,6 +17,8 @@ on:
       # Clinical-validation vignettes and unit tests don't change any screen; skipping them
       # stops a vignette merge from cancelling a walkthrough already in progress.
       - '!ios/AmiseMedFlowTests/**'
+      # Shared clinical rules bundled into the app (project.yml folder reference "rules").
+      - 'clinical-content/rules/**'
       - '.github/workflows/ios-ui-walkthrough.yml'
 
 concurrency:

@@ -1,5 +1,7 @@
 {
-  "$comment": "Zebra check rules (iOS copy). Source of truth: lib/triage-engine/src/diagnostic-reasoning/zebra-rules.ts; scripts/src/diagnostic-reasoning-parity.test.ts fails when they differ. UNREVIEWED: needs the surgeon's sign-off.",
+  "$schema": "../schemas/zebra-rules.schema.json",
+  "$comment": "Zebra check rules (rule set diagnostic-reasoning-zebras, clinical-content/registry.json). The single source for web (lib/triage-engine/src/diagnostic-reasoning/zebra-rules.ts) and iOS (ZebraCheck.swift, bundled folder \"rules\"). Validated by lint:shared-content. UNREVIEWED: needs the surgeon's sign-off (docs/clinical-validation/changes/diagnostic-reasoning.md).",
+  "id": "diagnostic-reasoning-zebras",
   "version": "1.0.0",
   "rules": [
     {

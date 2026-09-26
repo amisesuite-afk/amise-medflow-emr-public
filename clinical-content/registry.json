@@ -1655,20 +1655,23 @@
       ],
       "kind": "diagnostic-rules",
       "contentVersion": "1.0.0",
-      "versionStamp": { "file": "lib/triage-engine/src/diagnostic-reasoning/zebra-rules.ts", "type": "regex", "pattern": "ZEBRA_RULES_VERSION\\s*=\\s*'([^']+)'" },
+      "versionStamp": { "file": "clinical-content/rules/zebra-rules.json", "type": "json-key", "key": "version" },
       "files": [
+        "clinical-content/rules/zebra-rules.json",
+        "clinical-content/schemas/zebra-rules.schema.json",
         "lib/triage-engine/src/diagnostic-reasoning/zebra-rules.ts",
         "lib/triage-engine/src/diagnostic-reasoning/zebras.ts",
-        "ios/AmiseMedFlow/Resources/ZebraRules.json",
         "ios/AmiseMedFlow/Services/ZebraCheck.swift"
       ],
       "tests": [
         "artifacts/dashboard/src/lib/__tests__/diagnostic-reasoning-core.test.ts",
         "ios/AmiseMedFlowTests/DiagnosticReasoningTests.swift",
-        "scripts/src/diagnostic-reasoning-parity.test.ts"
+        "scripts/src/diagnostic-reasoning-parity.test.ts",
+        "ios/AmiseMedFlowTests/SharedClinicalContentTests.swift",
+        "scripts/src/shared-content.test.ts"
       ],
       "ciChecks": [
-        "scripts vitest (diagnostic-reasoning-parity: ZebraRules.json must equal zebra-rules.ts)",
+        "lint:shared-content (clinical-content/rules/zebra-rules.json is the single source for web and iOS)",
         "dashboard vitest (shared vectors)",
         "clinval:web (reasoning-zebra-* vignettes)"
       ],

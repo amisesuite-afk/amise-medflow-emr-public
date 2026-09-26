@@ -898,6 +898,9 @@ importers:
       '@types/node':
         specifier: 'catalog:'
         version: 26.6.1
+      ajv:
+        specifier: 8.20.0
+        version: 8.20.0
       tsx:
         specifier: 'catalog:'
         version: 4.23.13

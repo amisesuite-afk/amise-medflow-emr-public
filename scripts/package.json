@@ -19,6 +19,7 @@
     "lint:signoff-catalogue": "tsx ./src/signoff-catalogue.ts --check",
     "signoff:catalogue": "tsx ./src/signoff-catalogue.ts",
     "signoff:apply": "tsx ./src/signoff-apply.ts",
+    "lint:shared-content": "tsx ./src/lint-shared-content.ts",
     "typecheck": "tsc -p tsconfig.json --noEmit",
     "clinval:web": "tsx ./src/clinval/run-web.ts",
     "clinval:report": "tsx ./src/clinval/report.ts",
@@ -30,6 +31,7 @@
   "devDependencies": {
     "@electric-sql/pglite": "0.5.8",
     "@types/node": "catalog:",
+    "ajv": "8.20.0",
     "tsx": "catalog:",
     "vitest": "^5.0.1"
   }

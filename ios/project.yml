@@ -26,6 +26,13 @@ targets:
       - path: AmiseMedFlow
         excludes:
           - "**/.DS_Store"
+      # Clinical rules shared with the web (clinical-content/rules/*.json at the repository root),
+      # copied into the app bundle as the "rules" folder reference, so a new file needs no
+      # per-file registration. Read by Services/SharedClinicalContent.swift; the web imports the
+      # same files. lint:shared-content fails if this entry goes.
+      - path: ../clinical-content/rules
+        type: folder
+        buildPhase: resources
 
     resources:
       - path: AmiseMedFlow/Assets.xcassets

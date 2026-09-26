@@ -1,15 +1,16 @@
 {
   "extends": "../../tsconfig.base.json",
-  "include": ["src/**/*"],
+  "include": ["src/**/*", "../../clinical-content/rules/*.json"],
   "exclude": ["node_modules", "dist"],
   "compilerOptions": {
     "outDir": "./dist",
-    "rootDir": "./src",
+    "rootDir": "../..",
     "composite": true,
     "declarationMap": true,
     "emitDeclarationOnly": true,
     "moduleResolution": "bundler",
     "module": "ESNext",
-    "lib": ["esnext"]
+    "lib": ["esnext"],
+    "resolveJsonModule": true
   }
 }

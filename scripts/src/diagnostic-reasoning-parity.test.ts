@@ -4,16 +4,17 @@
  * The behaviour of the two twins is pinned by the shared vectors
  * (ios/AmiseMedFlowTests/Resources/DiagnosticReasoningVectors.json, run by the dashboard's
  * diagnostic-reasoning-core.test.ts and by DiagnosticReasoningTests.swift). This test pins the data
- * the vectors cannot cover exhaustively: the zebra rule set (ZebraRules.json must equal
- * zebra-rules.ts), the thresholds, the probe-cost term lists, the time-out checklist, the
- * longitudinal thresholds and the other-specimen terms, read from the Swift source.
+ * the vectors cannot cover exhaustively: the thresholds, the probe-cost term lists, the time-out
+ * checklist, the longitudinal thresholds and the other-specimen terms, read from the Swift source.
+ * The zebra rule set is no longer twinned: both platforms read clinical-content/rules/zebra-rules.json
+ * (lint:shared-content, shared-content.test.ts).
  */
 import { readFileSync } from 'node:fs';
 import { join } from 'node:path';
 import { describe, expect, it } from 'vitest';
 import {
   LONGITUDINAL_THRESHOLDS, OTHER_SPECIMEN_TERMS, PROBE_COST_TERMS, PROBE_COST_WEIGHT, REASONING_THRESHOLDS,
-  TIME_OUT_CHECKLIST, ZEBRA_RULES, ZEBRA_RULES_VERSION, DIAGNOSTIC_REASONING_VERSION,
+  TIME_OUT_CHECKLIST, DIAGNOSTIC_REASONING_VERSION,
 } from '../../lib/triage-engine/src/diagnostic-reasoning/index';
 import { REPO_ROOT } from './clinval/load';
 
@@ -33,12 +34,6 @@ function stringsIn(block: string): string[] {
 }
 
 describe('diagnostic reasoning parity (web ↔ iOS)', () => {
-  it('ZebraRules.json equals zebra-rules.ts', () => {
-    const json = JSON.parse(read('ios/AmiseMedFlow/Resources/ZebraRules.json')) as { version: string; rules: unknown };
-    expect(json.version).toBe(ZEBRA_RULES_VERSION);
-    expect(json.rules).toEqual(ZEBRA_RULES);
-  });
-
   it('versions and thresholds match', () => {
     expect(/static let version = "([^"]+)"/.exec(CORE)?.[1]).toBe(DIAGNOSTIC_REASONING_VERSION);
     for (const [name, value] of Object.entries(REASONING_THRESHOLDS)) {

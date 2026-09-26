@@ -234,7 +234,7 @@ final class DiagnosticReasoningTests: XCTestCase {
 
     func testZebraAndDerivedLabVectors() throws {
         let v = try Self.loadVectors()
-        XCTAssertFalse(ZebraCheck.rules.isEmpty, "ZebraRules.json must be bundled and decode")
+        XCTAssertFalse(ZebraCheck.rules.isEmpty, "clinical-content/rules/zebra-rules.json must be bundled and decode")
         for c in v.zebras {
             let got = ZebraCheck.match(c.text).map { "\($0.id):\($0.matched.joined(separator: "+"))" }
             XCTAssertEqual(got, c.expected.map { "\($0.id):\($0.matched.joined(separator: "+"))" }, c.text)

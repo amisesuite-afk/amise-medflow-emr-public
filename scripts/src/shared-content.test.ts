@@ -1,0 +1,131 @@
+/**
+ * Shared clinical content (clinical-content/rules/*.json): the library passes its own lint, the lint
+ * catches drift between a schema and the Swift / TypeScript types that read it, and the web
+ * modules read the shared files (no platform copy).
+ */
+import { readFileSync } from 'node:fs';
+import { join } from 'node:path';
+import { describe, expect, it } from 'vitest';
+import { ZEBRA_RULES, ZEBRA_RULES_VERSION } from '../../lib/triage-engine/src/diagnostic-reasoning/zebra-rules';
+import { REPO_ROOT } from './clinval/load';
+import { checkSharedContent, compareSwift, compareTs, parseSwift, parseTs, type Schema } from './shared-content';
+
+const readJson = (p: string) => JSON.parse(readFileSync(join(REPO_ROOT, p), 'utf8')) as Record<string, unknown>;
+
+describe('shared clinical content library', () => {
+  it('passes lint:shared-content', () => {
+    const { problems, checked } = checkSharedContent(REPO_ROOT);
+    expect(problems).toEqual([]);
+    expect(checked).toEqual(['zebra-rules']);
+  });
+
+  it('the web modules read the shared files', () => {
+    const zebra = readJson('clinical-content/rules/zebra-rules.json');
+    expect(ZEBRA_RULES).toEqual(zebra.rules);
+    expect(ZEBRA_RULES_VERSION).toBe(zebra.version);
+  });
+});
+
+// ── Drift detection ──────────────────────────────────────────────────────────────────────────
+
+const SCHEMA: Schema = {
+  type: 'object',
+  required: ['version', 'items', 'grade'],
+  properties: {
+    $schema: { type: 'string' },
+    version: { type: 'string' },
+    count: { type: 'integer' },
+    items: { type: 'array', items: { $ref: '#/$defs/item' } },
+    grade: { enum: ['Works', 'No benefit shown'] },
+    byId: { type: 'object', additionalProperties: { type: 'array', items: { type: 'string' } } },
+  },
+  $defs: {
+    item: {
+      type: 'object',
+      required: ['id', 'link'],
+      properties: { id: { type: 'string' }, link: { type: ['string', 'null'] } },
+    },
+  },
+};
+
+const SWIFT_OK = `
+enum Outer {
+    struct File: Codable {
+        let version: String
+        let count: Int?
+        let items: [Item]
+        let grade: Grade
+        let byId: [String: [String]]?
+        static let shared = 1
+        var computed: String { version }
+    }
+    struct Item: Codable {
+        let id: String
+        let link: String?
+    }
+    enum Grade: String, Codable {
+        case works = "Works"
+        case noBenefit = "No benefit shown"
+    }
+}`;
+
+const TS_OK = `
+export type Grade = 'Works' | 'No benefit shown';
+export interface Item { id: string; link: string | null }
+export interface File {
+  /** Version. */
+  version: string;
+  count?: number;
+  items: Item[];
+  grade: Grade;
+  byId?: Record<string, string[]>;
+}`;
+
+describe('lint:shared-content catches drift', () => {
+  const ignore = ['/$schema'];
+
+  it('accepts types that agree with the schema', () => {
+    expect(compareSwift(SCHEMA, parseSwift([SWIFT_OK]), 'Outer.File', ignore)).toEqual([]);
+    expect(compareTs(SCHEMA, parseTs([TS_OK]), 'File', ignore)).toEqual([]);
+  });
+
+  it('a field the schema does not have (a rename on one side)', () => {
+    const swift = SWIFT_OK.replace('let id: String', 'let identifier: String');
+    expect(compareSwift(SCHEMA, parseSwift([swift]), 'Outer.File', ignore).join('\n')).toMatch(/identifier: not a property/);
+    const ts = TS_OK.replace('id: string;', 'identifier: string;');
+    expect(compareTs(SCHEMA, parseTs([ts]), 'File', ignore).join('\n')).toMatch(/identifier: not a property/);
+  });
+
+  it('a schema property nobody reads', () => {
+    const swift = SWIFT_OK.replace('        let count: Int?\n', '');
+    expect(compareSwift(SCHEMA, parseSwift([swift]), 'Outer.File', ignore).join('\n')).toMatch(/"count" is not read/);
+    expect(compareSwift(SCHEMA, parseSwift([swift]), 'Outer.File', [...ignore, '/count'])).toEqual([]);
+  });
+
+  it('a non-optional field the schema does not require', () => {
+    const swift = SWIFT_OK.replace('let count: Int?', 'let count: Int');
+    expect(compareSwift(SCHEMA, parseSwift([swift]), 'Outer.File', ignore).join('\n')).toMatch(/count: non-optional here/);
+    const ts = TS_OK.replace('count?: number;', 'count: number;');
+    expect(compareTs(SCHEMA, parseTs([ts]), 'File', ignore).join('\n')).toMatch(/count: non-optional here/);
+  });
+
+  it('a wrong type, a missing null, an enum value that differs', () => {
+    const swift = SWIFT_OK.replace('let count: Int?', 'let count: String?')
+      .replace('let link: String?', 'let link: String')
+      .replace('case noBenefit = "No benefit shown"', 'case noBenefit = "No benefit"');
+    const problems = compareSwift(SCHEMA, parseSwift([swift]), 'Outer.File', ignore).join('\n');
+    expect(problems).toMatch(/count: Swift String/);
+    expect(problems).toMatch(/link: the schema allows null/);
+    expect(problems).toMatch(/raw values \[No benefit, Works\] differ/);
+
+    const ts = TS_OK.replace('link: string | null', 'link: string').replace("'No benefit shown'", "'No benefit'");
+    const tsProblems = compareTs(SCHEMA, parseTs([ts]), 'File', ignore).join('\n');
+    expect(tsProblems).toMatch(/link: the schema allows null/);
+    expect(tsProblems).toMatch(/literals \[No benefit, Works\] differ/);
+  });
+
+  it('a struct that is not Codable', () => {
+    const swift = SWIFT_OK.replace('struct Item: Codable', 'struct Item: Equatable');
+    expect(compareSwift(SCHEMA, parseSwift([swift]), 'Outer.File', ignore).join('\n')).toMatch(/Item is not Codable/);
+  });
+});

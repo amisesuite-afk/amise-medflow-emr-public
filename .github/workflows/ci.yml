@@ -73,6 +73,13 @@ jobs:
       # (lib/triage-engine/src/reference-ranges.ts), or an analyte is not a catalogue saved name.
       - name: Lint default reference-range parity, web vs iOS
         run: pnpm --filter @workspace/scripts run lint:reference-range-parity
+      # Shared clinical rules (clinical-content/rules/*.json, read by web AND iOS): fails if a
+      # file does not validate against its JSON Schema (clinical-content/schemas/), is not
+      # registered with a json-key version stamp, is not bundled for iOS (project.yml folder
+      # reference, SharedClinicalContent.File), or if the Swift Codable structs / TypeScript types
+      # that read it disagree with the schema.
+      - name: Lint shared clinical content (schema + Swift/TS types)
+        run: pnpm --filter @workspace/scripts run lint:shared-content
 
       # Checks clinical-content/registry.json: fails if a registered path is missing, a known
       # clinical rule-set file is unregistered or a version stamp disagrees; prints (warns) the

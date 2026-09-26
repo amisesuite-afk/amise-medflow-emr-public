@@ -1,7 +1,8 @@
 // ClinicalContentDiagnosticsRows.swift
 // Settings → Diagnostics rows for the bundled clinical content: DiagnosticDatabase.json
 // version and content date, and whether the differential engine is using it or its built-in
-// fallback lists (DiagnosticDatabaseInfo.swift). Display only.
+// fallback lists (DiagnosticDatabaseInfo.swift); then the shared rule files
+// (clinical-content/rules/*.json, SharedClinicalContent.swift). Display only.
 
 import SwiftUI
 
@@ -43,6 +44,52 @@ struct ClinicalContentDiagnosticsRows: View {
                 .font(.caption)
                 .foregroundStyle(.secondary)
                 .padding(.vertical, 2)
+            }
+        }
+
+        SharedRulesDiagnosticsRows()
+    }
+}
+
+/// Settings → Diagnostics rows for the clinical rule files shared with the web
+/// (clinical-content/rules/*.json, SharedClinicalContent.swift): each file's version, or why it
+/// could not be read (the feature then shows nothing). Display only.
+struct SharedRulesDiagnosticsRows: View {
+
+    @State private var statuses: [SharedClinicalContent.Status]?
+
+    private var summary: String {
+        guard let statuses else { return "Checking…" }
+        let loaded = statuses.filter(\.loaded).count
+        return "\(loaded) of \(statuses.count) loaded"
+    }
+
+    var body: some View {
+        LabeledContent("Shared clinical rules", value: summary)
+            .task {
+                guard statuses == nil else { return }
+                statuses = await Task.detached(priority: .utility) {
+                    SharedClinicalContent.statuses()
+                }.value
+            }
+
+        if let statuses {
+            ForEach(statuses) { status in
+                LabeledContent(status.title) {
+                    Text(status.valueText)
+                        .foregroundStyle(status.loaded ? Color.secondary : Color.orange)
+                }
+                if let error = status.error {
+                    VStack(alignment: .leading, spacing: 4) {
+                        Text("This build could not read \(status.file).json, so this feature shows nothing. Please report this to support.")
+                        Text(error)
+                            .font(.caption.monospaced())
+                            .textSelection(.enabled)
+                    }
+                    .font(.caption)
+                    .foregroundStyle(.secondary)
+                    .padding(.vertical, 2)
+                }
             }
         }
     }
