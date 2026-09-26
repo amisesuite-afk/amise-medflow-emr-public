@@ -28,7 +28,7 @@
  */
 
 import {
-  DISEASES, FEATURES, adaptProtocolForPatient, applyModifiers, initPaneState, topDiagnoses, updatePosterior,
+  DISEASES, FEATURES, adaptProtocolForPatient, applyModifiers, decisionSummaryLines, initPaneState, topDiagnoses, updatePosterior,
 } from '../../../lib/pane-engine/src/index';
 import type { ManagementProtocol, PaneState } from '../../../lib/pane-engine/src/index';
 import { RULES_VERSION, adaptiveTriage, matchPathways } from '../../../lib/triage-engine/src/index';
@@ -58,6 +58,8 @@ import {
 import {
   buildDiagnosticReasoning, news2Series, numericLabs, reasoningHarnessLines, reasoningRecordText,
 } from '../../../artifacts/dashboard/src/lib/diagnostic-reasoning';
+import { buildDecisionSupport, resultPosteriorShifts, shiftText, withRecordedScore } from '../../../artifacts/dashboard/src/lib/decision-support';
+import type { DecisionConsultation } from '../../../artifacts/dashboard/src/lib/decision-support';
 import type { DxItem, EngineOutputs, Level, ScoreForm, SourcedText, Vignette } from './types';
 
 /** CDS scaleKey → canonical score key. Unlisted keys are reported as 'web:<key>'. */
@@ -443,6 +445,8 @@ export function runWeb(v: Vignette): EngineOutputs {
   // ── Calculators (ScalesTab: clinical-scales.ts; ClinicalScoresPanel: clinical-scores.ts) ─
   const scoreValues: EngineOutputs['scoreValues'] = [];
   const forms = inp.scoreForms ?? {};
+  // Scores the clinician records for decision support ("Use in decision support" on the Scales step).
+  const recorded: Record<string, number> = {};
   const labs = extractedLabs(v);
   const sv = scoringVitals(v);
   const tempAtLeast38 = (sv.temperatureC ?? 0) >= 38;
@@ -455,6 +459,7 @@ export function runWeb(v: Vignette): EngineOutputs {
       wbcAbove10: bool(alv, 'wbcAbove10'), leftShift: bool(alv, 'neutrophilia'),
     });
     const r = interpretAlvarado(score);
+    recorded.alvarado = score;
     scoreValues.push({ score: 'alvarado', mode: 'calculator', source: 'web.scaleCalculator.alvarado', value: score, label: r.band });
     management.push({ source: 'web.scaleCalculator.alvarado', text: `${r.band}: ${r.action}` });
   }
@@ -472,6 +477,7 @@ export function runWeb(v: Vignette): EngineOutputs {
       organDysfunctionHepatic: org.includes('hepatic'), organDysfunctionHaem: org.includes('haematological'),
     });
     const gi = g === 'III' ? 3 : g === 'II' ? 2 : 1;
+    recorded['tg18-cholangitis'] = gi;
     const r = interpretTg18Cholangitis(g);
     scoreValues.push({ score: 'tg18-cholangitis', mode: 'calculator', source: 'web.scaleCalculator.tg18-cholangitis', value: gi, label: r.band });
     management.push({ source: 'web.scaleCalculator.tg18-cholangitis', text: `${r.band}: ${r.action}` });
@@ -513,6 +519,7 @@ export function runWeb(v: Vignette): EngineOutputs {
       organ_dysfunction: organs(tgk),
     }, labs, sv);
     scoreValues.push({ score: 'tg18-cholecystitis', mode: 'calculator', source: 'web.scoreCalculator.tg18-cholecystitis', value: full.score, label: full.label });
+    if (full.score >= 1) recorded['tg18-cholecystitis'] = full.score;
     management.push({ source: 'web.scoreCalculator.tg18-cholecystitis', text: full.label });
   }
   if (tgk || (dx?.paneDiseaseId === 'cholecystitis')) {
@@ -520,7 +527,9 @@ export function runWeb(v: Vignette): EngineOutputs {
     scoreValues.push({ score: 'tg18-cholecystitis', mode: 'autofill', source: 'web.scoreCalculator.tg18-cholecystitis', value: auto.score, label: auto.label, pending: auto.missing_inputs });
   }
   for (const key of Object.keys(forms)) {
-    if (!['alvarado', 'tg18-cholangitis', 'tg18-cholecystitis'].includes(key)) notes.push(`no web calculator for score form '${key}'`);
+    const total = forms[key]?.total;
+    if (typeof total === 'number') recorded[key] = total;
+    else if (!['alvarado', 'tg18-cholangitis', 'tg18-cholecystitis'].includes(key)) notes.push(`no web calculator for score form '${key}'`);
   }
 
   // ── Diagnostic reasoning (AssessmentTab DiagnosticReasoningPanel) ───────────
@@ -546,6 +555,42 @@ export function runWeb(v: Vignette): EngineOutputs {
     currentComplaint: inp.chiefComplaint,
   });
   const reasoningLines: SourcedText[] = reasoningHarnessLines(reasoning, 'web.reasoning');
+  // ── Decision support (PlanTab → DecisionSupportPanel) ──────────────────────
+  let clinicalScores: Record<string, unknown> = {};
+  const { source: _labSource, ...labNumbers } = labs;
+  void _labSource;
+  for (const [key, value] of Object.entries(recorded)) clinicalScores = withRecordedScore(clinicalScores, key, value, 'vignette');
+  const decisionConsultation: DecisionConsultation = {
+    age: String(age), sex, pregnancyPossible: pregnancyPossible(v),
+    allergies: (inp.allergies ?? []).map(a => (a.reaction ? `${a.name} (${a.reaction})` : a.name)),
+    medications: (inp.medications ?? []).map(m => m.drug), medicationsText: '',
+    comorbidities: inp.comorbidities ?? [], pmhNotes: '', hpiNotes: inp.hpi ?? '', freeText: inp.chiefComplaint,
+    surgicalHistory: inp.surgicalHistory ?? [], assessment,
+    extractedLabs: { ...labNumbers, egfr: labValue(v, 'egfr') },
+    investigationResults: investigationResults(v), vitals: vitalStrings(v),
+    weightKg: inp.patient.weightKg === undefined ? '' : String(inp.patient.weightKg),
+    heightCm: inp.patient.heightCm === undefined ? '' : String(inp.patient.heightCm),
+    isPostOp: inp.encounter.isPostOp ?? false,
+    postOpDays: inp.encounter.postOpDays === undefined || inp.encounter.postOpDays === null ? '' : String(inp.encounter.postOpDays),
+    clinicalScores,
+    workingDiagnosis: dx?.paneDiseaseId ? { diseaseId: dx.paneDiseaseId, icdCode: icd, locked: true, diseaseLabel: dx.name } : null,
+    icdCodes: icd && !dx?.paneDiseaseId ? [`${icd} — ${dx?.name ?? icd}`] : [],
+    paneTop: paneTop.map(r => ({ disease: { id: r.disease.id, label: r.disease.label, icd10: r.disease.icd10 }, probability: r.probability })),
+    imagingText: (inp.imaging ?? []).map(i => i.result).join('.\n'),
+    today: '2026-09-25',
+  };
+  const decisions = buildDecisionSupport(decisionConsultation);
+  for (const line of decisionSummaryLines(decisions)) {
+    if (line.kind === 'safety') redFlags.push({ source: 'web.decisions.notForPatient', text: line.text });
+    else if (line.kind === 'info') notes.push(line.text);
+    else management.push({ source: 'web.decisions', text: line.text });
+  }
+  const shiftSnapshot = { ...decisionConsultation, ...consultationSnapshot(v) };
+  const ccEntries = [{ complaint: cc, answers: socratesAnswers(v) }];
+  for (const s of resultPosteriorShifts(shiftSnapshot, ccEntries, pane)) {
+    management.push({ source: 'web.decisions.shift', text: `Posterior shift — ${shiftText(s)}` });
+  }
+  notes.push(`Decision support: ${decisions.decisions.map(d => d.id).join(', ') || '(no decision)'}; factors ${decisions.activeFactors.join(', ') || '(none)'}`);
 
   // ── Pathway registry (usePathway / matchPathways) — recorded for information ─
   const pathways = matchPathways({ symptoms, freeText: [inp.chiefComplaint, inp.hpi].join('. ') });

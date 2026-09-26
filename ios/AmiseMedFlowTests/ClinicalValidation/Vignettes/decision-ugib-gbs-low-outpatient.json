@@ -1,0 +1,143 @@
+{
+  "schemaVersion": 1,
+  "id": "decision-ugib-gbs-low-outpatient",
+  "condition": "Upper GI bleeding — Glasgow-Blatchford 0",
+  "category": "upper-gi",
+  "permutationOf": null,
+  "summary": "35-year-old with a single small haematemesis after retching, normal observations and bloods, Glasgow-Blatchford 0: outpatient management candidate.",
+  "tags": [
+    "decision-support",
+    "risk-band",
+    "observe-band"
+  ],
+  "inputs": {
+    "patient": {
+      "ageYears": 35,
+      "sex": "male",
+      "pregnancy": {
+        "status": "not-applicable"
+      },
+      "heightCm": 178,
+      "weightKg": 80
+    },
+    "encounter": {
+      "setting": "emergency",
+      "visitType": "urgentReview",
+      "acuity": "urgent"
+    },
+    "chiefComplaint": "Vomiting blood",
+    "hpi": "Single small streak of fresh blood after repeated retching last night following alcohol. No melaena, no syncope. No NSAIDs, no anticoagulants.",
+    "exam": {
+      "general": "Alert.",
+      "abdomen": "Soft, mild epigastric tenderness."
+    },
+    "vitals": [
+      {
+        "minutesAgo": 10,
+        "heartRate": 78,
+        "systolicBp": 128,
+        "diastolicBp": 78,
+        "respiratoryRate": 14,
+        "temperatureC": 36.8,
+        "spo2": 99,
+        "avpu": "A",
+        "onSupplementalO2": false
+      }
+    ],
+    "labs": [
+      {
+        "analyte": "haemoglobin",
+        "name": "Haemoglobin",
+        "value": 14.6,
+        "unit": "g/dL",
+        "minutesAgo": 60
+      },
+      {
+        "analyte": "urea",
+        "name": "Urea",
+        "value": 4.8,
+        "unit": "mmol/L",
+        "minutesAgo": 60
+      }
+    ],
+    "nkda": true,
+    "scoreForms": {
+      "glasgow-blatchford": {
+        "total": 0
+      }
+    },
+    "platform": {
+      "web": {
+        "ccTemplate": "Haematemesis",
+        "symptoms": [
+          "Vomiting blood"
+        ]
+      }
+    }
+  },
+  "expected": {
+    "management": {
+      "mustInclude": [
+        {
+          "id": "decision-gbs-outpatient-action",
+          "severity": "critical",
+          "match": [
+            "re:score action - gbs 0: low risk - outpatient management candidate"
+          ],
+          "sources": [
+            "web.decisions",
+            "ios.decisions"
+          ],
+          "unverified": [
+            "ios"
+          ],
+          "guidelineRefs": [
+            "nice-cg141",
+            "esge-2021"
+          ]
+        },
+        {
+          "id": "decision-gbs-observe-admission",
+          "severity": "critical",
+          "match": [
+            "re:observe rather than admission and endoscopy within 24 h: outpatient management"
+          ],
+          "sources": [
+            "web.decisions",
+            "ios.decisions"
+          ],
+          "unverified": [
+            "ios"
+          ],
+          "guidelineRefs": [
+            "nice-cg141"
+          ]
+        }
+      ]
+    }
+  },
+  "guideline": [
+    {
+      "id": "nice-cg141",
+      "name": "NICE CG141 acute upper GI bleeding",
+      "year": 2012,
+      "section": "Glasgow-Blatchford; early discharge; timing of endoscopy",
+      "citation": "NICE CG141 (2012, updated 2016).",
+      "verified": false
+    },
+    {
+      "id": "esge-2021",
+      "name": "ESGE guideline — non-variceal upper GI haemorrhage (2021)",
+      "year": 2021,
+      "section": "Risk stratification; timing of endoscopy; transfusion threshold",
+      "citation": "Gralnek IM et al. Endoscopy 2021;53:300-332.",
+      "verified": false
+    }
+  ],
+  "rationale": "Glasgow-Blatchford 0 (NICE CG141) / 0-1 (international consensus 2019, ESGE 2021): early discharge with outpatient follow-up.",
+  "authoring": {
+    "author": "Claude (bayes-treatment branch)",
+    "date": "2026-09-25",
+    "notes": "Decision-support vignette (web.decisions / ios.decisions). Expectations test the band and ranking of the decision layer, whose numbers await surgeon sign-off (docs/clinical-validation/changes/bayes-treatment.md)."
+  }
+}

@@ -1,0 +1,212 @@
+{
+  "schemaVersion": 1,
+  "id": "decision-pancreatitis-severe-defer-cholecystectomy",
+  "condition": "Acute gallstone pancreatitis — predicted severe",
+  "category": "hpb",
+  "permutationOf": null,
+  "summary": "Gallstone pancreatitis with lipase 1450 U/L and Glasgow-Imrie 4: the lipase meets the Atlanta criterion; same-admission cholecystectomy is deferred in predicted severe disease.",
+  "tags": [
+    "decision-support",
+    "result-action",
+    "severity"
+  ],
+  "inputs": {
+    "patient": {
+      "ageYears": 55,
+      "sex": "female",
+      "pregnancy": {
+        "status": "not-pregnant"
+      },
+      "heightCm": 160,
+      "weightKg": 82
+    },
+    "encounter": {
+      "setting": "emergency",
+      "visitType": "urgentReview",
+      "acuity": "urgent"
+    },
+    "chiefComplaint": "Severe upper abdominal pain",
+    "hpi": "Twelve hours of severe epigastric pain radiating to the back with repeated vomiting. Known gallstones. Drinks rarely.",
+    "exam": {
+      "general": "Distressed.",
+      "abdomen": "Epigastric tenderness and guarding; no generalised peritonism."
+    },
+    "vitals": [
+      {
+        "minutesAgo": 10,
+        "heartRate": 112,
+        "systolicBp": 108,
+        "diastolicBp": 64,
+        "respiratoryRate": 24,
+        "temperatureC": 37.9,
+        "spo2": 94,
+        "avpu": "A",
+        "onSupplementalO2": false
+      }
+    ],
+    "labs": [
+      {
+        "analyte": "lipase",
+        "name": "Lipase",
+        "value": 1450,
+        "unit": "U/L",
+        "minutesAgo": 30
+      },
+      {
+        "analyte": "wbc",
+        "name": "WBC",
+        "value": 17.0,
+        "unit": "x10^9/L",
+        "minutesAgo": 60
+      },
+      {
+        "analyte": "urea",
+        "name": "Urea",
+        "value": 9.8,
+        "unit": "mmol/L",
+        "minutesAgo": 60
+      },
+      {
+        "analyte": "glucose",
+        "name": "Glucose",
+        "value": 11.2,
+        "unit": "mmol/L",
+        "minutesAgo": 60
+      },
+      {
+        "analyte": "egfr",
+        "name": "eGFR",
+        "value": 70,
+        "unit": "mL/min/1.73m2",
+        "minutesAgo": 60
+      }
+    ],
+    "imaging": [
+      {
+        "name": "USS abdomen",
+        "modality": "US",
+        "region": "abdomen",
+        "result": "Multiple gallstones; CBD 6 mm; bulky oedematous pancreas.",
+        "minutesAgo": 20
+      }
+    ],
+    "nkda": true,
+    "scoreForms": {
+      "glasgow-imrie": {
+        "total": 4
+      },
+      "asa": {
+        "total": 2
+      }
+    },
+    "confirmedDiagnosis": {
+      "name": "Acute gallstone pancreatitis",
+      "icd10": "K85.1",
+      "paneDiseaseId": "pancreatitis",
+      "assessmentText": "Acute gallstone pancreatitis, predicted severe (Glasgow-Imrie 4)."
+    },
+    "platform": {
+      "web": {
+        "ccTemplate": "Acute abdominal pain",
+        "symptoms": [
+          "Abdominal pain",
+          "Vomiting"
+        ]
+      }
+    }
+  },
+  "expected": {
+    "management": {
+      "mustInclude": [
+        {
+          "id": "decision-lipase-atlanta",
+          "severity": "critical",
+          "match": [
+            "re:result action - lipase 1450 u/l: lipase >= 3 x uln - atlanta 2012"
+          ],
+          "sources": [
+            "web.decisions",
+            "ios.decisions"
+          ],
+          "unverified": [
+            "ios"
+          ],
+          "guidelineRefs": [
+            "atlanta-2012"
+          ]
+        },
+        {
+          "id": "decision-glasgow-severe",
+          "severity": "quality",
+          "match": [
+            "re:score action - glasgow-imrie 4: predicted severe"
+          ],
+          "sources": [
+            "web.decisions",
+            "ios.decisions"
+          ],
+          "unverified": [
+            "ios"
+          ],
+          "guidelineRefs": [
+            "iap-apa-2013"
+          ]
+        }
+      ]
+    },
+    "safety": {
+      "redFlags": [
+        {
+          "id": "decision-defer-cholecystectomy",
+          "severity": "critical",
+          "match": [
+            "re:not for this patient: same-admission laparoscopic cholecystectomy - .*6 weeks"
+          ],
+          "sources": [
+            "web.decisions.notForPatient",
+            "ios.decisions.notForPatient"
+          ],
+          "unverified": [
+            "ios"
+          ],
+          "guidelineRefs": [
+            "iap-apa-2013",
+            "poncho-2015"
+          ]
+        }
+      ]
+    }
+  },
+  "guideline": [
+    {
+      "id": "atlanta-2012",
+      "name": "Revised Atlanta classification",
+      "year": 2012,
+      "section": "Diagnosis (2 of 3); severity",
+      "citation": "Banks PA et al. Gut 2013;62:102-111.",
+      "verified": false
+    },
+    {
+      "id": "iap-apa-2013",
+      "name": "IAP/APA acute pancreatitis guidelines",
+      "year": 2013,
+      "section": "Timing of cholecystectomy in severe pancreatitis",
+      "citation": "Pancreatology 2013;13(4 Suppl 2):e1-e15.",
+      "verified": false
+    },
+    {
+      "id": "poncho-2015",
+      "name": "PONCHO trial",
+      "year": 2015,
+      "section": "Same-admission cholecystectomy in mild gallstone pancreatitis",
+      "citation": "da Costa DW et al. Lancet 2015;386:1261-1268.",
+      "verified": false
+    }
+  ],
+  "rationale": "Same-admission cholecystectomy reduces recurrent gallstone events in MILD gallstone pancreatitis (PONCHO); in severe or necrotising pancreatitis it is deferred until collections resolve or for at least 6 weeks (IAP/APA 2013).",
+  "authoring": {
+    "author": "Claude (bayes-treatment branch)",
+    "date": "2026-09-25",
+    "notes": "Decision-support vignette (web.decisions / ios.decisions). Expectations test the band and ranking of the decision layer, whose numbers await surgeon sign-off (docs/clinical-validation/changes/bayes-treatment.md)."
+  }
+}

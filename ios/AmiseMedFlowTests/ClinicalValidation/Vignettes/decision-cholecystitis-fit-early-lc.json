@@ -1,0 +1,159 @@
+{
+  "schemaVersion": 1,
+  "id": "decision-cholecystitis-fit-early-lc",
+  "condition": "Acute cholecystitis — fit 45-year-old",
+  "category": "hpb",
+  "permutationOf": "decision-cholecystitis-frail-88-drainage",
+  "permutationLabel": "Fit 45-year-old",
+  "summary": "Fit 45-year-old (ASA I) with ultrasound-confirmed acute calculous cholecystitis: early laparoscopic cholecystectomy ranks first.",
+  "tags": [
+    "decision-support",
+    "personalisation"
+  ],
+  "inputs": {
+    "patient": {
+      "ageYears": 45,
+      "sex": "female",
+      "pregnancy": {
+        "status": "not-pregnant"
+      },
+      "heightCm": 162,
+      "weightKg": 64
+    },
+    "encounter": {
+      "setting": "emergency",
+      "visitType": "urgentReview",
+      "acuity": "urgent"
+    },
+    "chiefComplaint": "Right upper abdominal pain",
+    "hpi": "Two days of constant right upper quadrant pain after a fatty meal, radiating to the right shoulder tip, with nausea and one vomit. Fever overnight. Otherwise fit and well, works as a teacher.",
+    "exam": {
+      "general": "Unwell, flushed.",
+      "abdomen": "Tender right upper quadrant with a positive Murphy's sign; no generalised peritonism; no palpable mass."
+    },
+    "vitals": [
+      {
+        "minutesAgo": 10,
+        "heartRate": 104,
+        "systolicBp": 128,
+        "diastolicBp": 76,
+        "respiratoryRate": 20,
+        "temperatureC": 38.4,
+        "spo2": 96,
+        "avpu": "A",
+        "onSupplementalO2": false
+      }
+    ],
+    "labs": [
+      {
+        "analyte": "wbc",
+        "name": "WBC",
+        "value": 16.2,
+        "unit": "x10^9/L",
+        "minutesAgo": 60
+      },
+      {
+        "analyte": "crp",
+        "name": "CRP",
+        "value": 180,
+        "unit": "mg/L",
+        "minutesAgo": 60
+      },
+      {
+        "analyte": "bilirubin",
+        "name": "Bilirubin",
+        "value": 18,
+        "unit": "µmol/L",
+        "minutesAgo": 60
+      },
+      {
+        "analyte": "egfr",
+        "name": "eGFR",
+        "value": 98,
+        "unit": "mL/min/1.73m2",
+        "minutesAgo": 60
+      }
+    ],
+    "imaging": [
+      {
+        "name": "USS abdomen",
+        "modality": "US",
+        "region": "abdomen",
+        "result": "Gallstones with a thickened 6 mm gallbladder wall, pericholecystic fluid and a sonographic Murphy's sign. CBD 5 mm.",
+        "minutesAgo": 30
+      }
+    ],
+    "comorbidities": [],
+    "medications": [],
+    "nkda": true,
+    "scoreForms": {
+      "asa": {
+        "total": 1
+      }
+    },
+    "confirmedDiagnosis": {
+      "name": "Acute calculous cholecystitis",
+      "icd10": "K81.0",
+      "paneDiseaseId": "cholecystitis",
+      "assessmentText": "Acute calculous cholecystitis, TG18 grade I, fit for early laparoscopic cholecystectomy."
+    },
+    "platform": {
+      "web": {
+        "ccTemplate": "Acute abdominal pain",
+        "symptoms": [
+          "Abdominal pain",
+          "Nausea",
+          "Fever"
+        ]
+      }
+    }
+  },
+  "expected": {
+    "management": {
+      "mustInclude": [
+        {
+          "id": "decision-early-lc-ranked-first",
+          "severity": "critical",
+          "match": [
+            "re:rank 1: early laparoscopic cholecystectomy[^;]*- treat"
+          ],
+          "sources": [
+            "web.decisions",
+            "ios.decisions"
+          ],
+          "unverified": [
+            "ios"
+          ],
+          "guidelineRefs": [
+            "tg18",
+            "chocolate"
+          ]
+        }
+      ]
+    }
+  },
+  "guideline": [
+    {
+      "id": "tg18",
+      "name": "Tokyo Guidelines 2018 — flowchart for the management of acute cholecystitis",
+      "year": 2018,
+      "section": "Grade I-III management; fitness (CCI, ASA)",
+      "citation": "Okamoto K et al. J Hepatobiliary Pancreat Sci 2018;25:55-72.",
+      "verified": false
+    },
+    {
+      "id": "chocolate",
+      "name": "CHOCOLATE randomised trial",
+      "year": 2018,
+      "section": "LC vs percutaneous drainage in high-risk patients",
+      "citation": "Loozen CS et al. BMJ 2018;363:k3965.",
+      "verified": false
+    }
+  ],
+  "rationale": "TG18: early laparoscopic cholecystectomy within 72 h (same admission) for patients fit for surgery.",
+  "authoring": {
+    "author": "Claude (bayes-treatment branch)",
+    "date": "2026-09-25",
+    "notes": "Decision-support vignette (web.decisions / ios.decisions). Expectations test the band and ranking of the decision layer, whose numbers await surgeon sign-off (docs/clinical-validation/changes/bayes-treatment.md)."
+  }
+}

@@ -11,6 +11,7 @@ export const DECISION_CONTENT_VERSION: string = DECISION_CONTENT.version;
 
 export {
   decisionSupport, evaluateDecisions, scoreActions, resultActions, activeFactors, thresholds, bandFor,
-  pickScores, scoreBand, diagnosisMatches, keywordAt, formatPercent, formatValue,
+  pickScores, scoreBand, diagnosisMatches, keywordAt, formatPercent, formatValue, decisionSummaryLines, lowerFirst, factorLabel,
 } from './engine.js';
 export type * from './types.js';
+export type { DecisionSummaryLine } from './engine.js';

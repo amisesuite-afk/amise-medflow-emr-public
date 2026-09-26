@@ -114,7 +114,9 @@ function scoreValue(scores: readonly DecisionScore[], key: string): number | nul
 }
 
 /** The patient's active factors (content modifiers are keyed by these). */
-export function activeFactors(p: DecisionPatient, scores: readonly DecisionScore[], labs: DecisionInput['labs']): Set<FactorId> {
+export function activeFactors(
+  p: DecisionPatient, scores: readonly DecisionScore[], labs: DecisionInput['labs'], diagnoses: readonly DecisionDiagnosis[] = [],
+): Set<FactorId> {
   const f = new Set<FactorId>();
   const age = p.ageYears;
   if (age !== null && age >= 65 && age < 80) f.add('age65to79');
@@ -147,7 +149,11 @@ export function activeFactors(p: DecisionPatient, scores: readonly DecisionScore
     const v = scoreValue(scores, k);
     return v !== null && v >= 3;
   });
-  if (severe) f.add('predictedSeverePancreatitis');
+  // Severity from the scores, or named in the confirmed diagnosis ("severe", "moderately severe",
+  // "necrotising", "organ failure" — revised Atlanta 2012).
+  const namedSevere = diagnoses.some(d => d.confirmed && keywordAt(d.name, 'pancreatitis')
+    && ['severe', 'necrotis', 'necrotiz', 'organ failure'].some(k => keywordAt(d.name, k)));
+  if (severe || namedSevere) f.add('predictedSeverePancreatitis');
   if (p.mechanicalValve) f.add('mechanicalValve');
   if (p.recentVte3m) f.add('recentVte3m');
   return f;
@@ -484,7 +490,10 @@ function selectDecision(def: DecisionDef, input: DecisionInput, content: Decisio
     .filter(d => !d.confirmed && d.probability !== null)
     .reduce<DecisionDiagnosis | null>((best, d) => (!best || (d.probability ?? 0) > (best.probability ?? 0) ? d : best), null);
   const minP = content.defaults.minEngineProbability;
-  const engineOk = engine !== null && (engine.probability ?? 0) >= minP;
+  // A clinician-confirmed diagnosis wins over the engine's differential (the ManagementPanel rule,
+  // managementPanelSource): other leading differentials give decisions only when nothing is confirmed.
+  const anyConfirmed = input.diagnoses.some(d => d.confirmed);
+  const engineOk = !anyConfirmed && engine !== null && (engine.probability ?? 0) >= minP;
 
   if (def.type === 'diagnosis') {
     const pre = def.pretestScore ? scores.find(s => s.key === def.pretestScore) ?? null : null;
@@ -581,7 +590,7 @@ function missingFor(def: DecisionDef, sel: Selected, input: DecisionInput, conte
 
 export function evaluateDecisions(
   input: DecisionInput, content: DecisionContent, filter: LineFilter = IDENTITY,
-  factors: Set<FactorId> = activeFactors(input.patient, input.scores, input.labs),
+  factors: Set<FactorId> = activeFactors(input.patient, input.scores, input.labs, input.diagnoses),
 ): DecisionResult[] {
   const selected: Selected[] = [];
   for (const def of content.decisions) {
@@ -619,7 +628,7 @@ export function evaluateDecisions(
 
 /** Everything the Plan-step "Decision support — clinician decides" section shows. */
 export function decisionSupport(input: DecisionInput, content: DecisionContent, filter: LineFilter = IDENTITY): DecisionSupportResult {
-  const factors = activeFactors(input.patient, input.scores, input.labs);
+  const factors = activeFactors(input.patient, input.scores, input.labs, input.diagnoses);
   const order = Object.keys({
     age65to79: 1, age80plus: 1, cfs5to6: 1, cfs7plus: 1, asa3: 1, asa4plus: 1, egfr30to59: 1, egfrBelow30: 1,
     anticoagulated: 1, doacOnly: 1, antiplatelet: 1, hasBled3plus: 1, pregnant: 1, penicillinAllergy: 1, diabetes: 1,
@@ -633,4 +642,41 @@ export function decisionSupport(input: DecisionInput, content: DecisionContent, 
     decisions: evaluateDecisions(input, content, filter, factors),
     activeFactors: order.filter(f => factors.has(f)),
   };
+}
+
+// ── Summary lines (clinical-validation harness web.decisions / ios.decisions; identical on iOS) ─
+
+const BAND_WORD: Record<Band, string> = {
+  observe: 'OBSERVE', test: 'TEST FURTHER', treat: 'TREAT', 'not-for-patient': 'NOT FOR THIS PATIENT', unknown: 'RISK NOT KNOWN',
+};
+
+/** One line per card / option / missing input, in display order. */
+export interface DecisionSummaryLine {
+  /** management = what is suggested; safety = an option that is not for this patient; info = a missing input. */
+  kind: 'management' | 'safety' | 'info';
+  text: string;
+}
+
+export function decisionSummaryLines(r: DecisionSupportResult): DecisionSummaryLine[] {
+  const out: DecisionSummaryLine[] = [];
+  for (const c of r.resultActions) out.push({ kind: 'management', text: `Result action — ${c.chip}: ${c.label} — ${c.action}` });
+  for (const c of r.scoreActions) out.push({ kind: 'management', text: `Score action — ${c.chip}: ${c.band} — ${c.action}` });
+  for (const d of r.decisions) {
+    const head = `Decision ${d.label} (${d.chip}; ${d.probability === null ? 'P not known' : `P ${formatPercent(d.probability)}`})`;
+    for (const o of d.options) {
+      if (o.band === 'unknown') continue;
+      if (o.band === 'not-for-patient') {
+        out.push({ kind: 'safety', text: `${head} — not for this patient: ${o.label} — ${o.withheldText ?? o.excludedReason ?? ''}` });
+        continue;
+      }
+      const thr = `treat threshold ${formatPercent(o.treatThreshold[1])}${o.testThreshold ? `, test threshold ${formatPercent(o.testThreshold[1])}` : ''}`;
+      const tail = [thr, ...(o.borderline ? ['borderline across the evidence range'] : []), ...(o.factorSummary ? [o.factorSummary] : [])].join('; ');
+      const rank = `rank ${o.rank === null ? '-' : String(o.rank)}`;
+      if (o.band === 'treat') out.push({ kind: 'management', text: `${head} — ${rank}: ${o.label} — ${BAND_WORD.treat}: ${o.suggestedLine ?? o.planLine} (${tail})` });
+      else if (o.band === 'test') out.push({ kind: 'management', text: `${head} — ${rank}: ${o.label} — ${BAND_WORD.test}: ${o.suggestedLine ?? ''} (${tail})` });
+      else out.push({ kind: 'management', text: `${head} — ${rank}: ${BAND_WORD.observe} rather than ${lowerFirst(o.label)}: ${o.suggestedLine ?? o.observeText} (${tail})` });
+    }
+    for (const m of d.missing) out.push({ kind: 'info', text: `Decision ${d.label} — missing: ${m}` });
+  }
+  return out;
 }

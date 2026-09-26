@@ -26,9 +26,10 @@ export type {
 export {
   DECISION_CONTENT, DECISION_CONTENT_VERSION, decisionSupport, evaluateDecisions, scoreActions, resultActions,
   activeFactors, thresholds, bandFor, pickScores, scoreBand, diagnosisMatches, keywordAt, formatPercent, formatValue,
+  decisionSummaryLines,
 } from './decision/index.js';
 export type {
   DecisionContent, DecisionInput, DecisionPatient, DecisionDiagnosis, DecisionScore, DecisionLabs, DecisionPregnancy,
   DecisionSupportResult, DecisionResult, OptionResult, ScoreActionCard, ResultActionCard, AppliedFactor, Band,
-  LineFilter, FactorId, Triple as DecisionTriple, SourceRef as DecisionSourceRef, LabAnalyte as DecisionLabAnalyte,
+  LineFilter, FactorId, DecisionSummaryLine, Triple as DecisionTriple, SourceRef as DecisionSourceRef, LabAnalyte as DecisionLabAnalyte,
 } from './decision/index.js';

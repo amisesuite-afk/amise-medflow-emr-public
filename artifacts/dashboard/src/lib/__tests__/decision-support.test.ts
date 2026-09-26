@@ -47,6 +47,12 @@ describe('record → decision input', () => {
     expect(decisionPatient({ ...BASE, assessment: 'Surgical review; no operation planned' }, []).procedurePlanned).toBe(false);
   });
 
+  it('history is read negation-aware ("otherwise fit, no immunosuppression")', () => {
+    expect(decisionPatient({ ...BASE, hpiNotes: 'Otherwise fit, no immunosuppression. Non-smoker.' }, []).immunosuppressed).toBe(false);
+    expect(decisionPatient({ ...BASE, comorbidities: ['Renal transplant 2019'] }, []).immunosuppressed).toBe(true);
+    expect(decisionPatient({ ...BASE, hpiNotes: 'Not diabetic.' }, []).diabetes).toBe(false);
+  });
+
   it('recent surgery from the recorded date (America/St_Lucia today)', () => {
     expect(decisionPatient({ ...BASE, recentSurgeryDate: '2026-09-15' }, []).recentSurgeryDays).toBe(10);
   });

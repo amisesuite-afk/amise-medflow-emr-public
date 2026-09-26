@@ -3229,6 +3229,269 @@
       }
     },
     {
+      "id": "pancreatitis-named-severe",
+      "description": "Confirmed \"severe acute biliary pancreatitis\" without a severity score: same-admission cholecystectomy deferred (revised Atlanta).",
+      "input": {
+        "patient": {
+          "ageYears": 45,
+          "sex": "female",
+          "cfs": null,
+          "asa": 2,
+          "egfr": 85,
+          "bmi": null,
+          "news2": 5,
+          "sbp": 104,
+          "anticoagulant": "none",
+          "antiplatelet": false,
+          "hasBled": null,
+          "pregnancy": "not-pregnant",
+          "allergyClasses": [],
+          "diabetes": false,
+          "immunosuppressed": false,
+          "recentSurgeryDays": null,
+          "procedurePlanned": false,
+          "appendicolith": false,
+          "mechanicalValve": false,
+          "recentVte3m": false
+        },
+        "diagnoses": [
+          {
+            "name": "Severe acute biliary pancreatitis",
+            "id": null,
+            "icd10": "K85.1",
+            "probability": null,
+            "confirmed": true
+          }
+        ],
+        "scores": [],
+        "labs": {}
+      },
+      "expected": {
+        "activeFactors": [
+          "predictedSeverePancreatitis"
+        ],
+        "scoreActions": [],
+        "resultActions": [],
+        "decisions": [
+          {
+            "id": "gallstone-pancreatitis",
+            "probability": 0.95,
+            "probabilitySource": "confirmed",
+            "chip": "Confirmed: Severe acute biliary pancreatitis",
+            "missing": [
+              "Record BMI (height and weight) to refine: BMI 40 or more raises operative harm (same-admission laparoscopic cholecystectomy)."
+            ],
+            "options": [
+              {
+                "id": "same-admission-cholecystectomy",
+                "band": "not-for-patient",
+                "bandRange": [
+                  "not-for-patient"
+                ],
+                "rank": null,
+                "treatThreshold": [
+                  0.0556,
+                  0.1429,
+                  0.3636
+                ],
+                "testThreshold": null,
+                "benefit": [
+                  0.07,
+                  0.12,
+                  0.17
+                ],
+                "harm": [
+                  0.01,
+                  0.02,
+                  0.04
+                ],
+                "net": [
+                  0.0645,
+                  0.113,
+                  0.161
+                ],
+                "topFactors": [
+                  "severe-pancreatitis-defer"
+                ],
+                "factorSummary": "Predicted severe pancreatitis (Glasgow-Imrie, BISAP or Ranson >= 3): same-admission laparoscopic cholecystectomy is not for this patient.",
+                "excluded": true
+              }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "id": "confirmed-suppresses-differential",
+      "description": "A confirmed diagnosis wins: the engine's sepsis differential (30%) gives no decision.",
+      "input": {
+        "patient": {
+          "ageYears": 45,
+          "sex": "female",
+          "cfs": null,
+          "asa": 1,
+          "egfr": 95,
+          "bmi": 26,
+          "news2": 3,
+          "sbp": 120,
+          "anticoagulant": "none",
+          "antiplatelet": false,
+          "hasBled": null,
+          "pregnancy": "not-pregnant",
+          "allergyClasses": [],
+          "diabetes": false,
+          "immunosuppressed": false,
+          "recentSurgeryDays": null,
+          "procedurePlanned": false,
+          "appendicolith": false,
+          "mechanicalValve": false,
+          "recentVte3m": false
+        },
+        "diagnoses": [
+          {
+            "name": "Acute cholecystitis",
+            "id": "cholecystitis",
+            "icd10": "K81.0",
+            "probability": 0.62,
+            "confirmed": true
+          },
+          {
+            "name": "Sepsis",
+            "id": "sepsis",
+            "icd10": "A41.9",
+            "probability": 0.3,
+            "confirmed": false
+          }
+        ],
+        "scores": [],
+        "labs": {}
+      },
+      "expected": {
+        "activeFactors": [],
+        "scoreActions": [],
+        "resultActions": [],
+        "decisions": [
+          {
+            "id": "cholecystitis",
+            "probability": 0.95,
+            "probabilitySource": "confirmed",
+            "chip": "Confirmed: Acute cholecystitis",
+            "missing": [],
+            "options": [
+              {
+                "id": "early-lap-chole",
+                "band": "treat",
+                "bandRange": [
+                  "treat"
+                ],
+                "rank": 1,
+                "treatThreshold": [
+                  0.304,
+                  0.5048,
+                  0.686
+                ],
+                "testThreshold": [
+                  0.0206,
+                  0.0467,
+                  0.095
+                ],
+                "benefit": [
+                  0.2,
+                  0.3,
+                  0.4
+                ],
+                "harm": [
+                  0.04,
+                  0.07,
+                  0.1
+                ],
+                "net": [
+                  0.185,
+                  0.2815,
+                  0.378
+                ],
+                "topFactors": [],
+                "factorSummary": null,
+                "excluded": false
+              },
+              {
+                "id": "percutaneous-cholecystostomy",
+                "band": "treat",
+                "bandRange": [
+                  "treat"
+                ],
+                "rank": 2,
+                "treatThreshold": [
+                  0.2255,
+                  0.4427,
+                  0.6709
+                ],
+                "testThreshold": [
+                  0.0138,
+                  0.0368,
+                  0.0892
+                ],
+                "benefit": [
+                  0.15,
+                  0.22,
+                  0.3
+                ],
+                "harm": [
+                  0.02,
+                  0.04,
+                  0.07
+                ],
+                "net": [
+                  0.139,
+                  0.207,
+                  0.284
+                ],
+                "topFactors": [],
+                "factorSummary": null,
+                "excluded": false
+              },
+              {
+                "id": "antibiotics-supportive",
+                "band": "treat",
+                "bandRange": [
+                  "treat"
+                ],
+                "rank": 3,
+                "treatThreshold": [
+                  0.1953,
+                  0.4213,
+                  0.6209
+                ],
+                "testThreshold": [
+                  0.0115,
+                  0.0338,
+                  0.073
+                ],
+                "benefit": [
+                  0.08,
+                  0.12,
+                  0.18
+                ],
+                "harm": [
+                  0.01,
+                  0.02,
+                  0.03
+                ],
+                "net": [
+                  0.0745,
+                  0.113,
+                  0.1705
+                ],
+                "topFactors": [],
+                "factorSummary": null,
+                "excluded": false
+              }
+            ]
+          }
+        ]
+      }
+    },
+    {
       "id": "hernia-fit",
       "description": "Fit 50-year-old man, inguinal hernia: repair.",
       "input": {

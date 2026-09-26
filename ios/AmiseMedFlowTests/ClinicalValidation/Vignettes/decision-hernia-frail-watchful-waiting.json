@@ -1,0 +1,149 @@
+{
+  "schemaVersion": 1,
+  "id": "decision-hernia-frail-watchful-waiting",
+  "condition": "Inguinal hernia — frail 86-year-old",
+  "category": "hernia",
+  "permutationOf": "decision-vte-caprini-low-mechanical",
+  "permutationLabel": "Frail 86-year-old",
+  "summary": "Frail 86-year-old man (CFS 7, ASA III) with a reducible minimally symptomatic inguinal hernia: watchful waiting rather than elective repair.",
+  "tags": [
+    "decision-support",
+    "frailty",
+    "observe-band",
+    "personalisation"
+  ],
+  "inputs": {
+    "patient": {
+      "ageYears": 86,
+      "sex": "male",
+      "pregnancy": {
+        "status": "not-applicable"
+      },
+      "heightCm": 176,
+      "weightKg": 78
+    },
+    "encounter": {
+      "setting": "outpatient",
+      "visitType": "newConsult",
+      "acuity": "routine"
+    },
+    "chiefComplaint": "Lump in the right groin",
+    "hpi": "Several months of a right groin lump on standing that goes back lying down; mild ache only; never stuck. Lives with his daughter; mobilises with a frame; needs help with bathing.",
+    "exam": {
+      "general": "Well.",
+      "abdomen": "Reducible right inguinal hernia with a cough impulse, controlled at the deep ring. Left groin normal."
+    },
+    "vitals": [
+      {
+        "minutesAgo": 10,
+        "heartRate": 74,
+        "systolicBp": 136,
+        "diastolicBp": 80,
+        "respiratoryRate": 14,
+        "temperatureC": 36.7,
+        "spo2": 98,
+        "avpu": "A",
+        "onSupplementalO2": false
+      }
+    ],
+    "labs": [
+      {
+        "analyte": "egfr",
+        "name": "eGFR",
+        "value": 52,
+        "unit": "mL/min/1.73m2",
+        "minutesAgo": 60
+      }
+    ],
+    "nkda": true,
+    "scoreForms": {
+      "cfs": {
+        "total": 7
+      },
+      "asa": {
+        "total": 3
+      }
+    },
+    "confirmedDiagnosis": {
+      "name": "Right inguinal hernia, reducible, minimally symptomatic",
+      "icd10": "K40.90",
+      "paneDiseaseId": "inguinal_hernia",
+      "assessmentText": "Reducible right inguinal hernia, minimally symptomatic, in a frail 86-year-old (CFS 7)."
+    },
+    "platform": {
+      "web": {
+        "ccTemplate": "Groin lump",
+        "symptoms": [
+          "Groin swelling"
+        ]
+      }
+    }
+  },
+  "expected": {
+    "management": {
+      "mustInclude": [
+        {
+          "id": "decision-watchful-waiting",
+          "severity": "critical",
+          "match": [
+            "re:observe rather than elective inguinal hernia repair: watchful waiting"
+          ],
+          "sources": [
+            "web.decisions",
+            "ios.decisions"
+          ],
+          "unverified": [
+            "ios"
+          ],
+          "guidelineRefs": [
+            "herniasurge-2018",
+            "cpoc-2021"
+          ]
+        }
+      ],
+      "mustExclude": [
+        {
+          "id": "decision-no-repair-treat-band",
+          "severity": "critical",
+          "match": [
+            "re:elective inguinal hernia repair - treat"
+          ],
+          "sources": [
+            "web.decisions",
+            "ios.decisions"
+          ],
+          "unverified": [
+            "ios"
+          ],
+          "guidelineRefs": [
+            "herniasurge-2018"
+          ]
+        }
+      ]
+    }
+  },
+  "guideline": [
+    {
+      "id": "herniasurge-2018",
+      "name": "HerniaSurge international groin hernia guidelines",
+      "year": 2018,
+      "section": "Watchful waiting; frail patients",
+      "citation": "Hernia 2018;22:1-165.",
+      "verified": false
+    },
+    {
+      "id": "cpoc-2021",
+      "name": "CPOC/BGS perioperative care for people living with frailty",
+      "year": 2021,
+      "section": "Emergency surgery; shared decision-making",
+      "citation": "Centre for Perioperative Care 2021.",
+      "verified": false
+    }
+  ],
+  "rationale": "Watchful waiting is safe for minimally symptomatic inguinal hernias in men (Fitzgibbons 2006; O'Dwyer 2006); severe frailty raises operative harm, so the balance favours observation (HerniaSurge 2018; CPOC 2021).",
+  "authoring": {
+    "author": "Claude (bayes-treatment branch)",
+    "date": "2026-09-25",
+    "notes": "Decision-support vignette (web.decisions / ios.decisions). Expectations test the band and ranking of the decision layer, whose numbers await surgeon sign-off (docs/clinical-validation/changes/bayes-treatment.md)."
+  }
+}

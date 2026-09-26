@@ -17,7 +17,7 @@ import type {
   DecisionDiagnosis, DecisionInput, DecisionLabs, DecisionPatient, DecisionScore, DecisionSupportResult,
   DiseaseNode, LineFilter, ManagementProtocol, PaneState, PlanPatientContext,
 } from '@workspace/pane-engine';
-import { evaluateNews2, testAffirmed } from '@workspace/triage-engine';
+import { evaluateNews2, joinClauses, testAffirmed } from '@workspace/triage-engine';
 import type { News2Avpu } from '@workspace/triage-engine';
 import { ALIAS_INDEX } from '@workspace/triage-engine/report-import';
 import { qSofaScore } from './clinical-scales';
@@ -137,7 +137,8 @@ const IMMUNO_TEXT = /\b(transplant\w*|hiv|aids|chemotherapy|neutropeni\w*|immuno
 export function decisionPatient(c: DecisionConsultation, scores: DecisionScore[]): DecisionPatient {
   const ctx: PlanPatientContext = planPatientContext(c);
   const meds = (ctx.medications ?? []).join(' ; ').toLowerCase();
-  const history = [...(ctx.comorbidities ?? []), ctx.freeText ?? ''].join(' ; ');
+  // Negation-aware reads ("otherwise fit, no immunosuppression"): one clause per entry.
+  const history = joinClauses([...(ctx.comorbidities ?? []), ctx.freeText ?? '']);
   const vka = VKA.some(d => wordIn(meds, d));
   const doac = DOACS.some(d => wordIn(meds, d));
   const preg = pregnancyFor(ctx).status;
@@ -165,13 +166,13 @@ export function decisionPatient(c: DecisionConsultation, scores: DecisionScore[]
     hasBled: score('has-bled'),
     pregnancy: preg === 'pregnant' ? 'pregnant' : preg === 'possible' ? 'possible' : preg === 'unknown' ? 'unknown' : 'not-pregnant',
     allergyClasses: allergyProfile(ctx.allergies).classes.map(cl => cl.id),
-    diabetes: DIABETES.test(history) || /\b(insulin|metformin|gliclazide|sglt2|empagliflozin|dapagliflozin)\b/.test(meds),
-    immunosuppressed: IMMUNOSUPPRESSANTS.some(d => wordIn(meds, d)) || IMMUNO_TEXT.test(history),
+    diabetes: testAffirmed(DIABETES, history) || /\b(insulin|metformin|gliclazide|sglt2|empagliflozin|dapagliflozin)\b/.test(meds),
+    immunosuppressed: IMMUNOSUPPRESSANTS.some(d => wordIn(meds, d)) || testAffirmed(IMMUNO_TEXT, history),
     recentSurgeryDays,
     procedurePlanned: procedureFor(STUB_PROTOCOL, ctx, false) !== 'none',
     appendicolith: testAffirmed(/\b(appendicolith|faecolith|fecalith)\b/i, resultText),
-    mechanicalValve: MECHANICAL_VALVE.test(history),
-    recentVte3m: RECENT_VTE.test(history),
+    mechanicalValve: testAffirmed(MECHANICAL_VALVE, history),
+    recentVte3m: testAffirmed(RECENT_VTE, history),
   };
 }
 
@@ -301,14 +302,15 @@ function replay(diseases: DiseaseNode[], answered: FeatureMap): PaneState {
  * Leave-one-out per result names the result that moved each diagnosis most.
  */
 export function resultPosteriorShifts(
-  c: DecisionConsultation & Partial<ConsultationSnapshot>,
+  c: DecisionConsultation & { [field: string]: unknown },
   entries: { complaint: string; answers: Record<string, string> }[],
   state: PaneState | null,
   opts: { top?: number; minDelta?: number } = {},
 ): PosteriorShift[] {
   const results = Object.entries(c.investigationResults ?? {}).filter(([, v]) => v && v.trim());
   if (!results.length) return [];
-  const snapshot: Partial<ConsultationSnapshot> = { ...c, investigationResults: c.investigationResults ?? {} } as Partial<ConsultationSnapshot>;
+  // The PANE context reads the AppContext snapshot fields (strings as entered).
+  const snapshot = { ...c, age: c.age === null || c.age === undefined ? '' : String(c.age), investigationResults: c.investigationResults ?? {} } as unknown as Partial<ConsultationSnapshot>;
   const withResults = featuresFor(entries, snapshot);
   const without = featuresFor(entries, { ...snapshot, investigationResults: {} });
   const resultOnly = Object.keys(withResults).filter(k => without[k] !== withResults[k]);

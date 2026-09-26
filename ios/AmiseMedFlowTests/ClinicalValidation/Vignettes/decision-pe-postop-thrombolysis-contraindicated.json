@@ -1,0 +1,185 @@
+{
+  "schemaVersion": 1,
+  "id": "decision-pe-postop-thrombolysis-contraindicated",
+  "condition": "High-risk PE after recent surgery",
+  "category": "vascular",
+  "permutationOf": null,
+  "summary": "Day 5 after an anterior resection with CT-confirmed PE and shock: systemic thrombolysis is not for this patient (major surgery within 3 weeks); anticoagulation ranks first.",
+  "tags": [
+    "decision-support",
+    "contraindication",
+    "recent-surgery"
+  ],
+  "inputs": {
+    "patient": {
+      "ageYears": 64,
+      "sex": "male",
+      "pregnancy": {
+        "status": "not-applicable"
+      },
+      "heightCm": 175,
+      "weightKg": 88
+    },
+    "encounter": {
+      "setting": "inpatient",
+      "visitType": "wardReview",
+      "acuity": "emergency",
+      "isPostOp": true,
+      "postOpDays": 5
+    },
+    "chiefComplaint": "Sudden breathlessness and collapse on the ward",
+    "hpi": "Day 5 after laparoscopic anterior resection for rectal cancer. Sudden breathlessness, pleuritic chest pain and a pre-syncopal episode this morning.",
+    "exam": {
+      "general": "Pale, clammy, distressed.",
+      "cardiovascular": "Raised JVP; tachycardic.",
+      "respiratory": "Clear chest."
+    },
+    "vitals": [
+      {
+        "minutesAgo": 5,
+        "heartRate": 128,
+        "systolicBp": 84,
+        "diastolicBp": 52,
+        "respiratoryRate": 30,
+        "temperatureC": 37.4,
+        "spo2": 89,
+        "avpu": "A",
+        "onSupplementalO2": false
+      }
+    ],
+    "labs": [
+      {
+        "analyte": "lactate",
+        "name": "Lactate",
+        "value": 3.6,
+        "unit": "mmol/L",
+        "minutesAgo": 10
+      },
+      {
+        "analyte": "egfr",
+        "name": "eGFR",
+        "value": 72,
+        "unit": "mL/min/1.73m2",
+        "minutesAgo": 60
+      },
+      {
+        "analyte": "haemoglobin",
+        "name": "Haemoglobin",
+        "value": 11.8,
+        "unit": "g/dL",
+        "minutesAgo": 60
+      }
+    ],
+    "imaging": [
+      {
+        "name": "CTPA",
+        "modality": "CT",
+        "region": "chest",
+        "result": "Saddle pulmonary embolus with right ventricular dilatation (RV:LV 1.4).",
+        "minutesAgo": 15
+      }
+    ],
+    "comorbidities": [
+      "Rectal cancer"
+    ],
+    "surgicalHistory": [
+      "Laparoscopic anterior resection 5 days ago"
+    ],
+    "nkda": true,
+    "confirmedDiagnosis": {
+      "name": "High-risk pulmonary embolism 5 days after anterior resection",
+      "icd10": "I26.0",
+      "paneDiseaseId": "pulmonary_embolism",
+      "assessmentText": "High-risk PE with shock, post-operative day 5 after anterior resection."
+    },
+    "platform": {
+      "web": {
+        "ccTemplate": "Shortness of breath",
+        "symptoms": [
+          "Shortness of breath",
+          "Chest pain"
+        ]
+      }
+    }
+  },
+  "expected": {
+    "management": {
+      "mustInclude": [
+        {
+          "id": "decision-anticoagulation-first",
+          "severity": "critical",
+          "match": [
+            "re:rank 1: therapeutic anticoagulation[^;]*- treat"
+          ],
+          "sources": [
+            "web.decisions",
+            "ios.decisions"
+          ],
+          "unverified": [
+            "ios"
+          ],
+          "guidelineRefs": [
+            "esc-pe-2019"
+          ]
+        }
+      ],
+      "mustExclude": [
+        {
+          "id": "decision-no-thrombolysis-after-surgery",
+          "severity": "critical",
+          "match": [
+            "re:systemic thrombolysis - treat"
+          ],
+          "sources": [
+            "web.decisions",
+            "ios.decisions"
+          ],
+          "unverified": [
+            "ios"
+          ],
+          "guidelineRefs": [
+            "esc-pe-2019"
+          ]
+        }
+      ]
+    },
+    "safety": {
+      "redFlags": [
+        {
+          "id": "decision-thrombolysis-not-for-patient",
+          "severity": "critical",
+          "match": [
+            "re:not for this patient: systemic thrombolysis - .*3 weeks"
+          ],
+          "sources": [
+            "web.decisions.notForPatient",
+            "ios.decisions.notForPatient"
+          ],
+          "unverified": [
+            "ios"
+          ],
+          "guidelineRefs": [
+            "esc-pe-2019"
+          ],
+          "note": "ESC 2019: major surgery within 3 weeks is a contraindication to systemic fibrinolysis — surgical embolectomy or catheter-directed treatment instead."
+        }
+      ]
+    }
+  },
+  "guideline": [
+    {
+      "id": "esc-pe-2019",
+      "name": "ESC guidelines — acute pulmonary embolism",
+      "year": 2019,
+      "section": "Diagnostic strategy; reperfusion; contraindications to fibrinolysis",
+      "citation": "Konstantinides SV et al. Eur Heart J 2020;41:543-603.",
+      "verified": false
+    }
+  ],
+  "rationale": "In high-risk PE after major surgery within 3 weeks, systemic thrombolysis is contraindicated; anticoagulate (UFH) and consider surgical embolectomy or catheter-directed treatment (ESC 2019).",
+  "authoring": {
+    "author": "Claude (bayes-treatment branch)",
+    "date": "2026-09-25",
+    "notes": "Decision-support vignette (web.decisions / ios.decisions). Expectations test the band and ranking of the decision layer, whose numbers await surgeon sign-off (docs/clinical-validation/changes/bayes-treatment.md)."
+  }
+}

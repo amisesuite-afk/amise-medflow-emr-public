@@ -946,7 +946,7 @@
           "max": 3,
           "band": "2 or more",
           "level": "high",
-          "action": "qSOFA >= 2 with suspected infection: treat as likely sepsis — lactate, blood cultures before antibiotics, IV antibiotics within 1 h, fluid resuscitation guided by perfusion, senior review (SSC 2021).",
+          "action": "qSOFA >= 2: high risk of a poor outcome. If suspected infection, treat as sepsis: lactate, blood cultures, IV antibiotics within 1 h, fluid resuscitation guided by perfusion and senior review (SSC 2021); otherwise look for another cause of organ dysfunction.",
           "addAs": "plan",
           "sources": [
             "SEPSIS3-2016",
@@ -1393,7 +1393,7 @@
       "lower": 4,
       "label": "Lactate >= 4 mmol/L",
       "thresholdText": "lactate >= 4 mmol/L",
-      "action": "Tissue hypoperfusion / possible septic shock — sepsis bundle now: blood cultures, IV antibiotics within 1 h if infection is likely, fluid resuscitation guided by perfusion, repeat lactate within 2-4 h, senior review and critical-care referral (SSC 2021).",
+      "action": "Tissue hypoperfusion: find the cause (sepsis, bleeding, ischaemia, obstructive shock), resuscitate guided by perfusion, repeat lactate within 2-4 h, senior review and critical-care referral. If suspected infection, sepsis bundle now: blood cultures and IV antibiotics within 1 h (SSC 2021).",
       "addAs": "plan",
       "level": "critical",
       "diagnosisHint": "sepsis",
@@ -2789,7 +2789,8 @@
           "strangulat",
           "obstruct",
           "irreducible",
-          "gangren"
+          "gangren",
+          "femoral"
         ]
       },
       "options": [

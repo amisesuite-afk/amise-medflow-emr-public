@@ -1,0 +1,145 @@
+{
+  "schemaVersion": 1,
+  "id": "decision-vte-caprini-low-mechanical",
+  "condition": "VTE prophylaxis — Caprini low risk (elective hernia repair)",
+  "category": "hernia",
+  "permutationOf": null,
+  "summary": "Fit 50-year-old for elective inguinal hernia repair with Caprini 1: mechanical prophylaxis; pharmacological prophylaxis not needed.",
+  "tags": [
+    "decision-support",
+    "vte",
+    "risk-band"
+  ],
+  "inputs": {
+    "patient": {
+      "ageYears": 50,
+      "sex": "male",
+      "pregnancy": {
+        "status": "not-applicable"
+      },
+      "heightCm": 176,
+      "weightKg": 78
+    },
+    "encounter": {
+      "setting": "outpatient",
+      "visitType": "newConsult",
+      "acuity": "routine"
+    },
+    "chiefComplaint": "Lump in the right groin",
+    "hpi": "Several months of a right groin lump on standing that goes back lying down; mild ache only; never stuck. Otherwise fit.",
+    "exam": {
+      "general": "Well.",
+      "abdomen": "Reducible right inguinal hernia with a cough impulse, controlled at the deep ring. Left groin normal."
+    },
+    "vitals": [
+      {
+        "minutesAgo": 10,
+        "heartRate": 74,
+        "systolicBp": 136,
+        "diastolicBp": 80,
+        "respiratoryRate": 14,
+        "temperatureC": 36.7,
+        "spo2": 98,
+        "avpu": "A",
+        "onSupplementalO2": false
+      }
+    ],
+    "labs": [
+      {
+        "analyte": "egfr",
+        "name": "eGFR",
+        "value": 96,
+        "unit": "mL/min/1.73m2",
+        "minutesAgo": 60
+      }
+    ],
+    "nkda": true,
+    "scoreForms": {
+      "caprini": {
+        "total": 1
+      },
+      "asa": {
+        "total": 1
+      }
+    },
+    "confirmedDiagnosis": {
+      "name": "Right inguinal hernia, reducible, minimally symptomatic",
+      "icd10": "K40.90",
+      "paneDiseaseId": "inguinal_hernia",
+      "assessmentText": "Reducible right inguinal hernia — planned elective laparoscopic repair."
+    },
+    "platform": {
+      "web": {
+        "ccTemplate": "Groin lump",
+        "symptoms": [
+          "Groin swelling"
+        ]
+      }
+    }
+  },
+  "expected": {
+    "management": {
+      "mustInclude": [
+        {
+          "id": "decision-mechanical-first",
+          "severity": "critical",
+          "match": [
+            "re:rank 1: mechanical prophylaxis[^;]*- treat"
+          ],
+          "sources": [
+            "web.decisions",
+            "ios.decisions"
+          ],
+          "unverified": [
+            "ios"
+          ],
+          "guidelineRefs": [
+            "accp-2012",
+            "nice-ng89"
+          ]
+        },
+        {
+          "id": "decision-lmwh-observe",
+          "severity": "quality",
+          "match": [
+            "re:observe rather than pharmacological prophylaxis"
+          ],
+          "sources": [
+            "web.decisions",
+            "ios.decisions"
+          ],
+          "unverified": [
+            "ios"
+          ],
+          "guidelineRefs": [
+            "accp-2012"
+          ]
+        }
+      ]
+    }
+  },
+  "guideline": [
+    {
+      "id": "accp-2012",
+      "name": "ACCP 9th edition — VTE prevention in non-orthopaedic surgery",
+      "year": 2012,
+      "section": "Caprini risk groups",
+      "citation": "Gould MK et al. Chest 2012;141(2 Suppl):e227S-e277S.",
+      "verified": false
+    },
+    {
+      "id": "nice-ng89",
+      "name": "NICE NG89 VTE prophylaxis in over 16s",
+      "year": 2018,
+      "section": "Surgical patients",
+      "citation": "NICE NG89 (2018).",
+      "verified": false
+    }
+  ],
+  "rationale": "ACCP 2012: low risk (Caprini 1-2, about 1.5%) — mechanical prophylaxis; LMWH from moderate risk (Caprini 3-4).",
+  "authoring": {
+    "author": "Claude (bayes-treatment branch)",
+    "date": "2026-09-25",
+    "notes": "Decision-support vignette (web.decisions / ios.decisions). Expectations test the band and ranking of the decision layer, whose numbers await surgeon sign-off (docs/clinical-validation/changes/bayes-treatment.md)."
+  }
+}

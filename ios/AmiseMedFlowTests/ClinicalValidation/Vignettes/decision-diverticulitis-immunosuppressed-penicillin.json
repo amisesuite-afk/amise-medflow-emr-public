@@ -1,0 +1,181 @@
+{
+  "schemaVersion": 1,
+  "id": "decision-diverticulitis-immunosuppressed-penicillin",
+  "condition": "Uncomplicated diverticulitis — immunosuppressed, penicillin-allergic",
+  "category": "colorectal",
+  "permutationOf": "decision-diverticulitis-uncomplicated-observe",
+  "permutationLabel": "Immunosuppressed, penicillin-allergic",
+  "summary": "Renal-transplant recipient on tacrolimus and prednisolone with a penicillin allergy: antibiotics now indicated (non-penicillin regimen) and admission favoured.",
+  "tags": [
+    "decision-support",
+    "allergy",
+    "immunosuppression",
+    "personalisation"
+  ],
+  "inputs": {
+    "patient": {
+      "ageYears": 52,
+      "sex": "male",
+      "pregnancy": {
+        "status": "not-applicable"
+      },
+      "heightCm": 178,
+      "weightKg": 84
+    },
+    "encounter": {
+      "setting": "outpatient",
+      "visitType": "urgentReview",
+      "acuity": "priority"
+    },
+    "chiefComplaint": "Left lower abdominal pain",
+    "hpi": "Two days of constant left iliac fossa pain with mild nausea; eating and drinking. Renal transplant 2019 on tacrolimus and prednisolone.",
+    "exam": {
+      "general": "Comfortable at rest.",
+      "abdomen": "Tender left iliac fossa with mild localised guarding; no peritonism, no mass."
+    },
+    "vitals": [
+      {
+        "minutesAgo": 10,
+        "heartRate": 86,
+        "systolicBp": 132,
+        "diastolicBp": 80,
+        "respiratoryRate": 16,
+        "temperatureC": 37.8,
+        "spo2": 98,
+        "avpu": "A",
+        "onSupplementalO2": false
+      }
+    ],
+    "labs": [
+      {
+        "analyte": "wbc",
+        "name": "WBC",
+        "value": 12.4,
+        "unit": "x10^9/L",
+        "minutesAgo": 60
+      },
+      {
+        "analyte": "crp",
+        "name": "CRP",
+        "value": 70,
+        "unit": "mg/L",
+        "minutesAgo": 60
+      },
+      {
+        "analyte": "egfr",
+        "name": "eGFR",
+        "value": 92,
+        "unit": "mL/min/1.73m2",
+        "minutesAgo": 60
+      }
+    ],
+    "imaging": [
+      {
+        "name": "CT abdomen/pelvis",
+        "modality": "CT",
+        "region": "abdomen/pelvis",
+        "result": "Uncomplicated sigmoid diverticulitis (modified Hinchey Ia): pericolic fat stranding; no abscess, no free gas, no free fluid.",
+        "minutesAgo": 60
+      }
+    ],
+    "comorbidities": [
+      "Renal transplant"
+    ],
+    "medications": [
+      {
+        "drug": "Tacrolimus",
+        "dose": "2 mg"
+      },
+      {
+        "drug": "Prednisolone",
+        "dose": "5 mg"
+      }
+    ],
+    "allergies": [
+      {
+        "name": "Penicillin",
+        "severity": "Severe",
+        "reaction": "anaphylaxis"
+      }
+    ],
+    "confirmedDiagnosis": {
+      "name": "Acute uncomplicated diverticulitis",
+      "icd10": "K57.32",
+      "paneDiseaseId": "diverticulitis",
+      "assessmentText": "CT-confirmed uncomplicated sigmoid diverticulitis in an immunosuppressed transplant recipient."
+    },
+    "platform": {
+      "web": {
+        "ccTemplate": "Acute abdominal pain",
+        "symptoms": [
+          "Abdominal pain",
+          "Nausea"
+        ]
+      }
+    }
+  },
+  "expected": {
+    "management": {
+      "mustInclude": [
+        {
+          "id": "decision-antibiotics-when-immunosuppressed",
+          "severity": "critical",
+          "match": [
+            "re:rank \\d: antibiotics - treat"
+          ],
+          "sources": [
+            "web.decisions",
+            "ios.decisions"
+          ],
+          "unverified": [
+            "ios"
+          ],
+          "guidelineRefs": [
+            "wses-div-2020"
+          ]
+        },
+        {
+          "id": "decision-penicillin-allergy-factor",
+          "severity": "quality",
+          "match": [
+            "re:penicillin allergy recorded raised the harm of antibiotics"
+          ],
+          "sources": [
+            "web.decisions",
+            "ios.decisions"
+          ],
+          "unverified": [
+            "ios"
+          ],
+          "guidelineRefs": [
+            "wses-div-2020"
+          ]
+        }
+      ]
+    }
+  },
+  "guideline": [
+    {
+      "id": "wses-div-2020",
+      "name": "WSES guidelines — acute colonic diverticulitis (2020 update)",
+      "year": 2020,
+      "section": "Uncomplicated diverticulitis: antibiotics and outpatient management",
+      "citation": "Sartelli M et al. World J Emerg Surg 2020;15:32.",
+      "verified": false
+    },
+    {
+      "id": "diabolo-2017",
+      "name": "DIABOLO trial",
+      "year": 2017,
+      "section": "Observation vs antibiotics",
+      "citation": "Daniels L et al. Br J Surg 2017;104:52-61.",
+      "verified": false
+    }
+  ],
+  "rationale": "Immunocompromised patients were excluded from the trials of observation; WSES 2020 advises antibiotics (and a low threshold for admission) in immunosuppression. The allergy class directs a non-penicillin regimen.",
+  "authoring": {
+    "author": "Claude (bayes-treatment branch)",
+    "date": "2026-09-25",
+    "notes": "Decision-support vignette (web.decisions / ios.decisions). Expectations test the band and ranking of the decision layer, whose numbers await surgeon sign-off (docs/clinical-validation/changes/bayes-treatment.md)."
+  }
+}
