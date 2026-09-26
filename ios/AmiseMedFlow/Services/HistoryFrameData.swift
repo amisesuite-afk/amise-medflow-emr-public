@@ -7,7 +7,7 @@ import Foundation
 
 // swiftlint:disable line_length file_length type_body_length
 extension HistoryFrameData {
-    static let version = "1.0.0"
+    static let version = "1.1.0"
 
     static let frame_pain_abdomen = HistoryFrameSpec(
         id: "pain.abdomen", type: "pain", variant: "abdomen",
@@ -370,9 +370,9 @@ extension HistoryFrameData {
             HistoryDimensionSpec(id: "radiation", title: "Radiation", question: "Does the pain spread anywhere?", icon: "arrow.up.right.and.arrow.down.left", multiSelect: false, key: "radiation", options: [
                 HistoryOptionSpec(label: "No radiation", value: "No radiation", key: "radiation", recordOnlyIOS: true, excludes: ["*"]),
                 HistoryOptionSpec(label: "Ear", value: "Ear", key: "radiation", recordOnlyIOS: true, excludes: []),
-                HistoryOptionSpec(label: "Jaw", value: "Jaw", key: "radiation", recordOnlyIOS: true, excludes: []),
+                HistoryOptionSpec(label: "Jaw", value: "Jaw", key: "radiation", recordOnlyIOS: false, excludes: []),
                 HistoryOptionSpec(label: "Shoulder", value: "Shoulder", key: "radiation", recordOnlyIOS: true, excludes: []),
-                HistoryOptionSpec(label: "Arm", value: "Arm", key: "radiation", recordOnlyIOS: true, excludes: []),
+                HistoryOptionSpec(label: "Arm", value: "Arm", key: "radiation", recordOnlyIOS: false, excludes: []),
                 HistoryOptionSpec(label: "Occiput", value: "Occiput", key: "radiation", recordOnlyIOS: true, excludes: []),
             ]),
             HistoryDimensionSpec(id: "associations", title: "Associations", question: "Associated symptoms?", icon: "list.bullet", multiSelect: true, key: "associations", options: [
@@ -633,7 +633,7 @@ extension HistoryFrameData {
             HistoryDimensionSpec(id: "radiation", title: "Radiation", question: "Does the pain spread anywhere?", icon: "arrow.up.right.and.arrow.down.left", multiSelect: false, key: "radiation", options: [
                 HistoryOptionSpec(label: "No radiation", value: "No radiation", key: "radiation", recordOnlyIOS: true, excludes: ["*"]),
                 HistoryOptionSpec(label: "Axilla", value: "Axilla", key: "radiation", recordOnlyIOS: true, excludes: []),
-                HistoryOptionSpec(label: "Arm", value: "Arm", key: "radiation", recordOnlyIOS: true, excludes: []),
+                HistoryOptionSpec(label: "Arm", value: "Arm", key: "radiation", recordOnlyIOS: false, excludes: []),
             ]),
             HistoryDimensionSpec(id: "associations", title: "Associations", question: "Associated symptoms?", icon: "list.bullet", multiSelect: true, key: "associations", options: [
                 HistoryOptionSpec(label: "Lump", value: "Lump", key: "associations", recordOnlyIOS: false, excludes: []),
@@ -2700,7 +2700,7 @@ extension HistoryFrameData {
             HistoryDimensionSpec(id: "risk", title: "Risk factors", question: "Heart disease, family history?", icon: "exclamationmark.shield", multiSelect: true, key: "history", options: [
                 HistoryOptionSpec(label: "Known heart disease", value: "Known heart disease", key: "history", recordOnlyIOS: false, excludes: []),
                 HistoryOptionSpec(label: "Family history of sudden death", value: "Family history of sudden death", key: "history", recordOnlyIOS: false, excludes: []),
-                HistoryOptionSpec(label: "Antihypertensives", value: "Antihypertensives", key: "history", recordOnlyIOS: true, excludes: []),
+                HistoryOptionSpec(label: "Antihypertensives", value: "Antihypertensives", key: "history", recordOnlyIOS: false, excludes: []),
             ]),
         ],
         secondaryDims: ["setting", "prodrome"],
@@ -2881,6 +2881,36 @@ extension HistoryFrameData {
         "Neurology": "head",
         "Neurosurgery": "head",
         "Dermatology": "limb",
+    ]
+
+    /// A chip as the engine's finding features read it: "<label>: <chip>" (engine-dimensions.ts).
+    static let chipLabels: [String: String] = [
+        "onset": "onset",
+        "site": "site",
+        "character": "character",
+        "radiation": "radiation",
+        "associations": "associated",
+        "timing": "timing",
+        "exacerbating": "aggravating",
+        "aggravating": "aggravating",
+        "relieving": "relieving",
+        "severity": "severity",
+        "history": "history",
+        "exam": "examination",
+        "pmh": "past history",
+        "pshx": "operative history",
+        "social": "social history",
+        "inv": "result",
+    ]
+
+    /// Chips also read as these record fields (exam, pmh, pshx, social, inv).
+    static let chipRecordFields: [String: [String]] = [
+        "history": ["pmh", "social"],
+        "exam": ["exam"],
+        "pmh": ["pmh"],
+        "pshx": ["pshx"],
+        "social": ["social"],
+        "inv": ["inv"],
     ]
 }
 // swiftlint:enable line_length file_length type_body_length

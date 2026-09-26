@@ -10,7 +10,7 @@
 import { writeFileSync } from 'node:fs';
 import { join } from 'node:path';
 import {
-  CLASSIFIER_RULES, HISTORY_FRAMES, HISTORY_FRAMES_VERSION, PAIN_SYSTEM_DEFAULTS, VARIANT_RULES,
+  CHIP_ENGINE_DIMENSIONS, CLASSIFIER_RULES, HISTORY_FRAMES, HISTORY_FRAMES_VERSION, PAIN_SYSTEM_DEFAULTS, VARIANT_RULES,
   dimensionKey, optionKey, optionValue,
 } from '../../lib/triage-engine/src/history-frames/index';
 import { ROOT } from './history-frames-corpus';
@@ -83,6 +83,16 @@ export function generateSwift(): string {
   out.push('');
   out.push('    static let painSystemDefaults: [String: String] = [');
   for (const [k, v] of Object.entries(PAIN_SYSTEM_DEFAULTS)) out.push(`        ${q(k)}: ${q(v)},`);
+  out.push('    ]');
+  out.push('');
+  out.push('    /// A chip as the engine\'s finding features read it: "<label>: <chip>" (engine-dimensions.ts).');
+  out.push('    static let chipLabels: [String: String] = [');
+  for (const [k, v] of Object.entries(CHIP_ENGINE_DIMENSIONS)) out.push(`        ${q(k)}: ${q(v.label)},`);
+  out.push('    ]');
+  out.push('');
+  out.push('    /// Chips also read as these record fields (exam, pmh, pshx, social, inv).');
+  out.push('    static let chipRecordFields: [String: [String]] = [');
+  for (const [k, v] of Object.entries(CHIP_ENGINE_DIMENSIONS)) if (v.record?.length) out.push(`        ${q(k)}: ${list(v.record)},`);
   out.push('    ]');
   out.push('}');
   out.push('// swiftlint:enable line_length file_length type_body_length');

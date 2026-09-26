@@ -9,6 +9,8 @@ import type { FrameChoice, FrameDimension, FrameOption, HistoryFrame } from './t
 
 export * from './types';
 export { HISTORY_FRAMES, HISTORY_FRAMES_VERSION } from './frames';
+export { CHIP_ENGINE_DIMENSIONS, chipFindingText, chipRecordValues } from './engine-dimensions';
+export type { ChipEngineDimension, RecordField } from './engine-dimensions';
 export {
   CLASSIFIER_RULES, PAIN_REGION_RULES, PAIN_SYSTEM_DEFAULTS, VARIANT_RULES, classifyComplaint, firstPosition,
   frameIdFor, keywordPosition,

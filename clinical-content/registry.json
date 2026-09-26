@@ -84,10 +84,11 @@
         "ios/AmiseMedFlow/Services/BayesianDiagnosisEngine+Context.swift",
         "ios/AmiseMedFlow/Services/BayesianDiagnosisEngine+FeatureDAG.swift",
         "ios/AmiseMedFlow/Services/BayesianDiagnosisEngine+Catalogue.swift",
+        "ios/AmiseMedFlow/Services/BayesianDiagnosisEngine+FeatureTerms.swift",
         "ios/AmiseMedFlow/Services/BayesianDecisionEngine*.swift",
         "ios/AmiseMedFlow/Services/BayesianFeatureNetwork.swift"
       ],
-      "tests": ["ios/AmiseMedFlowTests/BayesianDifferentialDatabaseTests.swift"],
+      "tests": ["ios/AmiseMedFlowTests/BayesianDifferentialDatabaseTests.swift", "ios/AmiseMedFlowTests/FeatureTermMatchingTests.swift"],
       "ciChecks": [],
       "guidelines": [],
       "citationStatus": "none",
@@ -99,6 +100,7 @@
       "changeAuthority": "Any repository committer. Ships with an iOS app release.",
       "notes": "Hand-set constants: confirmed-diagnosis boost (+20), about 30 score-driven adjustments (the NEWS2 one by urgency tier: news2FullShareUrgency), confidence bands on logGap (25 / 15 / 7), pathognomonic threshold logLR ≥ 18, CPT discounting in BayesianFeatureNetwork, \"do not miss\" places (ranks 4-5 for urgency ≥ 2), candidate cap 60, age-banded vital-sign limits (APLS 7th edition) and numeric laboratory chip thresholds (BayesianDiagnosisEngine+Routing.swift). Routing reads the chief complaint only. BayesianDecisionEngine+Database/Scoring/... duplicate the BayesianDiagnosisEngine extensions.",
       "changelog": [
+        { "version": "unversioned", "date": "2026-09-26", "change": "Database terms (complaint / finding / findingAbsent / notFinding): a term of four letters or digits or fewer is a whole word (\"sti\" not in \"still\", \"stab\" not in \"stabbing\", \"lip\" not in \"lipase\"), FeatureTerm.stems excepted; a cough term follows CoughMention (a Coughing chip under Aggravating is not a cough). Database content unchanged. Simulator over 441 vignettes: 0 pass -> fail. docs/clinical-validation/changes/followups-history.md." },
         { "version": "unversioned", "date": "2026-09-25", "change": "Routing from the complaint only (negation-aware, word-start); topResults softmax divides by 5 (logs are round(ln × 5)); urgency × 8 boost removed in favour of two \"do not miss\" places; curated presentations first, applicability filter, age-banded vital chips, numeric lab chips, HPI and PSHx read by curated features, \"a&b\" terms within one sentence, inv keys need every significant token. See docs/clinical-validation/changes/fix-ios-differential.md." },
         { "version": "unversioned", "date": "2026-09-25", "change": "Sepsis and qSOFA decisions: IV antibiotics \"if suspected infection\"; lactate fluid line goal-directed; the strangulated-hernia decision reads \"emergency surgical review\" (repair only if strangulation is confirmed). Decisions pass through PlanSafetyFilter in ClinicalPipelineOrchestrator." },
         { "version": "unversioned", "date": "2026-09-25", "change": "NEWS2 adjustment follows the candidate's urgency tier (critical full, emergency half) instead of a fixed name list; curated \"postOpDay\" feature key (post-operative day read from the record) and \"maskedBy\" masking contexts (elderly, immunosuppressed, diabetes, female) for negative features (BayesianDiagnosisEngine+Context.swift); a curated diagnosis whose strong feature (logLR >= 12) is in a resulted report or evidence chip joins the list; \"glucose not low\" and \"lrinec 6 or more\" (LRINEC from the results on file, ClinicalScoringEngine.lrinec) lab chips. See docs/clinical-validation/changes/ios-last-criticals.md." }
@@ -171,9 +173,10 @@
         "ios/AmiseMedFlow/Services/EncounterQuestionnaire.swift",
         "ios/AmiseMedFlow/Services/ClinicalTextParser.swift",
         "ios/AmiseMedFlow/Views/Consultation/ConsultationViewChipData.swift",
-        "ios/AmiseMedFlow/Views/Consultation/ConsultationViewEarlyForms.swift"
+        "ios/AmiseMedFlow/Views/Consultation/ConsultationViewEarlyForms.swift",
+        "ios/AmiseMedFlow/Services/CoughMention.swift"
       ],
-      "tests": [],
+      "tests": ["ios/AmiseMedFlowTests/CoughMentionTests.swift", "ios/AmiseMedFlowTests/Resources/CoughMentionVectors.json"],
       "ciChecks": [],
       "guidelines": [],
       "citationStatus": "none",
@@ -187,7 +190,8 @@
       "changelog": [
         { "version": "unversioned", "date": "2026-09-25", "change": "ClinicalTextParser: \"rest\" matches whole words only (not inside \"arrest\"); a written temperature counts as fever only at >=38.0 C (or when described as raised); recordedTemperatures() added." },
         { "version": "unversioned", "date": "2026-09-25", "change": "ClinicalTextParser: \"free intraperitoneal gas / air\" and \"extraluminal gas / air\" raise the pneumoperitoneum alarm and feature." },
-        { "version": "unversioned", "date": "2026-09-26", "change": "The HPI builder's SOCRATES chips are replaced by the complaint's history frame (history-frames rule set); EncounterDetailSheet now renders stored history answers (lowercase keys); pre-consult associated-symptom chips follow the complaint." }
+        { "version": "unversioned", "date": "2026-09-26", "change": "The HPI builder's SOCRATES chips are replaced by the complaint's history frame (history-frames rule set); EncounterDetailSheet now renders stored history answers (lowercase keys); pre-consult associated-symptom chips follow the complaint." },
+        { "version": "unversioned", "date": "2026-09-26", "change": "ClinicalTextParser: a typed cough is the symptom (associations \"Cough\"), \"worse on / aggravated by coughing\" the aggravating factor (exacerbating \"Coughing\"), \"cough impulse\" neither (CoughMention, twin of the web cough-mention.ts). Early-form chips under exam / pmh / pshx / social / inv reach those record features (history-frames 1.1.0). The patient questionnaire asks lump questions for a lump or hernia (history-frames symptom type). docs/clinical-validation/changes/followups-history.md." }
       ]
     },
     {
@@ -195,14 +199,15 @@
       "title": "History frames: chief complaint (+ system) -> symptom type -> the history questions asked (SOCRATES for pain only; cough, dyspnoea, lump, bleeding, bowel, dysphagia, jaundice and other frames), their chip options and the chip -> engine-feature mapping",
       "platforms": ["web", "ios"],
       "kind": "mapping",
-      "contentVersion": "1.0.0",
+      "contentVersion": "1.1.0",
       "versionStamp": { "file": "lib/triage-engine/src/history-frames/frames.ts", "type": "regex", "pattern": "HISTORY_FRAMES_VERSION\\s*=\\s*'([^']+)'" },
       "files": [
         "lib/triage-engine/src/history-frames/*.ts",
         "ios/AmiseMedFlow/Services/HistoryFrames.swift",
         "ios/AmiseMedFlow/Services/HistoryFrameData.swift",
         "ios/AmiseMedFlow/Views/Consultation/ConsultationView+HistoryFrame.swift",
-        "artifacts/dashboard/src/lib/hpi-fields.ts"
+        "artifacts/dashboard/src/lib/hpi-fields.ts",
+        "ios/AmiseMedFlow/Services/BayesianDiagnosisEngine+ChipDimensions.swift"
       ],
       "tests": [
         "scripts/src/history-frames.test.ts",
@@ -233,7 +238,8 @@
       "changeAuthority": "Any repository committer. Change frames.ts / classify.ts, run gen:history-frames (Swift twin, record-only table) and lint:history-frames in the same PR; ships with a dashboard deploy and an iOS app release.",
       "notes": "Chips feed the existing engines only (iOS DiagnosticDatabase features by substring / finding match; web PANE features via socrates-to-features.ts FRAME_KEY_RULES); no weight changed. Chips with no engine feature are listed as record only (lib/triage-engine/src/history-frames/record-only.ts). Renamed chips keep aliases so stored answers still render. Sign-off list: docs/clinical-validation/changes/history-by-complaint.md.",
       "changelog": [
-        { "version": "1.0.0", "date": "2026-09-26", "change": "First version: 41 frames across 21 symptom types and a deterministic classifier; the web and iOS history builders follow the complaint (SOCRATES only for pain). Owner report: a cough complaint showed abdominal sites." }
+        { "version": "1.0.0", "date": "2026-09-26", "change": "First version: 41 frames across 21 symptom types and a deterministic classifier; the web and iOS history builders follow the complaint (SOCRATES only for pain). Owner report: a cough complaint showed abdominal sites." },
+        { "version": "1.1.0", "date": "2026-09-26", "change": "Chip -> engine mapping only (no chip text changed): iOS chips carry their question into the finding text (engine-dimensions.ts, generated chipLabels / chipRecordFields: a Coughing chip under Aggravating is not a cough); early-form and history chips under exam / pmh / history / pshx / social / inv reach those record features; short database terms matched as whole words. Record-only table regenerated (iOS 561 -> 563). docs/clinical-validation/changes/followups-history.md." }
       ]
     },
     {
@@ -732,7 +738,7 @@
       "title": "Web Bayesian differential (pane-engine): diseases, priors, feature likelihoods, prior modifiers, applicability, stopping rules; PANE feature mapper",
       "platforms": ["web"],
       "kind": "bayesian-model-data",
-      "contentVersion": "1.1.0",
+      "contentVersion": "1.1.1",
       "versionStamp": { "file": "lib/pane-engine/src/constants.ts", "type": "regex", "pattern": "PANE_MODEL_VERSION\\s*=\\s*'([^']+)'" },
       "files": [
         "lib/pane-engine/src/vademecum/specialties/*.ts",
@@ -748,7 +754,8 @@
         "lib/pane-engine/src/engine/evidenceLikelihood.ts",
         "lib/pane-engine/src/constants.ts",
         "artifacts/dashboard/src/lib/socrates-to-features.ts",
-        "artifacts/dashboard/src/lib/record-text-match.ts"
+        "artifacts/dashboard/src/lib/record-text-match.ts",
+        "lib/triage-engine/src/cough-mention.ts"
       ],
       "tests": [
         "lib/pane-engine/src/__tests__/bayes.test.ts",
@@ -781,12 +788,13 @@
       "reviewPriority": "P1",
       "nextReviewDue": "2026-10-31",
       "changeAuthority": "Any repository committer. Ships on dashboard deploy.",
-      "notes": "Model 1.0.2 (mapper changes; the disease model is 1.0.0): 187 diseases plus _other_, 426 features (surgical, medical, obstetric, paediatric, neurological, vascular), prior tiers (vademecum/priors.ts), unmodelled findings scored at the finding's background rate (engine/likelihood.ts; was a flat 0.30), bounded sex likelihood ratios and age/sex/pregnancy applicability (engine/modifiers.ts), feature mapper reads chips, vitals, history, results and free text (socrates-to-features.ts). Stops at posterior 0.85 or 8 questions.",
+      "notes": "Model 1.0.3 (mapper changes; the disease model is 1.0.0): 187 diseases plus _other_, 426 features (surgical, medical, obstetric, paediatric, neurological, vascular), prior tiers (vademecum/priors.ts), unmodelled findings scored at the finding's background rate (engine/likelihood.ts; was a flat 0.30), bounded sex likelihood ratios and age/sex/pregnancy applicability (engine/modifiers.ts), feature mapper reads chips, vitals, history, results and free text (socrates-to-features.ts). Stops at posterior 0.85 or 8 questions.",
       "changelog": [
         { "version": "1.0.0", "date": "2026-09-25", "change": "Condition-neutral model (clinval C6): neutral background rates for unmodelled findings instead of 0.30; frequency-tier priors with no specialty boost (cholecystitis 0.15 → 0.015, GORD 0.12 → 0.03, PUD 0.10 → 0.015 …); sex modifiers bounded as likelihood ratios (inguinal hernia ×5/×0.3 → ×1.8/×0.2; gynaecological ×2.5 and breast ×1.8 boosts removed); applicability (sex, age, pregnancy); 58 new nodes (ACS, dissection, heart failure, AF, cardiac syncope, hypertensive emergency, pneumonia, asthma, COPD, sepsis, anaphylaxis, gastroenteritis, C. difficile, AKI, hyperkalaemia, hypercalcaemia, hyponatraemia, DKA, HHS, hypoglycaemia, phaeochromocytoma, stroke, TIA, SAH, meningitis, seizure, cauda equina, MSCC, pre-eclampsia/HELLP, abruption, hyperemesis, intussusception, pyloric stenosis, malrotation, HSP, mesenteric ischaemia, limb ischaemia, aorto-enteric fistula, femoral aneurysm, superficial thrombophlebitis, pyelonephritis, infected obstructed kidney, biliary colic, variceal bleed, perforated ulcer, food bolus, lower GI bleed, anal cancer, Fournier's, sigmoid volvulus, toxic megacolon, incarcerated hernia, post-operative collection and pneumonia, DFI, Charcot, inguinal nodes, anaplastic thyroid); feature mapper reads the whole consultation record. Versioned from unversioned." },
         { "version": "1.0.1", "date": "2026-09-26", "change": "Feature mapper precision (no disease, prior or likelihood changed). Every rule goes through record-text-match.ts: negated lists get a window per item (\"never had pain, jaundice or fever\"; \"denies A, B and C\"), family history is never the patient, symptoms and signs are not read from a sentence dated years back, a repaired or planned-for-repair condition or a lay guess, a [^.]{0,N} gap cannot cross a negation cue (\"DRE: no mass\"), requires-context must be affirmed. Pattern fixes: flame haemorrhages, restless + disorientated, rheumatoid arthritis, abscess drainage, defaecation as a syncope trigger, pale stools, calf pain on walking, pulse-oximetry, fistula cord, flatus incontinence and faecal urgency, rash on both legs, breast 'central' and 'diffuse neck' sites, RIF scar, distended neck veins, 'not passed urine' (oliguria), neuropathic pain; adrenal mass read from imaging. Clinval web: no expectation changed status. See docs/clinical-validation/changes/diagnostic-reasoning.md (precision pass)." },
         { "version": "1.0.2", "date": "2026-09-26", "change": "Feature mapper reads the history frames (no disease, prior or likelihood changed): every frame answer key maps to an existing PANE feature (socrates-to-features.ts FRAME_KEY_RULES; e.g. sputum, haemoptysis, orthopnoea, MRC grade, lump consistency, cough impulse); pain-only features (episodic, nocturnal, post-prandial, colicky pain, worse on movement, severe, localised) come only from pain answers; 'Coughing' as an aggravating factor no longer sets the cough feature. Clinval web: 0 blocking, no expectation went pass -> fail. See docs/clinical-validation/changes/history-by-complaint.md." },
-        { "version": "1.1.0", "date": "2026-09-26", "change": "Evidence-exam: new disease nodes cirrhosis (K74.60) and abdominal-wall pain / ACNES (G58.8, target of Carnett's sign); examination-sign and decision-rule band features registered from clinical-content/rules (lib/pane-engine/src/evidence: sensitivity and specificity from the likelihood ratios; finding-level signs marginalise over their finding); updatePosterior applies each evidence feature once and groups a decision rule with its components (engine/evidenceGroups.ts: the rule supersedes its component signs for its targets; its positive band adds only what the component findings have not already given); evidence features are never asked (Feature.askable false). Clinval web: no existing expectation changed status. See docs/clinical-validation/changes/evidence-exam.md."}
+        { "version": "1.1.0", "date": "2026-09-26", "change": "Evidence-exam: new disease nodes cirrhosis (K74.60) and abdominal-wall pain / ACNES (G58.8, target of Carnett's sign); examination-sign and decision-rule band features registered from clinical-content/rules (lib/pane-engine/src/evidence: sensitivity and specificity from the likelihood ratios; finding-level signs marginalise over their finding); updatePosterior applies each evidence feature once and groups a decision rule with its components (engine/evidenceGroups.ts: the rule supersedes its component signs for its targets; its positive band adds only what the component findings have not already given); evidence features are never asked (Feature.askable false). Clinval web: no existing expectation changed status. See docs/clinical-validation/changes/evidence-exam.md."},
+        { "version": "1.1.1", "date": "2026-09-26", "change": "Feature mapper only (no disease, prior or likelihood changed): the free-text cough rule counts a cough mention only when it records the symptom (lib/triage-engine/src/cough-mention.ts, shared vectors with iOS CoughMention): \"pain worse on coughing\", \"aggravated by coughing\" and \"cough impulse\" in the HPI no longer set the cough feature. docs/clinical-validation/changes/followups-history.md." }
       ]
     },
     {

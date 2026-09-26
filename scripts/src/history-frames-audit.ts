@@ -19,8 +19,11 @@
 import { readFileSync, readdirSync } from 'node:fs';
 import { join } from 'node:path';
 import {
-  HISTORY_FRAMES, classifyComplaint, dimensionKey, optionKey, optionValue, resolveFrame, webKeyFor, webStoredLabel,
+  CHIP_ENGINE_DIMENSIONS, HISTORY_FRAMES, chipFindingText, classifyComplaint, dimensionKey, optionKey, optionValue,
+  resolveFrame, webKeyFor, webStoredLabel,
 } from '../../lib/triage-engine/src/history-frames/index';
+import type { RecordField } from '../../lib/triage-engine/src/history-frames/index';
+import { coughMentionKindAt } from '../../lib/triage-engine/src/cough-mention';
 import type { FrameDimension, FrameOption, HistoryFrame } from '../../lib/triage-engine/src/history-frames/index';
 import { FEATURES } from '../../lib/pane-engine/src/index';
 import {
@@ -97,11 +100,27 @@ export function featureTermStems(): Set<string> {
  * word, with a plural "s"/"es" ("sti" is not in "still", "burn" not in "burning").
  */
 function termAffirmed(text: string, term: string): boolean {
+  const cough = coughKind(term);
+  if (cough) {
+    // FeatureTerm.coughKind: the cough symptom or the cough manoeuvre, per CoughMention.
+    if (NEG.test(text)) return false;
+    for (let i = text.indexOf(term); i >= 0; i = text.indexOf(term, i + 1)) {
+      if ((i === 0 || !/[a-z0-9]/.test(text[i - 1]!)) && coughMentionKindAt(text, i) === cough) return true;
+    }
+    return false;
+  }
   if (!/^[a-z0-9]{1,4}$/.test(term) || featureTermStems().has(term)) return wordStart(text, term);
   if (NEG.test(text)) return false;
   const esc = term.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
   const plural = !/[a-z]$/.test(term) ? '' : term.length <= 3 ? 's?' : '(s|es)?';
   return new RegExp(`(^|[^a-z0-9])${esc}${plural}($|[^a-z0-9])`).test(text);
+}
+/** FeatureTerm.coughKind (BayesianDiagnosisEngine+FeatureTerms.swift). */
+function coughKind(term: string): 'symptom' | 'aggravating' | null {
+  if (!term.startsWith('cough') || term.includes('impulse') || term.includes('tender')) return null;
+  if (term === 'coughing') return 'aggravating';
+  if (/^cough(s|ed)?$/.test(term) || term.startsWith('cough ')) return 'symptom';
+  return null;
 }
 function anyAlternative(spec: string, text: string): boolean {
   return spec.toLowerCase().split('|').some(alt => {
@@ -130,7 +149,8 @@ export function iosFires(f: DbFeature, key: string, value: string): boolean {
     case 'socrates_site': return key === 'site' && v.includes(fv);
     case 'aggravating': return (key === 'exacerbating' || key === 'aggravating') && v.includes(fvs);
     case 'pain': return (key === 'character' || key === 'severity') && v.includes(fvs);
-    case 'finding': return anyAlternative(f.value, v);
+    // A chip is read with its question: "aggravating: coughing" (ChipDimensions).
+    case 'finding': return !NEG.test(v) && anyAlternative(f.value, chipFindingText(key, v));
     case 'fever': return key === 'associations' && v.includes('fever');
     case 'weight_loss': return ['weight loss', 'losing weight', 'cachexia', 'unintentional weight'].some(t => affirmed(v, t));
     case 'headache': {
@@ -139,6 +159,34 @@ export function iosFires(f: DbFeature, key: string, value: string): boolean {
     }
     case 'haemodynamic_instability': return key === 'associations' && (v.includes('hypotension') || v.includes('tachycardia'));
     case 'bp': return key === 'associations' && v.includes('hyperten');
+    default: break;
+  }
+  // Early-form / history chips read as a record field (ChipDimensions.recordValues).
+  const routed = (field: RecordField) => !!CHIP_ENGINE_DIMENSIONS[key]?.record?.includes(field);
+  switch (f.key) {
+    case 'exam': case 'exam_general': case 'exam_abdo': case 'exam_cvs':
+      return routed('exam') && fv.split(' ').every(w => affirmed(v, w));
+    case 'pmh': return routed('pmh') && affirmed(v, fv);
+    case 'pshx': return routed('pshx') && affirmed(v, fv);
+    case 'social': return routed('social') && affirmed(v, fv);
+    case 'history': case 'risk_factors': case 'risk': return (routed('pmh') || routed('social')) && affirmed(v, fv);
+    case 'family_history': {
+      if (!routed('pmh')) return false;
+      const toks = fvs.split(' ').filter(w => w.length >= 3);
+      return toks.length ? affirmed(v, 'family') && toks.filter(t => affirmed(v, t)).length >= Math.max(1, Math.floor(toks.length / 2))
+        : affirmed(v, 'family history') || affirmed(v, fvs);
+    }
+    case 'hypertension':
+      return (routed('pmh') || routed('social')) && ['hypertension', ' htn', 'high blood pressure'].some(t => affirmed(v, t));
+    case 'diabetes':
+      return (routed('pmh') || routed('social')) && ['diabetes', 'diabetic', ' dm2', ' dm1', ' dm '].some(t => affirmed(v, t));
+    case 'inv': case 'investigations': {
+      if (!routed('inv')) return false;
+      const stop = new Set(['with', 'and', 'the', 'for', 'that', 'this', 'from', 'into', 'positive', 'negative', 'confirmed',
+        'elevated', 'raised', 'normal', 'abnormal', 'level', 'result']);
+      const toks = fv.split(' ').filter(t => t.length >= 4 && !stop.has(t));
+      return affirmed(v, fv) || (toks.length >= 2 && toks.every(t => affirmed(v, t)));
+    }
     default: break;
   }
   if (explicitKeys().has(f.key)) return false;

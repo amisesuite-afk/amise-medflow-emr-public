@@ -10,6 +10,10 @@
 //    Terms written short on purpose as word stems (`stems`: "dizz" → dizziness, "smok" → smoker,
 //    "numb" → numbness …) keep word-start matching. The database content is unchanged
 //    (docs/clinical-validation/changes/followups-history.md).
+//  - COUGH: a symptom term ("cough", "cough …") counts only a cough mention that records the
+//    symptom, and "coughing" (the manoeuvre, as in "movement|twisting|lifting|strain|coughing") only
+//    one that records an aggravating factor (CoughMention): "pain worse on coughing", a chip read as
+//    "aggravating: Coughing" (ChipDimensions) and "cough impulse" are not a cough.
 //
 // lint:history-frames reads `stems` from this file (scripts/src/history-frames-audit.ts), so the
 // chip audit matches terms the same way.
@@ -33,6 +37,16 @@ enum FeatureTerm {
         guard !scalars.isEmpty, scalars.count <= shortTermMaxLength, !stems.contains(term) else { return false }
         return scalars.allSatisfy { CharacterSet.alphanumerics.contains($0) }
     }
+
+    /// The cough mention a term needs, or nil when the term is not about the cough symptom or the
+    /// cough manoeuvre ("cough impulse", "cough tender" are examination signs, matched as written).
+    static func coughKind(of term: String) -> CoughMention.Kind? {
+        guard term.hasPrefix("cough") else { return nil }
+        if term.contains("impulse") || term.contains("tender") { return nil }
+        if term == "coughing" { return .aggravating }
+        if term == "cough" || term == "coughs" || term == "coughed" || term.hasPrefix("cough ") { return .symptom }
+        return nil
+    }
 }
 
 extension BayesianDiagnosisEngine {
@@ -49,6 +63,9 @@ extension BayesianDiagnosisEngine {
             }
         } else {
             found = source.occurrences(of: term, wordStart: true)
+        }
+        if let kind = FeatureTerm.coughKind(of: term), !found.isEmpty {
+            found = found.filter { CoughMention.kind(inLowercased: source.lower, at: $0.index) == kind }
         }
         return found
     }

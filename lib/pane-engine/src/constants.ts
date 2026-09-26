@@ -4,7 +4,7 @@
  * (`pane-engine-disease-model`): bump it, and the registry, with a changelog entry whenever the
  * model content changes.
  */
-export const PANE_MODEL_VERSION = '1.1.0';
+export const PANE_MODEL_VERSION = '1.1.1';
 
 /** Stop asking when the leading posterior exceeds this threshold */
 export const CONVERGENCE_THRESHOLD = 0.85;

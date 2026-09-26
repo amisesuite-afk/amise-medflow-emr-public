@@ -20,7 +20,7 @@
 import { RECORD_ONLY } from './record-only';
 import type { FrameDimension, FrameOption, HistoryFrame, Platform } from './types';
 
-export const HISTORY_FRAMES_VERSION = '1.0.0';
+export const HISTORY_FRAMES_VERSION = '1.1.0';
 
 // ── Helpers ────────────────────────────────────────────────────────────────────
 

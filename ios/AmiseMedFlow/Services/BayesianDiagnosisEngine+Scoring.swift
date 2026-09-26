@@ -111,6 +111,14 @@ extension BayesianDiagnosisEngine {
         func clauses(_ parts: [String]) -> NegationMatcher.Source {
             NegationMatcher.Source(parts.joined(separator: " .\n "))
         }
+        // Chips carry their question (ChipDimensions, generated HistoryFrameData tables): early-form
+        // chips under "exam", "pmh", "history", "pshx", "social" and "inv" are also read as that part
+        // of the record, so the examination, history and result features written for them fire.
+        let pmh = ChipDimensions.merged(pmh, socrates, field: "pmh")
+        let pshx = ChipDimensions.merged(pshx, socrates, field: "pshx")
+        let examOther = ChipDimensions.merged(examOther, socrates, field: "exam")
+        let socialText = ChipDimensions.merged(socialText, socrates, field: "social")
+        let invChipSources = ChipDimensions.recordValues(socrates, field: "inv").map { NegationMatcher.Source($0) }
         let pmhL = NegationMatcher.Source(pmh)
         let pshxL = NegationMatcher.Source(pshx)
         let examL = clauses([examAbdo, examGeneral, examCVS, examResp, examNeuro, examMSK, examSkin, examOther])
@@ -141,11 +149,15 @@ extension BayesianDiagnosisEngine {
                                        examResp, examNeuro, examMSK, examSkin, examOther,
                                        socialText] + invResults + invNames + chipTexts)
         let complaintL = NegationMatcher.Source(complaint)
+        // The finding features read each chip with its question ("aggravating: Coughing",
+        // "associated: Fever"): a cough chosen as an aggravating factor is not a cough
+        // (FeatureTerm.coughKind).
+        let labelledChips = ChipDimensions.findingTexts(socrates)
         let findingText = FeatureText([complaint, hpi, examAbdo, examGeneral, examCVS, examResp, examNeuro,
-                                       examMSK, examSkin, examOther, pmh, pshx] + chipTexts + invResults)
+                                       examMSK, examSkin, examOther, pmh, pshx] + labelledChips + invResults)
         /// Resulted reports and evidence chips only (no history): what can add a diagnosis to the
         /// list by itself (ScoredCandidate.reportEvidence).
-        let reportText = FeatureText(invResults + chipTexts)
+        let reportText = FeatureText(invResults + labelledChips)
         // Patient context (BayesianDiagnosisEngine+Context.swift): the post-operative day written in
         // the record ("postOpDay" features) and the masking contexts of negative features.
         let postOpDay = BayesianDiagnosisEngine.postOperativeDay([complaint, hpi, pshx, pmh])
@@ -271,7 +283,8 @@ extension BayesianDiagnosisEngine {
                         (fTokens.count >= 2 && fTokens.filter { has($0) }.count >= threshold)
                     }
                     triggered = invNames.contains(where: { name in tokenMatch { name.contains($0) } }) ||
-                                invResultsL.contains(where: { report in tokenMatch { report.contains($0) } })
+                                invResultsL.contains(where: { report in tokenMatch { report.contains($0) } }) ||
+                                invChipSources.contains(where: { chip in tokenMatch { chip.contains($0) } })
                     sourceKey = "investigation"
                 case "age_over":
                     if let threshold = Int(f.value) { triggered = age >= threshold }
@@ -319,7 +332,8 @@ extension BayesianDiagnosisEngine {
                         has(fv) || (fTok.count >= 2 && fTok.filter { has($0) }.count >= thr)
                     }
                     triggered = invNames.contains(where: { name in invMatch { name.contains($0) } }) ||
-                                invResultsL.contains(where: { report in invMatch { report.contains($0) } })
+                                invResultsL.contains(where: { report in invMatch { report.contains($0) } }) ||
+                                invChipSources.contains(where: { chip in invMatch { chip.contains($0) } })
                     sourceKey = "investigation"
 
                 case "exam_general":
