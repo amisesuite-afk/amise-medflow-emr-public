@@ -106,8 +106,14 @@ An output that also matches an `unless` alternative does not count (`"cholecysto
 `ios.triage`, `ios.pipeline.decisions`, `ios.radiation.plan`, `ios.autofill.<score>`,
 `ios.scoreCalculator.<score>`, `ios.soap.plan`, `web.pane`, `web.symptomInference`,
 `web.triage.reasons`, `web.cds`, `web.plan`, `web.managementPanel`, `web.clinicalPrompts.<kind>`,
-`web.scoreCalculator.<score>`, `web.scaleCalculator.<score>`. `sources` restricts a text expectation
-to these prefixes; an expectation whose sources are all on the other platform is `n/a` there.
+`web.scoreCalculator.<score>`, `web.scaleCalculator.<score>`, and the Plan-step decision support
+`web.decisions` / `ios.decisions` (management: score and result actions, one line per treatment
+option — `rank N: <option> — TREAT: …`, `— TEST FURTHER: …`, `OBSERVE rather than <option>: …`),
+`web.decisions.notForPatient` / `ios.decisions.notForPatient` (red flags: an option excluded by a
+contraindication or withheld by the plan-safety filter) and `web.decisions.shift` /
+`ios.decisions.shift` (how the resulted investigations moved the differential). `sources` restricts a
+text expectation to these prefixes; an expectation whose sources are all on the other platform is
+`n/a` there.
 
 **Scores** use canonical keys: `alvarado`, `air`, `tg18-cholecystitis`, `tg18-cholangitis`, `qsofa`,
 `sirs`, `news2`, `bisap`, `ranson`, `glasgow-blatchford`, `rockall`, `asa`, `rcri`, `asge-cbd`.
@@ -124,7 +130,13 @@ holds the clinician's ticks for the calculator run, with these fields:
 | `sirs` | `tempAbove38OrBelow36`, `hrAbove90`, `rrAbove20`, `wbcAbnormal`, `suspectedInfection` |
 
 `organDysfunction` entries: `cardiovascular`, `neurological`, `respiratory`, `renal`, `hepatic`,
-`haematological`. Each harness maps the form onto its platform's input struct
+`haematological`.
+
+Any score form may instead give a numeric **`total`** (for example `"caprini": { "total": 6 }`,
+`"cfs": { "total": 7 }`, `"asa": { "total": 4 }`, `"wells-pe": { "total": 3 }`): the value the
+clinician calculated and recorded for decision support ("Use in decision support" on the web Scales
+step; the stored score on iOS). Both harnesses pass it to the decision layer as a calculator score;
+it does not run a calculator. Each harness maps the form onto its platform's input struct
 (`ClinValIOSRunner.calculatorScores`, `web-runner.ts`); `autofill` mode ignores the form and uses
 what the app would pre-fill from the record.
 
