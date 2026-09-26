@@ -1,6 +1,6 @@
 {
   "format": "amise-signoff-catalogue/1",
-  "catalogueHash": "323963a76aedf599",
+  "catalogueHash": "1dd931862df37021",
   "repoUrl": "https://github.com/amisesuite-afk/amise-medflow-emr-public/blob/main/",
   "sources": [
     {
@@ -120,6 +120,22 @@
         "surgeon-decisions#I2.4",
         "surgeon-decisions#I2.5",
         "surgeon-decisions#I2.6"
+      ]
+    },
+    {
+      "id": "approved-content-channel",
+      "title": "Change log — `approved-content-channel` (signed-off rule files without an app update)",
+      "doc": "docs/clinical-validation/changes/approved-content-channel.md",
+      "anchor": "needs-sign-off",
+      "ruleSetIds": [],
+      "itemIds": [
+        "approved-content-channel#1",
+        "approved-content-channel#2",
+        "approved-content-channel#3",
+        "approved-content-channel#4",
+        "approved-content-channel#5",
+        "approved-content-channel#6",
+        "approved-content-channel#7"
       ]
     },
     {
@@ -4306,6 +4322,90 @@
       "hash": "c33e732b4edaf517",
       "doc": "docs/clinical-validation/SURGEON-DECISIONS.md",
       "anchor": "i2-real-outcomes-loop-governance--item-approved-2026-09-26-defaults-below-await-confirmation",
+      "ruleSetIds": []
+    },
+    {
+      "id": "approved-content-channel#1",
+      "source": "approved-content-channel",
+      "number": "1",
+      "group": null,
+      "title": "Who may publish and withdraw a version",
+      "text": "**Who may publish and withdraw a version.** Doctor and admin accounts (the database refuses\neveryone else), in their own name. An admin account is not necessarily a clinician: should\npublishing be limited to doctors? (Same question as signoff-tool 1 and D6.)",
+      "hash": "8645cc8c402c3741",
+      "doc": "docs/clinical-validation/changes/approved-content-channel.md",
+      "anchor": "needs-sign-off",
+      "ruleSetIds": []
+    },
+    {
+      "id": "approved-content-channel#2",
+      "source": "approved-content-channel",
+      "number": "2",
+      "group": null,
+      "title": "Two-person rule",
+      "text": "**Two-person rule.** Today one person can publish, provided a sign-off reference is given and\nthe rule set's review is recorded. Should publishing require a second named person (for\nexample: the reviewer who approved the items may not be the publisher, or a second doctor /\nadmin confirms before devices use it)? Not enforced yet.",
+      "hash": "cac08a14b7f5ed77",
+      "doc": "docs/clinical-validation/changes/approved-content-channel.md",
+      "anchor": "needs-sign-off",
+      "ruleSetIds": []
+    },
+    {
+      "id": "approved-content-channel#3",
+      "source": "approved-content-channel",
+      "number": "3",
+      "group": null,
+      "title": "When a version may be published",
+      "text": "**When a version may be published.** The publish script refuses until the rule set's registry\nentry records a clinical review (`lastReviewed` and `reviewer`, written by `signoff:apply` only\nwhen every item linked to the rule set is approved). Confirm this is the bar, rather than\nallowing a single approved change to go out while other items of the rule set are still pending.",
+      "hash": "007ca53b8ddbd4c9",
+      "doc": "docs/clinical-validation/changes/approved-content-channel.md",
+      "anchor": "needs-sign-off",
+      "ruleSetIds": []
+    },
+    {
+      "id": "approved-content-channel#4",
+      "source": "approved-content-channel",
+      "number": "4",
+      "group": null,
+      "title": "Scope of what can change without an app update",
+      "text": "**Scope of what can change without an app update.** Zebra rules: the rules (conditions, terms,\ncitations). Supplement catalogue: the items (names, concerns, clinician-facing stop times,\nharms, evidence, sources). Patient wording, prompt texts and trigger words stay built in.\nConfirm, or narrow (for example, keep supplement stop times built in).",
+      "hash": "c5b9f0171967e7d4",
+      "doc": "docs/clinical-validation/changes/approved-content-channel.md",
+      "anchor": "needs-sign-off",
+      "ruleSetIds": []
+    },
+    {
+      "id": "approved-content-channel#5",
+      "source": "approved-content-channel",
+      "number": "5",
+      "group": null,
+      "title": "How fast a change and a withdrawal take effect",
+      "text": "**How fast a change and a withdrawal take effect.** Web: at the next sign-in / page load (or\nSettings → Check again). iPhone / iPad: checked at most every 6 hours (and at sign-in / launch),\nused from the next app launch. A withdrawn version stays in use on a device until then. Is\nthis acceptable, including for a withdrawal made for a safety reason?",
+      "hash": "28822d49d9dd9d3e",
+      "doc": "docs/clinical-validation/changes/approved-content-channel.md",
+      "anchor": "needs-sign-off",
+      "ruleSetIds": []
+    },
+    {
+      "id": "approved-content-channel#6",
+      "source": "approved-content-channel",
+      "number": "6",
+      "group": null,
+      "title": "Offline devices",
+      "text": "**Offline devices.** A device that cannot reach the server keeps the last version it verified\n(even if it has since been withdrawn) until it can check again. Alternative: fall back to the\nbuilt-in file after a set number of days without a successful check.",
+      "hash": "f346a641ead5417e",
+      "doc": "docs/clinical-validation/changes/approved-content-channel.md",
+      "anchor": "needs-sign-off",
+      "ruleSetIds": []
+    },
+    {
+      "id": "approved-content-channel#7",
+      "source": "approved-content-channel",
+      "number": "7",
+      "group": null,
+      "title": "Audit",
+      "text": "**Audit.** The releases table is the record (who published or withdrew which version, when and\nunder which sign-off reference; it cannot be edited or deleted). No separate `audit_log` row is\nwritten. Confirm this is sufficient.",
+      "hash": "17d61dc40b2468a5",
+      "doc": "docs/clinical-validation/changes/approved-content-channel.md",
+      "anchor": "needs-sign-off",
       "ruleSetIds": []
     },
     {
