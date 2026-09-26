@@ -577,3 +577,35 @@ are overridden here, so this step must stay after every step that creates those 
   are retried on the next sync; the whole-row patient push and pull are unaffected. Also listed in
   `docs/sql/check-ios-columns.sql`.
 - Independent of 87–96: safe to apply on its own.
+
+### Migration 98 — `supabase-approved-content-migration.sql` (approved-content channel)
+
+- One new table, `clinical_content_releases`: each published, signed-off version ("release") of a
+  shared rule file (`clinical-content/rules/*.json`), so a new version reaches the dashboard and
+  iOS without an app update (`docs/APPROVED-CONTENT-CHANNEL.md`,
+  `docs/clinical-validation/changes/approved-content-channel.md`). Columns: `content_id` (the
+  registry id = the file's `id`, e.g. `diagnostic-reasoning-zebras` for `zebra-rules.json`),
+  `version` (MAJOR.MINOR.PATCH, unique per content id), `sha256` (canonical-JSON hash, checked by
+  the clients), `body` (the whole file, jsonb), `schema_version`, `published_by` (auth user, no
+  ON DELETE: a publisher account cannot be deleted while it has releases), `published_at` (server
+  clock), `signoff_ref` (required: what approved it), `revoked_at` / `revoked_by` /
+  `revoked_reason`.
+- CHECKs: content id, semver and 64-lowercase-hex shapes; `body` is an object whose `id` and
+  `version` equal the row's, at most 2 MB; a sign-off reference of 3–1000 characters; revocation
+  fields set together.
+- Append-only except a one-time revocation: BEFORE DELETE / TRUNCATE triggers raise `42501` for
+  everyone (service role included); a BEFORE UPDATE trigger allows only setting `revoked_at`
+  (stamped with the server clock), `revoked_by` and `revoked_reason` on a live release, once; a
+  BEFORE INSERT trigger stamps `published_at` and refuses a row published already revoked.
+- RLS (Migration 89 model, `auth_role()`): every staff role reads (clinical content, not patient
+  data); doctor and admin insert as themselves (`published_by = auth.uid()`) and revoke as
+  themselves (`revoked_by = auth.uid()`); portal patients and users without a staff profile match
+  no policy. Grants: `authenticated` SELECT, INSERT and UPDATE of the three revocation columns
+  only; `service_role` all four. `lint:rls-policies` requires the three policies;
+  `scripts/src/approved-content-migration.test.ts` checks the roles, append-only triggers, CHECKs
+  and a row written by `content:publish` on PGlite.
+- Rows are written only by `pnpm --filter @workspace/scripts run content:publish` (prints the SQL
+  for an admin by default). No app screen writes the table.
+- Clients tolerate its absence: the dashboard and iOS read "table missing" as "no releases" and
+  keep the bundled files; nothing returns a 500 and no error is shown.
+- Independent of 87–97: safe to apply on its own.

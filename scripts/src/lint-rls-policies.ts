@@ -93,6 +93,13 @@ const REQUIRED_POLICIES: Record<string, string[]> = {
   lab_results_to_reconcile: [
     'clinicians_select_lab_results_to_reconcile',
   ],
+  // Migration 98 (supabase-approved-content-migration.sql): every staff role reads published
+  // rule-file releases; doctor / admin publish and revoke as themselves; no DELETE policy.
+  clinical_content_releases: [
+    'staff_select_clinical_content_releases',
+    'publishers_insert_clinical_content_releases',
+    'publishers_revoke_clinical_content_releases',
+  ],
 };
 
 const DIRECT_ENABLE_RE =

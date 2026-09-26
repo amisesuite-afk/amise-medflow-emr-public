@@ -3,7 +3,7 @@
 Done so far on the live database (Amise-frontdesk, production): Migration 92 (`patients.visit_type`)
 and Migration 93 (iOS sync columns), both on 2026-09-25.
 
-Still to apply: Migrations 87, 88, 90, 91, 94, 95, 96, 97 (safe, additive) and 89 (staff-only access; needs checks
+Still to apply: Migrations 87, 88, 90, 91, 94, 95, 96, 97, 98 (safe, additive) and 89 (staff-only access; needs checks
 first and should go with the deploy to `main`).
 
 How to run one file, every time:
@@ -38,6 +38,7 @@ Expect 7 rows. If fewer, send the screenshot before running 87 (88, 90 and 91 ca
 | 6 | 95 Clinical sign-off | One new table, `clinical_signoffs` (doctor and admin record decisions in their own name; nurses can read them; front desk and portal see nothing; decisions can never be changed or deleted, only followed by a new one), so the Insights → Clinical sign-off page can record your approvals. Until it runs, the page shows the items read-only. | [supabase-clinical-signoffs-migration.sql](https://raw.githubusercontent.com/amisesuite-afk/amise-medflow-emr-public/claude/pr-37-gbg22z/supabase-clinical-signoffs-migration.sql) |
 | 7 | 96 Lab results feed and reference ranges | Three new tables: `lab_reference_ranges` (seeded with the built-in defaults, each marked "default — replace with your laboratory's ranges"; staff read, admin edits in Settings), `lab_feed_messages` (log of messages from the laboratory, no message bodies) and `lab_results_to_reconcile` (results that did not match a patient exactly; nurse, doctor and admin only — front desk sees nothing), plus three provenance columns on `investigation_results`. Until it runs, the laboratory's messages are refused with "retry later" and the app uses the built-in default ranges. Independent of 94 and 95. | [supabase-lab-feed-migration.sql](https://raw.githubusercontent.com/amisesuite-afk/amise-medflow-emr-public/claude/pr-37-gbg22z/supabase-lab-feed-migration.sql) |
 | 8 | 97 Appointment type on patients | One new column, `patients.appointment_type`, which the iPad front-desk scheduler already writes locally; front desk may set it (added to the Migration 89 allow-list). Run it before 89. | [supabase-patients-appointment-type-migration.sql](https://raw.githubusercontent.com/amisesuite-afk/amise-medflow-emr-public/claude/pr-37-gbg22z/supabase-patients-appointment-type-migration.sql) |
+| 9 | 98 Approved clinical content | One new table, `clinical_content_releases`, where a signed-off new version of a shared rule file (for now the zebra rules and the supplement catalogue items) can be published once and picked up by the dashboard and the iPhone/iPad without an app update. Every staff account reads it; only doctor and admin accounts can publish or withdraw a version, in their own name; nothing can be edited or deleted afterwards, only withdrawn. Every device checks each version itself and otherwise keeps the rules built into the app. Until it runs, nothing changes. Independent of the others. | [supabase-approved-content-migration.sql](https://raw.githubusercontent.com/amisesuite-afk/amise-medflow-emr-public/claude/pr-37-gbg22z/supabase-approved-content-migration.sql) |
 
 After Part 1, on the iPhone: Settings → Sync Now. Nothing else changes for users.
 
@@ -59,6 +60,14 @@ After 96: check the default ranges are there (expect 37), then follow the go-liv
 
 ```sql
 select count(*) from lab_reference_ranges where is_default;
+```
+
+After 98: open Settings → Clinical rule files on the dashboard. The note "Published releases become
+available after the database update" should be gone and every file should read "Bundled …" (nothing
+is published until you approve a version). Optionally, this should return 0:
+
+```sql
+select count(*) from clinical_content_releases;
 ```
 
 ## Part 2 — Migration 89, staff-only access (on deploy day)
