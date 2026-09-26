@@ -50,7 +50,19 @@ extension ConsultationView {
                             ForEach(otherTabs, id: \.self) { tab in
                                 Button(tab.rawValue) { withAnimation(.easeInOut(duration: 0.15)) { activeTab = tab } }
                             }
-                            // Same tools as the toolbar's Tools menu, opened over this step.
+                            // iPhone: Save snapshot lives here, not in the navigation bar, so
+                            // Complete stays visible there (see `compactToolbar`).
+                            if compactToolbar {
+                                Section("Visit") {
+                                    Button { requestSaveSnapshot() } label: {
+                                        Label("Save snapshot", systemImage: "archivebox")
+                                    }
+                                    .accessibilityHint("Copies the visit into Visit History. The visit stays open.")
+                                    .accessibilityIdentifier("consult.more.saveVisit")
+                                }
+                            }
+                            // Same tools as the toolbar's Tools menu (iPad), opened over this step;
+                            // on iPhone this is the Tools menu.
                             Section("Tools") {
                                 ForEach(ConsultTool.allCases) { tool in
                                     Button { activeTool = tool } label: {
@@ -231,15 +243,35 @@ extension ConsultationView {
     @ViewBuilder
     var visitActionsExplanation: some View {
         if pathwaySteps.last == activeTab, patient.encounterStatus != .complete {
-            Label(EncounterCompletionReview.actionsExplanation, systemImage: "info.circle")
-                .font(.footnote)
-                .foregroundStyle(.secondary)
-                .padding(.horizontal, 14).padding(.vertical, 6)
-                .frame(maxWidth: .infinity, alignment: .leading)
-                .background(.bar)
-                .accessibilityElement(children: .combine)
-                .accessibilityIdentifier("consult.actionsExplanation")
+            VStack(alignment: .leading, spacing: 6) {
+                Label(EncounterCompletionReview.actionsExplanation, systemImage: "info.circle")
+                    .font(.footnote)
+                    .foregroundStyle(.secondary)
+                    .accessibilityElement(children: .combine)
+                    .accessibilityIdentifier("consult.actionsExplanation")
+                // iPhone: the navigation bar holds Complete only, so the Save snapshot the
+                // explanation names is right here (and in the More menu).
+                if compactToolbar {
+                    lastStepSaveSnapshotButton
+                }
+            }
+            .padding(.horizontal, 14).padding(.vertical, 6)
+            .frame(maxWidth: .infinity, alignment: .leading)
+            .background(.bar)
         }
+    }
+
+    /// Same action as the iPad toolbar's Save snapshot; constant text, the icon fills when saved.
+    private var lastStepSaveSnapshotButton: some View {
+        Button { requestSaveSnapshot() } label: {
+            Label("Save snapshot", systemImage: encounterSavedFeedback ? "archivebox.fill" : "archivebox")
+                .scaledFont(size: 13, weight: .semibold, relativeTo: .footnote)
+        }
+        .buttonStyle(.bordered)
+        .tint(encounterSavedFeedback ? Color.green : AMColor.accent)
+        .accessibilityHint("Copies the visit into Visit History. The visit stays open.")
+        .accessibilityValue(encounterSavedFeedback ? "Saved" : "")
+        .accessibilityIdentifier("consult.actions.saveVisit")
     }
 
     typealias PathwayProgress = (filled: Int, total: Int, missing: [String])

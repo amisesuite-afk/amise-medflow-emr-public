@@ -67,7 +67,8 @@ struct ConsultationView: View {
     /// Template drafts inserted this session ("HPI", "Plan" → inserted text): the completion
     /// review flags a field that still holds exactly its draft.
     @State var templateDrafts: [String: String] = [:]
-    @State private var encounterSavedFeedback = false
+    /// Read by the step bar's More menu and the last step's actions row (compact width).
+    @State var encounterSavedFeedback = false
     @State var selectedEncounter: Encounter? = nil
     // Visit pathway ("first door") — orders the steps in the tab bar
     @State var pathway: ConsultPathway = .firstVisit
@@ -77,6 +78,11 @@ struct ConsultationView: View {
     // Dynamic Type: the step bar's number + label are one concatenated Text, so their sizes are
     // scaled metrics (same point sizes at the default text size).
     @Environment(\.dynamicTypeSize) var dynamicTypeSize
+    /// iPhone (compact width): the navigation bar keeps Complete only. With Save snapshot and
+    /// Tools beside it, iOS folded Complete into the bar's "..." overflow (UI walkthrough, run
+    /// 36205324814), so on compact width those two live in the step bar's More menu instead.
+    @Environment(\.horizontalSizeClass) var horizontalSizeClass
+    var compactToolbar: Bool { horizontalSizeClass == .compact }
     @ScaledMetric(relativeTo: .caption2) var stepNumberFontSize: CGFloat = 10
     @ScaledMetric(relativeTo: .footnote) var stepLabelFontSize: CGFloat = 13
 
@@ -387,29 +393,33 @@ struct ConsultationView: View {
             // visit into Visit History and leaves it open; "Complete" opens the review sheet, which
             // saves the snapshot too. The explanation is on screen on the last step and in both
             // the save dialog and the review sheet.
-            ToolbarItem(placement: .navigationBarLeading) {
-                Button {
-                    showSaveEncounterConfirm = true
-                } label: {
-                    HStack(spacing: 4) {
-                        Image(systemName: encounterSavedFeedback ? "archivebox.fill" : "archivebox")
-                        // Same text before and after: changing it re-laid out the navigation bar
-                        // for two seconds, moving the Complete button just as it is reached for.
-                        // The filled green icon is the feedback (and "Saved" for VoiceOver).
-                        Text("Save snapshot")
-                            .scaledFont(size: 13, weight: .semibold, relativeTo: .footnote)
+            // iPhone: Save snapshot and Tools are in the step bar's More menu (see
+            // `compactToolbar`), so Complete stays visible in the navigation bar.
+            if !compactToolbar {
+                ToolbarItem(placement: .navigationBarLeading) {
+                    Button {
+                        showSaveEncounterConfirm = true
+                    } label: {
+                        HStack(spacing: 4) {
+                            Image(systemName: encounterSavedFeedback ? "archivebox.fill" : "archivebox")
+                            // Same text before and after: changing it re-laid out the navigation bar
+                            // for two seconds, moving the Complete button just as it is reached for.
+                            // The filled green icon is the feedback (and "Saved" for VoiceOver).
+                            Text("Save snapshot")
+                                .scaledFont(size: 13, weight: .semibold, relativeTo: .footnote)
+                        }
+                        .foregroundStyle(encounterSavedFeedback ? Color.green : AMColor.accent)
                     }
-                    .foregroundStyle(encounterSavedFeedback ? Color.green : AMColor.accent)
+                    .accessibilityLabel("Save snapshot")
+                    .accessibilityHint("Copies the visit into Visit History. The visit stays open.")
+                    .accessibilityValue(encounterSavedFeedback ? "Saved" : "")
+                    .accessibilityIdentifier("consult.saveVisit")
                 }
-                .accessibilityLabel("Save snapshot")
-                .accessibilityHint("Copies the visit into Visit History. The visit stays open.")
-                .accessibilityValue(encounterSavedFeedback ? "Saved" : "")
-                .accessibilityIdentifier("consult.saveVisit")
-            }
-            // Scores / Vitals / Prescriptions over the current step (UX review: reachable from
-            // inside the consultation on every pathway).
-            ToolbarItem(placement: .navigationBarTrailing) {
-                ConsultationToolsMenu { tool in activeTool = tool }
+                // Scores / Vitals / Prescriptions over the current step (UX review: reachable from
+                // inside the consultation on every pathway).
+                ToolbarItem(placement: .navigationBarTrailing) {
+                    ConsultationToolsMenu { tool in activeTool = tool }
+                }
             }
             // The step footer hides while typing; keep "Next" one tap away (UX review M11).
             ToolbarItemGroup(placement: .keyboard) {
@@ -518,6 +528,9 @@ struct ConsultationView: View {
 
     /// Opens the review sheet (toolbar Complete and the last step's footer button).
     func requestComplete() { showCompleteSheet = true }
+
+    /// Asks before saving a snapshot (toolbar on iPad; More menu and the last step on iPhone).
+    func requestSaveSnapshot() { showSaveEncounterConfirm = true }
 
     /// What the review sheet lists (pure builder: EncounterCompletionReview).
     func completionReview(_ c: PathwayProgress) -> EncounterCompletionReview {
