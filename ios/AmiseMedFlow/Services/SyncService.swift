@@ -110,6 +110,7 @@ final class SyncService: ObservableObject {
             await fetchUserRole(userId: session.user.id)
             SyncTombstones.clearRefused()   // the role may have changed since the last launch
             SyncRefusals.clearAll()
+            SyncService.clearOutcomesUnavailable()   // Migration 94 may have been applied since
             startRealtime()
             // Race-condition fix: setModelContext() may have run before restoreSession()
             // completed (isSignedIn was false at that point), so sync was silently skipped.
@@ -129,6 +130,7 @@ final class SyncService: ObservableObject {
         await fetchUserRole(userId: session.user.id)
         SyncTombstones.clearRefused()   // a different user may be allowed to delete
         SyncRefusals.clearAll()         // ... or to make the refused edits
+        SyncService.clearOutcomesUnavailable()
         await syncIfAuthenticated()
         startRealtime()
     }
@@ -230,6 +232,10 @@ final class SyncService: ObservableObject {
         await pushNEWS2Scale2(context: context)
         // And the front-desk booking type (patients.appointment_type, migration 97).
         await syncAppointmentType(context: context)
+        // The outcomes loop (Migration 94, not yet applied on production): prediction snapshots and
+        // final diagnoses, nurse / doctor / admin only. Own requests, never throws; a missing table
+        // is skipped quietly and retried hours later (SyncService+Outcomes.swift).
+        await syncOutcomes(context: context)
         await AuditLog.flush()
         if syncError == nil { lastSyncedAt = .now }
         recountPending(context: context)

@@ -10,12 +10,12 @@
 // (OutcomeFinalDiagnosisRecord in Encounter.finalDiagnosisJson; a correction retracts the old
 // record and confirms a new one, nothing is deleted).
 //
-// LOCAL AND SYNC-READY, NOT PUSHED YET. Each record carries `sync` (clientRef, remoteId,
-// pendingSync, updatedAt) and the same keys as the Supabase tables of Migration 94
-// (prediction_snapshots / diagnosis_outcomes), so a push loop can be added following the sync
-// hard rules (ios-arch skill). Until then these records stay on this device: Encounters are not
-// peer-synced or in the NAS backup, and the web calibration report does not include them.
-// Nothing here changes an engine, a weight or the record's clinical fields.
+// SYNC. Each record carries `sync` (clientRef, remoteId, pendingSync, updatedAt) and the same
+// keys as the Supabase tables of Migration 94 (prediction_snapshots / diagnosis_outcomes).
+// SyncService+Outcomes.swift pushes them (nurse, doctor, admin only), through the Swift twin of the
+// web sanitisers (OutcomeSanitiser.swift), and pulls back final diagnoses confirmed or retracted
+// elsewhere for this device's encounters. Encounters themselves are not peer-synced or in the NAS
+// backup. Nothing here changes an engine, a weight or the record's clinical fields.
 
 import Foundation
 
@@ -28,21 +28,32 @@ enum OutcomeCodes {
     /// normaliseIcd10 and the Migration 94 CHECK).
     static func normaliseICD10(_ raw: String?) -> String? {
         guard let raw else { return nil }
+        // Twin of codes.ts normaliseIcd10: the text before the first `\s+[—–-]\s+`, run of two
+        // spaces, comma or semicolon; trimmed, upper-cased, all whitespace removed.
         var head = raw
-        for sep in [" — ", " – ", " - ", "  ", ",", ";"] {
-            if let r = head.range(of: sep) { head = String(head[..<r.lowerBound]) }
+        if let r = labelSeparator.firstMatch(in: raw, range: NSRange(raw.startIndex..., in: raw)),
+           let range = Range(r.range, in: raw) {
+            head = String(raw[..<range.lowerBound])
         }
         let compact = head.trimmingCharacters(in: .whitespacesAndNewlines)
             .uppercased()
-            .replacingOccurrences(of: " ", with: "")
+            .components(separatedBy: .whitespacesAndNewlines)
+            .joined()
         guard !compact.isEmpty else { return nil }
-        var chars = Array(compact)
-        if !chars.contains(".") && chars.count >= 4 && chars.count <= 7 {
-            chars.insert(".", at: 3)
+        // ^[A-Z][0-9][0-9A-Z][0-9A-Z]{1,4}$ → a dot after the category ("K3580" → "K35.80").
+        let c = Array(compact)
+        var code = compact
+        if c.count >= 4 && c.count <= 7 && isUpperLetter(c[0]) && isDigit(c[1])
+            && c[2...].allSatisfy({ isUpperLetter($0) || isDigit($0) }) {
+            code = String(c[0..<3]) + "." + String(c[3...])
         }
-        let code = String(chars)
         return isICD10(code) ? code : nil
     }
+
+    private static let labelSeparator: NSRegularExpression = {
+        // A constant, valid pattern: `try!` cannot fail at run time.
+        try! NSRegularExpression(pattern: "\\s+[—–-]\\s+|\\s{2,}|,|;")
+    }()
 
     /// Letter, digit, letter-or-digit, then optionally "." and 1–4 letters or digits.
     static func isICD10(_ code: String) -> Bool {
@@ -115,7 +126,7 @@ struct OutcomeActionTaken: Codable, Equatable {
 }
 
 /// Local sync bookkeeping (not part of the server row). `pendingSync` stays true until a push
-/// (not built yet) gets the row back; `remoteId` is the server row id then.
+/// (SyncService+Outcomes.swift) gets the row back; `remoteId` is the server row id then.
 struct OutcomeSyncState: Codable, Equatable {
     var clientRef: String
     var remoteId: String?
@@ -291,6 +302,25 @@ struct OutcomeFinalDiagnosisRecord: Codable, Equatable, Identifiable {
     }
 }
 
+extension OutcomeFinalDiagnosisRecord {
+    /// Every field (a record pulled from the server, OutcomeSanitiser.record(fromServerRow:)).
+    init(encounterRef: String, finalIcd10: String, finalDiseaseId: String?, sourceType: String,
+         sourceDate: String, actionsTaken: [OutcomeActionTaken], retrospectiveAcuity: String?,
+         status: String, confirmedAt: String, retractedAt: String?, sync: OutcomeSyncState) {
+        self.encounterRef = encounterRef
+        self.finalIcd10 = finalIcd10
+        self.finalDiseaseId = finalDiseaseId
+        self.sourceType = sourceType
+        self.sourceDate = sourceDate
+        self.actionsTaken = actionsTaken
+        self.retrospectiveAcuity = retrospectiveAcuity
+        self.status = status
+        self.confirmedAt = confirmedAt
+        self.retractedAt = retractedAt
+        self.sync = sync
+    }
+}
+
 // MARK: - Building the snapshot (pure)
 
 enum OutcomeSnapshotBuilder {
@@ -438,6 +468,29 @@ extension Encounter {
         all.append(record)
         guard let data = try? JSONEncoder().encode(all), let json = String(data: data, encoding: .utf8) else { return }
         finalDiagnosisJson = json
+    }
+
+    /// Rewrites the stored prediction (sync bookkeeping only: the push and the pull use this; the
+    /// coded values are frozen at completion).
+    func updateOutcomePrediction(_ change: (inout OutcomePredictionRecord) -> Void) {
+        guard var record = outcomePrediction else { return }
+        change(&record)
+        guard let data = try? JSONEncoder().encode(record), let json = String(data: data, encoding: .utf8) else { return }
+        predictionSnapshotJson = json
+    }
+
+    /// Replaces the stored final-diagnosis list (the pull's merge result).
+    func replaceFinalDiagnoses(_ all: [OutcomeFinalDiagnosisRecord]) {
+        guard let data = try? JSONEncoder().encode(all), let json = String(data: data, encoding: .utf8) else { return }
+        finalDiagnosisJson = json
+    }
+
+    /// Rewrites one stored final diagnosis, found by its clientRef (sync bookkeeping only).
+    func updateFinalDiagnosis(clientRef: String, _ change: (inout OutcomeFinalDiagnosisRecord) -> Void) {
+        var all = outcomeFinalDiagnoses
+        guard let i = all.firstIndex(where: { $0.sync.clientRef == clientRef }) else { return }
+        change(&all[i])
+        replaceFinalDiagnoses(all)
     }
 
     /// Retracts the confirmed final diagnosis (kept for the record).

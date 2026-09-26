@@ -49,8 +49,9 @@ version stamps; no free text.
 | Part | Web / API | iOS |
 |---|---|---|
 | Snapshot built | `artifacts/dashboard/src/lib/outcomes-snapshot.ts` (pure), `outcomes-completion.ts` (from AppContext, same inputs as the decision-support panel) | `Services/OutcomeSnapshot.swift` `OutcomeSnapshotBuilder`, `ConsultationView+OutcomeSnapshot.swift` |
-| Stored | Sent with `POST /api/visit/complete` → `lib/prediction-snapshots.ts` sanitises it, forces `encounter_ref = web:<encounter id>`, upserts with `ignoreDuplicates` (first completion wins) | `Encounter.predictionSnapshotJson` (set once) |
-| Final diagnosis | `lib/outcomes-db.ts` → `diagnosis_outcomes` (RLS: nurse/doctor/admin), `components/outcomes/FinalDiagnosisPanel.tsx` | `Encounter.finalDiagnosisJson` (array; retract, never delete), `Views/Consultation/FinalDiagnosisSection.swift` |
+| Stored | Sent with `POST /api/visit/complete` → `lib/prediction-snapshots.ts` sanitises it, forces `encounter_ref = web:<encounter id>`, upserts with `ignoreDuplicates` (first completion wins) | `Encounter.predictionSnapshotJson` (set once), pushed to `prediction_snapshots` by `SyncService+Outcomes.swift` (`encounter_ref = ios:<Encounter.syncCode>`, first completion wins) |
+| Final diagnosis | `lib/outcomes-db.ts` → `diagnosis_outcomes` (RLS: nurse/doctor/admin), `components/outcomes/FinalDiagnosisPanel.tsx` | `Encounter.finalDiagnosisJson` (array; retract, never delete), `Views/Consultation/FinalDiagnosisSection.swift`; pushed to and pulled from `diagnosis_outcomes` (`SyncService+Outcomes.swift`) |
+| Sanitisers | `@workspace/triage-engine/outcomes` (`codes.ts`) | Swift twin `Services/OutcomeSanitiser.swift`, same vectors (`ios/AmiseMedFlowTests/Resources/OutcomeSanitiserVectors.json`) |
 | Maths | `@workspace/triage-engine/outcomes` (`lib/triage-engine/src/outcomes/*`): sanitisers, calibration, shrinkage, de-identification | — |
 | Report | Admin page `pages/tabs/CalibrationTab.tsx`; script `pnpm --filter @workspace/scripts run outcomes:calibration -- --input <export.json> \| --supabase` | — |
 | Export | `GET /api/outcomes/research-export` (`routes/outcomes.ts`) | — |
@@ -114,22 +115,49 @@ version stamps; no free text.
   returns a 500.
 - **Research export:** `200 { available: false }`. The script prints that the tables are missing
   and exits 0.
-- **iOS** does not touch Supabase for this yet.
+- **iOS**: the first "table missing" answer (`42P01` / `PGRST205` / `PGRST204` / `42703`) stops the
+  outcomes step quietly (no sync error, nothing in the pending count), notes the time and does not ask
+  again for six hours or until the next sign-in / launch. The records stay pending on the device and
+  go up once the migration is applied.
 
-## iOS: local and sync-ready, not pushed
+## iOS: push and pull (added 2026-09-26, branch `ios-outcomes-calculators`)
 
-- The records carry `sync { clientRef, remoteId, pendingSync, updatedAt }` and the same JSON keys
-  as the web snapshot. A web test (`outcomes-ios-contract.test.ts`) feeds the iOS shape through
-  the same sanitisers and report.
-- A push loop was **not** added. The sync hard rules (pending protection, `SyncPushConfirmation`,
-  `SyncRefusals`, 0-row handling) need a new push loop and on-device testing, which cannot be
-  compiled here. Pushing would also need the `Encounter` to map to a server `encounter_ref`
-  (`ios:<syncCode>`) and the patient to have a server id (`SyncRemoteId.serverId`).
-- **Consequence:** iOS predictions and final diagnoses stay on the device that completed the
-  visit. They are not in peer sync or the NAS backup (Encounters never were), and the web report
-  does not include them yet.
-- Adding `predictionSnapshotJson` / `finalDiagnosisJson` (optional `String?`) to `Encounter` is a
-  lightweight SwiftData migration, the same as `pathwaySummary` in `8b0fa4b`.
+`SyncService+Outcomes.swift`, rules in `OutcomeSync.swift`, sanitisers in `OutcomeSanitiser.swift`. It runs
+after the main sync steps in its own requests and never throws, so it cannot hold back the rest of the sync.
+
+- **Who.** Only a confirmed nurse, doctor or admin role (`OutcomeSync.mayUse`), matching the Migration 94
+  RLS. Front desk, and a role that could not be read (falls back to front desk, unconfirmed), neither push
+  nor pull.
+- **Same values as the web.** Every record goes through the Swift twin of `sanitizeSnapshot` /
+  `sanitizeFinalDiagnosis` (ICD-10 normalisation, disease-id, key and version patterns, probability
+  rounding, caps, triage scale, triggers, dates). The shared vectors are run by both platforms
+  (`OutcomeSyncTests.swift`, `outcomes-sanitiser-vectors.test.ts`). The Swift `normaliseICD10` now splits
+  labels exactly as the web does (any whitespace around a dash, two spaces, comma, semicolon).
+- **Snapshots (first completion wins).** INSERT with `encounter_ref = ios:<syncCode>`, `encounter_id` null,
+  `created_by` the signed-in user. A `23505` (the server already has this encounter's snapshot, e.g. an
+  earlier insert whose answer was lost) adopts the existing row. Snapshots are never updated.
+- **Final diagnoses (retract, then confirm).** Pending records go retractions first, so the server's
+  "one confirmed row per encounter" index accepts the corrected diagnosis. A record already on the server
+  is retracted with an UPDATE of `status`, `retracted_at`, `retracted_by` only (`eq status confirmed`); a
+  record confirmed and retracted before it was ever sent is inserted as retracted (with its time), so the
+  server keeps what was recorded. `client_ref` (`ios:<UUID>`) makes a retried insert idempotent: a `23505`
+  is resolved by reading the row back by `client_ref`. When a retraction does not go through, the new
+  confirmed diagnosis of that encounter waits.
+- **Sync hard rules.** `pendingSync` clears only when the server returns the row and `updatedAt` did not
+  change during the request (`SyncPushConfirmation`); the row id is kept at once (no second insert after a
+  crash). A 0-row retraction is read back by id: still confirmed → refused; already retracted → applied (a
+  retry after a lost answer); gone → left pending. A `42501` marks the record refused
+  (`SyncRefusals .predictionSnapshot / .diagnosisOutcome`, counted in "N changes not permitted for your
+  role") and the loop carries on; a transport error stops it. Patient ids go through
+  `SyncRemoteId.serverId`; a patient not yet on the server waits.
+- **Pull.** For this device's encounters the server knows, `diagnosis_outcomes` rows are merged
+  (`OutcomeSync.merge`): a retraction made elsewhere is taken, a final diagnosis recorded on the web for an
+  iOS encounter (the web card lists iOS snapshots) is added, not pending. An encounter with any unsent
+  final-diagnosis change is skipped (never overwritten); a retracted record never becomes confirmed again.
+  Snapshots are not pulled: they are written once, on the device that completed the visit.
+- Encounters themselves are still not peer-synced or in the NAS backup, so a snapshot exists only on the
+  device that completed the visit until it is pushed. The web report now includes iOS predictions once
+  pushed (matched by ICD-10 category).
 
 ## Tests
 
@@ -149,8 +177,11 @@ version stamps; no free text.
   503 without audit, unavailable without tables).
 - `scripts/src/outcomes-calibration.test.ts` (script: rows and exports; the PANE table is
   unchanged after proposing).
-- iOS `AmiseMedFlowTests/OutcomeSnapshotTests.swift` (not run here: Swift cannot be compiled in
-  this environment).
+- iOS `AmiseMedFlowTests/OutcomeSnapshotTests.swift` and `OutcomeSyncTests.swift` (shared sanitiser
+  vectors, server rows, role gate, back-off, retract-before-confirm order, 0-row retraction, pull merge;
+  not run here: Swift cannot be compiled in this environment).
+- `artifacts/dashboard/src/lib/__tests__/outcomes-sanitiser-vectors.test.ts` (the same vectors through
+  the TypeScript sanitisers).
 
 ## Needs sign-off
 
@@ -171,8 +202,11 @@ version stamps; no free text.
    example K80 (gallstones) does not match K81 (cholecystitis).
 7. **Decision-band grading:** treat + done and observe / not-for-patient + not done agree; test
    bands are not graded.
-8. **iOS push:** confirm iOS stays local for now, or ask for the push loop as a follow-up (needs
-   device testing).
+8. **iOS push (now built):** iOS predictions and final diagnoses go to Supabase for nurse, doctor and
+   admin accounts; a record confirmed and retracted before it was sent is stored on the server as
+   retracted; the device's clock sets `confirmed_at` (the time the clinician confirmed it, possibly
+   offline) where the web lets the database set it. Needs a device test once Migration 94 is applied
+   (`docs/clinical-validation/changes/ios-outcomes-calculators.md`).
 
 ## Owner actions
 

@@ -45,6 +45,18 @@ extension SyncService {
         refused += refusedCount(bills.map(\.id), .billingItem)
         refused += refusedCount(unsentPathway.map(\.id), .pathwayData)
         refused += refusedCount(unsentScale2.map(\.id), .news2Scale2)
+        // Outcomes loop records (SyncService+Outcomes.swift): not in the pending count (they wait
+        // quietly while Migration 94 is not applied), but a refusal is reported like any other.
+        let encounters = (try? context.fetch(FetchDescriptor<Encounter>()))?.filter {
+            $0.isLive && ($0.predictionSnapshotJson != nil || $0.finalDiagnosisJson != nil)
+        } ?? []
+        refused += refusedCount(encounters.filter { $0.outcomePrediction?.sync.pendingSync == true }.map(\.id),
+                                .predictionSnapshot)
+        refused += refusedCount(encounters.flatMap { e in
+            e.outcomeFinalDiagnoses.filter(\.sync.pendingSync).map {
+                OutcomeSync.refusalId(clientRef: $0.sync.clientRef, encounterId: e.id)
+            }
+        }, .diagnosisOutcome)
         syncNotice = SyncRefusals.notice(count: refused)
     }
 

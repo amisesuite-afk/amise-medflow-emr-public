@@ -115,6 +115,13 @@ your role"); a transport error stops that loop. New push loops must follow the s
 Front desk (role confirmed via `isRoleConfirmed`) sends only `FrontDeskPatientColumns` in the
 patient UPDATE (`PatientUpdateRow`), mirroring Migration 89's column guard. Tests:
 `AmiseMedFlowTests/FrontDeskSyncTests.swift`.
+Outcomes loop (`SyncService+Outcomes.swift`, rules `OutcomeSync.swift`): `Encounter.predictionSnapshotJson`
+→ `prediction_snapshots` (insert once, `23505` adopts the existing row) and `finalDiagnosisJson` ⇄
+`diagnosis_outcomes` (retractions pushed before the new confirmed row; 0-row retraction read back by id;
+pull merges only encounters with nothing pending). Confirmed nurse / doctor / admin only; values go through
+`OutcomeSanitiser.swift` (twin of `@workspace/triage-engine/outcomes`, shared vectors
+`Resources/OutcomeSanitiserVectors.json`). Migration 94 missing → skipped quietly for six hours or until
+sign-in. Tests: `AmiseMedFlowTests/OutcomeSyncTests.swift`.
 
 **PeerSyncService**: MultipeerConnectivity, service type `"amise-medflow"`, one MCSession per
 peer (`encryptionPreference: .required`). Admission (`PeerSyncService+Pairing.swift`, protocol

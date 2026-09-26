@@ -29,6 +29,8 @@ enum SyncRefusals {
         case pathwayData    = "pathway_data"
         case news2Scale2    = "news2_scale2"
         case appointmentType = "appointment_type"
+        case predictionSnapshot = "prediction_snapshot"
+        case diagnosisOutcome = "diagnosis_outcome"
     }
 
     /// The server refused the write for this user: 42501 is both "RLS policy violation" and the

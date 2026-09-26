@@ -1,8 +1,9 @@
 /**
  * Outcomes loop — the iOS records (ios/AmiseMedFlow/Services/OutcomeSnapshot.swift,
- * OutcomeSnapshotTests.swift) use the same JSON keys as the web snapshot, so a future iOS push
- * (or an export of the device records) is accepted by the same sanitisers and the same
- * calibration report. These literals are what JSONEncoder writes for OutcomePredictionRecord /
+ * OutcomeSnapshotTests.swift) use the same JSON keys as the web snapshot, so what the iOS push
+ * (SyncService+Outcomes.swift, through the Swift twin OutcomeSanitiser.swift) sends is accepted by
+ * the same sanitisers and the same calibration report. The twin's own vectors are in
+ * outcomes-sanitiser-vectors.test.ts. These literals are what JSONEncoder writes for OutcomePredictionRecord /
  * OutcomeFinalDiagnosisRecord (nil optionals omitted, plus the local `sync` bookkeeping, which
  * the sanitiser drops). Change both platforms together.
  */

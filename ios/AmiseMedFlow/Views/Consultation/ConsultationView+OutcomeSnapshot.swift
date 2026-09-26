@@ -1,7 +1,7 @@
 // ConsultationView+OutcomeSnapshot.swift
 // Outcomes loop: on "Complete visit", the engines' outputs are frozen on today's completed visit
-// as coded data only (OutcomeSnapshot.swift). Kept on this device, sync-ready; nothing is pushed
-// yet and nothing in the record changes.
+// as coded data only (OutcomeSnapshot.swift). The next sync sends it to prediction_snapshots
+// (SyncService+Outcomes.swift, nurse / doctor / admin); nothing in the record changes.
 
 import SwiftUI
 import SwiftData

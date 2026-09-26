@@ -5,8 +5,9 @@
 // with the source and its date. A gentle "Final diagnosis not yet recorded" shows on completed
 // visits older than 14 days that had an operation or pathology.
 //
-// Coded only (ICD-10), stored on the Encounter (OutcomeSnapshot.swift). Local and sync-ready:
-// not pushed to Supabase yet. Nothing here edits the working diagnosis or any clinical field.
+// Coded only (ICD-10), stored on the Encounter (OutcomeSnapshot.swift) and sent to Supabase
+// diagnosis_outcomes by the next sync (SyncService+Outcomes.swift; once Migration 94 is applied).
+// Nothing here edits the working diagnosis or any clinical field.
 
 import SwiftUI
 import SwiftData
@@ -65,7 +66,7 @@ struct EncounterFinalDiagnosisSection: View {
             } header: {
                 Text("Final diagnosis")
             } footer: {
-                Text("Confirmed later from histology, operative findings, a discharge summary or a follow-up visit, to measure how accurate the engines were. ICD-10 code only. Kept on this device for now.")
+                Text("Confirmed later from histology, operative findings, a discharge summary or a follow-up visit, to measure how accurate the engines were. ICD-10 code only. Sent to the practice's records at the next sync (nurse, doctor or admin).")
             }
             .sheet(isPresented: $showCapture) {
                 FinalDiagnosisCaptureSheet(encounter: encounter)
